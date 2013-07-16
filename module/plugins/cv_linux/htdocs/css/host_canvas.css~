@@ -1,0 +1,6 @@
+#donut_cpu {
+    position: absolute;
+    left: 330px;
+    top: 200px;
+    cursor: pointer;
+}
