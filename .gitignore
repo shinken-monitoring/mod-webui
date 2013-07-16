@@ -33,3 +33,7 @@ nosetests.xml
 .mr.developer.cfg
 .project
 .pydevproject
+
+# OS generated files
+*.pyc
+*.DS_Store*
