@@ -15,7 +15,8 @@
   "keywords": [
     "module",
     "broker",
-    "webui"
+    "webui",
+    "interface"
   ],
   "dependencies": {
     "shinken": ">=1.4"
