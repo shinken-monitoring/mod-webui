@@ -9,6 +9,10 @@
     {
       "name": "Jean Gabès",
       "email": "naparuba@gmail.com"
+    },
+    {
+      "name": "Andreas Karfusehr",
+      "email": "andreas.karfusehr@gmail.com"
     }
   ],
   "repository": "https://github.com/shinken-monitoring/mod-webui",
