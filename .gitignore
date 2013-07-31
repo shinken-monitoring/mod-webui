@@ -37,3 +37,6 @@ nosetests.xml
 # OS generated files
 *.pyc
 *.DS_Store*
+
+# backup file
+*.py~
