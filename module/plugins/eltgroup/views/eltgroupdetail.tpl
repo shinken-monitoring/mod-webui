@@ -1,54 +1,38 @@
-%rebase layout globals()
+%rebase layout globals(), css=['eltgroup/css/group-detail.css'], title='Group overview', menu_part=''
 
 <div class="row-fluid">
-	<div class="span12 well well-small">	   
-		<table class="span3">
-			<tbody>
-				<tr>
-					<td>Name:</td>
-					<td>generic-hosts</td>
-				</tr>
-				<tr>
-					<td>Address:</td>
-					<td>ERP</td>
-				</tr>
-			</tbody>
-		</table>
+	<h3 class="no-topmargin">hostgroup_name</h3>
+</div>
 
-		<table class="span2">
-			<tbody>
-				<tr>
-					<td>Up: </td>
-					<td> <span class="label label-success"> 42 </span> </td>
-				</tr>
-				<tr>
-					<td>Down: </td>
-					<td>  <span class="label label-important">5</span>  </td>
-				</tr>
-			</tbody>
-		</table>
-
-		<table class="span2">
-			<tbody>
-				<tr>
-					<td>Unreachable: </td>
-					<td> <span class="label label-important">23</span> </td>
-				</tr>
-				<tr>
-					<td>Pending: </td>
-					<td> <span class="label label-info">10</span> </td>
-				</tr>
-			</tbody>
-		</table>
-
-		<div class="progress span5 no-bottommargin" style="height: 45px;">
-			<div class="bar bar-success quickinfo" data-original-title='35% Up' style="width: 35%;"></div>
-			<div class="bar bar-info quickinfo" data-original-title='20% Unreachable' style="width: 20%;"></div>
-			<div class="bar bar-danger quickinfo" data-original-title='10% Down' style="width: 10%;"></div>
-			<div class="bar bar-warning quickinfo" data-original-title='35% Warning' style="width: 35%;"></div>
+<div class="row-fluid">
+	<div class="accordion" id="fitted-accordion">
+		<div class="fitted-box overall-summary accordion-group">
+			<div class="accordion-heading">
+				<a class="accordion-toggle" data-toggle="collapse" data-parent="#fitted-accordion" href="#collapseOne">
+					Overview (alias)
+				</a>
+			</div>
+			<div id="collapseOne" class="accordion-body collapse in">
+				<div class="row-fluid fitted-bar ">
+					<div class="progress">
+						<div class="bar bar-success quickinfo" data-original-title='35% Up' style="width: 35%;"></div>
+						<div class="bar bar-info quickinfo" data-original-title='20% Unreachable' style="width: 20%;"></div>
+						<div class="bar bar-danger quickinfo" data-original-title='10% Down' style="width: 10%;"></div>
+						<div class="bar bar-warning quickinfo" data-original-title='35% Warning' style="width: 35%;"></div>
+					</div>
+				</div>
+				<div class="accordion-inner">
+					<ul>
+						<li class="span3"><span class="num">35</span> Up</li>
+						<li class="span3"><span class="num">10</span> Down</li>
+						<li class="span3"><span class="num">23</span> Unreachable</li>
+						<li class="span3"><span class="num">10</span> Pending</li>
+					</ul>
+				</div>
+			</div>
 		</div>
-	</div>
-
+    </div>
+    
 	<div>
 		<div class="clearfix">
 			<table class="table table-hover">
@@ -162,5 +146,5 @@
 				<li><a href="#">Next</a></li>
 			</ul>
 		</div>
-	</div>
+	</div> 
 </div>
