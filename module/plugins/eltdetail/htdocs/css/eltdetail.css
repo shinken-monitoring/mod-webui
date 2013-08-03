@@ -1,5 +1,5 @@
 /**
-* Copyright (C) 2009-2012:
+* Copyright (C) 2009-2013:
 *    Gabes Jean, naparuba@gmail.com
 *    Gerhard Lausser, Gerhard.Lausser@consol.de
 *    Gregory Starck, g.starck@gmail.com
@@ -22,6 +22,11 @@
 * along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 *
 **/
+
+#inner_depgraph {
+  background: #FFFFFF;
+  padding: 15px;
+} 
 
 #content_container {
 	padding-bottom: 15px;

@@ -26,7 +26,7 @@ Invalid element name
 %end
 
 
-%rebase layout title=elt_type.capitalize() + ' detail about ' + elt.get_full_name(), js=['eltdetail/js/jquery.color.js', 'eltdetail/js/jquery.Jcrop.js', 'eltdetail/js/iphone-style-checkboxes.js', 'eltdetail/js/hide.js', 'eltdetail/js/dollar.js', 'eltdetail/js/gesture.js', 'eltdetail/js/graphs.js', 'eltdetail/js/tags.js', 'eltdetail/js/depgraph.js', 'eltdetail/js/custom_views.js', 'eltdetail/js/tabs.js' ], css=['eltdetail/css/iphonebuttons.css_', 'eltdetail/css/eltdetail.css', 'eltdetail/css/hide.css', 'eltdetail/css/gesture.css', 'eltdetail/css/jquery.Jcrop.css'], top_right_banner_state=top_right_banner_state , user=user, app=app, refresh=True
+%rebase layout title=elt_type.capitalize() + ' detail about ' + elt.get_full_name(), js=['eltdetail/js/jquery.color.js', 'eltdetail/js/jquery.Jcrop.js', 'eltdetail/js/iphone-style-checkboxes.js', 'eltdetail/js/hide.js', 'eltdetail/js/dollar.js', 'eltdetail/js/gesture.js', 'eltdetail/js/graphs.js', 'eltdetail/js/tags.js', 'eltdetail/js/depgraph.js', 'eltdetail/js/custom_views.js', 'eltdetail/js/tabs.js', 'eltdetail/js/screenfull.js' ], css=['eltdetail/css/iphonebuttons.css_', 'eltdetail/css/eltdetail.css', 'eltdetail/css/hide.css', 'eltdetail/css/gesture.css', 'eltdetail/css/jquery.Jcrop.css'], top_right_banner_state=top_right_banner_state , user=user, app=app, refresh=True
 
 %# " We will save our element name so gesture functions will be able to call for the good elements."
 <script type="text/javascript">
@@ -95,8 +95,8 @@ $(document).ready(function(){
 					<button class="btn btn-mini"><i class="icon-cog"></i> Actions</button>
 					%end
 					<button class="btn btn-mini dropdown-toggle" data-toggle="dropdown">
-				 		<span class="caret"></span>
-				 	</button>
+						<span class="caret"></span>
+					</button>
 					<ul class="dropdown-menu pull-right">
 						%action_urls = elt.action_url.split('|')
 						%if len(action_urls) > 0:
@@ -115,93 +115,118 @@ $(document).ready(function(){
 			    </div>
 			</div>	
 		%else:
-			<div class="span5">
-			  	<span class="pull-right leftmargin" id="host_tags">
-					%tags = elt.get_host_tags()
-					%for t in tags:
-					<script>add_tag_image('/static/images/sets/{{t.lower()}}/tag.png','{{t}}');</script>
-					%end
-				</span>
-			</div>
+		    <div class="span5">
+		   		<span class="pull-right leftmargin" id="host_tags">
+		   			%tags = elt.get_host_tags()
+		   			%for t in tags:
+		    		<script>add_tag_image('/static/images/sets/{{t.lower()}}/tag.png','{{t}}');</script>
+		    		%end
+		    	</span>
+		    </div>
 		%end	
-  	</div>
-
-	<div class="row-fluid box">	   
-		<table class="span4">
-			%#Alias, apretns and hostgroups arefor host only
-			%if elt_type=='host':
-			<tr>
-				<td>Alias:</td>
-				<td>{{elt.alias}}</td>
-			</tr>
-			<tr>
-				<td>Address:</td>
-				<td>{{elt.address}}</td>
-			</tr>
-			<tr>
-				<td>Importance:</td>
-				<td>{{!helper.get_business_impact_text(elt)}}</td>
-			</tr>
-		</table>
-		
-		<table class="span3">
-			<tr>
-				<td>Parents:</td>
-				%if len(elt.parents) > 0:
-				<td>{{','.join([h.get_name() for h in elt.parents])}}</td>
-				%else:
-				<td>No parents</td>
-				%end
-			</tr>
-			<tr>
-				<td>Members of:</td>
-				%if len(elt.hostgroups) > 0:
-				<td>{{','.join([hg.get_name() for hg in elt.hostgroups])}}</td>
-				%else:
-				<td> No groups </td>
-				%end
-			</tr>
-			%# End of the host only case, so now service
-			%else:
-			<tr>
-				<td>Host:</td>
-				<td><a href="/host/{{elt.host.host_name}}" class="link">{{elt.host.host_name}}</a></td>
-			</tr>
-			<tr>
-				<td>Members of:</td>
-				%if len(elt.servicegroups) > 0:
-				<td>{{','.join([sg.get_name() for sg in elt.servicegroups])}}</td>
-				%else:
-				<td> No groups </td>
-				%end
-			</tr>
-			%end
-			<tr>
-				<td>Notes: </td>
-				%if elt.notes != '' and elt.notes_url != '':
-				<td><a href="{{elt.notes_url}}" target=_blank>{{elt.notes}}</a></td>
-				%elif elt.notes == '' and elt.notes_url != '':
-				<td><a href="{{elt.notes_url}}" target=_blank>{{elt.notes_url}}</a></td>
-				%elif elt.notes != '' and elt.notes_url == '':
-				<td>{{elt.notes}}</td>
-				%else:
-				<td>(none)</td>
-				%end
-			</tr>
-		</table>	    
-
-		<div class="span4">
-		      	%#   " If the elements is a root problem with a huge impact and not ack, ask to ack it!"
-		      	%if elt.is_problem and elt.business_impact > 2 and not elt.problem_has_been_acknowledged:
-		      	<div class="alert alert-critical no-bottommargin pulsate row-fluid">
-		      		<div class="span2 font-white" style="font-size: 50px; padding-top: 10px;"> <i class="icon-bolt"></i> </div>
-		      		<p class="span10 font-white">This element has got an important impact on your business, please <b>fix it</b> or <b>acknowledge it</b>.</p>
-		      		%# "end of the 'SOLVE THIS' highlight box"
-		      		%end
-		      	</div>
-		</div>				
 	</div>
 
+	<div class="accordion" id="fitted-accordion">
+		<div class="fitted-box overall-summary accordion-group">
+			<div class="accordion-heading">
+				%if elt_type=='host':
+				<a class="accordion-toggle fitted-link" data-toggle="collapse" data-parent="#fitted-accordion" href="#collapseOne">
+					Overview ({{elt.alias}})
+				</a>
+				%else:
+				<a class="accordion-toggle fitted-link" data-toggle="collapse" data-parent="#fitted-accordion" href="#collapseOne">
+					Overview
+				</a>
+				%end
+			</div>
+			<div id="collapseOne" class="accordion-body collapse in">
+				<div class="row-fluid fitted-bar ">
+					<table class="span4 leftmargin">
+						%#Alias, apretns and hostgroups are for host only
+						%if elt_type=='host':
+						<tr>
+							<td>Alias:</td>
+							<td>{{elt.alias}}</td>
+						</tr>
+						<tr>
+							<td>Address:</td>
+							<td>{{elt.address}}</td>
+						</tr>
+						<tr>
+							<td>Importance:</td>
+							<td>{{!helper.get_business_impact_text(elt)}}</td>
+						</tr>
+					</table>
+
+					<table class="span3">
+						<tr>
+							<td>Parents:</td>
+							%if len(elt.parents) > 0:
+							<td>{{','.join([h.get_name() for h in elt.parents])}}</td>
+							%else:
+							<td>No parents</td>
+							%end
+						</tr>
+						<tr>
+							<td>Members of:</td>
+							%if len(elt.hostgroups) > 0:
+							<td>{{','.join([hg.get_name() for hg in elt.hostgroups])}}</td>
+							%else:
+							<td> No groups </td>
+							%end
+						</tr>
+						%# End of the host only case, so now service
+						%else:
+						<tr>
+							<td>Host:</td>
+							<td><a href="/host/{{elt.host.host_name}}" class="link">{{elt.host.host_name}}</a></td>
+						</tr>
+						<tr>
+							<td>Members of:</td>
+							%if len(elt.servicegroups) > 0:
+							<td>{{','.join([sg.get_name() for sg in elt.servicegroups])}}</td>
+							%else:
+							<td> No groups </td>
+							%end
+						</tr>
+						%end
+						<tr>
+							<td>Notes: </td>
+							%if elt.notes != '' and elt.notes_url != '':
+							<td><a href="{{elt.notes_url}}" target=_blank>{{elt.notes}}</a></td>
+							%elif elt.notes == '' and elt.notes_url != '':
+							<td><a href="{{elt.notes_url}}" target=_blank>{{elt.notes_url}}</a></td>
+							%elif elt.notes != '' and elt.notes_url == '':
+							<td>{{elt.notes}}</td>
+							%else:
+							<td>(none)</td>
+							%end
+						</tr>
+					</table>
+					<div class="span4">
+						%#   " If the elements is a root problem with a huge impact and not ack, ask to ack it!"
+						%if elt.is_problem and elt.business_impact > 2 and not elt.problem_has_been_acknowledged:
+						<div class="alert alert-critical no-bottommargin pulsate row-fluid leftmargin">
+							<div class="span2 font-white" style="font-size: 50px; padding-top: 10px;"> <i class="icon-bolt"></i> </div>
+							<p class="span10 font-white">This element has got an important impact on your business, please <b>fix it</b> or <b>acknowledge it</b>.</p>
+							%# "end of the 'SOLVE THIS' highlight box"
+							%end
+						</div>
+					</div>
+				</div>
+				%if elt_type=='host':
+				<div class="row-fluid">
+					<ul>
+						<li class="span3"> <span class="icon-stack font-green"> <i class="icon-circle-blank icon-stack-base"></i> <i class="icon-arrow-up"></i></span> <span class="num">35</span> Up</li>
+						<li class="span3"> <span class="icon-stack font-red"> <i class="icon-circle-blank icon-stack-base"></i> <i class="icon-arrow-down"></i></span> <span class="num">10</span> Down</li>
+						<li class="span3"> <span class="icon-stack font-orange"> <i class="icon-circle-blank icon-stack-base"></i> <i class="icon-question"></i></span> <span class="num">23</span> Unreachable</li>
+						<li class="span3"> <span class="icon-stack"> <i class="icon-circle-blank icon-stack-base"></i> <i class="icon-spinner"></i></span> <span class="num">10</span> Pending</li>
+					</ul>
+				</div>
+				%end
+			</div>
+	    </div>
+	</div>	
 	<!-- Switch Start -->
 
 	%# By default all is unabled
@@ -745,7 +770,32 @@ $(document).ready(function(){
 
 
 			<!-- Tab Dep graph Start -->
-			<div class="tab-pane" id="depgraph">
+			<script>
+			$(function() {
+				$('#supported').text('Supported/allowed: ' + !!screenfull.enabled);
+				if (!screenfull.enabled) {
+					return false;
+				}
+
+
+				$('#fullscreen-request').click(function() {
+					screenfull.request($('#inner_depgraph')[0]);
+					// Does not require jQuery, can be used like this too:
+					// screenfull.request(document.getElementById('container'));
+				});
+
+				// Trigger the onchange() to set the initial values
+				screenfull.onchange();
+			});
+			</script>
+
+			<div class="tab-pane" id="depgraph" class="span12">
+				<div>
+					<ul class="nav nav-pills">
+						<li class="active"><a id="fullscreen-request" href="#"><i class="icon-plus"></i> Fullscreen</a></li></i>
+					</ul>
+				</div>
+				<div class="clear"></div>
 				<div id="inner_depgraph" data-elt-name='{{elt.get_full_name()}}'>
 					<span class="alert alert-error"> Cannot load dependency graph.</span>
 				</div>
