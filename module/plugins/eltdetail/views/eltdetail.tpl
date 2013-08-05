@@ -73,12 +73,12 @@ $(document).ready(function(){
 
   %#app.insert_template('cv_linux', globals())
 
-  <div id="content_container" class="row-fluid">
-  	<div class="row-fluid">
-  		<h1 class="span7 state_{{elt.state.lower()}} icon_down no-margin"> <img class="imgsize3" alt="icon state" src="{{helper.get_icon_state(elt)}}" />{{elt.state}}: {{elt.get_full_name()}}</h1> 
+  <div id="content_container">
+  	<div class="row">
+  		<h1 class="col-lg-7 state_{{elt.state.lower()}} icon_down no-margin"> <img class="imgsize3" alt="icon state" src="{{helper.get_icon_state(elt)}}" />{{elt.state}}: {{elt.get_full_name()}}</h1> 
 
 		%if elt.action_url != '':
-			<div class="span4">
+			<div class="col-lg-4">
 				<span class="pull-right leftmargin" id="host_tags">
 					%tags = elt.get_host_tags()
 					%for t in tags:
@@ -86,7 +86,7 @@ $(document).ready(function(){
 					%end
 				</span>
 			</div>
-			<div class="span1">
+			<div class="col-lg-1">
 				<div class="btn-group">
 					%action_urls = elt.action_url.split('|')
 					%if len(action_urls) == 1:
@@ -115,7 +115,7 @@ $(document).ready(function(){
 			    </div>
 			</div>	
 		%else:
-		    <div class="span5">
+		    <div class="col-lg-5">
 		   		<span class="pull-right leftmargin" id="host_tags">
 		   			%tags = elt.get_host_tags()
 		   			%for t in tags:
