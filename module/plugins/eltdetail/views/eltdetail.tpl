@@ -140,8 +140,8 @@ $(document).ready(function(){
 				%end
 			</div>
 			<div id="collapseOne" class="accordion-body collapse in">
-				<div class="row-fluid fitted-bar ">
-					<table class="span4 leftmargin">
+				<div class="fitted-bar ">
+					<table class="col-lg-4 leftmargin">
 						%#Alias, apretns and hostgroups are for host only
 						%if elt_type=='host':
 						<tr>
@@ -158,7 +158,7 @@ $(document).ready(function(){
 						</tr>
 					</table>
 
-					<table class="span3">
+					<table class="col-lg-3">
 						<tr>
 							<td>Parents:</td>
 							%if len(elt.parents) > 0:
@@ -203,7 +203,7 @@ $(document).ready(function(){
 							%end
 						</tr>
 					</table>
-					<div class="span4">
+					<div class="col-lg-4">
 						%#   " If the elements is a root problem with a huge impact and not ack, ask to ack it!"
 						%if elt.is_problem and elt.business_impact > 2 and not elt.problem_has_been_acknowledged:
 						<div class="alert alert-critical no-bottommargin pulsate row-fluid leftmargin">
@@ -215,12 +215,12 @@ $(document).ready(function(){
 					</div>
 				</div>
 				%if elt_type=='host':
-				<div class="row-fluid">
+				<div class="row">
 					<ul>
-						<li class="span3"> <span class="icon-stack font-green"> <i class="icon-circle-blank icon-stack-base"></i> <i class="icon-arrow-up"></i></span> <span class="num">35</span> Up</li>
-						<li class="span3"> <span class="icon-stack font-red"> <i class="icon-circle-blank icon-stack-base"></i> <i class="icon-arrow-down"></i></span> <span class="num">10</span> Down</li>
-						<li class="span3"> <span class="icon-stack font-orange"> <i class="icon-circle-blank icon-stack-base"></i> <i class="icon-question"></i></span> <span class="num">23</span> Unreachable</li>
-						<li class="span3"> <span class="icon-stack"> <i class="icon-circle-blank icon-stack-base"></i> <i class="icon-spinner"></i></span> <span class="num">10</span> Pending</li>
+						<li class="col-lg-3"> <span class="icon-stack font-green"> <i class="icon-circle-blank icon-stack-base"></i> <i class="icon-arrow-up"></i></span> <span class="num">35</span> Up</li>
+						<li class="col-lg-3"> <span class="icon-stack font-red"> <i class="icon-circle-blank icon-stack-base"></i> <i class="icon-arrow-down"></i></span> <span class="num">10</span> Down</li>
+						<li class="col-lg-3"> <span class="icon-stack font-orange"> <i class="icon-circle-blank icon-stack-base"></i> <i class="icon-question"></i></span> <span class="num">23</span> Unreachable</li>
+						<li class="col-lg-3"> <span class="icon-stack"> <i class="icon-circle-blank icon-stack-base"></i> <i class="icon-spinner"></i></span> <span class="num">10</span> Pending</li>
 					</ul>
 				</div>
 				%end

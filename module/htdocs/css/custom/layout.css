@@ -124,6 +124,7 @@ html, body {height: 95.5%;}
   padding: 10px 0;
   background: #FFFFFF;
   border-bottom: 1px solid #DDDDDD;
+  height: 80px;
 }
 
 .fitted-summary {}
