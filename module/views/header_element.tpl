@@ -2,31 +2,30 @@
 
 <script type="text/javascript">
   function webui() {
-      var Port = {{app.get_webui_port()}}
-      var Host = document.domain;
-      var Url = 'http://' + Host + ':' + Port;
-      return Url;
+    var Port = {{app.get_webui_port()}}
+    var Host = document.domain;
+    var Url = 'http://' + Host + ':' + Port;
+    return Url;
   }
 
   $(function(){
-      $("a[href=':7767']").attr('href', webui());
+    $("a[href=':7767']").attr('href', webui());
   });
 </script>
 
-<div class="navbar navbar-fixed-top">
-  <div class="navbar-inner">
-    <div class="container-fluid">
-      <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-        <span class="i-bar"></span>
-        <span class="i-bar"></span>
-        <span class="i-bar"></span>
-      </a>
-
-      <div class="nav-collapse">
-       <ul class="nav">
-         <li class="dropdown">
-           <a href="#" class="dropdown-toggle brand" data-toggle="dropdown" style="color: #FFFFFF"> Shinken <b class="caret"></b></a>
-           <ul class="dropdown-menu">
+<!-- Fixed navbar -->
+<div class="navbar navbar-inverse navbar-fixed-top">
+  <div class="container">
+    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <div class="nav-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+          <h4><a href="#" class="dropdown-toggle" data-toggle="dropdown" style="color: #FFFFFF">Shinken <b class="caret"></b></a></h4>
+          <ul class="dropdown-menu">
             <li><a href=":7767">Shinken UI </a></li>
             <!-- We will add also others UIs on the global menu -->
             %if app:
@@ -42,8 +41,7 @@
           </ul>
         </li>
       </ul>
-
-      <ul class="nav">
+      <ul class="nav navbar-nav">
         %menu = [ ('/dashboard', 'Dashboard'), ('/impacts','Impacts'), ('/problems','IT problems'), ('/all', 'All'), ('/wall', 'Wall')]
         %for (key, value) in menu:
         %# Check for the selected element, if there is one
@@ -54,20 +52,18 @@
         %end
         %end
       </ul>
-
-     <ul class="nav">
-      <li class="dropdown">
-        <a href="#" class="dropdown-toggle" data-toggle="dropdown"> System <b class="caret"></b></a>
-        <ul class="dropdown-menu">
-          <li><a href="/system">Shinken state</a></li>
-          <!-- Comment until the page is done <li><a href="/system/log">System logs</a></li> -->
-        </ul>
-      </li>
-    </ul>
-
-    %if user is not None:
-    <div class="nav-controll">
-      <ul class="nav pull-right">
+      <ul class="nav navbar-nav pull-right">
+        <script>  
+          $(function ()  
+            { $("#searchhelp").popover({trigger: 'click', placement:'bottom', html: 'true', animation: 'true'});  
+          });  
+        </script> 
+        <!--
+        <form name="global_search" class="navbar-search pull-right topmmargin1" action='#'>
+          <input type="text" class="search-query typeahead no-bottommargin" autocomplete="off" placeholder="Search" name="global_search">
+          <a id="searchhelp" href="http://www.shinken-monitoring.org/wiki/webui_search" target="_blank"><i class="icon-question-sign font-white topmmargin2"></i></a>  
+        </form>
+        -->
         <li class="divider-vertical"></li>
         %# Check for the selected element, if there is one
         %if menu_part == '/dashboard':
@@ -97,32 +93,18 @@
         %end
         <!-- <li><a href="#" class="quickinfo" data-original-title='Settings'><i class="icon-setting"></i></a></li>-->
         <!-- <li><a href="/user/logout" class="quickinfo" data-original-title='Logout'><i class="nav-icon icon-off"></i></a></li> -->
-        <ul class="nav pull-right">
-          <li class="dropdown">
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Hi {{user.get_name().capitalize()}} <b class="caret"></b></a>
-            <ul class="dropdown-menu">
-              <li> <a class="disabled-link" href="#"><i class="icon-pencil"></i> Edit profile</a> </li>
-	      <li> <a class="" href="http://www.shinken-monitoring.org/wiki/"><i class="icon-external-link"></i> Help</a></li>
-              <li class="divider"></li>
-              <li> <a href="/user/logout" data-original-title='Logout'><i class="icon-off"></i> Logout</a></li>
-            </ul>
-          </li>
-        </ul>
+        
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Hi {{user.get_name().capitalize()}} <b class="caret"></b></a>
+          <ul class="dropdown-menu">
+            <li> <a class="disabled-link" href="#"><i class="icon-pencil"></i> Edit profile</a> </li>
+            <li> <a class="" href="http://www.shinken-monitoring.org/wiki/"><i class="icon-external-link"></i> Help</a></li>
+            <li class="divider"></li>
+            <li> <a href="/user/logout" data-original-title='Logout'><i class="icon-off"></i> Logout</a></li>
+          </ul>
+        </li>
+        
       </ul>
-    </div>
-
-    <script>  
-      $(function ()  
-      { $("#searchhelp").popover({trigger: 'click', placement:'bottom', html: 'true', animation: 'true'});  
-      });  
-    </script> 
-
-    <form name="global_search" class="navbar-search pull-right topmmargin1" action='#'>
-      <input type="text" class="search-query typeahead no-bottommargin" autocomplete="off" placeholder="Search" name="global_search">
-      <a id="searchhelp" href="http://www.shinken-monitoring.org/wiki/webui_search" target="_blank"><i class="icon-question-sign font-white topmmargin2"></i></a>  
-    </form>
-    %end
-  </div><!--/.nav-collapse -->
-</div>
-</div>
+    </div><!--/.nav-collapse -->
+  </div>
 </div>
