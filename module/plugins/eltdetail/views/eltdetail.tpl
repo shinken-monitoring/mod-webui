@@ -206,9 +206,9 @@ $(document).ready(function(){
 					<div class="col-lg-4">
 						%#   " If the elements is a root problem with a huge impact and not ack, ask to ack it!"
 						%if elt.is_problem and elt.business_impact > 2 and not elt.problem_has_been_acknowledged:
-						<div class="alert alert-critical no-bottommargin pulsate row-fluid leftmargin">
-							<div class="span2 font-white" style="font-size: 50px; padding-top: 10px;"> <i class="icon-bolt"></i> </div>
-							<p class="span10 font-white">This element has got an important impact on your business, please <b>fix it</b> or <b>acknowledge it</b>.</p>
+						<div class="alert alert-critical no-bottommargin pulsate row leftmargin">
+							<div class="col-lg-2 font-white" style="font-size: 50px; padding-top: 10px;"> <i class="icon-bolt"></i> </div>
+							<p class="col-lg-10 font-white">This element has got an important impact on your business, please <b>fix it</b> or <b>acknowledge it</b>.</p>
 							%# "end of the 'SOLVE THIS' highlight box"
 							%end
 						</div>
@@ -276,7 +276,7 @@ $(document).ready(function(){
 	<!-- Le Anfang -->
 	<div class="row">
 		<!-- Start Host/Services-->
-		<div class="tabbable verticaltabs-container col-lg-3"> <!-- Wrap the Bootstrap Tabs/Pills in this container to position them vertically -->
+		<div class="tabbable verticaltabs-container col-sm-4 col-lg-3"> <!-- Wrap the Bootstrap Tabs/Pills in this container to position them vertically -->
 			<ul class="nav nav-tabs">
 				<li class="active"><a href="#basic" data-toggle="tab">{{elt_type.capitalize()}} Information:</a></li>
 				<li><a href="#additonal" data-toggle="tab">Additonal Informations:</a></li>
@@ -309,16 +309,16 @@ $(document).ready(function(){
 					<table class="">
 						<tr>
 							<td class="column1"><b>Status:</b></td>
-							<td><button class="btn span11 alert-small alert-{{elt.state.lower()}} quickinforight" data-original-title="since {{helper.print_duration(elt.last_state_change, just_duration=True, x_elts=2)}}">{{elt.state}}</button> </td>
+							<td><button class="col-lg-11 btn alert-small alert-{{elt.state.lower()}} quickinforight" data-original-title="since {{helper.print_duration(elt.last_state_change, just_duration=True, x_elts=2)}}">{{elt.state}}</button> </td>
 						</tr>
 						<tr>
 							<td class="column1"><b>Flapping:</b></td>
-							<td><button class="btn alert-small trim-{{helper.yes_no(elt.in_scheduled_downtime)}} span11" quickinfo="{{helper.print_float(elt.percent_state_change)}}% state change">{{helper.yes_no(elt.is_flapping)}}</button></td>
+							<td><button class="col-lg-11 btn alert-small trim-{{helper.yes_no(elt.in_scheduled_downtime)}}" quickinfo="{{helper.print_float(elt.percent_state_change)}}% state change">{{helper.yes_no(elt.is_flapping)}}</button></td>
 						</tr>
 						<tr>
 							<td class="column1"><b>In Scheduled Downtime?</b></td>
 							<td><!-- <span class="btn span11 alert-small trim-{{helper.yes_no(elt.in_scheduled_downtime)}}">{{helper.yes_no(elt.in_scheduled_downtime)}}</span> -->
-							<button class="btn alert-small trim-{{helper.yes_no(elt.in_scheduled_downtime)}} span11" type="button">{{helper.yes_no(elt.in_scheduled_downtime)}}</button>
+							<button class="col-lg-11 btn alert-small trim-{{helper.yes_no(elt.in_scheduled_downtime)}}" type="button">{{helper.yes_no(elt.in_scheduled_downtime)}}</button>
 							</td>
 						</tr>
 					</table>
@@ -448,7 +448,7 @@ $(document).ready(function(){
 		</div>
 
 		<!-- Detail info box start -->
-		<div class="col-lg-9 tabbable">
+		<div class="col-sm-8 col-lg-9 tabbable">
 			<ul class="nav nav-tabs"  style="margin-bottom: 12px;">
 			  %_go_active = 'active'
 			  %for cvname in elt.custom_views:
