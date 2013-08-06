@@ -274,9 +274,9 @@ $(document).ready(function(){
 	</script>
 
 	<!-- Le Anfang -->
-	<div class="row-fluid">
+	<div class="row">
 		<!-- Start Host/Services-->
-		<div class="tabbable verticaltabs-container span3"> <!-- Wrap the Bootstrap Tabs/Pills in this container to position them vertically -->
+		<div class="tabbable verticaltabs-container col-lg-3"> <!-- Wrap the Bootstrap Tabs/Pills in this container to position them vertically -->
 			<ul class="nav nav-tabs">
 				<li class="active"><a href="#basic" data-toggle="tab">{{elt_type.capitalize()}} Information:</a></li>
 				<li><a href="#additonal" data-toggle="tab">Additonal Informations:</a></li>
@@ -306,7 +306,7 @@ $(document).ready(function(){
 					});
 					</script>
 
-					<table class="table">
+					<table class="">
 						<tr>
 							<td class="column1"><b>Status:</b></td>
 							<td><button class="btn span11 alert-small alert-{{elt.state.lower()}} quickinforight" data-original-title="since {{helper.print_duration(elt.last_state_change, just_duration=True, x_elts=2)}}">{{elt.state}}</button> </td>
@@ -448,7 +448,7 @@ $(document).ready(function(){
 		</div>
 
 		<!-- Detail info box start -->
-		<div class="span9 tabbable">
+		<div class="col-lg-9 tabbable">
 			<ul class="nav nav-tabs"  style="margin-bottom: 12px;">
 			  %_go_active = 'active'
 			  %for cvname in elt.custom_views:
