@@ -10,7 +10,7 @@ $(document).ready(function(){
 });
 </script>
 
-<div id="login_container" class="span9">
+<div id="login_container" class="col-lg-9">
 
   %if login_text:
   <p><span id="login-text"> {{login_text}}</span></p>
@@ -22,10 +22,10 @@ $(document).ready(function(){
     </div>
   </noscript>
   <div class="row well">
-    <div class="span5">
+    <div class="col-lg-5">
     	<img src="/static/img/logo.png" alt="Shinken is awesome!">
     </div>
-    <div class="span6">
+    <div class="col-lg-6">
       %if error:
       <div class="alert alert-error">
         <strong>Warning!</strong>
@@ -33,13 +33,24 @@ $(document).ready(function(){
       </div>
       %end
 
-      <form method="post" id="loginform" action="/user/auth">
-        <label>Name</label>
-        <input class="span6" name="login" type="text">
-        <label>Password</label>
-        <input class="span6" id="password" name="password" type="password" onkeypress="capsCheck(event,this);">
-        <br>
-        <button class="btn" type="submit" href="javascript: submitform()"><i class="icon-signin"></i> Login</button>
+      <form method="post" id="loginform" class="form-horizontal" action="/user/auth">
+        <fieldset>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Name</label>
+            <div class="col-lg-10">
+              <input class="form-control" name="login" type="text">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="col-lg-2 control-label">Password</label>
+            <div class="col-lg-10">
+              <input id="password" class="form-control" name="password" type="password" onkeypress="capsCheck(event,this);">
+            </div>         
+          </div>
+          <div class="form-group">
+            <button class="btn btn-success" type="submit" href="javascript: submitform()"><i class="icon-signin"></i> Login</button>
+          </div>
+        </fieldset>
       </form>
     </div>
   </div>
