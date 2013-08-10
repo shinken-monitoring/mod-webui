@@ -206,8 +206,8 @@ $(document).ready(function(){
 					<div class="col-lg-4">
 						%#   " If the elements is a root problem with a huge impact and not ack, ask to ack it!"
 						%if elt.is_problem and elt.business_impact > 2 and not elt.problem_has_been_acknowledged:
-						<div class="alert alert-critical no-bottommargin pulsate row leftmargin">
-							<div class="col-lg-2 font-white" style="font-size: 50px; padding-top: 10px;"> <i class="icon-bolt"></i> </div>
+						<div style="padding: 10px 35px 5px 15px;" class="alert alert-critical no-bottommargin pulsate row">
+							<div class="col-lg-2 font-white" style="font-size: 30px; padding-top: 0px;"> <i class="icon-bolt"></i> </div>
 							<p class="col-lg-10 font-white">This element has got an important impact on your business, please <b>fix it</b> or <b>acknowledge it</b>.</p>
 							%# "end of the 'SOLVE THIS' highlight box"
 							%end
