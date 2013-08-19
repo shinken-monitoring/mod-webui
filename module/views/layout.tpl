@@ -109,7 +109,6 @@
       %for p in js:
     <script type="text/javascript" src="/static/{{p}}"></script>
       %end
-
   </head>
 
   <body>

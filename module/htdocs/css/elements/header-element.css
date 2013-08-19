@@ -59,9 +59,10 @@
 /*  Navbar styles
     ------------------------------------------------------- */
 
+
 .navbar .nav .active > a, .navbar .nav .active > a:hover {
   background: transparent url(/static/img/icons/pointer.gif) bottom center no-repeat !important;
-  padding: 11px 15px;
+  padding: 16px 15px;
 }
 
 .brand {
