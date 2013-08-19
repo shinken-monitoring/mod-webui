@@ -22,8 +22,8 @@ $(document).ready(function(){
     </div>
   </noscript>
   <div class="row well">
-    <div class="col-lg-5">
-    	<img src="/static/img/logo.png" alt="Shinken is awesome!">
+    <div >
+    	<img class="col-lg-5" src="/static/img/logo.png" alt="Shinken is awesome!">
     </div>
     <div class="col-lg-6">
       %if error:
@@ -47,8 +47,8 @@ $(document).ready(function(){
               <input id="password" class="form-control" name="password" type="password" onkeypress="capsCheck(event,this);">
             </div>         
           </div>
-          <div class="form-group">
-            <button class="btn btn-success" type="submit" href="javascript: submitform()"><i class="icon-signin"></i> Login</button>
+          <div class="form-group col-lg-10 pull-right" style="margin-left: 0; padding-left: 0">
+            <button class=" btn btn-success btn-block" type="submit" href="javascript: submitform()"><i class="icon-signin"></i> Login</button>
           </div>
         </fieldset>
       </form>
