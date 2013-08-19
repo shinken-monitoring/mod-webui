@@ -452,14 +452,10 @@ a.disabled-link:hover {
   margin-left: 0px;
   margin-right: 0;
 }
-.navbar .nav {
-    margin: 0 10px -1px 0;
-}
 
 .row-fluid .offset1 {
   margin-left: 3%;
 }
-
 
 
 /* With the SORTER javascript plugin */
