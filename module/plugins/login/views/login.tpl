@@ -10,7 +10,10 @@ $(document).ready(function(){
 });
 </script>
 
-<h1>Shinken</h1>
+<div class="page-header">
+  <h1>Shinken <small>Subtext for header</small></h1>
+</div>
+
 <div class="row">
   <div class="col-xs-6 col-sm-8 col-md-8">
     <noscript>
@@ -53,7 +56,7 @@ $(document).ready(function(){
                 <input id="password" class="form-control" name="password" type="password" onkeypress="capsCheck(event,this);">
               </div>         
             </div>
-            <div class="form-group pull-right" >
+            <div class="form-group pull-right">
               <button class=" btn btn-success" type="submit" href="javascript: submitform()"><i class="icon-signin"></i> Login</button>
             </div>
           </fieldset>
