@@ -73,12 +73,12 @@ $(document).ready(function(){
 
   %#app.insert_template('cv_linux', globals())
 
-  <div id="content_container" class="row-fluid">
-  	<div class="row-fluid">
-  		<h1 class="span7 state_{{elt.state.lower()}} icon_down no-margin"> <img class="imgsize3" alt="icon state" src="{{helper.get_icon_state(elt)}}" />{{elt.state}}: {{elt.get_full_name()}}</h1> 
+  <div id="content_container">
+  	<div class="row">
+  		<h1 class="col-lg-7 state_{{elt.state.lower()}} icon_down no-margin"> <img class="imgsize3" alt="icon state" src="{{helper.get_icon_state(elt)}}" />{{elt.state}}: {{elt.get_full_name()}}</h1> 
 
 		%if elt.action_url != '':
-			<div class="span4">
+			<div class="col-lg-4">
 				<span class="pull-right leftmargin" id="host_tags">
 					%tags = elt.get_host_tags()
 					%for t in tags:
@@ -86,7 +86,7 @@ $(document).ready(function(){
 					%end
 				</span>
 			</div>
-			<div class="span1">
+			<div class="col-lg-1">
 				<div class="btn-group">
 					%action_urls = elt.action_url.split('|')
 					%if len(action_urls) == 1:
@@ -115,7 +115,7 @@ $(document).ready(function(){
 			    </div>
 			</div>	
 		%else:
-		    <div class="span5">
+		    <div class="col-lg-5">
 		   		<span class="pull-right leftmargin" id="host_tags">
 		   			%tags = elt.get_host_tags()
 		   			%for t in tags:
@@ -140,8 +140,8 @@ $(document).ready(function(){
 				%end
 			</div>
 			<div id="collapseOne" class="accordion-body collapse in">
-				<div class="row-fluid fitted-bar ">
-					<table class="span4 leftmargin">
+				<div class="fitted-bar ">
+					<table class="col-lg-4 leftmargin">
 						%#Alias, apretns and hostgroups are for host only
 						%if elt_type=='host':
 						<tr>
@@ -158,7 +158,7 @@ $(document).ready(function(){
 						</tr>
 					</table>
 
-					<table class="span3">
+					<table class="col-lg-3">
 						<tr>
 							<td>Parents:</td>
 							%if len(elt.parents) > 0:
@@ -203,24 +203,24 @@ $(document).ready(function(){
 							%end
 						</tr>
 					</table>
-					<div class="span4">
+					<div class="col-lg-4">
 						%#   " If the elements is a root problem with a huge impact and not ack, ask to ack it!"
 						%if elt.is_problem and elt.business_impact > 2 and not elt.problem_has_been_acknowledged:
-						<div class="alert alert-critical no-bottommargin pulsate row-fluid leftmargin">
-							<div class="span2 font-white" style="font-size: 50px; padding-top: 10px;"> <i class="icon-bolt"></i> </div>
-							<p class="span10 font-white">This element has got an important impact on your business, please <b>fix it</b> or <b>acknowledge it</b>.</p>
+						<div style="padding: 10px 35px 5px 15px;" class="alert alert-critical no-bottommargin pulsate row">
+							<div class="col-lg-2 font-white" style="font-size: 30px; padding-top: 0px;"> <i class="icon-bolt"></i> </div>
+							<p class="col-lg-10 font-white">This element has got an important impact on your business, please <b>fix it</b> or <b>acknowledge it</b>.</p>
 							%# "end of the 'SOLVE THIS' highlight box"
 							%end
 						</div>
 					</div>
 				</div>
 				%if elt_type=='host':
-				<div class="row-fluid">
+				<div class="row">
 					<ul>
-						<li class="span3"> <span class="icon-stack font-green"> <i class="icon-circle-blank icon-stack-base"></i> <i class="icon-arrow-up"></i></span> <span class="num">35</span> Up</li>
-						<li class="span3"> <span class="icon-stack font-red"> <i class="icon-circle-blank icon-stack-base"></i> <i class="icon-arrow-down"></i></span> <span class="num">10</span> Down</li>
-						<li class="span3"> <span class="icon-stack font-orange"> <i class="icon-circle-blank icon-stack-base"></i> <i class="icon-question"></i></span> <span class="num">23</span> Unreachable</li>
-						<li class="span3"> <span class="icon-stack"> <i class="icon-circle-blank icon-stack-base"></i> <i class="icon-spinner"></i></span> <span class="num">10</span> Pending</li>
+						<li class="col-lg-3"> <span class="icon-stack font-green"> <i class="icon-circle-blank icon-stack-base"></i> <i class="icon-arrow-up"></i></span> <span class="num">35</span> Up</li>
+						<li class="col-lg-3"> <span class="icon-stack font-red"> <i class="icon-circle-blank icon-stack-base"></i> <i class="icon-arrow-down"></i></span> <span class="num">10</span> Down</li>
+						<li class="col-lg-3"> <span class="icon-stack font-orange"> <i class="icon-circle-blank icon-stack-base"></i> <i class="icon-question"></i></span> <span class="num">23</span> Unreachable</li>
+						<li class="col-lg-3"> <span class="icon-stack"> <i class="icon-circle-blank icon-stack-base"></i> <i class="icon-spinner"></i></span> <span class="num">10</span> Pending</li>
 					</ul>
 				</div>
 				%end
@@ -274,9 +274,9 @@ $(document).ready(function(){
 	</script>
 
 	<!-- Le Anfang -->
-	<div class="row-fluid">
+	<div class="row">
 		<!-- Start Host/Services-->
-		<div class="tabbable verticaltabs-container span3"> <!-- Wrap the Bootstrap Tabs/Pills in this container to position them vertically -->
+		<div class="tabbable verticaltabs-container col-sm-4 col-lg-3"> <!-- Wrap the Bootstrap Tabs/Pills in this container to position them vertically -->
 			<ul class="nav nav-tabs">
 				<li class="active"><a href="#basic" data-toggle="tab">{{elt_type.capitalize()}} Information:</a></li>
 				<li><a href="#additonal" data-toggle="tab">Additonal Informations:</a></li>
@@ -306,19 +306,19 @@ $(document).ready(function(){
 					});
 					</script>
 
-					<table class="table">
+					<table class="">
 						<tr>
 							<td class="column1"><b>Status:</b></td>
-							<td><button class="btn span11 alert-small alert-{{elt.state.lower()}} quickinforight" data-original-title="since {{helper.print_duration(elt.last_state_change, just_duration=True, x_elts=2)}}">{{elt.state}}</button> </td>
+							<td><button class="col-lg-11 btn alert-small alert-{{elt.state.lower()}} quickinforight" data-original-title="since {{helper.print_duration(elt.last_state_change, just_duration=True, x_elts=2)}}">{{elt.state}}</button> </td>
 						</tr>
 						<tr>
 							<td class="column1"><b>Flapping:</b></td>
-							<td><button class="btn alert-small trim-{{helper.yes_no(elt.in_scheduled_downtime)}} span11" quickinfo="{{helper.print_float(elt.percent_state_change)}}% state change">{{helper.yes_no(elt.is_flapping)}}</button></td>
+							<td><button class="col-lg-11 btn alert-small trim-{{helper.yes_no(elt.in_scheduled_downtime)}}" quickinfo="{{helper.print_float(elt.percent_state_change)}}% state change">{{helper.yes_no(elt.is_flapping)}}</button></td>
 						</tr>
 						<tr>
 							<td class="column1"><b>In Scheduled Downtime?</b></td>
 							<td><!-- <span class="btn span11 alert-small trim-{{helper.yes_no(elt.in_scheduled_downtime)}}">{{helper.yes_no(elt.in_scheduled_downtime)}}</span> -->
-							<button class="btn alert-small trim-{{helper.yes_no(elt.in_scheduled_downtime)}} span11" type="button">{{helper.yes_no(elt.in_scheduled_downtime)}}</button>
+							<button class="col-lg-11 btn alert-small trim-{{helper.yes_no(elt.in_scheduled_downtime)}}" type="button">{{helper.yes_no(elt.in_scheduled_downtime)}}</button>
 							</td>
 						</tr>
 					</table>
@@ -448,7 +448,7 @@ $(document).ready(function(){
 		</div>
 
 		<!-- Detail info box start -->
-		<div class="span9 tabbable">
+		<div class="col-sm-8 col-lg-9 tabbable">
 			<ul class="nav nav-tabs"  style="margin-bottom: 12px;">
 			  %_go_active = 'active'
 			  %for cvname in elt.custom_views:

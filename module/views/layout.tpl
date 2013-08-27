@@ -109,7 +109,6 @@
       %for p in js:
     <script type="text/javascript" src="/static/{{p}}"></script>
       %end
-
   </head>
 
   <body>
@@ -117,13 +116,12 @@
 		%include header_element globals()
 	%end
 
-    <div id="wrap" class="container-fluid">
-      <div class="row-fluid container">
-        <div id="content" class="span12 row-fluid">
-		      %include
-        </div><!--/span-->
-      </div><!--/row-->
-    </div><!--/.fluid-container-->
+  <div id="wrap" class="container-fluid">    
+    <div id="content" class="col-lg-12">
+        %include
+    </div><!--/span-->
+  </div><!--/.fluid-container-->
+
   %if print_footer:
     %include footer_element
   %end

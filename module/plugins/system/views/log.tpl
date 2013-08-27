@@ -5,26 +5,24 @@
 
 <!-- Log Contaier START -->
 <h3>System logs</h3>
-<div class="pagination pagination-right">
-    <ul>
-        <li><a href="#">Prev</a></li>
-        <li class="active"><a href="#">1</a></li>
-        <li><a href="#">2</a></li>
-        <li><a href="#">3</a></li>
-        <li><a href="#">4</a></li>
-        <li><a href="#">Next</a></li>
-    </ul>
-</div>
+<ul class="pagination pagination-sm pull-right">
+  <li><a href="#">&laquo;</a></li>
+  <li><a href="#">1</a></li>
+  <li><a href="#">2</a></li>
+  <li><a href="#">3</a></li>
+  <li><a href="#">4</a></li>
+  <li><a href="#">5</a></li>
+  <li><a href="#">&raquo;</a></li>
+</ul>
+
 
 <div class="bs-docs-example">
-    <div class="tabbable tabs-left">
-      <ul class="nav nav-tabs">
+    <div class="tabs-left">
+      <ul class="nav nav-tabs nav-stacked">
         <li class="active"><a data-toggle="tab" href="#lA">Today</a></li>
         <li><a data-toggle="tab" href="#lB">Yesterday</a></li>
         <li><a data-toggle="tab" href="#lC">This Week</a></li>
-        <li><a data-toggle="tab" href="#lD">Week I</a></li>
-        <li><a data-toggle="tab" href="#lE">Week II</a></li>
-        <li><a data-toggle="tab" href="#lF">Week III</a></li>
+        <li><a data-toggle="tab" href="#lD">Last Week</a></li>
         <li><a data-toggle="tab" href="#lG">Custom</a></li>
     </ul>
     <div class="tab-content">
@@ -81,14 +79,14 @@
   </div>
 </div> <!-- /tabbable -->
 
-<div class="pagination pagination-right">
-    <ul>
-        <li><a href="#">Prev</a></li>
-        <li class="active"><a href="#">1</a></li>
-        <li><a href="#">2</a></li>
-        <li><a href="#">3</a></li>
-        <li><a href="#">4</a></li>
-        <li><a href="#">Next</a></li>
-    </ul>
-</div>
+<ul class="pagination pagination-sm pull-right">
+  <li><a href="#">&laquo;</a></li>
+  <li><a href="#">1</a></li>
+  <li><a href="#">2</a></li>
+  <li><a href="#">3</a></li>
+  <li><a href="#">4</a></li>
+  <li><a href="#">5</a></li>
+  <li><a href="#">&raquo;</a></li>
+</ul>
+
 <!-- Log Contaier End -->
