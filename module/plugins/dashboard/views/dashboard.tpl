@@ -13,7 +13,7 @@
 <div id="warn-pref" class="hero-unit alert-critical">
   <h2>Warning:</h2>
   <p>You didn't define a WebUI module for saving user preferences like the MongoDB one. You won't be able to use this page!</p>
-  <p><a href="http://www.shinken-monitoring.org/wiki/shinken_10min_start" class="btn btn-success btn-large">Learn more <i class="icon-hand-right"></i></a></p>
+  <p><a href="http://www.shinken-monitoring.org/wiki/shinken_10min_start" class="btn btn-success">Learn more <i class="icon-hand-right"></i></a></p>
 </div>
 %end
 
@@ -26,31 +26,31 @@
   %end
   <a id='small_show_panel' href="#pageslide" class="slidelink btn btn-small btn-success pull-right {{small_show_panel_s}}"><i class="icon-plus"></i> Add a new widget</a>
   %# Go in the center of the page!
-  <span id="center-button" class="span4 offset4 page-center" >
+  <span id="center-button" class="col-sm-4 col-sm-offset-4 page-center" >
     <h3>You don't have any widget yet?</h3>
-  <a href="#pageslide" class="slidelink btn btn-large btn-success at-center"><i class="icon-plus"></i> Add a new widget</a>
+    <a href="#pageslide" class="slidelink btn btn-large btn-success at-center"><i class="icon-plus"></i> Add a new widget</a>
   </span>
 </div>
 
 <div id="pageslide" style="display:none">
-    <div class="span12 row">
-      <h3 class="span10 pull-left font-white">Widgets available</h3>
-      <p class="span2 pull-right"><a class="btn btn-small btn-danger" href="javascript:$.pageslide.close()"><i class="icon-remove"></i> Close</a></p>
+    <div class="row">
+      <h3 class="col-sm-10 pull-left font-white">Widgets available</h3>
+      <p class="col-sm-2 pull-right"><a class="btn btn-small btn-danger" href="javascript:$.pageslide.close()"><i class="icon-remove"></i> Close</a></p>
     </div>
       <p>&nbsp;</p>
       <p>&nbsp;</p>
-    <div class='row span12'>
+    <div class='row col-sm-12'>
     %for w in app.get_widgets_for('dashboard'):
-    <div class='widget_desc span5' style='position: relative;'>
+    <div class='widget_desc col-sm-5' style="position: relative;">
       <div class='row-fluid'>
-	<span class="span4" style="margin-top:10px;">
+	<span class="col-sm-4" style="margin-top:10px;">
 	  <img class="img-rounded" style="width:64px;height:64px" src="{{w['widget_picture']}}" id="widget_desc_{{w['widget_name']}}"/>
 	</span>
 	<span class='span6'>
 	  {{!w['widget_desc']}}
 	</span>
       </div>
-      <p class="add_button"><a class='btn btn-mini btn-success' href="javascript:AddNewWidget('{{w['base_uri']}}', 'widget-place-1');"> <i class="icon-chevron-left"></i> Add {{w['widget_name']}} widget</a></p>
+      <p class="add_button"><a class="btn btn-mini btn-success" href="javascript:AddNewWidget('{{w['base_uri']}}', 'widget-place-1');"> <i class="icon-chevron-left"></i> Add {{w['widget_name']}} widget</a></p>
     </div>
     %end
     </div>
