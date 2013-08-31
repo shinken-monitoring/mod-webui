@@ -11,7 +11,7 @@ $(document).ready(function(){
 </script>
 
 <div class="page-header">
-  <h1>Shinken <small>Subtext for header</small></h1>
+  <h1>Shinken <small>v 1.0</small></h1>
 </div>
 
 <div class="row">
