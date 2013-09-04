@@ -116,7 +116,7 @@
 		%include header_element globals()
 	%end
 
-  <div id="wrap" class="container-fluid">    
+  <div id="wrap">    
     <div id="content" class="col-lg-12">
         %include
     </div><!--/span-->
