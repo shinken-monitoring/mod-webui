@@ -22,7 +22,7 @@
   %# If we got no widget, we should put the button at the center fo the screen
   %small_show_panel_s = ''
   %if len(widgets) == 0:
-     %small_show_panel_s = 'hide'
+  %small_show_panel_s = 'hide'
   %end
   <a id='small_show_panel' href="#pageslide" class="slidelink btn btn-small btn-success pull-right {{small_show_panel_s}}"><i class="icon-plus"></i> Add a new widget</a>
   %# Go in the center of the page!
@@ -32,69 +32,70 @@
   </span>
 </div>
 
-<div id="pageslide" style="display:none">
-    <div class="row">
-      <h3 class="col-sm-10 pull-left font-white">Widgets available</h3>
-      <p class="col-sm-2 pull-right"><a class="btn btn-small btn-danger" href="javascript:$.pageslide.close()"><i class="icon-remove"></i> Close</a></p>
-    </div>
-      <p>&nbsp;</p>
-      <p>&nbsp;</p>
-    <div class='row col-sm-12'>
-    %for w in app.get_widgets_for('dashboard'):
-    <div class='widget_desc col-sm-5' style="position: relative;">
-      <div class='row-fluid'>
-	<span class="col-sm-4" style="margin-top:10px;">
-	  <img class="img-rounded" style="width:64px;height:64px" src="{{w['widget_picture']}}" id="widget_desc_{{w['widget_name']}}"/>
-	</span>
-	<span class='span6'>
-	  {{!w['widget_desc']}}
-	</span>
-      </div>
-      <p class="add_button"><a class="btn btn-mini btn-success" href="javascript:AddNewWidget('{{w['base_uri']}}', 'widget-place-1');"> <i class="icon-chevron-left"></i> Add {{w['widget_name']}} widget</a></p>
-    </div>
-    %end
-    </div>
-</div>
-
 <script >$(function(){
   $(".slidelink").pageslide({ direction: "left", modal: true});
-  });
+});
 </script>
 
 <script>
   // Now load all widgets
   $(function(){
-      %for w in widgets:
-         %if 'base_url' in w and 'position' in w:
-            %uri = w['base_url'] + "?" + w['options_uri']
-            AddWidget("{{!uri}}", "{{w['position']}}");
-         %end
-      %end
+    %for w in widgets:
+    %if 'base_url' in w and 'position' in w:
+    %uri = w['base_url'] + "?" + w['options_uri']
+    AddWidget("{{!uri}}", "{{w['position']}}");
+    %end
+    %end
   });
 </script>
 
-<div class="widget-place" id="widget-place-1">
+<!-- Button trigger modal -->
+<a data-toggle="modal" href="#widgets" class="btn btn-primary btn-lg">Launch demo modal</a>
 
-</div>
+<!-- Modal -->
+<div class="modal fade" id="widgets" tabindex="-1" role="dialog" aria-labelledby="Widgets" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Widgets available</h4>
+      </div>
+      <div class="modal-body">
+
+        <div class="row">
+          %for w in app.get_widgets_for('dashboard'):
+          <div class='widget_desc' style="position: relative;">
+            <div class='row'>
+              <span class="col-sm-4" style="margin-top:10px;">
+                <img class="img-rounded" style="width:64px;height:64px" src="{{w['widget_picture']}}" id="widget_desc_{{w['widget_name']}}"/>
+              </span>
+              <span>
+                {{!w['widget_desc']}}
+              </span>
+            </div>
+            <p class="add_button"><a class="btn btn-mini btn-success" href="javascript:AddNewWidget('{{w['base_uri']}}', 'widget-place-1');"> <i class="icon-chevron-left"></i> Add {{w['widget_name']}} widget</a></p>
+          </div>
+          %end
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="widget-place" id="widget-place-1"> </div>
 <!-- /place-1 -->
 
-<div class="widget-place" id="widget-place-2">
-
-</div>
-
-
-<div class="widget-place" id="widget-place-3">
-
-</div>
-
+<div class="widget-place" id="widget-place-2"> </div>
 <!-- /place-2 -->
 
-
-  <!-- End Easy Widgets plugin HTML markup -->
-
-
+<div class="widget-place" id="widget-place-3"> </div>
+<!-- /place-3 -->
 
 
-  <!-- Bellow code not is part of the Easy Widgets plugin HTML markup -->
+<!-- End Easy Widgets plugin HTML markup -->
 
-  <div style="clear:both">
+<!-- Bellow code not is part of the Easy Widgets plugin HTML markup -->
+
