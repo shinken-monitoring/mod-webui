@@ -38,12 +38,10 @@ html, body {
 }
 
 #footer {
-    background-color: #F5F5F5;
     height: 40px;
 }
 
 .container {
-    max-width: 680px;
     padding: 0 15px;
     width: auto;
 }
