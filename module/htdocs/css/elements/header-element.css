@@ -26,8 +26,17 @@
 
 /*  Header element styles
     ------------------------------------------------------- */
+.brand {
+  color: #FFFFFF !important;
+  /*line-height: 20px;*/
+  font-size: 17px;
+  padding-left: 0 !important;
+}
 
-
+.brand a {
+  color: #FFFFFF;
+  text-decoration: none;
+}
 
 /*  Icon styles
     ------------------------------------------------------- */
@@ -65,9 +74,6 @@
   padding: 16px 15px;
 }
 
-.brand {
-  text-shadow: 1px 1px 3px #E3E3E5; /* FF3.5+, Opera 9+, Saf1+, Chrome */
-}
 
 .nav-controll .navbar-text > span > a {
   color: #FFFFFF;

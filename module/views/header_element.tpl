@@ -15,16 +15,17 @@
 
 <!-- Fixed navbar -->
 <div class="navbar navbar-inverse navbar-fixed-top">
-  <div class="container">
-    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".nav-collapse">
+  <div class="container" style="margin-left:0; padding-left: 0;">
+    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="nav-collapse">
       <span class="icon-bar"></span>
       <span class="icon-bar"></span>
       <span class="icon-bar"></span>
     </button>
+
     <div class="nav-collapse collapse">
       <ul class="nav navbar-nav">
         <li class="dropdown">
-          <h4><a href="#" class="dropdown-toggle" data-toggle="dropdown" style="color: #FFFFFF">Shinken <b class="caret"></b></a></h4>
+          <a href="#" class="dropdown-toggle brand" data-toggle="dropdown">Shinken <b class="caret"></b></a>
           <ul class="dropdown-menu">
             <li><a href=":7767">Shinken UI </a></li>
             <!-- We will add also others UIs on the global menu -->
