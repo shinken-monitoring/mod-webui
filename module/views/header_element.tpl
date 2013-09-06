@@ -15,14 +15,14 @@
 
 <!-- Fixed navbar -->
 <div class="navbar navbar-inverse navbar-fixed-top">
-  <div class="container" style="margin-left:0; padding-left: 0;">
+  <div class="container" style="margin-left:0; padding-left: 0; padding-right: 0; max-width: 100%;">
     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="nav-collapse">
       <span class="icon-bar"></span>
       <span class="icon-bar"></span>
       <span class="icon-bar"></span>
     </button>
 
-    <div class="nav-collapse collapse">
+    <div>
       <ul class="nav navbar-nav">
         <li class="dropdown">
           <a href="#" class="dropdown-toggle brand" data-toggle="dropdown">Shinken <b class="caret"></b></a>
