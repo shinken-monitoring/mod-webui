@@ -39,22 +39,21 @@
   });
 </script>
 
-<div class="row-fluid">
+<div class="row">
   <ul class="pull-right nav nav-pills font-grey">
-    <li> <a href="/dashboard" class="font-darkgrey"><i class="icon-home"></i></a></li>
-    <li><a href="" class="font-darkgrey"><i class="icon-cogs"></i></a></li>
+    <li> <a href="/dashboard" class="font-darkgrey"><i class="icon-home"></i></a> </li>
+    <li> <a href="" class="font-darkgrey"><i class="icon-cogs"></i></a> </li>
   </ul>
 </div>
 
 <!-- Jet Pack Area START -->
-<div class="row-fluid">
+<div class="row">
   <p><span id="clock"></span></p>
   <p><span id="date"></span></p>
 </div>
 
-<div class="row-fluid"> 
-  <ul id="Navigation" class="span8 wtf">
-    <li class="span3">
+  <ul id="Navigation" class="row wtf">
+    <li class="col-sm-2">
       <svg version="1.0" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="100px" height="85px" viewBox="0 0 100 83.419" enable-background="new 0 0 100 83.419" fill ="#FFFFFF" xml:space="preserve">
         <path fill-opacity="0.875" d="M68.2,55.555l4.742,4.792c6.451-6.143,10.461-14.861,10.461-24.532c0-9.521-3.901-18.122-10.184-24.25
         l-5.159,5.356c5.06,4.861,8.228,11.724,8.228,19.317C76.288,43.797,73.217,50.701,68.2,55.555z"></path>
@@ -85,7 +84,7 @@
       %end
     </li>
 
-    <li class="span3">
+    <li class="col-sm-2">
       <svg version="1.0" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="100px" height="82.922px" viewBox="0 0 100 82.922" enable-background="new 0 0 100 82.922" fill="#FFFFFF" xml:space="preserve">
         <path d="M77.958,11.073c-3.73,0-7.339,0.933-10.544,2.685C63.515,5.537,55.108,0,45.693,0C32.842,0,22.314,10.141,21.694,22.838
         c-5.901,0.704-10.96,4.619-13.149,10.09C3.642,34.151,0,38.595,0,43.873c0,6.223,5.062,11.283,11.281,11.283h27.821l-4.238,8.501
@@ -107,7 +106,7 @@
       %end
     </li>
 
-    <li class="span3">
+    <li class="col-sm-2">
       <svg version="1.0" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="100px" height="82.922px" viewBox="0 0 100 82.922" enable-background="new 0 0 100 82.922" fill="#FFFFFF" xml:space="preserve">
         <path fill-rule="evenodd" clip-rule="evenodd" d="M17.15,47.28V85.2l31.601,13.543v-37.92L17.15,47.28z M84,45.437  L49.653,60.823v37.92L84,83.357V45.437z M61.458,2.445l-33.466,14.83v32.759l9.043,3.747l-0.022-22.753  c0,0,12.31-5.395,24.445-10.691V2.445z M22.575,15.695L22.56,47.784l4.507,1.865V17.485L22.575,15.695z M22.936,14.311l4.484,1.791  l32.759-14.28L55.665,0L22.936,14.311z M38.818,54.525l4.5,1.866V35.543l-4.492-1.791L38.818,54.525z M44.243,56.775l5.41,2.242  l28.057-12.52V20.502l-33.467,14.83V56.775z M39.188,32.368l4.484,1.791l32.76-14.28l-4.515-1.821L39.188,32.368z"/>
       </svg>
@@ -126,7 +125,7 @@
       %end
     </li>
 
-    <li class="span3">
+    <li class="col-sm-2">
       <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Layer_1" x="0px" y="0px" width="100px" height="82.922px" viewBox="0 0 50 50" enable-background="new 0 0 50 50" fill="#FFFFFF" xml:space="preserve">
         <polygon points="45.91,26.078 40.467,26.078 40.467,44.177 25.517,44.177 25.517,34.844 16.105,34.844 16.105,44.177 8.73,44.177   8.732,26.078 3.687,26.078 24.596,5.168 "/>
       </svg>
@@ -145,7 +144,6 @@
       %end
 </li>
 </ul>
-</div>
 
 
 <!-- Shinken Info End -->
