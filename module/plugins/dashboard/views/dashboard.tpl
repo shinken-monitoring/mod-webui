@@ -24,10 +24,12 @@
   %if len(widgets) == 0:
   %small_show_panel_s = 'hide'
   %end
-  <a id='small_show_panel' href="#pageslide" class="slidelink btn btn-small btn-success pull-right {{small_show_panel_s}}"><i class="icon-plus"></i> Add a new widget</a>
+  <a data-toggle="modal" href="#widgets" class="btn btn-small btn-success pull-right"><i class="icon-plus"></i> Add a new widget</a>
   %# Go in the center of the page!
   <span id="center-button" class="col-sm-4 col-sm-offset-4 page-center" >
     <h3>You don't have any widget yet?</h3>
+    <!-- Button trigger widgets modal -->
+    <a data-toggle="modal" href="#widgets" class="btn btn-primary btn-lg">Launch demo modal</a>
     <a href="#pageslide" class="slidelink btn btn-large btn-success at-center"><i class="icon-plus"></i> Add a new widget</a>
   </span>
 </div>
@@ -49,10 +51,6 @@
   });
 </script>
 
-<!-- Button trigger modal -->
-<a data-toggle="modal" href="#widgets" class="btn btn-primary btn-lg">Launch demo modal</a>
-
-<!-- Modal -->
 <div class="modal fade" id="widgets" tabindex="-1" role="dialog" aria-labelledby="Widgets" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
