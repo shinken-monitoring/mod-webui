@@ -387,7 +387,16 @@ $(document).ready(function(){
 						</tbody>
 					</table>
 					<hr>
-					<table class="table">
+					<div>
+						<span><b>Active/passive checks</b></span>
+						<input {{chk_state}} class="iphone" type="checkbox" id='btn-checks'>
+						<span><b>Notifications</b></span>
+						<input {{not_state}} class="iphone" type="checkbox" id='btn-not'>
+						<span><b>Event handler</b></span>
+						<input {{evt_state}} class="iphone" type="checkbox" id='btn-evt'>
+						<span><b>Flap detection</b></span>
+					</div>
+					<!-- <table class="table">
 						<tr>
 							<td class="column1"><b>Active/passive checks</b></td>
 							<td><input {{chk_state}} class="iphone" type="checkbox" id='btn-checks'></td>
@@ -404,7 +413,7 @@ $(document).ready(function(){
 							<td class="column1"><b>Flap detection</b></td>
 							<td><input {{flp_state}} class="iphone" type="checkbox" id='btn-flp'></td>
 						</tr>
-					</table>
+					</table> -->
 				</div>
 
 				<div class="tab-pane fade" id="commands">
