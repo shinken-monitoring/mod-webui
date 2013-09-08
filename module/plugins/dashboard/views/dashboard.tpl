@@ -29,8 +29,7 @@
   <span id="center-button" class="col-sm-4 col-sm-offset-4 page-center" >
     <h3>You don't have any widget yet?</h3>
     <!-- Button trigger widgets modal -->
-    <a data-toggle="modal" href="#widgets" class="btn btn-primary btn-lg">Launch demo modal</a>
-    <a href="#pageslide" class="slidelink btn btn-large btn-success at-center"><i class="icon-plus"></i> Add a new widget</a>
+    <a data-toggle="modal" href="#widgets" class="btn btn-block btn-success btn-lg"><i class="icon-plus"></i> Add a new widget</a>
   </span>
 </div>
 
