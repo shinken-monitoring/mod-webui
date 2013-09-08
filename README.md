@@ -3,12 +3,15 @@
 ###Description
 Shinken main Web interface
 
+###Screenshots
+
 ###Dependencies
 
 ###Installation
 
 ###Report a bug
 * A helpful title - use descriptive keywords in the title and body so others can find your bug (avoiding duplicates).
+* WebUI Version and branch
 * Steps to reproduce the problem, with actual vs. expected results
 * OS version
 * Browser and Version
