@@ -22,7 +22,7 @@
 
 function save_name_filter(){
     var f = document.forms['namefilter'];
-    var name = f.name.value;
+    var name = f.search.value;
     add_hst_srv_filter(name);
 }
 

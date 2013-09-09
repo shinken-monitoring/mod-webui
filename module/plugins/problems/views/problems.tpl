@@ -131,7 +131,7 @@
   <div class='in_panel_filter'>
     <h3>Names</h3>
     <form name='namefilter' class='form-horizontal'>
-      <input name='name'></input>
+      <input name='search'></input>
       <p class='pull-right'><a class='btn btn-success pull-right' href="javascript:save_name_filter();"> <i class="icon-chevron-right"></i> Add</a></p>
     </form>
 
