@@ -395,6 +395,7 @@ $(document).ready(function(){
 						<span><b>Event handler</b></span>
 						<input {{evt_state}} class="iphone" type="checkbox" id='btn-evt'>
 						<span><b>Flap detection</b></span>
+						<input {{flp_state}} class="iphone" type="checkbox" id='btn-flp'>
 					</div>
 					<!-- <table class="table">
 						<tr>
