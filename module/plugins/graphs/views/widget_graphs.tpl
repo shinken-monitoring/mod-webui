@@ -18,8 +18,7 @@
 
 
     %for g in uris:
-      %img_src = g['img_src']
-      %link = g['link']
+      %(img_src, link) = app.get_graph_img_src( g['img_src'], g['link'])
      <p class='widget_graph'>
        <a href="{{link}}" target='_blank'><img src="{{img_src}}"></a>
      </p>

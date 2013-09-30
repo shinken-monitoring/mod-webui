@@ -703,8 +703,7 @@ $(document).ready(function(){
 		      		html_1y='<p>';
 
 		      		%for g in uris_4h:
-		      		%img_src = g['img_src']
-		      		%link = g['link']
+                    %(img_src, link) = app.get_graph_img_src( g['img_src'], g['link'])
 		      		var img_src="{{img_src}}";
 		      		html_4h = html_4h + '<img src="'+ img_src.replace("'","\'") +'" class="jcropelt"/>';
 		      		html_4h = html_4h + '<a href="{{link}}" class="btn"><i class="icon-plus"></i> Show more</a>';
@@ -714,8 +713,7 @@ $(document).ready(function(){
 		      		html_4h=html_4h+'</p>';
 
 		      		%for g in uris_1d:
-		      		%img_src = g['img_src']
-		      		%link = g['link']
+                    %(img_src, link) = app.get_graph_img_src( g['img_src'], g['link'])
 		      		var img_src="{{img_src}}";
 		      		html_1d = html_1d +'<img src="'+ img_src.replace("'","\'") +'" class="jcropelt"/>';
 		      		html_1d = html_1d + '<a href={{link}}" class="btn"><i class="icon-plus"></i> Show more</a>';
@@ -725,8 +723,7 @@ $(document).ready(function(){
 		      		html_1d=html_1d+'</p>';
 
 		      		%for g in uris_1w:
-		      		%img_src = g['img_src']
-		      		%link = g['link']
+                    %(img_src, link) = app.get_graph_img_src( g['img_src'], g['link'])
 		      		var img_src="{{img_src}}";
 		      		html_1w = html_1w + '<img src="'+ img_src.replace("'","\'") +'" class="jcropelt"/>';
 		      		html_1w = html_1w + '<a href="{{link}}" class="btn"><i class="icon-plus"></i> Show more</a>';
@@ -735,8 +732,7 @@ $(document).ready(function(){
 		      		%end
 
 		      		%for g in uris_1m:
-		      		%img_src = g['img_src']
-		      		%link = g['link']
+                    %(img_src, link) = app.get_graph_img_src( g['img_src'], g['link'])
 		      		var img_src="{{img_src}}";
 		      		html_1m = html_1m + '<img src="'+ img_src.replace("'","\'") +'" class="jcropelt"/>';
 		      		html_1m = html_1m + '<a href="{{link}}" class="btn"><i class="icon-plus"></i> Show more</a>';
@@ -745,8 +741,7 @@ $(document).ready(function(){
 		      		%end
 
 		      		%for g in uris_1y:
-		      		%img_src = g['img_src']
-		      		%link = g['link']
+                    %(img_src, link) = app.get_graph_img_src( g['img_src'], g['link'])
 		      		var img_src="{{img_src}}";
 		      		html_1y = html_1y + '<img src="'+ img_src.replace("'","\'") +'" class="jcropelt"/>';
 		      		html_1y = html_1y + '<a href="{{link}}" class="btn"><i class="icon-plus"></i> Show more</a>';
@@ -761,8 +756,7 @@ $(document).ready(function(){
 		      			<div id='real_graphs'>
     			  <!-- Let's keep this part visible. This is the custom and default range -->
 				    %for g in uris:
-				      %img_src = g['img_src']
-				      %link = g['link']
+                      %(img_src, link) = app.get_graph_img_src( g['img_src'], g['link'])
 				      <p>
 						
 				        <img src="{{img_src}}" class="jcropelt"/>
