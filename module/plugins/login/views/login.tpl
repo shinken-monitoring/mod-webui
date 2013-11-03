@@ -11,7 +11,7 @@ $(document).ready(function(){
 </script>
 
 <div class="page-header">
-  <h1>Shinken <small>v 1.0</small></h1>
+  <h1>Shinken <small>v X.X</small></h1>
 </div>
 
 <div class="row">
@@ -35,7 +35,13 @@ $(document).ready(function(){
     </div>
     %end
 
+    <!-- <div>
+      <h2>Maintance News</h2>
+        <p>Todo import script?</p>
+    </div> -->
+
   </div>
+
   <div class="col-xs-6 col-sm-4 col-md-4">
     <div class="panel panel-default">
       <div class="panel-heading">
@@ -63,7 +69,6 @@ $(document).ready(function(){
         </form>
       </div>
     </div>
-
   </div>
 </div>
 

@@ -1,4 +1,4 @@
-/*Copyright (C) 2009-2012 :
+/*Copyright (C) 2009-2013 :
      Gabes Jean, naparuba@gmail.com
      Gerhard Lausser, Gerhard.Lausser@consol.de
      Gregory Starck, g.starck@gmail.com
@@ -38,7 +38,7 @@ if(!Array.indexOf){
 }
 
 /**
- * Description: Add a remvoe finction to the lists....
+ * Description: Add a remvoe function to the lists....
  *  WTF javascript don't have this? Please guys, at least good
  *  list and dict functions.... you want us to manage memory soon?
  * Example: lst.remove(value)
