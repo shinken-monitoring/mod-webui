@@ -1,5 +1,7 @@
 %rebase layout title='Shinken UI Login', print_header=False, js=['login/js/detectmobilebrowser.js','login/js/capslock.js'], css=['login/css/login.css']
 
+%from shinken.bin import VERSION
+
 <script type="text/javascript">
 // If we are a mobile device, go in the /mobile part :)
 $(document).ready(function(){
@@ -11,7 +13,7 @@ $(document).ready(function(){
 </script>
 
 <div class="page-header">
-  <h1>Shinken <small>v X.X</small></h1>
+  <h1>Shinken <small>v {{VERSION}}</small></h1>
 </div>
 
 <div class="row">
