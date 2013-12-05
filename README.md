@@ -6,7 +6,7 @@ Shinken main Web interface
 ###Screenshots
 
 Host Detail
-![Host Detail](doc/ShinkenWebUIDetails.png)
+![Host Detail](doc/animated.31005.gif)
 
 System
 ![System](doc/ShinkenWebUISystem.png)
