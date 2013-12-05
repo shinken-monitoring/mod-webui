@@ -5,6 +5,12 @@ Shinken main Web interface
 
 ###Screenshots
 
+Host Detail
+![Host Detail](doc/ShinkenWebUIDetails.png)
+
+System
+![System](doc/ShinkenWebUISystem.png)
+
 ###Dependencies
 
 ###Installation
