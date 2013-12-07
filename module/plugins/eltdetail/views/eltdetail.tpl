@@ -467,7 +467,7 @@ $(document).ready(function(){
 			  %end
 
 				<li class="{{_go_active}}"><a class='link_to_tab' href="#impacts" data-toggle="tab">Services</a></li>
-			        <li><a class='link_to_tab' href="#comments" data-toggle="tab">Comments</a></li>
+			    <li><a class='link_to_tab' href="#comments" data-toggle="tab">Comments</a></li>
 				<li><a class='link_to_tab' href="#downtimes" data-toggle="tab">Downtimes</a></li>
 				<li><a class='link_to_tab' href="#graphs" data-toggle="tab" id='tab_to_graphs'>Graphs</a></li>
 				<li><a class='link_to_tab' href="#depgraph" data-toggle="tab" id='tab_to_depgraph'>Impact graph</a></li>

@@ -89,11 +89,7 @@ def get_instance(plugin):
     return instance
 
 
-
-
-
-# Class for the Merlindb Broker
-# Get broks and puts them in merlin database
+# Class for the WebUI Broker
 class Webui_broker(BaseModule, Daemon):
     def __init__(self, modconf):
         BaseModule.__init__(self, modconf)
