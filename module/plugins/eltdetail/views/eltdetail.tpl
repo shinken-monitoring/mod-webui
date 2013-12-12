@@ -78,7 +78,7 @@ $(document).ready(function(){
   		<h1 class="col-lg-7 state_{{elt.state.lower()}} icon_down no-margin"> <img class="imgsize3" alt="icon state" src="{{helper.get_icon_state(elt)}}" />{{elt.state}}: {{elt.get_full_name()}}</h1> 
 
 		%if elt.action_url != '':
-			<div class="col-lg-4">
+			<div class="col-lg-3">
 				<span class="pull-right leftmargin" id="host_tags">
 					%tags = elt.get_host_tags()
 					%for t in tags:
@@ -86,15 +86,15 @@ $(document).ready(function(){
 					%end
 				</span>
 			</div>
-			<div class="col-lg-1">
-				<div class="btn-group">
+			<div class="col-lg-2">
+				<div class="btn-group pull-right">
 					%action_urls = elt.action_url.split('|')
 					%if len(action_urls) == 1:
-					<button class="btn btn-mini"><i class="icon-cog"></i> Action</button>
+					<button class="btn btn-default btn-mini"><i class="icon-cog"></i> Action</button>
 					%else:
-					<button class="btn btn-mini"><i class="icon-cog"></i> Actions</button>
+					<button class="btn btn-default btn-mini"><i class="icon-cog"></i> Actions</button>
 					%end
-					<button class="btn btn-mini dropdown-toggle" data-toggle="dropdown">
+					<button class="btn btn-default btn-mini dropdown-toggle" data-toggle="dropdown">
 						<span class="caret"></span>
 					</button>
 					<ul class="dropdown-menu pull-right">
