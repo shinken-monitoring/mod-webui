@@ -27,7 +27,7 @@
 /*  List view 
     ------------------------------------------------------- */
 
-ul.list { list-style: none; width: 100%; }
+ul.list { list-style: none; width: 100%; padding-left: 15px; }
 ul.list li { display: block; background: #F9F9F9; padding: 10px 15px; }
 
 ul.list li.alt { background: #FFF; }

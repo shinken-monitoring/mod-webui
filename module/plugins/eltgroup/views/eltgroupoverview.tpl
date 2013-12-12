@@ -1,16 +1,16 @@
 %rebase layout globals(), css=['eltgroup/css/group-overview.css'], js=['eltgroup/js/group-overview.js'], title='Group overview', menu_part=''
 
-<div class="row-fluid">
-  <h3 class="span11 no-topmargin">Group overview</h3>
-  <span class="span1 btn-group pull-right">
+<div class="row">
+  <h3 class="col-lg-11 no-topmargin">Group overview</h3>
+  <span class="col-lg-1 btn-group pull-right">
     <a href="#" id="listview" class="btn btn-small switcher active quickinfo" data-original-title='List'> <i class="icon-align-justify"></i></a>
     <a href="#" id="gridview" class="btn btn-small switcher quickinfo"data-original-title='Grid'><i class="icon-th"></i></a>
   </span>
 </div>
 		
-<ul id="products" class="list no-leftmargin">
+<ul id="products" class="list row">
 	<!-- row 1 -->
-	<li class="clearfix">
+	<li class="col-lg-12 clearfix">
 		<section class="left">
 			<h3>Group Name</h3>
 			<span class="meta">Services: <span class="quickinfo" data-original-title='Down'>29</span>/<span class="quickinfo" data-original-title='Up'>78</span>/<span class="quickinfo" data-original-title='Unreachable'>12</span>/<span class="quickinfo" data-original-title='Pending'>2</span></span>
