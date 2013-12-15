@@ -90,11 +90,11 @@ $(document).ready(function(){
 				<div class="btn-group pull-right">
 					%action_urls = elt.action_url.split('|')
 					%if len(action_urls) == 1:
-					<button class="btn btn-default btn-mini"><i class="icon-cog"></i> Action</button>
+					<button class="btn btn-primary btn-xs"><i class="icon-cog"></i> Action</button>
 					%else:
-					<button class="btn btn-default btn-mini"><i class="icon-cog"></i> Actions</button>
+					<button class="btn btn-primary btn-xs"><i class="icon-cog"></i> Actions</button>
 					%end
-					<button class="btn btn-default btn-mini dropdown-toggle" data-toggle="dropdown">
+					<button class="btn btn-primary btn-xs dropdown-toggle" data-toggle="dropdown">
 						<span class="caret"></span>
 					</button>
 					<ul class="dropdown-menu pull-right">
