@@ -42,7 +42,7 @@
 <div class="row">
   <ul class="pull-right nav nav-pills font-grey">
     <li> <a href="/dashboard" class="font-darkgrey"><i class="icon-home"></i></a> </li>
-    <li> <a href="" class="font-darkgrey"><i class="icon-cogs"></i></a> </li>
+    <li> <a class="font-darkgrey" data-toggle="modal" data-target="#mySettings"> <i class="icon-cogs"></i></a></li>
   </ul>
 </div>
 
@@ -142,8 +142,31 @@
       <span class="badger-big badger-ok">{{app.datamgr.get_per_hosts_state()}}%</span>
       %end
       %end
-</li>
+    </li>
 </ul>
 
+<!-- Modal -->
+<div class="modal fade" id="mySettings" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">Settings</h4>
+      </div>
+      <div class="modal-body">
+        ...
+        <div class="checkbox">
+          <label>
+            <input type="checkbox"> Power mode
+          </label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- Shinken Info End -->
