@@ -86,6 +86,10 @@ html, body {
   margin-top: 5px;
 }
 
+.fitted-header {
+  background: #F7F7F7 !important;
+}
+
 .fitted-link {
   color: #787878;
   font-size: 12px;

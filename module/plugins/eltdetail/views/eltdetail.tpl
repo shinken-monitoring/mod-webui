@@ -130,13 +130,21 @@ $(document).ready(function(){
 		<div class="fitted-box overall-summary accordion-group">
 			<div class="accordion-heading">
 				%if elt_type=='host':
-				<a class="accordion-toggle fitted-link" data-toggle="collapse" data-parent="#fitted-accordion" href="#collapseOne">
-					Overview ({{elt.alias}})
-				</a>
+				<div class="panel-heading fitted-header">
+		            <h4 class="panel-title">
+		              <a href="#collapseOne" data-parent="#accordion" data-toggle="collapse">
+		                Overview ({{elt.alias}})
+		              </a>
+		            </h4>
+		        </div>
 				%else:
-				<a class="accordion-toggle fitted-link" data-toggle="collapse" data-parent="#fitted-accordion" href="#collapseOne">
-					Overview
-				</a>
+				<div class="panel-heading fitted-header">
+		            <h4 class="panel-title">
+		              <a href="#collapseOne" data-parent="#accordion" data-toggle="collapse">
+		                Overview
+		              </a>
+		            </h4>
+		        </div>
 				%end
 			</div>
 			<div id="collapseOne" class="accordion-body collapse in">
