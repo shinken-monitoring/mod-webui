@@ -1,14 +1,29 @@
-	.map_container{position:absolute;width:90%;margin:auto;background:#cccccc;padding:20px 0px 20px 0px;}
-	.map_container h1{margin:0px 0px 10px 20px;}
-	.map_container p{margin:10px 0px 10px 20px;}
-	.map_container #map{width:90%;height:700px;margin:auto;}
-	/* Thanks to http://stackoverflow.com/questions/9663375/google-map-infowindow-not-showing-properly 
-	This Css avoids corrupted map control and infowindow */
-	.map_container img{max-width:none}
+.map_container {
+	position: absolute;
+	margin: auto;
+	background: #cccccc;
+	padding: 20px 0px 20px 0px;
+	width: 98%;
+}
 
-	.map-iconHostState {
-		width: 32px;
-	}
+.map_container h1{margin:0px 0px 10px 20px;}
+
+.map_container p{margin:10px 0px 10px 20px;}
+
+.map_container #map {
+	width: 100%;
+	min-height: 550px;
+	margin: auto;
+}
+/* Thanks to http://stackoverflow.com/questions/9663375/google-map-infowindow-not-showing-properly 
+	This Css avoids corrupted map control and infowindow */
+	
+.map_container img{max-width:none}
+
+.map-iconHostState {
+	width: 32px;
+}
+
 	.map-hostname {
 	}
 

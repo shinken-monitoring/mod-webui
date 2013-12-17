@@ -2,14 +2,11 @@
 
 %rebase layout globals(), js=['worldmap/js/XXX.js'], css=['worldmap/css/worldmap.css'], title='Worldmap', refresh=True
 
-<style type="text/css">
-
-</style>
-
+<!-- <h1>Mapping your hosts ...</h1> -->
 <!-- HTML map container -->
-<div class="map_container col-lg-12">
-  <h1>Mapping your hosts ...</h1>
-  <div id="map">
+<div class="map_container row">
+  
+  <div id="map" class="col-lg-12">
     <p>Map loading</p>
   </div>
 </div>
