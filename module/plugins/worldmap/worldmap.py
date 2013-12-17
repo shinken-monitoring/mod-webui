@@ -2,10 +2,8 @@
 # -*- coding: utf-8 -*-
 # Copyright (C) 2009-2012:
 #    Gabes Jean, naparuba@gmail.com
-#    Gerhard Lausser, Gerhard.Lausser@consol.de
-#    Gregory Starck, g.starck@gmail.com
-#    Hartmut Goebel, h.goebel@goebel-consult.de
-#
+#    Mohier Frédéric frederic.mohier@gmail.com
+#    Karfusehr Andreas, frescha@unitedseed.de
 # This file is part of Shinken.
 #
 # Shinken is free software: you can redistribute it and/or modify
@@ -20,6 +18,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
+
+# from shinken.webui.bottle import redirect
 
 ### Will be populated by the UI with it's own value
 app = None
@@ -39,22 +39,24 @@ def get_page():
     all_hosts = app.datamgr.get_hosts()
     valid_hosts = []
     for h in all_hosts:
-        _lat = h.customs.get('_LAT', None)
-        _long = h.customs.get('_LONG', None)
+        _lat = h.customs.get('_LOC_LAT', None)
+        _lng = h.customs.get('_LOC_LNG', None)
+        # valid_hosts.append(h)
 
         try:
-            print "Host", h.get_name(), _lat, _long, h.customs
+            print "Host", h.get_name(), _lat, _lng
         except:
             pass
-        if _lat and _long:
+        if _lat and _lng:
             try:
+                # Maybe the customs are set, but with invalid float?
                 _lat = float(_lat)
-                _long = float(_long)
-            # Maybe the customs are set, but with invalid float?
+                _lng = float(_lng)
             except ValueError:
+                print "Host invalid coordinates !"
                 continue
             # Look for good range, lat/long must be between -180/180
-            if -180 <= _lat <= 180 and -180 <= _long <= 180:
+            if -180 <= _lat <= 180 and -180 <= _lng <= 180:
                 print "GOOD VALUES FOR HOST", h.get_name()
                 valid_hosts.append(h)
 
