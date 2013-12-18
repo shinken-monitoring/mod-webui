@@ -1,6 +1,6 @@
 <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
 
-%rebase layout globals(), js=['worldmap/js/XXX.js'], css=['worldmap/css/worldmap.css'], title='Worldmap', refresh=True
+%rebase layout globals(), js=['worldmap/js/worldmap.js'], css=['worldmap/css/worldmap.css'], title='Worldmap', refresh=True
 
 <!-- HTML map container -->
 <div class="map_container row">

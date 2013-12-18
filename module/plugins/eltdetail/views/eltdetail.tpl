@@ -130,24 +130,16 @@ $(document).ready(function(){
 		<div class="fitted-box overall-summary accordion-group">
 			<div class="accordion-heading">
 				%if elt_type=='host':
-				<div class="panel-heading fitted-header">
-		            <h4 class="panel-title">
-		              <a href="#collapseOne" data-parent="#accordion" data-toggle="collapse">
-		                Overview ({{elt.alias}})
-		              </a>
-		            </h4>
+				<div class="panel-heading fitted-header" data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+		            <h4 class="panel-title">Overview ({{elt.alias}})</h4>
 		        </div>
 				%else:
 				<div class="panel-heading fitted-header">
-		            <h4 class="panel-title">
-		              <a href="#collapseOne" data-parent="#accordion" data-toggle="collapse">
-		                Overview
-		              </a>
-		            </h4>
+		            <h4 class="panel-title">Overview</h4>
 		        </div>
 				%end
 			</div>
-			<div id="collapseOne" class="accordion-body collapse in">
+			<div id="collapseOne" class="accordion-body collapse">
 				<div class="fitted-bar ">
 					<table class="col-lg-4 leftmargin">
 						%#Alias, apretns and hostgroups are for host only
