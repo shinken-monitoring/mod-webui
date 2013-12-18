@@ -2,12 +2,12 @@
 
 %rebase layout globals(), js=['worldmap/js/XXX.js'], css=['worldmap/css/worldmap.css'], title='Worldmap', refresh=True
 
-<!-- <h1>Mapping your hosts ...</h1> -->
 <!-- HTML map container -->
 <div class="map_container row">
-  
   <div id="map" class="col-lg-12">
-    <p>Map loading</p>
+  	<div class="alert alert-info">
+		<a href="#" class="alert-link">Map loading</a>
+	</div>
   </div>
 </div>
 
@@ -261,6 +261,6 @@
 		});
 	};
 
-	<!-- Ok go initialize the map with all elements when it's loaded -->
+	//<!-- Ok go initialize the map with all elements when it's loaded -->
 	$(document).ready(mapLoad);
 </script>
