@@ -173,6 +173,10 @@ html, body {
 	padding-left: 0;
 }
 
+.no-rightpadding {
+  padding-right: 0;
+}
+
 .leftpadding1 {
   padding-left: 10px;
 }

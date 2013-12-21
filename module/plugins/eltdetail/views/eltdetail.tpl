@@ -170,7 +170,10 @@ $(document).ready(function(){
 						<tr>
 							<td>Members of:</td>
 							%if len(elt.hostgroups) > 0:
-							<td>{{','.join([hg.get_name() for hg in elt.hostgroups])}}</td>
+							<!-- <td>{{','.join([hg.get_name() for hg in elt.hostgroups])}}</td> -->
+							%for hg in elt.hostgroups:
+							<td><a href="/eltgroup/{{hg.get_name()}}" class="link">{{hg.alias}} ({{hg.get_name()}})</a></td>
+							%end
 							%else:
 							<td> No groups </td>
 							%end
