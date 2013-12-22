@@ -23,14 +23,13 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 
-from shinken.misc.sorter import hst_srv_sort
-
 ### Will be populated by the UI with it's own value
 app = None
 
-# Our page. If the user call /dummy/TOTO arg1 will be TOTO.
-# if it's /dummy/, it will be 'nothing'
-def get_page():
+from shinken.util import safe_print
+from shinken.misc.sorter import hst_srv_sort
+
+def get_page(name):
     # First we look for the user sid
     # so we bail out if it's a false one
     user = app.get_user_auth()
@@ -41,7 +40,7 @@ def get_page():
 
 # Here we can call app.datamgr because when the webui "loaded" us, it
     # populate app with it's own value.
-    my_group = app.datamgr.get_hostgroup('backbone-servers')
+    my_group = app.datamgr.get_hostgroup(name)
 
     # We want to limit the number of elements
     start = int(app.request.GET.get('start', '0'))
@@ -65,11 +64,6 @@ def get_page():
     # only one the template will have, so we must give it an app link and the
     # user we are logged with (it's a contact object in fact)
     return {'app': app, 'user': user, 'navi': navi, 'group': my_group, 'hosts': items}
-    
-    # we return values for the template (view). But beware, theses values are the
-    # only one the template will have, so we must give it an app link and the
-    # user we are logged with (it's a contact object in fact)
-#    return {'app': app, 'user': user}
 
 # This is the dict the webui will try to "load".
 #  *here we register one page with both addresses /dummy/:arg1 and /dummy/, both addresses
@@ -79,4 +73,6 @@ def get_page():
 #    the dummy/htdocs/ directory. Beware: it will take the plugin name to match.
 #  * optional: you can add 'method': 'POST' so this address will be only available for
 #    POST calls. By default it's GET. Look at the lookup module for sample about this.
-pages = {get_page: {'routes': ['/group'], 'view': 'groups', 'static': True}}
+
+pages = {get_page: {'routes': ['/group/:name'], 'view': 'groups', 'static': True},
+         }
