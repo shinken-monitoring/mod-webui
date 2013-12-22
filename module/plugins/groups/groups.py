@@ -65,6 +65,24 @@ def get_page(name):
     # user we are logged with (it's a contact object in fact)
     return {'app': app, 'user': user, 'navi': navi, 'group': my_group, 'hosts': items}
 
+def show_hostgroups():
+    # First we look for the user sid
+    # so we bail out if it's a false one
+    user = app.get_user_auth()
+
+    if not user:
+        app.bottle.redirect("/user/login")
+        return
+
+    # Here we can call app.datamgr because when the webui "loaded" us, it
+    # populate app with it's own value.
+    my_hostgroups = app.datamgr.get_hostgroups()
+
+    # we return values for the template (view). But beware, theses values are the
+    # only one the template will have, so we must give it an app link and the
+    # user we are logged with (it's a contact object in fact)
+    return {'app': app, 'user': user, 'hgroups': my_hostgroups}
+
 # This is the dict the webui will try to "load".
 #  *here we register one page with both addresses /dummy/:arg1 and /dummy/, both addresses
 #   will call the function get_page.
@@ -75,4 +93,5 @@ def get_page(name):
 #    POST calls. By default it's GET. Look at the lookup module for sample about this.
 
 pages = {get_page: {'routes': ['/group/:name'], 'view': 'groups', 'static': True},
+         show_hostgroups: {'routes': ['/hostgroups'], 'view': 'groups-overview', 'static': True},
          }

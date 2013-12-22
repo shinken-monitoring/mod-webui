@@ -1,4 +1,11 @@
-%rebase layout globals(), css=['eltgroup/css/group-overview.css'], js=['eltgroup/js/group-overview.js'], title='Group overview', menu_part=''
+%rebase layout globals(), css=['groups/css/groups-overview.css'], js=['groups/js/groups-overview.js'], title='Group overview', menu_part=''
+
+%helper = app.helper
+%datamgr = app.datamgr
+
+{{hgroups}}
+
+
 
 <div class="row">
   <h3 class="col-lg-11 no-topmargin">Group overview</h3>
