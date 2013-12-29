@@ -22,9 +22,28 @@ Invalid element name
 %# Look for actions if we must show them or not
 %global_disabled = ''
 %if app.manage_acl and not helper.can_action(user):
-%global_disabled = 'disabled-link'
+	%global_disabled = 'disabled-link'
 %end
 
+%sOK=0
+%sWARNING=0
+%sCRITICAL=0
+%sUNKNOWN=0
+
+%for h in elt.services:
+	%if h.state == 'OK':
+		%sOK=sOK+1
+	%end
+	%if h.state == 'WARNING':
+		%sWARNING=sWARNING+1
+	%end
+	%if h.state == 'CRITICAL':
+		%sCRITICAL=sCRITICAL+1
+	%end
+	%if h.state == 'UNKNOWN':
+		%sUNKNOWN=sUNKNOWN+1
+	%end
+%end
 
 %rebase layout title=elt_type.capitalize() + ' detail about ' + elt.get_full_name(), js=['eltdetail/js/jquery.color.js', 'eltdetail/js/jquery.Jcrop.js', 'eltdetail/js/iphone-style-checkboxes.js', 'eltdetail/js/hide.js', 'eltdetail/js/dollar.js', 'eltdetail/js/gesture.js', 'eltdetail/js/graphs.js', 'eltdetail/js/tags.js', 'eltdetail/js/depgraph.js', 'eltdetail/js/custom_views.js', 'eltdetail/js/tabs.js', 'eltdetail/js/screenfull.js' ], css=['eltdetail/css/iphonebuttons.css_', 'eltdetail/css/eltdetail.css', 'eltdetail/css/hide.css', 'eltdetail/css/gesture.css', 'eltdetail/css/jquery.Jcrop.css'], top_right_banner_state=top_right_banner_state , user=user, app=app, refresh=True
 
@@ -219,10 +238,10 @@ $(document).ready(function(){
 				%if elt_type=='host':
 				<div class="row">
 					<ul>
-						<li class="col-lg-3"> <span class="icon-stack font-green"> <i class="icon-circle-blank icon-stack-base"></i> <i class="icon-arrow-up"></i></span> <span class="num">35</span> Up</li>
-						<li class="col-lg-3"> <span class="icon-stack font-red"> <i class="icon-circle-blank icon-stack-base"></i> <i class="icon-arrow-down"></i></span> <span class="num">10</span> Down</li>
-						<li class="col-lg-3"> <span class="icon-stack font-orange"> <i class="icon-circle-blank icon-stack-base"></i> <i class="icon-question"></i></span> <span class="num">23</span> Unreachable</li>
-						<li class="col-lg-3"> <span class="icon-stack"> <i class="icon-circle-blank icon-stack-base"></i> <i class="icon-spinner"></i></span> <span class="num">10</span> Pending</li>
+						<li class="col-lg-3"> <span class="icon-stack font-green"> <i class="icon-circle-blank icon-stack-base"></i> <i class="icon-ok"></i></span> <span class="num">{{sOK}}</span> OK</li>
+						<li class="col-lg-3"> <span class="icon-stack font-orange"> <i class="icon-circle-blank icon-stack-base"></i> <i class="icon-exclamation"></i></span> <span class="num">{{sWARNING}}</span> Warning</li>
+						<li class="col-lg-3"> <span class="icon-stack font-red"> <i class="icon-circle-blank icon-stack-base"></i> <i class="icon-arrow-down"></i></span> <span class="num">{{sCRITICAL}}</span> Critical</li>
+						<li class="col-lg-3"> <span class="icon-stack"> <i class="icon-circle-blank icon-stack-base"></i> <i class="icon-question"></i></span> <span class="num">{{sUNKNOWN}}</span> Unknown</li>
 					</ul>
 				</div>
 				%end
