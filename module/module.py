@@ -65,8 +65,6 @@ sys.path.insert(0, bottle_dir)
 webuimod_dir = os.path.abspath(os.path.dirname(__file__))
 htdocs_dir = os.path.join(webuimod_dir, 'htdocs')
 
-bottle.TEMPLATE_PATH.append(os.path.join(webuimod_dir, 'views'))
-bottle.TEMPLATE_PATH.append(webuimod_dir)
 
 
 
@@ -82,6 +80,10 @@ properties = {
 
 # called by the plugin manager to get an instance
 def get_instance(plugin):
+    # Only add template if we CALL webui
+    bottle.TEMPLATE_PATH.append(os.path.join(webuimod_dir, 'views'))
+    bottle.TEMPLATE_PATH.append(webuimod_dir)
+
     print "Get a WebUI instancefor plugin %s" % plugin.get_name()
 
     instance = Webui_broker(plugin)
