@@ -25,23 +25,25 @@ Invalid element name
 	%global_disabled = 'disabled-link'
 %end
 
-%sOK=0
-%sWARNING=0
-%sCRITICAL=0
-%sUNKNOWN=0
+%if elt_type=='host':
+	%sOK=0
+	%sWARNING=0
+	%sCRITICAL=0
+	%sUNKNOWN=0
 
-%for h in elt.services:
-	%if h.state == 'OK':
-		%sOK=sOK+1
-	%end
-	%if h.state == 'WARNING':
-		%sWARNING=sWARNING+1
-	%end
-	%if h.state == 'CRITICAL':
-		%sCRITICAL=sCRITICAL+1
-	%end
-	%if h.state == 'UNKNOWN':
-		%sUNKNOWN=sUNKNOWN+1
+	%for h in elt.services:
+		%if h.state == 'OK':
+			%sOK=sOK+1
+		%end
+		%if h.state == 'WARNING':
+			%sWARNING=sWARNING+1
+		%end
+		%if h.state == 'CRITICAL':
+			%sCRITICAL=sCRITICAL+1
+		%end
+		%if h.state == 'UNKNOWN':
+			%sUNKNOWN=sUNKNOWN+1
+		%end
 	%end
 %end
 
@@ -68,7 +70,8 @@ $(document).ready(function(){
 $(document).ready(function(){
 	if (window.location.hash.length > 0) {
 		$('ul.nav-tabs > li > a[href="' + window.location.hash + '"]').tab('show');
-	}else{
+	}
+	else {
 		$('ul.nav-tabs > li > a:first').tab('show');
 	}
 });
@@ -247,7 +250,7 @@ $(document).ready(function(){
 				%end
 			</div>
 	    </div>
-	</div>	
+	</div>
 	<!-- Switch Start -->
 
 	%# By default all is unabled
@@ -344,7 +347,7 @@ $(document).ready(function(){
 						</tr>
 					</table>
 					<hr>
-					<div class="truncate"> <b><i>{{elt.output}}</i></b> </div>
+					<div class="truncate">{{elt.output}}</div>
 					<hr>
 					<table class="table">
 						<tr>
