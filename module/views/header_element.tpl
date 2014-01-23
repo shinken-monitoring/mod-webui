@@ -1,18 +1,5 @@
 %if 'app' not in locals(): app = None
 
-<script type="text/javascript">
-  function webui() {
-    var Port = {{app.get_webui_port()}}
-    var Host = document.domain;
-    var Url = 'http://' + Host + ':' + Port;
-    return Url;
-  }
-
-  $(function(){
-    $("a[href=':7767']").attr('href', webui());
-  });
-</script>
-
 <!-- Fixed navbar -->
 <div class="navbar navbar-inverse navbar-fixed-top">
   <div class="container" style="margin-left:0; padding-left: 0; padding-right: 0; max-width: 100%;">
