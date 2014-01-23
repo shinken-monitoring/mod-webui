@@ -32,9 +32,9 @@ def find_disks(h):
     all_disks = []
     disks_state = 'UNKNOWN'
     s = h.find_service_by_name('Disks')
-    print "Service found", s.get_full_name()
     if not s:
         return disks_state,all_disks
+    print "Service found", s.get_full_name()
     disks_state = s.state
     p = PerfDatas(s.perf_data)
     print "PERFDATA", p, p.__dict__
@@ -50,7 +50,7 @@ def find_disks(h):
         pct = 100*float(m.value)/m.max
         pct = int(pct)
         print m.value, m.max, pct
-        
+
         all_disks.append((m.name, pct))
 
     return disks_state,all_disks
@@ -59,11 +59,11 @@ def find_disks(h):
 def get_memory(h):
 
     mem_state = swap_state = 'UNKNOWN'
-    
+
     s = h.find_service_by_name('Memory')
-    print "Service found", s.get_full_name()
     if not s:
         return (mem_state,swap_state,0,0)
+    print "Service found", s.get_full_name()
 
     mem_state = swap_state = s.state
     # Now grep perfdata in it
@@ -71,7 +71,7 @@ def get_memory(h):
     print "PERFDATA", p, p.__dict__
     mem = 0
     swap = 0
-    
+
     if 'ram_used' in p:
         m = p['ram_used']
         # Maybe it's an invalid metric?
@@ -97,16 +97,16 @@ def get_memory(h):
 def get_cpu(h):
     cpu_state = 'UNKNOWN'
     s = h.find_service_by_name('Cpu')
-    print "Service found", s.get_full_name()
     if not s:
         return cpu_state,0
+    print "Service found", s.get_full_name()
 
     cpu_state = s.state
     # Now perfdata
     p = PerfDatas(s.perf_data)
     print "PERFDATA", p, p.__dict__
     cpu = 0
-    
+
     if 'cpu_prct_used' in p:
         m = p['cpu_prct_used']
         # Maybe it's an invalid metric?
@@ -157,10 +157,10 @@ def get_page(hname):
         # And CPU too
         all_states['cpu'], all_perfs['cpu'] = get_cpu(h)
         all_states["global"] = compute_worst_state(all_states)
-        
+
 
     print "ALL PERFS", all_perfs
-    
+
     return {'app': app, 'elt': h, 'all_perfs':all_perfs, 'all_states':all_states}
 
 
