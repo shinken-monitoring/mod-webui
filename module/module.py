@@ -66,8 +66,6 @@ sys.path.insert(0, bottle_dir)
 webuimod_dir = os.path.abspath(os.path.dirname(__file__))
 htdocs_dir = os.path.join(webuimod_dir, 'htdocs')
 
-bottle.TEMPLATE_PATH.append(os.path.join(webuimod_dir, 'views'))
-bottle.TEMPLATE_PATH.append(webuimod_dir)
 
 
 
@@ -83,6 +81,10 @@ properties = {
 
 # called by the plugin manager to get an instance
 def get_instance(plugin):
+    # Only add template if we CALL webui
+    bottle.TEMPLATE_PATH.append(os.path.join(webuimod_dir, 'views'))
+    bottle.TEMPLATE_PATH.append(webuimod_dir)
+
     print "Get a WebUI instancefor plugin %s" % plugin.get_name()
 
     instance = Webui_broker(plugin)
@@ -184,7 +186,7 @@ class Webui_broker(BaseModule, Daemon):
 
         # Daemon like init
         self.debug_output = []
-        self.modulesdir = modulesctx.get_modulesdir()
+        self.modules_dir = modulesctx.get_modulesdir()
         self.modules_manager = ModulesManager('webui', self.find_modules_path(), [])
         self.modules_manager.set_modules(self.modules)
         # We can now output some previously silenced debug output
