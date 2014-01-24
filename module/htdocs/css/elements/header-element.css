@@ -326,7 +326,7 @@
 }
 
 .snap-drawer {
-  background: #323949;
+  background: rgb(59,62,69);
   color: #eee;
 }
 
@@ -351,10 +351,17 @@
 
 .snap-drawer li > a {
   display: block;
-  border-bottom: 1px solid rgba(0,0,0, 0.1);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 15px;
-  font-weight: bold;
+  padding: 5px 10px;
+  text-shadow: 0 1px 0 #000;
+  text-decoration: none;
+  color: #ccc;
+  text-indent: 20px;
+}
+
+.snap-drawer li > a:hover {
+  display: block;
+  background: rgb(36,39,44);
+  padding: 5px 10px;
   text-shadow: 0 1px 0 #000;
   text-decoration: none;
   color: #ccc;

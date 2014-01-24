@@ -112,10 +112,13 @@
 </head>
 
 <body>
-	%include side_nav_element
-
+	%if print_menu:
+		%include side_nav_element
+	%end
 	<div id="content" class="snap-content">
-		%include nav_element		
+		%if print_header:
+			%include nav_element globals()
+		%end	
 		<div class="container" style="padding-top:50px;">
 			%include
 		</div>

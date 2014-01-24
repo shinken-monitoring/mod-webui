@@ -1,4 +1,4 @@
-%rebase layout title='Shinken UI Login', print_header=False, js=['login/js/detectmobilebrowser.js','login/js/capslock.js'], css=['login/css/login.css']
+%rebase layout title='Shinken UI Login', print_header=False, print_nav=False, js=['login/js/detectmobilebrowser.js','login/js/capslock.js'], css=['login/css/login.css']
 
 %from shinken.bin import VERSION
 
