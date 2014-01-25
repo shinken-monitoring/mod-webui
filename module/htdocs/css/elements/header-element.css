@@ -134,7 +134,6 @@
 /*  Dummy side styles
     ------------------------------------------------------- */
 
-
 .snap-content {
   position: absolute;
   top: 0;
@@ -169,7 +168,7 @@
   right: auto;
   bottom: 0;
   left: auto;
-  width: 265px;
+  width: 200px;
   height: auto;
   overflow: auto;
   -webkit-overflow-scrolling: touch;
@@ -243,19 +242,6 @@
   display: block;
   width: 44px;
   height: 44px;
-}
-
-
-/* Show the translucent white "Toggle" boxes in the demo */
-.toggler {
-  width: 80%;
-  background: rgba(255,255,255,0.5);
-  margin: 0 auto;
-  position: relative;
-  top: 70px;
-  padding: 20px;
-  margin-bottom: 20px;
-  text-align: center;
 }
 
 /* Styles for expanding "Search" input in the "Expanding" demo */

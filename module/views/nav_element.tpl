@@ -3,7 +3,12 @@
 <!-- Fixed navbar -->
 <div id="toolbar" class="navbar navbar-inverse navbar-fixed-top">
 	<div class="container" style="margin-left:0; padding-left: 0; padding-right: 0;">
-		<div id="ol" class="col-sm-8" style="font-size: 20px; margin-top: 10px;"><i class="icon-align-justify font-darkgrey"></i> </div>
+		<div id="ol" class="col-sm-1" style="font-size: 20px; margin-top: 10px;"><i class="icon-align-justify font-darkgrey"></i> </div>
+		<ol class="col-sm-7 breadcrumb">
+			<li><a href="/">Home</a></li>
+			<li class="active">{{title or 'No title'}}</li>
+		</ol>
+
 		<ul class="nav navbar-nav col-sm-4">
 			<li class="dropdown pull-right">
 				<a href="#" class="dropdown-toggle" data-toggle="dropdown">Hi {{user.get_name().capitalize()}} <b class="caret"></b></a>
