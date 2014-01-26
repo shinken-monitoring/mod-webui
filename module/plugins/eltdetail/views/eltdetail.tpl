@@ -97,10 +97,10 @@ $(document).ready(function(){
 
   <div id="content_container">
   	<div class="row">
-  		<h1 class="col-lg-7 state_{{elt.state.lower()}} icon_down no-margin"> <img class="imgsize3" alt="icon state" src="{{helper.get_icon_state(elt)}}" />{{elt.state}}: {{elt.get_full_name()}}</h1> 
+  		<!-- <h1 class="col-lg-7 state_{{elt.state.lower()}} icon_down no-margin"> <img class="imgsize3" alt="icon state" src="{{helper.get_icon_state(elt)}}" />{{elt.state}}: {{elt.get_full_name()}}</h1>  -->
 
 		%if elt.action_url != '':
-			<div class="col-lg-3">
+			<div class="col-lg-10">
 				<span class="pull-right leftmargin" id="host_tags">
 					%tags = elt.get_host_tags()
 					%for t in tags:
@@ -137,7 +137,7 @@ $(document).ready(function(){
 			    </div>
 			</div>	
 		%else:
-		    <div class="col-lg-5">
+		    <div class="col-lg-12">
 		   		<span class="pull-right leftmargin" id="host_tags">
 		   			%tags = elt.get_host_tags()
 		   			%for t in tags:
