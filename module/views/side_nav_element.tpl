@@ -33,18 +33,19 @@
 						%end
 						%end
 					</ul>
-					<li class="dropup">
-						<a class="dropdown-toggle" data-toggle="dropdown" href="#">
-							<i class="icon-cogs"></i> <span class="caret"></span>
-						</a>
-						<ul class="dropdown-menu">
-							<li> <a class="disabled-link" href="#"><i class="icon-pencil"></i> Edit profile</a> </li>
-							<li> <a class="" href="http://www.shinken-monitoring.org/wiki/"><i class="icon-external-link"></i> Help</a></li>
-							<li> <i class="icon-github"></i> icon-github</li>
-						</ul>
-					</li>
-					<li><a href="/user/logout" data-original-title='Logout'><i class="icon-signout"></i></a></li>
-				</ul>
-			</div>
+				</li>
+				<li class="dropup">
+					<a class="dropdown-toggle" data-toggle="dropdown" href="#">
+						<i class="icon-cogs"></i> <span class="caret"></span>
+					</a>
+					<ul class="dropdown-menu">
+						<li> <a class="disabled-link" href="#"><i class="icon-pencil"></i> Edit profile</a> </li>
+						<li> <a class="" href="http://www.shinken-monitoring.org/wiki/"><i class="icon-external-link"></i> Help</a></li>
+						<li> <i class="icon-github"></i> icon-github</li>
+					</ul>
+				</li>
+				<li><a href="/user/logout" data-original-title='Logout'><i class="icon-signout"></i></a></li>
+			</ul>
 		</div>
 	</div>
+</div>
