@@ -1,18 +1,5 @@
 %if 'app' not in locals(): app = None
 
-<script type="text/javascript">
-  function webui() {
-    var Port = {{app.get_webui_port()}}
-    var Host = document.domain;
-    var Url = 'http://' + Host + ':' + Port;
-    return Url;
-  }
-
-  $(function(){
-    $("a[href=':7767']").attr('href', webui());
-  });
-</script>
-
 <!-- Fixed navbar -->
 <div class="navbar navbar-inverse navbar-fixed-top">
   <div class="container" style="margin-left:0; padding-left: 0; padding-right: 0; max-width: 100%;">
@@ -23,25 +10,7 @@
     </button>
 
     <div>
-      <ul class="nav navbar-nav">
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle brand" data-toggle="dropdown">Shinken <b class="caret"></b></a>
-          <ul class="dropdown-menu">
-            <li><a href=":7767">Shinken UI </a></li>
-            <!-- We will add also others UIs on the global menu -->
-            %if app:
-            %other_uis = app.get_external_ui_link()
-            <!-- If we add others UIs, we separate them from the inner ones-->
-            %if len(other_uis) > 0:
-            <li class="divider"></li>
-            %end
-            %for c in other_uis:
-            <li><a href="{{c['uri']}}">{{c['label']}}</a></li>
-            %end
-            %end
-          </ul>
-        </li>
-      </ul>
+
       <ul class="nav navbar-nav">
         %menu = [ ('/dashboard', 'Dashboard'), ('/impacts','Impacts'), ('/problems','IT problems'), ('/all', 'All'), ('/wall', 'Wall')]
         %for (key, value) in menu:
@@ -92,18 +61,6 @@
         <li><a href="/impacts" class="quickinfo" data-original-title='Impacts'><i class="icon-impact"></i><span class="pulsate badger badger-warning">{{app.datamgr.get_len_overall_state()}}</span> </a></li>
         %end
         %end
-        <!-- <li><a href="#" class="quickinfo" data-original-title='Settings'><i class="icon-setting"></i></a></li>-->
-        <!-- <li><a href="/user/logout" class="quickinfo" data-original-title='Logout'><i class="nav-icon icon-off"></i></a></li> -->
-        
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Hi {{user.get_name().capitalize()}} <b class="caret"></b></a>
-          <ul class="dropdown-menu">
-            <li> <a class="disabled-link" href="#"><i class="icon-pencil"></i> Edit profile</a> </li>
-            <li> <a class="" href="http://www.shinken-monitoring.org/wiki/"><i class="icon-external-link"></i> Help</a></li>
-            <li class="divider"></li>
-            <li> <a href="/user/logout" data-original-title='Logout'><i class="icon-off"></i> Logout</a></li>
-          </ul>
-        </li>
         
       </ul>
     </div><!--/.nav-collapse -->
