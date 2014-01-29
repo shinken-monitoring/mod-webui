@@ -16,7 +16,7 @@
         var settings = {
             element: null,
             dragger: null,
-            disable: 'none',
+            disable: 'right',
             addBodyClasses: true,
             hyperextensible: true,
             resistance: 0.5,

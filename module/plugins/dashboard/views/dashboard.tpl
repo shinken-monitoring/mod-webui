@@ -24,7 +24,7 @@
   %if len(widgets) == 0:
   %small_show_panel_s = 'hide'
   %end
-  <a data-toggle="modal" href="#widgets" class="btn btn-small btn-success pull-right"><i class="icon-plus"></i> Add a new widget</a>
+  <a data-toggle="modal" href="#widgets" class="btn btn-sm btn-success pull-right topmmargin" style="margin-right: 25px;"><i class="icon-plus"></i> Add a new widget</a>
   %# Go in the center of the page!
   <span id="center-button" class="col-sm-4 col-sm-offset-4 page-center" >
     <h3>You don't have any widget yet?</h3>

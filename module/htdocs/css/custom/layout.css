@@ -164,6 +164,13 @@ html, body {
   line-height: 17px;
 }
 
+/*  Special Shinken snap.js & BS3 (modal) workaround
+    ------------------------------------------------------- */
+.modal-backdrop {
+  z-index: 0 !important;
+}
+
+
 /*  Special Shinken styles
     ------------------------------------------------------- */
 .min-height {

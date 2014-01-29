@@ -28,12 +28,7 @@
             { $("#searchhelp").popover({trigger: 'click', placement:'bottom', html: 'true', animation: 'true'});  
           });  
         </script> 
-        <!--
-        <form name="global_search" class="navbar-search pull-right topmmargin1" action='#'>
-          <input type="text" class="search-query typeahead no-bottommargin" autocomplete="off" placeholder="Search" name="global_search">
-          <a id="searchhelp" href="http://www.shinken-monitoring.org/wiki/webui_search" target="_blank"><i class="icon-question-sign font-white topmmargin2"></i></a>  
-        </form>
-        -->
+
         <li class="divider-vertical"></li>
         %# Check for the selected element, if there is one
         %if menu_part == '/dashboard':

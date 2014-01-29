@@ -10,16 +10,6 @@
 		</ol>
 
 		<ul class="nav navbar-nav col-sm-4">
-			<li class="dropdown pull-right">
-				<a href="#" class="dropdown-toggle" data-toggle="dropdown">Hi {{user.get_name().capitalize()}} <b class="caret"></b></a>
-				<ul class="dropdown-menu">
-					<li> <a class="disabled-link" href="#"><i class="icon-pencil"></i> Edit profile</a> </li>
-					<li> <a class="" href="http://www.shinken-monitoring.org/wiki/"><i class="icon-external-link"></i> Help</a></li>
-					<li class="divider"></li>
-					<li> <a href="/user/logout" data-original-title='Logout'><i class="icon-off"></i> Logout</a></li>
-				</ul>
-			</li>
-			<li class="divider-vertical"></li>
 			%# Check for the selected element, if there is one
 			%if menu_part == '/dashboard':
 			<li class="pull-right"><a class="quickinfo" data-original-title='Currently' href="/dashboard/currently"><i class="nav-icon icon-fullscreen"></i></a></li>
