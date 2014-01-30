@@ -34,7 +34,6 @@
 <link href="/static/css/bootstrap.css" rel="stylesheet">
 <link href="/static/css/font-awesome.css" rel="stylesheet">
 <link href="/static/css/custom/layout.css" rel="stylesheet">
-<link href="/static/css/custom/badger.css" rel="stylesheet">
 <link href="/static/css/elements/jquery.meow.css" rel="stylesheet">
 <link href="/static/css/elements/header-element.css" rel="stylesheet">
 <link href="/static/css/custom/deptree.css" rel="stylesheet">
@@ -57,21 +56,9 @@
 <link rel="stylesheet" type="text/css" href="/static/{{p}}">
 %end
 
-<style type="text/css">
-	body {
-		padding-top: 60px;
-		/*  padding-bottom: 40px;*/
-	}
-	.sidebar-nav {
-		padding: 9px 0;
-	}
-</style>
-
 <!-- Le javascript
 	================================================== -->
-	<!-- WAS Placed at the end of the document so the pages load faster -->
-<!-- but then we a't call $ in our html page. So we will loose a bit loading speed (just
-	for the first launch, not a big deal) but then we can call jquery in our page -->
+	
 	<script src="/static/js/jquery.js"></script>
 	<script src="/static/js/jquery-ui-1.8.17.custom.min.js"></script>
 	<script src="/static/js/shinkenui.js"></script>

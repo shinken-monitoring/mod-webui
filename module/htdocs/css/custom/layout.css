@@ -30,6 +30,15 @@ html, body {
     height: 100%;
 }
 
+body {
+  padding-top: 60px;
+  /*  padding-bottom: 40px;*/
+}
+
+.sidebar-nav {
+  padding: 9px 0;
+}
+
 #wrap {
     height: auto !important;
     margin: 0 auto -40px;
