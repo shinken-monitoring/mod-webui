@@ -18,6 +18,14 @@ develop-eggs
 lib
 lib64
 
+###SublimeText###
+*.cache
+Package Control.sublime-settings
+
+# SublimeText project files
+/*.sublime-project
+*.sublime-workspace
+
 # Installer logs
 pip-log.txt
 
