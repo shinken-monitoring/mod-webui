@@ -1,7 +1,7 @@
 {
   "name": "webui",
   "types": ["module"],
-  "version": "1.4",
+  "version": "1.0",
   "homepage": "http://github.com/shinken-monitoring/mod-webui",
   "author": "Jean Gabès",
   "description": "Main Web interface for Shinken",
@@ -15,7 +15,7 @@
       "email": "andreas.karfusehr@gmail.com"
     }
   ],
-  "repository": "https://github.com/shinken-monitoring/mod-webui",
+  "repository": "https://github.com/shinken-monitoring/mod-webui/tree/1.0",
   "keywords": [
     "module",
     "broker",
