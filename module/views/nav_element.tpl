@@ -12,7 +12,7 @@
 		<ul class="nav navbar-nav col-sm-4">
 			%# Check for the selected element, if there is one
 			%if menu_part == '/dashboard':
-			<li class="pull-right"><a class="quickinfo" data-original-title='Currently' href="/dashboard/currently"><i class="nav-icon icon-fullscreen"></i></a></li>
+			<li class="pull-right"><a class="quickinfo" data-original-title='Currently' href="/dashboard/currently"><i class="icon-fullscreen"></i></a></li>
 			%else:
 			<li></li>
 			%end
