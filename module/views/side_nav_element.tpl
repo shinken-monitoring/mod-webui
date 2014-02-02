@@ -44,7 +44,7 @@
 						<li> <i class="icon-github"></i> icon-github</li>
 					</ul>
 				</li>
-				<li><a href="/user/logout" data-original-title='Logout'><i class="icon-signout"></i></a></li>
+				<li><a href="/user/logout" data-original-title='Logout'><i class="icon-signout font-red"></i></a></li>
 			</ul>
 		</div>
 	</div>
