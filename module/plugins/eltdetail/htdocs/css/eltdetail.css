@@ -1,5 +1,5 @@
 /**
-* Copyright (C) 2009-2012:
+* Copyright (C) 2009-2014:
 *    Gabes Jean, naparuba@gmail.com
 *    Gerhard Lausser, Gerhard.Lausser@consol.de
 *    Gregory Starck, g.starck@gmail.com
@@ -22,6 +22,11 @@
 * along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 *
 **/
+
+#inner_depgraph {
+  background: #FFFFFF;
+  padding: 15px;
+} 
 
 #content_container {
 	padding-bottom: 15px;
@@ -342,7 +347,6 @@ div.marginbottom {
 
 .verticaltabs-container {
   position: relative;
-  width: 100%;
   min-height:500px;
   height:auto !important;
   overflow: hidden;
@@ -560,3 +564,11 @@ label.iOSCheckLabelOff {
   height: 100%;
   width: 100%;
   background: url('images/ios-style-checkboxes/slider_center.png'); }
+
+  /*
+
+  */
+
+  .table thead > tr > th, .table tbody > tr > th, .table tfoot > tr > th, .table thead > tr > td, .table tbody > tr > td, .table tfoot > tr > td {
+    border-top: none;
+}

@@ -1,5 +1,5 @@
 /**
-* Copyright (C) 2009-2012:
+* Copyright (C) 2009-2014:
 *    Gabes Jean, naparuba@gmail.com
 *    Gerhard Lausser, Gerhard.Lausser@consol.de
 *    Gregory Starck, g.starck@gmail.com
@@ -74,7 +74,7 @@ hr { /* Yes this is a workaround*/
 
 ul#Navigation {
   margin-top: 17.5em; 
-  margin-left: 15%;
+  margin-left: 20%;
   padding: 0.8em;
   text-align: center;
 }

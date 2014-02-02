@@ -1,27 +1,12 @@
-%rebase layout globals(), css=['system/css/system.css'], title='Architecture state', menu_part='/system'
+%rebase layout globals(), css=['system/css/system.css'], title='System', menu_part='/system'
 
 %from shinken.bin import VERSION
 %helper = app.helper
 
-<div class="row-fluid">
-  <div class="span12">
-<!--     <h3><i class="icon-cogs"> General Informations </i></h3>
-    <div class="span4 well general-box">
-      <h4><i class="icon-cog"></i> Start Time</h4>
-      <span class="general">{{helper.print_duration(app.datamgr.get_program_start())}}</span>
-    </div>
-    <div class="span4 well general-box">
-      <h4><i class="icon-cog"></i> Version</h4>
-      <span class="general">Shinken {{VERSION}}</span>
-    </div> -->
-    <!--
+<div class="row">
+  <div class="col-lg-12">
     <div class="row-fluid">
-      <div class="span6">Level 2</div>
-      <div class="span6">Level 2</div>
-    </div> -->
-
-    <div class="row-fluid">
-      <div class="span8">
+      <div class="col-lg-8">
         <h3>Shinken Daemons</h3>
         %types = [ ('scheduler', schedulers), ('poller', pollers), ('broker', brokers), ('reactionner', reactionners), ('receiver', receivers)]
         %for (sat_type, sats) in types:
@@ -52,8 +37,8 @@
         </table>
         %end
       </div>
-      <div class="span4">
-        <div class="well" style="margin-top: 65px;">
+      <div class="col-lg-4">
+        <div class="well well-sm" style="margin-top: 65px;">
           <!-- <img alt="" src="http://placehold.it/300x200"> -->
           <div class="caption">
             <h3 class="font-blue"><i class="icon-question-sign"></i> Information</h3>
@@ -64,7 +49,7 @@
             <p><a href="http://www.shinken-monitoring.org/wiki/official/configuringshinken/configobjects/broker">Broker:</a> The broker daemon exports and manages data from schedulers. The broker uses modules exclusively to get the job done.</p>
             <p>Receiver (<b>optional</b>): The receiver daemon receives passive check data and serves as a distributed command buffer.</p>
             <hr>
-            <p><a href="http://www.shinken-monitoring.org/wiki/the_shinken_architecture" class="btn btn-success">Learn more »</a></p>
+            <p><a href="http://www.shinken-monitoring.org/wiki/the_shinken_architecture" class="btn btn-info btn-lg btn-block">Learn more »</a></p>
           </div>
         </div>
       </div>

@@ -13,7 +13,7 @@
 <div id="warn-pref" class="hero-unit alert-critical">
   <h2>Warning:</h2>
   <p>You didn't define a WebUI module for saving user preferences like the MongoDB one. You won't be able to use this page!</p>
-  <p><a href="http://www.shinken-monitoring.org/wiki/shinken_10min_start" class="btn btn-success btn-large">Learn more <i class="icon-hand-right"></i></a></p>
+  <p><a href="http://www.shinken-monitoring.org/wiki/shinken_10min_start" class="btn btn-success">Learn more <i class="icon-hand-right"></i></a></p>
 </div>
 %end
 
@@ -22,79 +22,77 @@
   %# If we got no widget, we should put the button at the center fo the screen
   %small_show_panel_s = ''
   %if len(widgets) == 0:
-     %small_show_panel_s = 'hide'
+  %small_show_panel_s = 'hide'
   %end
-  <a id='small_show_panel' href="#pageslide" class="slidelink btn btn-small btn-success pull-right {{small_show_panel_s}}"><i class="icon-plus"></i> Add a new widget</a>
+  <a data-toggle="modal" href="#widgets" class="btn btn-sm btn-success pull-right topmmargin" style="margin-right: 25px;"><i class="icon-plus"></i> Add a new widget</a>
   %# Go in the center of the page!
-  <span id="center-button" class="span4 offset4 page-center" >
+  <span id="center-button" class="col-sm-4 col-sm-offset-4 page-center" >
     <h3>You don't have any widget yet?</h3>
-  <a href="#pageslide" class="slidelink btn btn-large btn-success at-center"><i class="icon-plus"></i> Add a new widget</a>
+    <!-- Button trigger widgets modal -->
+    <a data-toggle="modal" href="#widgets" class="btn btn-block btn-success btn-lg"><i class="icon-plus"></i> Add a new widget</a>
   </span>
-</div>
-
-<div id="pageslide" style="display:none">
-    <div class="span12 row">
-      <h3 class="span10 pull-left font-white">Widgets available</h3>
-      <p class="span2 pull-right"><a class="btn btn-small btn-danger" href="javascript:$.pageslide.close()"><i class="icon-remove"></i> Close</a></p>
-    </div>
-      <p>&nbsp;</p>
-      <p>&nbsp;</p>
-    <div class='row span12'>
-    %for w in app.get_widgets_for('dashboard'):
-    <div class='widget_desc span5' style='position: relative;'>
-      <div class='row-fluid'>
-	<span class="span4" style="margin-top:10px;">
-	  <img class="img-rounded" style="width:64px;height:64px" src="{{w['widget_picture']}}" id="widget_desc_{{w['widget_name']}}"/>
-	</span>
-	<span class='span6'>
-	  {{!w['widget_desc']}}
-	</span>
-      </div>
-      <p class="add_button"><a class='btn btn-mini btn-success' href="javascript:AddNewWidget('{{w['base_uri']}}', 'widget-place-1');"> <i class="icon-chevron-left"></i> Add {{w['widget_name']}} widget</a></p>
-    </div>
-    %end
-    </div>
 </div>
 
 <script >$(function(){
   $(".slidelink").pageslide({ direction: "left", modal: true});
-  });
+});
 </script>
 
 <script>
   // Now load all widgets
   $(function(){
-      %for w in widgets:
-         %if 'base_url' in w and 'position' in w:
-            %uri = w['base_url'] + "?" + w['options_uri']
-            AddWidget("{{!uri}}", "{{w['position']}}");
-         %end
-      %end
+    %for w in widgets:
+    %if 'base_url' in w and 'position' in w:
+    %uri = w['base_url'] + "?" + w['options_uri']
+    AddWidget("{{!uri}}", "{{w['position']}}");
+    %end
+    %end
   });
 </script>
 
-<div class="widget-place" id="widget-place-1">
+<div class="modal fade" id="widgets" tabindex="-1" role="dialog" aria-labelledby="Widgets" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Widgets available</h4>
+      </div>
+      <div class="modal-body">
 
-</div>
+        <div class="row">
+          %for w in app.get_widgets_for('dashboard'):
+          <div class='widget_desc' style="position: relative;">
+            <div class='row'>
+              <span class="col-sm-4" style="margin-top:10px;">
+                <img class="img-rounded" style="width:64px;height:64px" src="{{w['widget_picture']}}" id="widget_desc_{{w['widget_name']}}"/>
+              </span>
+              <span>
+                {{!w['widget_desc']}}
+              </span>
+            </div>
+            <p class="add_button"><a class="btn btn-mini btn-success" href="javascript:AddNewWidget('{{w['base_uri']}}', 'widget-place-1');"> <i class="icon-chevron-left"></i> Add {{w['widget_name']}} widget</a></p>
+          </div>
+          %end
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="widget-place" id="widget-place-1"> </div>
 <!-- /place-1 -->
 
-<div class="widget-place" id="widget-place-2">
-
-</div>
-
-
-<div class="widget-place" id="widget-place-3">
-
-</div>
-
+<div class="widget-place" id="widget-place-2"> </div>
 <!-- /place-2 -->
 
-
-  <!-- End Easy Widgets plugin HTML markup -->
-
-
+<div class="widget-place" id="widget-place-3"> </div>
+<!-- /place-3 -->
 
 
-  <!-- Bellow code not is part of the Easy Widgets plugin HTML markup -->
+<!-- End Easy Widgets plugin HTML markup -->
 
-  <div style="clear:both">
+<!-- Bellow code not is part of the Easy Widgets plugin HTML markup -->
+

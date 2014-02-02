@@ -50,7 +50,7 @@ function add_tag_image(src, name){
     var img = create_img(src, name);
     var span = $("<span/>");
     var a = $('<a href="/all?search=htag:'+name+'"/>');
-    span.addClass('label');
+    span.addClass('label label-primary');
 
 
     span.append(img);

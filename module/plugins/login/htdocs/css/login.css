@@ -1,3 +1,7 @@
+body { padding-top : 0 !important; }
+
+h1 { font-size: 45px; }
+
 .img_logo {
     /*height: 75%;*/
     width: 100%;

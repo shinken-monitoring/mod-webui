@@ -38,6 +38,7 @@ import threading
 import base64
 import cPickle
 import imp
+import urllib
 
 from shinken.basemodule import BaseModule
 from shinken.message import Message
@@ -90,11 +91,7 @@ def get_instance(plugin):
     return instance
 
 
-
-
-
-# Class for the Merlindb Broker
-# Get broks and puts them in merlin database
+# Class for the WebUI Broker
 class Webui_broker(BaseModule, Daemon):
     def __init__(self, modconf):
         BaseModule.__init__(self, modconf)
@@ -130,6 +127,8 @@ class Webui_broker(BaseModule, Daemon):
         self.photo_dir = getattr(modconf, 'photo_dir', 'photos')
         self.photo_dir = os.path.abspath(self.photo_dir)
         print "Webui: using the backend", self.http_backend
+
+        self.embeded_graph = to_bool(getattr(modconf, 'embeded_graph', '0'))
 
         # Look for an additonnal pages dir
         self.additional_plugins_dir = getattr(modconf, 'additional_plugins_dir', '')
@@ -622,6 +621,14 @@ class Webui_broker(BaseModule, Daemon):
         # Ok if we got a real contact, and if a module auth it
         return uris
 
+    def get_graph_img_src(self,uri,link):
+        url=uri
+        lk=link
+        if self.embeded_graph:
+            data = urllib.urlopen(uri, 'rb').read().encode('base64').replace('\n', '')
+            url="data:image/png;base64,{0}".format(data)
+            lk=''
+        return (url,lk)
         
     def get_common_preference(self, key, default=None):
         safe_print("Checking common preference for", key)

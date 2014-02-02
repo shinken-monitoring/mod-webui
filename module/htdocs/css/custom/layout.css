@@ -1,5 +1,5 @@
 /**
-* Copyright (C) 2009-2012:
+* Copyright (C) 2009-2014:
 *    Gabes Jean, naparuba@gmail.com
 *    Gerhard Lausser, Gerhard.Lausser@consol.de
 *    Gregory Starck, g.starck@gmail.com
@@ -26,66 +26,159 @@
 
 /*  Shinken basics
     ------------------------------------------------------- */
-html, body {height: 95.5%;}
-
-#wrap {
-  min-height: 100%;
-  height: auto !important;
-  height: 100%;
-  margin: 0 auto -30px;
+html, body {
+    height: 100%;
 }
 
-#push, #footer {height: 30px;}
+body {
+  padding-top: 60px;
+  /*  padding-bottom: 40px;*/
+}
+
+.sidebar-nav {
+  padding: 9px 0;
+}
+
+#wrap {
+    height: auto !important;
+    margin: 0 auto -40px;
+    min-height: 100%;
+    padding: 0 0 60px;
+}
+
+#footer {
+    height: 40px;
+}
+
+.container {
+    padding: 0 15px;
+    width: auto;
+}
+
+.container .credit {
+    margin: 10px 0;
+}
+
 
 /*  Special Font Awesome styles (Font Color)
     ------------------------------------------------------- */
-.font-white {
-  color: #FFFFFF;
+.font-white {color: #FFFFFF;}
+
+.font-black {color: #000000;}
+
+.font-green {color: #468847;}
+
+.font-yellow {color: #FFEE00;}
+
+.font-orange {color: #F89406;}
+
+.font-red {color: #DA4F49;}
+
+.font-green {color: #51A351;}
+
+.font-grey {color: #505050;}
+
+.font-lightgrey {color: #EBEBEB;}
+
+.font-darkgrey {color: #535456;}
+
+.font-blue {color: #3A87AD;}
+
+/*  Special Shinken Box
+    ------------------------------------------------------- */
+.fitted-box {
+  -moz-box-sizing: border-box;
+  background-color: #FFFFFF;
+  border: 1px solid #DDDDDD;
+  border-radius: 3px 3px 3px 3px;
+  margin-bottom: 20px;
+  margin-top: 5px;
 }
 
-.font-black {
-  color: #000000;
+.fitted-header {
+  background: #F7F7F7 !important;
 }
 
-.font-green {
-  color: #468847;
+.fitted-link {
+  color: #787878;
+  font-size: 12px;
+  font-weight: bold;
+  background: #F7F7F7 !important;
+  border-bottom: 1px solid #DDDDDD;
+  line-height: 100%;
+  margin: 0;
+  padding: 10px;  
 }
 
-.font-yellow {
-  color: #FFEE00;
+.fitted-box a {
+  color: #787878;
+  font-size: 12px;
+  font-weight: bold;
+  line-height: 100%;
+  margin: 0;
+  padding: 10px;
 }
 
-.font-orange {
-  color: #F89406;
+.fitted-box a:hover {
+  text-decoration: none;
 }
 
-.font-red {
-  color: #DA4F49;
+.fitted-box ul {
+  min-height: 25px;
+  margin: 3px 15px;
+  font-size: 13px;
 }
 
-.font-grey {
-  color: #505050;
+.fitted-box li {
+  display: inline;
+  list-style-type: none;
+  padding-right: 20px;
+  color: #777777;
 }
 
-.font-lightgrey {
-  color: #EBEBEB;
+.fitted-box .num {
+  color: #333333;
+  font-weight: bold;
 }
 
-.font-darkgrey {
-  color: #535456;
+.fitted-box .progress {
+  margin: 0 5px;
+  height: 25px;
+  width: 99%;
 }
 
-.font-blue {
-  color: #3A87AD;
+.fitted-bar {
+  font-size: 12px;
+  padding: 10px 0;
+  background: #FFFFFF;
+  border-bottom: 1px solid #DDDDDD;
+  height: 80px;
+}
+
+.fitted-summary {}
+
+.fitted-summary li {
+  font-size: 12px;
+  color: #999999;
+  -moz-box-sizing: border-box;
+  display: table-cell;
+  list-style-type: none;
+  margin: 0;
 }
 
 /*  Special Shinken Buttons
     ------------------------------------------------------- */
-
 .btn-spezial {
   min-height: 15px !important;
   line-height: 17px;
 }
+
+/*  Special Shinken snap.js & BS3 (modal) workaround
+    ------------------------------------------------------- */
+.modal-backdrop {
+  z-index: 0 !important;
+}
+
 
 /*  Special Shinken styles
     ------------------------------------------------------- */
@@ -94,6 +187,10 @@ html, body {height: 95.5%;}
 }
 .no-leftpadding {
 	padding-left: 0;
+}
+
+.no-rightpadding {
+  padding-right: 0;
 }
 
 .leftpadding1 {
@@ -132,7 +229,7 @@ html, body {height: 95.5%;}
 }
 
 .topmmargin1 {
-  margin-top: 5px;
+  margin-top: 7px;
 }
 
 .topmmargin2 {
@@ -398,7 +495,6 @@ a.disabled-link:hover {
 .row-fluid .offset1 {
   margin-left: 3%;
 }
-
 
 
 /* With the SORTER javascript plugin */
