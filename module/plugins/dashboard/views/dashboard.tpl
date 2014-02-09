@@ -18,7 +18,7 @@
 %end
 
 <div class="row">
-  <div id="" class="col-sm-10">
+  <div class="col-sm-10 topmmargin2">
     <div class="col-sm-2">
       %if app:
       %service_state = app.datamgr.get_per_hosts_state()
