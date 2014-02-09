@@ -121,7 +121,7 @@
 	</script>
 
 	%if print_footer:
-	%include footer_element
+		%include footer_element
 	%end
 	<!-- The modal div that will be shown when we want, and after put in it the data we want -->
 	<div class="modal fade" id="modal"></div>

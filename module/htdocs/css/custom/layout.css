@@ -180,6 +180,9 @@ body {
 
 /*  Special Shinken styles
     ------------------------------------------------------- */
+
+.cursor { cursor:pointer; }
+
 .min-height {
   min-height: 600px;
 }
