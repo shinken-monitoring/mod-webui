@@ -18,7 +18,64 @@
 %end
 
 <div class="row">
-  <div id="loading" class="pull-left"> <img src='/static/images/spinner.gif'> Loading widgets</div>
+  <div id="" class="col-sm-10">
+    <div class="col-sm-2">
+      %if app:
+      %service_state = app.datamgr.get_per_hosts_state()
+      %if service_state <= 0:
+      <span class="dash-big critical">{{app.datamgr.get_per_hosts_state()}}%</span>
+      %elif service_state <= 33:
+      <span class="dash-big critical">{{app.datamgr.get_per_hosts_state()}}%</span>
+      %elif service_state <= 66:
+      <span class="dash-big warning">{{app.datamgr.get_per_hosts_state()}}%</span>
+      %elif service_state <= 100:
+      <span class="dash-big ok">{{app.datamgr.get_per_hosts_state()}}%</span>
+      %end
+      %end
+      <span>Hosts UP</span>
+    </div>
+    <div class="col-sm-2">
+      %if app:
+      %service_state = app.datamgr.get_per_service_state()
+      %if service_state <= 0:
+      <span class="dash-big critical">{{app.datamgr.get_per_service_state()}}%</span>
+      %elif service_state <= 33:
+      <span class="dash-big critical">{{app.datamgr.get_per_service_state()}}%</span>
+      %elif service_state <= 66:
+      <span class="dash-big warning">{{app.datamgr.get_per_service_state()}}%</span>
+      %elif service_state <= 100:
+      <span class="dash-big ok">{{app.datamgr.get_per_service_state()}}%</span>
+      %end
+      %end
+      <span>Services UP</span>
+    </div>
+    <div class="col-sm-2">
+      %if app:
+      %overall_itproblem = app.datamgr.get_overall_it_state()
+      %if overall_itproblem == 0:
+      <span class="dash-big ok">OK!</span>
+      %elif overall_itproblem == 1:
+      <span class="dash-big warning">{{app.datamgr.get_nb_all_problems(app.get_user_auth())}}</span>
+      %elif overall_itproblem == 2:
+      <span class="dash-big critical">{{app.datamgr.get_nb_all_problems(app.get_user_auth())}}</span>
+      %end
+      %end
+      <span>Problems</span>
+    </div>
+    <div class="col-sm-2">
+      %if app:
+      %overall_state = app.datamgr.get_overall_state()
+      %if overall_state == 0:
+      <span class="dash-big critical">OK!</span>
+      %elif overall_state == 2:
+      <span class="dash-big critical">{{app.datamgr.get_len_overall_state()}}</span>
+      %elif overall_state == 1:
+      <span class="dash-big critical">{{app.datamgr.get_len_overall_state()}}</span>
+      %end
+      %end
+      <span>Impacts</span>
+    </div>
+  </div>
   %# If we got no widget, we should put the button at the center fo the screen
   %small_show_panel_s = ''
   %if len(widgets) == 0:
