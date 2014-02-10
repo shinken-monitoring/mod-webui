@@ -1,4 +1,4 @@
-%rebase layout globals(), js=['dashboard/js/widgets.js', 'dashboard/js/jquery.easywidgets.js'], css=['dashboard/css/widget.css', 'dashboard/css/dashboard.css'], title='Dashboard', menu_part='/dashboard', refresh=True
+%rebase layout globals(), js=['dashboard/js/widgets.js', 'dashboard/js/jquery.easywidgets.js'], css=['dashboard/css/dashboard.css'], title='Dashboard', menu_part='/dashboard', refresh=True
 
 %from shinken.bin import VERSION
 %helper = app.helper
@@ -90,10 +90,7 @@
   </span>
 </div>
 
-<script >$(function(){
-  $(".slidelink").pageslide({ direction: "left", modal: true});
-});
-</script>
+
 
 <script>
   // Now load all widgets
