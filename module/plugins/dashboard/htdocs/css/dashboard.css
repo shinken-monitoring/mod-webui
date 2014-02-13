@@ -68,7 +68,7 @@
  the classes names using the plugin settings. But you can
  use directly the default classes names, this names. */
 
- .widget-place {
+.widget-place {
     margin: 0;
     padding: 0;
     float: left;
@@ -91,7 +91,7 @@
     border: #000 dashed 1px;
     color: #000;
     margin: 1em;
-    background-color: #F1F2F4;
+    background-color: #FAFAFA;
 }
 
 .widget {
@@ -105,19 +105,19 @@
 .widget-header {
     padding: 0.2em 0.6em;
 
-    color: #333333;
+    color: #505050;
     background-color: #D9DCDF;
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#F1F2F4), to(#D9DCDF)); /* Saf4+, Chrome */
-    background-image: -webkit-linear-gradient(top, #F1F2F4, #D9DCDF); /* Chrome 10+, Saf5.1+, iOS 5+ */
-    background-image:    -moz-linear-gradient(top, #F1F2F4, #D9DCDF); /* FF3.6 */
-    background-image:     -ms-linear-gradient(top, #F1F2F4, #D9DCDF); /* IE10 */
-    background-image:      -o-linear-gradient(top, #F1F2F4, #D9DCDF); /* Opera 11.10+ */
-    background-image:         linear-gradient(top, #F1F2F4, #D9DCDF);
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorStr='#F1F2F4', EndColorStr='#D9DCDF'); /* IE6-IE9 */
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#FAFAFA), to(#EAEAEA)); /* Saf4+, Chrome */
+    background-image: -webkit-linear-gradient(top, #FAFAFA, #EAEAEA); /* Chrome 10+, Saf5.1+, iOS 5+ */
+    background-image:    -moz-linear-gradient(top, #FAFAFA, #EAEAEA); /* FF3.6 */
+    background-image:     -ms-linear-gradient(top, #FAFAFA, #EAEAEA); /* IE10 */
+    background-image:      -o-linear-gradient(top, #FAFAFA, #EAEAEA); /* Opera 11.10+ */
+    background-image:         linear-gradient(top, #FAFAFA, #EAEAEA);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorStr='#FAFAFA', EndColorStr='#EAEAEA'); /* IE6-IE9 */
 
-    border-bottom: solid 1px #99A0A5;
-    box-shadow: 0 1px 0 #FFFFFF inset;
-    text-shadow: 0 1px 1px #FFFFFF;
+    border-bottom: solid 1px #EAEAEA;
+/*    box-shadow: 0 1px 0 #FFFFFF inset;
+    text-shadow: 0 1px 1px #FFFFFF;*/
 }
 
 .widget-editbox {
