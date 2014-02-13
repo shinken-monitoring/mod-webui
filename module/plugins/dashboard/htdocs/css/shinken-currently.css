@@ -40,6 +40,10 @@ hr { /* Yes this is a workaround*/
 	display: none;
 }
 
+#content {
+  background: #232426 !important;
+}
+
 .hell {
 	background-color: #343434;
 	border-bottom-color: #2C2C2C solid 2px;

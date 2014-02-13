@@ -26,7 +26,7 @@
             maxPosition: 200,
             minPosition: -200,
             tapToClose: true,
-            touchToDrag: true,
+            touchToDrag: false,
             slideIntent: 40, // degrees
             minDragDistance: 5
         },
