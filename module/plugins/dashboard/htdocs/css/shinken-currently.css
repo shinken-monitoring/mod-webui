@@ -23,6 +23,8 @@
 *
 **/
 
+/*  Currently basics
+    ------------------------------------------------------- */
 body {
 	background: #232426 !important;
 	padding-top: 0px !important;
@@ -44,6 +46,8 @@ hr { /* Yes this is a workaround*/
   background: #232426 !important;
 }
 
+/*  
+    ------------------------------------------------------- */
 .hell {
 	background-color: #343434;
 	border-bottom-color: #2C2C2C solid 2px;
@@ -60,7 +64,9 @@ hr { /* Yes this is a workaround*/
 	vertical-align: middle;
 }
 
-#footer p{
+/*  Elements
+    ------------------------------------------------------- */
+#footer p {
 	text-align: right;
 	font-size: 1.5em;
 }
