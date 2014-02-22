@@ -45,7 +45,7 @@
 <link href="/static/css/elements/pulse.css" rel="stylesheet">
 <!-- <![ENDIF]-->
 
-<!-- Warnign, this version of datepicker came from http://dl.dropbox.com/u/143355/datepicker/datepicker.html -->
+<!-- Warning, this version of datepicker came from http://dl.dropbox.com/u/143355/datepicker/datepicker.html -->
 <link href="/static/css/custom/datepicker.css" rel="stylesheet">
 
 <!-- Canvas and gauge ones -->
@@ -66,9 +66,9 @@
 	<script src="/static/js/demo.js"></script>
 	<script src="/static/js/bootstrap.js"></script>
 	<script src="/static/js/jquery.pageslide.js"></script>
-	<!-- Warnign, this version of datepicker came from http://dl.dropbox.com/u/143355/datepicker/datepicker.html -->
+	<!-- Warning, this version of datepicker came from http://dl.dropbox.com/u/143355/datepicker/datepicker.html -->
 	<script src="/static/js/bootstrap-datepicker.js"></script>
-	<!-- Warnign, this version of typeahead came from https://gist.github.com/1866577 -->
+	<!-- Warning, this version of typeahead came from https://gist.github.com/1866577 -->
 	<script src="/static/js/bootstrap-typeahead.js"></script>
 	<script src="/static/js/jquery.meow.js"></script>
 	<script src="/static/js/jquery-jsonp-2.2.1.min.js"></script>
