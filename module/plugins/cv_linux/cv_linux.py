@@ -138,7 +138,7 @@ def get_page(hname):
     h = app.datamgr.get_host(hname)
 
     all_perfs = {"swap": 0, "all_disks": [], "cpu": 0, "memory": 0}
-    all_states = {"disks": "UNKNOWN", "global": "UNKNOWN", "swap": "UNKNON", "memory": "UNKNOWN", "cpu": "UNKNOWN"}
+    all_states = {"disks": "UNKNOWN", "global": "UNKNOWN", "swap": "UNKNOWN", "memory": "UNKNOWN", "cpu": "UNKNOWN"}
 
     print "\n"*5, "Find host?", h
     if h:
