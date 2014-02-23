@@ -74,6 +74,7 @@
 
 <div class="widget movable collapsable removable {{editable}} closeconfirm {{collapsed_s}}" id="{{wid}}">
   <div class="widget-header">
+    <span class="icon"><i class="icon-bug"></i> </span>
     <strong>{{title}}</strong>
   </div>
   <div class="widget-editbox">

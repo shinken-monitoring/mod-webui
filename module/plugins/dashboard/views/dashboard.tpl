@@ -108,6 +108,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
+        <span class="icon"><i class="fa fa-signal"></i></span>
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
         <h4 class="modal-title">Widgets available</h4>
       </div>
@@ -116,7 +117,7 @@
         <div class="row">
           %for w in app.get_widgets_for('dashboard'):
           <div class='widget_desc' style="position: relative;">
-            <div class='row'>
+            <div class="row">
               <span class="col-sm-4" style="margin-top:10px;">
                 <img class="img-rounded" style="width:64px;height:64px" src="{{w['widget_picture']}}" id="widget_desc_{{w['widget_name']}}"/>
               </span>
