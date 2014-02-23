@@ -297,7 +297,7 @@ $(document).ready(function(){
 	}); 
 	</script>
 
-	<!-- Le Anfang -->
+	<!-- Start -->
 	<div class="row">
 		<!-- Start Host/Services-->
 		<div class="tabbable verticaltabs-container col-sm-4 col-lg-3"> <!-- Wrap the Bootstrap Tabs/Pills in this container to position them vertically -->
@@ -384,7 +384,7 @@ $(document).ready(function(){
 					});
 					</script>
 
-					<h4>Additonal Informations</h4>
+					<h4>Additional Informations</h4>
 					<table class="table tabletop">
 						<tbody class="tabletop">
 						<tr class="tabletop">
@@ -630,7 +630,7 @@ $(document).ready(function(){
 		      		<div>
 		      			<ul class="nav nav-pills">
 		      				<li class="active"><a class='{{global_disabled}}' href="/forms/downtime/{{helper.get_uri_name(elt)}}" data-toggle="modal" data-target="#modal"><i class="icon-plus"></i> Add a downtime</a></li>
-		      				<li><a class='{{global_disabled}}' href="/forms/downtime_delete/{{helper.get_uri_name(elt)}}" data-toggle="modal" data-target="#modal"><i class="icon-minus"></i> Delete all comments</a></li>
+		      				<li><a class='{{global_disabled}}' href="/forms/downtime_delete/{{helper.get_uri_name(elt)}}" data-toggle="modal" data-target="#modal"><i class="icon-minus"></i> Delete all downtimes</a></li>
 		      			</ul>
 		      		</div>
 		      		<div class="clear"></div>
@@ -832,8 +832,7 @@ $(document).ready(function(){
 		</div>
 		<!-- Detail info box end -->
 	</div>
-	<!-- Le Ende -->
-	<!--</div>-->
+	<!-- End ... -->
 </div>
 
 %#End of the Host Exist or not case
