@@ -13,64 +13,65 @@ $(document).ready(function(){
 </script>
 
 <div class="page-header">
-  <h1>Shinken <small>v {{VERSION}}</small></h1>
+	<h1>Shinken <small>v {{VERSION}}</small></h1>
 </div>
 
 <div class="row">
-  <div class="col-xs-6 col-sm-8 col-md-8">
-    <noscript>
-      <div class="row alert">
-        <button type="button" class="close" data-dismiss="alert">×</button>
-        <div class="font-red"><strong>Warning!</strong> Please enable Java Script in your browser and retry.</div>
-      </div>
-    </noscript>
+	<div class="col-xs-6 col-sm-8 col-md-8">
+		<noscript>
+			<div class="row alert">
+				<button type="button" class="close" data-dismiss="alert">×</button>
+				<div class="font-red"><strong>Warning!</strong> Please enable Java Script in your browser and retry.</div>
+			</div>
+		</noscript>
 
 
-    %if login_text:
-    <p class="lead">{{login_text}}</p>
-    %end
+		%if login_text:
+		<p class="lead">{{login_text}}</p>
+		%end
 
-    %if error:
-    <div class="alert alert-error">
-      <strong>Warning!</strong>
-      {{error}}
-    </div>
-    %end
+		<img src="/static/img/logo.png" />
+		<!-- <img src="/static/img/mascot.png" /> -->
+		%if error:
+		<div class="alert alert-error">
+			<strong>Warning!</strong>
+			{{error}}
+		</div>
+		%end
 
-    <!-- <div>
-      <h2>Maintance News</h2>
-        <p>Todo import script?</p>
-    </div> -->
+		<!-- <div>
+		<h2>Maintance News</h2>
+		<p>Todo import script?</p>
+		</div> -->
+	</div>
 
-  </div>
-
-  <div class="col-xs-6 col-sm-4 col-md-4">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h4 class="panel-title">Login</h4>
-      </div>
-      <div class="panel-body">
-        <form method="post" id="loginform" role="form" action="/user/auth">
-          <fieldset>
-            <div class="form-group">
-              <label>Name</label>
-              <div>
-                <input class="form-control" name="login" type="text">
-              </div>
-            </div>
-            <div class="form-group">
-              <label>Password</label>
-              <div>
-                <input id="password" class="form-control" name="password" type="password" onkeypress="capsCheck(event,this);">
-              </div>         
-            </div>
-            <div class="form-group pull-right">
-              <button class=" btn btn-success" type="submit" href="javascript: submitform()"><i class="icon-signin"></i> Login</button>
-            </div>
-          </fieldset>
-        </form>
-      </div>
-    </div>
-  </div>
+	<div class="col-xs-6 col-sm-4 col-md-4">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h4 class="panel-title">Login</h4>
+			</div>
+			<div class="panel-body">
+				<form method="post" id="loginform" role="form" action="/user/auth">
+					<fieldset>
+						<div class="form-group">
+							<label>Name</label>
+							<div>
+								<input class="form-control" name="login" type="text">
+							</div>
+						</div>
+						<div class="form-group">
+							<label>Password</label>
+							<div>
+								<input id="password" class="form-control" name="password" type="password" onkeypress="capsCheck(event,this);">
+							</div>
+						</div>
+						<div class="form-group pull-right">
+							<button class=" btn btn-success" type="submit" href="javascript: submitform()"><i class="icon-signin"></i> Login</button>
+						</div>
+					</fieldset>
+				</form>
+			</div>
+		</div>
+	</div>
 </div>
 

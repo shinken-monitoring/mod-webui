@@ -1,5 +1,7 @@
 %rebase layout title='Shinken UI login', print_header=False, js=['login/js/pass_shark.js']
 
+%from shinken.bin import VERSION
+
 <script type="text/javascript">
 	function submitform() {
 		document.forms["loginform"].submit();
@@ -9,45 +11,55 @@
 	 Will be link in the password field
 	*/
 	function submitenter(myfield,e) {
-	  var keycode;
-	  if (window.event) keycode = window.event.keyCode;
-	  else if (e) keycode = e.which;
-	  else return true;
+		var keycode;
+		if (window.event) keycode = window.event.keyCode;
+		else if (e) keycode = e.which;
+		else return true;
 
-	  if (keycode == 13) {
-	    submitform();
-	    return false;
-	  } else
-	   return true;
+		if (keycode == 13) {
+			submitform();
+			return false;
+		} else
+			return true;
 	}
 </script>
 
-<div>
+<div class="page-header">
+	<h1>Shinken <small>v {{VERSION}}</small></h1>
+</div>
 
-%if login_text:
-<p><span id="login-text"> {{login_text}}</span></p>
-%end
-	<div id="login-form" class="grid_7">
-	%if error:
-		<span id="login-error"> {{error}}</span>
+<div class="row">
+
+	%if login_text:
+	<p class="lead">{{login_text}}</p>
 	%end
-		<form method="post" id="loginform" action="/user/auth">
-			<div class="text-field">
-			  <label for="login">Login:</label>
-				<input name="login" type="text" tabindex="1" size="30">
-			</div>
-			<div class="text-field">
-				<label for="password">Password:</label>
-				<input id="password" name="password" type="password" tabindex="2" size="30" onKeyPress="return submitenter(this,event)">
-			</div>
-			<input type="hidden" value="0" name="remember_me">
-				<div class="check-field">
-					<input type="checkbox" id="remember_me" tabindex="3" name="remember_me"> <label for="remember_me">Don't forget me</label>
-				</div>
-				<div class="buttons">
-					<a tabindex="4" class="button" href="javascript: submitform()">Login</a>
-				</div>
-			<input type="hidden" value="1" name="is_mobile">
-		</form>
+	<img src="/static/img/logo_small.png" />
+	<!-- <img src="/static/img/mascot.png" /> -->
+	
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<h4 class="panel-title">Login</h4>
+		</div>
+		<div class="panel-body">
+			<form method="post" id="loginform" role="form" action="/user/auth">
+				<fieldset>
+					<div class="form-group">
+						<label>Name</label>
+						<div>
+							<input class="form-control" name="login" type="text">
+						</div>
+					</div>
+					<div class="form-group">
+						<label>Password</label>
+						<div>
+							<input id="password" class="form-control" name="password" type="password" onkeypress="return submitenter(this,event);">
+						</div>
+					</div>
+					<div class="form-group pull-right">
+						<button class=" btn btn-success" type="submit" href="javascript: submitform()"><i class="icon-signin"></i> Login</button>
+					</div>
+				</fieldset>
+			</form>
+		</div>
 	</div>
 </div>
