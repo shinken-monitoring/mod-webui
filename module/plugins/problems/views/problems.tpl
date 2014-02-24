@@ -3,12 +3,7 @@
 %helper = app.helper
 %datamgr = app.datamgr
 
-%top_right_banner_state = datamgr.get_overall_state()
-
-
-
 %rebase layout globals(), title='All problems', top_right_banner_state=top_right_banner_state, js=['problems/js/img_hovering.js', 'problems/js/accordion.js', 'problems/js/sliding_navigation.js', 'problems/js/filters.js', 'problems/js/bookmarks.js'], css=['problems/css/accordion.css', 'problems/css/pagenavi.css', 'problems/css/perfometer.css', 'problems/css/img_hovering.css', 'problems/css/sliding_navigation.css', 'problems/css/filters.css'], refresh=True, menu_part='/'+page, user=user
-
 
 %# Look for actions if we must show them or not
 %global_disabled = ''
@@ -33,12 +28,9 @@
 </script>
 %end
 
-
-
 <script type="text/javascript">
-	function submitform()
-	{
-	document.forms["search_form"].submit();
+	function submitform() {
+	   document.forms["search_form"].submit();
 	}
 
 	/* Catch the key ENTER and launch the form
@@ -70,7 +62,6 @@
 	             $("ul.typeahead.dropdown-menu").find('li.active').data(obj);
 	         }
 	});
-
 
 	var active_filters = [];
 
@@ -255,7 +246,6 @@ $(function(){
     </div>
 
 </div>
-
 
 <div class='row'>
   <div id="toolbar-ext" class="col-sm-2">
@@ -505,7 +495,6 @@ $(function(){
 	</div> </td>
 	  </tr>
 	</table>
-
 
 	<div class='col-sm-8'>
 	%if len(pb.impacts) > 0:
