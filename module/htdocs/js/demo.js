@@ -22,9 +22,9 @@
 */
 
 var addEvent = function addEvent(element, eventName, func) {
-	if (element.addEventListener) {
+	if (element && element.addEventListener) {
     	return element.addEventListener(eventName, func, false);
-    } else if (element.attachEvent) {
+    } else if (element && element.attachEvent) {
         return element.attachEvent("on" + eventName, func);
     }
 };
