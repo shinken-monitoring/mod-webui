@@ -153,18 +153,26 @@ $(document).ready(function(){
 			<div class="accordion-heading">
 				%if elt_type=='host':
 				<div class="panel-heading fitted-header" data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
-		            <h4 class="panel-title">Overview ({{elt.alias}})</h4>
-		        </div>
+					<h4 class="panel-title">Overview {{elt.host_name}}
+						%if len(elt.display_name) > 0:
+							({{elt.display_name}})
+						%end
+					</h4>
+				</div>
 				%else:
-				<div class="panel-heading fitted-header">
-		            <h4 class="panel-title">Overview</h4>
-		        </div>
+				<div class="panel-heading fitted-header" data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+					<h4 class="panel-title">Overview ({{elt.service_description}}) on {{elt.host.host_name}}
+						%if len(elt.host.display_name) > 0:
+							({{elt.host.display_name}})
+						%end
+					</h4>
+				</div>
 				%end
 			</div>
 			<div id="collapseOne" class="accordion-body collapse">
 				<div class="fitted-bar ">
 					<table class="col-lg-4 leftmargin">
-						%#Alias, apretns and hostgroups are for host only
+						%#Alias, parents and hostgroups are for host only
 						%if elt_type=='host':
 						<tr>
 							<td>Alias:</td>
@@ -190,11 +198,13 @@ $(document).ready(function(){
 							%end
 						</tr>
 						<tr>
-							<td>Members of:</td>
+							<td>Member of:</td>
 							%if len(elt.hostgroups) > 0:
+							<td>
 							%for hg in elt.hostgroups:
-							<td><a href="/group/{{hg.get_name()}}" class="link">{{hg.alias}} ({{hg.get_name()}})</a></td>
+							<a href="/group/{{hg.get_name()}}" class="link">{{hg.alias}} ({{hg.get_name()}})</a>
 							%end
+							</td>
 							%else:
 							<td> No groups </td>
 							%end
@@ -203,10 +213,14 @@ $(document).ready(function(){
 						%else:
 						<tr>
 							<td>Host:</td>
-							<td><a href="/host/{{elt.host.host_name}}" class="link">{{elt.host.host_name}}</a></td>
+							<td><a href="/host/{{elt.host.host_name}}" class="link">{{elt.host.host_name}}
+							%if len(elt.host.display_name) > 0:
+								({{elt.host.display_name}})
+							%end
+							</a></td>
 						</tr>
 						<tr>
-							<td>Members of:</td>
+							<td>Member of:</td>
 							%if len(elt.servicegroups) > 0:
 							<td>{{','.join([sg.get_name() for sg in elt.servicegroups])}}</td>
 							%else:
@@ -254,9 +268,15 @@ $(document).ready(function(){
 	<!-- Switch Start -->
 
 	%# By default all is unabled
-	% chk_state = not_state =  evt_state = flp_state = 'checked=""'
-	%if not (elt.active_checks_enabled|elt.passive_checks_enabled):
-	%chk_state = 'unchecked=""'
+	% chk_freshness = chk_active_state = chk_passive_state = not_state =  evt_state = flp_state = 'checked=""'
+	%if not (elt.check_freshness):
+	%chk_freshness = 'unchecked=""'
+	%end
+	%if not (elt.active_checks_enabled):
+	%chk_active_state = 'unchecked=""'
+	%end
+	%if not (elt.passive_checks_enabled):
+	%chk_passive_state = 'unchecked=""'
 	%end
 	%if not elt.notifications_enabled:
 	%not_state = 'unchecked=""'
@@ -270,7 +290,13 @@ $(document).ready(function(){
 
 	<script type="text/javascript">
 	$(document).ready(function() {
-		$('#btn-checks').iphoneStyle({
+		$('#btn-active-check').iphoneStyle({
+			resizeContainer: false,
+			resizeHandle: false,
+			onChange : function(elt, b){toggle_checks("{{elt.get_full_name()}}", !b);}
+		});
+
+		$('#btn-passive-check').iphoneStyle({
 			resizeContainer: false,
 			resizeHandle: false,
 			onChange : function(elt, b){toggle_checks("{{elt.get_full_name()}}", !b);}
@@ -347,7 +373,7 @@ $(document).ready(function(){
 						</tr>
 					</table>
 					<hr>
-					<div class="truncate">{{elt.output}}</div>
+					<div class="truncate"> <b><i>{{elt.output}} <br/> {{elt.long_output}}</i></b> </div>
 					<hr>
 					<table class="table">
 						<tr>
@@ -405,6 +431,10 @@ $(document).ready(function(){
 							<td class="column2">{{helper.print_date(elt.last_notification)}} (notification {{elt.current_notification_number}})</td>
 						</tr>
 						<tr>
+							<td class="column1"><b>Notification interval</b></td>
+							<td class="column2">{{elt.notification_interval}} mn (period : {{elt.notification_period.timeperiod_name}})</td>
+						</tr>
+						<tr>
 							<td class="column1"><b>Current Attempt</b></td>
 							<td class="column2">{{elt.attempt}}/{{elt.max_check_attempts}} ({{elt.state_type}} state)</td>
 						</tr>
@@ -412,8 +442,10 @@ $(document).ready(function(){
 					</table>
 					<hr>
 					<div>
-						<span><b>Active/passive checks</b></span>
-						<input {{chk_state}} class="iphone" type="checkbox" id='btn-checks'>
+						<span><b>Active checks</b></span>
+						<input {{chk_active_state}} class="iphone" type="checkbox" id='btn-active-check'>
+						<span><b>Passive checks</b></span>
+						<input {{chk_passive_state}} class="iphone" type="checkbox" id='btn-passive-check'>
 						<span><b>Notifications</b></span>
 						<input {{not_state}} class="iphone" type="checkbox" id='btn-not'>
 						<span><b>Event handler</b></span>
@@ -421,24 +453,6 @@ $(document).ready(function(){
 						<span><b>Flap detection</b></span>
 						<input {{flp_state}} class="iphone" type="checkbox" id='btn-flp'>
 					</div>
-					<!-- <table class="table">
-						<tr>
-							<td class="column1"><b>Active/passive checks</b></td>
-							<td><input {{chk_state}} class="iphone" type="checkbox" id='btn-checks'></td>
-						</tr>
-						<tr>		
-							<td class="column1"><b>Notifications</b></td>
-							<td><input {{not_state}} class="iphone" type="checkbox" id='btn-not'></td>
-						</tr>
-						<tr>			
-							<td class="column1"><b>Event handler</b></td>
-							<td><input {{evt_state}} class="iphone" type="checkbox" id='btn-evt'></td>
-						</tr>
-						<tr>
-							<td class="column1"><b>Flap detection</b></td>
-							<td><input {{flp_state}} class="iphone" type="checkbox" id='btn-flp'></td>
-						</tr>
-					</table> -->
 				</div>
 
 				<div class="tab-pane fade" id="commands">
