@@ -6,6 +6,7 @@
 			<h3>Shinken</h3>
 			<ul>
 				<li><a href="/dashboard">Dashboard</a></li>
+				<li><a href="/hostgroups">Host groups</a></li>
 				<li><a href="/impacts">Impacts</a></li>
 				<li><a href="/worldmap">Worldmap</a></li>
 				<li><a href="/wall">Wall</a></li>

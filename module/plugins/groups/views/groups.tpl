@@ -31,10 +31,17 @@ Invalid element name
 		%hPending=hPending+1
 	%end
 %end
-%pctUp=100 * hUp / nHosts
-%pctDown=100 * hDown / nHosts
-%pctUnreachable=100 * hUnreachable / nHosts
-%pctPending=100 * hPending / nHosts
+%if nHosts != 0:
+	%pctUp=100 * hUp / nHosts
+	%pctDown=100 * hDown / nHosts
+	%pctUnreachable=100 * hUnreachable / nHosts
+	%pctPending=100 * hPending / nHosts
+%else:
+	%pctUp=0
+	%pctDown=0
+	%pctUnreachable=0
+	%pctPending=0
+%end
 
 %end
 
