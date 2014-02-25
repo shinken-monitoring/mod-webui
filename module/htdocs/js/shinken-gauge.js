@@ -12,12 +12,13 @@ if (typeof all_donuts === "undefined"){
 }
 
 function DonutChart(canv_id){
-    console.log('creating a donut'+canv_id);
+    // console.log('Creating a donut : '+canv_id);
     this.name = canv_id;
     this.canvas = document.getElementById(canv_id);
     if(!this.canvas){
-	this.valid = false
-	return;
+		console.error('Creating a donut, canvas not found, donut id exists ?');
+		this.valid = false
+		return;
     }
     this.valid = true;
     this.ctx    = this.canvas.getContext('2d')
@@ -74,9 +75,9 @@ function DonutChart(canv_id){
     this.final_pct = $(this.canvas).data('value') / 100;
     this.pct = Math.max(0.05, 0.05);
     this.nb_steps = this.animation_time / this.interval_update;
-    console.log('Will need' + this.nb_steps + 'steps');
+    // console.log('Will need' + this.nb_steps + 'steps');
     this.pct_step = (this.final_pct - this.pct) / this.nb_steps;
-    console.log('pct_step'+this.pct_step);
+    // console.log('pct_step'+this.pct_step);
 
 }
 
@@ -156,15 +157,15 @@ DonutChart.prototype.update = update;
 
 
 function get_donut(name){
-    console.log('get_donut::'+name);
+    // console.log('get_donut : '+name);
     donut = new DonutChart(name);
     if(!donut.valid){
-	return null;
+		return null;
     }
-    console.log("GO");
-    console.log('Go canvas'+donut.canv);
+    // console.log("GO");
+    // console.log('Go canvas'+donut.canv);
     
-    console.log('Init+'+donut.startAngle+' '+donut.endAngle);
+    // console.log('Init : '+donut.startAngle+' '+donut.endAngle);
     
     
     // fist the outter arc
@@ -200,7 +201,7 @@ function get_donut(name){
 
 function register_all_donuts(){
     $('.donut_canvas').each(function(id, elt){
-	console.log('Oh a donut canvas?'+elt.id);
+	// console.log('Oh a donut canvas : '+elt.id);
 	d = get_donut(elt.id);
 	if(d != null){
 	    all_donuts.push(d);
@@ -239,7 +240,7 @@ function draw_cylinder(ctx, value){
 
     var value_offset = 90 - Math.floor(value*0.8);
 
-    console.log('Value offset '+value_offset);
+    // console.log('Value offset '+value_offset);
 
     // Draw the side bars
     ctx.fillStyle=back_color;
@@ -285,7 +286,7 @@ function draw_cylinder(ctx, value){
 
 function register_all_cylinders(){
     $('.cylinder_canvas').each(function(id, elt){
-        console.log('Oh a cylinder canvas?'+elt.id);
+        // console.log('Oh a cylinder canvas?'+elt.id);
         //var canvas = document.getElementById('stage');
         var ctx = elt.getContext('2d');
         var value = $(elt).data('value');

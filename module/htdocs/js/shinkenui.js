@@ -38,7 +38,7 @@ if(!Array.indexOf){
 }
 
 /**
- * Description: Add a remvoe function to the lists....
+ * Description: Add a remove function to the lists....
  *  WTF javascript don't have this? Please guys, at least good
  *  list and dict functions.... you want us to manage memory soon?
  * Example: lst.remove(value)

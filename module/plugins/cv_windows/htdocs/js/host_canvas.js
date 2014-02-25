@@ -49,7 +49,7 @@ $(function(){
 		var newHeight = ($('#donutWindowsCPU').width() - 20) * f;
         ctx.drawImage(img_status, 50, 40, $('#donutWindowsCPU').width() - 40, ($('#donutWindowsCPU').width() - 40) * f);
     };
-    img_status.src = '/static/cv_linux/img/'+$('#host_canvas').data('host-state-image');
+    img_status.src = '/static/cv_windows/img/'+$('#host_canvas').data('host-state-image');
     
     //////////////// Lines part
     // Now the line from the left part to down, in 3 parts
@@ -72,7 +72,7 @@ $(function(){
 		img_network.onload=function(){
 			ctx.drawImage(img_network, 75, linePos-30, img_size, img_size);
 		};
-		img_network.src = '/static/cv_linux/img/'+$('#host_canvas').data('host-network-image');
+		img_network.src = '/static/cv_windows/img/'+$('#host_canvas').data('host-network-image');
 		
 		var ip = $('#host_canvas').data('host-network-address');
 		ctx.font      = "bold 10px Verdana";
@@ -94,7 +94,7 @@ $(function(){
 		img_printer.onload=function(){
 			ctx.drawImage(img_printer, 75, linePos-30, img_size, img_size);
 		};
-		img_printer.src = '/static/cv_linux/img/'+$('#host_canvas').data('host-printer-image');
+		img_printer.src = '/static/cv_windows/img/'+$('#host_canvas').data('host-printer-image');
 	}
 
 
@@ -128,7 +128,7 @@ $(function(){
 		}
     };
 	// An img for disks image background ...
-    img_disks.src = '/static/cv_linux/img/bar_horizontal.png';
+    img_disks.src = '/static/cv_windows/img/bar_horizontal.png';
 
     // And a small vertical line for disks
     draw_line(ctx, 150, 180, 150, 220, line_color, 1, 0.5);
@@ -150,14 +150,14 @@ $(function(){
 	
     // Draw the services.
 	var sources = {
-		ok:				'/static/cv_linux/img/service_ok.png',
-		warning:		'/static/cv_linux/img/service_warning.png',
-		critical:		'/static/cv_linux/img/service_critical.png',
-		unknown:		'/static/cv_linux/img/service_unknown.png',
-		pending:		'/static/cv_linux/img/service_pending.png',
-		downtime:		'/static/cv_linux/img/service_downtime.png',
-		flapping:		'/static/cv_linux/img/service_flapping.png',
-		uninstalled:	'/static/cv_linux/img/service_uninstalled.png'
+		ok:				'/static/cv_windows/img/service_ok.png',
+		warning:		'/static/cv_windows/img/service_warning.png',
+		critical:		'/static/cv_windows/img/service_critical.png',
+		unknown:		'/static/cv_windows/img/service_unknown.png',
+		pending:		'/static/cv_windows/img/service_pending.png',
+		downtime:		'/static/cv_windows/img/service_downtime.png',
+		flapping:		'/static/cv_windows/img/service_flapping.png',
+		uninstalled:	'/static/cv_windows/img/service_uninstalled.png'
 	};
 	function loadImages(sources, callback) {
 		var images = {};

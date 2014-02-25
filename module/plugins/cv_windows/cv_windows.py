@@ -34,7 +34,9 @@ def _findServiceByName(host, service):
             return s
     return None
     
+
 def get_disks(h):
+# Windows :	'C:\ %'=60%;80;90 'C:\'=245.331G;322.105;362.369;0;402.632 'D:\ %'=17%;80;90 'D:\'=5.243G;23.437;26.367;0;29.297 'E:\ %'=0%;80;90 'E:\'=13.633M;1628;1831.5;0;2035 'G:\ %'=84%;80;90 'G:\'=18.406G;17.416;19.593;0;21.77
     all_disks = []
     s = _findServiceByName(h, 'disk')
     if not s:
@@ -50,57 +52,60 @@ def get_disks(h):
         if not m.name or m.value is None or m.max is None or m.max == 0:
             continue
         # Skip device we don't care about
-        if m.name == '/dev' or m.name.startswith('/sys/'):
+        if m.name == 'C:\ %' or m.name.endswith('%'):
             continue
 
         pct = 100*float(m.value)/m.max
         pct = int(pct)
         print m.value, m.max, pct
-
+        
         all_disks.append((m.name, pct))
 
     return disks_state,all_disks
 
 
 def get_memory(h):
-
-    mem_state = swap_state = 'UNKNOWN'
-
+# Windows :	'physical memory %'=51%;80;90 'physical memory'=6.165G;9.54599;10.74;0;11.933 'virtual memory %'=0%;80;90 'virtual memory'=365.539M;6710886.3;7549747.087;0;8388607.875 'paged bytes %'=29%;80;90 'paged bytes'=7.04399G;19.092;21.478;0;23.864 'p
+    mem_state = virtual_state = paged_state = 'UNKNOWN'
+    
     s = _findServiceByName(h, 'memory')
     if not s:
-        return (mem_state,swap_state,0,0)
+        return (mem_state,virtual_state,paged_state,0,0,0)
     print "Service found", s.get_full_name()
 
-    mem_state = swap_state = s.state
+    mem_state = virtual_state = paged_state = s.state
     # Now grep perfdata in it
     p = PerfDatas(s.perf_data)
-    print "PERFDATA", p, p.__dict__
-    mem = 0
-    swap = 0
-
-    if 'ram_used' in p:
-        m = p['ram_used']
-        # Maybe it's an invalid metric?
+    # print "PERFDATA", p, p.__dict__
+    mem = virtual = paged = 0
+    
+    if 'physical memory' in p:
+        m = p['physical memory']
         if m.name and m.value is not None and m.max is not None and m.max != 0:
-            # Classic pct compute
             pct = 100*float(m.value)/m.max
             mem = int(pct)
-            print "Mem", m.value, m.max, pct
+            # print "Mem", m.value, m.max, pct
 
-    if 'swap_used' in p:
-        m = p['swap_used']
-        # Maybe it's an invalid metric?
+    if 'virtual memory' in p:
+        m = p['virtual memory']
         if m.name and m.value is not None and m.max is not None and m.max != 0:
-            # Classic pct compute
             pct = 100*float(m.value)/m.max
-            swap = int(pct)
-            print "Swap", m.value, m.max, pct
+            virtual = int(pct)
+            # print "Virtual", m.value, m.max, pct
 
-    return mem_state,swap_state,mem,swap
+    if 'paged bytes' in p:
+        m = p['paged bytes']
+        if m.name and m.value is not None and m.max is not None and m.max != 0:
+            pct = 100*float(m.value)/m.max
+            paged = int(pct)
+            # print "Paged", m.value, m.max, pct
 
+    return mem_state,virtual_state,paged_state,mem,virtual,paged
 
 
 def get_cpu(h):
+# Windows :
+	# cpu : 	'5m'=15%;80;90 '1m'=15%;80;90 '30s'=16%;80;90
     cpu_state = 'UNKNOWN'
     s = _findServiceByName(h, 'cpu')
     if not s:
@@ -112,10 +117,9 @@ def get_cpu(h):
     p = PerfDatas(s.perf_data)
     print "PERFDATA", p, p.__dict__
     cpu = 0
-
-    if 'cpu_prct_used' in p:
-        m = p['cpu_prct_used']
-        # Maybe it's an invalid metric?
+    
+    if '30s' in p:
+        m = p['30s']
         if m.name and m.value is not None:
             cpu = m.value
             print "Cpu", m.value
@@ -124,26 +128,61 @@ def get_cpu(h):
 
 
 def get_printer(h):
+# Windows :
+	# printer : 	'Cut Pages'=8[c];;;; 'Retracted Pages'=8[c];;;;
     printer_state = 'UNKNOWN'
     s = _findServiceByName(h, 'printer')
     if not s:
         return 'UNKNOWN',0,0
     print "Service found", s.get_full_name()
+    cut = retracted = 0
+
+    printer_state = s.state
+    # Now perfdata
+    p = PerfDatas(s.perf_data)
+    # p = PerfDatas("'CutPages'=12[c];;;; 'RetractedPages'=8[c];;;;")
+    print "PERFDATA", p, p.__dict__
+    
+    if 'Cut Pages' in p:
+        m = p['Cut Pages']
+        if m.name and m.value is not None:
+            cut = m.value
+    if 'Retracted Pages' in p:
+        m = p['Retracted Pages']
+        if m.name and m.value is not None:
+            retracted = m.value
 
     return printer_state, cut, retracted
-    
-    
+
+
 def get_network(h):
     all_nics = []
     network_state = 'UNKNOWN'
     s = _findServiceByName(h, 'network')
     if not s:
-        return 'UNKNOWN',0,0
+        return 'UNKNOWN',all_nics
     print "Service found", s.get_full_name()
 
+    # Host perfdata
+    p = PerfDatas(h.perf_data)
+    print "PERFDATA", p, p.__dict__
+    # all_nics.append(('perfdata', h.perf_data))
+    
+    if 'rta' in p:
+        all_nics.append(('rta', p['rta'].value))
+
+    if 'pl' in p:
+        all_nics.append(('pl', p['pl'].value))
+        if p['pl'].value > 10:
+            network_state = 'WARNING'
+        elif p['pl'].value > 50:
+            network_state = 'CRITICAL'
+        else:
+            network_state = 'OK'
+
     return network_state, all_nics
-    
-    
+
+
 def get_packages(h):
     all_packages = []
     packages_state = {}
@@ -183,16 +222,18 @@ def get_page(hname):
     all_states = {"global": "UNKNOWN", "cpu": "UNKNOWN", "disks": "UNKNOWN", "memory": "UNKNOWN", "virtual": "UNKNOWN", "paged": "UNKNOWN", "printer": "UNKNOWN"}
 
     if h:
-        # Set the host state firt
+        # Set the host state first
         all_states["global"] = h.state
         # First look at disks
         all_states["disks"], all_perfs['all_disks'] = get_disks(h)
         # Then memory
-        mem_state, swap_state, mem,swap = get_memory(h)
+        mem_state, virtual_state, paged_state, mem, virtual, paged = get_memory(h)
         all_perfs["memory"] = mem
-        all_perfs["swap"] = swap
-        all_states['swap'] = swap_state
+        all_perfs["virtual"] = virtual
+        all_perfs["paged"] = paged
         all_states['memory'] = mem_state
+        all_states['virtual'] = virtual_state
+        all_states['paged'] = paged_state
         # And CPU too
         all_states['cpu'], all_perfs['cpu'] = get_cpu(h)
         # Then printer
@@ -213,11 +254,9 @@ def get_page(hname):
         
 
     print "ALL PERFS", all_perfs
-
+    
     return {'app': app, 'elt': h, 'all_perfs':all_perfs, 'all_states':all_states}
 
 
-
-
 # Void plugin
-pages = {get_page: {'routes': ['/cv/linux/:hname'], 'view': 'cv_linux', 'static': True}}
+pages = {get_page: {'routes': ['/cv/windows/:hname'], 'view': 'cv_windows', 'static': True}}

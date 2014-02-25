@@ -94,6 +94,7 @@ $(document).ready(function(){
   %#  "Content Container Start"
 
   %#app.insert_template('cv_linux', globals())
+  %#app.insert_template('cv_windows', globals())
 
   <div id="content_container">
   	<div class="row">
@@ -372,8 +373,17 @@ $(document).ready(function(){
 							</td>
 						</tr>
 					</table>
+					<!--
 					<hr>
-					<div class="truncate"> <b><i>{{elt.output}} <br/> {{elt.long_output}}</i></b> </div>
+					<div class="truncate">{{elt.check_command.get_name()}}</div>
+					-->
+					<hr>
+					<div class="truncate"> <b><i>{{elt.output}}
+						%if elt.long_output:
+							<br/> {{elt.long_output}}
+						%end
+						</i></b>
+					</div>
 					<hr>
 					<table class="table">
 						<tr>
@@ -524,9 +534,9 @@ $(document).ready(function(){
 
 				<!-- Tab Summary Start-->
 				<div class="tab-pane {{_go_active}}" id="impacts">
-		      <!-- Start of the Whole info pack. We got a row of 2 thing : 
-		      left is information, right is related elements -->
-		      <div class="row-fluid">
+				<!-- Start of the Whole info pack. We got a row of 2 thing : 
+				left is information, right is related elements -->
+				<div class="row-fluid">
 				<!-- So now it's time for the right part, replaceted elements -->
 				<div class="span12">
 					<!-- Show our father dependencies if we got some -->
@@ -552,13 +562,12 @@ $(document).ready(function(){
 					</div>
 		      		%end
 		      		<div class="host-services span11">
-
-				  <div class='pull-left'>
-				    %_html_id = helper.get_html_id(elt)
-				    {{!helper.print_aggregation_tree(helper.get_host_service_aggregation_tree(elt), _html_id)}}
-				  </div>
-				  <div>&nbsp;</div>
-		      			</div>
+						<div class='pull-left'>
+							%_html_id = helper.get_html_id(elt)
+							{{!helper.print_aggregation_tree(helper.get_host_service_aggregation_tree(elt), _html_id)}}
+						</div>
+						<div>&nbsp;</div>
+		      		</div>
 		      			%end #of the only host part
 
 		      			<!-- If we are a root problem and got real impacts, show them! -->

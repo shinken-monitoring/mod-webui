@@ -1,4 +1,4 @@
-#host_linux_bloc{
+#host_windows_bloc{
     position:absolute;
 	background-color: lightgrey;
 }
@@ -35,13 +35,13 @@
 	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
 }
 
-#linux_memory_cylinders {
+#windows_memory_cylinders {
     position: absolute;
     left: 220px;
     top: 210px;
 }
 
-#cylinder_linux_mem{
+#cylinder_windows_mem{
     position: absolute;
     left:     30px;
     top:      10px;
@@ -75,19 +75,20 @@
     left:     32px;
 }
 
-#cylinder_linux_swap{
+#cylinder_windows_paged{
     position: absolute;
     left:     65px;
     top:      10px;
 }
 
-.swap_label{
+.paged_label{
     top:      0px;
     left:     67px;
 }
 
-.swap_value{
+.paged_value{
     top:      100px;
     left:     67px;
 }
+
 

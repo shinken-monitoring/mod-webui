@@ -5,8 +5,8 @@ function draw_arc(ctx, x, y, radius, startAngle, endAngle, clockwise, color, lin
     var saved_color = ctx.strokeStyle;
     var saved_alpha = ctx.globalAlpha;
     if(typeof alpha != 'undefined'){
-	console.log('Set alpha to'+alpha);
-	ctx.globalAlpha = alpha;
+		// console.log('Set alpha to : '+alpha);
+		ctx.globalAlpha = alpha;
     }
     ctx.strokeStyle = color;
     ctx.lineWidth = lineWidth;
@@ -33,7 +33,7 @@ function draw_line(ctx, x, y, x2, y2, color, lineWidth, alpha){
     var saved_color = ctx.strokeStyle;
     var saved_alpha = ctx.globalAlpha;
     if(typeof alpha != 'undefined'){
-        console.log('Set alpha to'+alpha);
+        // console.log('Set alpha to : '+alpha);
         ctx.globalAlpha = alpha;
     }
 
@@ -117,3 +117,24 @@ function draw_text_along_arc(ctx, str, centerX, centerY, radius, angle_offset, f
     }
     ctx.restore();
 }
+
+function wrapText(context, text, x, y, maxWidth, lineHeight) {
+	var words = text.split(' ');
+	var line = '';
+
+	for(var n = 0; n < words.length; n++) {
+		var testLine = line + words[n] + ' ';
+		var metrics = context.measureText(testLine);
+		var testWidth = metrics.width;
+		if (testWidth > maxWidth && n > 0) {
+			context.fillText(line, x, y);
+			line = words[n] + ' ';
+			y += lineHeight;
+		} else {
+			line = testLine;
+		}
+	}
+	context.fillText(line, x, y);
+}
+
+
