@@ -346,7 +346,7 @@ $(document).ready(function(){
 					<script type="text/javascript">
 					$().ready(function() {
 						$('.truncate').jTruncate({
-							length: 85,
+							length: 100,
 							minTrail: 0,
 							moreText: "[see all]",
 							lessText: "[hide extra]",
@@ -373,16 +373,24 @@ $(document).ready(function(){
 							</td>
 						</tr>
 					</table>
-					<!--
 					<hr>
-					<div class="truncate">{{elt.check_command.get_name()}}</div>
-					-->
-					<hr>
-					<div class="truncate"> <b><i>{{elt.output}}
+					<div class="truncate">
+						%if len(elt.output) > 100:
+							%if app.allow_html_output:
+								<div class='output' rel="tooltip" data-original-title="{{elt.output}}"> {{!helper.strip_html_output(elt.output[:app.max_output_length])}}</div>
+							%else:
+								<div class='output' rel="tooltip" data-original-title="{{elt.output}}"> {{elt.output[:app.max_output_length]}}</div>
+							%end
+						%else:
+							%if app.allow_html_output:
+								<div class='output'> {{!helper.strip_html_output(elt.output)}}</div>
+							%else:
+								<div class='output'> {{elt.output}} </div>
+							%end
+						%end
 						%if elt.long_output:
 							<br/> {{elt.long_output}}
 						%end
-						</i></b>
 					</div>
 					<hr>
 					<table class="table">
