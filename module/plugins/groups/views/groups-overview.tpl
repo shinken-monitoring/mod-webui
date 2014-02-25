@@ -6,12 +6,12 @@
 <div class="row">
   <h3 class="col-lg-11 no-topmargin">Groups overview</h3>
   <span class="col-lg-1 btn-group pull-right">
-    <a href="#" id="listview" class="btn btn-small switcher active quickinfo" data-original-title='List'> <i class="icon-align-justify"></i> </a>
-    <a href="#" id="gridview" class="btn btn-small switcher quickinfo" data-original-title='Grid'> <i class="icon-th"></i> </a>
+    <a href="#" id="listview" class="btn btn-small switcher quickinfo" data-original-title='List'> <i class="icon-align-justify"></i> </a>
+    <a href="#" id="gridview" class="btn btn-small switcher active quickinfo" data-original-title='Grid'> <i class="icon-th"></i> </a>
   </span>
 </div>
 		
-<ul id="groups" class="list row">
+<ul id="groups" class="grid row">
 %even='alt'
 %for group in hgroups:
 	%if even =='':
