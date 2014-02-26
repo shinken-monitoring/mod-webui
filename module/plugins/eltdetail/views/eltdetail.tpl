@@ -460,16 +460,31 @@ $(document).ready(function(){
 					</table>
 					<hr>
 					<div>
+						<div>
 						<span><b>Active checks</b></span>
 						<input {{chk_active_state}} class="iphone" type="checkbox" id='btn-active-check'>
+						</div>
+						<div>
 						<span><b>Passive checks</b></span>
 						<input {{chk_passive_state}} class="iphone" type="checkbox" id='btn-passive-check'>
+						</div>
+						%if (elt.passive_checks_enabled):
+						%if (elt.check_freshness):
+						<span><b>- Freshness check:</b> {{elt.freshness_threshold}}</span>
+						%end
+						%end
+						<div>
 						<span><b>Notifications</b></span>
 						<input {{not_state}} class="iphone" type="checkbox" id='btn-not'>
+						</div>
+						<div>
 						<span><b>Event handler</b></span>
 						<input {{evt_state}} class="iphone" type="checkbox" id='btn-evt'>
+						</div>
+						<div>
 						<span><b>Flap detection</b></span>
 						<input {{flp_state}} class="iphone" type="checkbox" id='btn-flp'>
+						</div>
 					</div>
 				</div>
 
