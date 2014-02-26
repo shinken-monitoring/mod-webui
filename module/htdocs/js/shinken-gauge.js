@@ -128,12 +128,10 @@ function update_donuts(){
 
 
 function update(){
-    
-
     var pct = this.pct;
     var final_pct = this.final_pct;
     if (this.pct >= this.final_pct){
-	return;
+		return;
     }
     //console.log('Updating donut');
     this.pct += this.pct_step;
@@ -162,11 +160,6 @@ function get_donut(name){
     if(!donut.valid){
 		return null;
     }
-    // console.log("GO");
-    // console.log('Go canvas'+donut.canv);
-    
-    // console.log('Init : '+donut.startAngle+' '+donut.endAngle);
-    
     
     // fist the outter arc
     donut.draw_arc(donut.x, donut.y, donut.radius, donut.startAngle, donut.endAngle, donut.clockwise, donut.color_external, donut.line_size);
@@ -201,13 +194,13 @@ function get_donut(name){
 
 function register_all_donuts(){
     $('.donut_canvas').each(function(id, elt){
-	// console.log('Oh a donut canvas : '+elt.id);
-	d = get_donut(elt.id);
-	if(d != null){
-	    all_donuts.push(d);
-	}
+		// console.log('Oh a donut canvas : '+elt.id);
+		d = get_donut(elt.id);
+		if(d != null){
+			all_donuts.push(d);
+		}
     });
-}
+ }
 
 
 $(function(){

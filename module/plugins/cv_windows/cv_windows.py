@@ -34,9 +34,8 @@ def _findServiceByName(host, service):
             return s
     return None
     
-
+    
 def get_disks(h):
-# Windows :	'C:\ %'=60%;80;90 'C:\'=245.331G;322.105;362.369;0;402.632 'D:\ %'=17%;80;90 'D:\'=5.243G;23.437;26.367;0;29.297 'E:\ %'=0%;80;90 'E:\'=13.633M;1628;1831.5;0;2035 'G:\ %'=84%;80;90 'G:\'=18.406G;17.416;19.593;0;21.77
     all_disks = []
     s = _findServiceByName(h, 'disk')
     if not s:
@@ -57,8 +56,7 @@ def get_disks(h):
 
         pct = 100*float(m.value)/m.max
         pct = int(pct)
-        print m.value, m.max, pct
-        
+
         all_disks.append((m.name, pct))
 
     return disks_state,all_disks
@@ -76,7 +74,6 @@ def get_memory(h):
     mem_state = virtual_state = paged_state = s.state
     # Now grep perfdata in it
     p = PerfDatas(s.perf_data)
-    # print "PERFDATA", p, p.__dict__
     mem = virtual = paged = 0
     
     if 'physical memory' in p:
@@ -84,28 +81,23 @@ def get_memory(h):
         if m.name and m.value is not None and m.max is not None and m.max != 0:
             pct = 100*float(m.value)/m.max
             mem = int(pct)
-            # print "Mem", m.value, m.max, pct
 
     if 'virtual memory' in p:
         m = p['virtual memory']
         if m.name and m.value is not None and m.max is not None and m.max != 0:
             pct = 100*float(m.value)/m.max
             virtual = int(pct)
-            # print "Virtual", m.value, m.max, pct
 
     if 'paged bytes' in p:
         m = p['paged bytes']
         if m.name and m.value is not None and m.max is not None and m.max != 0:
             pct = 100*float(m.value)/m.max
             paged = int(pct)
-            # print "Paged", m.value, m.max, pct
 
     return mem_state,virtual_state,paged_state,mem,virtual,paged
 
 
 def get_cpu(h):
-# Windows :
-	# cpu : 	'5m'=15%;80;90 '1m'=15%;80;90 '30s'=16%;80;90
     cpu_state = 'UNKNOWN'
     s = _findServiceByName(h, 'cpu')
     if not s:
@@ -128,8 +120,6 @@ def get_cpu(h):
 
 
 def get_printer(h):
-# Windows :
-	# printer : 	'Cut Pages'=8[c];;;; 'Retracted Pages'=8[c];;;;
     printer_state = 'UNKNOWN'
     s = _findServiceByName(h, 'printer')
     if not s:
@@ -181,21 +171,21 @@ def get_network(h):
             network_state = 'OK'
 
     return network_state, all_nics
-
-
-def get_packages(h):
-    all_packages = []
+    
+    
+def get_services(h):
+    all_services = []
     packages_state = {}
 
     # Get host's services list
     for item in h.services:
-        all_packages.append((item.get_name(), item.state))
+        all_services.append((item.get_name(), item.state))
         packages_state[item.get_name()] = item.state
 
     # Compute the worst state of all packages
     packages_state = compute_worst_state(packages_state)
     
-    return packages_state,all_packages
+    return packages_state,all_services
 
 
 def compute_worst_state(d):
@@ -245,16 +235,11 @@ def get_page(hname):
         network_state, all_nics = get_network(h)
         all_perfs['all_nics'] = all_nics
         all_states['network'] = network_state
-        # And Packages
-        packages_state, all_packages = get_packages(h)
-        all_perfs['all_packages'] = all_packages
-        all_states['packages'] = packages_state
+        # And services
+        all_states['services'], all_perfs['all_services'] = get_services(h)
         # Then global
         all_states["view"] = compute_worst_state(all_states)
         
-
-    print "ALL PERFS", all_perfs
-    
     return {'app': app, 'elt': h, 'all_perfs':all_perfs, 'all_states':all_states}
 
 

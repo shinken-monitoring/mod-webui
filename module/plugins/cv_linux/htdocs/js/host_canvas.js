@@ -1,23 +1,23 @@
 
+
 $(function(){
-    var test_canvas = $('#host_canvas')[0];
-    var ctx = test_canvas.getContext('2d');
+    var host_canvas = $("#cv_linux canvas[name='host_canvas']");
+    var ctx = host_canvas[0].getContext('2d');
 
 
 	// Purple : '#c1bad9', '#a79fcb'
-    // Green  : '#A6CE8D', '#81BA6B'
-    // Blue   : '#DEF3F5', '#89C3C6'
-    // Red    : '#dc4950', '#e05e65'
-    // Orange : '#F1B16E', '#EC9054'
+	// Green  : '#A6CE8D', '#81BA6B'
+	// Blue   : '#DEF3F5', '#89C3C6'
+	// Red    : '#dc4950', '#e05e65'
+	// Orange : '#F1B16E', '#EC9054'
     var main_colors = {'UNKNOWN' : '#c1bad9', 'OK' : '#A6CE8D', 'UP' : '#A6CE8D', 'WARNING' : '#F1B16E', 'CRITICAL' : '#dc4950', 'DOWN' : '#dc4950'};
     var huge_colors = {'UNKNOWN' : '#a79fcb', 'OK' : '#81BA6B', 'UP' : '#81BA6B', 'WARNING' : '#EC9054', 'CRITICAL' : '#e05e65', 'DOWN' : '#e05e65'};
     
-    var global_state = $('#host_canvas').data('global-state');
+    var global_state = host_canvas.data('global-state');
     var main_color = main_colors[global_state];
     var huge_color = huge_colors[global_state];
     var line_color = huge_color;
 
-    var line_s = 2;
     // Inner circle
     draw_arc(ctx, 80, 80, 32, 0, 2*Math.PI, true, main_color, 40, 0.5);
     draw_arc(ctx, 80, 80, 33, 0, 2*Math.PI, true, huge_color, 2, 0.5);
@@ -46,10 +46,12 @@ $(function(){
     img_status.onload=function(){
 		// Image ratio
 		var f = img_status.height / img_status.width;
-		var newHeight = ($('#donutWindowsCPU').width() - 20) * f;
-        ctx.drawImage(img_status, 50, 40, $('#donutWindowsCPU').width() - 40, ($('#donutWindowsCPU').width() - 40) * f);
+		var donut_canvas = $("#cv_linux canvas[name='donut_CPU']");
+		var newWidth = (donut_canvas.width() - 40);
+		var newHeight = newWidth * f;
+		ctx.drawImage(img_status, donut_canvas.width() - newWidth, donut_canvas.height() - newHeight, newWidth, newHeight);
     };
-    img_status.src = '/static/cv_linux/img/'+$('#host_canvas').data('host-state-image');
+    img_status.src = '/static/cv_linux/img/'+host_canvas.data('host-state-image');
     
     //////////////// Lines part
     // Now the line from the left part to down, in 3 parts
@@ -60,7 +62,7 @@ $(function(){
 
     /////////////// The network icon
 	var linePos = 150;
-	if ($('#host_canvas').data('host-network-state') != 'unknown') {
+	if (host_canvas.data('host-network-state') != 'unknown') {
 		// Now a small step down
 		draw_line(ctx, 50, linePos, 50, linePos+150, line_color, 1, 0.5);
 		linePos += 150;
@@ -72,9 +74,9 @@ $(function(){
 		img_network.onload=function(){
 			ctx.drawImage(img_network, 75, linePos-30, img_size, img_size);
 		};
-		img_network.src = '/static/cv_linux/img/'+$('#host_canvas').data('host-network-image');
+		img_network.src = '/static/cv_linux/img/'+host_canvas.data('host-network-image');
 		
-		var ip = $('#host_canvas').data('host-network-address');
+		var ip = host_canvas.data('host-network-address');
 		ctx.font      = "bold 10px Verdana";
 		ctx.fillStyle = "#555";
 		ctx.textAlign = 'center';
@@ -82,7 +84,7 @@ $(function(){
 	}
 
     /////////////// The printer icon
-	if ($('#host_canvas').data('host-printer-state') != 'unknown') {
+	if (host_canvas.data('host-printer-state') != 'unknown') {
 		// Now a small step down
 		draw_line(ctx, 50, linePos, 50, linePos+150, line_color, 1, 0.5);
 		linePos += 150;
@@ -94,147 +96,149 @@ $(function(){
 		img_printer.onload=function(){
 			ctx.drawImage(img_printer, 75, linePos-30, img_size, img_size);
 		};
-		img_printer.src = '/static/cv_linux/img/'+$('#host_canvas').data('host-printer-image');
+		img_printer.src = '/static/cv_linux/img/'+host_canvas.data('host-printer-image');
 	}
 
 
-    // Now a small step on the right, before disks
-    draw_line(ctx, 50, 200, 70, 200, line_color, 1, 0.5);
-    // And a small vertical line for disks
-    draw_line(ctx, 70, 180, 70, 220, line_color, 1, 0.5);
+	if (all_disks.length != 0) {
+		// Now a small step on the right, before disks
+		draw_line(ctx, 50, 200, 70, 200, line_color, 1, 0.5);
+		// And a small vertical line for disks
+		draw_line(ctx, 70, 180, 70, 220, line_color, 1, 0.5);
 
+		/////////////// The disks part ...
+		var img_disks = document.createElement('img');
+		var dsk_x = 75;
+		var dsk_y = 190;
+		img_disks.onload=function(){
+			for(var i=0; i<all_disks.length; i++){
+				ctx.drawImage(img_disks, 0, 0, 70, 18, dsk_x, dsk_y, 70, 18);
+				var d_name = all_disks[i][0];
+				var d_value = all_disks[i][1]/100;
+				var offset = 70*d_value;
+				ctx.drawImage(img_disks, 0, 18, offset, 18, dsk_x, dsk_y, offset, 18);
 
-    /////////////// The disks part ...
-    var img_disks = document.createElement('img');
-    var dsk_x = 75;
-    var dsk_y = 190;
-    img_disks.onload=function(){
-		for(var i=0; i<all_disks.length; i++){
-			ctx.drawImage(img_disks, 0, 0, 70, 18, dsk_x, dsk_y, 70, 18);
-			var d_name = all_disks[i][0];
-			var d_value = all_disks[i][1]/100;
-			var offset = 70*d_value;
-			ctx.drawImage(img_disks, 0, 18, offset, 18, dsk_x, dsk_y, offset, 18);
+				// And draw the disk name
+				d_name=d_name+' '+(d_value*100)+'%';
+				ctx.font      = "bold 10px Verdana";
+				ctx.textAlign = 'left';
+				ctx.fillStyle = "#222";
+				ctx.fillText(d_name, dsk_x + 5, dsk_y + 13);
 
-			// And draw the disk name
-			d_name=d_name+' '+(d_value*100)+'%';
-			ctx.font      = "bold 10px Verdana";
-			ctx.textAlign = 'left';
-			ctx.fillStyle = "#222";
-			ctx.fillText(d_name, dsk_x + 5, dsk_y + 13);
-
-			// Now prepare the next disk
-			dsk_y += 25;
-		}
-    };
-	// An img for disks image background ...
-    img_disks.src = '/static/cv_linux/img/bar_horizontal.png';
-
-    // And a small vertical line for disks
-    draw_line(ctx, 150, 180, 150, 220, line_color, 1, 0.5);
-	
-    // Now a small line to go to the sub-systems
-    draw_line(ctx, 150, 200, 200, 200, line_color, 1, 0.5);
-	
-    // A line that go to the CPU on the top
-    draw_line(ctx, 200, 200, 240, 160, line_color, 1, 0.5);
-	
-    // A line that go to the Memory on the bottom
-    draw_line(ctx, 200, 200, 240, 240, line_color, 1, 0.5);
-	
-    // Now a big line to the right
-    draw_line(ctx, 200, 200, 340, 200, line_color, 1, 0.5);
-
-    // And a vertical line for peripherals
-    draw_line(ctx, 340, 10, 340, 600, line_color, 1, 0.5);
-	
-    // Draw the services.
-	var sources = {
-		ok:				'/static/cv_linux/img/service_ok.png',
-		warning:		'/static/cv_linux/img/service_warning.png',
-		critical:		'/static/cv_linux/img/service_critical.png',
-		unknown:		'/static/cv_linux/img/service_unknown.png',
-		pending:		'/static/cv_linux/img/service_pending.png',
-		downtime:		'/static/cv_linux/img/service_downtime.png',
-		flapping:		'/static/cv_linux/img/service_flapping.png',
-		uninstalled:	'/static/cv_linux/img/service_uninstalled.png'
-	};
-	function loadImages(sources, callback) {
-		var images = {};
-		var loadedImages = 0;
-		var numImages = 0;
-		// get num of sources
-		for(var src in sources) {
-			numImages++;
-		}
-		for(var src in sources) {
-			images[src] = new Image();
-			images[src].onload = function() {
-				if(++loadedImages >= numImages) {
-					callback(images);
-				}
-			};
-			images[src].src = sources[src];
-		}
-	}
-	
-	var img_peripheral = document.createElement('img');
-    var dev_x = 360;
-    var dev_y = 10;
-    var img_size = 64;
-    var img_spacing = 100;
-	var packagesPerColumn = 5;
-	var img_src=$('#host_canvas').data('icon-package');
-	loadImages(sources, function(images){
-		var p_prefix="";
-		for (var i=0, column=1, line=1; i<all_packages.length; i++, line++){
-			var p_name = all_packages[i][0];
-			var p_status = all_packages[i][1];
-			// console.log("Service : "+p_name+", status : "+p_status);
-
-			// Next column for the package 
-			if ((column != 0) && (line % (packagesPerColumn+1) == 0)) {
-				column += 1; line = 1;
-				dev_x += img_spacing;
-				dev_y = 10;
+				// Now prepare the next disk
+				dsk_y += 25;
 			}
-			
-			// Draw package icon
-			ctx.drawImage(images[p_status.toLowerCase()], dev_x, dev_y, img_size, img_size);
-			
-			// And draw the package name
-			ctx.font      = "bold 10px Verdana";
-			ctx.fillStyle = "#222";
-			ctx.textAlign = 'center';
-			wrapText(ctx, p_name, dev_x + (img_size/2), dev_y+5, 20, 15)
+		};
+		// An img for disks image background ...
+		img_disks.src = '/static/cv_linux/img/bar_horizontal.png';
 
-			var span = $(document.createElement('span'));
-			span.html('');
-			span.attr('name', p_name);
-			span.css('width', img_size+'px');
-			span.css('height',img_size+'px');
-			span.css('display','inline-block');
-			span.css('position', 'absolute');
-			span.css('left', dev_x);
-			span.css('top', dev_y);
-			span.css('cursor', 'pointer');
-			span.css('border', 'red');
-			span.on('click', function(){
-				window.location.href="/service/"+$('#host_canvas').data('name')+"/"+$(this).attr('name');
-			});
-			$('#host_windows_bloc').append(span);
+		// And a small vertical line for disks
+		draw_line(ctx, 150, 180, 150, 220, line_color, 1, 0.5);
+	
+		// Now a small line to go to the sub-systems
+		draw_line(ctx, 150, 200, 170, 200, line_color, 1, 0.5);
+	} else {
+		// Now a large step on the right
+		draw_line(ctx, 50, 200, 170, 200, line_color, 1, 0.5);
+	}
+	
+	// A line that go to the CPU on the top
+	draw_line(ctx, 170, 200, 200, 160, line_color, 1, 0.5);
 
-			// Now prepare the next package
-			dev_y += img_spacing;
+	// A line that go to the Memory on the bottom
+	draw_line(ctx, 170, 200, 200, 240, line_color, 1, 0.5);
+
+	if (all_services && all_services.length != 0) {
+		// Now a big line to the right
+		draw_line(ctx, 170, 200, 340, 200, line_color, 1, 0.5);
+
+		// And a vertical line for peripherals
+		draw_line(ctx, 340, 10, 340, 600, line_color, 1, 0.5);
+		
+		// Draw the services.
+		var sources = {
+			ok:				'/static/cv_linux/img/service_ok.png',
+			warning:		'/static/cv_linux/img/service_warning.png',
+			critical:		'/static/cv_linux/img/service_critical.png',
+			unknown:		'/static/cv_linux/img/service_unknown.png',
+			pending:		'/static/cv_linux/img/service_pending.png',
+			downtime:		'/static/cv_linux/img/service_downtime.png',
+			flapping:		'/static/cv_linux/img/service_flapping.png',
+			uninstalled:	'/static/cv_linux/img/service_uninstalled.png'
+		};
+		function loadImages(sources, callback) {
+			var images = {};
+			var loadedImages = 0;
+			var numImages = 0;
+			// get num of sources
+			for(var src in sources) {
+				numImages++;
+			}
+			for(var src in sources) {
+				images[src] = new Image();
+				images[src].onload = function() {
+					if(++loadedImages >= numImages) {
+						callback(images);
+					}
+				};
+				images[src].src = sources[src];
+			}
 		}
-	});
+		
+		var dev_x = 360;
+		var dev_y = 10;
+		var img_size = 64;
+		var img_spacing = 100;
+		var packagesPerColumn = 5;
+		loadImages(sources, function(images){
+			for (var i=0, column=1, line=1; i<all_services.length; i++, line++){
+				var p_name = all_services[i][0];
+				var p_state = all_services[i][1];
+				console.log(p_name+" is "+p_state);
 
+				// Next column for the package 
+				if ((column != 0) && (line % (packagesPerColumn+1) == 0)) {
+					column += 1; line = 1;
+					dev_x += img_spacing;
+					dev_y = 10;
+				}
+				
+				// Draw service icon
+				ctx.drawImage(images[p_state.toLowerCase()], dev_x, dev_y, img_size, img_size);
+				
+				// And draw the service name
+				ctx.font      = "bold 10px Verdana";
+				ctx.fillStyle = "#222";
+				ctx.textAlign = 'center';
+				wrapText(ctx, p_name, dev_x + (img_size/2), dev_y+5, 20, 15)
+
+				var span = $(document.createElement('span'));
+				span.html('');
+				span.attr('name', p_name);
+				span.css('width', img_size+'px');
+				span.css('height',img_size+'px');
+				span.css('display','inline-block');
+				span.css('position', 'absolute');
+				span.css('left', dev_x);
+				span.css('top', dev_y);
+				span.css('cursor', 'pointer');
+				span.css('border', 'red');
+				span.on('click', function(){
+					window.location.href="/service/"+host_canvas.data('name')+"/"+$(this).attr('name');
+				});
+				$('#cv_linux').append(span);
+
+				// Now prepare the next package
+				dev_y += img_spacing;
+			}
+		});
+	}
+	
     // Terminate with the host name and the IP address
-    var hname = $('#host_canvas').data('name');
+    var hname = host_canvas.data('name');
     if (hname.length>=20) hname = hname.substr(0, 17)+'...';
     ctx.font      = "bold 22px Verdana";
     ctx.fillStyle = "#555";
 	ctx.textAlign = 'left';
     ctx.fillText(hname, 120, 30);
-
 });

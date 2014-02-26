@@ -1,23 +1,17 @@
 %import json
 
 <script>
-	console.log('cv_windows');
-
 	all_perfs = {{json.dumps(all_perfs)}}
-	console.log(all_perfs);
 	all_disks = all_perfs['all_disks'];
-	console.log(all_disks);
 	all_states = {{! json.dumps(all_states)}};
-	console.log(all_states);
-	all_packages = {{! json.dumps(all_perfs['all_packages'])}};
-	console.log(all_packages);
+	all_services = {{! json.dumps(all_perfs['all_services'])}};
 
 	loadjscssfile('/static/cv_windows/js/host_canvas.js', 'js');
 	loadjscssfile('/static/cv_windows/css/host_canvas.css', 'css');
 </script>
 
-<div id='host_windows_bloc' class='container'>
-	<canvas id='host_canvas' width='800' height='480' 
+<div id='cv_windows'>
+	<canvas name='host_canvas' width='800' height='480' 
 		data-global-state="{{all_states['global']}}" 
 		data-name='{{elt.get_name()}}' 
 		data-host-state-image="host_{{all_states['global'].lower()}}.png"
@@ -29,23 +23,30 @@
 		>
 	</canvas>
 
-	%pct_cpu = all_perfs['cpu']
-	<div class="donutContainer" id='donut_cpu'>
-		<canvas id="donutWindowsCPU" data-value={{pct_cpu}} data-state="{{all_states['cpu']}}" class='donut_canvas' width="100" height="110"></canvas>
-		<span class="donut_value">{{pct_cpu}}%</span>
+	<div class="cpu_container">
+		<canvas class='donut_canvas' name='donut_CPU' id="donutLinuxCPU" data-value={{all_perfs['cpu']}} data-state="{{all_states['cpu']}}" width="100" height="100"></canvas>
+		<span class="donut_value">{{all_perfs['cpu']}}%</span>
 		<span class="donut_label">CPU</span>
 	</div>
 
-	<div id='windows_memory_cylinders'>
-		%pct_memory = all_perfs['memory']
-		<canvas id="cylinder_windows_mem" data-value={{pct_memory}} data-state="{{all_states['memory']}}" class='cylinder_canvas' width="100" height="100"></canvas>
-		<span class="cylinder_label mem_label">Mem</span>
-		<span class="cylinder_value mem_value">{{pct_memory}}%</span>
-
-		%pct_paged = all_perfs['paged']
-		<canvas id="cylinder_windows_paged" data-value={{pct_paged}} data-state="{{all_states['virtual']}}" class='cylinder_canvas' width="100" height="100"></canvas>
-		<span class="cylinder_label paged_label">Paged</span>
-		<span class="cylinder_value paged_value">{{pct_paged}}%</span>
+	<div class="cylinderContainer">
+		<div name="cylinder_mem">
+			<canvas class='cylinder_canvas' data-value={{all_perfs['memory']}} data-state="{{all_states['memory']}}" width="30" height="100"></canvas>
+			<span>Memory</span>
+			<span>{{all_perfs['memory']}}%</span>
+		</div>
+		
+		<div name="cylinder_virtual" >
+			<canvas class='cylinder_canvas' data-value={{all_perfs['virtual']}} data-state="{{all_states['virtual']}}" width="30" height="100"></canvas>
+			<span>virtual</span>
+			<span>{{all_perfs['virtual']}}%</span>
+		</div>
+		
+		<div name="cylinder_paged" >
+			<canvas class='cylinder_canvas' data-value={{all_perfs['paged']}} data-state="{{all_states['paged']}}" width="30" height="100"></canvas>
+			<span>Paged</span>
+			<span>{{all_perfs['paged']}}%</span>
+		</div>
 	</div>
 </div>
 

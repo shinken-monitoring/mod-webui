@@ -34,6 +34,7 @@ def _findServiceByName(host, service):
             return s
     return None
     
+    
 def get_disks(h):
     all_disks = []
     s = _findServiceByName(h, 'disk')
@@ -55,7 +56,6 @@ def get_disks(h):
 
         pct = 100*float(m.value)/m.max
         pct = int(pct)
-        print m.value, m.max, pct
 
         all_disks.append((m.name, pct))
 
@@ -74,7 +74,6 @@ def get_memory(h):
     mem_state = swap_state = s.state
     # Now grep perfdata in it
     p = PerfDatas(s.perf_data)
-    print "PERFDATA", p, p.__dict__
     mem = 0
     swap = 0
 
@@ -85,7 +84,6 @@ def get_memory(h):
             # Classic pct compute
             pct = 100*float(m.value)/m.max
             mem = int(pct)
-            print "Mem", m.value, m.max, pct
 
     if 'swap_used' in p:
         m = p['swap_used']
@@ -94,10 +92,8 @@ def get_memory(h):
             # Classic pct compute
             pct = 100*float(m.value)/m.max
             swap = int(pct)
-            print "Swap", m.value, m.max, pct
 
     return mem_state,swap_state,mem,swap
-
 
 
 def get_cpu(h):
@@ -138,25 +134,25 @@ def get_network(h):
     network_state = 'UNKNOWN'
     s = _findServiceByName(h, 'network')
     if not s:
-        return 'UNKNOWN',0,0
+        return 'UNKNOWN',all_nics
     print "Service found", s.get_full_name()
 
     return network_state, all_nics
     
     
-def get_packages(h):
-    all_packages = []
+def get_services(h):
+    all_services = []
     packages_state = {}
 
     # Get host's services list
     for item in h.services:
-        all_packages.append((item.get_name(), item.state))
+        all_services.append((item.get_name(), item.state))
         packages_state[item.get_name()] = item.state
 
     # Compute the worst state of all packages
     packages_state = compute_worst_state(packages_state)
     
-    return packages_state,all_packages
+    return packages_state,all_services
 
 
 def compute_worst_state(d):
@@ -204,16 +200,11 @@ def get_page(hname):
         network_state, all_nics = get_network(h)
         all_perfs['all_nics'] = all_nics
         all_states['network'] = network_state
-        # And Packages
-        packages_state, all_packages = get_packages(h)
-        all_perfs['all_packages'] = all_packages
-        all_states['packages'] = packages_state
+        # And services
+        all_states['services'], all_perfs['all_services'] = get_services(h)
         # Then global
         all_states["view"] = compute_worst_state(all_states)
         
-
-    print "ALL PERFS", all_perfs
-
     return {'app': app, 'elt': h, 'all_perfs':all_perfs, 'all_states':all_states}
 
 
