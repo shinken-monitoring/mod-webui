@@ -63,10 +63,9 @@ Invalid element name
 </style>
 
 <div class="">
-
 	<div class="panel panel-default">
 		<div class="panel-heading">
-			<h3 class="panel-title">{{group.alias}} / ({{group.get_name()}})</h3>
+			<h3 class="panel-title">{{group.get_name()}} / ({{group.alias}})</h3>
 		</div>
 		<div class="panel-body">
 			<table class="col-lg-2 leftmargin">
@@ -96,47 +95,44 @@ Invalid element name
 			<table class="table table-hover">
 				<tbody>
 					<tr>
-						<th><em>Status</em></th>
+						<th>State</th>
 						<th>Host</th>
-						<!--
-						<th><em>Status</em></th>
-						-->
 						<th>Service</th>
 						<th>Last Check</th>
 						<th>Duration</th>
 						<th>Attempt</th>
 						<th>Status Information</th>
 					</tr>
-%for h in hosts:
-					<tr id="host_{{h.get_name()}}" class="{{h.state.lower()}}">
-						<td ><em>{{h.state}}</em></td>
-						<td>
-							<span><a href="/host/{{h.get_name()}}">{{h.get_name()}}</a></span>
-						</td>
+					%for h in hosts:
+						<tr id="host_{{h.get_name()}}" class="{{h.state.lower()}}">
+							<td >{{h.state}}</td>
+							<td>
+								<span><a href="/host/{{h.get_name()}}">{{h.get_name()}}</a></span>
+							</td>
 
-						<td style="white-space: normal">
-							<span>{{h.get_check_command()}}</span>
-						</td>
-						<td>{{helper.print_duration(h.last_chk)}}</td>
-						<td>{{h.get_duration()}}</td>
-						<td>{{h.attempt}}/{{h.max_check_attempts}}</td>
-						<td><span class="{{h.state.lower()}}">{{h.state}}</span></td>	
-					</tr>
-			%for s in h.services:
-					<tr class="service service_{{h.get_name()}} {{s.state.lower()}}" style="display: none; line-height: 14px;">
-						<td></td>
-						<td></td>
+							<td style="white-space: normal">
+								<span>{{h.get_check_command()}}</span>
+							</td>
+							<td>{{helper.print_duration(h.last_chk)}}</td>
+							<td>{{h.get_duration()}}</td>
+							<td>{{h.attempt}}/{{h.max_check_attempts}}</td>
+							<td><span class="{{h.state.lower()}}">{{h.state}}</span></td>	
+						</tr>
+						%for s in h.services:
+							<tr class="service service_{{h.get_name()}} {{s.state.lower()}}" style="display: none; line-height: 14px;">
+								<td></td>
+								<td></td>
 
-						<td style="white-space: normal" class="{{s.state.lower()}}">
-							<span><a href="/service/{{h.get_name()}}/{{s.get_name()}}">{{s.get_name()}}</a></span>
-						</td>
-						<td>{{helper.print_duration(s.last_chk)}}</td>
-						<td>{{s.get_duration()}}</td>
-						<td>{{s.attempt}}/{{s.max_check_attempts}}</td>
-						<td><span class="{{s.state.lower()}}">{{s.state}}</span></td>	
-					</tr>
-			%end
-%end
+								<td style="white-space: normal" class="{{s.state.lower()}}">
+									<span><a href="/service/{{h.get_name()}}/{{s.get_name()}}">{{s.get_name()}}</a></span>
+								</td>
+								<td>{{helper.print_duration(s.last_chk)}}</td>
+								<td>{{s.get_duration()}}</td>
+								<td>{{s.attempt}}/{{s.max_check_attempts}}</td>
+								<td><span class="{{s.state.lower()}}">{{s.state}}</span></td>	
+							</tr>
+						%end
+					%end
 				</tbody>
 			</table>
 		</div>
