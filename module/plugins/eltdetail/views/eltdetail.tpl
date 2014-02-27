@@ -1,12 +1,8 @@
-%# " We should limit the number of impacts to show here. Too much is just useless "
-%max_impacts = 200
-
-%print 'Elt value?', elt
 %import time
 
 %# If got no Elt, bailout
 %if not elt:
-%rebase layout title='Invalid name'
+%rebase layout title='Invalid element name'
 
 Invalid element name
 
@@ -47,7 +43,7 @@ Invalid element name
 	%end
 %end
 
-%rebase layout title=elt_type.capitalize() + ' / ' + elt.get_full_name(), js=['eltdetail/js/jquery.color.js', 'eltdetail/js/jquery.Jcrop.js', 'eltdetail/js/iphone-style-checkboxes.js', 'eltdetail/js/hide.js', 'eltdetail/js/dollar.js', 'eltdetail/js/gesture.js', 'eltdetail/js/graphs.js', 'eltdetail/js/tags.js', 'eltdetail/js/depgraph.js', 'eltdetail/js/custom_views.js', 'eltdetail/js/tabs.js', 'eltdetail/js/screenfull.js' ], css=['eltdetail/css/eltdetail.css', 'eltdetail/css/hide.css', 'eltdetail/css/gesture.css', 'eltdetail/css/jquery.Jcrop.css'], user=user, app=app, refresh=True
+%rebase layout title=elt_type.capitalize() + ' / ' + elt.get_full_name(), js=['eltdetail/js/jquery.color.js', 'eltdetail/js/jquery.Jcrop.js', 'eltdetail/js/iphone-style-checkboxes.js', 'eltdetail/js/hide.js', 'eltdetail/js/dollar.js', 'eltdetail/js/gesture.js', 'eltdetail/js/graphs.js', 'eltdetail/js/tags.js', 'eltdetail/js/depgraph.js', 'eltdetail/js/custom_views.js', 'eltdetail/js/tabs.js', 'eltdetail/js/screenfull.js', 'eltdetail/js/shinken-gauge.js'], css=['eltdetail/css/eltdetail.css', 'eltdetail/css/hide.css', 'eltdetail/css/gesture.css', 'eltdetail/css/jquery.Jcrop.css', 'eltdetail/css/shinken-gauge.css'], user=user, app=app, refresh=True
 
 %# " We will save our element name so gesture functions will be able to call for the good elements."
 <script type="text/javascript">
