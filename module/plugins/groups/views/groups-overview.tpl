@@ -4,10 +4,10 @@
 %datamgr = app.datamgr
 
 <div class="row">
-  <h3 class="col-lg-11 no-topmargin">Groups overview</h3>
-  <span class="col-lg-1 btn-group pull-right">
-    <a href="#" id="listview" class="btn btn-small switcher quickinfo" data-original-title='List'> <i class="icon-align-justify"></i> </a>
-    <a href="#" id="gridview" class="btn btn-small switcher active quickinfo" data-original-title='Grid'> <i class="icon-th"></i> </a>
+  <h3 class="col-lg-10 no-topmargin">Groups overview</h3>
+  <span class="col-lg-2 btn-group">
+    <a href="#" id="listview" class="btn btn-small switcher quickinfo pull-right" data-original-title='List'> <i class="icon-align-justify"></i> </a>
+    <a href="#" id="gridview" class="btn btn-small switcher active quickinfo pull-right" data-original-title='Grid'> <i class="icon-th"></i> </a>
   </span>
 </div>
 		
