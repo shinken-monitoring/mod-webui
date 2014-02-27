@@ -194,7 +194,7 @@ $(function(){
 			for (var i=0, column=1, line=1; i<all_services.length; i++, line++){
 				var p_name = all_services[i][0];
 				var p_state = all_services[i][1];
-				console.log(p_name+" is "+p_state);
+				// console.log(p_name+" is "+p_state);
 
 				// Next column for the package 
 				if ((column != 0) && (line % (packagesPerColumn+1) == 0)) {
