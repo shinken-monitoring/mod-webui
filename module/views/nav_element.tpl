@@ -31,9 +31,9 @@
 			%if app:
 			%overall_state = app.datamgr.get_overall_state()
 			%if overall_state == 2:
-			<li class="pull-right"><a href="/impacts" class="quickinfo" data-original-title='Impacts'><i class="icon-impact"></i><span class="pulsate badger badger-critical">{{app.datamgr.get_len_overall_state()}}</span> </a></li>
+			<li class="pull-right"><a href="/impacts" class="quickinfo" data-original-title='Impacts'><i class="icon-bolt"></i><span class="pulsate badger badger-critical">{{app.datamgr.get_len_overall_state()}}</span> </a></li>
 			%elif overall_state == 1:
-			<li class="pull-right"><a href="/impacts" class="quickinfo" data-original-title='Impacts'><i class="icon-impact"></i><span class="pulsate badger badger-warning">{{app.datamgr.get_len_overall_state()}}</span> </a></li>
+			<li class="pull-right"><a href="/impacts" class="quickinfo" data-original-title='Impacts'><i class="icon-bolt"></i><span class="pulsate badger badger-warning">{{app.datamgr.get_len_overall_state()}}</span> </a></li>
 			%end
 			%end
 		</ul>
