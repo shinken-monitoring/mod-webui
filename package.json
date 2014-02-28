@@ -13,6 +13,10 @@
     {
       "name": "Andreas Karfusehr",
       "email": "andreas.karfusehr@gmail.com"
+    },
+    {
+      "name": "Frederic Mohier",
+      "email": "frederic.mohier@gmail.com"
     }
   ],
   "repository": "https://github.com/shinken-monitoring/mod-webui/tree/1.0",
