@@ -47,43 +47,41 @@ Invalid element name
 
 %# " We will save our element name so gesture functions will be able to call for the good elements."
 <script type="text/javascript">
-var elt_name = '{{elt.get_full_name()}}';
+	var elt_name = '{{elt.get_full_name()}}';
 
-var graphstart={{graphstart}};
-var graphend={{graphend}};
+	var graphstart={{graphstart}};
+	var graphend={{graphend}};
 
-/* Now hide canvas */
-$(document).ready(function(){
-	$('#gesture_panel').hide();
+	$(document).ready(function(){
+		/* Hide gesture panel */
+		$('#gesture_panel').hide();
 
-    // Also hide the button under IE (gesture don't work under it)
-    if (navigator.appName == 'Microsoft Internet Explorer'){
-    	$('#btn_show_gesture').hide();
-    }
-});
-
-/* Look at the # part of the URI. If it match a nav name, go for it*/
-$(document).ready(function(){
-	if (window.location.hash.length > 0) {
-		$('ul.nav-tabs > li > a[href="' + window.location.hash + '"]').tab('show');
-	}
-	else {
-		$('ul.nav-tabs > li > a:first').tab('show');
-	}
-});
+		// Also hide the button under IE (gesture don't work under it)
+		if (navigator.appName == 'Microsoft Internet Explorer'){
+			$('#btn_show_gesture').hide();
+		}
+		
+		/* Look at the # part of the URI. If it match a nav name, go for it*/
+		if (window.location.hash.length > 0) {
+			$('ul.nav-tabs > li > a[href="' + window.location.hash + '"]').tab('show');
+		}
+		else {
+			$('ul.nav-tabs > li > a:first').tab('show');
+		}
+	});
 
   // Now we hook the global search thing
-  $('.typeahead').typeahead({
-    // note that "value" is the default setting for the property option
-    source: function (typeahead, query) {
-    	$.ajax({url: "/lookup/"+query,
-    		success: function (data){
-    			typeahead.process(data)}
-    		});
-    },
-    onselect: function(obj) { 
-    	$("ul.typeahead.dropdown-menu").find('li.active').data(obj);
-    }
+	$('.typeahead').typeahead({
+		// note that "value" is the default setting for the property option
+		source: function (typeahead, query) {
+			$.ajax({url: "/lookup/"+query,
+				success: function (data){
+					typeahead.process(data)}
+				});
+		},
+		onselect: function(obj) { 
+			$("ul.typeahead.dropdown-menu").find('li.active').data(obj);
+		}
 	});
 </script>
 
@@ -542,89 +540,89 @@ $(document).ready(function(){
 			</ul>
 			<div class="tab-content">
 
-			  <!-- First custom views -->
-			  %_go_active = 'active'
-			  %for cvname in elt.custom_views:
-			     <div class="tab-pane {{_go_active}}" data-cv-name="{{cvname}}" data-elt-name='{{elt.get_full_name()}}' id="cv{{cvname}}">
-			       Cannot load the pane {{cvname}}.
-			     </div>
-			     %_go_active = ''
-			  %end
+				<!-- First custom views -->
+				%_go_active = 'active'
+				%for cvname in elt.custom_views:
+					<div class="tab-pane {{_go_active}}" data-cv-name="{{cvname}}" data-elt-name='{{elt.get_full_name()}}' id="cv{{cvname}}">
+						Cannot load the pane {{cvname}}.
+					</div>
+					%_go_active = ''
+				%end
 
 				<!-- Tab Summary Start-->
 				<div class="tab-pane {{_go_active}}" id="impacts">
-				<!-- Start of the Whole info pack. We got a row of 2 thing : 
-				left is information, right is related elements -->
-				<div class="row-fluid">
-				<!-- So now it's time for the right part, replaceted elements -->
-				<div class="span12">
-					<!-- Show our father dependencies if we got some -->
-					%#    Now print the dependencies if we got somes
-					%if len(elt.parent_dependencies) > 0:
-					<h4 class="span12">Root cause:</h4>
-					<a id="togglelink-{{elt.get_dbg_name()}}" href="javascript:toggleBusinessElt('{{elt.get_dbg_name()}}')"> {{!helper.get_button('Show dependency tree', img='/static/images/expand.png')}}</a>
-					<div class="clear"></div>
-					{{!helper.print_business_rules(datamgr.get_business_parents(elt), source_problems=elt.source_problems)}}
-					%end
-					<hr>
+					<!-- Start of the Whole info pack. We got a row of 2 thing : 
+					left is information, right is related elements -->
+					<div class="row-fluid">
+					<!-- So now it's time for the right part, replaceted elements -->
+					<div class="span12">
+						<!-- Show our father dependencies if we got some -->
+						%#    Now print the dependencies if we got somes
+						%if len(elt.parent_dependencies) > 0:
+						<h4 class="span12">Root cause:</h4>
+						<a id="togglelink-{{elt.get_dbg_name()}}" href="javascript:toggleBusinessElt('{{elt.get_dbg_name()}}')"> {{!helper.get_button('Show dependency tree', img='/static/images/expand.png')}}</a>
+						<div class="clear"></div>
+						{{!helper.print_business_rules(datamgr.get_business_parents(elt), source_problems=elt.source_problems)}}
+						%end
+						<hr/>
 
-		      		<!-- If we are an host and not a problem, show our services -->
-		      		%# " Only print host service if elt is an host of course"
-		      		%# " If the host is a problem, services will be print in the impacts, so don't"
-		      		%# " print twice "
-		      		%if elt_type=='host' and not elt.is_problem:
-		      		%if len(elt.services) > 0:
-		      		<h4 class="span10 no-topmargin">My services:</h4>
-		      		%elif len(elt.parent_dependencies) == 0:
-					<div class="alert alert-info">
-						<p class="font-blue">No services available</p>
-					</div>
-		      		%end
-		      		<div class="host-services span11">
-						<div class='pull-left'>
-							%_html_id = helper.get_html_id(elt)
-							{{!helper.print_aggregation_tree(helper.get_host_service_aggregation_tree(elt), _html_id)}}
+						<!-- If we are an host and not a problem, show our services -->
+						%# " Only print host service if elt is an host of course"
+						%# " If the host is a problem, services will be print in the impacts, so don't"
+						%# " print twice "
+						%if elt_type=='host' and not elt.is_problem:
+						%if len(elt.services) > 0:
+						<h4 class="span10 no-topmargin">My services:</h4>
+						%elif len(elt.parent_dependencies) == 0:
+						<div class="alert alert-info">
+							<p class="font-blue">No services available</p>
 						</div>
-						<div>&nbsp;</div>
-		      		</div>
-		      			%end #of the only host part
+						%end
+						<div class="host-services span11">
+							<div class='pull-left'>
+								%_html_id = helper.get_html_id(elt)
+								{{!helper.print_aggregation_tree(helper.get_host_service_aggregation_tree(elt), _html_id)}}
+							</div>
+							<div>&nbsp;</div>
+						</div>
+						%end #of the only host part
 
-		      			<!-- If we are a root problem and got real impacts, show them! -->
-		      			%if elt.is_problem and len(elt.impacts) != 0:
-		      			<h4 class="span10">My impacts:</h4>
-		      			<div class='host-services'>
-		      				%nb = 0
-		      				%for i in helper.get_impacts_sorted(elt):
-		      				%nb += 1
-		      				%if nb == 8:
-		      				<div style="float:right;" id="hidden_impacts_or_services_button"><a href="javascript:show_hidden_impacts_or_services()"> {{!helper.get_button('Show all impacts', img='/static/images/expand.png')}}</a></div>
-		      				%end
-		      				%if nb < 8:
-		      				<div class="service">
-		      					%else:
-		      					<div class="service hidden_impacts_services">
-		      						%end
-		      						<div>
-		      							<img style="width : 16px; height:16px" alt="icon state" src="{{helper.get_icon_state(i)}}">
-		      							<span class='alert-small alert-{{i.state.lower()}}' style="font-size:110%">{{i.state}}</span> for <span style="font-size:110%">{{!helper.get_link(i, short=True)}}</span> since {{helper.print_duration(i.last_state_change, just_duration=True, x_elts=2)}}
-		      							%for i in range(0, i.business_impact-2):
-		      							<img alt="icon state" src="/static/images/star.png">
-		      							%end
-		      						</div>
-		      					</div>
-		      					%# End of this impact
-		      					%end
-		      				</div>
-		      				%# end of the 'is problem' if
-		      				%end
-		      			</div><!-- End of the right part -->
-		      		</div>
-		      		<!-- End of the row with the 2 blocks-->
-		      	</div>
-		      	<!-- Tab Summary End-->
+						<!-- If we are a root problem and got real impacts, show them! -->
+						%if elt.is_problem and len(elt.impacts) != 0:
+							<h4 class="span10">My impacts:</h4>
+							<div class='host-services'>
+								%nb = 0
+								%for i in helper.get_impacts_sorted(elt):
+								%nb += 1
+								%if nb == 8:
+								<div style="float:right;" id="hidden_impacts_or_services_button"><a href="javascript:show_hidden_impacts_or_services()"> {{!helper.get_button('Show all impacts', img='/static/images/expand.png')}}</a></div>
+								%end
+								%if nb < 8:
+								<div class="service">
+									%else:
+									<div class="service hidden_impacts_services">
+										%end
+										<div>
+											<img style="width : 16px; height:16px" alt="icon state" src="{{helper.get_icon_state(i)}}">
+											<span class='alert-small alert-{{i.state.lower()}}' style="font-size:110%">{{i.state}}</span> for <span style="font-size:110%">{{!helper.get_link(i, short=True)}}</span> since {{helper.print_duration(i.last_state_change, just_duration=True, x_elts=2)}}
+											%for i in range(0, i.business_impact-2):
+											<img alt="icon state" src="/static/images/star.png">
+											%end
+										</div>
+									</div>
+									%# End of this impact
+									%end
+								</div>
+						%# end of the 'is problem' if
+						%end
+						</div><!-- End of the right part -->
+						</div>
+						<!-- End of the row with the 2 blocks-->
+				</div>
+				<!-- Tab Summary End-->
 
-		      	<!-- Tab Comments Start -->
-		      	<div class="tab-pane" id="comments">
+				<!-- Tab Comments Start -->
+				<div class="tab-pane" id="comments">
 		      		<div>
 		      			<ul class="nav nav-pills">
 		      				<li class="active"><a class='{{global_disabled}}' href="/forms/comment/{{helper.get_uri_name(elt)}}" data-toggle="modal" data-target="#modal"><i class="icon-plus"></i> Add comment</a></li>
@@ -665,10 +663,10 @@ $(document).ready(function(){
 		      			%end
 		      		</div>
 		      	</div>
-		      	<!-- Tab Comments End -->
-		      	
-		      	<!-- Tab Downtimes Start -->
-		      	<div class="tab-pane" id="downtimes">
+				<!-- Tab Comments End -->
+
+				<!-- Tab Downtimes Start -->
+				<div class="tab-pane" id="downtimes">
 		      		<div>
 		      			<ul class="nav nav-pills">
 		      				<li class="active"><a class='{{global_disabled}}' href="/forms/downtime/{{helper.get_uri_name(elt)}}" data-toggle="modal" data-target="#modal"><i class="icon-plus"></i> Add a downtime</a></li>
@@ -709,18 +707,21 @@ $(document).ready(function(){
 					%end
 				</div>
 			</div>
-			<!-- Tab Comments and Downtimes End -->
+				<!-- Tab Downtimes End -->
 
-		      	<!-- Tab Graph Start -->
-		      	<div class="tab-pane" id="graphs">
-		      		%uris = app.get_graph_uris(elt, graphstart, graphend)
-		      		%if len(uris) == 0:
+				<!-- Tab Graph Start -->
+				<div class="tab-pane" id="graphs">
+					%uris = app.get_graph_uris(elt, graphstart, graphend)
+					%if len(uris) == 0:
 					<div class="alert alert-info">
 					    <div class="font-blue"><strong>Oh snap!</strong> No graphs available!</div>
 					</div>
-		      		%else:
-		      		<h4>Graphs</h4>
-		      		<div class='row-fluid well span6'>
+					<script language="javascript">
+						$('#tab_to_graphs').hide();
+					</script>
+					%else:
+					<h4>Graphs</h4>
+					<div class='row-fluid well span6'>
 		      			<!-- Get the uris for the 4 standard time ranges in advance	 -->
 		      			%now = int(time.time())
 		      			%fourhours = now - 3600*4
@@ -744,7 +745,7 @@ $(document).ready(function(){
 		      			<div class='span2'><a onclick="setHTML(html_1y,{{lastyear}});" class=""> 1 year</a></div>
 		      		</div>
 
-		      		<script langage="javascript">
+					<script language="javascript">
 		      		function setHTML(html,start) {
 		      			<!-- change the content of the div --!>
 		      			document.getElementById("real_graphs").innerHTML=html;
@@ -818,60 +819,55 @@ $(document).ready(function(){
 
 		      		</script>
 
-		      		<div class='row-fluid well span8 jcrop'>
-		      			<div id='real_graphs'>
-    			  <!-- Let's keep this part visible. This is the custom and default range -->
-				    %for g in uris:
-                      %(img_src, link) = app.get_graph_img_src( g['img_src'], g['link'])
-				      <p>
-						
-				        <img src="{{img_src}}" class="jcropelt"/>
-				        <a href="{{link}}" class="btn"><i class="icon-plus"></i> Show more</a>
-				        <a href="javascript:graph_zoom('/{{elt_type}}/{{elt.get_full_name()}}?')" class="btn"><i class="icon-zoom-in"></i> Zoom</a>
-                      </p>
-                      
-					%end      
-					
-				  </div>
-				</div>
+					<div class='row-fluid well span8 jcrop'>
+						<div id='real_graphs'>
+						<!-- Let's keep this part visible. This is the custom and default range -->
+						%for g in uris:
+							%(img_src, link) = app.get_graph_img_src( g['img_src'], g['link'])
+							<p>
+								<img src="{{img_src}}" class="jcropelt"/>
+								<a href="{{link}}" class="btn"><i class="icon-plus"></i> Show more</a>
+								<a href="javascript:graph_zoom('/{{elt_type}}/{{elt.get_full_name()}}?')" class="btn"><i class="icon-zoom-in"></i> Zoom</a>
+							</p>
+						%end      
+						</div>
+					</div>
 				%end
 			</div>
-			<!-- Tab Graph End -->
+				<!-- Tab Graph End -->
 
 
-			<!-- Tab Dep graph Start -->
-			<script>
-			$(function() {
-				$('#supported').text('Supported/allowed: ' + !!screenfull.enabled);
-				if (!screenfull.enabled) {
-					return false;
-				}
+				<!-- Tab Dep graph Start -->
+				<script>
+				$(function() {
+					$('#supported').text('Supported/allowed: ' + !!screenfull.enabled);
+					if (!screenfull.enabled) {
+						return false;
+					}
 
+					$('#fullscreen-request').click(function() {
+						screenfull.request($('#inner_depgraph')[0]);
+						// Does not require jQuery, can be used like this too:
+						// screenfull.request(document.getElementById('container'));
+					});
 
-				$('#fullscreen-request').click(function() {
-					screenfull.request($('#inner_depgraph')[0]);
-					// Does not require jQuery, can be used like this too:
-					// screenfull.request(document.getElementById('container'));
+					// Trigger the onchange() to set the initial values
+					screenfull.onchange();
 				});
-
-				// Trigger the onchange() to set the initial values
-				screenfull.onchange();
-			});
-			</script>
-
-			<div class="tab-pane" id="depgraph" class="span12">
-				<div>
-					<ul class="nav nav-pills">
-						<li class="active"><a id="fullscreen-request" href="#"><i class="icon-plus"></i> Fullscreen</a></li></i>
-					</ul>
+				</script>
+				<div class="tab-pane" id="depgraph" class="span12">
+					<div>
+						<ul class="nav nav-pills">
+							<li class="active"><a id="fullscreen-request" href="#"><i class="icon-plus"></i>Fullscreen</a></li></i>
+						</ul>
+					</div>
+					<div class="clear"></div>
+					<div id="inner_depgraph" data-elt-name='{{elt.get_full_name()}}'>
+						<span class="alert alert-error">Cannot load dependency graph.</span>
+					</div>
 				</div>
-				<div class="clear"></div>
-				<div id="inner_depgraph" data-elt-name='{{elt.get_full_name()}}'>
-					<span class="alert alert-error"> Cannot load dependency graph.</span>
-				</div>
+				<!-- Tab Dep graph End -->
 			</div>
-			<!-- Tab Dep graph End -->
-		</div>
 		<!-- Detail info box end -->
 	</div>
 	<!-- End ... -->
