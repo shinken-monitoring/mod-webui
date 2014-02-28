@@ -24,6 +24,8 @@
     "module",
     "broker",
     "webui",
+    "ui",
+    "web"
     "interface"
   ],
   "dependencies": {
