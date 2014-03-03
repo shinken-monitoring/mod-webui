@@ -11,6 +11,8 @@ Invalid element name
 %helper = app.helper
 %datamgr = app.datamgr
 
+%from shinken.macroresolver import MacroResolver
+
 %elt_type = elt.__class__.my_type
 
 %top_right_banner_state = datamgr.get_overall_state()
@@ -120,10 +122,10 @@ Invalid element name
 							%for triplet in action_urls:
 								%if len(triplet.split(',')) == 3:
 									%( action_url, icon, alt) = triplet.split(',')
-									<li><a href="{{action_url}}" target=_blank><img src={{icon}} alt="{{alt}}"></a></li>
+									<li><a href="{{ MacroResolver().resolve_simple_macros_in_string(action_url, elt.get_data_for_checks()) }}" target=_blank><img src={{icon}} alt="{{alt}}"></a></li>
 								%else:
 									%if len(triplet.split(',')) == 1:
-										<li><a id="action-link" href="{{triplet}}" target=_blank>{{triplet}}</a></li>
+										<li><a id="action-link" href="{{ MacroResolver().resolve_simple_macros_in_string(triplet, elt.get_data_for_checks()) }}" target=_blank>{{ MacroResolver().resolve_simple_macros_in_string(triplet, elt.get_data_for_checks()) }}</a></li>
 									%end
 								%end
 							%end
