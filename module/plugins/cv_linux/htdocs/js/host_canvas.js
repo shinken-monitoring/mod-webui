@@ -62,17 +62,18 @@ $(function(){
 
     /////////////// The network icon
 	var linePos = 150;
+	var posNetwork = linePos;
 	if (host_canvas.data('host-network-state') != 'unknown') {
 		// Now a small step down
 		draw_line(ctx, 50, linePos, 50, linePos+150, line_color, 1, 0.5);
 		linePos += 150;
+		posNetwork = linePos-50;
 		// And a small vertical line for disks
 		draw_line(ctx, 50, linePos, 100, linePos, line_color, 1, 0.5);
 
 		var img_network = document.createElement('img');
-		var img_size = 64;
 		img_network.onload=function(){
-			ctx.drawImage(img_network, 75, linePos-30, img_size, img_size);
+			ctx.drawImage(img_network, 75, posNetwork, 64, 64);
 		};
 		img_network.src = '/static/cv_linux/img/'+host_canvas.data('host-network-image');
 		
@@ -80,23 +81,30 @@ $(function(){
 		ctx.font      = "bold 10px Verdana";
 		ctx.fillStyle = "#555";
 		ctx.textAlign = 'center';
-		ctx.fillText(ip, 105, linePos);
+		ctx.fillText(ip, 105, linePos+25);
 	}
 
     /////////////// The printer icon
+	var posPrinter = linePos;
 	if (host_canvas.data('host-printer-state') != 'unknown') {
 		// Now a small step down
 		draw_line(ctx, 50, linePos, 50, linePos+150, line_color, 1, 0.5);
 		linePos += 150;
+		posPrinter = linePos-50;
 		// And a small vertical line for disks
 		draw_line(ctx, 50, linePos, 100, linePos, line_color, 1, 0.5);
 
 		var img_printer = document.createElement('img');
-		var img_size = 64;
 		img_printer.onload=function(){
-			ctx.drawImage(img_printer, 75, linePos-30, img_size, img_size);
+			ctx.drawImage(img_printer, 75, posPrinter, 64, 64);
 		};
 		img_printer.src = '/static/cv_linux/img/'+host_canvas.data('host-printer-image');
+		
+		var pages = host_canvas.data('host-printer-pages');
+		ctx.font      = "bold 10px Verdana";
+		ctx.fillStyle = "#555";
+		ctx.textAlign = 'center';
+		ctx.fillText(pages + " pages", 105, linePos+25);
 	}
 
 

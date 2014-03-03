@@ -120,15 +120,35 @@ def get_cpu(h):
 
 
 def get_printer(h):
-    printer_state = 'UNKNOWN'
     s = _findServiceByName(h, 'printer')
     if not s:
-        return 'UNKNOWN',0,0
+        return 'UNKNOWN',0
     print "Service found", s.get_full_name()
 
-    return printer_state, cut, retracted
+    printed_pages = 0
+    printer_state = s.state
     
+    # Now perfdata
+    p = PerfDatas(s.perf_data)
+    # p = PerfDatas("'CutPages'=12[c];;;; 'RetractedPages'=8[c];;;;")
+    print "PERFDATA", p, p.__dict__
     
+    if 'CutPages' in p:
+        m = p['CutPages']
+        if m.name and m.value is not None:
+            printed_pages = m.value
+    if 'Cut Pages' in p:
+        m = p['Cut Pages']
+        if m.name and m.value is not None:
+            printed_pages = m.value
+    # if 'Retracted Pages' in p:
+        # m = p['Retracted Pages']
+        # if m.name and m.value is not None:
+            # retracted = m.value
+
+    return printer_state, printed_pages
+
+
 def get_network(h):
     all_nics = []
     network_state = 'UNKNOWN'
@@ -136,6 +156,20 @@ def get_network(h):
     if not s:
         return 'UNKNOWN',all_nics
     print "Service found", s.get_full_name()
+
+    # Host perfdata
+    p = PerfDatas(h.perf_data)
+    print "PERFDATA", p, p.__dict__
+    # all_nics.append(('perfdata', h.perf_data))
+    
+    network_state = s.state
+    p = PerfDatas(s.perf_data)
+    
+    if 'BytesTotalPersec' in p:
+        all_nics.append(('BytesTotalPersec', p['BytesTotalPersec'].value))
+        
+    if 'CurrentBandwidth' in p:
+        all_nics.append(('CurrentBandwidth', p['CurrentBandwidth'].value))
 
     return network_state, all_nics
     
@@ -192,10 +226,7 @@ def get_page(hname):
         # And CPU too
         all_states['cpu'], all_perfs['cpu'] = get_cpu(h)
         # Then printer
-        printer_state, cut, retracted = get_printer(h)
-        all_perfs["cut"] = cut
-        all_perfs["retracted"] = retracted
-        all_states['printer'] = printer_state
+        all_states['printer'], all_perfs['printed_pages'] = get_printer(h)
         # And Network
         network_state, all_nics = get_network(h)
         all_perfs['all_nics'] = all_nics

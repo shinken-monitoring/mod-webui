@@ -17,9 +17,10 @@
 		data-host-state-image="host_{{all_states['global'].lower()}}.png"
 		data-host-network-state="{{all_states['network'].lower()}}"
 		data-host-network-image="network_{{all_states['network'].lower()}}.png"
-		data-host-network-address='{{elt.address}}' 
+		data-host-network-address="{{elt.address}}"
 		data-host-printer-state="{{all_states['printer'].lower()}}"
 		data-host-printer-image="printer_{{all_states['printer'].lower()}}.png"
+		data-host-printer-pages="{{all_perfs['printed_pages']}}"
 		>
 	</canvas>
 
