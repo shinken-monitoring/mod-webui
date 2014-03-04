@@ -1,6 +1,6 @@
 <script type="text/javascript">
 	function submit_local_form() {
-		var form = document.forms['modal_form'];
+		var form = document.forms['input_form'];
 
 		delete_all_comments('{{name}}');
 		$('#modal').modal('hide')
@@ -19,9 +19,11 @@
 			<form name="input_form" class="form-horizontal" role="form">
 				<div class="form-group">
 					<label class="col-sm-12 control-label">Are you sure you want to delete all comments ?</label>
+					<!--
 					<div class="col-sm-1">
-						<textarea type="textarea" name='comment' class="span4 hide" rows=5 placeholder="Comment…"/>
+						<textarea type="textarea" name='comment' class="span4 hide" rows=5 placeholder="Comment..."/>
 					</div>
+					-->
 				</div>
 			</form>
 		</div>
