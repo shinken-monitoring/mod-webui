@@ -10,7 +10,7 @@
 
 <script type="text/javascript">
 	function submit_local_form(){
-	  var form = document.forms['modal_form'];
+	  var form = document.forms['input_form'];
 
 	  var from_day = form.from_day.value;
 	  var from_hour = form.from_hour.value;
@@ -61,40 +61,57 @@
 
 
 	$(function() {
-	$('[data-datepicker]').datepicker();
+		$('[data-datepicker]').datepicker();
 	});
 </script>
 
-<div class="modal-header">
-	<a class="close" data-dismiss="modal">×</a>
-	<h3>Schedule downtime for {{name}}</h3>
-</div>
-
-<div class="modal-body">
-	<form class="well" name='modal_form'>
-		<label>Downtime date range</label>
-		<div class="row-fluid input">
-			<div class="inline-inputs">
-				From
-				<input name='from_day' data-datepicker="datepicker" class="input input-small" type="text" value="{{s_now_day}}" />
-				<input name='from_hour' class="input input-mini" type="text" value="{{s_now_hour}}" />
-				to
-				<input name='to_day' data-datepicker="datepicker" class="input input-small" type="text" value="{{s_nxt_day}}" />
-				<input name='to_hour' class="intput input-mini" type="text" value="{{s_nxt_hour}}" />
-			</div>
+<div class="modal-dialog">
+	<div class="modal-content">
+		<div class="modal-header">
+			<a class="close" data-dismiss="modal">×</a>
+			<h3>Schedule downtime for {{name}}</h3>
 		</div>
-		<textarea type="textarea" name='reason' class="span5" placeholder="Reason…" rows=5></textarea>
-	</form>
-</div>
 
-<div class="modal-footer">
-	<div class="error" id="dateinversion">
-		<p><strong>Error:</strong> Your ending date is before the starting one!</p>
+		<div class="modal-body">
+			<form name="input_form" class="form-horizontal" role="form">
+				<label>Downtime date range</label>
+				<div class="row-fluid input">
+					<div class="form-group">
+						<label class="col-sm-2 control-label">From</label>
+						<div class="col-sm-10">
+							<input name='from_day' data-datepicker="datepicker" class="input input-small" type="text" value="{{s_now_day}}" />
+							<input name='from_hour' class="input input-mini" type="text" value="{{s_now_hour}}" />
+						</div>
+					</div>
+					
+					<div class="form-group">
+						<label class="col-sm-2 control-label">To</label>
+						<div class="col-sm-10">
+							<input name='to_day' data-datepicker="datepicker" class="input input-small" type="text" value="{{s_nxt_day}}" />
+							<input name='to_hour' class="intput input-mini" type="text" value="{{s_nxt_hour}}" />
+						</div>
+					</div>
+					
+					<div class="form-group">
+						<label class="col-sm-2 control-label">Comment</label>
+						<div class="col-sm-10">
+							<textarea type="textarea" name='reason' class="form-control-static col-sm-12" rows=5 placeholder="Reason..."/>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+
+		<div class="modal-footer">
+			<div class="error" id="dateinversion">
+				<p><strong>Error:</strong> Your ending date is before the starting one!</p>
+			</div>
+			<a href="javascript:submit_local_form();" class="btn btn-primary"> <i class="icon-save"></i> Submit</button>
+			<a href="#" class="btn" data-dismiss="modal">Close</a>
+		</div>
 	</div>
-	<a href="javascript:submit_local_form();" class="btn btn-primary">Submit</button>
-	<a href="#" class="btn" data-dismiss="modal">Close</a>
 </div>
 
 <script type="text/javascript">
-  $('#dateinversion').hide();
+	$('#dateinversion').hide();
 </script>
