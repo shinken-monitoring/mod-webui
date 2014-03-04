@@ -83,8 +83,8 @@ hr { /* Yes this is a workaround*/
 }
 
 ul#Navigation {
+  margin: auto;
   margin-top: 17.5em; 
-  margin-left: 20%;
   padding: 0.8em;
   text-align: center;
 }
@@ -92,9 +92,6 @@ ul#Navigation {
 ul#Navigation li {
   list-style: none;
   display: inline;
-  margin: 0.4em;
-  padding: 0;
-  z-index: 1;
 }
 
 /*  Title styles
