@@ -337,6 +337,16 @@
   list-style-type: none;
 }
 
+.snap-drawer li > i {
+  float: left;
+  padding: 5px 10px;
+  text-shadow: 0 1px 0 #000;
+  text-decoration: none;
+  color: #fff;
+  text-indent: 5px;
+  width: 25px;
+}
+
 .snap-drawer li > a {
   display: block;
   padding: 5px 10px;
