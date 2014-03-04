@@ -76,6 +76,9 @@
 
 	<!--Shinken ones-->
 	%if refresh:
+	<script>
+		var app_refresh_period = {{app.refresh_period}};
+	</script>
 	<script src="/static/js/shinken-refresh.js"></script>
 	%end
 	<script src="/static/js/shinken-actions.js"></script>
