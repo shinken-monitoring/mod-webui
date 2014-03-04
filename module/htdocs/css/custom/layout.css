@@ -50,6 +50,11 @@ body {
     height: 40px;
 }
 
+#content_container {
+  padding-top: 5px;
+  padding-bottom: 15px;
+}
+
 .container {
     padding: 0 15px;
     width: auto;
@@ -219,7 +224,7 @@ body {
 }
 
 .no-margin {
-    margin : 0 !important;
+  margin : 0 !important;
 }
 
 .no-border {

@@ -3,6 +3,7 @@
 %helper = app.helper
 %datamgr = app.datamgr
 
+<div id="content_container">
 <div class="row">
   <h3 class="col-lg-10 no-topmargin">Groups overview</h3>
   <span class="col-lg-2 btn-group">
@@ -104,3 +105,4 @@
 	</li>
 %end
 </ul>
+</div>
