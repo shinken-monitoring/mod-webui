@@ -1,6 +1,6 @@
 <script type="text/javascript">
 	function submit_local_form() {
-		var form = document.forms['modal_form'];
+		var form = document.forms['input_form'];
 
 		var comment = form.comment.value;
 
@@ -18,13 +18,13 @@
 		</div>
 
 		<div class="modal-body">
-			<form class="form-horizontal" role="form">
-			  <div class="form-group">
-			    <label class="col-sm-2 control-label">Comment</label>
-			    <div class="col-sm-10">
-			      <textarea type="textarea" name='comment' class="form-control-static col-sm-12" rows=5 placeholder="Comment…"/>
-			    </div>
-			  </div>
+			<form name="input_form" class="form-horizontal" role="form">
+				<div class="form-group">
+					<label class="col-sm-2 control-label">Comment</label>
+					<div class="col-sm-10">
+						<textarea type="textarea" name='comment' class="form-control-static col-sm-12" rows=5 placeholder="Comment…"/>
+					</div>
+				</div>
 			</form>
 		</div>
 
