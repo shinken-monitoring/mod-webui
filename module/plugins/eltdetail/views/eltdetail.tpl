@@ -371,7 +371,7 @@ Invalid element name
 					</table>
 					<hr>
 					<div class="truncate">
-						%if len(elt.output) > 100:
+						%if len(elt.output) > app.max_output_length:
 							%if app.allow_html_output:
 								<div class='output' rel="tooltip" data-original-title="{{elt.output}}"> {{!helper.strip_html_output(elt.output[:app.max_output_length])}}</div>
 							%else:
