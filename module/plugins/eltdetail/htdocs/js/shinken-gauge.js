@@ -39,26 +39,25 @@ function DonutChart(canv_id){
 
     // Value gradient and some colors
     this.grd = this.ctx.createRadialGradient(this.x, this.y, this.radius, this.x, this.y, this.radius - this.space_l);
+	
     // The color depends on the state, so first get it
     this.state = $(this.canvas).data('state');
-    // Uknown go in purple
-
     // Ok: green
     // Warning : orange
     // Critical : red
     // unknown or other : purple
     if(this.state == 'OK'){
-	this.grd.addColorStop(0, '#A6CE8D');
+		this.grd.addColorStop(0, '#A6CE8D');
         this.grd.addColorStop(1, '#81BA6B');
     }else if(this.state == 'WARNING') {
-	this.grd.addColorStop(0, '#F1B16E');
+		this.grd.addColorStop(0, '#F1B16E');
         this.grd.addColorStop(1, '#EC9054');
 
     }else if(this.state == 'CRITICAL') {
         this.grd.addColorStop(0, '#dc4950');
         this.grd.addColorStop(1, '#e05e65');
     }else{
-	this.grd.addColorStop(0, '#c1bad9');
+		this.grd.addColorStop(0, '#c1bad9');
         this.grd.addColorStop(1, '#a79fcb');
     }
     this.color_value    = this.grd;
@@ -121,8 +120,7 @@ DonutChart.prototype.fill_arc = _fill_arc;
 
 function update_donuts(){
     $.each(all_donuts, function(i, donut){
-	//update_donut(donut);
-	donut.update();
+		donut.update();
     });
 }
 
@@ -224,14 +222,28 @@ $(function(){
 // Now the cylinders
 
 
-function draw_cylinder(ctx, value){
+function draw_cylinder(ctx, elt){
     //var canvas = document.getElementById('stage');
     //var ctx = canvas.getContext('2d');
 
-    var value_color = '#89C3C6';
+    var value_color = '#ccc';
+    // The color depends on the state : 
+    // Ok: green
+    // Warning : orange
+    // Critical : red
+    // unknown or other : purple
+    if(elt.data('state') == 'OK'){
+		value_color = '#A6CE8D';
+    }else if(elt.data('state') == 'WARNING') {
+		value_color = '#F1B16E';
+    }else if(elt.data('state') == 'CRITICAL') {
+        value_color = '#dc4950';
+    }else{
+		value_color = '#c1bad9';
+    }
     var back_color = '#DEF3F5';
 
-    var value_offset = 90 - Math.floor(value*0.8);
+    var value_offset = 90 - Math.floor(elt.data('value')*0.8);
 
     // console.log('Value offset '+value_offset);
 
@@ -282,8 +294,7 @@ function register_all_cylinders(){
         // console.log('Oh a cylinder canvas?'+elt.id);
         //var canvas = document.getElementById('stage');
         var ctx = elt.getContext('2d');
-        var value = $(elt).data('value');
-        draw_cylinder(ctx, value);
+        draw_cylinder(ctx, $(elt));
     });
 }
 

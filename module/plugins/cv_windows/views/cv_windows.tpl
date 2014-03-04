@@ -2,7 +2,6 @@
 
 <script>
 	all_perfs = {{json.dumps(all_perfs)}}
-	console.log(all_perfs);
 	all_disks = all_perfs['all_disks'];
 	all_states = {{! json.dumps(all_states)}};
 	all_services = {{! json.dumps(all_perfs['all_services'])}};

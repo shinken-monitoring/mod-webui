@@ -61,14 +61,14 @@ $(function(){
 
 
     /////////////// The network icon
-	var linePos = 150;
+	var linePos = 190;
 	var posNetwork = linePos;
 	if (host_canvas.data('host-network-state') != 'unknown') {
 		// Now a small step down
 		draw_line(ctx, 50, linePos, 50, linePos+150, line_color, 1, 0.5);
 		linePos += 150;
 		posNetwork = linePos-50;
-		// And a small vertical line for disks
+
 		draw_line(ctx, 50, linePos, 100, linePos, line_color, 1, 0.5);
 
 		var img_network = document.createElement('img');
@@ -88,10 +88,10 @@ $(function(){
 	var posPrinter = linePos;
 	if (host_canvas.data('host-printer-state') != 'unknown') {
 		// Now a small step down
-		draw_line(ctx, 50, linePos, 50, linePos+150, line_color, 1, 0.5);
-		linePos += 150;
+		draw_line(ctx, 50, linePos, 50, linePos+100, line_color, 1, 0.5);
+		linePos += 100;
 		posPrinter = linePos-50;
-		// And a small vertical line for disks
+
 		draw_line(ctx, 50, linePos, 100, linePos, line_color, 1, 0.5);
 
 		var img_printer = document.createElement('img');
@@ -117,7 +117,7 @@ $(function(){
 		/////////////// The disks part ...
 		var img_disks = document.createElement('img');
 		var dsk_x = 75;
-		var dsk_y = 190;
+		var dsk_y = 210 - (25 * all_disks.length / 2);
 		img_disks.onload=function(){
 			for(var i=0; i<all_disks.length; i++){
 				ctx.drawImage(img_disks, 0, 0, 70, 18, dsk_x, dsk_y, 70, 18);
