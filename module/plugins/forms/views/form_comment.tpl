@@ -22,7 +22,7 @@
 				<div class="form-group">
 					<label class="col-sm-2 control-label">Comment</label>
 					<div class="col-sm-10">
-						<textarea type="textarea" name='comment' class="form-control-static col-sm-12" rows=5 placeholder="Comment…"/>
+						<textarea type="textarea" name='comment' class="form-control-static col-sm-12" rows=5 placeholder="Comment..."/>
 					</div>
 				</div>
 			</form>
