@@ -4,11 +4,11 @@ $(document).ready(function(){
 		e.preventDefault();
 		
 		var theid = $(this).attr("id");
-		var theproducts = $("ul#products");
+		var thegroups = $("ul#groups");
 		var classNames = $(this).attr('class').split(' ');
 		
-		var gridthumb = "images/products/grid-default-thumb.png";
-		var listthumb = "images/products/list-default-thumb.png";
+		var gridthumb = "images/groups/grid-default-thumb.png";
+		var listthumb = "images/groups/list-default-thumb.png";
 		
 		if($(this).hasClass("active")) {
 			// if currently clicked button has the active class
@@ -28,8 +28,8 @@ $(document).ready(function(){
 				theimg.attr("src","images/grid-view-active.png");
 			
 				// remove the list class and change to grid
-				theproducts.removeClass("list");
-				theproducts.addClass("grid");
+				thegroups.removeClass("list");
+				thegroups.addClass("grid");
 			
 				// update all thumbnails to larger size
 				$("img.thumb").attr("src",gridthumb);
@@ -45,8 +45,8 @@ $(document).ready(function(){
 				theimg.attr("src","images/list-view-active.png");
 					
 				// remove the grid view and change to list
-				theproducts.removeClass("grid")
-				theproducts.addClass("list");
+				thegroups.removeClass("grid")
+				thegroups.addClass("list");
 				// update all thumbnails to smaller size
 				$("img.thumb").attr("src",listthumb);
 			} 

@@ -25,18 +25,28 @@
 
 /* ************************************* Message raise part ******************* */
 function raise_message_ok(text){
-    $.meow({
-	message: text,
-	icon: '/static/images/ok_medium.png'
-    });
+	$.meow({
+		message: text,
+		icon: '/static/images/ok_medium.png',
+		onTimeout: function () {
+			// Reload the page
+			// window.location.href = window.location.protocol + "//" + window.location.host + window.location.pathname + '?' + params.join('&');
+			window.location.href = window.location.protocol + "//" + window.location.host + window.location.pathname;
+		}
+	});
 }
 
 
 function raise_message_error(text){
-    $.meow({
-        message: text,
-        icon: '/static/images/down_medium.png'
-    });
+	$.meow({
+		message: text,
+		icon: '/static/images/down_medium.png',
+		onTimeout: function () {
+			// Reload the page
+			// window.location.href = window.location.protocol + "//" + window.location.host + window.location.pathname + '?' + params.join('&');
+			window.location.href = window.location.protocol + "//" + window.location.host + window.location.pathname;
+		}
+	});
 }
 
 
@@ -45,10 +55,10 @@ function raise_message_error(text){
 function react(response){
     //alert('In react'+ response+response.status);
     //alert(response.status == 200);
-    if(response.status == 200){
-	raise_message_ok(response.text);
+    if (response.status == 200){
+		raise_message_ok(response.text);
     }else{
-	raise_message_error(response.text);
+		raise_message_error(response.text);
     }
 }
 
@@ -64,11 +74,10 @@ function launch(url){
     // this code will send a data object via a GET request and alert the retrieved data.
     //alert('Try to get' + url+'?callback=?');
     $.jsonp({
-	"url": url+'?callback=?',
-	"success": react,
-	"error": manage_error
+		"url": url+'?callback=?',
+		"success": react,
+		"error": manage_error
     });
-
 }
 
 

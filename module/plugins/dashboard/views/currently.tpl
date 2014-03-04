@@ -1,4 +1,4 @@
-%rebase layout globals(), js=['dashboard/js/widgets.js','dashboard/js/screenfull.js', 'dashboard/js/jquery.easywidgets.js', 'dashboard/js/jquery.jclock.js'], css=['dashboard/css/shinken-currently.css'], title='Shinken currently', menu_part='/dashboard', print_header=False, print_footer=False, refresh=True
+%rebase layout globals(), js=['dashboard/js/widgets.js','dashboard/js/screenfull.js', 'dashboard/js/jquery.easywidgets.js', 'dashboard/js/jquery.jclock.js'], css=['dashboard/css/shinken-currently.css'], title='Shinken currently', print_header=False, print_footer=False, refresh=True
 
 %from shinken.bin import VERSION
 %helper = app.helper

@@ -28,13 +28,20 @@ from shinken.misc.perfdata import PerfDatas
 ### Will be populated by the UI with it's own value
 app = None
 
-def find_disks(h):
+def _findServiceByName(host, service):
+    for s in host.services:
+        if service.lower() in s.get_name().lower():
+            return s
+    return None
+    
+    
+def get_disks(h):
     all_disks = []
-    disks_state = 'UNKNOWN'
-    s = h.find_service_by_name('Disks')
+    s = _findServiceByName(h, 'disk')
     if not s:
-        return disks_state,all_disks
+        return 'UNKNOWN',all_disks
     print "Service found", s.get_full_name()
+
     disks_state = s.state
     p = PerfDatas(s.perf_data)
     print "PERFDATA", p, p.__dict__
@@ -49,7 +56,6 @@ def find_disks(h):
 
         pct = 100*float(m.value)/m.max
         pct = int(pct)
-        print m.value, m.max, pct
 
         all_disks.append((m.name, pct))
 
@@ -60,7 +66,7 @@ def get_memory(h):
 
     mem_state = swap_state = 'UNKNOWN'
 
-    s = h.find_service_by_name('Memory')
+    s = _findServiceByName(h, 'memory')
     if not s:
         return (mem_state,swap_state,0,0)
     print "Service found", s.get_full_name()
@@ -68,7 +74,6 @@ def get_memory(h):
     mem_state = swap_state = s.state
     # Now grep perfdata in it
     p = PerfDatas(s.perf_data)
-    print "PERFDATA", p, p.__dict__
     mem = 0
     swap = 0
 
@@ -79,7 +84,6 @@ def get_memory(h):
             # Classic pct compute
             pct = 100*float(m.value)/m.max
             mem = int(pct)
-            print "Mem", m.value, m.max, pct
 
     if 'swap_used' in p:
         m = p['swap_used']
@@ -88,17 +92,15 @@ def get_memory(h):
             # Classic pct compute
             pct = 100*float(m.value)/m.max
             swap = int(pct)
-            print "Swap", m.value, m.max, pct
 
     return mem_state,swap_state,mem,swap
 
 
-
 def get_cpu(h):
     cpu_state = 'UNKNOWN'
-    s = h.find_service_by_name('Cpu')
+    s = _findServiceByName(h, 'cpu')
     if not s:
-        return cpu_state,0
+        return 'UNKNOWN',0
     print "Service found", s.get_full_name()
 
     cpu_state = s.state
@@ -117,9 +119,79 @@ def get_cpu(h):
     return cpu_state, cpu
 
 
+def get_printer(h):
+    s = _findServiceByName(h, 'printer')
+    if not s:
+        return 'UNKNOWN',0
+    print "Service found", s.get_full_name()
+
+    printed_pages = 0
+    printer_state = s.state
+    
+    # Now perfdata
+    p = PerfDatas(s.perf_data)
+    # p = PerfDatas("'CutPages'=12[c];;;; 'RetractedPages'=8[c];;;;")
+    print "PERFDATA", p, p.__dict__
+    
+    if 'CutPages' in p:
+        m = p['CutPages']
+        if m.name and m.value is not None:
+            printed_pages = m.value
+    if 'Cut Pages' in p:
+        m = p['Cut Pages']
+        if m.name and m.value is not None:
+            printed_pages = m.value
+    # if 'Retracted Pages' in p:
+        # m = p['Retracted Pages']
+        # if m.name and m.value is not None:
+            # retracted = m.value
+
+    return printer_state, printed_pages
+
+
+def get_network(h):
+    all_nics = []
+    network_state = 'UNKNOWN'
+    s = _findServiceByName(h, 'network')
+    if not s:
+        return 'UNKNOWN',all_nics
+    print "Service found", s.get_full_name()
+
+    # Host perfdata
+    p = PerfDatas(h.perf_data)
+    print "PERFDATA", p, p.__dict__
+    # all_nics.append(('perfdata', h.perf_data))
+    
+    network_state = s.state
+    p = PerfDatas(s.perf_data)
+    
+    if 'BytesTotalPersec' in p:
+        all_nics.append(('BytesTotalPersec', p['BytesTotalPersec'].value))
+        
+    if 'CurrentBandwidth' in p:
+        all_nics.append(('CurrentBandwidth', p['CurrentBandwidth'].value))
+
+    return network_state, all_nics
+    
+    
+def get_services(h):
+    all_services = []
+    packages_state = {}
+
+    # Get host's services list
+    for item in h.services:
+        all_services.append((item.get_name(), item.state))
+        packages_state[item.get_name()] = item.state
+
+    # Compute the worst state of all packages
+    packages_state = compute_worst_state(packages_state)
+    
+    return packages_state,all_services
+
+
 def compute_worst_state(d):
     _ref = {'OK':0, 'UP':0, 'DOWN':3, 'UNREACHABLE':1, 'UNKNOWN':1, 'CRITICAL':3, 'WARNING':2, 'PENDING' :1}
-    cur_level = _ref[d['global']]
+    cur_level = 0
     for (k,v) in d.iteritems():
         level = _ref[v]
         cur_level = max(cur_level, level)
@@ -137,17 +209,14 @@ def get_page(hname):
     # Ok, we can lookup it
     h = app.datamgr.get_host(hname)
 
-    all_perfs = {"swap": 0, "all_disks": [], "cpu": 0, "memory": 0}
-    all_states = {"disks": "UNKNOWN", "global": "UNKNOWN", "swap": "UNKNOWN", "memory": "UNKNOWN", "cpu": "UNKNOWN"}
+    all_perfs = {}
+    all_states = {"global": "UNKNOWN", "cpu": "UNKNOWN", "disks": "UNKNOWN", "memory": "UNKNOWN", "virtual": "UNKNOWN", "paged": "UNKNOWN", "printer": "UNKNOWN"}
 
-    print "\n"*5, "Find host?", h
     if h:
         # Set the host state firt
         all_states["global"] = h.state
         # First look at disks
-        disks_state, all_disks = find_disks(h)
-        all_perfs['all_disks'] = all_disks
-        all_states["disks"] = disks_state
+        all_states["disks"], all_perfs['all_disks'] = get_disks(h)
         # Then memory
         mem_state, swap_state, mem,swap = get_memory(h)
         all_perfs["memory"] = mem
@@ -156,11 +225,17 @@ def get_page(hname):
         all_states['memory'] = mem_state
         # And CPU too
         all_states['cpu'], all_perfs['cpu'] = get_cpu(h)
-        all_states["global"] = compute_worst_state(all_states)
-
-
-    print "ALL PERFS", all_perfs
-
+        # Then printer
+        all_states['printer'], all_perfs['printed_pages'] = get_printer(h)
+        # And Network
+        network_state, all_nics = get_network(h)
+        all_perfs['all_nics'] = all_nics
+        all_states['network'] = network_state
+        # And services
+        all_states['services'], all_perfs['all_services'] = get_services(h)
+        # Then global
+        all_states["view"] = compute_worst_state(all_states)
+        
     return {'app': app, 'elt': h, 'all_perfs':all_perfs, 'all_states':all_states}
 
 

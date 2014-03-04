@@ -1,75 +1,69 @@
-#host_linux_bloc{
+#cv_linux{
     position:absolute;
+	background-color: lightgrey;
 }
 
-#donut_cpu {
-    position: absolute;
-    left: 320px;
-    top: 200px;
-    cursor: pointer;
-    display:inline;
+/* CPU consumption donut */
+.cpu_container {
+	position: absolute;
+
+	top: 70px;
+	left: 240px;
 }
 
-
-#memory_cylinders {
-    position: absolute;
-    left: 410px;
-    top: 110px;
-    cursor: pointer;
+.donut_value {
+	font-weight: bold;
+	position: absolute;
+	top: 32px;
+	left: 50%;
+	margin-left: -40px;
+	line-height: 30px;
+	color: #222;
+	width: 80px;
+	text-align: center;
+	font-size: 20px;
 }
 
-#cylinder_mem{
-    position: absolute;
-    left:     30px;
-    top:      10px;
+.donut_label {
+	font-size: 11px;
+	position: absolute;
+	top: 55px;
+	width: 100%;
+	text-align: center;
+	color: #222;
+	margin: 0;
+	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
 }
 
-.cylinder_label{
-    font-size: 11px;
-    position: absolute;
-    width: 100%;
-    color: #A6A6A6;
-    display: inline-block;
-    margin: 0;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+/* Memory consumption cylinders */
+.cylinderContainer {
+	position: absolute;
+	top: 210px;
+	left: 205px;
 }
 
-.cylinder_value{
-    font-size: 13px;
-    position: absolute;
-    width: 100%;
-    color: #777;
-    font-weight: bold;
-    display: inline-block;
-    margin: 0;
+.cylinderContainer div {
+	float: left;
+	margin-right: 5px;
 }
 
-.mem_label{
-    top:      0px;
-    left:     32px;
+.cylinderContainer div[name=cylinder_mem] {
 }
 
-.mem_value{
-    top:      100px;
-    left:     32px;
-
+.cylinderContainer div[name=cylinder_swap] {
 }
 
-#cylinder_swap{
-    position: absolute;
-    left:     65px;
-    top:      10px;
+.cylinderContainer canvas {
+	text-align: center;
+	margin: auto;
+	display: block;
 }
 
-.swap_label{
-    top:      0px;
-    left:     65px;
-
+.cylinderContainer span {
+	font-size: 10px;
+	color: #222;
+	margin: auto;
+	font-weight: bold;
+	text-align: center;
+	display: block;
 }
-
-.swap_value{
-    top:      100px;
-    left:     70px;
-
-}
-

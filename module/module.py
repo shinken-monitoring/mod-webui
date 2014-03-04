@@ -359,6 +359,7 @@ class Webui_broker(BaseModule, Daemon):
     def load_plugin(self, fdir, plugin_dir):
             print "Try to load", fdir, "from", plugin_dir
             try:
+                logger.debug("Loading WebUI module %s from %s" % (fdir, plugin_dir))
                 # Put the full qualified path of the module we want to load
                 # for example we will give  webui/plugins/eltdetail/
                 mod_path = os.path.join(plugin_dir, fdir)
@@ -368,6 +369,7 @@ class Webui_broker(BaseModule, Daemon):
                 sys.path.append(m_dir)
 
                 print "Loaded module m", m
+                logger.debug("Loaded WebUI module %s" % (m))
                 print m.__file__
                 pages = m.pages
                 print "Try to load pages", pages
@@ -425,7 +427,7 @@ class Webui_broker(BaseModule, Daemon):
 
 
             except Exception, exp:
-                logger.warning("Loading plugins: %s" % exp)
+                logger.warning("Loading WebUI plugin %s: %s" % (fdir, exp))
         
 
 

@@ -1,4 +1,4 @@
-%rebase layout globals(), js=['dashboard/js/widgets.js', 'dashboard/js/jquery.easywidgets.js'], css=['dashboard/css/widget.css', 'dashboard/css/dashboard.css'], title='Dashboard', menu_part='/dashboard', refresh=True
+%rebase layout globals(), js=['dashboard/js/widgets.js', 'dashboard/js/jquery.easywidgets.js'], css=['dashboard/css/dashboard.css'], title='Dashboard', menu_part='/dashboard', refresh=True
 
 %from shinken.bin import VERSION
 %helper = app.helper
@@ -18,7 +18,64 @@
 %end
 
 <div class="row">
-  <div id="loading" class="pull-left"> <img src='/static/images/spinner.gif'> Loading widgets</div>
+  <div class="col-sm-10 topmmargin2">
+    <div class="col-sm-2">
+      %if app:
+      %service_state = app.datamgr.get_per_hosts_state()
+      %if service_state <= 0:
+      <span class="dash-big critical">{{app.datamgr.get_per_hosts_state()}}%</span>
+      %elif service_state <= 33:
+      <span class="dash-big critical">{{app.datamgr.get_per_hosts_state()}}%</span>
+      %elif service_state <= 66:
+      <span class="dash-big warning">{{app.datamgr.get_per_hosts_state()}}%</span>
+      %elif service_state <= 100:
+      <span class="dash-big ok">{{app.datamgr.get_per_hosts_state()}}%</span>
+      %end
+      %end
+      <span>Hosts UP</span>
+    </div>
+    <div class="col-sm-2">
+      %if app:
+      %service_state = app.datamgr.get_per_service_state()
+      %if service_state <= 0:
+      <span class="dash-big critical">{{app.datamgr.get_per_service_state()}}%</span>
+      %elif service_state <= 33:
+      <span class="dash-big critical">{{app.datamgr.get_per_service_state()}}%</span>
+      %elif service_state <= 66:
+      <span class="dash-big warning">{{app.datamgr.get_per_service_state()}}%</span>
+      %elif service_state <= 100:
+      <span class="dash-big ok">{{app.datamgr.get_per_service_state()}}%</span>
+      %end
+      %end
+      <span>Services UP</span>
+    </div>
+    <div class="col-sm-2">
+      %if app:
+      %overall_itproblem = app.datamgr.get_overall_it_state()
+      %if overall_itproblem == 0:
+      <span class="dash-big ok">OK!</span>
+      %elif overall_itproblem == 1:
+      <span class="dash-big warning">{{app.datamgr.get_nb_all_problems(app.get_user_auth())}}</span>
+      %elif overall_itproblem == 2:
+      <span class="dash-big critical">{{app.datamgr.get_nb_all_problems(app.get_user_auth())}}</span>
+      %end
+      %end
+      <span>Problems</span>
+    </div>
+    <div class="col-sm-2">
+      %if app:
+      %overall_state = app.datamgr.get_overall_state()
+      %if overall_state == 0:
+      <span class="dash-big critical">OK!</span>
+      %elif overall_state == 2:
+      <span class="dash-big critical">{{app.datamgr.get_len_overall_state()}}</span>
+      %elif overall_state == 1:
+      <span class="dash-big critical">{{app.datamgr.get_len_overall_state()}}</span>
+      %end
+      %end
+      <span>Impacts</span>
+    </div>
+  </div>
   %# If we got no widget, we should put the button at the center fo the screen
   %small_show_panel_s = ''
   %if len(widgets) == 0:
@@ -33,10 +90,7 @@
   </span>
 </div>
 
-<script >$(function(){
-  $(".slidelink").pageslide({ direction: "left", modal: true});
-});
-</script>
+
 
 <script>
   // Now load all widgets
@@ -54,6 +108,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
+        <span class="icon"><i class="fa fa-signal"></i></span>
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
         <h4 class="modal-title">Widgets available</h4>
       </div>
@@ -62,7 +117,7 @@
         <div class="row">
           %for w in app.get_widgets_for('dashboard'):
           <div class='widget_desc' style="position: relative;">
-            <div class='row'>
+            <div class="row">
               <span class="col-sm-4" style="margin-top:10px;">
                 <img class="img-rounded" style="width:64px;height:64px" src="{{w['widget_picture']}}" id="widget_desc_{{w['widget_name']}}"/>
               </span>

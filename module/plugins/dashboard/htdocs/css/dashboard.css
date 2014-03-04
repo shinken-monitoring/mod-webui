@@ -1,3 +1,42 @@
+/**
+* Copyright (C) 2009-2014:
+*    Gabes Jean, naparuba@gmail.com
+*    Gerhard Lausser, Gerhard.Lausser@consol.de
+*    Gregory Starck, g.starck@gmail.com
+*    Hartmut Goebel, h.goebel@goebel-consult.de
+*    Andreas Karfusehr, andreas@karfusehr.de
+*
+* This file is part of Shinken.
+*
+* Shinken is free software: you can redistribute it and/or modify
+* it under the terms of the GNU Affero General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* Shinken is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU Affero General Public License for more details.
+*
+* You should have received a copy of the GNU Affero General Public License
+* along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
+*
+**/
+
+
+/*  Dashboard basics
+------------------------------------------------------- */
+
+.dash-big {
+    color: #505050;
+    line-height: 30px;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+
+/*  Unsorted
+------------------------------------------------------- */
 #warn-pref {
     padding: 10px 20px;
 }
@@ -6,6 +45,8 @@
     color: #FFFFFF;
 }
 
+/*  Widget styles
+------------------------------------------------------- */
 .widget_desc {
     background-color : white;
     margin : 5px;
@@ -20,21 +61,75 @@
     bottom:0px;
     position:absolute;
 }
-.slidelink{
-    margin-right:20px;
+
+/*  Widget styles informations
+------------------------------------------------------- 
+ This is the widgets basic CSS. Note that you can change
+ the classes names using the plugin settings. But you can
+ use directly the default classes names, this names. */
+
+.widget-place {
+    margin: 0;
+    padding: 0;
+    float: left;
+    width: 33.3%;
+    height: auto;
+    list-style: none;
+    min-height: 400px;
 }
 
-#pageslide {
-    width:600px;
+.widget-menu {
+    float:right;
 }
 
-.page-center {
-    position: absolute;
-    top : 50%;
-    z-index:10;
+.widget-menu a {
+    margin: 0 0 0 0.5em;
 }
 
-.at-center {
-    position: relative;
-    left : 20%;
+
+.widget-placeholder {
+    border: #000 dashed 1px;
+    color: #000;
+    margin: 1em;
+    background-color: #FAFAFA;
+}
+
+.widget {
+    margin: 1em;
+    border-left: #ebebeb solid 1px;
+    border-right: #ebebeb solid 1px;
+    border-bottom: #ebebeb solid 1px;
+    border-radius: 4px;
+}
+
+.widget-header {
+    padding: 0.4em 0.6em;
+
+    color: #505050;
+    background-color: #D9DCDF;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#FAFAFA), to(#EAEAEA)); /* Saf4+, Chrome */
+    background-image: -webkit-linear-gradient(top, #FAFAFA, #EAEAEA); /* Chrome 10+, Saf5.1+, iOS 5+ */
+    background-image:    -moz-linear-gradient(top, #FAFAFA, #EAEAEA); /* FF3.6 */
+    background-image:     -ms-linear-gradient(top, #FAFAFA, #EAEAEA); /* IE10 */
+    background-image:      -o-linear-gradient(top, #FAFAFA, #EAEAEA); /* Opera 11.10+ */
+    background-image:         linear-gradient(top, #FAFAFA, #EAEAEA);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorStr='#FAFAFA', EndColorStr='#EAEAEA'); /* IE6-IE9 */
+
+    border-bottom: solid 1px #EAEAEA;
+/*    box-shadow: 0 1px 0 #FFFFFF inset;
+    text-shadow: 0 1px 1px #FFFFFF;*/
+}
+
+.widget-editbox {
+    color: #000;
+    margin: 0.2em;
+    padding: 0.2em;
+}
+
+.widget-content {
+    padding: 0.6em;
+}
+
+.table-result {
+    border-top: 4px double #ebebeb !important; 
 }

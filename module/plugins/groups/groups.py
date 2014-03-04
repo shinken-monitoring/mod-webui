@@ -38,16 +38,27 @@ def get_page(name):
         app.bottle.redirect("/user/login")
         return
 
-# Here we can call app.datamgr because when the webui "loaded" us, it
+    # Here we can call app.datamgr because when the webui "loaded" us, it
     # populate app with it's own value.
-    my_group = app.datamgr.get_hostgroup(name)
+    if name == 'all':
+        my_group = 'all'
+        
+        hosts = []
+        hosts.extend(app.datamgr.get_hosts())
+        items = hosts
+
+    else:
+        my_group = app.datamgr.get_hostgroup(name)
+
+        if not my_group:
+            return "Unknown group %s" % name
+            
+        items = my_group.get_hosts()
 
     # We want to limit the number of elements
     start = int(app.request.GET.get('start', '0'))
     end = int(app.request.GET.get('end', '30'))
         
-    items = my_group.get_hosts()
-
     # Now sort hosts list ..
     items.sort(hst_srv_sort)
         

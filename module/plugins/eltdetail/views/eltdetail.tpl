@@ -1,12 +1,8 @@
-%# " We should limit the number of impacts to show here. Too much is just useless "
-%max_impacts = 200
-
-%print 'Elt value?', elt
 %import time
 
 %# If got no Elt, bailout
 %if not elt:
-%rebase layout title='Invalid name'
+%rebase layout title='Invalid element name'
 
 Invalid element name
 
@@ -14,6 +10,8 @@ Invalid element name
 
 %helper = app.helper
 %datamgr = app.datamgr
+
+%from shinken.macroresolver import MacroResolver
 
 %elt_type = elt.__class__.my_type
 
@@ -47,53 +45,52 @@ Invalid element name
 	%end
 %end
 
-%rebase layout title=elt_type.capitalize() + ' / ' + elt.get_full_name(), js=['eltdetail/js/jquery.color.js', 'eltdetail/js/jquery.Jcrop.js', 'eltdetail/js/iphone-style-checkboxes.js', 'eltdetail/js/hide.js', 'eltdetail/js/dollar.js', 'eltdetail/js/gesture.js', 'eltdetail/js/graphs.js', 'eltdetail/js/tags.js', 'eltdetail/js/depgraph.js', 'eltdetail/js/custom_views.js', 'eltdetail/js/tabs.js', 'eltdetail/js/screenfull.js' ], css=['eltdetail/css/iphonebuttons.css_', 'eltdetail/css/eltdetail.css', 'eltdetail/css/hide.css', 'eltdetail/css/gesture.css', 'eltdetail/css/jquery.Jcrop.css'], user=user, app=app, refresh=True
+%rebase layout title=elt_type.capitalize() + ' / ' + elt.get_full_name(), js=['eltdetail/js/jquery.color.js', 'eltdetail/js/jquery.Jcrop.js', 'eltdetail/js/iphone-style-checkboxes.js', 'eltdetail/js/hide.js', 'eltdetail/js/dollar.js', 'eltdetail/js/gesture.js', 'eltdetail/js/graphs.js', 'eltdetail/js/tags.js', 'eltdetail/js/depgraph.js', 'eltdetail/js/custom_views.js', 'eltdetail/js/tabs.js', 'eltdetail/js/screenfull.js', 'eltdetail/js/shinken-gauge.js'], css=['eltdetail/css/eltdetail.css', 'eltdetail/css/hide.css', 'eltdetail/css/gesture.css', 'eltdetail/css/jquery.Jcrop.css', 'eltdetail/css/shinken-gauge.css'], user=user, app=app, refresh=True
 
 %# " We will save our element name so gesture functions will be able to call for the good elements."
 <script type="text/javascript">
-var elt_name = '{{elt.get_full_name()}}';
+	var elt_name = '{{elt.get_full_name()}}';
 
-var graphstart={{graphstart}};
-var graphend={{graphend}};
+	var graphstart={{graphstart}};
+	var graphend={{graphend}};
 
-/* Now hide canvas */
-$(document).ready(function(){
-	$('#gesture_panel').hide();
+	$(document).ready(function(){
+		/* Hide gesture panel */
+		$('#gesture_panel').hide();
 
-    // Also hide the button under IE (gesture don't work under it)
-    if (navigator.appName == 'Microsoft Internet Explorer'){
-    	$('#btn_show_gesture').hide();
-    }
-});
-
-/* Look at the # part of the URI. If it match a nav name, go for it*/
-$(document).ready(function(){
-	if (window.location.hash.length > 0) {
-		$('ul.nav-tabs > li > a[href="' + window.location.hash + '"]').tab('show');
-	}
-	else {
-		$('ul.nav-tabs > li > a:first').tab('show');
-	}
-});
+		// Also hide the button under IE (gesture don't work under it)
+		if (navigator.appName == 'Microsoft Internet Explorer'){
+			$('#btn_show_gesture').hide();
+		}
+		
+		/* Look at the # part of the URI. If it match a nav name, go for it*/
+		if (window.location.hash.length > 0) {
+			$('ul.nav-tabs > li > a[href="' + window.location.hash + '"]').tab('show');
+		}
+		else {
+			$('ul.nav-tabs > li > a:first').tab('show');
+		}
+	});
 
   // Now we hook the global search thing
-  $('.typeahead').typeahead({
-    // note that "value" is the default setting for the property option
-    source: function (typeahead, query) {
-    	$.ajax({url: "/lookup/"+query,
-    		success: function (data){
-    			typeahead.process(data)}
-    		});
-    },
-    onselect: function(obj) { 
-    	$("ul.typeahead.dropdown-menu").find('li.active').data(obj);
-    }
+	$('.typeahead').typeahead({
+		// note that "value" is the default setting for the property option
+		source: function (typeahead, query) {
+			$.ajax({url: "/lookup/"+query,
+				success: function (data){
+					typeahead.process(data)}
+				});
+		},
+		onselect: function(obj) { 
+			$("ul.typeahead.dropdown-menu").find('li.active').data(obj);
+		}
 	});
 </script>
 
   %#  "Content Container Start"
 
   %#app.insert_template('cv_linux', globals())
+  %#app.insert_template('cv_windows', globals())
 
   <div id="content_container">
   	<div class="row">
@@ -125,10 +122,10 @@ $(document).ready(function(){
 							%for triplet in action_urls:
 								%if len(triplet.split(',')) == 3:
 									%( action_url, icon, alt) = triplet.split(',')
-									<li><a href="{{action_url}}" target=_blank><img src={{icon}} alt="{{alt}}"></a></li>
+									<li><a href="{{ MacroResolver().resolve_simple_macros_in_string(action_url, elt.get_data_for_checks()) }}" target=_blank><img src={{icon}} alt="{{alt}}"></a></li>
 								%else:
 									%if len(triplet.split(',')) == 1:
-										<li><a id="action-link" href="{{triplet}}" target=_blank>{{triplet}}</a></li>
+										<li><a id="action-link" href="{{ MacroResolver().resolve_simple_macros_in_string(triplet, elt.get_data_for_checks()) }}" target=_blank>{{ MacroResolver().resolve_simple_macros_in_string(triplet, elt.get_data_for_checks()) }}</a></li>
 									%end
 								%end
 							%end
@@ -153,18 +150,26 @@ $(document).ready(function(){
 			<div class="accordion-heading">
 				%if elt_type=='host':
 				<div class="panel-heading fitted-header" data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
-		            <h4 class="panel-title">Overview ({{elt.alias}})</h4>
-		        </div>
+					<h4 class="panel-title">Overview {{elt.host_name}}
+						%if len(elt.display_name) > 0:
+							({{elt.display_name}})
+						%end
+					</h4>
+				</div>
 				%else:
-				<div class="panel-heading fitted-header">
-		            <h4 class="panel-title">Overview</h4>
-		        </div>
+				<div class="panel-heading fitted-header" data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+					<h4 class="panel-title">Overview ({{elt.service_description}}) on {{elt.host.host_name}}
+						%if len(elt.host.display_name) > 0:
+							({{elt.host.display_name}})
+						%end
+					</h4>
+				</div>
 				%end
 			</div>
 			<div id="collapseOne" class="accordion-body collapse">
 				<div class="fitted-bar ">
 					<table class="col-lg-4 leftmargin">
-						%#Alias, apretns and hostgroups are for host only
+						%#Alias, parents and hostgroups are for host only
 						%if elt_type=='host':
 						<tr>
 							<td>Alias:</td>
@@ -190,11 +195,13 @@ $(document).ready(function(){
 							%end
 						</tr>
 						<tr>
-							<td>Members of:</td>
+							<td>Member of:</td>
 							%if len(elt.hostgroups) > 0:
+							<td>
 							%for hg in elt.hostgroups:
-							<td><a href="/group/{{hg.get_name()}}" class="link">{{hg.alias}} ({{hg.get_name()}})</a></td>
+							<a href="/group/{{hg.get_name()}}" class="link">{{hg.alias}} ({{hg.get_name()}})</a>
 							%end
+							</td>
 							%else:
 							<td> No groups </td>
 							%end
@@ -203,10 +210,14 @@ $(document).ready(function(){
 						%else:
 						<tr>
 							<td>Host:</td>
-							<td><a href="/host/{{elt.host.host_name}}" class="link">{{elt.host.host_name}}</a></td>
+							<td><a href="/host/{{elt.host.host_name}}" class="link">{{elt.host.host_name}}
+							%if len(elt.host.display_name) > 0:
+								({{elt.host.display_name}})
+							%end
+							</a></td>
 						</tr>
 						<tr>
-							<td>Members of:</td>
+							<td>Member of:</td>
 							%if len(elt.servicegroups) > 0:
 							<td>{{','.join([sg.get_name() for sg in elt.servicegroups])}}</td>
 							%else:
@@ -254,9 +265,15 @@ $(document).ready(function(){
 	<!-- Switch Start -->
 
 	%# By default all is unabled
-	% chk_state = not_state =  evt_state = flp_state = 'checked=""'
-	%if not (elt.active_checks_enabled|elt.passive_checks_enabled):
-	%chk_state = 'unchecked=""'
+	% chk_freshness = chk_active_state = chk_passive_state = not_state =  evt_state = flp_state = 'checked=""'
+	%if not (elt.check_freshness):
+	%chk_freshness = 'unchecked=""'
+	%end
+	%if not (elt.active_checks_enabled):
+	%chk_active_state = 'unchecked=""'
+	%end
+	%if not (elt.passive_checks_enabled):
+	%chk_passive_state = 'unchecked=""'
 	%end
 	%if not elt.notifications_enabled:
 	%not_state = 'unchecked=""'
@@ -270,7 +287,13 @@ $(document).ready(function(){
 
 	<script type="text/javascript">
 	$(document).ready(function() {
-		$('#btn-checks').iphoneStyle({
+		$('#btn-active-check').iphoneStyle({
+			resizeContainer: false,
+			resizeHandle: false,
+			onChange : function(elt, b){toggle_checks("{{elt.get_full_name()}}", !b);}
+		});
+
+		$('#btn-passive-check').iphoneStyle({
 			resizeContainer: false,
 			resizeHandle: false,
 			onChange : function(elt, b){toggle_checks("{{elt.get_full_name()}}", !b);}
@@ -319,7 +342,7 @@ $(document).ready(function(){
 					<script type="text/javascript">
 					$().ready(function() {
 						$('.truncate').jTruncate({
-							length: 85,
+							length: 100,
 							minTrail: 0,
 							moreText: "[see all]",
 							lessText: "[hide extra]",
@@ -347,7 +370,24 @@ $(document).ready(function(){
 						</tr>
 					</table>
 					<hr>
-					<div class="truncate">{{elt.output}}</div>
+					<div class="truncate">
+						%if len(elt.output) > 100:
+							%if app.allow_html_output:
+								<div class='output' rel="tooltip" data-original-title="{{elt.output}}"> {{!helper.strip_html_output(elt.output[:app.max_output_length])}}</div>
+							%else:
+								<div class='output' rel="tooltip" data-original-title="{{elt.output}}"> {{elt.output[:app.max_output_length]}}</div>
+							%end
+						%else:
+							%if app.allow_html_output:
+								<div class='output'> {{!helper.strip_html_output(elt.output)}}</div>
+							%else:
+								<div class='output'> {{elt.output}} </div>
+							%end
+						%end
+						%if elt.long_output:
+							<br/> {{elt.long_output}}
+						%end
+					</div>
 					<hr>
 					<table class="table">
 						<tr>
@@ -405,6 +445,10 @@ $(document).ready(function(){
 							<td class="column2">{{helper.print_date(elt.last_notification)}} (notification {{elt.current_notification_number}})</td>
 						</tr>
 						<tr>
+							<td class="column1"><b>Notification interval</b></td>
+							<td class="column2">{{elt.notification_interval}} mn (period : {{elt.notification_period.timeperiod_name}})</td>
+						</tr>
+						<tr>
 							<td class="column1"><b>Current Attempt</b></td>
 							<td class="column2">{{elt.attempt}}/{{elt.max_check_attempts}} ({{elt.state_type}} state)</td>
 						</tr>
@@ -412,33 +456,32 @@ $(document).ready(function(){
 					</table>
 					<hr>
 					<div>
-						<span><b>Active/passive checks</b></span>
-						<input {{chk_state}} class="iphone" type="checkbox" id='btn-checks'>
+						<div>
+						<span><b>Active checks</b></span>
+						<input {{chk_active_state}} class="iphone" type="checkbox" id='btn-active-check'>
+						</div>
+						<div>
+						<span><b>Passive checks</b></span>
+						<input {{chk_passive_state}} class="iphone" type="checkbox" id='btn-passive-check'>
+						</div>
+						%if (elt.passive_checks_enabled):
+						%if (elt.check_freshness):
+						<span><b>- Freshness check:</b> {{elt.freshness_threshold}}</span>
+						%end
+						%end
+						<div>
 						<span><b>Notifications</b></span>
 						<input {{not_state}} class="iphone" type="checkbox" id='btn-not'>
+						</div>
+						<div>
 						<span><b>Event handler</b></span>
 						<input {{evt_state}} class="iphone" type="checkbox" id='btn-evt'>
+						</div>
+						<div>
 						<span><b>Flap detection</b></span>
 						<input {{flp_state}} class="iphone" type="checkbox" id='btn-flp'>
+						</div>
 					</div>
-					<!-- <table class="table">
-						<tr>
-							<td class="column1"><b>Active/passive checks</b></td>
-							<td><input {{chk_state}} class="iphone" type="checkbox" id='btn-checks'></td>
-						</tr>
-						<tr>		
-							<td class="column1"><b>Notifications</b></td>
-							<td><input {{not_state}} class="iphone" type="checkbox" id='btn-not'></td>
-						</tr>
-						<tr>			
-							<td class="column1"><b>Event handler</b></td>
-							<td><input {{evt_state}} class="iphone" type="checkbox" id='btn-evt'></td>
-						</tr>
-						<tr>
-							<td class="column1"><b>Flap detection</b></td>
-							<td><input {{flp_state}} class="iphone" type="checkbox" id='btn-flp'></td>
-						</tr>
-					</table> -->
 				</div>
 
 				<div class="tab-pane fade" id="commands">
@@ -499,93 +542,93 @@ $(document).ready(function(){
 			</ul>
 			<div class="tab-content">
 
-			  <!-- First custom views -->
-			  %_go_active = 'active'
-			  %for cvname in elt.custom_views:
-			     <div class="tab-pane {{_go_active}}" data-cv-name="{{cvname}}" data-elt-name='{{elt.get_full_name()}}' id="cv{{cvname}}">
-			       Cannot load the pane {{cvname}}.
-			     </div>
-			     %_go_active = ''
-			  %end
+				<!-- First custom views -->
+				%_go_active = 'active'
+				%for cvname in elt.custom_views:
+					<div class="tab-pane {{_go_active}}" data-cv-name="{{cvname}}" data-elt-name='{{elt.get_full_name()}}' id="cv{{cvname}}">
+						Cannot load the pane {{cvname}}.
+					</div>
+					%_go_active = ''
+				%end
 
 				<!-- Tab Summary Start-->
 				<div class="tab-pane {{_go_active}}" id="impacts">
-		      <!-- Start of the Whole info pack. We got a row of 2 thing : 
-		      left is information, right is related elements -->
-		      <div class="row-fluid">
-				<!-- So now it's time for the right part, replaceted elements -->
-				<div class="span12">
-					<!-- Show our father dependencies if we got some -->
-					%#    Now print the dependencies if we got somes
-					%if len(elt.parent_dependencies) > 0:
-					<h4 class="span12">Root cause:</h4>
-					<a id="togglelink-{{elt.get_dbg_name()}}" href="javascript:toggleBusinessElt('{{elt.get_dbg_name()}}')"> {{!helper.get_button('Show dependency tree', img='/static/images/expand.png')}}</a>
-					<div class="clear"></div>
-					{{!helper.print_business_rules(datamgr.get_business_parents(elt), source_problems=elt.source_problems)}}
-					%end
-					<hr>
+					<!-- Start of the Whole info pack. We got a row of 2 thing : 
+					left is information, right is related elements -->
+					<div class="row-fluid">
+					<!-- So now it's time for the right part, replaceted elements -->
+					<div class="span12">
+						<!-- Show our father dependencies if we got some -->
+						%#    Now print the dependencies if we got somes
+						%if len(elt.parent_dependencies) > 0:
+						<h4 class="span12">Root cause:</h4>
+						<a id="togglelink-{{elt.get_dbg_name()}}" href="javascript:toggleBusinessElt('{{elt.get_dbg_name()}}')"> {{!helper.get_button('Show dependency tree', img='/static/images/expand.png')}}</a>
+						<div class="clear"></div>
+						{{!helper.print_business_rules(datamgr.get_business_parents(elt), source_problems=elt.source_problems)}}
+						%end
+						<hr/>
 
-		      		<!-- If we are an host and not a problem, show our services -->
-		      		%# " Only print host service if elt is an host of course"
-		      		%# " If the host is a problem, services will be print in the impacts, so don't"
-		      		%# " print twice "
-		      		%if elt_type=='host' and not elt.is_problem:
-		      		%if len(elt.services) > 0:
-		      		<h4 class="span10 no-topmargin">My services:</h4>
-		      		%elif len(elt.parent_dependencies) == 0:
-					<div class="alert alert-info">
-						<p class="font-blue">No services available</p>
-					</div>
-		      		%end
-		      		<div class="host-services span11">
+						<!-- If we are an host and not a problem, show our services -->
+						%# " Only print host service if elt is an host of course"
+						%# " If the host is a problem, services will be print in the impacts, so don't"
+						%# " print twice "
+						%if elt_type=='host' and not elt.is_problem:
+						%if len(elt.services) > 0:
+						<h4 class="span10 no-topmargin">My services:</h4>
+						%elif len(elt.parent_dependencies) == 0:
+						<div class="alert alert-info">
+							<p class="font-blue">No services available</p>
+						</div>
+						%end
+						<div class="host-services span11">
+							<div class='pull-left'>
+								%_html_id = helper.get_html_id(elt)
+								{{!helper.print_aggregation_tree(helper.get_host_service_aggregation_tree(elt), _html_id)}}
+							</div>
+							<div>&nbsp;</div>
+						</div>
+						%end #of the only host part
 
-				  <div class='pull-left'>
-				    %_html_id = helper.get_html_id(elt)
-				    {{!helper.print_aggregation_tree(helper.get_host_service_aggregation_tree(elt), _html_id)}}
-				  </div>
-				  <div>&nbsp;</div>
-		      			</div>
-		      			%end #of the only host part
+						<!-- If we are a root problem and got real impacts, show them! -->
+						%if elt.is_problem and len(elt.impacts) != 0:
+							<h4 class="span10">My impacts:</h4>
+							<div class='host-services'>
+								%nb = 0
+								%for i in helper.get_impacts_sorted(elt):
+								%nb += 1
+								%if nb == 8:
+								<div style="float:right;" id="hidden_impacts_or_services_button"><a href="javascript:show_hidden_impacts_or_services()"> {{!helper.get_button('Show all impacts', img='/static/images/expand.png')}}</a></div>
+								%end
+								%if nb < 8:
+								<div class="service">
+									%else:
+									<div class="service hidden_impacts_services">
+										%end
+										<div>
+											<img style="width : 16px; height:16px" alt="icon state" src="{{helper.get_icon_state(i)}}">
+											<span class='alert-small alert-{{i.state.lower()}}' style="font-size:110%">{{i.state}}</span> for <span style="font-size:110%">{{!helper.get_link(i, short=True)}}</span> since {{helper.print_duration(i.last_state_change, just_duration=True, x_elts=2)}}
+											%for i in range(0, i.business_impact-2):
+											<img alt="icon state" src="/static/images/star.png">
+											%end
+										</div>
+									</div>
+									%# End of this impact
+									%end
+								</div>
+						%# end of the 'is problem' if
+						%end
+						</div><!-- End of the right part -->
+						</div>
+						<!-- End of the row with the 2 blocks-->
+				</div>
+				<!-- Tab Summary End-->
 
-		      			<!-- If we are a root problem and got real impacts, show them! -->
-		      			%if elt.is_problem and len(elt.impacts) != 0:
-		      			<h4 class="span10">My impacts:</h4>
-		      			<div class='host-services'>
-		      				%nb = 0
-		      				%for i in helper.get_impacts_sorted(elt):
-		      				%nb += 1
-		      				%if nb == 8:
-		      				<div style="float:right;" id="hidden_impacts_or_services_button"><a href="javascript:show_hidden_impacts_or_services()"> {{!helper.get_button('Show all impacts', img='/static/images/expand.png')}}</a></div>
-		      				%end
-		      				%if nb < 8:
-		      				<div class="service">
-		      					%else:
-		      					<div class="service hidden_impacts_services">
-		      						%end
-		      						<div>
-		      							<img style="width : 16px; height:16px" alt="icon state" src="{{helper.get_icon_state(i)}}">
-		      							<span class='alert-small alert-{{i.state.lower()}}' style="font-size:110%">{{i.state}}</span> for <span style="font-size:110%">{{!helper.get_link(i, short=True)}}</span> since {{helper.print_duration(i.last_state_change, just_duration=True, x_elts=2)}}
-		      							%for i in range(0, i.business_impact-2):
-		      							<img alt="icon state" src="/static/images/star.png">
-		      							%end
-		      						</div>
-		      					</div>
-		      					%# End of this impact
-		      					%end
-		      				</div>
-		      				%# end of the 'is problem' if
-		      				%end
-		      			</div><!-- End of the right part -->
-		      		</div>
-		      		<!-- End of the row with the 2 blocks-->
-		      	</div>
-		      	<!-- Tab Summary End-->
-
-		      	<!-- Tab Comments Start -->
-		      	<div class="tab-pane" id="comments">
+				<!-- Tab Comments Start -->
+				<div class="tab-pane" id="comments">
 		      		<div>
 		      			<ul class="nav nav-pills">
 		      				<li class="active"><a class='{{global_disabled}}' href="/forms/comment/{{helper.get_uri_name(elt)}}" data-toggle="modal" data-target="#modal"><i class="icon-plus"></i> Add comment</a></li>
+		      				
 		      				<li><a class='{{global_disabled}}' href="/forms/comment_delete/{{helper.get_uri_name(elt)}}" data-toggle="modal" data-target="#modal"><i class="icon-minus"></i> Delete all comments</a></li>
 		      			</ul>
 		      		</div>
@@ -623,10 +666,10 @@ $(document).ready(function(){
 		      			%end
 		      		</div>
 		      	</div>
-		      	<!-- Tab Comments End -->
-		      	
-		      	<!-- Tab Downtimes Start -->
-		      	<div class="tab-pane" id="downtimes">
+				<!-- Tab Comments End -->
+
+				<!-- Tab Downtimes Start -->
+				<div class="tab-pane" id="downtimes">
 		      		<div>
 		      			<ul class="nav nav-pills">
 		      				<li class="active"><a class='{{global_disabled}}' href="/forms/downtime/{{helper.get_uri_name(elt)}}" data-toggle="modal" data-target="#modal"><i class="icon-plus"></i> Add a downtime</a></li>
@@ -667,18 +710,21 @@ $(document).ready(function(){
 					%end
 				</div>
 			</div>
-			<!-- Tab Comments and Downtimes End -->
+				<!-- Tab Downtimes End -->
 
-		      	<!-- Tab Graph Start -->
-		      	<div class="tab-pane" id="graphs">
-		      		%uris = app.get_graph_uris(elt, graphstart, graphend)
-		      		%if len(uris) == 0:
+				<!-- Tab Graph Start -->
+				<div class="tab-pane" id="graphs">
+					%uris = app.get_graph_uris(elt, graphstart, graphend)
+					%if len(uris) == 0:
 					<div class="alert alert-info">
 					    <div class="font-blue"><strong>Oh snap!</strong> No graphs available!</div>
 					</div>
-		      		%else:
-		      		<h4>Graphs</h4>
-		      		<div class='row-fluid well span6'>
+					<script language="javascript">
+						$('#tab_to_graphs').hide();
+					</script>
+					%else:
+					<h4>Graphs</h4>
+					<div class='row-fluid well span6'>
 		      			<!-- Get the uris for the 4 standard time ranges in advance	 -->
 		      			%now = int(time.time())
 		      			%fourhours = now - 3600*4
@@ -702,7 +748,7 @@ $(document).ready(function(){
 		      			<div class='span2'><a onclick="setHTML(html_1y,{{lastyear}});" class=""> 1 year</a></div>
 		      		</div>
 
-		      		<script langage="javascript">
+					<script language="javascript">
 		      		function setHTML(html,start) {
 		      			<!-- change the content of the div --!>
 		      			document.getElementById("real_graphs").innerHTML=html;
@@ -776,60 +822,55 @@ $(document).ready(function(){
 
 		      		</script>
 
-		      		<div class='row-fluid well span8 jcrop'>
-		      			<div id='real_graphs'>
-    			  <!-- Let's keep this part visible. This is the custom and default range -->
-				    %for g in uris:
-                      %(img_src, link) = app.get_graph_img_src( g['img_src'], g['link'])
-				      <p>
-						
-				        <img src="{{img_src}}" class="jcropelt"/>
-				        <a href="{{link}}" class="btn"><i class="icon-plus"></i> Show more</a>
-				        <a href="javascript:graph_zoom('/{{elt_type}}/{{elt.get_full_name()}}?')" class="btn"><i class="icon-zoom-in"></i> Zoom</a>
-                      </p>
-                      
-					%end      
-					
-				  </div>
-				</div>
+					<div class='row-fluid well span8 jcrop'>
+						<div id='real_graphs'>
+						<!-- Let's keep this part visible. This is the custom and default range -->
+						%for g in uris:
+							%(img_src, link) = app.get_graph_img_src( g['img_src'], g['link'])
+							<p>
+								<img src="{{img_src}}" class="jcropelt"/>
+								<a href="{{link}}" class="btn"><i class="icon-plus"></i> Show more</a>
+								<a href="javascript:graph_zoom('/{{elt_type}}/{{elt.get_full_name()}}?')" class="btn"><i class="icon-zoom-in"></i> Zoom</a>
+							</p>
+						%end      
+						</div>
+					</div>
 				%end
 			</div>
-			<!-- Tab Graph End -->
+				<!-- Tab Graph End -->
 
 
-			<!-- Tab Dep graph Start -->
-			<script>
-			$(function() {
-				$('#supported').text('Supported/allowed: ' + !!screenfull.enabled);
-				if (!screenfull.enabled) {
-					return false;
-				}
+				<!-- Tab Dep graph Start -->
+				<script>
+				$(function() {
+					$('#supported').text('Supported/allowed: ' + !!screenfull.enabled);
+					if (!screenfull.enabled) {
+						return false;
+					}
 
+					$('#fullscreen-request').click(function() {
+						screenfull.request($('#inner_depgraph')[0]);
+						// Does not require jQuery, can be used like this too:
+						// screenfull.request(document.getElementById('container'));
+					});
 
-				$('#fullscreen-request').click(function() {
-					screenfull.request($('#inner_depgraph')[0]);
-					// Does not require jQuery, can be used like this too:
-					// screenfull.request(document.getElementById('container'));
+					// Trigger the onchange() to set the initial values
+					screenfull.onchange();
 				});
-
-				// Trigger the onchange() to set the initial values
-				screenfull.onchange();
-			});
-			</script>
-
-			<div class="tab-pane" id="depgraph" class="span12">
-				<div>
-					<ul class="nav nav-pills">
-						<li class="active"><a id="fullscreen-request" href="#"><i class="icon-plus"></i> Fullscreen</a></li></i>
-					</ul>
+				</script>
+				<div class="tab-pane" id="depgraph" class="span12">
+					<div>
+						<ul class="nav nav-pills">
+							<li class="active"><a id="fullscreen-request" href="#"><i class="icon-plus"></i>Fullscreen</a></li></i>
+						</ul>
+					</div>
+					<div class="clear"></div>
+					<div id="inner_depgraph" data-elt-name='{{elt.get_full_name()}}'>
+						<span class="alert alert-error">Cannot load dependency graph.</span>
+					</div>
 				</div>
-				<div class="clear"></div>
-				<div id="inner_depgraph" data-elt-name='{{elt.get_full_name()}}'>
-					<span class="alert alert-error"> Cannot load dependency graph.</span>
-				</div>
+				<!-- Tab Dep graph End -->
 			</div>
-			<!-- Tab Dep graph End -->
-		</div>
 		<!-- Detail info box end -->
 	</div>
 	<!-- End ... -->

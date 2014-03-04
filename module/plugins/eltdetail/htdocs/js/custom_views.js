@@ -22,51 +22,50 @@
 */
 
 
-var _already_load = {};
+var _already_loaded = {};
 
 // when we show a custom view tab, we lazy load it :D
 function show_custom_view(p){
-    var hname = p.attr('data-elt-name');
-    var cvname = p.attr('data-cv-name');
+	var hname = p.attr('data-elt-name');
+	var cvname = p.attr('data-cv-name');
 
-    if(cvname in _already_load){
-	console.log('Panel already load');
-	return;
-    }
-
-    var _t = new Date().getTime();
-    console.log('GOGOGO'+hname);
-    var spinner = get_spinner('cv'+cvname);
-    $('#cv'+cvname).load('/cv/'+cvname+'/'+hname+"?_="+_t, function(response, status, xhr) {
-	if (status == "error") {
-	    var msg = "Sorry but there was an error: ";
-	    $('#cv'+cvname).html(msg + xhr.status + " " + xhr.statusText);
+	if (cvname in _already_loaded){
+		return;
 	}
-    });
 
-    _already_load[cvname] = true;
-    console.log("Already load?");
-    console.log(_already_load);
+	var _t = new Date().getTime();
+	var spinner = get_spinner('cv'+cvname);
+	$('#cv'+cvname).load('/cv/'+cvname+'/'+hname+"?_="+_t, function(response, status, xhr) {
+		if (status == "error") {
+			// var msg = "Sorry but there was an error: ";
+			// $('#cv'+cvname).html(msg + xhr.status + " " + xhr.statusText);
+			$('#cv'+cvname).remove();
+			$('#tab-cv-'+cvname).remove();
+			$('#impacts').addClass('active');
+		}
+	});
+
+	_already_loaded[cvname] = true;
 }
 
 // when we show the depgraph tab, we lazy load the depgraph :p
 $(window).ready(function(){
-    $('.cv_pane').on('shown', function (e) {
-	console.log('Show must go on!');
-	show_custom_view($(this));
-    })
+	$('.cv_pane').on('shown', function (e) {
+		console.log('Show must go on!');
+		show_custom_view($(this));
+	})
 
-    // And for each already active on boot, show them directly!
-    $('.cv_pane.active').each(function(index, elt ) {
-	show_custom_view($(elt));
-    });
-
+	// And for each already active on boot, show them directly!
+	$('.cv_pane.active').each(function(index, elt ) {
+		console.log('Show must go on!');
+		show_custom_view($(elt));
+	});
 });
 
 
 function reload_custom_view(name){
-    // Be sure to remove the panel from already view, becaue if not
-    // won't load
-    delete _already_load[name];
-    show_custom_view($('#tab-cv-'+name));
+	// Be sure to remove the panel from already view, because if not
+	// won't load
+	delete _already_loaded[name];
+	show_custom_view($('#tab-cv-'+name));
 }

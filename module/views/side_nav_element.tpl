@@ -5,11 +5,13 @@
 		<div>
 			<h3>Shinken</h3>
 			<ul>
-				<li><a href="/dashboard">Dashboard</a></li>
-				<li><a href="/impacts">Impacts</a></li>
-				<li><a href="/worldmap">Worldmap</a></li>
-				<li><a href="/wall">Wall</a></li>
-				<li><a href="/system">System</a></li>
+				<li><i class="icon-dashboard"></i>	<a href="/dashboard">Dashboard</a></li>
+				<li><i class="icon-bolt"></i>		<a href="/impacts">Impacts</a></li>
+				<li><i class="icon-sitemap"></i>	<a href="/hostgroups">Host groups</a></li>
+				<li><i class="icon-table"></i>		<a href="/minemaps">Minemap</a></li>
+				<li><i class="icon-compass"></i>	<a href="/worldmap">Worldmap</a></li>
+				<li><i class="icon-list"></i>		<a href="/wall">Wall</a></li>
+				<li><i class="icon-gears"></i>		<a href="/system">System</a></li>
 			</ul>
 		</div>
 		<div class="opt" style="position: absolute; bottom: 2px;">
