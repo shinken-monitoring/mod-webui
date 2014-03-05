@@ -154,6 +154,9 @@ Invalid element name
 						%if len(elt.display_name) > 0:
 							({{elt.display_name}})
 						%end
+						%for i in range(0, elt.business_impact-2):
+						<img alt="icon state" src="/static/images/star.png">
+						%end
 					</h4>
 				</div>
 				%else:
@@ -161,6 +164,9 @@ Invalid element name
 					<h4 class="panel-title">Overview ({{elt.service_description}}) on {{elt.host.host_name}}
 						%if len(elt.host.display_name) > 0:
 							({{elt.host.display_name}})
+						%end
+						%for i in range(0, elt.business_impact-2):
+						<img alt="icon state" src="/static/images/star.png">
 						%end
 					</h4>
 				</div>
@@ -326,7 +332,7 @@ Invalid element name
 		<div class="tabbable verticaltabs-container col-sm-4 col-lg-3"> <!-- Wrap the Bootstrap Tabs/Pills in this container to position them vertically -->
 			<ul class="nav nav-tabs">
 				<li class="active"><a href="#basic" data-toggle="tab">{{elt_type.capitalize()}} Information:</a></li>
-				<li><a href="#additonal" data-toggle="tab">Additonal Informations:</a></li>
+				<li><a href="#additional" data-toggle="tab">Additional Informations:</a></li>
 				<li><a href="#commands" data-toggle="tab">Commands:</a></li>
 				<li><a href="#gesture" data-toggle="tab">Gesture:</a></li>
 			</ul>
@@ -409,7 +415,7 @@ Invalid element name
 					</table>
 				</div>
 
-				<div class="tab-pane fade" id="additonal">
+				<div class="tab-pane fade" id="additional">
 					<script type="text/javascript">
 					$().ready(function() {
 						$('.truncate_perf').jTruncate({
@@ -526,7 +532,7 @@ Invalid element name
 
 		<!-- Detail info box start -->
 		<div class="col-sm-8 col-lg-9 tabbable">
-			<ul class="nav nav-tabs"  style="margin-bottom: 12px;">
+			<ul class="nav nav-tabs" style="margin-bottom: 12px;">
 			  %_go_active = 'active'
 			  %for cvname in elt.custom_views:
 			     <li class="{{_go_active}} cv_pane" data-cv-name="{{cvname}}" data-elt-name='{{elt.get_full_name()}}' id='tab-cv-{{cvname}}'><a class='link_to_tab' href="#cv{{cvname}}" data-toggle="tab">{{cvname.capitalize()}}</a></li>
@@ -628,7 +634,6 @@ Invalid element name
 		      		<div>
 		      			<ul class="nav nav-pills">
 		      				<li class="active"><a class='{{global_disabled}}' href="/forms/comment/{{helper.get_uri_name(elt)}}" data-toggle="modal" data-target="#modal"><i class="icon-plus"></i> Add comment</a></li>
-		      				
 		      				<li><a class='{{global_disabled}}' href="/forms/comment_delete/{{helper.get_uri_name(elt)}}" data-toggle="modal" data-target="#modal"><i class="icon-minus"></i> Delete all comments</a></li>
 		      			</ul>
 		      		</div>
@@ -637,26 +642,26 @@ Invalid element name
 		      		<div id="log_container" class="row-fluid">
 		      			%if len(elt.comments) > 0:
 		      			<table class="table table-condensed table-hover">
-						  <thead>
-						    <tr>
-						      <th class="span2"></th>
-						      <th class="span1"></th>
-						      <th class="span6"></th>
-						      <th class="span4"></th>
-						      <th class="span1"></th>
-						    </tr>
-						  </thead>
-						  <tbody>
+							<thead>
+								<tr>
+									<th class="span2"></th>
+									<th class="span1"></th>
+									<th class="span6"></th>
+									<th class="span4"></th>
+									<th class="span1"></th>
+								</tr>
+							</thead>
+							<tbody>
 						  	%for c in elt.comments:
-						    <tr>
-						      <td><strong>{{c.author}}</strong></td>
-						      <td><span class="label pull-right">Comments</span></td>
-						      <td><strong>{{c.comment}}</strong></td>
-						      <td><strong>{{helper.print_date(c.entry_time)}} - {{helper.print_date(c.expire_time)}}</strong></td>
-						      <td><a class="icon-trash {{global_disabled}} font-red" href="javascript:delete_comment('{{elt.get_full_name()}}', {{c.id}})"></a></td>
-						    </tr>
-						    %end
-						  </tbody>
+								<tr>
+									<td><strong>{{c.author}}</strong></td>
+									<td><span class="label pull-right">Comments</span></td>
+									<td><strong>{{c.comment}}</strong></td>
+									<td><strong>{{helper.print_date(c.entry_time)}} - {{helper.print_date(c.expire_time)}}</strong></td>
+									<td><a class="icon-trash {{global_disabled}} font-red" href="javascript:delete_comment('{{elt.get_full_name()}}', {{c.id}})"></a></td>
+								</tr>
+							%end
+							</tbody>
 						</table>
 
 		      			%else:
@@ -838,7 +843,6 @@ Invalid element name
 				%end
 			</div>
 				<!-- Tab Graph End -->
-
 
 				<!-- Tab Dep graph Start -->
 				<script>
