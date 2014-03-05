@@ -62,7 +62,7 @@ Invalid element name
 }
 </style>
 
-<div class="">
+<div id="content_container">
 	<div class="panel panel-default">
 		<div class="panel-heading">
 			<h3 class="panel-title">{{group.get_name()}} / ({{group.alias}})</h3>
