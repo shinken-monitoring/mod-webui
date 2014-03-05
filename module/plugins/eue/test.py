@@ -4,6 +4,7 @@ id="GLPI"
 records = []
 con = Connection('localhost')
 db = con.shinken
+app = None # app is not otherwise
 if not db:
     message = "Error : Unable to connect to mongo database"
     return {'app': app, 'eue_data': {}, 'message': message }
