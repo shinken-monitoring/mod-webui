@@ -48,8 +48,9 @@ function check_gotfirstdata_result(response){
 	//alert(response.status == 200);
 	if(response.status == 200 && response.text == '1'){
 		// Go Refresh
-		location.assign(location.href);
-		window.location.href = window.location.protocol + "//" + window.location.host + window.location.pathname;
+		location.reload();
+		// location.assign(location.href);
+		// window.location.href = window.location.protocol + "//" + window.location.host + window.location.pathname;
 		reinit_refresh();
 	}else{
 		postpone_refresh();
