@@ -631,13 +631,8 @@ Invalid element name
 
 				<!-- Tab Comments Start -->
 				<div class="tab-pane" id="comments">
-		      		<div>
-		      			<ul class="nav nav-pills">
-		      				<li class="active"><a class='{{global_disabled}}' href="/forms/comment/{{helper.get_uri_name(elt)}}" data-toggle="modal" data-target="#modal"><i class="icon-plus"></i> Add comment</a></li>
-		      				<li><a class='{{global_disabled}}' href="/forms/comment_delete/{{helper.get_uri_name(elt)}}" data-toggle="modal" data-target="#modal"><i class="icon-minus"></i> Delete all comments</a></li>
-		      			</ul>
-		      		</div>
-		      		<div class="clear"></div>
+					<button type="button" class="btn btn-primary btn-sm" href="/forms/comment/{{helper.get_uri_name(elt)}}" data-toggle="modal" data-target="#modal"><i class="icon-plus"></i> Add comment</button>
+					<button type="button" class="btn btn-primary btn-sm" href="/forms/comment_delete/{{helper.get_uri_name(elt)}}" data-toggle="modal" data-target="#modal"><i class="icon-minus"></i> Delete all comments</button>
 
 		      		<div id="log_container" class="row-fluid">
 		      			%if len(elt.comments) > 0:
@@ -675,13 +670,8 @@ Invalid element name
 
 				<!-- Tab Downtimes Start -->
 				<div class="tab-pane" id="downtimes">
-		      		<div>
-		      			<ul class="nav nav-pills">
-		      				<li class="active"><a class='{{global_disabled}}' href="/forms/downtime/{{helper.get_uri_name(elt)}}" data-toggle="modal" data-target="#modal"><i class="icon-plus"></i> Add a downtime</a></li>
-		      				<li><a class='{{global_disabled}}' href="/forms/downtime_delete/{{helper.get_uri_name(elt)}}" data-toggle="modal" data-target="#modal"><i class="icon-minus"></i> Delete all downtimes</a></li>
-		      			</ul>
-		      		</div>
-		      		<div class="clear"></div>
+						<button type="button" class="btn btn-primary btn-sm" href="/forms/downtime/{{helper.get_uri_name(elt)}}" data-toggle="modal" data-target="#modal" class="btn btn-primary"><i class="icon-plus"></i> Add a downtime</button>
+						<button type="button" class="btn btn-primary btn-sm" href="/forms/downtime_delete/{{helper.get_uri_name(elt)}}" data-toggle="modal" data-target="#modal" class="btn btn-primary"><i class="icon-minus"></i> Delete all downtimes</button>
 
 		      		<div id="log_container" class="row-fluid">
 		      			%if len(elt.downtimes) > 0:
@@ -863,12 +853,9 @@ Invalid element name
 				});
 				</script>
 				<div class="tab-pane" id="depgraph" class="span12">
-					<div>
-						<ul class="nav nav-pills">
-							<li class="active"><a id="fullscreen-request" href="#"><i class="icon-plus"></i>Fullscreen</a></li></i>
-						</ul>
+					<div class="btn-group btn-group-sm">
+						<button type="button" id="fullscreen-request" class="btn btn-primary"><i class="icon-plus"></i> Fullscreen</button>
 					</div>
-					<div class="clear"></div>
 					<div id="inner_depgraph" data-elt-name='{{elt.get_full_name()}}'>
 						<span class="alert alert-error">Cannot load dependency graph.</span>
 					</div>
