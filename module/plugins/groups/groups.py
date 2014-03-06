@@ -55,9 +55,10 @@ def get_page(name):
             
         items = my_group.get_hosts()
 
+    elts_per_page = 5
     # We want to limit the number of elements
     start = int(app.request.GET.get('start', '0'))
-    end = int(app.request.GET.get('end', '30'))
+    end = int(app.request.GET.get('end', elts_per_page))
         
     # Now sort hosts list ..
     items.sort(hst_srv_sort)
@@ -66,9 +67,9 @@ def get_page(name):
     total = len(items)
     if start > total:
         start = 0
-        end = 30
+        end = elts_per_page
 
-    navi = app.helper.get_navi(total, start, step=5)
+    navi = app.helper.get_navi(total, start, step=elts_per_page)
     items = items[start:end]
         
     # we return values for the template (view). But beware, theses values are the

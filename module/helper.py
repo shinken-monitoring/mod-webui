@@ -626,23 +626,25 @@ class Helper(object):
     # Get
     def get_navi(self, total, pos, step=30):
         step = float(step)
-        nb_pages = math.ceil(total / step)
-        current_page = int(pos / step)
+        nb_pages = math.ceil(total / step) if step <> 0 else 0
+        current_page = int(pos / step) if step <> 0 else 0
 
         step = int(step)
 
         res = []
 
+        nb_max_items = 2
+        
         if nb_pages == 0 or nb_pages == 1:
             return None
 
-        if current_page >= 2:
+        if current_page >= nb_max_items:
             # Name, start, end, is_current
             res.append((u'« First', 0, step, False))
             res.append(('...', None, None, False))
 
         #print "Range,", current_page - 1, current_page + 1
-        for i in xrange(current_page - 1, current_page + 2):
+        for i in xrange(current_page - (nb_max_items / 2), current_page + 1 + (nb_max_items / 2)):
             if i < 0:
                 continue
             #print "Doing PAGE", i
@@ -653,18 +655,14 @@ class Helper(object):
                 continue
 
             end = int((i+1) * step)
-            res.append(('%d' % (i+1), start, end, is_current))
+            res.append(('Page %d' % (i+1), start, end, is_current))
 
-        if current_page < nb_pages - 2:
-            start = int((nb_pages - 1) * step)
-            end = int(nb_pages * step)
+        if current_page < nb_pages - nb_max_items:
+            start = int((nb_pages - (nb_max_items - 1)) * step)
+            end = int(total)
+            # end = int(nb_pages * step)
             res.append(('...', None, None, False))
             res.append((u'Last »', start, end, False))
-
-        #print "Total:", total, "pos", pos, "step", step
-        #print "nb pages", nb_pages, "current_page", current_page
-
-        #print "Res", res
 
         return res
 
