@@ -25,8 +25,49 @@
 
 import time
 
+# Mongodb lib
+try:
+    import pymongo
+    from pymongo.connection import Connection
+    import gridfs
+except ImportError:
+    Connection = None
+
+
 ### Will be populated by the UI with it's own value
 app = None
+
+### TODO make this configurable START
+mongo_host = "localhost"
+mongo_port = 27017
+### TODO make this configurable END
+
+
+def getdb(dbname):
+    con = None
+    db = None
+
+    try:
+        con = Connection(mongo_host,mongo_port)
+    except:
+        return (  
+            "Error : Unable to create mongo connection %s:%s" % (mongo_host,mongo_port),
+            None
+        )
+
+    try:
+        db = con[dbname]
+    except:
+        return (  
+            "Error : Unable to connect to mongo database %s" % dbname,
+            None
+        )
+
+    return (  
+        "Connected to mongo database %s" % dbname,
+        db
+    )
+
 
 
 def system_page():
@@ -83,16 +124,33 @@ def show_log():
     if not user:
         app.bottle.redirect("/user/login")
 
-    schedulers = app.datamgr.get_schedulers()
-    brokers = app.datamgr.get_brokers()
-    reactionners = app.datamgr.get_reactionners()
-    receivers = app.datamgr.get_receivers()
-    pollers = app.datamgr.get_pollers()
+    message,db = getdb('logs')
+    if not db:
+        return {
+            'app': app,
+            'user': user, 
+            'message': message,
+            'records': []
+        }
 
-    return {'app': app, 'user': user, 'schedulers': schedulers,
-            'brokers': brokers, 'reactionners': reactionners,
-            'receivers': receivers, 'pollers': pollers,
-            }
+    records=[]
+    for feature in db.logs.find({'type': 'HOST NOTIFICATION' }).sort("time",1).limit(100):
+        date = feature["time"]
+
+        records.append({
+            "date" : int(date),
+            "host" : feature['host_name'],
+            "service" : feature['service_description'],
+            "message" : feature['message']
+        })
+
+    return {
+        'app': app,
+        'user': user, 
+        'message': 'Data fetched from DB ...',
+        'records': records
+    }
+
 
 widget_desc = '''<h4>System state</h4>
 Show an aggregated view of all Shinken daemons.
@@ -100,5 +158,5 @@ Show an aggregated view of all Shinken daemons.
 
 pages = {system_page: {'routes': ['/system', '/system/'], 'view': 'system', 'static': True},
          system_widget: {'routes': ['/widget/system'], 'view': 'system_widget', 'static': True, 'widget': ['dashboard'], 'widget_desc': widget_desc, 'widget_name': 'system', 'widget_picture': '/static/system/img/widget_system.png'},
-         show_log: {'routes': ['/system/log'], 'view': 'log', 'static': True},
+         show_log: {'routes': ['/system/logs'], 'view': 'log', 'static': True},
          }
