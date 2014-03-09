@@ -168,8 +168,8 @@ def show_log():
                 "service" : log['service_description'],
                 "message" : log['message']
             })
-        # message = len(records) + " records fetched from database."
-        # logger.debug("[Logs] %d records fetched from database." % len(records))
+        message = "%d records fetched from database." % len(records)
+        logger.debug("[Logs] %d records fetched from database." % len(records))
     except Exception, exp:
         logger.error("[Logs] Exception when querying database: %s" % (str(exp)))
 

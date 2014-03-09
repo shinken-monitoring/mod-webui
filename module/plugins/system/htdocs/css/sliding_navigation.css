@@ -1,8 +1,9 @@
 ul.sliding-navigation {
 	list-style-type: none;
+    width: 300px;
 	margin: 30px;
 	padding: 0;
-	position : fixed;
+	position : absolute;
 	top: 30px; right: 10px;
 	z-index : 9999;
 	background: #bbb;
@@ -13,7 +14,6 @@ ul.sliding-navigation li.sliding-element h3,
 ul.sliding-navigation li.sliding-element a
 {
     display: block;
-    width: 300px;
     padding: 5px 18px;
     margin: 0;
     margin-bottom: 2px;

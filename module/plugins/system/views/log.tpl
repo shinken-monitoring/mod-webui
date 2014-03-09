@@ -31,7 +31,7 @@
 
 
 <div id="content_container">
-	<ul class="sliding-navigation" id="actions">
+	<ul class="sliding-navigation" id="parameters">
 		<li class="sliding-element"><h3>Parameters</h3></li>
 		<li class="sliding-element">
 			<a href="javascript:recheck_now_all()"><i class="icon-gear icon-white"></i> Logs limit: {{params['logs_limit']}}</a>
@@ -40,7 +40,11 @@
 			<a href="javascript:recheck_now_all()"><i class="icon-gear icon-white"></i> Logs type: {{params['logs_type']}}</a>
 		</li>
 	</ul>
-
+	<script>
+$("#parameters").draggable({
+    handle: ".modal-header"
+});
+	</script>
 
 	<ul class="nav nav-tabs" id="myTab">
 		<li class="active"><a href="#today" data-toggle="tab">Today</a></li>
