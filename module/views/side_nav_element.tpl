@@ -16,7 +16,7 @@
 		</div>
 		<div class="opt" style="position: absolute; bottom: 2px;">
 			<ul class="nav nav-pills">
-				<li><a href="#"><i class="icon-rocket"></i></a></li>
+				<li><a href="/system/logs"><i class="icon-rocket"></i></a></li>
 				<li class="dropup">
 					<a class="dropdown-toggle" data-toggle="dropdown" href="#">
 						<i class="icon-random"></i> <span class="caret"></span>
