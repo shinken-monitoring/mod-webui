@@ -46,6 +46,8 @@ params['mongo_port'] = 27017
 params['db_name'] = "Logs"
 params['logs_limit'] = 500
 params['logs_type'] = []
+params['logs_hosts'] = []
+params['logs_services'] = []
 
 import os,sys
 from webui import config_parser
@@ -60,9 +62,13 @@ try:
     params['mongo_port'] = int(params['mongo_port'])
     params['logs_limit'] = int(params['logs_limit'])
     params['logs_type'] = [item.strip() for item in params['logs_type'].split(',')]
+    params['logs_hosts'] = [item.strip() for item in params['logs_hosts'].split(',')]
+    params['logs_services'] = [item.strip() for item in params['logs_services'].split(',')]
     
     logger.debug("Plugin configuration, database: %s (%s)" % (params['mongo_host'], params['mongo_port']))
     logger.debug("Plugin configuration, fetching: %d %s" % (params['logs_limit'], params['logs_type']))
+    logger.debug("Plugin configuration, hosts: %s" % (params['logs_hosts']))
+    logger.debug("Plugin configuration, services: %s" % (params['logs_services']))
 except Exception, exp:
     logger.warning("Plugin configuration file (%s) not available: %s" % (configuration_file, str(exp)))
 
@@ -161,7 +167,8 @@ def show_log():
 
     try:
         logger.info("[Logs] Fetching records from database: %s (max %d)" % (params['logs_type'], params['logs_limit']))
-        for log in db.logs.find({ "type" : { "$in": params['logs_type'] }}).sort("time", -1).limit(params['logs_limit']):
+        for log in db.logs.find({ "$and" : [ { "type" : { "$in": params['logs_type'] }}, { "host_name" : { "$in": params['logs_hosts'] }}, { "service_description" : { "$in": params['logs_services'] }}  ]}).sort("time", -1).limit(params['logs_limit']):
+        # for log in db.logs.find({ "type" : { "$in": params['logs_type'] }}).sort("time", -1).limit(params['logs_limit']):
             records.append({
                 "date" : int(log["time"]),
                 "host" : log['host_name'],

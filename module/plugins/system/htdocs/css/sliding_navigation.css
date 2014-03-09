@@ -7,7 +7,7 @@ ul.sliding-navigation {
 	top: 30px; right: 10px;
 	z-index : 9999;
 	background: #bbb;
-	opacity: 0.8;
+	opacity: 0.9;
 }
 
 ul.sliding-navigation li.sliding-element h3,
@@ -17,12 +17,6 @@ ul.sliding-navigation li.sliding-element a
     padding: 5px 18px;
     margin: 0;
     margin-bottom: 2px;
-}
-
-ul.sliding-navigation li.sliding-element a
-{
-    border-top-right-radius: 10px;
-    border-bottom-right-radius: 10px;
 }
 
 ul.sliding-navigation li.sliding-element h3
@@ -40,4 +34,4 @@ ul.sliding-navigation li.sliding-element a
     text-decoration: none;
 }
 
-ul.sliding-navigation li.sliding-element a:hover { color: #ffff66; }
+ul.sliding-navigation li.sliding-element a:hover { color: #000; }

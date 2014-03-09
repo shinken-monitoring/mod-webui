@@ -37,13 +37,37 @@
 			<a href="javascript:recheck_now_all()"><i class="icon-gear icon-white"></i> Logs limit: {{params['logs_limit']}}</a>
 		</li>
 		<li class="sliding-element">
-			<a href="javascript:recheck_now_all()"><i class="icon-gear icon-white"></i> Logs type: {{params['logs_type']}}</a>
+			<a href="javascript:recheck_now_all()"><i class="icon-gear icon-white"></i> Hosts filter: 
+			<ul>
+			%for log_host in params['logs_hosts']:
+				<li class="sliding-element">{{log_host}}</li>
+			%end
+			</ul>
+			</a>
+		</li>
+		<li class="sliding-element">
+			<a href="javascript:recheck_now_all()"><i class="icon-gear icon-white"></i> Services filter: 
+			<ul>
+			%for log_service in params['logs_services']:
+				<li class="sliding-element">{{log_service}}</li>
+			%end
+			</ul>
+			</a>
+		</li>
+		<li class="sliding-element">
+			<a href="javascript:recheck_now_all()"><i class="icon-gear icon-white"></i> Logs type filter: 
+			<ul>
+			%for log_type in params['logs_type']:
+				<li class="sliding-element">{{log_type}}</li>
+			%end
+			</ul>
+			</a>
 		</li>
 	</ul>
 	<script>
-$("#parameters").draggable({
-    handle: ".modal-header"
-});
+		$("#parameters").draggable({
+			handle: ".modal-header"
+		});
 	</script>
 
 	<ul class="nav nav-tabs" id="myTab">
