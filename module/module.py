@@ -53,6 +53,7 @@ from shinken.util import safe_print, to_bool
 # Local import
 from shinken.misc.datamanager import datamgr
 from helper import helper
+from config_parser import config_parser
 
 # Debug
 import shinken.webui.bottlewebui as bottle

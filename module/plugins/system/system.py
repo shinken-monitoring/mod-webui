@@ -25,6 +25,8 @@
 
 import time
 
+from shinken.log import logger
+
 # Mongodb lib
 try:
     import pymongo
@@ -37,10 +39,26 @@ except ImportError:
 ### Will be populated by the UI with it's own value
 app = None
 
-### TODO make this configurable START
+# Get plugin's parameters from configuration file
 mongo_host = "localhost"
 mongo_port = 27017
-### TODO make this configurable END
+logs_limit = 500
+
+import os,sys
+from webui import config_parser
+try:
+    currentdir = os.path.dirname(os.path.realpath(__file__))
+    configuration_file = "%s/%s" % (currentdir, 'plugin.cfg')
+    logger.debug("Plugin configuration file: %s" % (configuration_file))
+    scp = config_parser('#', '=')
+    params = scp.parse_config(configuration_file)
+
+    mongo_host = params['mongo_host']
+    mongo_port = int(params['mongo_port'])
+    logs_limit = int(params['logs_limit'])
+    logger.debug("Plugin configuration : %s (%s)" % (mongo_host, mongo_port))
+except Exception, exp:
+    logger.warning("Plugin configuration file (%s) not available: %s" % (configuration_file, str(exp)))
 
 
 def getdb(dbname):
@@ -51,7 +69,7 @@ def getdb(dbname):
         con = Connection(mongo_host,mongo_port)
     except:
         return (  
-            "Error : Unable to create mongo connection %s:%s" % (mongo_host,mongo_port),
+            "Error : Unable to create mongo DB connection %s:%s" % (mongo_host,mongo_port),
             None
         )
 
@@ -67,7 +85,6 @@ def getdb(dbname):
         "Connected to mongo database %s" % dbname,
         db
     )
-
 
 
 def system_page():
@@ -134,14 +151,12 @@ def show_log():
         }
 
     records=[]
-    for feature in db.logs.find({'type': 'HOST NOTIFICATION' }).sort("time",1).limit(100):
-        date = feature["time"]
-
+    for log in db.logs.find({'type': 'HOST NOTIFICATION'}).sort("time", -1).limit(logs_limit):
         records.append({
-            "date" : int(date),
-            "host" : feature['host_name'],
-            "service" : feature['service_description'],
-            "message" : feature['message']
+            "date" : int(log["time"]),
+            "host" : log['host_name'],
+            "service" : log['service_description'],
+            "message" : log['message']
         })
 
     return {
