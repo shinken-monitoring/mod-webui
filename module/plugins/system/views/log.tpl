@@ -26,7 +26,7 @@
 %lastweek = datetime.datetime.now() - datetime.timedelta(days = 14)
 %lastweek_beginning = datetime.datetime(lastweek.year, lastweek.month, lastweek.day,0,0,0,0)
 %lastweek_beginning_time = int(time.mktime(lastweek_beginning.timetuple()))
-%lastweek_end = lastweek_beginning + datetime.timedelta(days = 14)
+%lastweek_end = lastweek_beginning + datetime.timedelta(days = 7)
 %lastweek_end_time = int(time.mktime(lastweek_end.timetuple()))
 
 
@@ -43,6 +43,11 @@
 		<div class="tab-pane active" id="today">
 			<table class="table table-striped">
 				<tbody>
+					<!--
+					<tr>
+						<td colspan="4"><em>{{message}}</em></td>
+					</tr>
+					-->
 					<tr>
 						<td colspan="4"><strong>From {{time.asctime(time.localtime(today_beginning_time))}} to {{time.asctime(time.localtime(today_end_time))}}</strong></td>
 					</tr>
