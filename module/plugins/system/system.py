@@ -40,9 +40,12 @@ except ImportError:
 app = None
 
 # Get plugin's parameters from configuration file
-mongo_host = "localhost"
-mongo_port = 27017
-logs_limit = 500
+params = {}
+params['mongo_host'] = "localhost"
+params['mongo_port'] = 27017
+params['db_name'] = "Logs"
+params['logs_limit'] = 500
+params['logs_type'] = []
 
 import os,sys
 from webui import config_parser
@@ -53,10 +56,13 @@ try:
     scp = config_parser('#', '=')
     params = scp.parse_config(configuration_file)
 
-    mongo_host = params['mongo_host']
-    mongo_port = int(params['mongo_port'])
-    logs_limit = int(params['logs_limit'])
-    logger.debug("Plugin configuration : %s (%s)" % (mongo_host, mongo_port))
+    # mongo_host = params['mongo_host']
+    params['mongo_port'] = int(params['mongo_port'])
+    params['logs_limit'] = int(params['logs_limit'])
+    params['logs_type'] = [item.strip() for item in params['logs_type'].split(',')]
+    
+    logger.debug("Plugin configuration, database: %s (%s)" % (params['mongo_host'], params['mongo_port']))
+    logger.debug("Plugin configuration, fetching: %d %s" % (params['logs_limit'], params['logs_type']))
 except Exception, exp:
     logger.warning("Plugin configuration file (%s) not available: %s" % (configuration_file, str(exp)))
 
@@ -66,10 +72,10 @@ def getdb(dbname):
     db = None
 
     try:
-        con = Connection(mongo_host,mongo_port)
+        con = Connection(params['mongo_host'],int(params['mongo_port']))
     except:
         return (  
-            "Error : Unable to create mongo DB connection %s:%s" % (mongo_host,mongo_port),
+            "Error : Unable to create mongo DB connection %s:%s" % (params['mongo_host'],params['mongo_port']),
             None
         )
 
@@ -82,7 +88,7 @@ def getdb(dbname):
         )
 
     return (  
-        "Connected to mongo database %s" % dbname,
+        "Connected to mongo database '%s'" % dbname,
         db
     )
 
@@ -141,28 +147,37 @@ def show_log():
     if not user:
         app.bottle.redirect("/user/login")
 
-    message,db = getdb('logs')
+    message,db = getdb(params['db_name'])
     if not db:
         return {
             'app': app,
             'user': user, 
             'message': message,
+            'params': params,
             'records': []
         }
 
     records=[]
-    for log in db.logs.find({'type': 'HOST NOTIFICATION'}).sort("time", -1).limit(logs_limit):
-        records.append({
-            "date" : int(log["time"]),
-            "host" : log['host_name'],
-            "service" : log['service_description'],
-            "message" : log['message']
-        })
+
+    try:
+        logger.info("[Logs] Fetching records from database: %s (max %d)" % (params['logs_type'], params['logs_limit']))
+        for log in db.logs.find({ "type" : { "$in": params['logs_type'] }}).sort("time", -1).limit(params['logs_limit']):
+            records.append({
+                "date" : int(log["time"]),
+                "host" : log['host_name'],
+                "service" : log['service_description'],
+                "message" : log['message']
+            })
+        # message = len(records) + " records fetched from database."
+        # logger.debug("[Logs] %d records fetched from database." % len(records))
+    except Exception, exp:
+        logger.error("[Logs] Exception when querying database: %s" % (str(exp)))
 
     return {
         'app': app,
         'user': user, 
-        'message': 'Data fetched from DB ...',
+        'message': message,
+        'params': params,
         'records': records
     }
 

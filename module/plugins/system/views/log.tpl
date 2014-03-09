@@ -1,4 +1,4 @@
-%rebase layout globals(), css=['system/css/log.css'], title='System Log', menu_part='/system'
+%rebase layout globals(), css=['system/css/log.css','system/css/sliding_navigation.css'], title='System Log', menu_part='/system'
 
 %from shinken.bin import VERSION
 %helper = app.helper
@@ -31,6 +31,17 @@
 
 
 <div id="content_container">
+	<ul class="sliding-navigation" id="actions">
+		<li class="sliding-element"><h3>Parameters</h3></li>
+		<li class="sliding-element">
+			<a href="javascript:recheck_now_all()"><i class="icon-gear icon-white"></i> Logs limit: {{params['logs_limit']}}</a>
+		</li>
+		<li class="sliding-element">
+			<a href="javascript:recheck_now_all()"><i class="icon-gear icon-white"></i> Logs type: {{params['logs_type']}}</a>
+		</li>
+	</ul>
+
+
 	<ul class="nav nav-tabs" id="myTab">
 		<li class="active"><a href="#today" data-toggle="tab">Today</a></li>
 		<li><a href="#yesterday" data-toggle="tab">Yesterday</a></li>
@@ -43,11 +54,9 @@
 		<div class="tab-pane active" id="today">
 			<table class="table table-striped">
 				<tbody>
-					<!--
 					<tr>
 						<td colspan="4"><em>{{message}}</em></td>
 					</tr>
-					-->
 					<tr>
 						<td colspan="4"><strong>From {{time.asctime(time.localtime(today_beginning_time))}} to {{time.asctime(time.localtime(today_end_time))}}</strong></td>
 					</tr>
