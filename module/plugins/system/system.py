@@ -58,7 +58,7 @@ try:
     scp = config_parser('#', '=')
     params = scp.parse_config(configuration_file)
 
-    params['mongo_host'] = params['mongo_host']
+    # mongo_host = params['mongo_host']
     params['mongo_port'] = int(params['mongo_port'])
     params['logs_limit'] = int(params['logs_limit'])
     params['logs_type'] = [item.strip() for item in params['logs_type'].split(',')]
