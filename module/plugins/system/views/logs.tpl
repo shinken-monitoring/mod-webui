@@ -1,4 +1,4 @@
-%rebase layout globals(), css=['system/css/log.css','system/css/sliding_navigation.css'], title='System Log', menu_part='/system'
+%rebase layout globals(), css=['system/css/log.css','system/css/sliding_navigation.css','system/css/bootstrap-multiselect.css'], js=['system/js/bootstrap-multiselect.js'], title='System Log', menu_part='/system'
 
 %from shinken.bin import VERSION
 %helper = app.helper
@@ -34,10 +34,11 @@
 	<ul class="sliding-navigation" id="parameters">
 		<li class="sliding-element"><h3>Parameters</h3></li>
 		<li class="sliding-element">
-			<a href="javascript:recheck_now_all()"><i class="icon-gear icon-white"></i> Logs limit: {{params['logs_limit']}}</a>
+			<a><i class="icon-gear icon-white"></i> Logs limit: {{params['logs_limit']}}</a>
 		</li>
+		%if len(params['logs_hosts']) > 0:
 		<li class="sliding-element">
-			<a href="javascript:recheck_now_all()"><i class="icon-gear icon-white"></i> Hosts filter: 
+			<a href="/system/hosts_list" data-toggle="modal" data-target="#modal"><i class="icon-gear icon-white"></i> Hosts filter: 
 			<ul>
 			%for log_host in params['logs_hosts']:
 				<li class="sliding-element">{{log_host}}</li>
@@ -45,8 +46,10 @@
 			</ul>
 			</a>
 		</li>
+		%end
+		%if len(params['logs_services']) > 0:
 		<li class="sliding-element">
-			<a href="javascript:recheck_now_all()"><i class="icon-gear icon-white"></i> Services filter: 
+			<a href="/system/services_list" data-toggle="modal" data-target="#modal"><i class="icon-gear icon-white"></i> Services filter: 
 			<ul>
 			%for log_service in params['logs_services']:
 				<li class="sliding-element">{{log_service}}</li>
@@ -54,8 +57,10 @@
 			</ul>
 			</a>
 		</li>
+		%end
+		%if len(params['logs_type']) > 0:
 		<li class="sliding-element">
-			<a href="javascript:recheck_now_all()"><i class="icon-gear icon-white"></i> Logs type filter: 
+			<a href="/system/logs_type_list" data-toggle="modal" data-target="#modal"><i class="icon-gear icon-white"></i> Logs type filter: 
 			<ul>
 			%for log_type in params['logs_type']:
 				<li class="sliding-element">{{log_type}}</li>
@@ -63,11 +68,33 @@
 			</ul>
 			</a>
 		</li>
+		%end
 	</ul>
-	<script>
+	<script type="text/javascript">
 		$("#parameters").draggable({
 			handle: ".modal-header"
 		});
+		
+		$(document).ready(function() {
+			$('.multiselect').multiselect();
+		});
+
+		function getHostsList(url){
+			// this code will send a data object via a GET request and alert the retrieved data.
+			$.jsonp({
+				"url": url+'?callback=?',
+				"success": function (response){
+					if (response.status == 200) {
+						alert(response.text);
+					}else{
+						alert(response.text);
+					}
+				},
+				"error": function (response) {
+					alert('Error !');
+				}
+			});
+		}
 	</script>
 
 	<ul class="nav nav-tabs" id="myTab">
@@ -91,10 +118,10 @@
 %for log in records:
 %if log['date'] >= today_beginning_time and log['date'] <= today_end_time:
 					<tr>
-						<td>{{time.asctime(time.localtime(log['date']))}}</td>
-						<td>{{log['host']}}</td>
-						<td>{{log['service']}}</td>
-						<td>{{log['message']}}</td>
+						<td class="col-sm-1">{{time.asctime(time.localtime(log['date']))}}</td>
+						<td class="col-sm-1">{{log['host']}}</td>
+						<td class="col-sm-1">{{log['service']}}</td>
+						<td class="col-sm-8">{{log['message']}}</td>
 					</tr>
 %end
 %end

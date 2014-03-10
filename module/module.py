@@ -42,7 +42,7 @@ import urllib
 
 from shinken.basemodule import BaseModule
 from shinken.message import Message
-from shinken.webui.bottlewebui import Bottle, run, static_file, view, route, request, response, template
+from shinken.webui.bottlewebui import Bottle, run, static_file, view, route, request, response, template, redirect
 from shinken.misc.regenerator import Regenerator
 from shinken.log import logger
 from shinken.modulesctx import modulesctx
