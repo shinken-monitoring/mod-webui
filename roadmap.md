@@ -13,6 +13,9 @@ For more details on what has been done, please have a look at the [CHANGELOG](/c
 
 Overall goals: 
 - new custom views
+- new logs view
+- new Worldmap view
+- new Timeline view
 
 Featurelist:
 - New Main menu for more space and usebility 
