@@ -1,6 +1,4 @@
-<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
-
-%rebase layout globals(), js=['worldmap/js/worldmap.js'], css=['worldmap/css/worldmap.css'], title='Worldmap', refresh=True
+%rebase layout globals(), css=['worldmap/css/worldmap.css'], title='Worldmap', refresh=True
 
 <!-- HTML map container -->
 <div class="map_container row">
@@ -16,125 +14,94 @@
 	var apiLoaded=false;
 	var apiLoading=false;
 	// Set true to activate javascript console logs
-	var debugJs=true;
+	var debugJs=false;
 
 	var map;
 	var infoWindow;
 	
 	// Images dir
-	var urlImages="/static/worldmap/img/";
+	var imagesDir="/static/worldmap/img/";
+
+	// Default camera position/zoom ...
+	var defLat={{params['default_Lat']}};
+	var defLng={{params['default_Lng']}};
+	var defaultZoom={{params['default_zoom']}};
 
 	// Markers ...
 	var allMarkers = [];
-
-	// France / Romans is default camera position
-	var defLat=45.054485;
-	var defLng=5.081413;
-	var defaultZoom=16;
-	var currentZoom=defaultZoom;
-
-	// Markers ...
-	var allMarkers = [];
-	// Content of infoWindow ...
-	var infoWindowsArray = [];
-
-	//------------------------------------------------------------------------------
-	// Google maps API loading if needed, and map creation ...
-	//------------------------------------------------------------------------------
-	// If google maps API is not already loaded, call this function which will, at
-	// end, call mapInit ...
-	//------------------------------------------------------------------------------
-	mapLoad = function() {
-		if (debugJs) console.log('mapLoad');
-
-		if (! apiLoaded) {
-			apiLoading=true;
-			var script = document.createElement("script");
-			script.type = "text/javascript";
-			script.src = "http://maps.googleapis.com/maps/api/js?sensor=false&callback=mapInit";
-			document.body.appendChild(script);
-		} else {
-			mapInit();
-		}
-	}
 
 	//------------------------------------------------------------------------------
 	// Create a marker on specified position for specified host/state with IW content
 	//------------------------------------------------------------------------------
-	initPoint = function(point, name, state, content) {
-		if (debugJs) console.log("markerCreate for "+name+", state : "+state);
+	// point : GPS coordinates
+	// name : host name
+	// state : host state
+	// content : infoWindow content
+	//------------------------------------------------------------------------------
+	markerCreate = function(name, state, content, position, iconBase) {
+		if (debugJs) console.log("-> marker creation for "+name+", state : "+state);
+		if (iconBase == undefined) iconBase='host';
 
-		var iconUrl=urlImages+"point-"+state+".png";
-		if (debugJs) console.log("markerCreate, icon URL : "+iconUrl);
-
-		var image = new google.maps.MarkerImage(iconUrl, new google.maps.Size(32,32), new google.maps.Point(0,0), new google.maps.Point(16,32));
-
-		// Manage markers on the same position ...
-		for (i=0; i < allMarkers.length; i++) {
-			var existingMarker = allMarkers[i];
-			var pos = existingMarker.getPosition();
-
-			// if a marker already exists in the same position as this marker
-			if (point.equals(pos)) {
-				if (debugJs) console.log("markerCreate, same position ...");
-				
-				//update the position of the coincident marker by applying a small multipler to its coordinates
-				var newLat = point.lat() + (Math.random() -.10) / 20000;
-				var newLng = point.lng() + (Math.random() -.10) / 20000;
-				point = new google.maps.LatLng(newLat,newLng);
-				if (debugJs) console.log("markerCreate, new position is : "+point);
-			}
-		}
+		var iconUrl=imagesDir+'/'+iconBase+"-"+state+".png";
+		if (state == '') iconUrl=imagesDir+'/'+iconBase+".png";
+		
+		var markerImage = new google.maps.MarkerImage(
+			iconUrl,
+			new google.maps.Size(32,32), 
+			new google.maps.Point(0,0), 
+			new google.maps.Point(16,32)
+		);
 
 		try {
-/* Standard Google maps marker
+			/* Standard Google maps marker */
 			var marker = new google.maps.Marker({
-				map: map, position: point, raiseOnDrag: false,
-				icon: image, 
-				animation: google.maps.Animation.DROP,
-				title: name
-			});
-*/
-			// Marker with label ...
-			var marker = new MarkerWithLabel({
-				map: map, position: point,
-				icon: image, 
+				map: map, 
+				position: position,
+				icon: markerImage, 
 				raiseOnDrag: false, draggable: true,
 				title: name,
+				hoststate: state,
+				hostname: name,
+				iw_content: content
+			});
+
+			/* Marker with label ...
+			var marker = new MarkerWithLabel({
+				map: map, 
+				position: position,
+				icon: markerImage, 
+				raiseOnDrag: false, draggable: true,
+				title: name,
+				hoststate: state,
+				hostname: name,
+				iw_content: content,
 
 				// Half the CSS width to get a centered label ...
-				labelAnchor: new google.maps.Point(50, 10),
+				labelAnchor: new google.maps.Point(50, -20),
 				labelClass: "labels",
 				labelContent: name,
-				labelStyle: {opacity: 0.50}
+				labelStyle: {opacity: 0.8},
+				labelInBackground: true
 			});
-			if (debugJs) console.log("markerCreate 2 : "+iconUrl);
-
-			// Register Custom "click" Event
-			google.maps.event.addListener(marker, 'click', function () {
-				infoWindow.setContent(content);
-				infoWindow.open(map, marker);
-				
-				return true;
-			});
+			*/
 			
 			// Register Custom "dragend" Event
 			google.maps.event.addListener(marker, 'dragend', function() {
-				// Get the Current position, where the pointer was dropped
-				var point = marker.getPosition();
 				// Center the map at given point
-				map.panTo(point);
-				// To be defined ... should be interesting to change customs variables ... to be done.
-				if (debugJs) console.log("Host new position is : "+point.lat()+", "+point.lng());
-				alert("Host "+name+" new position is : "+point.lat()+", "+point.lng()+" ... should be stored in host custom variables ... to be done !");
+				map.panTo(marker.getPosition());
 			});
+		
 		} catch (e) {
-			if (debugJs) console.error('markerCreate, exception : '+e.message);
+			console.error('markerCreate, exception : '+e.message);
 		}
 		
 		return marker;
 	}
-	
+
+	//------------------------------------------------------------------------------
+	// Map initialization
+	//------------------------------------------------------------------------------
+	//------------------------------------------------------------------------------
 	mapInit = function() {
 		if (debugJs) console.log('mapInit ...');
 		if (apiLoading) {
@@ -145,50 +112,50 @@
 			return;
 		}
 		
-		$.getScript(debugJs ? "/static/worldmap/js/markerclusterer.js" : "/static/worldmap/js/markerclusterer_packed.js", function( data, textStatus, jqxhr ) {
-			if (debugJs) console.log('Google marker clusterer API loaded ...');
-			$.getScript(debugJs ? "/static/worldmap/js/markerwithlabel.js" : "/static/worldmap/js/markerwithlabel_packed.js", function( data, textStatus, jqxhr ) {
-				if (debugJs) console.log('Google labeled marker API loaded ...');
-				
-				map = new google.maps.Map(document.getElementById('map'),{
-					center: new google.maps.LatLng (defLat, defLng),
-					zoom: defaultZoom,
-					mapTypeId: google.maps.MapTypeId.ROADMAP
-				});
+		// "Spiderify" close markers : https://github.com/jawj/OverlappingMarkerSpiderfier
+		$.getScript("/static/worldmap/js/oms.min.js", function( data, textStatus, jqxhr ) {
+			if (debugJs) console.log('Spiderify API loaded ...');
+			$.getScript(debugJs ? "/static/worldmap/js/markerclusterer.js" : "/static/worldmap/js/markerclusterer_packed.js", function( data, textStatus, jqxhr ) {
+				if (debugJs) console.log('Google marker clusterer API loaded ...');
+				$.getScript(debugJs ? "/static/worldmap/js/markerwithlabel.js" : "/static/worldmap/js/markerwithlabel_packed.js", function( data, textStatus, jqxhr ) {
+					if (debugJs) console.log('Google labeled marker API loaded ...');
+					
+					map = new google.maps.Map(document.getElementById('map'),{
+						center: new google.maps.LatLng (defLat, defLng),
+						zoom: defaultZoom,
+						mapTypeId: google.maps.MapTypeId.ROADMAP
+					});
 
-				var bounds = new google.maps.LatLngBounds();
-				infoWindow = new google.maps.InfoWindow;
-				
-				var hostGlobalState = 0;
-
-				// Creating a marker for all hosts having GPS coordinates ...
-				%for h in hosts:
-//%_ref = {'OK':0, 'UP':0, 'DOWN':3, 'UNREACHABLE':1, 'UNKNOWN':1, 'CRITICAL':3, 'WARNING':2, 'PENDING' :1}
-
-					if (debugJs) console.log("host {{h.get_name()}} is {{h.state}}. GPS is {{h.customs.get('_LOC_LAT')}} / {{h.customs.get('_LOC_LNG')}}");
+					var bounds = new google.maps.LatLngBounds();
+					infoWindow = new google.maps.InfoWindow;
+					
+					%# For all hosts ...
+					%for h in hosts:
+					
 					try {
-						var gpsLocation = new google.maps.LatLng( {{float(h.customs.get('_LOC_LAT'))}} , {{float(h.customs.get('_LOC_LNG'))}} )
-						if (debugJs) console.log('host {{h.get_name()}} : '+gpsLocation);
+						// Creating a marker for all hosts having GPS coordinates ...
+						if (debugJs) console.log("host {{h.get_name()}} is {{h.state}}. GPS is {{h.customs.get('_LOC_LAT')}} / {{h.customs.get('_LOC_LNG')}} :");
+						var gpsLocation = new google.maps.LatLng( {{float(h.customs.get('_LOC_LAT', params['default_Lat']))}} , {{float(h.customs.get('_LOC_LNG', params['default_Lng']))}} );
+						//gpsLocation = new google.maps.LatLng( {{h.customs.get('_LOC_LAT', params['default_Lat'])}} , {{h.customs.get('_LOC_LNG', params['default_Lng'])}} );
+						//gpsLocation = new google.maps.LatLng( defLat , defLng );
 						
+						var hostGlobalState = 0;
 						var hostState = "{{h.state}}";
 						switch(hostState.toUpperCase()) {
 							case "UP":
 								hostGlobalState=0;
 								break;
 							case "DOWN":
-								hostGlobalState=3;
+								hostGlobalState=2;
 								break;
-							case "UNREACHABLE":
-								hostGlobalState=1;
-								break;
-							case "UNKNOWN":
+							default:
 								hostGlobalState=1;
 								break;
 						}
 						if (debugJs) console.log('-> host global state : '+hostGlobalState);
 
 						var markerInfoWindowContent = [
-							'<div id="iw-{{app.helper.get_html_id(h)}}">',
+							'<div class="map-infoView" id="iw-{{h.get_name()}}">',
 							'<img class="map-iconHostState map-host-{{h.state}} map-host-{{h.state_type}}" src="{{app.helper.get_icon_state(h)}}" />',
 							'<span class="map-hostname"><a href="/host/{{h.get_name()}}">{{h.get_name()}}</a> is {{h.state}}.</span>',
 							'<hr/>',
@@ -206,9 +173,9 @@
 								var serviceState = "{{s.state}}";
 								switch(serviceState.toUpperCase()) {
 									case "OK":
+										break;
 									case "UNKNOWN":
 									case "PENDING":
-										break;
 									case "WARNING":
 										if (hostGlobalState < 1) hostGlobalState=1;
 										break;
@@ -216,51 +183,119 @@
 										if (hostGlobalState < 2) hostGlobalState=2;
 										break;
 								}
-								if (debugJs) console.log('-> host global state : '+hostGlobalState);
+								//if (debugJs) console.log('-> host global state : '+hostGlobalState);
 							%end
 						%end
-						// Create a marker ...
-		//				allMarkers.push(markerCreate(gpsLocation, host, infoViewContent, iconBase));
-		//				bounds.extend(gpsLocation);
+						
 						var markerState = "UNKNOWN";
 						switch(hostGlobalState) {
 							case 0:
-								markerState = "UP";
-								break;
-							case 1:
-								markerState = "UNKNOWN";
+								markerState = "OK";
 								break;
 							case 2:
-								markerState = "UNREACHABLE";
+								markerState = "KO";
 								break;
-							case 3:
-								markerState = "DOWN";
+							default:
+								markerState = "WARNING";
 								break;
 						}
-						allMarkers.push(initPoint(gpsLocation, '{{h.get_name()}}', markerState, markerInfoWindowContent));
-					
+						
+						// Create marker and append to markers list ...
+						allMarkers.push(markerCreate('{{h.get_name()}}', markerState, markerInfoWindowContent, gpsLocation, 'host'));
 						bounds.extend(gpsLocation);
+						if (debugJs) console.log('-> marker created at '+gpsLocation+'.');
 					} catch (e) {
-						if (debugJs) console.log('-> host {{h.get_name()}} does not have valid GPS.');
+						if (debugJs) console.error('markerCreate, exception : '+e.message);
 					}
-				%end
-				map.fitBounds(bounds);
-				
-				var mcOptions = {
-					zoomOnClick: true, showText: true, averageCenter: true, gridSize: 40, maxZoom: 20, 
-					styles: [
-						{ height: 53, width: 53, url: urlImages+"m1.png" },
-						{ height: 56, width: 56, url: urlImages+"m2.png" },
-						{ height: 66, width: 66, url: urlImages+"m3.png" },
-						{ height: 78, width: 78, url: urlImages+"m4.png" },
-						{ height: 90, width: 90, url: urlImages+"m5.png" }
-					]
-				};
-				var markerCluster = new MarkerClusterer(map, allMarkers, mcOptions);
+						
+					%end
+					%# End all hosts ...
+					
+					map.fitBounds(bounds);
+
+					var mcOptions = {
+						zoomOnClick: true, showText: true, averageCenter: true, gridSize: 40, maxZoom: 20, 
+						styles: [
+							{ height: 53, width: 53, url: imagesDir+"m1.png" },
+							{ height: 56, width: 56, url: imagesDir+"m2.png" },
+							{ height: 66, width: 66, url: imagesDir+"m3.png" },
+							{ height: 78, width: 78, url: imagesDir+"m4.png" },
+							{ height: 90, width: 90, url: imagesDir+"m5.png" }
+						]
+					};
+					
+					var mcOptions = {
+						zoomOnClick: true, showText: true, averageCenter: true, gridSize: 10, minimumClusterSize: 2, maxZoom: 18,
+						styles: [
+							{ height: 50, width: 50, url: imagesDir+"/cluster-OK.png" },
+							{ height: 60, width: 60, url: imagesDir+"/cluster-WARNING.png" },
+							{ height: 60, width: 60, url: imagesDir+"/cluster-KO.png" }
+						]
+						,
+						calculator: function(markers, numStyles) {
+							// Manage markers in the cluster ...
+							if (debugJs) console.log("marker, count : "+markers.length);
+							if (debugJs) console.log(markers);
+							var clusterIndex = 1;
+							for (i=0; i < markers.length; i++) {
+								var currentMarker = markers[i];
+								if (debugJs) console.log("marker, "+currentMarker.hostname+" state is : "+currentMarker.hoststate);
+								// if (debugJs) console.log(currentMarker);
+								switch(currentMarker.hoststate.toUpperCase()) {
+									case "OK":
+										break;
+									case "WARNING":
+										if (clusterIndex < 2) clusterIndex=2;
+										break;
+									case "KO":
+										if (clusterIndex < 3) clusterIndex=3;
+										break;
+								}
+							}
+
+							if (debugJs) console.log("marker, index : "+clusterIndex);
+							return {text: markers.length, index: clusterIndex};
+						}
+					};
+					var markerCluster = new MarkerClusterer(map, allMarkers, mcOptions);
+
+					var oms = new OverlappingMarkerSpiderfier(map, {
+						markersWontMove: true, 
+						markersWontHide: true,
+						keepSpiderfied: true,
+						nearbyDistance: 10,
+						circleFootSeparation: 50,
+						spiralFootSeparation: 50,
+						spiralLengthFactor: 20
+					});
+					oms.addListener('click', function(marker) {
+						if (debugJs) console.log('click marker for host : '+marker.hostname);
+						infoWindow.setContent(marker.iw_content);
+						infoWindow.open(map, marker);
+					});
+					oms.addListener('spiderfy', function(markers) {
+						if (debugJs) console.log('spiderfy ...');
+						infoWindow.close();
+					});
+					oms.addListener('unspiderfy', function(markers) {
+						if (debugJs) console.log('unspiderfy ...');
+					});
+					
+					for (i=0; i < allMarkers.length; i++) {
+						oms.addMarker(allMarkers[i]);
+					}
+				});
 			});
 		});
 	};
 
 	//<!-- Ok go initialize the map with all elements when it's loaded -->
-	$(document).ready(mapLoad);
+	$(document).ready(function (){
+		// Uncomment to activate javascript console logs ...
+		// debugJs=true; 
+		$.getScript("http://maps.googleapis.com/maps/api/js?sensor=false&callback=mapInit", function() {
+			apiLoaded=true;
+			if (debugJs) console.log("Google maps API loaded ...");
+		});
+	});
 </script>
