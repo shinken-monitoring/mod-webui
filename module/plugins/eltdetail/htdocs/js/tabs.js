@@ -6,7 +6,7 @@ $(window).ready(function(){
 		var hash = customHash || location.hash;
 		var hashPieces = hash.split('?'),
 			activeTab = $('[href=' + hashPieces[0] + ']');
-		console.log('activeTab'+activeTab);
+		// console.log('activeTab'+activeTab);
 		activeTab && activeTab.tab('show');
 	}
 
