@@ -10,7 +10,7 @@
 			height:			'600',
 			source:			"/timeline/json/{{hostname}}",
 			embed_id:		'timeline',
-			start_at_end:	true
+			start_at_end:	false
 		});
 	});
 

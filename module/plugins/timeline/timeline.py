@@ -145,7 +145,7 @@ def get_json(hostname):
 
     try:
         logger.warning("[Timeline] Fetching records from database: %s (max %d)" % (params['logs_type'], params['logs_limit']))
-        for log in db.logs.find({ "$and" : [ { "type" : { "$in": params['logs_type'] }}, { "host_name" : hostname }  ]}).sort("time", 1).limit(params['logs_limit']):
+        for log in db.logs.find({ "$and" : [ { "type" : { "$in": params['logs_type'] }}, { "host_name" : hostname }  ]}).sort("time", -1).limit(params['logs_limit']):
             records.append({
                 "date" : int(log["time"]),
                 "service" : log['service_description'],
@@ -171,12 +171,19 @@ def get_json(hostname):
     timeline['asset']['caption'] = "Whitney Houston performing on her My Love is Your Love Tour in Hamburg."
     timeline['date'] = []
     for record in records:
+        asset = {}
+        asset['media'] = "/static/timeline/img/host_up.png"
+        asset['credit'] = ""
+        asset['caption'] = record['message']
+        
         t=datetime.datetime.fromtimestamp(record['date'])
 
+        # Should be interesting to manage startDate / endDate
         timeline['date'].append({
                 "startDate" : t.strftime('%Y,%m,%d %H:%m'),
                 "headline" : record['service'],
-                "text" : record['message']
+                "text" : record['message'],
+                "asset" : asset
         })
     
     output = {}
