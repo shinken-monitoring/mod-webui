@@ -1,7 +1,7 @@
 %helper = app.helper
 %datamgr = app.datamgr
 
-%rebase layout globals(), js=['impacts/js/impacts.js', 'impacts/js/hoverit.js'], title='All critical impacts for your business', css=['impacts/css/impacts.css'], refresh=True, menu_part = '/impacts', user=user
+%rebase layout globals(), js=['impacts/js/impacts.js'], title='All critical impacts for your business', css=['impacts/css/impacts.css'], refresh=True, menu_part = '/impacts', user=user
 
 
 %# Look for actions if we must show them or not
@@ -11,11 +11,8 @@
 %end
 
 <div id="impact-container">
-	<div class="impacts-panel">
+	<div class="impacts-panel col-sm-3">
 
-<!--		<div id="result-stats">
-    			<p>Impacts: <span class="label label-important">{{app.datamgr.get_len_overall_state()}}</span> IT Problems: <span class="label label-important"> {{app.datamgr.get_nb_all_problems(app.get_user_auth())}}</span></p>
-    		</div> -->
     	%# " We look for separate bad and good elements, so we remember last state"
     	%last_was_bad = False
     	%# " By default we won't expand an impact."
@@ -42,7 +39,7 @@
 		%end
 
 		<div class="impact pblink" id="{{imp_id}}">
-			<div class="span11">
+			<div class="col-sm-11 impact-blade">
 				<div class="show-problem" id="show-problem-{{imp_id}}"> </div>
 
 				%for i in range(2, impact.business_impact):
@@ -61,7 +58,7 @@
 					</div>
 				</div>
 			</div>
-			<div class="span1 impact-arrow"> <i class="icon-double-angle-right font-white"></i> </div>
+			<div class="col-sm-1 impact-arrow"> <i class="icon-double-angle-right font-white"></i> </div>
 		</div>
 		%# end of the for imp_id in impacts:
 		%end
@@ -71,7 +68,7 @@
 	<div class="right-panel"> </div>
 
 	%# "#######    Now we will output righ panel with all root problems"
-	<div class="problems-panels">
+	<div class="problems-panels col-sm-9">
 
 		%# Iinit pb_id
 		%pb_id = 0
