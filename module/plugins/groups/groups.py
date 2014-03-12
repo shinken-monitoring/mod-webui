@@ -29,14 +29,46 @@ app = None
 from shinken.util import safe_print
 from shinken.misc.sorter import hst_srv_sort
 
-def get_page(name):
-    # First we look for the user sid
-    # so we bail out if it's a false one
+# Get plugin's parameters from configuration file
+params = {}
+params['elts_per_page'] = 10
+
+def load_cfg():
+    global params
+    
+    import os,sys
+    from shinken.log import logger
+    from webui import config_parser
+    try:
+        currentdir = os.path.dirname(os.path.realpath(__file__))
+        configuration_file = "%s/%s" % (currentdir, 'plugin.cfg')
+        logger.debug("Plugin configuration file: %s" % (configuration_file))
+        scp = config_parser('#', '=')
+        params = scp.parse_config(configuration_file)
+
+        params['elts_per_page'] = int(params['elts_per_page'])
+        
+        logger.debug("Plugin configuration, elts_per_page: %d" % (params['elts_per_page']))
+        
+        return True
+    except Exception, exp:
+        logger.warning("Plugin configuration file (%s) not available: %s" % (configuration_file, str(exp)))
+        return False
+
+def checkauth():
     user = app.get_user_auth()
 
     if not user:
         app.bottle.redirect("/user/login")
-        return
+    else:
+        return user
+
+def reload_cfg():
+    load_cfg()
+    app.bottle.redirect("/hostgroups")
+
+def get_page(name):
+    user = checkauth()    
 
     # Here we can call app.datamgr because when the webui "loaded" us, it
     # populate app with it's own value.
@@ -55,7 +87,7 @@ def get_page(name):
             
         items = my_group.get_hosts()
 
-    elts_per_page = 5
+    elts_per_page = params['elts_per_page']
     # We want to limit the number of elements
     start = int(app.request.GET.get('start', '0'))
     end = int(app.request.GET.get('end', elts_per_page))
@@ -75,16 +107,10 @@ def get_page(name):
     # we return values for the template (view). But beware, theses values are the
     # only one the template will have, so we must give it an app link and the
     # user we are logged with (it's a contact object in fact)
-    return {'app': app, 'user': user, 'navi': navi, 'group': my_group, 'hosts': items}
+    return {'app': app, 'user': user, 'params': params, 'navi': navi, 'group': my_group, 'hosts': items}
 
 def show_hostgroups():
-    # First we look for the user sid
-    # so we bail out if it's a false one
-    user = app.get_user_auth()
-
-    if not user:
-        app.bottle.redirect("/user/login")
-        return
+    user = checkauth()    
 
     # Here we can call app.datamgr because when the webui "loaded" us, it
     # populate app with it's own value.
@@ -93,7 +119,8 @@ def show_hostgroups():
     # we return values for the template (view). But beware, theses values are the
     # only one the template will have, so we must give it an app link and the
     # user we are logged with (it's a contact object in fact)
-    return {'app': app, 'user': user, 'hgroups': my_hostgroups}
+    return {'app': app, 'user': user, 'params': params, 'hgroups': my_hostgroups}
+
 
 # This is the dict the webui will try to "load".
 #  *here we register one page with both addresses /dummy/:arg1 and /dummy/, both addresses
@@ -104,6 +131,9 @@ def show_hostgroups():
 #  * optional: you can add 'method': 'POST' so this address will be only available for
 #    POST calls. By default it's GET. Look at the lookup module for sample about this.
 
-pages = {get_page: {'routes': ['/group/:name'], 'view': 'groups', 'static': True},
+load_cfg()
+
+pages = {reload_cfg: {'routes': ['/group/reload'], 'view': 'groups', 'static': True},
+         get_page: {'routes': ['/group/:name'], 'view': 'groups', 'static': True},
          show_hostgroups: {'routes': ['/hostgroups'], 'view': 'groups-overview', 'static': True},
          }
