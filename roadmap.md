@@ -6,8 +6,8 @@ The development of Shinken WebUI is done in parallel with Shinken, each with a d
 
 For more details on what has been done, please have a look at the [CHANGELOG](/changelog).
 
-## Milestone 1.0:
-- Current code base (git master 26.01.2014)
+## Milestone 1.0 - Hapuna:
+- Current code base (git master 6d3cc44 26.01.2014)
 
 ## Milestone 1.1 - Contis:
 
