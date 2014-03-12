@@ -23,6 +23,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 
+import re
 import time
 import datetime
 
@@ -139,58 +140,94 @@ def get_json(hostname):
             'records': []
         }
 
-    logger.warning("[Timeline] Fetching records from database for host %s" % (hostname))
+    logger.info("[Timeline] Fetching records from database for host %s" % (hostname))
     
     records=[]
 
     try:
-        logger.warning("[Timeline] Fetching records from database: %s (max %d)" % (params['logs_type'], params['logs_limit']))
+        logger.info("[Timeline] Fetching records from database: %s (max %d)" % (params['logs_type'], params['logs_limit']))
+        # {
+        # "_id" : ObjectId("53140d923dbf176872000014"),
+        # "comment" : "",
+        # "plugin_output" : "",
+        # "attempt" : 0,
+        # "message" : "[1393823120] CURRENT SERVICE STATE: localhost;Load;PENDING;HARD;0;",
+        # "logclass" : 6,
+        # "options" : "",
+        # "state_type" : "HARD",
+        # "lineno" : 21,
+        # "state" : "PENDING",
+        # "host_name" : "localhost",
+        # "time" : 1393823120,
+        # "service_description" : "Load",
+        # "logobject" : 2,
+        # "type" : "CURRENT SERVICE STATE",
+        # "contact_name" : "",
+        # "command_name" : ""
+        # }
+
         for log in db.logs.find({ "$and" : [ { "type" : { "$in": params['logs_type'] }}, { "host_name" : hostname }  ]}).sort("time", -1).limit(params['logs_limit']):
             records.append({
                 "date" : int(log["time"]),
+                "host" : log['host_name'],
                 "service" : log['service_description'],
-                "message" : log['message']
+                "message" : log['message'].split(":")[1].lstrip()
             })
         message = "%d records fetched from database." % len(records)
-        logger.debug("[Timeline] %d records fetched from database." % len(records))
+        logger.debug(message)
     except Exception, exp:
         logger.error("[Logs] Exception when querying database: %s" % (str(exp)))
         return
 
-    timeline = {}
-    timeline['type'] = "default"
-    timeline['headline'] = hostname
-    timeline['startDate'] = "2014,01,01"
-    timeline['text'] = host.get_full_name()
-    if len(host.display_name) > 0:
-        timeline['text'] += ' ('+host.display_name+')'
-        
-    timeline['asset'] = {}
-    timeline['asset']['media'] = "http://www.flickr.com/photos/tm_10001/2310475988/"
-    timeline['asset']['credit'] = "flickr/<a href='http://www.flickr.com/photos/tm_10001/'>tm_10001</a>"
-    timeline['asset']['caption'] = "Whitney Houston performing on her My Love is Your Love Tour in Hamburg."
-    timeline['date'] = []
+    records = sorted(records, key=lambda record: (record.get('service'), record.get('date')))
+    
+    timeline = []
     for record in records:
-        asset = {}
-        asset['media'] = "/static/timeline/img/host_up.png"
-        asset['credit'] = ""
-        asset['caption'] = record['message']
-        
         t=datetime.datetime.fromtimestamp(record['date'])
-
-        # Should be interesting to manage startDate / endDate
-        timeline['date'].append({
-                "startDate" : t.strftime('%Y,%m,%d %H:%m'),
-                "headline" : record['service'],
-                "text" : record['message'],
-                "asset" : asset
+        logger.warning("[Timeline] Record: %s / %s -> %s" % (t.strftime('%Y,%m,%d %H:%m'), t.isoformat(), record['message']))
+        message = record['message'].split(";")
+        content = 'Downtime %s<br>' % message[1].lower()
+        content +='<img src="/static/timeline/img/host_downtime.png" style="width:32px; height:32px;"><br/>'
+        timeline.append({
+                "start": t.isoformat(),
+                "content" : content,
+                # "group": 'Transitions'
         })
     
-    output = {}
-    output['timeline'] = timeline
+    # timeline = []
+    # initial_state = ""
+    # current_state = ""
+    # start_date = 0
+    # for record in records:
+        # t=datetime.datetime.fromtimestamp(record['date'])
+        # logger.warning("[Timeline] Record: %s -> %s" % (t.strftime('%Y,%m,%d %H:%m'), record['message']))
+        # message = record['message'].split(";")
+        
+        # if message[1] != "OK":
+            # current_state = message[1]
+            # if start_date == 0:
+                # start_date = record['date']
+            
+        # if message[1] == "OK" and current_state != "":
+            # current_state = message[1]
+            
+            # content = 'Host is %s<br>' % current_state
+            # content +='<img src="/static/timeline/img/host_%s.png" style="width:32px; height:32px;"><br/>' % current_state.lower()
+
+            # logger.warning("[Timeline] -> Period: %s" % (content))
+            # timeline.append({
+                    # "start": start_date,
+                    # "end": record['date'],
+                    # "content" : content,
+                    # "group": record['service'],
+            # })
+            
+            # start_date = 0
     
-    return json.dumps(output)
+    logger.debug("[Timeline] Finished compiling fetched records")
+    return json.dumps(timeline)
 
 
 pages = {get_page: {'routes': ['/timeline/:hostname'], 'view': 'timeline', 'static': True},
+         get_page: {'routes': ['/timeline/inner/:hostname'], 'view': 'timeline_inner', 'static': True},
          get_json: {'routes': ['/timeline/json/:hostname'], 'view': 'timeline', 'static': True},}
