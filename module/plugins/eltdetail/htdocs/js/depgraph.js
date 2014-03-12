@@ -24,10 +24,10 @@
 
 // when we show the depgraph tab, we lazy load the depgraph :p
 $(window).ready(function(){
-    $('#tab_to_depgraph').on('shown.bs.tab', function (e) {
+	$('#tab_to_depgraph').on('shown.bs.tab', function (e) {
 		// First we get the full name of the object from div data
 		var n = $('#inner_depgraph').attr('data-elt-name');
 		// Then we load the inner depgraph page. Easy isn't it? :)
 		$('#inner_depgraph').load('/inner/depgraph/'+n);
-    })
+	})
 });
