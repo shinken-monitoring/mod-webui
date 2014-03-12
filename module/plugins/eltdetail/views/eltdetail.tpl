@@ -45,7 +45,7 @@ Invalid element name
 	%end
 %end
 
-%rebase layout title=elt_type.capitalize() + ' / ' + elt.get_full_name(), js=['eltdetail/js/jquery.color.js', 'eltdetail/js/jquery.Jcrop.js', 'eltdetail/js/iphone-style-checkboxes.js', 'eltdetail/js/hide.js', 'eltdetail/js/dollar.js', 'eltdetail/js/gesture.js', 'eltdetail/js/graphs.js', 'eltdetail/js/tags.js', 'eltdetail/js/depgraph.js', 'eltdetail/js/custom_views.js', 'eltdetail/js/tabs.js', 'eltdetail/js/screenfull.js', 'eltdetail/js/shinken-gauge.js'], css=['eltdetail/css/eltdetail.css', 'eltdetail/css/hide.css', 'eltdetail/css/gesture.css', 'eltdetail/css/jquery.Jcrop.css', 'eltdetail/css/shinken-gauge.css'], user=user, app=app, refresh=True
+%rebase layout title=elt_type.capitalize() + ' / ' + elt.get_full_name(), js=['eltdetail/js/jquery.color.js', 'eltdetail/js/jquery.Jcrop.js', 'eltdetail/js/iphone-style-checkboxes.js', 'eltdetail/js/hide.js', 'eltdetail/js/dollar.js', 'eltdetail/js/gesture.js', 'eltdetail/js/graphs.js', 'eltdetail/js/tags.js', 'eltdetail/js/depgraph.js', 'eltdetail/js/custom_views.js', 'eltdetail/js/tabs.js', 'eltdetail/js/screenfull.js', 'eltdetail/js/shinken-gauge.js', 'timeline/js/timeline.js'], css=['eltdetail/css/eltdetail.css', 'eltdetail/css/hide.css', 'eltdetail/css/gesture.css', 'eltdetail/css/jquery.Jcrop.css', 'eltdetail/css/shinken-gauge.css', 'timeline/css/timeline.css'], user=user, app=app, refresh=True
 
 %# " We will save our element name so gesture functions will be able to call for the good elements."
 <script type="text/javascript">
@@ -70,9 +70,24 @@ Invalid element name
 		else {
 			$('ul.nav-tabs > li > a:first').tab('show');
 		}
+		
+		// Get timeline tab content ...
+		%if elt_type=='host':
+		$.ajax({
+			url: "/timeline/inner/{{elt.host_name}}",
+			success: function (data){
+				console.log(data);
+				$('#inner_timeline').html(data);
+			},
+			error: function(xhr) {
+				this.html('Error loading this widget!');
+				console.log( xhr);
+			}
+		});
+		%end
 	});
 
-  // Now we hook the global search thing
+	// Now we hook the global search thing
 	$('.typeahead').typeahead({
 		// note that "value" is the default setting for the property option
 		source: function (typeahead, query) {
@@ -134,14 +149,14 @@ Invalid element name
 			    </div>
 			</div>	
 		%else:
-		    <div class="col-lg-12">
-		   		<span class="pull-right leftmargin" id="host_tags">
-		   			%tags = elt.get_host_tags()
-		   			%for t in tags:
-		    		<script>add_tag_image('/static/images/sets/{{t.lower()}}/tag.png','{{t}}');</script>
-		    		%end
-		    	</span>
-		    </div>
+			<div class="col-lg-12">
+				<span class="pull-right leftmargin" id="host_tags">
+					%tags = elt.get_host_tags()
+					%for t in tags:
+					<script>add_tag_image('/static/images/sets/{{t.lower()}}/tag.png','{{t}}');</script>
+					%end
+				</span>
+			</div>
 		%end	
 	</div>
 
@@ -329,7 +344,8 @@ Invalid element name
 	<!-- Start -->
 	<div class="row">
 		<!-- Start Host/Services-->
-		<div class="tabbable verticaltabs-container col-sm-4 col-lg-3"> <!-- Wrap the Bootstrap Tabs/Pills in this container to position them vertically -->
+		<div class="tabbable verticaltabs-container col-sm-4 col-lg-3">
+			<!-- Wrap the Bootstrap Tabs/Pills in this container to position them vertically -->
 			<ul class="nav nav-tabs">
 				<li class="active"><a href="#basic" data-toggle="tab">{{elt_type.capitalize()}} Information:</a></li>
 				<li><a href="#additional" data-toggle="tab">Additional Informations:</a></li>
@@ -542,6 +558,7 @@ Invalid element name
 				<li class="{{_go_active}}"><a class='link_to_tab' href="#impacts" data-toggle="tab">Services</a></li>
 			    <li><a class='link_to_tab' href="#comments" data-toggle="tab">Comments</a></li>
 				<li><a class='link_to_tab' href="#downtimes" data-toggle="tab">Downtimes</a></li>
+				<li><a class='link_to_tab' href="#timeline" data-toggle="tab">Timeline</a></li>
 				<li><a class='link_to_tab' href="#graphs" data-toggle="tab" id='tab_to_graphs'>Graphs</a></li>
 				<li><a class='link_to_tab' href="#depgraph" data-toggle="tab" id='tab_to_depgraph'>Impact graph</a></li>
 				<!--<li><a href="/depgraph/{{elt.get_full_name()}}" title="Impact map of {{elt.get_full_name()}}">Impact map</a></li> -->
@@ -708,6 +725,18 @@ Invalid element name
 					</div>
 				</div>
 				<!-- Tab Downtimes End -->
+
+				<!-- Tab Timeline Start -->
+				<div class="tab-pane" id="timeline">
+					<div class='row-fluid well col-lg-12'>
+					<div class='row-fluid well col-lg-12 jcrop'>
+						<div id="inner_timeline" data-elt-name='{{elt.get_full_name()}}'>
+							<span class="alert alert-error">Cannot load timeline graph.</span>
+						</div>
+					</div>
+					</div>
+				</div>
+				<!-- Tab Graph End -->
 
 				<!-- Tab Graph Start -->
 				<div class="tab-pane" id="graphs">
