@@ -6547,6 +6547,6 @@ links.Timeline.parseJSONDate = function (date) {
     }
 
     // failing that, try to parse whatever we've got.
-	console.log(date, Date.parse(date));
+	// console.log(date, Date.parse(date));
     return Date.parse(date);
 };

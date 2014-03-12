@@ -76,7 +76,6 @@ Invalid element name
 		$.ajax({
 			url: "/timeline/inner/{{elt.host_name}}",
 			success: function (data){
-				console.log(data);
 				$('#inner_timeline').html(data);
 			},
 			error: function(xhr) {
