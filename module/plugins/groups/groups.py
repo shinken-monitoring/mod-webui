@@ -38,7 +38,7 @@ def load_cfg():
     
     import os,sys
     from shinken.log import logger
-    from webui import config_parser
+    from config_parser import config_parser
     try:
         currentdir = os.path.dirname(os.path.realpath(__file__))
         configuration_file = "%s/%s" % (currentdir, 'plugin.cfg')

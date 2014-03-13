@@ -50,7 +50,7 @@ params['logs_hosts'] = []
 params['logs_services'] = []
 
 import os,sys
-from webui import config_parser
+from config_parser import config_parser
 try:
     currentdir = os.path.dirname(os.path.realpath(__file__))
     configuration_file = "%s/%s" % (currentdir, 'plugin.cfg')
