@@ -346,13 +346,22 @@ Invalid element name
 		<div class="tabbable verticaltabs-container col-sm-4 col-lg-3">
 			<!-- Wrap the Bootstrap Tabs/Pills in this container to position them vertically -->
 			<ul class="nav nav-tabs">
+				%if params['tab_info']=='yes':
 				<li class="active"><a href="#basic" data-toggle="tab">{{elt_type.capitalize()}} Information:</a></li>
+				%end
+				%if params['tab_additional']=='yes':
 				<li><a href="#additional" data-toggle="tab">Additional Informations:</a></li>
+				%end
+				%if params['tab_commands']=='yes':
 				<li><a href="#commands" data-toggle="tab">Commands:</a></li>
+				%end
+				%if params['tab_gesture']=='yes':
 				<li><a href="#gesture" data-toggle="tab">Gesture:</a></li>
+				%end
 			</ul>
 
 			<div class="tab-content">
+				%if params['tab_info']=='yes':
 				<div class="tab-pane fade in active" id="basic">
 					%if elt_type=='host':
 					<h4>Host Information:</h4>
@@ -429,7 +438,9 @@ Invalid element name
 						</tr>
 					</table>
 				</div>
+				%end
 
+				%if params['tab_additional']=='yes':
 				<div class="tab-pane fade" id="additional">
 					<script type="text/javascript">
 					$().ready(function() {
@@ -504,7 +515,9 @@ Invalid element name
 						</div>
 					</div>
 				</div>
+				%end
 
+				%if params['tab_commands']=='yes':
 				<div class="tab-pane fade" id="commands">
 					<h4>Commands</h4>
 					<div>
@@ -528,10 +541,12 @@ Invalid element name
 						</ul>
 				    </div>
 				</div>
+				%end
 
+				%if params['tab_gesture']=='yes':
 				<div class="tab-pane fade" id="gesture">
 					<h4>Gesture</h4>
-					<canvas id="canvas" height="200" class="" style="border: 1px solid black;"></canvas>
+					<canvas id="gestureCanvas" height="200" class="" style="border: 1px solid black;"></canvas>
 					<div class="gesture_button">
 						<img title="By keeping a left click pressed and drawing a check, you will launch an acknowledgement." alt="gesture acknowledge" src="/static/eltdetail/images/gesture-check.png"/> Acknowledge
 					</div>
@@ -542,6 +557,7 @@ Invalid element name
 						<img title="By keeping a left click pressed and drawing a check, you will launch a try to fix command." alt="gesture fix" src="/static/eltdetail/images/gesture-zigzag.png"/> Fix
 					</div>
 				</div>
+				%end
 			</div>
 		</div>
 
@@ -549,22 +565,36 @@ Invalid element name
 		<div class="col-lg-9 tabbable">
 			<ul class="nav nav-tabs" style="margin-bottom: 12px;">
 				%_go_active = 'active'
+				%if params['tab_custom_views']=='yes':
 				%for cvname in elt.custom_views:
 				<li class="{{_go_active}} cv_pane" data-cv-name="{{cvname}}" data-elt-name='{{elt.get_full_name()}}' id='tab-cv-{{cvname}}'><a class='link_to_tab' href="#cv{{cvname}}" data-toggle="tab">{{cvname.capitalize()}}</a></li>
 					%_go_active = ''
 				%end
+				%end
 
+				%if params['tab_impacts']=='yes':
 				<li class="{{_go_active}}"><a class='link_to_tab' href="#impacts" data-toggle="tab">Services</a></li>
+				%end
+				%if params['tab_comments']=='yes':
 			    <li><a class='link_to_tab' href="#comments" data-toggle="tab">Comments</a></li>
+				%end
+				%if params['tab_downtimes']=='yes':
 				<li><a class='link_to_tab' href="#downtimes" data-toggle="tab">Downtimes</a></li>
+				%end
+				%if params['tab_timeline']=='yes':
 				<li><a class='link_to_tab' href="#timeline" data-toggle="tab">Timeline</a></li>
+				%end
+				%if params['tab_graphs']=='yes':
 				<li><a class='link_to_tab' href="#graphs" data-toggle="tab" id='tab_to_graphs'>Graphs</a></li>
+				%end
+				%if params['tab_depgraph']=='yes':
 				<li><a class='link_to_tab' href="#depgraph" data-toggle="tab" id='tab_to_depgraph'>Impact graph</a></li>
-				<!--<li><a href="/depgraph/{{elt.get_full_name()}}" title="Impact map of {{elt.get_full_name()}}">Impact map</a></li> -->
+				%end
 			</ul>
 			
 			<div class="tab-content">
-				<!-- First custom views -->
+				<!-- Tab custom views -->
+				%if params['tab_custom_views']=='yes':
 				%_go_active = 'active'
 				%for cvname in elt.custom_views:
 				<div class="tab-pane {{_go_active}}" data-cv-name="{{cvname}}" data-elt-name='{{elt.get_full_name()}}' id="cv{{cvname}}">
@@ -572,8 +602,11 @@ Invalid element name
 				</div>
 				%_go_active = ''
 				%end
+				%end
+				<!-- Tab custom views end -->
 
 				<!-- Tab Summary Start-->
+				%if params['tab_impacts']=='yes':
 				<div class="tab-pane {{_go_active}}" id="impacts">
 					<div class='row-fluid well col-lg-12'>
 					<!-- Start of the Whole info pack. We got a row of 2 thing : 
@@ -643,9 +676,11 @@ Invalid element name
 						<!-- End of the row with the 2 blocks-->
 					</div>
 				</div>
+				%end
 				<!-- Tab Summary End-->
 
 				<!-- Tab Comments Start -->
+				%if params['tab_comments']=='yes':
 				<div class="tab-pane" id="comments">
 					<div class='row-fluid well col-lg-12'>
 						<div id="log_container" class="row-fluid">
@@ -682,9 +717,11 @@ Invalid element name
 						<button type="button" class="btn btn-primary btn-sm" href="/forms/comment_delete/{{helper.get_uri_name(elt)}}" data-toggle="modal" data-target="#modal"><i class="icon-minus"></i> Delete all comments</button>
 					</div>
 				</div>
+				%end
 				<!-- Tab Comments End -->
 
 				<!-- Tab Downtimes Start -->
+				%if params['tab_downtimes']=='yes':
 				<div class="tab-pane" id="downtimes">
 					<div class='row-fluid well col-lg-12'>
 						<div id="log_container" class="row-fluid">
@@ -723,9 +760,11 @@ Invalid element name
 						<button type="button" class="btn btn-primary btn-sm" href="/forms/downtime_delete/{{helper.get_uri_name(elt)}}" data-toggle="modal" data-target="#modal" class="btn btn-primary"><i class="icon-minus"></i> Delete all downtimes</button>
 					</div>
 				</div>
+				%end
 				<!-- Tab Downtimes End -->
 
 				<!-- Tab Timeline Start -->
+				%if params['tab_timeline']=='yes':
 				<div class="tab-pane" id="timeline">
 					<div class='row-fluid well col-lg-12'>
 					<div class='row-fluid well col-lg-12 jcrop'>
@@ -735,9 +774,11 @@ Invalid element name
 					</div>
 					</div>
 				</div>
+				%end
 				<!-- Tab Graph End -->
 
 				<!-- Tab Graph Start -->
+				%if params['tab_graphs']=='yes':
 				<div class="tab-pane" id="graphs">
 					%uris = app.get_graph_uris(elt, graphstart, graphend)
 					%if len(uris) == 0:
@@ -862,9 +903,11 @@ Invalid element name
 					</div>
 					%end
 				</div>
+				%end
 				<!-- Tab Graph End -->
 
 				<!-- Tab Dep graph Start -->
+				%if params['tab_depgraph']=='yes':
 				<script>
 				$(function() {
 					$('#supported').text('Supported/allowed: ' + !!screenfull.enabled);
@@ -892,6 +935,7 @@ Invalid element name
 						</div>
 					</div>
 				</div>
+				%end
 				<!-- Tab Dep graph End -->
 			</div>
 		<!-- Detail info box end -->
