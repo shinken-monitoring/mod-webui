@@ -21,6 +21,7 @@
   ],
   "repository": "https://github.com/shinken-monitoring/mod-webui/tree/1.0",
   "keywords": [
+    "mod-webui",
     "module",
     "broker",
     "webui",
