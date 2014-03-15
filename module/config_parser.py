@@ -58,12 +58,4 @@ class config_parser(object):
                     self.options[option] = value
         config_file.close()
         return self.options
-        
-
-# Test module   
-# try:
-    # scp = SimpleConfigParser('#', '=')
-    # params = scp.parse_config('log_test.cfg')
-    # print params
-# except Exception, exp:
-    # print "Requested configuration file does not exist !", exp
+ 
