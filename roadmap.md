@@ -13,14 +13,14 @@ For more details on what has been done, please have a look at the [CHANGELOG](/c
 
 Overall goals: 
 - New views
-- Customizable views (#50)
+- Customizable views (Issue #50)
 
 Featurelist:
 - New Main menu for more space and usebility 
 - New Host- & Servicegroup view
-- New System log view (#51)
-- New Worldmap view (#52)
-- New Timeline view (#53)
+- New System log view (Issue #51)
+- New Worldmap view (Issue #52)
+- New Timeline view (Issue #53)
 - Enhanced Dashboard
 - Enhanced Impact view (backport from Enterprise 1.0 UI)
 - New Problems view (backport from Enterprise 1.0 UI)
