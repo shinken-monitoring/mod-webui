@@ -44,13 +44,10 @@ function postpone_refresh(){
 /* React to an action return of the /action page. Look at status
  to see if it's ok or not */
 function check_gotfirstdata_result(response){
-	//alert('In gotfirstdata_result'+ response+response.status);
-	//alert(response.status == 200);
 	if(response.status == 200 && response.text == '1'){
 		// Go Refresh
 		location.reload();
-		// location.assign(location.href);
-		// window.location.href = window.location.protocol + "//" + window.location.host + window.location.pathname;
+
 		reinit_refresh();
 	}else{
 		postpone_refresh();
@@ -62,7 +59,6 @@ function check_gotfirstdata_result(response){
    don't have enough data to refresh the page as it should. (force login) */
 function check_for_data(){
 	// this code will send a data object via a GET request and alert the retrieved data.
-	//alert('Try to get' + url+'?callback=?');
 	$.jsonp({
 		"url": '/gotfirstdata?callback=?',
 		"success": check_gotfirstdata_result,
@@ -75,7 +71,7 @@ function check_for_data(){
 /* Each second, we check for timeout and restart page */
 function check_refresh(){
 	// console.log('Check refresh timeout ' + refresh_timeout);
-	if(refresh_timeout < 0){
+	if (refresh_timeout < 0){
 		// We will first check if the backend is available or not. It's useless to refresh
 		// if the backend is reloading, because it will prompt for login, when wait a little bit
 		// will make the data available.
@@ -89,10 +85,9 @@ function check_refresh(){
    do some things like ask actions or something like that */
 function reinit_refresh(){
 	refresh_timeout = app_refresh_period;
-	// console.log('Reinitialize refresh to ' + refresh_timeout);
 }
 
-/* We will check timeout each 1s*/
+/* We will check timeout each 1s */
 $(document).ready(function(){
 	setInterval("check_refresh();", 1000);
 });
