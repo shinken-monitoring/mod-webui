@@ -56,14 +56,6 @@ def load_cfg():
         scp = config_parser('#', '=')
         params = scp.parse_config(configuration_file)
 
-        # params['tab_custom_views'] = params['tab_custom_views']
-        # params['tab_impacts'] = params['tab_impacts']
-        # params['tab_comments'] = params['tab_comments']
-        # params['tab_downtimes'] = params['tab_downtimes']
-        # params['tab_timeline'] = params['tab_timeline']
-        # params['tab_graphs'] = params['tab_graphs']
-        # params['tab_depgraph'] = params['tab_depgraph']
-        
         logger.error("Plugin configuration, parameters loaded.")
         return True
     except Exception, exp:
@@ -127,8 +119,7 @@ def show_service(hname, desc):
 
 load_cfg()
 
-pages = {reload_cfg: {'routes': ['/host/reload'], 'view': 'groups', 'static': True},
-         reload_cfg: {'routes': ['/service/reload'], 'view': 'groups', 'static': True},
+pages = {reload_cfg: {'routes': ['/eltview/reload'], 'view': 'groups', 'static': True},
          show_host: {'routes': ['/host/:name'], 'view': 'eltdetail', 'static': True},
          show_service: {'routes': ['/service/:hname/:desc#.+#'], 'view': 'eltdetail', 'static': True},
          }

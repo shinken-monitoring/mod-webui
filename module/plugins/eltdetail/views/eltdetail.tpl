@@ -1,6 +1,6 @@
 %import time
 
-%# If got no Elt, bailout
+%# If got no element, bailout
 %if not elt:
 %rebase layout title='Invalid element name'
 
@@ -45,7 +45,7 @@ Invalid element name
 	%end
 %end
 
-%rebase layout title=elt_type.capitalize() + ' / ' + elt.get_full_name(), js=['eltdetail/js/jquery.color.js', 'eltdetail/js/jquery.Jcrop.js', 'eltdetail/js/iphone-style-checkboxes.js', 'eltdetail/js/hide.js', 'eltdetail/js/dollar.js', 'eltdetail/js/gesture.js', 'eltdetail/js/graphs.js', 'eltdetail/js/tags.js', 'eltdetail/js/depgraph.js', 'eltdetail/js/custom_views.js', 'eltdetail/js/tabs.js', 'eltdetail/js/screenfull.js', 'eltdetail/js/shinken-gauge.js', 'timeline/js/timeline.js'], css=['eltdetail/css/eltdetail.css', 'eltdetail/css/hide.css', 'eltdetail/css/gesture.css', 'eltdetail/css/jquery.Jcrop.css', 'eltdetail/css/shinken-gauge.css', 'timeline/css/timeline.css'], user=user, app=app, refresh=True
+%rebase layout title=elt_type.capitalize() + ' / ' + elt.get_full_name(), js=['eltdetail/js/jquery.color.js', 'eltdetail/js/jquery.Jcrop.js', 'eltdetail/js/iphone-style-checkboxes.js', 'eltdetail/js/hide.js', 'eltdetail/js/dollar.js', 'eltdetail/js/gesture.js', 'eltdetail/js/graphs.js', 'eltdetail/js/tags.js', 'eltdetail/js/depgraph.js', 'eltdetail/js/custom_views.js', 'eltdetail/js/tabs.js', 'eltdetail/js/screenfull.js', 'eltdetail/js/shinken-gauge.js', 'eltdetail/js/timeline.js', 'timeline/js/timeline.js'], css=['eltdetail/css/eltdetail.css', 'eltdetail/css/hide.css', 'eltdetail/css/gesture.css', 'eltdetail/css/jquery.Jcrop.css', 'eltdetail/css/shinken-gauge.css', 'timeline/css/timeline.css'], user=user, app=app, refresh=True
 
 %# " We will save our element name so gesture functions will be able to call for the good elements."
 <script type="text/javascript">
@@ -70,20 +70,6 @@ Invalid element name
 		else {
 			$('ul.nav-tabs > li > a:first').tab('show');
 		}
-		
-		// Get timeline tab content ...
-		%if elt_type=='host':
-		$.ajax({
-			url: "/timeline/inner/{{elt.host_name}}",
-			success: function (data){
-				$('#inner_timeline').html(data);
-			},
-			error: function(xhr) {
-				this.html('Error loading this widget!');
-				console.log( xhr);
-			}
-		});
-		%end
 	});
 
 	// Now we hook the global search thing
@@ -390,13 +376,11 @@ Invalid element name
 						</tr>
 						<tr>
 							<td class="column1"><b>Flapping:</b></td>
-							<td><button class="col-lg-11 btn alert-small trim-{{helper.yes_no(elt.in_scheduled_downtime)}}" quickinfo="{{helper.print_float(elt.percent_state_change)}}% state change">{{helper.yes_no(elt.is_flapping)}}</button></td>
+							<td><button class="col-lg-11 btn alert-small trim-{{helper.yes_no(elt.is_flapping)}} quickinforight" data-original-title="{{helper.print_float(elt.percent_state_change)}}% state change">{{helper.yes_no(elt.is_flapping)}}</button></td>
 						</tr>
 						<tr>
 							<td class="column1"><b>In Scheduled Downtime?</b></td>
-							<td><!-- <span class="btn span11 alert-small trim-{{helper.yes_no(elt.in_scheduled_downtime)}}">{{helper.yes_no(elt.in_scheduled_downtime)}}</span> -->
-							<button class="col-lg-11 btn alert-small trim-{{helper.yes_no(elt.in_scheduled_downtime)}}" type="button">{{helper.yes_no(elt.in_scheduled_downtime)}}</button>
-							</td>
+							<td><button class="col-lg-11 btn alert-small trim-{{helper.yes_no(elt.in_scheduled_downtime)}}" type="button">{{helper.yes_no(elt.in_scheduled_downtime)}}</button></td>
 						</tr>
 					</table>
 					<hr>
@@ -518,6 +502,7 @@ Invalid element name
 				%end
 
 				%if params['tab_commands']=='yes':
+				%if app.manage_acl and helper.can_action(user):
 				<div class="tab-pane fade" id="commands">
 					<h4>Commands</h4>
 					<div>
@@ -541,6 +526,7 @@ Invalid element name
 						</ul>
 				    </div>
 				</div>
+				%end
 				%end
 
 				%if params['tab_gesture']=='yes':
@@ -582,7 +568,7 @@ Invalid element name
 				<li><a class='link_to_tab' href="#downtimes" data-toggle="tab">Downtimes</a></li>
 				%end
 				%if params['tab_timeline']=='yes':
-				<li><a class='link_to_tab' href="#timeline" data-toggle="tab">Timeline</a></li>
+				<li class='timeline_pane'><a class='link_to_tab' href="#timeline" data-toggle="tab" id='tab_to_timeline'>Timeline</a></li>
 				%end
 				%if params['tab_graphs']=='yes':
 				<li><a class='link_to_tab' href="#graphs" data-toggle="tab" id='tab_to_graphs'>Graphs</a></li>
@@ -769,7 +755,7 @@ Invalid element name
 					<div class='row-fluid well col-lg-12'>
 					<div class='row-fluid well col-lg-12 jcrop'>
 						<div id="inner_timeline" data-elt-name='{{elt.get_full_name()}}'>
-							<span class="alert alert-error">Cannot load timeline graph.</span>
+							<span class="alert alert-error">Cannot load the timeline graph.</span>
 						</div>
 					</div>
 					</div>
@@ -917,8 +903,6 @@ Invalid element name
 
 					$('#fullscreen-request').click(function() {
 						screenfull.request($('#inner_depgraph')[0]);
-						// Does not require jQuery, can be used like this too:
-						// screenfull.request(document.getElementById('container'));
 					});
 
 					// Trigger the onchange() to set the initial values

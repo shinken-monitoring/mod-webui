@@ -48,7 +48,7 @@ function show_custom_view(p){
 	_already_loaded[cvname] = true;
 }
 
-// when we show the depgraph tab, we lazy load the depgraph :p
+// When we show the custom view tab, we lazy load the view ...
 $(window).ready(function(){
 	$('.cv_pane').on('shown.bs.tab', function (e) {
 		show_custom_view($(this));
