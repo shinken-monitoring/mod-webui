@@ -1,7 +1,7 @@
-%rebase layout globals(), css=['worldmap/css/worldmap.css'], title='Worldmap', refresh=True
+%rebase widget globals(), css=['worldmap/css/worldmap.css']
 
 <!-- HTML map container -->
-<div class="map_container">
+<div class="map_container_widget">
 	<div id="map">
 		<div class="alert alert-info">
 			<a href="#" class="alert-link">Loading map ...</a>

@@ -1,17 +1,25 @@
 .map_container {
-	position: absolute;
 	margin: auto;
+	margin-top: 20px;
 	background: #cccccc;
 	width: 98%;
+	height: 720px;
 }
-
-.map_container p{margin:10px 0px 10px 20px;}
+.map_container_widget {
+	margin: 0;
+	width: 480px;
+	height: 320px;
+}
 
 .map_container #map {
 	width: 100%;
-	min-height: 700px;
-	margin: auto;
+	height: 100%;
 }
+.map_container_widget #map {
+	width: 480px;
+	height: 320px;
+}
+
 /* Thanks to http://stackoverflow.com/questions/9663375/google-map-infowindow-not-showing-properly 
 	This Css avoids corrupted map control and infowindow */
 	
