@@ -339,7 +339,9 @@ Invalid element name
 				<li><a href="#additional" data-toggle="tab">Additional Informations:</a></li>
 				%end
 				%if params['tab_commands']=='yes':
+				%if app.manage_acl and helper.can_action(user):
 				<li><a href="#commands" data-toggle="tab">Commands:</a></li>
+				%end
 				%end
 				%if params['tab_gesture']=='yes':
 				<li><a href="#gesture" data-toggle="tab">Gesture:</a></li>
