@@ -122,14 +122,6 @@ For an if it's also easy:
 
 
 
-Which javascript lib are you using?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-It's mootools 1.3 with all options :)
-
-
-
 
 What to do? 
 ~~~~~~~~~~~~
