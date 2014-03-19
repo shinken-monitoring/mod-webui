@@ -1,4 +1,4 @@
-
+.. _webui_index:
 
 =======================
 WebUI module
