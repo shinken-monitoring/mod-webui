@@ -69,32 +69,40 @@ Authentification modules
 
 The WebUI use modules to lookup your user password and allow to authenticate or not.
 
-By default it is using the cfg_password_webui module, which will look into your contact definition for the password parameter. 
+By default it is using the auth-cfg-password module, which will look into your contact definition for the password parameter. 
 
-Shinken contact - cfg_password_webui
+Shinken contact - auth-cfg-password
 ====================================
+
+::
+	
+	shinken install auth-cfg-password
 
 The simpliest is to use the users added as Shinken contacts
 
 ::
 
 	define module {
-	module_name Cfg_password
-	module_type cfg_password_webui
+	   module_name Cfg_password
+	   module_type cfg_password_webui
 	}
 
 Apache htpasswd - passwd_webui
 ==============================
-This module uses an Apache passwd file (htpasswd) as authentification backend. All it needs is the full path of the file (from a legacy Nagios CGI installation, for example).
+This module uses an Apache passwd file (htpasswd) as authentification backend. All it needs is the full path of the file.
+
+::
+
+	shinken install auth-htpasswd
 
 ::
 
 	define module {
-	module_name      Apache_passwd
-	module_type      passwd_webui
+	   module_name      Apache_passwd
+	   module_type      passwd_webui
 
-	# WARNING: put the full PATH for this value!
-	passwd           /etc/shinken/htpasswd.users
+	   # WARNING: put the full PATH for this value!
+	   passwd           /etc/shinken/htpasswd.users
 	}
 
 Check the owner (must be Shinken user) and mode (must be readable) of this file.
