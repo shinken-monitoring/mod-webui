@@ -6,10 +6,8 @@
 <script type="text/javascript">
   /* We are saving the global context for theses widgets */
   widget_context = 'dashboard';
-</script>
 
-<script type="text/javascript">
-	$(function($) {
+  $(function($) {
 		var options1 = {
 			format: '%H:%M:%S ' // 24-hour
 		}
@@ -19,9 +17,7 @@
 		}
 		$('#date').jclock(options6);
 	});
-</script>
 
-<script>
 	$(function() {
 		$('#supported').text('Supported/allowed: ' + !!screenfull.enabled);
 
@@ -38,14 +34,14 @@
 	});
 </script>
 
-%user = app.get_user_auth()
-%if user and user.get_name() != 'anonymous':
+%if not 'user' in locals(): user = None
+%username = 'anonymous'
+%if user is not None: username = user.get_name()
+
+%if username != 'anonymous':
 <div class="row">
 	<ul class="pull-right nav nav-pills font-grey">
 		<li> <a href="/dashboard" class="font-darkgrey"><i class="icon-home"></i></a> </li>
-		<!--
-		<li> <a class="font-darkgrey" data-toggle="modal" data-target="#mySettings"> <i class="icon-cogs"></i></a></li>
-		-->
 	</ul>
 </div>
 %end
