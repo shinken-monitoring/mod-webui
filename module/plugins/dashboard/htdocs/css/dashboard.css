@@ -142,7 +142,8 @@ ul#Navigation {
   margin-top: 4px;
   padding: 0.8em;
   text-align: center;
-  background: #aaa;
+  background: #F4F8FA;
+  border: #5BC0DE;
   height: 90px;
 }
 
@@ -177,16 +178,16 @@ ul#Navigation li {
   background-color: #999999;
   border-radius: 3px;
   color: #FFFFFF;
-  font-size: 1.5em;
+  font-size: 1.3em;
   font-weight: bold;
   padding: 1px 3px 2px;
   text-transform: uppercase;
   position: relative;
-  left: 0.8em;
+  left: 1.2em;
   z-index: 666;
   
   position: relative;
-  bottom: 3.5em;
+  bottom: 4.5em;
 }
 
 .badger-critical {
@@ -205,7 +206,7 @@ ul#Navigation li {
 .badger-title {
   display: block;
 
-  color: #FFFFFF;
+  color: #333;
   text-align: center;
   font-family: Century Gothic, sans-serif;
   font-size: 1em;
