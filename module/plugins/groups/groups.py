@@ -2,7 +2,7 @@
 
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2009-2014:
+# Copyright (C) 2009-2012:
 #    Gabes Jean, naparuba@gmail.com
 #    Gerhard Lausser, Gerhard.Lausser@consol.de
 #    Gregory Starck, g.starck@gmail.com
@@ -39,6 +39,7 @@ def load_cfg():
     import os,sys
     from shinken.log import logger
     from config_parser import config_parser
+    plugin_name = os.path.splitext(os.path.basename(__file__))[0]
     try:
         currentdir = os.path.dirname(os.path.realpath(__file__))
         configuration_file = "%s/%s" % (currentdir, 'plugin.cfg')
@@ -48,11 +49,12 @@ def load_cfg():
 
         params['elts_per_page'] = int(params['elts_per_page'])
         
+        logger.debug("WebUI plugin '%s', configuration loaded." % (plugin_name))
         logger.debug("Plugin configuration, elts_per_page: %d" % (params['elts_per_page']))
         
         return True
     except Exception, exp:
-        logger.warning("Plugin configuration file (%s) not available: %s" % (configuration_file, str(exp)))
+        logger.warning("WebUI plugin '%s', configuration file (%s) not available: %s" % (plugin_name, configuration_file, str(exp)))
         return False
 
 def checkauth():
