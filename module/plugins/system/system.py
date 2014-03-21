@@ -51,6 +51,7 @@ params['logs_services'] = []
 
 import os,sys
 from config_parser import config_parser
+plugin_name = os.path.splitext(os.path.basename(__file__))[0]
 try:
     currentdir = os.path.dirname(os.path.realpath(__file__))
     configuration_file = "%s/%s" % (currentdir, 'plugin.cfg')
@@ -65,12 +66,13 @@ try:
     params['logs_hosts'] = [item.strip() for item in params['logs_hosts'].split(',')]
     params['logs_services'] = [item.strip() for item in params['logs_services'].split(',')]
     
+    logger.debug("WebUI plugin '%s', configuration loaded." % (plugin_name))
     logger.debug("Plugin configuration, database: %s (%s)" % (params['mongo_host'], params['mongo_port']))
     logger.debug("Plugin configuration, fetching: %d %s" % (params['logs_limit'], params['logs_type']))
     logger.debug("Plugin configuration, hosts: %s" % (params['logs_hosts']))
     logger.debug("Plugin configuration, services: %s" % (params['logs_services']))
 except Exception, exp:
-    logger.warning("Plugin configuration file (%s) not available: %s" % (configuration_file, str(exp)))
+    logger.warning("WebUI plugin '%s', configuration file (%s) not available: %s" % (plugin_name, configuration_file, str(exp)))
 
 
 def checkauth():
