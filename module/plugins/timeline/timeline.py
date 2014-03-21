@@ -63,6 +63,7 @@ params['logs_type'] = []
 
 import os,sys
 from config_parser import config_parser
+plugin_name = os.path.splitext(os.path.basename(__file__))[0]
 try:
     currentdir = os.path.dirname(os.path.realpath(__file__))
     configuration_file = "%s/%s" % (currentdir, 'plugin.cfg')
@@ -75,10 +76,11 @@ try:
     params['logs_limit'] = int(params['logs_limit'])
     params['logs_type'] = [item.strip() for item in params['logs_type'].split(',')]
     
+    logger.debug("WebUI plugin '%s', configuration loaded." % (plugin_name))
     logger.debug("Plugin configuration, database: %s (%s)" % (params['mongo_host'], params['mongo_port']))
     logger.debug("Plugin configuration, fetching: %d %s" % (params['logs_limit'], params['logs_type']))
 except Exception, exp:
-    logger.warning("Plugin configuration file (%s) not available: %s" % (configuration_file, str(exp)))
+    logger.warning("WebUI plugin '%s', configuration file (%s) not available: %s" % (plugin_name, configuration_file, str(exp)))
 
 
 def checkauth():
@@ -118,7 +120,7 @@ def getdb(dbname):
 # Our page. If the user call /dummy/TOTO arg1 will be TOTO.
 # if it's /dummy/, it will be 'nothing'
 def get_page(hostname='nothing'):
-    user = checkauth()    
+    user = checkauth()
 
     return {'app': app, 'user': user, 'hostname': hostname}
 
