@@ -99,7 +99,7 @@
 
 <body>
 	%if print_menu:
-		%include side_nav_element
+		%include side_nav_element globals()
 	%end
 	<div id="content" class="snap-content">
 		%if print_header:

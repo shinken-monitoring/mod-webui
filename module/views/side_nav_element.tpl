@@ -1,19 +1,41 @@
 %if not 'app' in locals(): app = None
+%if not 'user' in locals(): user = None
+%username = 'anonymous'
+%if user is not None: 
+%if hasattr(user, 'alias'):
+%	username = user.alias
+%else:
+%	username = user.get_name()
+%end
+%end
 
 <div class="snap-drawers">
 	<div class="snap-drawer snap-drawer-left">
 		<div>
 			<h3>Shinken</h3>
 			<ul>
-				<li><i class="icon-dashboard"></i>	<a href="/dashboard">Dashboard</a></li>
-				<li><i class="icon-bolt"></i>		<a href="/impacts">Impacts</a></li>
-				<li><i class="icon-sitemap"></i>	<a href="/hostgroups">Host groups</a></li>
-				<li><i class="icon-table"></i>		<a href="/minemaps">Minemap</a></li>
-				<li><i class="icon-compass"></i>	<a href="/worldmap">Worldmap</a></li>
-				<li><i class="icon-list"></i>		<a href="/wall">Wall</a></li>
-				<li><i class="icon-gears"></i>		<a href="/system">System</a></li>
+				<li><i class="cursor icon-dashboard"></i>		<a href="/dashboard">Dashboard</a></li>
+				<li><i class="cursor icon-bolt"></i>			<a href="/impacts">Impacts</a></li>
+				<li><i class="cursor icon-sitemap"></i>			<a href="/hostgroups">Host groups</a></li>
+				<li><i class="cursor icon-table"></i>			<a href="/minemaps">Minemap</a></li>
+				<li><i class="cursor icon-compass"></i>			<a href="/worldmap">Worldmap</a></li>
+				<li><i class="cursor icon-th-large"></i>		<a href="/wall">Wall</a></li>
+				<li><i class="cursor icon-gears"></i>			<a href="/system">System</a></li>
+				<li><i class="cursor icon-list"></i>			<a href="/system/logs">Logs</a></li>
 			</ul>
 		</div>
+		<div style="position: absolute; bottom: 2px; width: 100%;">
+			<h4>{{username.capitalize()}}</h4>
+			<ul>
+				<li><i class="cursor icon-cogs"></i>			<a class="disabled" href="/config">Configuration</a></li>
+				<li><i class="cursor icon-pencil"></i>			<a class="disabled" href="/profile">Profile</a></li>
+				<li><i class="cursor icon-external-link"></i>	<a href="http://www.shinken-monitoring.org/wiki/">Help</a></li>
+				<li><i class="cursor icon-signout"></i>			<a class="btn-danger" href="/user/logout">Logout</a></li>
+			</ul>
+		</div>
+
+
+		<!--
 		<div class="opt" style="position: absolute; bottom: 2px;">
 			<ul class="nav nav-pills">
 				<li><a href="/system/logs"><i class="icon-rocket"></i></a></li>
@@ -23,10 +45,8 @@
 					</a>
 					<ul class="dropdown-menu">
 						<li><a href=":7767">Shinken UI </a></li>
-						<!-- We will add also others UIs on the global menu -->
 						%if app:
 						%other_uis = app.get_external_ui_link()
-						<!-- If we add others UIs, we separate them from the inner ones-->
 						%if len(other_uis) > 0:
 						<li class="divider"></li>
 						%end
@@ -49,5 +69,6 @@
 				<li><a href="/user/logout" data-original-title='Logout'><i class="icon-signout font-red"></i></a></li>
 			</ul>
 		</div>
+		-->
 	</div>
 </div>
