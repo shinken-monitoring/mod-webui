@@ -587,14 +587,22 @@ class Webui_broker(BaseModule, Daemon):
         return (is_ok and c is not None)
 
 
-    def get_user_auth(self):
+    def get_user_auth(self, allow_anonymous=False):
         # First we look for the user sid
         # so we bail out if it's a false one
         user_name = self.request.get_cookie("user", secret=self.auth_secret)
 
-        # If we cannot check the cookie, bailout
-        if not user_name:
+        # If we cannot check the cookie, bailout ... 
+        if not allow_anonymous and not user_name:
             return None
+            
+        # Allow anonymous access if requested and anonymous contact exists ...
+        if allow_anonymous:
+            c = self.datamgr.get_contact('anonymous')
+            if c:
+                return c
+            else:
+                return None
 
         c = self.datamgr.get_contact(user_name)
         return c

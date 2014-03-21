@@ -86,17 +86,14 @@ def get_page():
         w['options_uri'] = '&'.join('%s=%s' % (k, v) for (k, v) in args.iteritems())
         widgets.append(w)
 
-    print "Give widgets", widgets
     return {'app': app, 'user': user, 'widgets': widgets, 'has_user_pref_mod' : has_user_pref_mod}
 
 def get_currently():
-    
-    user = app.get_user_auth()
-
+    # Allow anonymous access
+    user = app.get_user_auth(True)
     if not user:
         app.bottle.redirect("/user/login")
         return
-
 
     return {'app': app, 'user': user}
 

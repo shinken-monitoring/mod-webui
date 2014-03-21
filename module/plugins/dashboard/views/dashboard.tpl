@@ -3,7 +3,7 @@
 %from shinken.bin import VERSION
 %helper = app.helper
 
-<script>
+<script type="text/javascript">
   /* We are saving the global context for theses widgets */
   widget_context = 'dashboard';
 </script>

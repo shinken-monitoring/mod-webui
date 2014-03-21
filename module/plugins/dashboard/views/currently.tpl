@@ -38,6 +38,8 @@
 	});
 </script>
 
+%user = app.get_user_auth()
+%if user and user.get_name() != 'anonymous':
 <div class="row">
 	<ul class="pull-right nav nav-pills font-grey">
 		<li> <a href="/dashboard" class="font-darkgrey"><i class="icon-home"></i></a> </li>
@@ -46,6 +48,7 @@
 		-->
 	</ul>
 </div>
+%end
 
 <!-- Jet Pack Area START -->
 <div class="row">
@@ -78,9 +81,9 @@
 			%if overall_itproblem == 0:
 			<span class=" badger-big badger-ok">OK!</span>
 			%elif overall_itproblem == 1:
-			<span class="badger-big badger-warning">{{app.datamgr.get_nb_all_problems(app.get_user_auth())}}</span>
+			<span class="badger-big badger-warning">{{app.datamgr.get_nb_all_problems(user)}}</span>
 			%elif overall_itproblem == 2:
-			<span class=" badger-big badger-critical">{{app.datamgr.get_nb_all_problems(app.get_user_auth())}}</span>
+			<span class=" badger-big badger-critical">{{app.datamgr.get_nb_all_problems(user)}}</span>
 			%end
 		%end
 	</li>
