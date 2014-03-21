@@ -31,6 +31,7 @@ from shinken.util import safe_print
 
 # Get plugin's parameters from configuration file
 params = {}
+# Tabs to be displayed or not ...
 params['tab_info'] = 'yes'
 params['tab_additional'] = 'yes'
 params['tab_commands'] = 'yes'
@@ -49,6 +50,7 @@ def load_cfg():
     import os,sys
     from config_parser import config_parser
     from shinken.log import logger
+    plugin_name = os.path.splitext(os.path.basename(__file__))[0]
     try:
         currentdir = os.path.dirname(os.path.realpath(__file__))
         configuration_file = "%s/%s" % (currentdir, 'plugin.cfg')
@@ -56,10 +58,10 @@ def load_cfg():
         scp = config_parser('#', '=')
         params = scp.parse_config(configuration_file)
 
-        logger.error("Plugin configuration, parameters loaded.")
+        logger.debug("WebUI plugin '%s', configuration loaded." % (plugin_name))
         return True
     except Exception, exp:
-        logger.warning("Plugin configuration file (%s) not available: %s" % (configuration_file, str(exp)))
+        logger.warning("WebUI plugin '%s', configuration file (%s) not available: %s" % (plugin_name, configuration_file, str(exp)))
         return False
 
 def checkauth():
