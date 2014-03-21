@@ -31,6 +31,7 @@ params = {}
 
 import os,sys
 from config_parser import config_parser
+plugin_name = os.path.splitext(os.path.basename(__file__))[0]
 try:
     currentdir = os.path.dirname(os.path.realpath(__file__))
     configuration_file = "%s/%s" % (currentdir, 'plugin.cfg')
@@ -42,10 +43,11 @@ try:
     params['default_Lng'] = float(params['default_Lng'])
     params['default_zoom'] = int(params['default_zoom'])
     
+    logger.debug("WebUI plugin '%s', configuration loaded." % (plugin_name))
     logger.debug("Plugin configuration, default position: %s / %s" % (params['default_Lat'], params['default_Lng']))
     logger.debug("Plugin configuration, default zoom level: %d" % (params['default_zoom']))
 except Exception, exp:
-    logger.warning("Plugin configuration file (%s) not available: %s" % (configuration_file, str(exp)))
+    logger.warning("WebUI plugin '%s', configuration file (%s) not available: %s" % (plugin_name, configuration_file, str(exp)))
 
 
 def checkauth():
