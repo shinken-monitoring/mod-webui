@@ -34,7 +34,7 @@
 	});
 </script>
 
-%if not 'user' in locals(): user = None
+%user = app.get_user_auth()
 %username = 'anonymous'
 %if user is not None: username = user.get_name()
 
