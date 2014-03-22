@@ -47,7 +47,12 @@
 				</section>
 				
 				<section class="right">
-					<span class="sum">{{nHosts}} element(s)</span>
+					%if nHosts == 1:
+					<span class="sum">{{nHosts}} element</span>
+					%else:
+					<span class="sum">{{nHosts}} elements</span>
+					%end
+					<!-- <span class="sum">{{nHosts}} element(s)</span> -->
 					<span class="darkview">
 					<a href="/tag/{{tag[0]}}" class="firstbtn"><i class="icon-zoom-in"></i> Details</a>
 					</span>
