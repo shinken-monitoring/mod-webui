@@ -70,14 +70,13 @@ def reload_cfg():
     app.bottle.redirect("/hostgroups")
 
 def show_hostgroup(name):
-    user = checkauth()    
+    user = checkauth()
 
     if name == 'all':
         my_group = 'all'
         
-        hosts = []
-        hosts.extend(app.datamgr.get_hosts())
-        items = hosts
+        items = []
+        items.extend(app.datamgr.get_hosts())
 
     else:
         my_group = app.datamgr.get_hostgroup(name)
@@ -170,7 +169,7 @@ load_cfg()
 #    the dummy/htdocs/ directory. Beware: it will take the plugin name to match.
 #  * optional: you can add 'method': 'POST' so this address will be only available for
 #    POST calls. By default it's GET. Look at the lookup module for sample about this.
-pages = {reload_cfg: {'routes': ['/group/reload'], 'view': 'hostgroup', 'static': True},
+pages = {reload_cfg: {'routes': ['/hostgroups/reload','/servicegroups/reload'], 'view': 'hostgroups-overview', 'static': True},
          show_hostgroup: {'routes': ['/hostgroup/:name'], 'view': 'hostgroup', 'static': True},
          show_hostgroups: {'routes': ['/hostgroups'], 'view': 'hostgroups-overview', 'static': True},
          show_servicegroup: {'routes': ['/servicegroup/:name'], 'view': 'servicegroup', 'static': True},
