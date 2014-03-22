@@ -44,7 +44,11 @@
 			</section>
 			
 			<section class="right">
+				%if nServices == 1:
+				<span class="sum">{{nServices}} service</span>
+				%else:
 				<span class="sum">{{nServices}} services</span>
+				%end
 				<span class="darkview">
 				<a href="/servicegroup/all" class="firstbtn"><i class="icon-zoom-in"></i> Details</a>
 				<a href="/minemap/all" class="firstbtn"><i class="icon-cogs"></i> Minemap</a>
@@ -96,7 +100,11 @@
 				</section>
 				
 				<section class="right">
+					%if nServices == 1:
+					<span class="sum">{{nServices}} service</span>
+					%else:
 					<span class="sum">{{nServices}} services</span>
+					%end
 					<span class="darkview">
 					<a href="/servicegroup/{{group.get_name()}}" class="firstbtn"><i class="icon-zoom-in"></i> Details</a>
 					<a href="/minemap/{{group.get_name()}}" class="firstbtn"><i class="icon-cogs"></i> Minemap</a>

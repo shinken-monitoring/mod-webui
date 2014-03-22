@@ -44,7 +44,11 @@
 			</section>
 			
 			<section class="right">
+				%if nHosts == 1:
+				<span class="sum">{{nHosts}} host</span>
+				%else:
 				<span class="sum">{{nHosts}} hosts</span>
+				%end
 				<span class="darkview">
 				<a href="/hostgroup/all" class="firstbtn"><i class="icon-zoom-in"></i> Details</a>
 				<a href="/minemap/all" class="firstbtn"><i class="icon-cogs"></i> Minemap</a>
@@ -95,7 +99,11 @@
 				</section>
 				
 				<section class="right">
+					%if nHosts == 1:
+					<span class="sum">{{nHosts}} host</span>
+					%else:
 					<span class="sum">{{nHosts}} hosts</span>
+					%end
 					<span class="darkview">
 					<a href="/hostgroup/{{group.get_name()}}" class="firstbtn"><i class="icon-zoom-in"></i> Details</a>
 					<a href="/minemap/{{group.get_name()}}" class="firstbtn"><i class="icon-cogs"></i> Minemap</a>
