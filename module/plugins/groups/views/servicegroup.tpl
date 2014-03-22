@@ -112,8 +112,8 @@ Invalid group name
 			<tbody>
 				<tr>
 					<th>State</th>
-					<th>Host</th>
 					<th>Service</th>
+					<th>Output</th>
 					<th>Last Check</th>
 					<th>Duration</th>
 					<th>Attempt</th>
@@ -123,11 +123,11 @@ Invalid group name
 					<tr id="host_{{s.get_name()}}" class="{{s.state.lower()}}">
 						<td >{{s.state}}</td>
 						<td>
-							<span><a href="/host/{{s.get_name()}}">{{s.get_name()}}</a></span>
+							<span><a href="/service/{{s.get_name()}}">{{s.get_name()}}</a></span>
 						</td>
 
 						<td style="white-space: normal">
-							<span>{{s.get_check_command()}}</span>
+							<span>{{s.output}}</span>
 						</td>
 						<td>{{helper.print_duration(s.last_chk)}}</td>
 						<td>{{s.get_duration()}}</td>

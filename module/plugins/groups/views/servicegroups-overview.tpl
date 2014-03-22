@@ -44,7 +44,7 @@
 			</section>
 			
 			<section class="right">
-				<span class="servicesum">{{nServices}} services</span>
+				<span class="sum">{{nServices}} services</span>
 				<span class="darkview">
 				<a href="/servicegroup/all" class="firstbtn"><i class="icon-zoom-in"></i> Details</a>
 				<a href="/minemap/all" class="firstbtn"><i class="icon-cogs"></i> Minemap</a>
@@ -65,7 +65,9 @@
 			%sCritical=0
 			%sWarning=0
 			%sPenging=0 # Pending / unknown
+			%business_impact = 0
 			%for h in group.get_services():
+				%business_impact = max(business_impact, h.business_impact)
 				%nServices=nServices+1
 				%if h.state == 'OK':
 					%sOk=sOk+1
@@ -79,7 +81,11 @@
 			%end
 			<li class="clearfix {{even}}">
 				<section class="left">
-					<h3>{{group.get_name()}}</h3>
+					<h3>{{group.get_name()}}
+						%for i in range(0, business_impact-2):
+						<img alt="icon state" src="/static/images/star.png">
+						%end
+					</h3>
 					<span class="meta">
 						<span class="icon-stack font-green"> <i class="icon-circle-blank icon-stack-base"></i> <i class="icon-ok"></i></span> <span class="num">{{sOk}}</span>
 						&nbsp; <span class="icon-stack font-orange"> <i class="icon-circle-blank icon-stack-base"></i> <i class="icon-exclamation"></i></span> <span class="num">{{sWarning}}</span>
@@ -90,7 +96,7 @@
 				</section>
 				
 				<section class="right">
-					<span class="servicesum">{{nServices}} services</span>
+					<span class="sum">{{nServices}} services</span>
 					<span class="darkview">
 					<a href="/servicegroup/{{group.get_name()}}" class="firstbtn"><i class="icon-zoom-in"></i> Details</a>
 					<a href="/minemap/{{group.get_name()}}" class="firstbtn"><i class="icon-cogs"></i> Minemap</a>

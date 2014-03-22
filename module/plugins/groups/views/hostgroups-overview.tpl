@@ -44,7 +44,7 @@
 			</section>
 			
 			<section class="right">
-				<span class="hostsum">{{nHosts}} hosts</span>
+				<span class="sum">{{nHosts}} hosts</span>
 				<span class="darkview">
 				<a href="/hostgroup/all" class="firstbtn"><i class="icon-zoom-in"></i> Details</a>
 				<a href="/minemap/all" class="firstbtn"><i class="icon-cogs"></i> Minemap</a>
@@ -65,7 +65,9 @@
 			%hDown=0
 			%hUnreachable=0
 			%hPending=0
+			%business_impact = 0
 			%for h in group.get_hosts():
+				%business_impact = max(business_impact, h.business_impact)
 				%nHosts=nHosts+1
 				%if h.state == 'UP':
 					%hUp=hUp+1
@@ -79,18 +81,21 @@
 			%end
 			<li class="clearfix {{even}}">
 				<section class="left">
-					<h3>{{group.get_name()}}</h3>
+					<h3>{{group.get_name()}}
+						%for i in range(0, business_impact-2):
+						<img alt="icon state" src="/static/images/star.png">
+						%end
+					</h3>
 					<span class="meta">
 						<span class="icon-stack font-green"> <i class="icon-circle-blank icon-stack-base"></i> <i class="icon-ok"></i></span> <span class="num">{{hUp}}</span>
 						&nbsp; <span class="icon-stack font-orange"> <i class="icon-circle-blank icon-stack-base"></i> <i class="icon-exclamation"></i></span> <span class="num">{{hUnreachable}}</span>
 						&nbsp; <span class="icon-stack font-red"> <i class="icon-circle-blank icon-stack-base"></i> <i class="icon-arrow-down"></i></span> <span class="num">{{hDown}}</span>
 						&nbsp; <span class="icon-stack"> <i class="icon-circle-blank icon-stack-base"></i> <i class="icon-question"></i></span> <span class="num">{{hPending}}</span>
 					</span>
-					<span class="meta"> <span class="label label-important pulsate">Business impact</span> </span>
 				</section>
 				
 				<section class="right">
-					<span class="hostsum">{{nHosts}} hosts</span>
+					<span class="sum">{{nHosts}} hosts</span>
 					<span class="darkview">
 					<a href="/hostgroup/{{group.get_name()}}" class="firstbtn"><i class="icon-zoom-in"></i> Details</a>
 					<a href="/minemap/{{group.get_name()}}" class="firstbtn"><i class="icon-cogs"></i> Minemap</a>
