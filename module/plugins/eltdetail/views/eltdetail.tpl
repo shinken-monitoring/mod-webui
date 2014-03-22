@@ -244,6 +244,7 @@ Invalid element name
 							%end
 						</tr>
 					</table>
+
 					<div class="col-lg-4">
 						%#   " If the elements is a root problem with a huge impact and not ack, ask to ack it!"
 						%if elt.is_problem and elt.business_impact > 2 and not elt.problem_has_been_acknowledged:
@@ -255,6 +256,7 @@ Invalid element name
 						</div>
 					</div>
 				</div>
+
 				%if elt_type=='host':
 				<div class="row">
 					<ul>
@@ -270,7 +272,7 @@ Invalid element name
 	</div>
 	<!-- Switch Start -->
 
-	%# By default all is unabled
+	%# By default all is disabled
 	% chk_freshness = chk_active_state = chk_passive_state = not_state =  evt_state = flp_state = 'checked=""'
 	%if not (elt.check_freshness):
 	%chk_freshness = 'unchecked=""'
