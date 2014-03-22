@@ -16,7 +16,8 @@
 			<ul>
 				<li><i class="cursor icon-dashboard"></i>		<a href="/dashboard">Dashboard</a></li>
 				<li><i class="cursor icon-bolt"></i>			<a href="/impacts">Impacts</a></li>
-				<li><i class="cursor icon-sitemap"></i>			<a href="/hostgroups">Host groups</a></li>
+				<li><i class="cursor icon-sitemap"></i>			<a href="/hostgroups">Hosts groups</a></li>
+				<li><i class="cursor icon-sitemap"></i>			<a href="/servicegroups">Services groups</a></li>
 				<li><i class="cursor icon-table"></i>			<a href="/minemaps">Minemap</a></li>
 				<li><i class="cursor icon-compass"></i>			<a href="/worldmap">Worldmap</a></li>
 				<li><i class="cursor icon-th-large"></i>		<a href="/wall">Wall</a></li>
