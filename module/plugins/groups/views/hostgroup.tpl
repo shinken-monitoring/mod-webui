@@ -53,7 +53,7 @@ Invalid group name
 
 %end
 
-%rebase layout globals(), title='Hostgroup detail for ' + groupname, refresh=True
+%rebase layout globals(), title='Hosts group detail for ' + groupname, refresh=True
 
 <style>
 .warning, .unreachable {
@@ -76,29 +76,35 @@ Invalid group name
 			<h3 class="panel-title">{{groupname}} / ({{groupalias}})</h3>
 		</div>
 		<div class="panel-body">
-			<div class="pull-left col-lg-2" style="height: 45px;">
-				<span>Members:</span>
-				<span>{{nHosts}} hosts</span>
+			<div class="pull-left col-lg-4">
+				<span>Currently displaying {{nHosts}} hosts out of {{length}}</span>
 			</div>
-			<div class="pull-right progress col-lg-6 no-bottommargin no-leftpadding no-rightpadding" style="height: 45px;">
+			<div class="pull-right progress col-lg-7 no-bottommargin no-leftpadding no-rightpadding" style="height: 45px;">
 				<div title="{{hUp}} hosts Up" class="progress-bar progress-bar-success quickinfo" role="progressbar" 
 					data-original-title='{{hUp}} Up' 
 					style="width: {{pctUp}}%; vertical-align:midddle; line-height: 45px;">{{pctUp}}% Up</div>
+					
 				<div title="{{hDown}} hosts Down" class="progress-bar progress-bar-danger quickinfo" 
-					data-original-title='{{hDown}}% Unreachable' 
+					data-original-title='{{hDown}} Down' 
 					style="width: {{pctDown}}%; vertical-align:midddle; line-height: 45px;">{{pctDown}}% Down</div>
+					
 				<div title="{{hUnreachable}} hosts Unreachable" class="progress-bar progress-bar-warning quickinfo" 
-					data-original-title='{{hUnreachable}} Down' 
+					data-original-title='{{hUnreachable}} Unreachable' 
 					style="width: {{pctUnreachable}}%; vertical-align:midddle; line-height: 45px;">{{pctUnreachable}}% Unreachable</div>
+					
+				<div title="{{hPending}} hosts Pending" class="progress-bar progress-bar-info quickinfo" 
+					data-original-title='{{hPending}} Pending' 
+					style="width: {{pctPending}}%; vertical-align:midddle; line-height: 45px;">{{pctPending}}% Pending</div>
+					
 				<div title="{{hPending}} hosts Pending/Unknown" class="progress-bar progress-bar-info quickinfo" 
-					data-original-title='{{hPending + hUnknown}} Pending / Unknown' 
-					style="width: {{pctPending}}%; vertical-align:midddle; line-height: 45px;">{{pctPending + pctUnknown}}% Pending or Unknown</div>
+					data-original-title='{{hUnknown}} Unknown' 
+					style="width: {{pctPending}}%; vertical-align:midddle; line-height: 45px;">{{pctUnknown}}% Unknown</div>
 			</div>
 		</div>
 	</div>
 
 	<div class='col-lg-12'>
-		%include pagination_element navi=navi, app=app, page="group/"+groupname, div_class="center no-margin"
+		%include pagination_element navi=navi, app=app, page="hostgroup/"+groupname, div_class="center no-margin"
 	</div>
 
 	<div class="clearfix">
@@ -148,7 +154,7 @@ Invalid group name
 	</div>
 
 	<div class='col-lg-12'>
-		%include pagination_element navi=navi, app=app, page="group/"+groupname, div_class="center no-margin"
+		%include pagination_element navi=navi, app=app, page="hostgroup/"+groupname, div_class="center no-margin"
 	</div>
 </div>
 
@@ -156,8 +162,6 @@ Invalid group name
 <script>
 	initialize = function() {
 %for h in hosts:
-		var rows = $('table.table tr.service_{{h.get_name()}}');
-		
 		$('#host_{{h.get_name()}}').click(function() {
 			$(".service_{{h.get_name()}}").toggle();
 		});

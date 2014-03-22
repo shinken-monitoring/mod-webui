@@ -69,11 +69,9 @@ def reload_cfg():
     load_cfg()
     app.bottle.redirect("/hostgroups")
 
-def get_page(name):
+def show_hostgroup(name):
     user = checkauth()    
 
-    # Here we can call app.datamgr because when the webui "loaded" us, it
-    # populate app with it's own value.
     if name == 'all':
         my_group = 'all'
         
@@ -106,23 +104,63 @@ def get_page(name):
     navi = app.helper.get_navi(total, start, step=elts_per_page)
     items = items[start:end]
         
-    # we return values for the template (view). But beware, theses values are the
-    # only one the template will have, so we must give it an app link and the
-    # user we are logged with (it's a contact object in fact)
-    return {'app': app, 'user': user, 'params': params, 'navi': navi, 'group': my_group, 'hosts': items}
+    return {'app': app, 'user': user, 'params': params, 'navi': navi, 'group': my_group, 'hosts': items, 'length': total}
 
 def show_hostgroups():
     user = checkauth()    
 
-    # Here we can call app.datamgr because when the webui "loaded" us, it
-    # populate app with it's own value.
     my_hostgroups = app.datamgr.get_hostgroups()
 
-    # we return values for the template (view). But beware, theses values are the
-    # only one the template will have, so we must give it an app link and the
-    # user we are logged with (it's a contact object in fact)
     return {'app': app, 'user': user, 'params': params, 'hgroups': my_hostgroups}
 
+
+def show_servicegroup(name):
+    user = checkauth()    
+
+    if name == 'all':
+        my_group = 'all'
+        
+        services = []
+        services.extend(app.datamgr.get_services())
+        items = services
+
+    else:
+        my_group = app.datamgr.get_servicegroup(name)
+
+        if not my_group:
+            return "Unknown group %s" % name
+            
+        items = my_group.get_services()
+
+    elts_per_page = params['elts_per_page']
+    # We want to limit the number of elements
+    start = int(app.request.GET.get('start', '0'))
+    end = int(app.request.GET.get('end', elts_per_page))
+        
+    # Now sort services list ..
+    items.sort(hst_srv_sort)
+        
+    # If we overflow, came back as normal
+    total = len(items)
+    if start > total:
+        start = 0
+        end = elts_per_page
+
+    navi = app.helper.get_navi(total, start, step=elts_per_page)
+    items = items[start:end]
+        
+    return {'app': app, 'user': user, 'params': params, 'navi': navi, 'group': my_group, 'services': items, 'length': total}
+
+def show_servicegroups():
+    user = checkauth()    
+
+    my_servicegroups = app.datamgr.get_servicegroups()
+
+    return {'app': app, 'user': user, 'params': params, 'sgroups': my_servicegroups}
+
+
+# Load plugin configuration parameters
+load_cfg()
 
 # This is the dict the webui will try to "load".
 #  *here we register one page with both addresses /dummy/:arg1 and /dummy/, both addresses
@@ -132,10 +170,9 @@ def show_hostgroups():
 #    the dummy/htdocs/ directory. Beware: it will take the plugin name to match.
 #  * optional: you can add 'method': 'POST' so this address will be only available for
 #    POST calls. By default it's GET. Look at the lookup module for sample about this.
-
-load_cfg()
-
-pages = {reload_cfg: {'routes': ['/group/reload'], 'view': 'groups', 'static': True},
-         get_page: {'routes': ['/group/:name'], 'view': 'groups', 'static': True},
-         show_hostgroups: {'routes': ['/hostgroups'], 'view': 'groups-overview', 'static': True},
+pages = {reload_cfg: {'routes': ['/group/reload'], 'view': 'hostgroup', 'static': True},
+         show_hostgroup: {'routes': ['/hostgroup/:name'], 'view': 'hostgroup', 'static': True},
+         show_hostgroups: {'routes': ['/hostgroups'], 'view': 'hostgroups-overview', 'static': True},
+         show_servicegroup: {'routes': ['/servicegroup/:name'], 'view': 'servicegroup', 'static': True},
+         show_servicegroups: {'routes': ['/servicegroups'], 'view': 'servicegroups-overview', 'static': True},
          }

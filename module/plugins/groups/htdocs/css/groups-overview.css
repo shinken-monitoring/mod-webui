@@ -61,7 +61,7 @@ ul.grid li section.left img.featured-banner { position: absolute; top: 0; }
 ul.grid li section.left h3 { font-family: "Trebuchet MS", Arial, sans-serif; font-weight: bold; text-transform: uppercase; color: #707375; font-size: 1.4em; line-height: 1.5em; } 
 ul.grid li section.left span.meta { display: block; color: #93989b; font-weight: normal; font-size: 1.1em; margin-bottom: 7px; }
 
-ul.grid li section.right span.hostsum { font-weight: bold; display: block; margin-bottom: 5px; color: #ad3939; font-size: 1.75em; }
+ul.grid li section.right span.hostsum, ul.grid li section.right span.servicesum { font-weight: bold; font-style: italic; display: block; margin-bottom: 5px; color: #ad3939; font-size: 1.25em; text-align: right; }
 
 
 ul.grid li section.right span.darkview { 
