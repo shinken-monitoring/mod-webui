@@ -16,14 +16,15 @@ Overall goals:
 - Customizable views (Issue #50)
 
 Featurelist:
-- New Main menu for more space and usebility 
-- New Host- & Servicegroup view
-- New System log view (Issue #51)
-- New Worldmap view (Issue #52)
-- New Timeline view (Issue #53)
-- Enhanced Dashboard
-- Enhanced Impact view (backport from Enterprise 1.0 UI)
-- New Problems view (backport from Enterprise 1.0 UI)
+- New: Main menu for more space and usebility 
+- New: Host- & Servicegroup view
+- New: System log view (Issue #51)
+- New: Worldmap view (Issue #52)
+- New: Timeline view (Issue #53)
+- New: Tag view (Issue #60)
+- Enhanced: Dashboard (Issue #53)
+- Enhanced: Impact view (backport from Enterprise 1.0 UI)
+- New: Problems view (backport from Enterprise 1.0 UI)
 
 ## Milestone 1.2 - GrauDuRoi:
 
