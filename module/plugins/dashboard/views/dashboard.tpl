@@ -4,16 +4,16 @@
 %helper = app.helper
 
 <script type="text/javascript">
-  /* We are saving the global context for theses widgets */
-  widget_context = 'dashboard';
+	/* We are saving the global context for the widgets */
+	widget_context = 'dashboard';
 </script>
 
 <!-- Maybe the admin didn't add a user preference module, or the module is dead, if so, warn about it -->
 %if not has_user_pref_mod:
 <div id="warn-pref" class="hero-unit alert-critical">
-  <h2>Warning:</h2>
-  <p>You didn't define a WebUI module for saving user preferences like the MongoDB one. You won't be able to use this page!</p>
-  <p><a href="http://www.shinken-monitoring.org/wiki/shinken_10min_start" class="btn btn-success">Learn more <i class="icon-hand-right"></i></a></p>
+	<h2>Warning:</h2>
+	<p>You didn't define a WebUI module for saving user preferences like the MongoDB one. You won't be able to use this page!</p>
+	<p><a href="http://www.shinken-monitoring.org/wiki/shinken_10min_start" class="btn btn-success">Learn more <i class="icon-hand-right"></i></a></p>
 </div>
 %end
 
@@ -81,6 +81,15 @@
 		</li>
 
 		<li class="col-sm-2">
+			%# If we got no widget, we should put the button at the center fo the screen
+			%small_show_panel_s = ''
+			%if len(widgets) == 0:
+			%small_show_panel_s = 'hide'
+			%end
+			<a id="small_show_panel" data-toggle="popover" href="#widgets" class="slidelink btn btn-sm btn-success pull-right {{small_show_panel_s}}"><i class="icon-plus"></i> Add a new widget</a>
+		</li>
+		
+		<li class="col-sm-2">
 			<a href="/servicegroups" class="slidelink btn btn-sm"><i class="icon-plus" style="color: #333"></i>
 				<svg version="1.0" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="50px" height="42px" viewBox="0 0 100 82.922" enable-background="new 0 0 100 82.922" fill="#333" xml:space="preserve">
 					<path fill-rule="evenodd" clip-rule="evenodd" d="M17.15,47.28V85.2l31.601,13.543v-37.92L17.15,47.28z M84,45.437  L49.653,60.823v37.92L84,83.357V45.437z M61.458,2.445l-33.466,14.83v32.759l9.043,3.747l-0.022-22.753  c0,0,12.31-5.395,24.445-10.691V2.445z M22.575,15.695L22.56,47.784l4.507,1.865V17.485L22.575,15.695z M22.936,14.311l4.484,1.791  l32.759-14.28L55.665,0L22.936,14.311z M38.818,54.525l4.5,1.866V35.543l-4.492-1.791L38.818,54.525z M44.243,56.775l5.41,2.242  l28.057-12.52V20.502l-33.467,14.83V56.775z M39.188,32.368l4.484,1.791l32.76-14.28l-4.515-1.821L39.188,32.368z"/>
@@ -122,23 +131,9 @@
 			</a>
 		</li>
 
-		<li class="col-sm-2">
-			%# If we got no widget, we should put the button at the center fo the screen
-			%small_show_panel_s = ''
-			%if len(widgets) == 0:
-			%small_show_panel_s = 'hide'
-			%end
-			<a id="small_show_panel" data-toggle="modal" href="#widgets" class="slidelink btn btn-sm btn-success pull-right {{small_show_panel_s}}"><i class="icon-plus"></i> Add a new widget</a>
-		</li>
-		
 		<li class="col-sm-1"></li>
 	</ul>
 </div>
-
-<button type="button" class="btn btn-default" data-container="body" data-toggle="popover" data-placement="bottom" data-content="Vivamus
-sagittis lacus vel augue laoreet rutrum faucibus.">
-  Popover on bottom
-</button>
 
 %# Go in the center of the page!
 <div id="loading" class="pull-left"> <img src='/static/images/spinner.gif'> Loading widgets</div>
@@ -148,51 +143,53 @@ sagittis lacus vel augue laoreet rutrum faucibus.">
 	<a data-toggle="modal" href="#widgets" class="btn btn-block btn-success btn-lg"><i class="icon-plus"></i> Add a new widget</a>
 </span>
 
-<script>
-  // Now load all widgets
-  $(function(){
-    %for w in widgets:
-    %if 'base_url' in w and 'position' in w:
-    %uri = w['base_url'] + "?" + w['options_uri']
-    AddWidget("{{!uri}}", "{{w['position']}}");
-    %end
-    %end
-  });
+<style>
+.popover
+{
+    min-width: 640px ! important;
+}
+</style>
+<script type="text/javascript">
+	// Activate the popover
+	$(function () {
+		$('#small_show_panel').popover({ 
+			html : true,
+			placement: 'bottom', 
+			title: 'Available widgets', 
+			content: function() {
+				return $('#widgets').html();
+			}
+		});
+	});
+
+	// Now load all widgets
+	$(function(){
+		%for w in widgets:
+			%if 'base_url' in w and 'position' in w:
+				%uri = w['base_url'] + "?" + w['options_uri']
+				AddWidget("{{!uri}}", "{{w['position']}}");
+			%end
+		%end
+	});
 </script>
 
-<div class="modal fade" id="widgets" tabindex="-1" role="dialog" aria-labelledby="Widgets" aria-hidden="true">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<span class="icon"><i class="fa fa-signal"></i></span>
-				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-				<h4 class="modal-title">Available widgets</h4>
-			</div>
+<div id="widgets" style="display: none; width: 480px;">
+	%for w in app.get_widgets_for('dashboard'):
+		<button type="button" class="btn btn-block" style="margin-bottom: 2px;" data-toggle="collapse" data-target="#desc_{{w['widget_name']}}">
+		  {{w['widget_name']}}
+		</button>
 
-			<div class="modal-body">
-				%for w in app.get_widgets_for('dashboard'):
-				<button type="button" class="btn btn-block" style="margin-bottom: 2px;" data-toggle="collapse" data-target="#desc_{{w['widget_name']}}">
-				  {{w['widget_name']}}
-				</button>
-
-				<div id="desc_{{w['widget_name']}}" class='widget_desc collapse' >
-					<div class="row">
-						<span class="col-sm-6">
-							<img class="img-rounded" style="width:100%" src="{{w['widget_picture']}}" id="widget_desc_{{w['widget_name']}}"/>
-						</span>
-						<span>{{!w['widget_desc']}}</span>
-					</div>
-					<p class="add_button"><a class="btn btn-sm btn-success" href="javascript:AddNewWidget('{{w['base_uri']}}', 'widget-place-1');"> <i class="icon-chevron-left"></i> Add {{w['widget_name']}} widget</a></p>
-				</div>
-				%end
+		<div id="desc_{{w['widget_name']}}" class='widget_desc collapse' >
+			<div class="row">
+				<span class="col-sm-6">
+					<img class="img-rounded" style="width:100%" src="{{w['widget_picture']}}" id="widget_desc_{{w['widget_name']}}"/>
+				</span>
+				<span>{{!w['widget_desc']}}</span>
 			</div>
-			
-			<div class="modal-footer">
-				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-			</div>
-		</div><!-- /.modal-content -->
-	</div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
+			<p class="add_button"><a class="btn btn-sm btn-success" href="javascript:AddNewWidget('{{w['base_uri']}}', 'widget-place-1');"> <i class="icon-chevron-left"></i> Add {{w['widget_name']}} widget</a></p>
+		</div>
+	%end
+</div>
 
 <div class="widget-place" id="widget-place-1"> </div>
 <!-- /place-1 -->
