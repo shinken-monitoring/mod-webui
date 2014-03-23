@@ -86,7 +86,7 @@
 			%if len(widgets) == 0:
 			%small_show_panel_s = 'hide'
 			%end
-			<a id="small_show_panel" data-toggle="popover" href="#widgets" class="slidelink btn btn-sm btn-success pull-right {{small_show_panel_s}}"><i class="icon-plus"></i> Add a new widget</a>
+			<a id="small_show_panel" data-toggle="popover" href="#widgets" class="slidelink btn btn-sm btn-success {{small_show_panel_s}}"><i class="icon-plus"></i> Add a new widget</a>
 		</li>
 		
 		<li class="col-sm-2">
