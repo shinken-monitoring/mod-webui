@@ -82,11 +82,9 @@
 
 		<li class="col-sm-2">
 			%# If we got no widget, we should put the button at the center fo the screen
-			%small_show_panel_s = ''
-			%if len(widgets) == 0:
-			%small_show_panel_s = 'hide'
+			%if len(widgets) > 0:
+			<a id="small_show_panel" data-toggle="popover" href="#widgets" class="btn btn-sm btn-success"><i class="icon-plus"></i> Add a new widget</a>
 			%end
-			<a id="small_show_panel" data-toggle="popover" href="#widgets" class="slidelink btn btn-sm btn-success {{small_show_panel_s}}"><i class="icon-plus"></i> Add a new widget</a>
 		</li>
 		
 		<li class="col-sm-2">
@@ -135,13 +133,16 @@
 	</ul>
 </div>
 
-%# Go in the center of the page!
 <div id="loading" class="pull-left"> <img src='/static/images/spinner.gif'> Loading widgets</div>
+
+%# Go in the center of the page!
+%if len(widgets) == 0:
 <span id="center-button" class="col-sm-4 col-sm-offset-4 page-center" >
-	<h3>You don't have any widget yet?</h3>
+	<h3>You don't have any widget yet ...</h3>
 	<!-- Button trigger widgets modal -->
-	<a data-toggle="modal" href="#widgets" class="btn btn-block btn-success btn-lg"><i class="icon-plus"></i> Add a new widget</a>
+	<a id="small_show_panel" data-toggle="popover" href="#widgets" class="btn btn-block btn-success"><i class="icon-plus"></i>... add a new widget</a>
 </span>
+%end
 
 <style>
 .popover
@@ -149,6 +150,7 @@
     min-width: 640px ! important;
 }
 </style>
+
 <script type="text/javascript">
 	// Activate the popover
 	$(function () {
@@ -173,7 +175,7 @@
 	});
 </script>
 
-<div id="widgets" style="display: none; width: 480px;">
+<div id="widgets" class="hidden" style="width: 480px;">
 	%for w in app.get_widgets_for('dashboard'):
 		<button type="button" class="btn btn-block" style="margin-bottom: 2px;" data-toggle="collapse" data-target="#desc_{{w['widget_name']}}">
 		  {{w['widget_name']}}
