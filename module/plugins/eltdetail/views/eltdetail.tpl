@@ -149,7 +149,7 @@ Invalid element name
 		<div class="fitted-box overall-summary accordion-group">
 			<div class="accordion-heading">
 				%if elt_type=='host':
-				<div class="panel-heading fitted-header" data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+				<div class="panel-heading fitted-header cursor" data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
 					<h4 class="panel-title">Overview {{elt.host_name}}
 						%if len(elt.display_name) > 0:
 							({{elt.display_name}})
