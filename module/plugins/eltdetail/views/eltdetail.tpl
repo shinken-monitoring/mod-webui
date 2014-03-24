@@ -94,8 +94,6 @@ Invalid element name
 
 <div id="content_container">
 	<div class="row">
-		<!-- <h1 class="col-lg-7 state_{{elt.state.lower()}} icon_down no-margin"> <img class="imgsize3" alt="icon state" src="{{helper.get_icon_state(elt)}}" />{{elt.state}}: {{elt.get_full_name()}}</h1>  -->
-
 		%if elt.action_url != '':
 			<div class="col-lg-10">
 				<span class="pull-right leftmargin" id="host_tags">
@@ -160,7 +158,7 @@ Invalid element name
 					</h4>
 				</div>
 				%else:
-				<div class="panel-heading fitted-header" data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+				<div class="panel-heading fitted-header cursor" data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
 					<h4 class="panel-title">Overview ({{elt.service_description}}) on {{elt.host.host_name}}
 						%if len(elt.host.display_name) > 0:
 							({{elt.host.display_name}})
