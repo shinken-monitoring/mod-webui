@@ -105,10 +105,10 @@ function graph_zoom(uri){
 
 // when we show the graph tab, we apply the crop effect.
 $(window).ready(function(){
-    $('#tab_to_graphs').on('shown', function (e) {
-	$('.jcropelt').Jcrop({
-	    onSelect: update_coords,
-            onChange: update_coords
-	});
+    $('#tab_to_graphs').on('shown.bs.tab', function (e) {
+		$('.jcropelt').Jcrop({
+			onSelect: update_coords,
+			onChange: update_coords
+		});
     })
 });

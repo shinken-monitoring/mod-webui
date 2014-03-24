@@ -29,16 +29,57 @@ import time
 
 from shinken.util import safe_print
 
+# Get plugin's parameters from configuration file
+params = {}
+# Tabs to be displayed or not ...
+params['tab_info'] = 'yes'
+params['tab_additional'] = 'yes'
+params['tab_commands'] = 'yes'
+params['tab_gesture'] = 'no'
+params['tab_custom_views'] = 'yes'
+params['tab_impacts'] = 'yes'
+params['tab_comments'] = 'yes'
+params['tab_downtimes'] = 'yes'
+params['tab_timeline'] = 'yes'
+params['tab_graphs'] = 'yes'
+params['tab_depgraph'] = 'yes'
 
-# Main impacts view
-#@route('/host')
-def show_host(name):
-    # First we look for the user sid
-    # so we bail out if it's a false one
+def load_cfg():
+    global params
+    
+    import os,sys
+    from config_parser import config_parser
+    from shinken.log import logger
+    plugin_name = os.path.splitext(os.path.basename(__file__))[0]
+    try:
+        currentdir = os.path.dirname(os.path.realpath(__file__))
+        configuration_file = "%s/%s" % (currentdir, 'plugin.cfg')
+        logger.debug("Plugin configuration file: %s" % (configuration_file))
+        scp = config_parser('#', '=')
+        params = scp.parse_config(configuration_file)
+
+        logger.debug("WebUI plugin '%s', configuration loaded." % (plugin_name))
+        return True
+    except Exception, exp:
+        logger.warning("WebUI plugin '%s', configuration file (%s) not available: %s" % (plugin_name, configuration_file, str(exp)))
+        return False
+
+def checkauth():
     user = app.get_user_auth()
 
     if not user:
         app.bottle.redirect("/user/login")
+    else:
+        return user
+
+def reload_cfg():
+    load_cfg()
+    app.bottle.redirect("/")
+
+
+# Main impacts view
+def show_host(name):
+    user = checkauth()
 
     # Ok we are in a detail page but the user ask for a specific search
     search = app.request.GET.get('global_search', None)
@@ -54,20 +95,12 @@ def show_host(name):
 
     # Ok, we can lookup it
     h = app.datamgr.get_host(name)
-    return {'app': app, 'elt': h, 'valid_user': True, 'user': user, 'graphstart': graphstart,
+    return {'app': app, 'elt': h, 'valid_user': True, 'user': user, 'params': params, 'graphstart': graphstart,
             'graphend': graphend}
 
 
 def show_service(hname, desc):
-
-    # First we look for the user sid
-    # so we bail out if it's a false one
-    user = app.get_user_auth()
-
-    if not user:
-        app.bottle.redirect("/user/login")
-#        return {'app': app, 'elt': None, 'valid_user': False, 'user': user}
-
+    user = checkauth()
 
     # Ok we are in a detail page but the user ask for a specific search
     search = app.request.GET.get('global_search', None)
@@ -83,9 +116,12 @@ def show_service(hname, desc):
 
     # Ok, we can lookup it :)
     s = app.datamgr.get_service(hname, desc)
-    return {'app': app, 'elt': s, 'valid_user': True, 'user': user, 'graphstart': graphstart,
+    return {'app': app, 'elt': s, 'valid_user': True, 'user': user, 'params': params, 'graphstart': graphstart,
             'graphend': graphend}
 
-pages = {show_host: {'routes': ['/host/:name'], 'view': 'eltdetail', 'static': True},
+load_cfg()
+
+pages = {reload_cfg: {'routes': ['/eltview/reload'], 'view': 'groups', 'static': True},
+         show_host: {'routes': ['/host/:name'], 'view': 'eltdetail', 'static': True},
          show_service: {'routes': ['/service/:hname/:desc#.+#'], 'view': 'eltdetail', 'static': True},
          }

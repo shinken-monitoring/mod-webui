@@ -42,7 +42,7 @@ import urllib
 
 from shinken.basemodule import BaseModule
 from shinken.message import Message
-from shinken.webui.bottlewebui import Bottle, run, static_file, view, route, request, response, template
+from shinken.webui.bottlewebui import Bottle, run, static_file, view, route, request, response, template, redirect
 from shinken.misc.regenerator import Regenerator
 from shinken.log import logger
 from shinken.modulesctx import modulesctx
@@ -53,6 +53,7 @@ from shinken.util import safe_print, to_bool
 # Local import
 from shinken.misc.datamanager import datamgr
 from helper import helper
+from config_parser import config_parser
 
 # Debug
 import shinken.webui.bottlewebui as bottle
@@ -116,6 +117,7 @@ class Webui_broker(BaseModule, Daemon):
         self.login_text = getattr(modconf, 'login_text', None)
         self.allow_html_output = to_bool(getattr(modconf, 'allow_html_output', '0'))
         self.max_output_length = int(getattr(modconf, 'max_output_length', '100'))
+        self.refresh_period = int(getattr(modconf, 'refresh_period', '60'))
         self.manage_acl = to_bool(getattr(modconf, 'manage_acl', '1'))
         self.remote_user_enable = getattr(modconf, 'remote_user_enable', '0')
         self.remote_user_variable = getattr(modconf, 'remote_user_variable', 'X_REMOTE_USER')
@@ -585,14 +587,22 @@ class Webui_broker(BaseModule, Daemon):
         return (is_ok and c is not None)
 
 
-    def get_user_auth(self):
+    def get_user_auth(self, allow_anonymous=False):
         # First we look for the user sid
         # so we bail out if it's a false one
         user_name = self.request.get_cookie("user", secret=self.auth_secret)
 
-        # If we cannot check the cookie, bailout
-        if not user_name:
+        # If we cannot check the cookie, bailout ... 
+        if not allow_anonymous and not user_name:
             return None
+            
+        # Allow anonymous access if requested and anonymous contact exists ...
+        if allow_anonymous:
+            c = self.datamgr.get_contact('anonymous')
+            if c:
+                return c
+            else:
+                return None
 
         c = self.datamgr.get_contact(user_name)
         return c

@@ -8,7 +8,8 @@ var threshold = 3; // number of pixels required to be moved for a movement to co
 
 
 $(document).ready(function(){
-    canvas = document.getElementById("canvas");
+    canvas = document.getElementById("gestureCanvas");
+	if (!canvas) return;
 
     ctx = canvas.getContext("2d");
 

@@ -1,6 +1,6 @@
 %import time
 
-%# If got no Elt, bailout
+%# If got no element, bailout
 %if not elt:
 %rebase layout title='Invalid element name'
 
@@ -45,7 +45,7 @@ Invalid element name
 	%end
 %end
 
-%rebase layout title=elt_type.capitalize() + ' / ' + elt.get_full_name(), js=['eltdetail/js/jquery.color.js', 'eltdetail/js/jquery.Jcrop.js', 'eltdetail/js/iphone-style-checkboxes.js', 'eltdetail/js/hide.js', 'eltdetail/js/dollar.js', 'eltdetail/js/gesture.js', 'eltdetail/js/graphs.js', 'eltdetail/js/tags.js', 'eltdetail/js/depgraph.js', 'eltdetail/js/custom_views.js', 'eltdetail/js/tabs.js', 'eltdetail/js/screenfull.js', 'eltdetail/js/shinken-gauge.js'], css=['eltdetail/css/eltdetail.css', 'eltdetail/css/hide.css', 'eltdetail/css/gesture.css', 'eltdetail/css/jquery.Jcrop.css', 'eltdetail/css/shinken-gauge.css'], user=user, app=app, refresh=True
+%rebase layout title=elt_type.capitalize() + ' / ' + elt.get_full_name(), js=['eltdetail/js/jquery.color.js', 'eltdetail/js/jquery.Jcrop.js', 'eltdetail/js/iphone-style-checkboxes.js', 'eltdetail/js/hide.js', 'eltdetail/js/dollar.js', 'eltdetail/js/gesture.js', 'eltdetail/js/graphs.js', 'eltdetail/js/tags.js', 'eltdetail/js/depgraph.js', 'eltdetail/js/custom_views.js', 'eltdetail/js/tabs.js', 'eltdetail/js/screenfull.js', 'eltdetail/js/shinken-gauge.js', 'eltdetail/js/timeline.js', 'timeline/js/timeline.js'], css=['eltdetail/css/eltdetail.css', 'eltdetail/css/hide.css', 'eltdetail/css/gesture.css', 'eltdetail/css/jquery.Jcrop.css', 'eltdetail/css/shinken-gauge.css', 'timeline/css/timeline.css'], user=user, app=app, refresh=True
 
 %# " We will save our element name so gesture functions will be able to call for the good elements."
 <script type="text/javascript">
@@ -72,7 +72,7 @@ Invalid element name
 		}
 	});
 
-  // Now we hook the global search thing
+	// Now we hook the global search thing
 	$('.typeahead').typeahead({
 		// note that "value" is the default setting for the property option
 		source: function (typeahead, query) {
@@ -92,10 +92,8 @@ Invalid element name
   %#app.insert_template('cv_linux', globals())
   %#app.insert_template('cv_windows', globals())
 
-  <div id="content_container">
-  	<div class="row">
-  		<!-- <h1 class="col-lg-7 state_{{elt.state.lower()}} icon_down no-margin"> <img class="imgsize3" alt="icon state" src="{{helper.get_icon_state(elt)}}" />{{elt.state}}: {{elt.get_full_name()}}</h1>  -->
-
+<div id="content_container">
+	<div class="row">
 		%if elt.action_url != '':
 			<div class="col-lg-10">
 				<span class="pull-right leftmargin" id="host_tags">
@@ -134,14 +132,14 @@ Invalid element name
 			    </div>
 			</div>	
 		%else:
-		    <div class="col-lg-12">
-		   		<span class="pull-right leftmargin" id="host_tags">
-		   			%tags = elt.get_host_tags()
-		   			%for t in tags:
-		    		<script>add_tag_image('/static/images/sets/{{t.lower()}}/tag.png','{{t}}');</script>
-		    		%end
-		    	</span>
-		    </div>
+			<div class="col-lg-12">
+				<span class="pull-right leftmargin" id="host_tags">
+					%tags = elt.get_host_tags()
+					%for t in tags:
+					<script>add_tag_image('/static/images/sets/{{t.lower()}}/tag.png','{{t}}');</script>
+					%end
+				</span>
+			</div>
 		%end	
 	</div>
 
@@ -149,18 +147,24 @@ Invalid element name
 		<div class="fitted-box overall-summary accordion-group">
 			<div class="accordion-heading">
 				%if elt_type=='host':
-				<div class="panel-heading fitted-header" data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+				<div class="panel-heading fitted-header cursor" data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
 					<h4 class="panel-title">Overview {{elt.host_name}}
 						%if len(elt.display_name) > 0:
 							({{elt.display_name}})
 						%end
+						%for i in range(0, elt.business_impact-2):
+						<img alt="icon state" src="/static/images/star.png">
+						%end
 					</h4>
 				</div>
 				%else:
-				<div class="panel-heading fitted-header" data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+				<div class="panel-heading fitted-header cursor" data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
 					<h4 class="panel-title">Overview ({{elt.service_description}}) on {{elt.host.host_name}}
 						%if len(elt.host.display_name) > 0:
 							({{elt.host.display_name}})
+						%end
+						%for i in range(0, elt.business_impact-2):
+						<img alt="icon state" src="/static/images/star.png">
 						%end
 					</h4>
 				</div>
@@ -238,6 +242,7 @@ Invalid element name
 							%end
 						</tr>
 					</table>
+
 					<div class="col-lg-4">
 						%#   " If the elements is a root problem with a huge impact and not ack, ask to ack it!"
 						%if elt.is_problem and elt.business_impact > 2 and not elt.problem_has_been_acknowledged:
@@ -249,6 +254,7 @@ Invalid element name
 						</div>
 					</div>
 				</div>
+
 				%if elt_type=='host':
 				<div class="row">
 					<ul>
@@ -264,7 +270,7 @@ Invalid element name
 	</div>
 	<!-- Switch Start -->
 
-	%# By default all is unabled
+	%# By default all is disabled
 	% chk_freshness = chk_active_state = chk_passive_state = not_state =  evt_state = flp_state = 'checked=""'
 	%if not (elt.check_freshness):
 	%chk_freshness = 'unchecked=""'
@@ -323,15 +329,27 @@ Invalid element name
 	<!-- Start -->
 	<div class="row">
 		<!-- Start Host/Services-->
-		<div class="tabbable verticaltabs-container col-sm-4 col-lg-3"> <!-- Wrap the Bootstrap Tabs/Pills in this container to position them vertically -->
+		<div class="tabbable verticaltabs-container col-sm-4 col-lg-3">
+			<!-- Wrap the Bootstrap Tabs/Pills in this container to position them vertically -->
 			<ul class="nav nav-tabs">
+				%if params['tab_info']=='yes':
 				<li class="active"><a href="#basic" data-toggle="tab">{{elt_type.capitalize()}} Information:</a></li>
-				<li><a href="#additonal" data-toggle="tab">Additonal Informations:</a></li>
+				%end
+				%if params['tab_additional']=='yes':
+				<li><a href="#additional" data-toggle="tab">Additional Informations:</a></li>
+				%end
+				%if params['tab_commands']=='yes':
+				%if app.manage_acl and helper.can_action(user):
 				<li><a href="#commands" data-toggle="tab">Commands:</a></li>
+				%end
+				%end
+				%if params['tab_gesture']=='yes':
 				<li><a href="#gesture" data-toggle="tab">Gesture:</a></li>
+				%end
 			</ul>
 
 			<div class="tab-content">
+				%if params['tab_info']=='yes':
 				<div class="tab-pane fade in active" id="basic">
 					%if elt_type=='host':
 					<h4>Host Information:</h4>
@@ -360,18 +378,16 @@ Invalid element name
 						</tr>
 						<tr>
 							<td class="column1"><b>Flapping:</b></td>
-							<td><button class="col-lg-11 btn alert-small trim-{{helper.yes_no(elt.in_scheduled_downtime)}}" quickinfo="{{helper.print_float(elt.percent_state_change)}}% state change">{{helper.yes_no(elt.is_flapping)}}</button></td>
+							<td><button class="col-lg-11 btn alert-small trim-{{helper.yes_no(elt.is_flapping)}} quickinforight" data-original-title="{{helper.print_float(elt.percent_state_change)}}% state change">{{helper.yes_no(elt.is_flapping)}}</button></td>
 						</tr>
 						<tr>
 							<td class="column1"><b>In Scheduled Downtime?</b></td>
-							<td><!-- <span class="btn span11 alert-small trim-{{helper.yes_no(elt.in_scheduled_downtime)}}">{{helper.yes_no(elt.in_scheduled_downtime)}}</span> -->
-							<button class="col-lg-11 btn alert-small trim-{{helper.yes_no(elt.in_scheduled_downtime)}}" type="button">{{helper.yes_no(elt.in_scheduled_downtime)}}</button>
-							</td>
+							<td><button class="col-lg-11 btn alert-small trim-{{helper.yes_no(elt.in_scheduled_downtime)}}" type="button">{{helper.yes_no(elt.in_scheduled_downtime)}}</button></td>
 						</tr>
 					</table>
 					<hr>
 					<div class="truncate">
-						%if len(elt.output) > 100:
+						%if len(elt.output) > app.max_output_length:
 							%if app.allow_html_output:
 								<div class='output' rel="tooltip" data-original-title="{{elt.output}}"> {{!helper.strip_html_output(elt.output[:app.max_output_length])}}</div>
 							%else:
@@ -408,8 +424,10 @@ Invalid element name
 						</tr>
 					</table>
 				</div>
+				%end
 
-				<div class="tab-pane fade" id="additonal">
+				%if params['tab_additional']=='yes':
+				<div class="tab-pane fade" id="additional">
 					<script type="text/javascript">
 					$().ready(function() {
 						$('.truncate_perf').jTruncate({
@@ -483,7 +501,10 @@ Invalid element name
 						</div>
 					</div>
 				</div>
+				%end
 
+				%if params['tab_commands']=='yes':
+				%if app.manage_acl and helper.can_action(user):
 				<div class="tab-pane fade" id="commands">
 					<h4>Commands</h4>
 					<div>
@@ -507,212 +528,245 @@ Invalid element name
 						</ul>
 				    </div>
 				</div>
+				%end
+				%end
 
+				%if params['tab_gesture']=='yes':
 				<div class="tab-pane fade" id="gesture">
 					<h4>Gesture</h4>
-					<canvas id="canvas" height="200" class="" style="border: 1px solid black;"></canvas>
+					<canvas id="gestureCanvas" height="200" class="" style="border: 1px solid black;"></canvas>
 					<div class="gesture_button">
 						<img title="By keeping a left click pressed and drawing a check, you will launch an acknowledgement." alt="gesture acknowledge" src="/static/eltdetail/images/gesture-check.png"/> Acknowledge
 					</div>
 					<div class="gesture_button">
-						<img title="By keeping a left click pressed and drawing a check, you will launch an recheck." alt="gesture recheck" src="/static/eltdetail/images/gesture-circle.png"/> Recheck
+						<img title="By keeping a left click pressed and drawing a circle, you will launch an recheck." alt="gesture recheck" src="/static/eltdetail/images/gesture-circle.png"/> Recheck
 					</div>
 					<div class="gesture_button">
 						<img title="By keeping a left click pressed and drawing a check, you will launch a try to fix command." alt="gesture fix" src="/static/eltdetail/images/gesture-zigzag.png"/> Fix
 					</div>
 				</div>
+				%end
 			</div>
 		</div>
 
 		<!-- Detail info box start -->
-		<div class="col-sm-8 col-lg-9 tabbable">
-			<ul class="nav nav-tabs"  style="margin-bottom: 12px;">
-			  %_go_active = 'active'
-			  %for cvname in elt.custom_views:
-			     <li class="{{_go_active}} cv_pane" data-cv-name="{{cvname}}" data-elt-name='{{elt.get_full_name()}}' id='tab-cv-{{cvname}}'><a class='link_to_tab' href="#cv{{cvname}}" data-toggle="tab">{{cvname.capitalize()}}</a></li>
-			     %_go_active = ''
-			  %end
-
-				<li class="{{_go_active}}"><a class='link_to_tab' href="#impacts" data-toggle="tab">Services</a></li>
-			    <li><a class='link_to_tab' href="#comments" data-toggle="tab">Comments</a></li>
-				<li><a class='link_to_tab' href="#downtimes" data-toggle="tab">Downtimes</a></li>
-				<li><a class='link_to_tab' href="#graphs" data-toggle="tab" id='tab_to_graphs'>Graphs</a></li>
-				<li><a class='link_to_tab' href="#depgraph" data-toggle="tab" id='tab_to_depgraph'>Impact graph</a></li>
-				<!--<li><a href="/depgraph/{{elt.get_full_name()}}" title="Impact map of {{elt.get_full_name()}}">Impact map</a></li> -->
-			</ul>
-			<div class="tab-content">
-
-				<!-- First custom views -->
+		<div class="col-lg-9 tabbable">
+			<ul class="nav nav-tabs" style="margin-bottom: 12px;">
 				%_go_active = 'active'
+				%if params['tab_custom_views']=='yes':
 				%for cvname in elt.custom_views:
-					<div class="tab-pane {{_go_active}}" data-cv-name="{{cvname}}" data-elt-name='{{elt.get_full_name()}}' id="cv{{cvname}}">
-						Cannot load the pane {{cvname}}.
-					</div>
+				<li class="{{_go_active}} cv_pane" data-cv-name="{{cvname}}" data-elt-name='{{elt.get_full_name()}}' id='tab-cv-{{cvname}}'><a class='link_to_tab' href="#cv{{cvname}}" data-toggle="tab">{{cvname.capitalize()}}</a></li>
 					%_go_active = ''
 				%end
+				%end
+
+				%if params['tab_impacts']=='yes':
+				<li class="{{_go_active}}"><a class='link_to_tab' href="#impacts" data-toggle="tab">Services</a></li>
+				%end
+				%if params['tab_comments']=='yes':
+			    <li><a class='link_to_tab' href="#comments" data-toggle="tab">Comments</a></li>
+				%end
+				%if params['tab_downtimes']=='yes':
+				<li><a class='link_to_tab' href="#downtimes" data-toggle="tab">Downtimes</a></li>
+				%end
+				%if params['tab_timeline']=='yes':
+				<li class='timeline_pane'><a class='link_to_tab' href="#timeline" data-toggle="tab" id='tab_to_timeline'>Timeline</a></li>
+				%end
+				%if params['tab_graphs']=='yes':
+				<li><a class='link_to_tab' href="#graphs" data-toggle="tab" id='tab_to_graphs'>Graphs</a></li>
+				%end
+				%if params['tab_depgraph']=='yes':
+				<li><a class='link_to_tab' href="#depgraph" data-toggle="tab" id='tab_to_depgraph'>Impact graph</a></li>
+				%end
+			</ul>
+			
+			<div class="tab-content">
+				<!-- Tab custom views -->
+				%if params['tab_custom_views']=='yes':
+				%_go_active = 'active'
+				%for cvname in elt.custom_views:
+				<div class="tab-pane {{_go_active}}" data-cv-name="{{cvname}}" data-elt-name='{{elt.get_full_name()}}' id="cv{{cvname}}">
+					Cannot load the pane {{cvname}}.
+				</div>
+				%_go_active = ''
+				%end
+				%end
+				<!-- Tab custom views end -->
 
 				<!-- Tab Summary Start-->
+				%if params['tab_impacts']=='yes':
 				<div class="tab-pane {{_go_active}}" id="impacts">
+					<div class='row-fluid well col-lg-12'>
 					<!-- Start of the Whole info pack. We got a row of 2 thing : 
 					left is information, right is related elements -->
 					<div class="row-fluid">
 					<!-- So now it's time for the right part, replaceted elements -->
-					<div class="span12">
+					<div class="col-lg-12">
 						<!-- Show our father dependencies if we got some -->
-						%#    Now print the dependencies if we got somes
 						%if len(elt.parent_dependencies) > 0:
-						<h4 class="span12">Root cause:</h4>
+						<h4 class="col-lg-10">Root cause:</h4>
 						<a id="togglelink-{{elt.get_dbg_name()}}" href="javascript:toggleBusinessElt('{{elt.get_dbg_name()}}')"> {{!helper.get_button('Show dependency tree', img='/static/images/expand.png')}}</a>
 						<div class="clear"></div>
 						{{!helper.print_business_rules(datamgr.get_business_parents(elt), source_problems=elt.source_problems)}}
 						%end
-						<hr/>
 
+						<hr/>
+						
 						<!-- If we are an host and not a problem, show our services -->
 						%# " Only print host service if elt is an host of course"
 						%# " If the host is a problem, services will be print in the impacts, so don't"
 						%# " print twice "
 						%if elt_type=='host' and not elt.is_problem:
 						%if len(elt.services) > 0:
-						<h4 class="span10 no-topmargin">My services:</h4>
+						<h4 class="col-lg-10">My services:</h4>
 						%elif len(elt.parent_dependencies) == 0:
 						<div class="alert alert-info">
 							<p class="font-blue">No services available</p>
 						</div>
 						%end
-						<div class="host-services span11">
+						<div class="col-lg-10 host-services">
 							<div class='pull-left'>
 								%_html_id = helper.get_html_id(elt)
 								{{!helper.print_aggregation_tree(helper.get_host_service_aggregation_tree(elt), _html_id)}}
 							</div>
-							<div>&nbsp;</div>
 						</div>
 						%end #of the only host part
 
 						<!-- If we are a root problem and got real impacts, show them! -->
 						%if elt.is_problem and len(elt.impacts) != 0:
-							<h4 class="span10">My impacts:</h4>
-							<div class='host-services'>
+							<h4 class="col-lg-10">My impacts:</h4>
+							<div class='col-lg-10 host-services'>
+								%max_impacts_displayed = 2
 								%nb = 0
 								%for i in helper.get_impacts_sorted(elt):
 								%nb += 1
-								%if nb == 8:
-								<div style="float:right;" id="hidden_impacts_or_services_button"><a href="javascript:show_hidden_impacts_or_services()"> {{!helper.get_button('Show all impacts', img='/static/images/expand.png')}}</a></div>
-								%end
-								%if nb < 8:
-								<div class="service">
-									%else:
-									<div class="service hidden_impacts_services">
-										%end
-										<div>
-											<img style="width : 16px; height:16px" alt="icon state" src="{{helper.get_icon_state(i)}}">
-											<span class='alert-small alert-{{i.state.lower()}}' style="font-size:110%">{{i.state}}</span> for <span style="font-size:110%">{{!helper.get_link(i, short=True)}}</span> since {{helper.print_duration(i.last_state_change, just_duration=True, x_elts=2)}}
-											%for i in range(0, i.business_impact-2):
-											<img alt="icon state" src="/static/images/star.png">
-											%end
-										</div>
-									</div>
-									%# End of this impact
-									%end
+								%if nb == max_impacts_displayed+1:
+								<div class="pull-right" id="hidden_impacts_or_services_button">
+									<a href="javascript:show_hidden_impacts_or_services()"> {{!helper.get_button('Show all impacts', img='/static/images/expand.png')}}</a>
 								</div>
+								%end
+								<div class="service {{"hidden_impacts_services" if nb > max_impacts_displayed else ""}}">
+									<div>
+										<img style="width:16px; height:16px" alt="icon state" src="{{helper.get_icon_state(i)}}">
+										<span class='alert-small alert-{{i.state.lower()}}' style="font-size:110%">{{i.state}}</span> for <span style="font-size:110%">{{!helper.get_link(i, short=True)}}</span> since {{helper.print_duration(i.last_state_change, just_duration=True, x_elts=2)}}
+										%for i in range(0, i.business_impact-2):
+										<img alt="icon state" src="/static/images/star.png">
+										%end
+									</div>
+								</div>
+								%# End of this impact
+								%end
+							</div>
 						%# end of the 'is problem' if
 						%end
 						</div><!-- End of the right part -->
 						</div>
 						<!-- End of the row with the 2 blocks-->
+					</div>
 				</div>
+				%end
 				<!-- Tab Summary End-->
 
 				<!-- Tab Comments Start -->
+				%if params['tab_comments']=='yes':
 				<div class="tab-pane" id="comments">
-		      		<div>
-		      			<ul class="nav nav-pills">
-		      				<li class="active"><a class='{{global_disabled}}' href="/forms/comment/{{helper.get_uri_name(elt)}}" data-toggle="modal" data-target="#modal"><i class="icon-plus"></i> Add comment</a></li>
-		      				
-		      				<li><a class='{{global_disabled}}' href="/forms/comment_delete/{{helper.get_uri_name(elt)}}" data-toggle="modal" data-target="#modal"><i class="icon-minus"></i> Delete all comments</a></li>
-		      			</ul>
-		      		</div>
-		      		<div class="clear"></div>
+					<div class='row-fluid well col-lg-12'>
+						<div id="log_container" class="row-fluid">
+							%if len(elt.comments) > 0:
+							<table class="table table-condensed table-hover">
+								<thead>
+									<tr>
+										<th class="col-lg-2">Author</th>
+										<th class="col-lg-6">Comment</th>
+										<th class="col-lg-3">Date</th>
+										<th class="col-lg-1"></th>
+									</tr>
+								</thead>
+								<tbody>
+								%for c in elt.comments:
+									<tr>
+										<td><strong>{{c.author}}</strong></td>
+										<td><strong>{{c.comment}}</strong></td>
+										<td><strong>{{helper.print_date(c.entry_time)}} - {{helper.print_date(c.expire_time)}}</strong></td>
+										<td><a class="icon-trash {{global_disabled}} font-red" href="javascript:delete_comment('{{elt.get_full_name()}}', {{c.id}})"></a></td>
+									</tr>
+								%end
+								</tbody>
+							</table>
 
-		      		<div id="log_container" class="row-fluid">
-		      			%if len(elt.comments) > 0:
-		      			<table class="table table-condensed table-hover">
-						  <thead>
-						    <tr>
-						      <th class="span2"></th>
-						      <th class="span1"></th>
-						      <th class="span6"></th>
-						      <th class="span4"></th>
-						      <th class="span1"></th>
-						    </tr>
-						  </thead>
-						  <tbody>
-						  	%for c in elt.comments:
-						    <tr>
-						      <td><strong>{{c.author}}</strong></td>
-						      <td><span class="label pull-right">Comments</span></td>
-						      <td><strong>{{c.comment}}</strong></td>
-						      <td><strong>{{helper.print_date(c.entry_time)}} - {{helper.print_date(c.expire_time)}}</strong></td>
-						      <td><a class="icon-trash {{global_disabled}} font-red" href="javascript:delete_comment('{{elt.get_full_name()}}', {{c.id}})"></a></td>
-						    </tr>
-						    %end
-						  </tbody>
-						</table>
-
-		      			%else:
-						<div class="alert alert-info">
-							<p class="font-blue">No comments available</p>
+							%else:
+							<div class="alert alert-info">
+								<p class="font-blue">No comments available</p>
+							</div>
+							%end
 						</div>
-		      			%end
-		      		</div>
-		      	</div>
+						
+						<button type="button" class="btn btn-primary btn-sm" href="/forms/comment/{{helper.get_uri_name(elt)}}" data-toggle="modal" data-target="#modal"><i class="icon-plus"></i> Add a comment</button>
+						<button type="button" class="btn btn-primary btn-sm" href="/forms/comment_delete/{{helper.get_uri_name(elt)}}" data-toggle="modal" data-target="#modal"><i class="icon-minus"></i> Delete all comments</button>
+					</div>
+				</div>
+				%end
 				<!-- Tab Comments End -->
 
 				<!-- Tab Downtimes Start -->
+				%if params['tab_downtimes']=='yes':
 				<div class="tab-pane" id="downtimes">
-		      		<div>
-		      			<ul class="nav nav-pills">
-		      				<li class="active"><a class='{{global_disabled}}' href="/forms/downtime/{{helper.get_uri_name(elt)}}" data-toggle="modal" data-target="#modal"><i class="icon-plus"></i> Add a downtime</a></li>
-		      				<li><a class='{{global_disabled}}' href="/forms/downtime_delete/{{helper.get_uri_name(elt)}}" data-toggle="modal" data-target="#modal"><i class="icon-minus"></i> Delete all downtimes</a></li>
-		      			</ul>
-		      		</div>
-		      		<div class="clear"></div>
+					<div class='row-fluid well col-lg-12'>
+						<div id="log_container" class="row-fluid">
+							%if len(elt.downtimes) > 0:
+							<table class="table table-condensed table-hover">
+							  <thead>
+								<tr>
+								  <th class="col-lg-2"></th>
+								  <th class="col-lg-1"></th>
+								  <th class="col-lg-5"></th>
+								  <th class="col-lg-5"></th>
+								  <th class="col-lg-1"></th>
+								</tr>
+							  </thead>
+							  <tbody>
+								%for dt in elt.downtimes:
+								<tr>
+								  <td><strong>{{dt.author}}</strong></td>
+								  <td><span class="label pull-right">Downtime</span></td>
+								  <td><strong>{{dt.comment}}</strong></td>
+								  <td><strong>{{helper.print_date(dt.start_time)}} - {{helper.print_date(dt.end_time)}}</strong></td>
+								  <td><a class="icon-trash {{global_disabled}} font-red" href="javascript:delete_downtime('{{elt.get_full_name()}}', {{dt.id}})"></a></td>
+								</tr>
+								%end
+							  </tbody>
+							</table>
 
-		      		<div id="log_container" class="row-fluid">
-		      			%if len(elt.downtimes) > 0:
-		      			<table class="table table-condensed table-hover">
-						  <thead>
-						    <tr>
-						      <th class="span2"></th>
-						      <th class="span1"></th>
-						      <th class="span5"></th>
-						      <th class="span5"></th>
-						      <th class="span1"></th>
-						    </tr>
-						  </thead>
-						  <tbody>
-						  	%for dt in elt.downtimes:
-						    <tr>
-						      <td><strong>{{dt.author}}</strong></td>
-						      <td><span class="label pull-right">Downtime</span></td>
-						      <td><strong>{{dt.comment}}</strong></td>
-						      <td><strong>{{helper.print_date(dt.start_time)}} - {{helper.print_date(dt.end_time)}}</strong></td>
-						      <td><a class="icon-trash {{global_disabled}} font-red" href="javascript:delete_downtime('{{elt.get_full_name()}}', {{dt.id}})"></a></td>
-						    </tr>
-						    %end
-						  </tbody>
-						</table>
-
-					%else:
-						<div class="alert alert-info">
-							<p class="font-blue">No downtimes available</p>
+							%else:
+							<div class="alert alert-info">
+								<p class="font-blue">No downtimes available</p>
+							</div>
+							%end
 						</div>
-					%end
+						
+						<button type="button" class="btn btn-primary btn-sm" href="/forms/downtime/{{helper.get_uri_name(elt)}}" data-toggle="modal" data-target="#modal" class="btn btn-primary"><i class="icon-plus"></i> Add a downtime</button>
+						<button type="button" class="btn btn-primary btn-sm" href="/forms/downtime_delete/{{helper.get_uri_name(elt)}}" data-toggle="modal" data-target="#modal" class="btn btn-primary"><i class="icon-minus"></i> Delete all downtimes</button>
+					</div>
 				</div>
-			</div>
+				%end
 				<!-- Tab Downtimes End -->
 
+				<!-- Tab Timeline Start -->
+				%if params['tab_timeline']=='yes':
+				<div class="tab-pane" id="timeline">
+					<div class='row-fluid well col-lg-12'>
+					<div class='row-fluid well col-lg-12 jcrop'>
+						<div id="inner_timeline" data-elt-name='{{elt.get_full_name()}}'>
+							<span class="alert alert-error">Cannot load the timeline graph.</span>
+						</div>
+					</div>
+					</div>
+				</div>
+				%end
+				<!-- Tab Graph End -->
+
 				<!-- Tab Graph Start -->
+				%if params['tab_graphs']=='yes':
 				<div class="tab-pane" id="graphs">
 					%uris = app.get_graph_uris(elt, graphstart, graphend)
 					%if len(uris) == 0:
@@ -723,106 +777,106 @@ Invalid element name
 						$('#tab_to_graphs').hide();
 					</script>
 					%else:
-					<h4>Graphs</h4>
-					<div class='row-fluid well span6'>
-		      			<!-- Get the uris for the 4 standard time ranges in advance	 -->
-		      			%now = int(time.time())
-		      			%fourhours = now - 3600*4
-		      			%lastday =   now - 86400
-		      			%lastweek =  now - 86400*7
-		      			%lastmonth = now - 86400*31
-		      			%lastyear =  now - 86400*365
+					<!-- <h4>Graphs</h4> -->
+					<div class='row-fluid well col-lg-12'>
+						<!-- Get the uris for the 5 standard time ranges in advance	 -->
+						%now = int(time.time())
+						%fourhours = now - 3600*4
+						%lastday =   now - 86400
+						%lastweek =  now - 86400*7
+						%lastmonth = now - 86400*31
+						%lastyear =  now - 86400*365
 
-		      			%# Let's get all the uris at once.
-		      			%uris_4h = app.get_graph_uris(elt, fourhours, now)
-		      			%uris_1d = app.get_graph_uris(elt, lastday, now)
-		      			%uris_1w = app.get_graph_uris(elt, lastweek, now)
-		      			%uris_1m = app.get_graph_uris(elt, lastmonth, now)
-		      			%uris_1y = app.get_graph_uris(elt, lastyear, now)
+						%# Let's get all the uris at once.
+						%uris_4h = app.get_graph_uris(elt, fourhours, now)
+						%uris_1d = app.get_graph_uris(elt, lastday, now)
+						%uris_1w = app.get_graph_uris(elt, lastweek, now)
+						%uris_1m = app.get_graph_uris(elt, lastmonth, now)
+						%uris_1y = app.get_graph_uris(elt, lastyear, now)
 
-		      			<!-- Use of javascript to change the content of a div!-->										
-		      			<div class='span2'><a onclick="setHTML(html_4h,{{fourhours}});" class=""> 4 hours</a></div>
-		      			<div class='span2'><a onclick="setHTML(html_1d,{{lastday}});" class=""> 1 day</a></div>
-		      			<div class='span2'><a onclick="setHTML(html_1w,{{lastweek}});" class=""> 1 week</a></div>
-		      			<div class='span2'><a onclick="setHTML(html_1m,{{lastmonth}});" class=""> 1 month</a></div>
-		      			<div class='span2'><a onclick="setHTML(html_1y,{{lastyear}});" class=""> 1 year</a></div>
-		      		</div>
+						<!-- Use of javascript to change the content of a div!-->
+						<div class='col-lg-2'><a onclick="setHTML(html_4h,{{fourhours}});" > 4 hours</a></div>
+						<div class='col-lg-2'><a onclick="setHTML(html_1d,{{lastday}});" > 1 day</a></div>
+						<div class='col-lg-2'><a onclick="setHTML(html_1w,{{lastweek}});" > 1 week</a></div>
+						<div class='col-lg-2'><a onclick="setHTML(html_1m,{{lastmonth}});" > 1 month</a></div>
+						<div class='col-lg-2'><a onclick="setHTML(html_1y,{{lastyear}});" > 1 year</a></div>
+					</div>
 
 					<script language="javascript">
-		      		function setHTML(html,start) {
-		      			<!-- change the content of the div --!>
-		      			document.getElementById("real_graphs").innerHTML=html;
+					function setHTML(html,start) {
+						<!-- change the content of the div --!>
+						document.getElementById("real_graphs").innerHTML=html;
 
-		      			<!-- and call the jcrop javascript --!>
-		      			$('.jcropelt').Jcrop({
-		      				onSelect: update_coords,
-		      				onChange: update_coords
-		      			});
-		      			graphstart=start;
-		      			get_range();
-		      		}
+						<!-- and call the jcrop javascript --!>
+						$('.jcropelt').Jcrop({
+							onSelect: update_coords,
+							onChange: update_coords
+						});
+						graphstart=start;
+						get_range();
+					}
 
-		      		<!-- let's create the html content for each time rand --!>
-		      		<!-- This is quite ugly here. I do the same thing 4 times --!->
-		      		<!-- someone said "function" ? You're right.--!>
-		      		<!-- but the mix between python and javascript is not a easy thing for me --!>
-		      		html_4h='<p>';
-		      		html_1d='<p>';
-		      		html_1w='<p>';
-		      		html_1m='<p>';
-		      		html_1y='<p>';
+					<!-- let's create the html content for each time range --!>
+					<!-- This is quite ugly here. I do the same thing 4 times --!->
+					<!-- someone said "function" ? You're right.--!>
+					<!-- but the mix between python and javascript is not a easy thing for me --!>
+					html_4h='<p>';
+					html_1d='<p>';
+					html_1w='<p>';
+					html_1m='<p>';
+					html_1y='<p>';
 
-		      		%for g in uris_4h:
-                    %(img_src, link) = app.get_graph_img_src( g['img_src'], g['link'])
-		      		var img_src="{{img_src}}";
-		      		html_4h = html_4h + '<img src="'+ img_src.replace("'","\'") +'" class="jcropelt"/>';
-		      		html_4h = html_4h + '<a href="{{link}}" class="btn"><i class="icon-plus"></i> Show more</a>';
-		      		html_4h = html_4h + '<a href="javascript:graph_zoom(\'/{{elt_type}}/{{elt.get_full_name()}}?\')" class="btn"><i class="icon-zoom-in"></i> Zoom</a>';
-		      		html_4h = html_4h + '<br>';
-		      		%end
-		      		html_4h=html_4h+'</p>';
+					%for g in uris_4h:
+					%(img_src, link) = app.get_graph_img_src( g['img_src'], g['link'])
+					var img_src="{{img_src}}";
+					html_4h = html_4h + '<img src="'+ img_src.replace("'","\'") +'" class="jcropelt"/>';
+					html_4h = html_4h + '<a href="{{link}}" class="btn"><i class="icon-plus"></i> Show more</a>';
+					html_4h = html_4h + '<a href="javascript:graph_zoom(\'/{{elt_type}}/{{elt.get_full_name()}}?\')" class="btn"><i class="icon-zoom-in"></i> Zoom</a>';
+					html_4h = html_4h + '<br>';
+					%end
+					html_4h=html_4h+'</p>';
 
-		      		%for g in uris_1d:
-                    %(img_src, link) = app.get_graph_img_src( g['img_src'], g['link'])
-		      		var img_src="{{img_src}}";
-		      		html_1d = html_1d +'<img src="'+ img_src.replace("'","\'") +'" class="jcropelt"/>';
-		      		html_1d = html_1d + '<a href={{link}}" class="btn"><i class="icon-plus"></i> Show more</a>';
-		      		html_1d = html_1d + '<a href="javascript:graph_zoom(\'/{{elt_type}}/{{elt.get_full_name()}}?\')" class="btn"><i class="icon-zoom-in"></i> Zoom</a>';
-		      		html_1d = html_1d + '<br>';
-		      		%end
-		      		html_1d=html_1d+'</p>';
+					%for g in uris_1d:
+					%(img_src, link) = app.get_graph_img_src( g['img_src'], g['link'])
+					var img_src="{{img_src}}";
+					html_1d = html_1d +'<img src="'+ img_src.replace("'","\'") +'" class="jcropelt"/>';
+					html_1d = html_1d + '<a href={{link}}" class="btn"><i class="icon-plus"></i> Show more</a>';
+					html_1d = html_1d + '<a href="javascript:graph_zoom(\'/{{elt_type}}/{{elt.get_full_name()}}?\')" class="btn"><i class="icon-zoom-in"></i> Zoom</a>';
+					html_1d = html_1d + '<br>';
+					%end
+					html_1d=html_1d+'</p>';
 
-		      		%for g in uris_1w:
-                    %(img_src, link) = app.get_graph_img_src( g['img_src'], g['link'])
-		      		var img_src="{{img_src}}";
-		      		html_1w = html_1w + '<img src="'+ img_src.replace("'","\'") +'" class="jcropelt"/>';
-		      		html_1w = html_1w + '<a href="{{link}}" class="btn"><i class="icon-plus"></i> Show more</a>';
-		      		html_1w = html_1w + '<a href="javascript:graph_zoom(\'/{{elt_type}}/{{elt.get_full_name()}}?\')" class="btn"><i class="icon-zoom-in"></i> Zoom</a>';
-		      		html_1w = html_1w + '<br>';
-		      		%end
+					%for g in uris_1w:
+					%(img_src, link) = app.get_graph_img_src( g['img_src'], g['link'])
+					var img_src="{{img_src}}";
+					html_1w = html_1w + '<img src="'+ img_src.replace("'","\'") +'" class="jcropelt"/>';
+					html_1w = html_1w + '<a href="{{link}}" class="btn"><i class="icon-plus"></i> Show more</a>';
+					html_1w = html_1w + '<a href="javascript:graph_zoom(\'/{{elt_type}}/{{elt.get_full_name()}}?\')" class="btn"><i class="icon-zoom-in"></i> Zoom</a>';
+					html_1w = html_1w + '<br>';
+					%end
 
-		      		%for g in uris_1m:
-                    %(img_src, link) = app.get_graph_img_src( g['img_src'], g['link'])
-		      		var img_src="{{img_src}}";
-		      		html_1m = html_1m + '<img src="'+ img_src.replace("'","\'") +'" class="jcropelt"/>';
-		      		html_1m = html_1m + '<a href="{{link}}" class="btn"><i class="icon-plus"></i> Show more</a>';
-		      		html_1m = html_1m + '<a href="javascript:graph_zoom(\'/{{elt_type}}/{{elt.get_full_name()}}?\')" class="btn"><i class="icon-zoom-in"></i> Zoom</a>';
-		      		html_1m = html_1m + '<br>';
-		      		%end
+					%for g in uris_1m:
+					%(img_src, link) = app.get_graph_img_src( g['img_src'], g['link'])
+					var img_src="{{img_src}}";
+					html_1m = html_1m + '<img src="'+ img_src.replace("'","\'") +'" class="jcropelt"/>';
+					html_1m = html_1m + '<a href="{{link}}" class="btn"><i class="icon-plus"></i> Show more</a>';
+					html_1m = html_1m + '<a href="javascript:graph_zoom(\'/{{elt_type}}/{{elt.get_full_name()}}?\')" class="btn"><i class="icon-zoom-in"></i> Zoom</a>';
+					html_1m = html_1m + '<br>';
+					%end
 
-		      		%for g in uris_1y:
-                    %(img_src, link) = app.get_graph_img_src( g['img_src'], g['link'])
-		      		var img_src="{{img_src}}";
-		      		html_1y = html_1y + '<img src="'+ img_src.replace("'","\'") +'" class="jcropelt"/>';
-		      		html_1y = html_1y + '<a href="{{link}}" class="btn"><i class="icon-plus"></i> Show more</a>';
-		      		html_1y = html_1y + '<a href="javascript:graph_zoom(\'/{{elt_type}}/{{elt.get_full_name()}}?\')" class="btn"><i class="icon-zoom-in"></i> Zoom</a>';
-		      		html_1y = html_1y + '<br>';
-		      		%end
+					%for g in uris_1y:
+					%(img_src, link) = app.get_graph_img_src( g['img_src'], g['link'])
+					var img_src="{{img_src}}";
+					html_1y = html_1y + '<img src="'+ img_src.replace("'","\'") +'" class="jcropelt"/>';
+					html_1y = html_1y + '<a href="{{link}}" class="btn"><i class="icon-plus"></i> Show more</a>';
+					html_1y = html_1y + '<a href="javascript:graph_zoom(\'/{{elt_type}}/{{elt.get_full_name()}}?\')" class="btn"><i class="icon-zoom-in"></i> Zoom</a>';
+					html_1y = html_1y + '<br>';
+					%end
 
 
-		      		</script>
+					</script>
 
-					<div class='row-fluid well span8 jcrop'>
+					<div class='row-fluid well col-lg-12 jcrop'>
 						<div id='real_graphs'>
 						<!-- Let's keep this part visible. This is the custom and default range -->
 						%for g in uris:
@@ -835,12 +889,13 @@ Invalid element name
 						%end      
 						</div>
 					</div>
+					%end
+				</div>
 				%end
-			</div>
 				<!-- Tab Graph End -->
 
-
 				<!-- Tab Dep graph Start -->
+				%if params['tab_depgraph']=='yes':
 				<script>
 				$(function() {
 					$('#supported').text('Supported/allowed: ' + !!screenfull.enabled);
@@ -850,33 +905,30 @@ Invalid element name
 
 					$('#fullscreen-request').click(function() {
 						screenfull.request($('#inner_depgraph')[0]);
-						// Does not require jQuery, can be used like this too:
-						// screenfull.request(document.getElementById('container'));
 					});
 
 					// Trigger the onchange() to set the initial values
 					screenfull.onchange();
 				});
 				</script>
-				<div class="tab-pane" id="depgraph" class="span12">
-					<div>
-						<ul class="nav nav-pills">
-							<li class="active"><a id="fullscreen-request" href="#"><i class="icon-plus"></i>Fullscreen</a></li></i>
-						</ul>
-					</div>
-					<div class="clear"></div>
-					<div id="inner_depgraph" data-elt-name='{{elt.get_full_name()}}'>
-						<span class="alert alert-error">Cannot load dependency graph.</span>
+				<div class="tab-pane" id="depgraph" class="col-lg-12">
+					<div class='row-fluid well col-lg-12 jcrop'>
+						<div class="btn-group btn-group-sm pull-right">
+							<button type="button" id="fullscreen-request" class="btn btn-primary"><i class="icon-plus"></i> Fullscreen</button>
+						</div>
+						<div id="inner_depgraph" data-elt-name='{{elt.get_full_name()}}'>
+							<span class="alert alert-error">Cannot load dependency graph.</span>
+						</div>
 					</div>
 				</div>
+				%end
 				<!-- Tab Dep graph End -->
 			</div>
 		<!-- Detail info box end -->
+		</div>
+		<!-- End ... -->
 	</div>
-	<!-- End ... -->
 </div>
 
 %#End of the Host Exist or not case
 %end
-
-

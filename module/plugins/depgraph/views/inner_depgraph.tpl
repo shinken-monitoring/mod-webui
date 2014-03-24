@@ -18,7 +18,7 @@ Invalid element
   loadjscssfile('/static/depgraph/js/excanvas.js', 'js');
 
 
-  $(document).ready(init_graph('{{elt.get_full_name()}}', {{!helper.create_json_dep_graph(elt, levels=4)}},400, 400,'{{helper.get_html_id(elt)}}'));
+  $(document).ready(init_graph('{{elt.get_full_name()}}', {{!helper.create_json_dep_graph(elt, levels=4)}},640, 480,'{{helper.get_html_id(elt)}}'));
 
 </script>
 

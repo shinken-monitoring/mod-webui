@@ -90,7 +90,7 @@ Invalid group name
 }
 </style>
 
-<div class="">
+<div id="content_container">
 	<div class="panel panel-default">
 		<div class="panel-heading">
 			<h3 class="panel-title">{{groupname}} / ({{groupalias}})</h3>
@@ -169,7 +169,7 @@ Invalid group name
 	</div>
 
 	<div>
-		<div class='span12'>
+		<div class='col-lg-12'>
 			&nbsp;
 			%include pagination_element navi=navi, app=app, page="minemap/"+groupname, div_class="center no-margin"
 		</div>

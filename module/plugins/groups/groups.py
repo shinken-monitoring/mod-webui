@@ -29,23 +29,54 @@ app = None
 from shinken.util import safe_print
 from shinken.misc.sorter import hst_srv_sort
 
-def get_page(name):
-    # First we look for the user sid
-    # so we bail out if it's a false one
+# Get plugin's parameters from configuration file
+params = {}
+params['elts_per_page'] = 10
+
+def load_cfg():
+    global params
+    
+    import os,sys
+    from shinken.log import logger
+    from config_parser import config_parser
+    plugin_name = os.path.splitext(os.path.basename(__file__))[0]
+    try:
+        currentdir = os.path.dirname(os.path.realpath(__file__))
+        configuration_file = "%s/%s" % (currentdir, 'plugin.cfg')
+        logger.debug("Plugin configuration file: %s" % (configuration_file))
+        scp = config_parser('#', '=')
+        params = scp.parse_config(configuration_file)
+
+        params['elts_per_page'] = int(params['elts_per_page'])
+        
+        logger.debug("WebUI plugin '%s', configuration loaded." % (plugin_name))
+        logger.debug("Plugin configuration, elts_per_page: %d" % (params['elts_per_page']))
+        
+        return True
+    except Exception, exp:
+        logger.warning("WebUI plugin '%s', configuration file (%s) not available: %s" % (plugin_name, configuration_file, str(exp)))
+        return False
+
+def checkauth():
     user = app.get_user_auth()
 
     if not user:
         app.bottle.redirect("/user/login")
-        return
+    else:
+        return user
 
-    # Here we can call app.datamgr because when the webui "loaded" us, it
-    # populate app with it's own value.
+def reload_cfg():
+    load_cfg()
+    app.bottle.redirect("/hostgroups")
+
+def show_hostgroup(name):
+    user = checkauth()
+
     if name == 'all':
         my_group = 'all'
         
-        hosts = []
-        hosts.extend(app.datamgr.get_hosts())
-        items = hosts
+        items = []
+        items.extend(app.datamgr.get_hosts())
 
     else:
         my_group = app.datamgr.get_hostgroup(name)
@@ -55,9 +86,10 @@ def get_page(name):
             
         items = my_group.get_hosts()
 
+    elts_per_page = params['elts_per_page']
     # We want to limit the number of elements
     start = int(app.request.GET.get('start', '0'))
-    end = int(app.request.GET.get('end', '30'))
+    end = int(app.request.GET.get('end', elts_per_page))
         
     # Now sort hosts list ..
     items.sort(hst_srv_sort)
@@ -66,33 +98,68 @@ def get_page(name):
     total = len(items)
     if start > total:
         start = 0
-        end = 30
+        end = elts_per_page
 
-    navi = app.helper.get_navi(total, start, step=5)
+    navi = app.helper.get_navi(total, start, step=elts_per_page)
     items = items[start:end]
         
-    # we return values for the template (view). But beware, theses values are the
-    # only one the template will have, so we must give it an app link and the
-    # user we are logged with (it's a contact object in fact)
-    return {'app': app, 'user': user, 'navi': navi, 'group': my_group, 'hosts': items}
+    return {'app': app, 'user': user, 'params': params, 'navi': navi, 'group': my_group, 'hosts': items, 'length': total}
 
 def show_hostgroups():
-    # First we look for the user sid
-    # so we bail out if it's a false one
-    user = app.get_user_auth()
+    user = checkauth()    
 
-    if not user:
-        app.bottle.redirect("/user/login")
-        return
-
-    # Here we can call app.datamgr because when the webui "loaded" us, it
-    # populate app with it's own value.
     my_hostgroups = app.datamgr.get_hostgroups()
 
-    # we return values for the template (view). But beware, theses values are the
-    # only one the template will have, so we must give it an app link and the
-    # user we are logged with (it's a contact object in fact)
-    return {'app': app, 'user': user, 'hgroups': my_hostgroups}
+    return {'app': app, 'user': user, 'params': params, 'hgroups': my_hostgroups}
+
+
+def show_servicegroup(name):
+    user = checkauth()    
+
+    if name == 'all':
+        my_group = 'all'
+        
+        services = []
+        services.extend(app.datamgr.get_services())
+        items = services
+
+    else:
+        my_group = app.datamgr.get_servicegroup(name)
+
+        if not my_group:
+            return "Unknown group %s" % name
+            
+        items = my_group.get_services()
+
+    elts_per_page = params['elts_per_page']
+    # We want to limit the number of elements
+    start = int(app.request.GET.get('start', '0'))
+    end = int(app.request.GET.get('end', elts_per_page))
+        
+    # Now sort services list ..
+    items.sort(hst_srv_sort)
+        
+    # If we overflow, came back as normal
+    total = len(items)
+    if start > total:
+        start = 0
+        end = elts_per_page
+
+    navi = app.helper.get_navi(total, start, step=elts_per_page)
+    items = items[start:end]
+        
+    return {'app': app, 'user': user, 'params': params, 'navi': navi, 'group': my_group, 'services': items, 'length': total}
+
+def show_servicegroups():
+    user = checkauth()    
+
+    my_servicegroups = app.datamgr.get_servicegroups()
+
+    return {'app': app, 'user': user, 'params': params, 'sgroups': my_servicegroups}
+
+
+# Load plugin configuration parameters
+load_cfg()
 
 # This is the dict the webui will try to "load".
 #  *here we register one page with both addresses /dummy/:arg1 and /dummy/, both addresses
@@ -102,7 +169,9 @@ def show_hostgroups():
 #    the dummy/htdocs/ directory. Beware: it will take the plugin name to match.
 #  * optional: you can add 'method': 'POST' so this address will be only available for
 #    POST calls. By default it's GET. Look at the lookup module for sample about this.
-
-pages = {get_page: {'routes': ['/group/:name'], 'view': 'groups', 'static': True},
-         show_hostgroups: {'routes': ['/hostgroups'], 'view': 'groups-overview', 'static': True},
+pages = {reload_cfg: {'routes': ['/hostgroups/reload','/servicegroups/reload'], 'view': 'hostgroups-overview', 'static': True},
+         show_hostgroup: {'routes': ['/hostgroup/:name'], 'view': 'hostgroup', 'static': True},
+         show_hostgroups: {'routes': ['/hostgroups'], 'view': 'hostgroups-overview', 'static': True},
+         show_servicegroup: {'routes': ['/servicegroup/:name'], 'view': 'servicegroup', 'static': True},
+         show_servicegroups: {'routes': ['/servicegroups'], 'view': 'servicegroups-overview', 'static': True},
          }

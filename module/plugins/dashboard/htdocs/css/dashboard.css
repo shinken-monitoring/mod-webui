@@ -133,3 +133,83 @@
 .table-result {
     border-top: 4px double #ebebeb !important; 
 }
+
+
+/*  Dashboard
+    ------------------------------------------------------- */
+
+ul#Navigation {
+  margin-top: 4px;
+  padding: 0.8em;
+  text-align: center;
+  background: #F4F8FA;
+  border: #5BC0DE;
+  height: 90px;
+}
+
+ul#Navigation li {
+  list-style: none;
+  display: inline;
+}
+
+/*  Title styles
+    ------------------------------------------------------- */
+
+.itproblem {
+}
+
+.impacts {
+  letter-spacing: 3px;
+}
+
+.services {
+  letter-spacing: 1px;
+  right: 2.6em !important;
+}
+
+.hosts {
+  letter-spacing: 2px;
+  right: 2.6em !important;
+}
+
+/*  Badger styles
+    ------------------------------------------------------- */
+.badger-big {
+  background-color: #999999;
+  border-radius: 3px;
+  color: #FFFFFF;
+  font-size: 1.3em;
+  font-weight: bold;
+  padding: 1px 3px 2px;
+  text-transform: uppercase;
+  position: relative;
+  left: 1.2em;
+  z-index: 666;
+  
+  position: relative;
+  bottom: 4.5em;
+}
+
+.badger-critical {
+  background-color: rgb(255,0,0); opacity: 0.85;
+}
+
+.badger-warning {
+  background-color: rgb(255,153,0); opacity: 0.85;
+}
+
+.badger-ok {
+  background-color: #7AB317;
+  background-image: -moz-linear-gradient(center top , #7AB317, #669900);
+}
+
+.badger-title {
+  display: block;
+
+  color: #333;
+  text-align: center;
+  font-family: Century Gothic, sans-serif;
+  font-size: 1em;
+  
+  z-index: 666;
+}

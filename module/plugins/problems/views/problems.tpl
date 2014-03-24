@@ -115,8 +115,8 @@
 </script>
 <div id="pageslide" style="display:none">
   <div class="row">
-    <col-sm- class="col-sm-8"><h2>Filtering options</h2></col-sm->
-    <col-sm- class="col-sm-3 pull-right"><a class='btn btn-danger' href="javascript:$.pageslide.close()"><i class="icon-remove"></i> Close</a></col-sm->
+    <span class="col-sm-8"><h2>Filtering options</h2></span>
+    <span class="col-sm-3 pull-right"><a class='btn btn-danger' href="javascript:$.pageslide.close()"><i class="icon-remove"></i> Close</a></span>
   </div>
   <div class='in_panel_filter'>
     <h3>Names</h3>
@@ -158,32 +158,32 @@
     <h3>States</h3>
     <form name='ack_filter' class='form-horizontal'>
 
-      <col-sm- class="help-inline">Ack </col-sm->
+      <span class="help-inline">Ack </span>
       %if page=='problems':
       <input type='checkbox' name='show_ack'></input>
       %else:
       <input type='checkbox' name='show_ack' checked></input>
       %end
 
-      <col-sm- class="help-inline">Both ack states</col-sm->
+      <span class="help-inline">Both ack states</span>
       <input type='checkbox' name='show_both_ack'></input>
       <p class='pull-right'><a class='btn btn-success pull-right' href="javascript:save_state_ack_filter();"> <i class="icon-chevron-right"></i> Add</a></p>
     </form>
 
     <form name='downtime_filter' class='form-horizontal'>
-      <col-sm- class="help-inline">Downtime</col-sm->
+      <span class="help-inline">Downtime</span>
       %if page=='problems':
       <input type='checkbox' name='show_downtime'></input>
       %else:
       <input type='checkbox' name='show_downtime' checked></input>
       %end
-      <col-sm- class="help-inline">Both downtime states</col-sm->
+      <span class="help-inline">Both downtime states</span>
       <input type='checkbox' name='show_both_downtime'></input>
       <p class='pull-right'><a class='btn btn-success pull-right' href="javascript:save_state_downtime_filter();"> <i class="icon-chevron-right"></i> Add</a></p>
     </form>
 
     <form name='criticity_filter' class='form-horizontal'>
-      <col-sm- class="help-inline">Critical Only</col-sm->
+      <span class="help-inline">Critical Only</span>
       %if page=='problems':
       <input type='checkbox' name='show_critical'></input>
       %else:
@@ -192,14 +192,14 @@
       <p class='pull-right'><a class='btn btn-success pull-right' href="javascript:save_state_criticity_filter();"> <i class="icon-chevron-right"></i> Add</a></p>
     </form>
 
-    <col-sm-><p>&nbsp;</p></col-sm->
+    <span><p>&nbsp;</p></span>
 
 
   </div>
   <div class='row'>
-    <col-sm- class='pull-left'><a id='remove_all_filters' class='btn btn-inverse' href="javascript:clean_new_search();"> <i class="icon-remove"></i> Remove all filters</a></col-sm->
-  <col-sm- class='pull-right'><a id='launch_the_search' class='btn btn-warning' href="javascript:launch_new_search('/{{page}}');"> <i class="icon-play"></i> Launch the search!</a></col-sm->
-    <col-sm-><p>&nbsp;</p></col-sm->
+    <span class='pull-left'><a id='remove_all_filters' class='btn btn-inverse' href="javascript:clean_new_search();"> <i class="icon-remove"></i> Remove all filters</a></span>
+  <span class='pull-right'><a id='launch_the_search' class='btn btn-warning' href="javascript:launch_new_search('/{{page}}');"> <i class="icon-play"></i> Launch the search!</a></span>
+    <span><p>&nbsp;</p></span>
   </div>
   <div id='new_search'>
   </div>
@@ -254,44 +254,44 @@ $(function(){
     %got_filters = sum([len(v) for (k,v) in filters.iteritems()]) > 0
     %if got_filters:
       <div class='row'>
-	<col-sm- class='col-sm-8'><h3>Active filters</h3></col-sm->
-	<col-sm- class='col-sm-1 pull-right'><a href='javascript:remove_all_current_filter("/{{page}}");' class="close">&times;</a></col-sm->
+	<span class='col-sm-8'><h3>Active filters</h3></span>
+	<span class='col-sm-1 pull-right'><a href='javascript:remove_all_current_filter("/{{page}}");' class="close">&times;</a></span>
       </div>
     %end
     <ul class="unstyled">
 
     %for n in filters['hst_srv']:
     <li>
-      <col-sm- class="filter_color hst_srv_filter_color">&nbsp;</col-sm->
-      <col-sm- class="hst_srv_filter_name">Name: {{n}}</col-sm->
-      <col-sm- class="filter_delete"><a href='javascript:remove_current_filter("hst_srv", "{{n}}", "/{{page}}");' class="close">&times;</a></col-sm->
+      <span class="filter_color hst_srv_filter_color">&nbsp;</span>
+      <span class="hst_srv_filter_name">Name: {{n}}</span>
+      <span class="filter_delete"><a href='javascript:remove_current_filter("hst_srv", "{{n}}", "/{{page}}");' class="close">&times;</a></span>
     </li>
     <script>add_active_hst_srv_filter('{{n}}');</script>
     %end
 
     %for hg in filters['hg']:
     <li>
-      <col-sm- class="filter_color hg_filter_color">&nbsp;</col-sm->
-      <col-sm- class="hg_filter_name">Group: {{hg}}</col-sm->
-      <col-sm- class="filter_delete"><a href='javascript:remove_current_filter("hg", "{{hg}}", "/{{page}}");' class="close">&times;</a></col-sm->
+      <span class="filter_color hg_filter_color">&nbsp;</span>
+      <span class="hg_filter_name">Group: {{hg}}</span>
+      <span class="filter_delete"><a href='javascript:remove_current_filter("hg", "{{hg}}", "/{{page}}");' class="close">&times;</a></span>
     </li>
     <script>add_active_hg_filter('{{hg}}');</script>
     %end
 
     %for r in filters['realm']:
     <li>
-      <col-sm- class="filter_color realm_filter_color">&nbsp;</col-sm->
-      <col-sm- class="realm_filter_name">Realm: {{r}}</col-sm->
-      <col-sm- class="filter_delete"><a href='javascript:remove_current_filter("realm", "{{r}}", "/{{page}}");' class="close">&times;</a></col-sm->
+      <span class="filter_color realm_filter_color">&nbsp;</span>
+      <span class="realm_filter_name">Realm: {{r}}</span>
+      <span class="filter_delete"><a href='javascript:remove_current_filter("realm", "{{r}}", "/{{page}}");' class="close">&times;</a></span>
     </li>
     <script>add_active_realm_filter('{{r}}');</script>
     %end
 
     %for r in filters['htag']:
     <li>
-      <col-sm- class="filter_color htag_filter_color">&nbsp;</col-sm->
-      <col-sm- class="htag_filter_name">Tag: {{r}}</col-sm->
-      <col-sm- class="filter_delete"><a href='javascript:remove_current_filter("htag", "{{r}}", "/{{page}}");' class="close">&times;</a></col-sm->
+      <span class="filter_color htag_filter_color">&nbsp;</span>
+      <span class="htag_filter_name">Tag: {{r}}</span>
+      <span class="filter_delete"><a href='javascript:remove_current_filter("htag", "{{r}}", "/{{page}}");' class="close">&times;</a></span>
     </li>
     <script>add_active_htag_filter('{{r}}');</script>
     %end
@@ -299,27 +299,27 @@ $(function(){
 
     %for r in filters['ack']:
     <li>
-      <col-sm- class="filter_color ack_filter_color">&nbsp;</col-sm->
-      <col-sm- class="ack_filter_name">Ack: {{r}}</col-sm->
-      <col-sm- class="filter_delete"><a href='javascript:remove_current_filter("ack", "{{r}}", "/{{page}}");' class="close">&times;</a></col-sm->
+      <span class="filter_color ack_filter_color">&nbsp;</span>
+      <span class="ack_filter_name">Ack: {{r}}</span>
+      <span class="filter_delete"><a href='javascript:remove_current_filter("ack", "{{r}}", "/{{page}}");' class="close">&times;</a></span>
     </li>
     <script>add_active_state_ack_filter('{{r}}');</script>
     %end
 
     %for r in filters['downtime']:
     <li>
-      <col-sm- class="filter_color downtime_filter_color">&nbsp;</col-sm->
-      <col-sm- class="downtime_filter_name">Downtime: {{r}}</col-sm->
-      <col-sm- class="filter_delete"><a href='javascript:remove_current_filter("downtime", "{{r}}", "/{{page}}");' class="close">&times;</a></col-sm->
+      <span class="filter_color downtime_filter_color">&nbsp;</span>
+      <span class="downtime_filter_name">Downtime: {{r}}</span>
+      <span class="filter_delete"><a href='javascript:remove_current_filter("downtime", "{{r}}", "/{{page}}");' class="close">&times;</a></span>
     </li>
     <script>add_active_state_downtime_filter('{{r}}');</script>
     %end
 
     %for r in filters['crit']:
     <li>
-      <col-sm- class="filter_color criticity_filter_color">&nbsp;</col-sm->
-      <col-sm- class="criticity_filter_name">Criticity: {{r}}</col-sm->
-      <col-sm- class="filter_delete"><a href='javascript:remove_current_filter("crit", "{{r}}", "/{{page}}");' class="close">&times;</a></col-sm->
+      <span class="filter_color criticity_filter_color">&nbsp;</span>
+      <span class="criticity_filter_name">Criticity: {{r}}</span>
+      <span class="filter_delete"><a href='javascript:remove_current_filter("crit", "{{r}}", "/{{page}}");' class="close">&times;</a></span>
     </li>
     <script>add_active_state_criticity_filter('{{r}}');</script>
     %end
@@ -402,7 +402,7 @@ $(function(){
 		<div class="aroundpulse">
 		    %# " We put a 'pulse' around the elements if it's an important one "
 		    %if pb.business_impact > 2 and pb.state_id in [1, 2, 3]:
-		         <col-sm- class="pulse"></col-sm->
+		         <span class="pulse"></span>
 	            %end
 		    <img src="{{helper.get_icon_state(pb)}}" /></div>
 		</div>

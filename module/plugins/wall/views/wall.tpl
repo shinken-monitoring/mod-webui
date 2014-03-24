@@ -1,6 +1,6 @@
 %helper = app.helper
 
-%rebase layout globals(), css=['wall/css/snowstack.css', 'wall/css/wall.css'], title='Wall view', js=[ 'wall/js/wall.js'], refresh=True, user=user, print_menu=False, print_header=True, menu_part='/wall'
+%rebase layout globals(), css=['wall/css/snowstack.css', 'wall/css/wall.css'], title='Wall view', js=[ 'wall/js/wall.js'], refresh=True, user=user, menu_part='/wall'
 
 <div class="page view">
 	<img src="/static/images/next.png" class="next-icon" onclick="go_right();"/>
@@ -33,7 +33,7 @@
 
 <div class="last_errors">
 	%if len(problems) == 0:
-	<h2>No new IT problems in the last 10minutes</h2>
+	<h2>No new IT problems in the last 10 minutes</h2>
 	%else:
 	<h3>There are {{len(problems)}} new IT problems in the last 10 minutes:</h3>
 	%end
