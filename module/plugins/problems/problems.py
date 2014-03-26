@@ -25,6 +25,7 @@
 
 from shinken.misc.filter  import only_related_to
 from shinken.misc.sorter import hst_srv_sort
+from shinken.objects.service import Service
 
 ### Will be populated by the UI with it's own value
 app = None
@@ -64,7 +65,7 @@ def get_view(page):
     toolbar = app.request.GET.get('toolbar', '')
     print "Toolbar", tool_pref, toolbar
     if toolbar != tool_pref and len(toolbar) > 0:
-        print "Need to change user prefs for Toolbar", 
+        print "Need to change user prefs for Toolbar",
         app.set_user_preference(user, 'toolbar', toolbar)
     tool_pref = app.get_user_preference(user, 'toolbar')
 
@@ -114,7 +115,15 @@ def get_view(page):
         app.bottle.redirect("/problems")
 
     # Filter with the user interests
-    items = only_related_to(items, user)
+    my_items = only_related_to(items, user)
+
+    # Check for related host contacts
+    for i in items:
+      if isinstance(i,Service):
+        if user in i.host.contacts:
+          my_items.append(i)
+          continue
+
 
     # Ok, if need, appli the search filter
     for s in search:
