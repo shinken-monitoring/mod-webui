@@ -124,6 +124,7 @@ def get_view(page):
           my_items.append(i)
           continue
 
+    items = my_items
 
     # Ok, if need, appli the search filter
     for s in search:
