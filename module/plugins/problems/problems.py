@@ -118,11 +118,12 @@ def get_view(page):
     my_items = only_related_to(items, user)
 
     # Check for related host contacts
-    for i in items:
-      if isinstance(i,Service):
-        if user in i.host.contacts:
-          my_items.append(i)
-          continue
+    if not user.is_admin:
+      for i in items:
+        if isinstance(i,Service):
+          if user in i.host.contacts:
+            my_items.append(i)
+            continue
 
     items = my_items
 
