@@ -67,11 +67,6 @@ sys.path.insert(0, bottle_dir)
 webuimod_dir = os.path.abspath(os.path.dirname(__file__))
 htdocs_dir = os.path.join(webuimod_dir, 'htdocs')
 
-
-
-
-
-
 properties = {
     'daemons': ['broker', 'scheduler'],
     'type': 'webui',
@@ -107,6 +102,7 @@ class Webui_broker(BaseModule, Daemon):
         if bindAddress:
             self.serveropts['bindAddress'] = str(bindAddress)
 
+        self.webui_version =  getattr(modconf, 'webui_version', '1.1.0-dev.3 - Contis')
         self.port = int(getattr(modconf, 'port', '7767'))
         self.http_port = int(getattr(modconf, 'http_port', '7766'))
         self.host = getattr(modconf, 'host', '0.0.0.0')

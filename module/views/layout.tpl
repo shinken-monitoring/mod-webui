@@ -9,12 +9,9 @@
 %if not 'refresh' in locals(): refresh = False
 %if not 'user' in locals(): user = None
 %if not 'app' in locals(): app = None
-
 %print "APP is", app
-
 %# If not need, disable the top right banner
 %if not 'top_right_banner_state' in locals(): top_right_banner_state = 0
-
 %# For the menu selection
 %if not 'menu_part' in locals(): menu_part = ''
 
@@ -23,7 +20,7 @@
 	<meta charset="utf-8">
 	<title>{{title or 'No title'}}</title>
 
-<!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+	%include copyright_element globals()
 
 <!--[if lt IE 9]>
 <script src="/static/js/html5.js"></script>
