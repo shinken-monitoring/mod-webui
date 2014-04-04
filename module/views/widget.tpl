@@ -99,13 +99,18 @@
           <input type="hidden" name='{{k}}' value='{{value}}'/>
         %end
         %if t in ['select']:
-          %values = v.get('values', [])
+          %values = v.get('values', {})
+          %value = v.get('value', '')
           <select name='{{k}}'>
-          %for sub_val in values:
-            <option value="{{sub_val}}">{{sub_val}}</option>
+          %for sub_name,sub_val in values.iteritems():
+            %selected = ''
+            %if value == sub_val:
+              %selected = 'selected'
+            %end
+            <option value="{{sub_val}}" {{selected}}>{{sub_name}}</option>
           %end
           </select>
-        %end
+        %end 
         %if t == 'bool':
           %checked = ''
           %if value:
