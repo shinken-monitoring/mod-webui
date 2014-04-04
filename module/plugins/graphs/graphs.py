@@ -37,6 +37,14 @@ def get_graphs_widget():
         app.bottle.redirect("/user/login")
 
     search = app.request.GET.get('search', '')
+    duration = app.request.GET.get('duration', '86400')
+    duration_list = {
+        '1h'   : '3600',
+        '1d'   : '86400',
+        '7d'   : '604800',
+        '30d'  : '2592000',
+        '365d' : '31536000' ,
+    }
 
     if not search:
         search = 'localhost'
@@ -52,13 +60,33 @@ def get_graphs_widget():
     wid = app.request.GET.get('wid', 'widget_graphs_' + str(int(time.time())))
     collapsed = (app.request.GET.get('collapsed', 'False') == 'True')
 
-    options = {'search': {'value': search, 'type': 'hst_srv', 'label': 'Element name'},}
+    options = {
+        'search': {
+            'value': search,
+            'type': 'hst_srv',
+            'label': 'Element name'
+        },
+        'duration': {
+            'value': duration,
+            'values':  duration_list,
+            'type': 'select',
+            'label': 'Duration'
+        },
+    }
 
     title = 'Element graphs for %s' % search
 
-    return {'app': app, 'elt': elt, 'user': user,
-            'wid': wid, 'collapsed': collapsed, 'options': options, 'base_url': '/widget/graphs', 'title': title,
-            }
+    return {
+        'app': app,
+        'elt': elt,
+        'user': user,
+        'wid': wid,
+        'collapsed': collapsed,
+        'options': options,
+        'base_url': '/widget/graphs',
+        'title': title,
+        'duration': int(duration),
+    }
 
 widget_desc = '''<h4>Graphs</h4>
 Show the perfdata graph
