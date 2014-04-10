@@ -105,6 +105,11 @@ def show_tags():
 
     return {'app': app, 'user': user, 'params': params, 'htags': my_tags}
 
+def show_stags():
+    user = checkauth()    
+    my_tags = app.datamgr.get_service_tags_sorted()
+
+    return {'app': app, 'user': user, 'params': params, 'stags': my_tags}
 
 # Load plugin configuration parameters
 load_cfg()
@@ -120,4 +125,5 @@ load_cfg()
 pages = {reload_cfg: {'routes': ['/tags/reload'], 'view': 'tags-overview', 'static': True},
          show_tag: {'routes': ['/tag/:name'], 'view': 'tag', 'static': True},
          show_tags: {'routes': ['/tags'], 'view': 'tags-overview', 'static': True},
+         show_stags: {'routes': ['/servicetags'], 'view': 'servicetags-overview', 'static': True},
          }
