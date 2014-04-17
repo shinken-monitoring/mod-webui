@@ -5,23 +5,28 @@ Shinken main Web interface
 
 ###Installation
 
-* *$ shinken install webui*
+* Install the webui module from shinken.io
+```
+$ shinken install webui
+```
 * Add it into the modules of the broker configuration :
 ```
-shinken@debian# cat /etc/shinken/brokers/broker-master.cfg
+$ cat /etc/shinken/brokers/broker-master.cfg
 [...]
 modules     webui
 [...]
 ```
-* Install an authentication module for instance 
+* Install an authentication module. For instance 
 ```
-shinken install auth-cfg-password
+$ shinken install auth-cfg-password
 ```
 
 * Declare it on the WebUI configuration :
 ```
-shinken@debian# grep modules /etc/shinken/modules/webui.cfg
+$ cat /etc/shinken/modules/webui.cfg
+[...]
 modules             auth-cfg-password
+[...]
 ```
 * Restart shinken and connect to the WebUI that will be available on the 7767 port.
 ```
