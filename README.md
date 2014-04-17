@@ -30,7 +30,7 @@ modules             auth-cfg-password
 ```
 * Restart shinken and connect to the WebUI that will be available on the 7767 port.
 ```
-root@debian# /etc/init.d/shinken restart
+root@system# /etc/init.d/shinken restart
 ```
 
 ###Screenshots
