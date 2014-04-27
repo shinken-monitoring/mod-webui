@@ -95,14 +95,25 @@ Invalid element name
 <div id="content_container">
 	<div class="row">
 		%if elt.action_url != '':
+			%if elt_type=='host':
 			<div class="col-lg-10">
 				<span class="pull-right leftmargin" id="host_tags">
 					%tags = elt.get_host_tags()
 					%for t in tags:
-					<script>add_tag_image('/static/images/sets/{{t.lower()}}/tag.png','{{t}}');</script>
+						<script>add_tag_image('/static/images/sets/{{t.lower()}}/tag.png','{{t}}');</script>
 					%end
 				</span>
 			</div>
+			%else:
+			<div class="col-lg-10">
+				<span class="pull-right leftmargin" id="service_tags">
+					%tags = elt.get_service_tags()
+					%for t in tags:
+						<script>add_tag_image('/static/images/sets/{{t.lower()}}/tag.png','{{t}}');</script>
+					%end
+				</span>
+			</div>
+			%end
 			<div class="col-lg-2">
 				<div class="btn-group pull-right">
 					%action_urls = elt.action_url.split('|')
