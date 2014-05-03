@@ -8,7 +8,7 @@
  	GNU Affero General Public License as published by the Free Software Foundation, either
  	version 3 of the License, or (at your option) any later version.
 
-	WebUI Version: {{app.webui_version}}
+	WebUI Version: 1.1.0-dev.3 - Contis
 	Shinken Framework Version: {{VERSION}}
 -->
 
