@@ -40,9 +40,7 @@ app = None
 
 # Our page
 def get_page():
-
     user = app.get_user_auth()
-
     if not user:
         app.bottle.redirect("/user/login")
 
@@ -90,10 +88,13 @@ def get_page():
 
 def get_currently():
     # Allow anonymous access
-    user = app.get_user_auth(True)
+    # user = app.get_user_auth(True)
+    # if not user:
+        # app.bottle.redirect("/user/login")
+        # return
+    user = app.get_user_auth()
     if not user:
         app.bottle.redirect("/user/login")
-        return
 
     return {'app': app, 'user': user}
 
