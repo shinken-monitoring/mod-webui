@@ -2,7 +2,7 @@
 
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2009-2012:
+# Copyright (C) 2009-2014:
 #    Gabes Jean, naparuba@gmail.com
 #    Gerhard Lausser, Gerhard.Lausser@consol.de
 #    Gregory Starck, g.starck@gmail.com
@@ -151,7 +151,7 @@ def system_widget():
             }
 
 
-def show_log():
+def show_logs():
     user = checkauth()    
 
     message,db = getdb(params['db_name'])
@@ -167,7 +167,7 @@ def show_log():
     records=[]
 
     try:
-        logger.debug("[Logs] Fetching records from database: %s (max %d)" % (params['logs_type'], params['logs_limit']))
+        logger.warning("[Logs] Fetching records from database: %s (max %d)" % (params['logs_type'], params['logs_limit']))
         for log in db.logs.find({ "$and" : [ { "type" : { "$in": params['logs_type'] }}, { "host_name" : { "$in": params['logs_hosts'] }}, { "service_description" : { "$in": params['logs_services'] }}  ]}).sort("time", -1).limit(params['logs_limit']):
             records.append({
                 "date" : int(log["time"]),
@@ -266,7 +266,7 @@ Show an aggregated view of all Shinken daemons.
 
 pages = {system_page: {'routes': ['/system', '/system/'], 'view': 'system', 'static': True},
          system_widget: {'routes': ['/widget/system'], 'view': 'system_widget', 'static': True, 'widget': ['dashboard'], 'widget_desc': widget_desc, 'widget_name': 'system', 'widget_picture': '/static/system/img/widget_system.png'},
-         show_log: {'routes': ['/system/logs'], 'view': 'logs', 'static': True},
+         show_logs: {'routes': ['/system/logs'], 'view': 'logs', 'static': True},
          form_hosts_list: {'routes': ['/system/hosts_list'], 'view': 'form_hosts_list'},
          set_hosts_list: {'routes': ['/system/set_hosts_list'], 'view': 'logs', 'method': 'POST'},
          form_services_list: {'routes': ['/system/services_list'], 'view': 'form_services_list'},
