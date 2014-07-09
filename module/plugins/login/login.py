@@ -39,8 +39,9 @@ def user_login():
 
     err = app.request.GET.get('error', None)
     login_text = app.login_text
+    company_logo = app.company_logo
 
-    return {'error': err, 'login_text': login_text}
+    return {'error': err, 'login_text': login_text, 'company_logo': company_logo}
 
 
 def user_login_redirect():
@@ -112,8 +113,9 @@ def login_mobile():
 
     err = app.request.GET.get('error', None)
     login_text = app.login_text
+    company_logo = app.company_logo
 
-    return {'error': err, 'login_text': login_text}
+    return {'error': err, 'login_text': login_text, 'company_logo': company_logo}
 
 pages = {user_login: {'routes': ['/user/login', '/user/login/'],
                          'view': 'login', 'static': True},
