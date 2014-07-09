@@ -17,7 +17,6 @@ $(document).ready(function(){
 	%if company_logo:
 	<div class="col-xs-2 col-sm-4 col-md-4"> <img src="/static/img/{{company_logo}}" /></div>
 	%end
-	
 </div>
 
 <div class="row">
