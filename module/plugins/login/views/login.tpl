@@ -33,13 +33,6 @@ $(document).ready(function(){
 		%end
 
 		<img src="/static/img/logo.png" />
-
-		%if error:
-		<div class="alert alert-error">
-			<strong>Warning!</strong>
-			{{error}}
-		</div>
-		%end
 	</div>
 
 	<div class="col-xs-6 col-sm-4 col-md-4">
@@ -69,6 +62,12 @@ $(document).ready(function(){
 				</form>
 			</div>
 		</div>
+		%if error:
+		<div class="alert alert-danger" role="alert">
+			<strong>Warning!</strong>
+			{{error}}
+		</div>
+		%end
 	</div>
 </div>
 
