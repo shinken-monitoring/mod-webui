@@ -31,9 +31,17 @@ Invalid element
   // var graph_root = '{{elt.get_full_name()}}';
   // var json_graph = {{!helper.create_json_dep_graph(elt, levels=4)}};
   //console.log('Show the graph'+json_graph);
+
+  // Get container dimensions
+  var container = $(window);
+  console.log('Container size: ', container.innerWidth(), container.innerHeight());
+  // Widget width is around 1/3 of window width ... and small margins !
+  var width = (container.innerWidth() / 3) - 50;
+  var height = container.innerHeight() - 5;
+  // Height is not significative ... because container is fluid ... set fixed height !
+  var height = 400;
  
- 
- $(document).ready(init_graph('{{elt.get_full_name()}}', {{!helper.create_json_dep_graph(elt, levels=4)}},400, 400,'{{helper.get_html_id(elt)}}'));
+  $(document).ready(init_graph('{{elt.get_full_name()}}', {{!helper.create_json_dep_graph(elt, levels=4)}}, width, height, '{{helper.get_html_id(elt)}}'));
  
  
 </script>

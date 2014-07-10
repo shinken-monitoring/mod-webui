@@ -19,7 +19,7 @@ Invalid element
 
   // Get container dimensions
   var container = $('#inner_depgraph');
-  console.log('Container size: ', '{{elt.get_full_name()}}', '{{helper.get_html_id(elt)}}', container.innerWidth(), container.innerHeight());
+  //console.log('Container size: ', '{{elt.get_full_name()}}', '{{helper.get_html_id(elt)}}', container.innerWidth(), container.innerHeight());
   var width = container.innerWidth() - 5;
   var height = container.innerHeight() - 5;
   // Height is not significative ... because container is fluid ... set fixed height !
