@@ -275,72 +275,75 @@ function init_graph(root, jsgraph, width, height, inject) {
     //Using this feature requires some javascript and canvas experience.
     $jit.RGraph.Plot.NodeTypes.implement({
 	    'custom': {
-		'render': function(node, canvas) {
+          'render': function(node, canvas) {
 
-		    /*First we need to know where the node is, so we can draw 
-		     in the correct place for the GLOBAL canvas*/
-		    var pos = node.getPos().getc();
-		    var size = 24;
+              /*First we need to know where the node is, so we can draw 
+               in the correct place for the GLOBAL canvas*/
+              var pos = node.getPos().getc();
+              var size = 24;
 
-		    var ctx = canvas.getCtx();
+              var ctx = canvas.getCtx();
 
-		    // Look if we really need to render this node
-		    if(!should_be_print(node)){
-			var color = node.data.circle;
-			// Remeber to clean the particule if need
-			clean_particule(node.id);
-			ctx.beginPath();
-			ctx.fillStyle = color;//'rgba(0,0,255,0.8)';
-			ctx.arc(pos.x, pos.y, 1,  0, Math.PI*(2), true);
-			ctx.fill();
-			return;
-		    }
+              // Look if we really need to render this node
+              if(!should_be_print(node)){
+                  var color = node.data.circle;
+                  // Remeber to clean the particule if need
+                  clean_particule(node.id);
+                  ctx.beginPath();
+                  ctx.fillStyle = color;//'rgba(0,0,255,0.8)';
+                  ctx.arc(pos.x, pos.y, 1,  0, Math.PI*(2), true);
+                  ctx.fill();
+                  return;
+              }
 
 
-		    //alert('Rendering node '+node.id);
-		    // save it
-		    context = ctx;
-		    img = new Image();
-		    
-		    /* We can have some missing data, so just add dummy info */
-		    if (typeof(node.data.img_src) == 'undefined'){
-			img.src = '/static/images/state_ok.png';
-		    }else{
-			img.src = node.data.img_src;
-			size = size * (1 + (node.data.business_impact - 2)/3);
-		    }
-		    
-		    var elt_type = 'service';
-		    /* We can have some missing data, so just add dummy info */
-                    if (typeof(node.data.elt_type) != 'undefined'){
-                        elt_type = node.data.elt_type;
-                    }
+              //alert('Rendering node '+node.id);
+              // save it
+              context = ctx;
+              var img = new Image();
+            
+              img.onload = function () {
+                  // console.log ('Image loaded', img)
+                  var elt_type = 'service';
+                  /* We can have some missing data, so just add dummy info */
+                              if (typeof(node.data.elt_type) != 'undefined'){
+                                  elt_type = node.data.elt_type;
+                              }
 
-		    /* We scale the image. Thanks html5 canvas.*/
-		    img.width = size;
-		    img.height = size;
-		    
-		    /* If we got a value for the circle */
-		    if (typeof(node.data.img_src) != 'undefined'){
-			color = node.data.circle;
-			if(color != 'none'){
-			    create_or_update_particule(node.id, pos.x, pos.y, color, node.data.business_impact - 1);
-			}else{
-			    // If we didn't print the circle, we can add one for the
-			    // root, so the user will show it. 
-			    // DO NOT PUT THE node.id here, because we need this particule to folow the root
-			    // whatever its name is ;)
-			    if(node.id == rgraph.root){
-				create_or_update_particule('graphrootforwebui', pos.x, pos.y, 'gray', node.data.business_impact - 1);
-			    }
-			}
-		    }
-		    
-		    //Ok, we draw the image, and we set it in the middle ofthe node :)
-		    ctx.drawImage(img, pos.x-size/2, pos.y-size/2, img.width, img.height);
-		}
-	    }
-	    });
+                  /* We scale the image. Thanks html5 canvas.*/
+                  img.width = size;
+                  img.height = size;
+                  
+                  /* If we got a value for the circle */
+                  if (typeof(node.data.img_src) != 'undefined'){
+                      color = node.data.circle;
+                      if(color != 'none'){
+                          create_or_update_particule(node.id, pos.x, pos.y, color, node.data.business_impact - 1);
+                      }else{
+                          // If we didn't print the circle, we can add one for the
+                          // root, so the user will show it. 
+                          // DO NOT PUT THE node.id here, because we need this particule to folow the root
+                          // whatever its name is ;)
+                          if(node.id == rgraph.root){
+                              create_or_update_particule('graphrootforwebui', pos.x, pos.y, 'gray', node.data.business_impact - 1);
+                          }
+                      }
+                  }
+                  
+                  //Ok, we draw the image, and we set it in the middle ofthe node :)
+                  ctx.drawImage(img, pos.x-size/2, pos.y-size/2, img.width, img.height);
+              };
+              /* We can have some missing data, so just add dummy info */
+              if (typeof(node.data.img_src) == 'undefined'){
+                  img.src = '/static/images/state_ok.png';
+              } else {
+                  img.src = node.data.img_src;
+                  size = size * (1 + (node.data.business_impact - 2)/3);
+              }
+              // console.log ('Image ', img.src)
+          }
+      }
+    });
 
     //init RGraph
     /*var */rgraph = new $jit.RGraph({
@@ -365,12 +368,12 @@ function init_graph(root, jsgraph, width, height, inject) {
 	Node: {
 	    color: 'green',
 	    'overridable': true,
-	    type : 'custom',
+	    type : 'custom'
 	},
 	Edge: {
 	    color: 'SeaGreen',
 	    lineWidth : 0.5,
-	    'overridable': true,
+	    'overridable': true
 	},
 	
 	//Add tooltips
