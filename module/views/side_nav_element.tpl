@@ -14,25 +14,37 @@
 		<div>
 			<h3>Shinken</h3>
 			<ul>
-				<li><i class="cursor icon-dashboard"></i>		<a href="/dashboard">Dashboard</a></li>
-				<li><i class="cursor icon-bolt"></i>			<a href="/impacts">Impacts</a></li>
-				<li><i class="cursor icon-sitemap"></i>			<a href="/hostgroups">Hosts groups</a></li>
-				<li><i class="cursor icon-sitemap"></i>			<a href="/servicegroups">Services groups</a></li>
-				<li><i class="cursor icon-sitemap"></i>			<a href="/tags">Hosts tags</a></li>
-				<li><i class="cursor icon-table"></i>			<a href="/minemaps">Minemap</a></li>
-				<li><i class="cursor icon-compass"></i>			<a href="/worldmap">Worldmap</a></li>
-				<li><i class="cursor icon-th-large"></i>		<a href="/wall">Wall</a></li>
-				<li><i class="cursor icon-gears"></i>			<a href="/system">System</a></li>
-				<li><i class="cursor icon-list"></i>			<a href="/system/logs">Logs</a></li>
+				<li><i class="cursor icon-dashboard"></i>	    <a href="/dashboard">Dashboard</a></li>
+				<li><i class="cursor icon-bolt"></i>			    <a href="/impacts">Impacts</a></li>
+				<li><i class="cursor icon-sitemap"></i>			  <a href="/hostgroups">Hosts groups</a></li>
+				<li><i class="cursor icon-sitemap"></i>			  <a href="/servicegroups">Services groups</a></li>
+				<li><i class="cursor icon-sitemap"></i>			  <a href="/hosts-tags">Hosts tags</a></li>
+				<li><i class="cursor icon-sitemap"></i>			  <a href="/services-tags">Services tags</a></li>
+				<li><i class="cursor icon-table"></i>			    <a href="/minemaps">Minemap</a></li>
+				<li><i class="cursor icon-compass"></i>			  <a href="/worldmap">Worldmap</a></li>
+				<li><i class="cursor icon-th-large"></i>		  <a href="/wall">Wall</a></li>
+				<li><i class="cursor icon-gears"></i>			    <a href="/system">System</a></li>
+				<li><i class="cursor icon-list"></i>			    <a href="/system/logs">Logs</a></li>
+        
+        %if app:
+        %other_uis = app.get_external_ui_link()
+        %if len(other_uis) > 0:
+        <hr/>
+        %end
+        %for c in other_uis:
+        <li><i class="cursor icon-rocket"></i> <a href="{{c['uri']}}">{{c['label']}}</a></li>
+        %end
+        %end
 			</ul>
 		</div>
-		<div style="position: absolute; bottom: 2px; width: 100%;">
+
+		<div style="position: absolute; bottom: 3px; width: 100%;">
 			<h4>{{username.capitalize()}}</h4>
 			<ul>
-				<li><i class="cursor icon-cogs"></i>			<a class="disabled" href="/config">Configuration</a></li>
-				<li><i class="cursor icon-pencil"></i>			<a class="disabled" href="/profile">Profile</a></li>
+				<li><i class="cursor icon-cogs"></i>			    <a class="disabled" href="/config">Configuration</a></li>
+				<li><i class="cursor icon-pencil"></i>			  <a class="disabled" href="/profile">Profile</a></li>
 				<li><i class="cursor icon-external-link"></i>	<a href="http://www.shinken-monitoring.org/wiki/">Help</a></li>
-				<li><i class="cursor icon-signout"></i>			<a class="btn-danger" href="/user/logout">Logout</a></li>
+				<li><i class="cursor icon-signout"></i>			  <a class="btn-danger" href="/user/logout">Logout</a></li>
 			</ul>
 		</div>
 
