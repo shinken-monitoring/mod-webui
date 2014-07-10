@@ -25,7 +25,6 @@ Invalid element
 %rebase widget globals(), title='Dependencies graph of ' + elt.get_full_name(),  js=['depgraph/js/jit-yc.js', 'depgraph/js/excanvas.js', 'depgraph/js/eltdeps.js'],  css=['depgraph/css/eltdeps.css', 'depgraph/css/eltdeps_widget.css'],  print_menu=False
 
 
-
 <script src=/static/depgraph/js/eltdeps.js></script>
 <script type="text/javascript">
   
@@ -40,18 +39,14 @@ Invalid element
 </script>
 
 
-
-
-<div id="right-container" class="border">
+<div id="right-container" class="" style="display: none">
   <div id="inner-details-{{helper.get_html_id(elt)}}">
-</div>
-  
+  </div>
 </div>
 
 <div id="infovis-{{helper.get_html_id(elt)}}"> </div>
 
-  <div id="log">Loading element informations...</div>
-</div>
+<div id="log">Loading element informations...</div>
   
 <div class="clear"></div>
 </div>
