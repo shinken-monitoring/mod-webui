@@ -28,7 +28,7 @@ Invalid element
   loadjscssfile('/static/depgraph/js/excanvas.js', 'js');
 
 
-  // Now we hook teh global search thing
+  // Now we hook the global search thing
   $('.typeahead').typeahead({
     // note that "value" is the default setting for the property option
     source: function (typeahead, query) {
@@ -44,7 +44,14 @@ Invalid element
   
   var graph = {{!helper.create_json_dep_graph(elt, levels=4)}};
 
-  $(document).ready(init_graph('{{elt.get_full_name()}}', graph, 700, 700,'{{helper.get_html_id(elt)}}'));
+  // Get container dimensions
+  var container = $(window);
+  // console.log('Container size: ', container.innerWidth(), container.innerHeight());
+  // Graph size is almost window size ... and small margins !
+  var width = container.innerWidth() - 40;
+  var height = container.innerHeight() - 100;
+ 
+  $(document).ready(init_graph('{{elt.get_full_name()}}', graph, width, height,'{{helper.get_html_id(elt)}}'));
 
 
   /* 
