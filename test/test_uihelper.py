@@ -25,6 +25,7 @@
 
 from shinken_test import *
 from shinken.modulesctx import modulesctx
+modulesctx.set_modulesdir(modules_dir)
 webui = modulesctx.get_module('webui')
 helper = webui.helper
 
