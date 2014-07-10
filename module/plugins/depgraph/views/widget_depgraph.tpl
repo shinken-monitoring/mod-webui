@@ -28,13 +28,9 @@ Invalid element
 <script src=/static/depgraph/js/eltdeps.js></script>
 <script type="text/javascript">
   
-  // var graph_root = '{{elt.get_full_name()}}';
-  // var json_graph = {{!helper.create_json_dep_graph(elt, levels=4)}};
-  //console.log('Show the graph'+json_graph);
-
   // Get container dimensions
   var container = $(window);
-  console.log('Container size: ', container.innerWidth(), container.innerHeight());
+  //console.log('Container size: ', container.innerWidth(), container.innerHeight());
   // Widget width is around 1/3 of window width ... and small margins !
   var width = (container.innerWidth() / 3) - 50;
   var height = container.innerHeight() - 5;
