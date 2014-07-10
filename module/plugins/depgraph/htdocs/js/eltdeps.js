@@ -93,7 +93,7 @@ function init_graph(root, jsgraph, width, height, inject) {
     //console.log("root : " + root +"\n width : "+ width + "\n height : " + height + "\n inject : " + inject);
 	
     if(typeof $jit === "undefined"){
-	console.log('Warning : there is no $jit, I postpone my init for 1s');
+	console.log('depgraph - Warning : there is no $jit, I postpone my init for 1s');
 	// Still not load $jit? racing problems are a nightmare :)
 	// Ok, we retry in the next second...
 	setTimeout(function(){init_graph(root,jsgraph,width,height,inject)},1000);
@@ -101,7 +101,7 @@ function init_graph(root, jsgraph, width, height, inject) {
 	return;
     }
 
-    console.log('On load is ok!');
+    console.log('depgraph - On load is ok!');
     //init data
     //If a node in this JSON structure
     //has the "$type" or "$dim" parameters

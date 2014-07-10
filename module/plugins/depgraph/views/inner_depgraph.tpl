@@ -17,8 +17,15 @@ Invalid element
   loadjscssfile('/static/depgraph/js/jit-yc.js', 'js');
   loadjscssfile('/static/depgraph/js/excanvas.js', 'js');
 
+  // Get container dimensions
+  var container = $('#inner_depgraph');
+  console.log('Container size: ', '{{elt.get_full_name()}}', '{{helper.get_html_id(elt)}}', container.innerWidth(), container.innerHeight());
+  var width = container.innerWidth() - 5;
+  var height = container.innerHeight() - 5;
+  // Height is not significative ... because container is fluid ... set fixed height !
+  var height = 800;
 
-  $(document).ready(init_graph('{{elt.get_full_name()}}', {{!helper.create_json_dep_graph(elt, levels=4)}},640, 480,'{{helper.get_html_id(elt)}}'));
+  $(document).ready(init_graph('{{elt.get_full_name()}}', {{!helper.create_json_dep_graph(elt, levels=4)}}, width, height,'{{helper.get_html_id(elt)}}'));
 
 </script>
 
