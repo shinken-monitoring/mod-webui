@@ -12,8 +12,11 @@ $(document).ready(function(){
 });
 </script>
 
-<div class="page-header">
-	<h1>Shinken <small>v {{VERSION}}</small></h1>
+<div class="row page-header no-topmargin">
+	<h1 class="col-xs-6 col-sm-8 col-md-8">Shinken <small>v {{VERSION}}</small></h1>
+	%if company_logo:
+	<div class="col-xs-2 col-sm-4 col-md-4"> <img src="/static/img/{{company_logo}}" /></div>
+	%end
 </div>
 
 <div class="row">
@@ -25,24 +28,18 @@ $(document).ready(function(){
 			</div>
 		</noscript>
 
-
 		%if login_text:
 		<p class="lead">{{login_text}}</p>
 		%end
 
 		<img src="/static/img/logo.png" />
-		<!-- <img src="/static/img/mascot.png" /> -->
+
 		%if error:
 		<div class="alert alert-error">
 			<strong>Warning!</strong>
 			{{error}}
 		</div>
 		%end
-
-		<!-- <div>
-		<h2>Maintance News</h2>
-		<p>Todo import script?</p>
-		</div> -->
 	</div>
 
 	<div class="col-xs-6 col-sm-4 col-md-4">

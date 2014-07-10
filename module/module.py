@@ -111,6 +111,7 @@ class Webui_broker(BaseModule, Daemon):
         self.play_sound = to_bool(getattr(modconf, 'play_sound', '0'))
         self.http_backend = getattr(modconf, 'http_backend', 'auto')
         self.login_text = getattr(modconf, 'login_text', None)
+        self.company_logo = getattr(modconf, 'company_logo', None)
         self.allow_html_output = to_bool(getattr(modconf, 'allow_html_output', '0'))
         self.max_output_length = int(getattr(modconf, 'max_output_length', '100'))
         self.refresh_period = int(getattr(modconf, 'refresh_period', '60'))
