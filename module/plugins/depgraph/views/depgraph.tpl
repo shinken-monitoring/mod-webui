@@ -15,7 +15,7 @@ Invalid element
 %datamgr = app.datamgr
 
 
-%rebase layout globals(), title='Dependencies graph of ' + elt.get_full_name(),  refresh=True
+%rebase layout globals(), title='Dependencies graph of ' + elt.get_full_name(),  refresh=False
 
 
 <script src='/static/depgraph/js/eltdeps.js'></script>
