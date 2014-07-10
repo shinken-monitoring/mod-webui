@@ -73,7 +73,7 @@ Invalid group name
 <div id="content_container">
 	<div class="panel panel-default">
 		<div class="panel-heading">
-			<h3 class="panel-title">{{groupname}} / ({{groupalias}})</h3>
+			<h3 class="panel-title">{{groupname}} ({{groupalias}})</h3>
 		</div>
 		<div class="panel-body">
 			<div class="pull-left col-lg-4">

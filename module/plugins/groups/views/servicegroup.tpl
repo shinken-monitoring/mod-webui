@@ -73,30 +73,30 @@ Invalid group name
 <div id="content_container">
 	<div class="panel panel-default">
 		<div class="panel-heading">
-			<h3 class="panel-title">{{groupname}} / ({{groupalias}})</h3>
+			<h3 class="panel-title">{{groupname}} ({{groupalias}})</h3>
 		</div>
 		<div class="panel-body">
 			<div class="pull-left col-lg-4">
 				<span>Currently displaying {{nServices}} services out of {{length}}</span>
 			</div>
 			<div class="pull-right progress col-lg-7 no-bottommargin no-leftpadding no-rightpadding" style="height: 45px;">
-				<div title="{{sOk}} hosts Ok" class="progress-bar progress-bar-success quickinfo" role="progressbar" 
+				<div title="{{sOk}} services Ok" class="progress-bar progress-bar-success quickinfo" role="progressbar" 
 					data-original-title='{{sOk}} Ok' 
 					style="width: {{pctOk}}%; vertical-align:midddle; line-height: 45px;">{{pctOk}}% Ok</div>
 					
-				<div title="{{sCritical}} hosts Critical" class="progress-bar progress-bar-danger quickinfo" 
+				<div title="{{sCritical}} services Critical" class="progress-bar progress-bar-danger quickinfo" 
 					data-original-title='{{sCritical}} Critical' 
 					style="width: {{pctCritical}}%; vertical-align:midddle; line-height: 45px;">{{pctCritical}}% Critical</div>
 					
-				<div title="{{sWarning}} hosts Unreachable" class="progress-bar progress-bar-warning quickinfo" 
+				<div title="{{sWarning}} services Unreachable" class="progress-bar progress-bar-warning quickinfo" 
 					data-original-title='{{sWarning}} Warning' 
 					style="width: {{pctWarning}}%; vertical-align:midddle; line-height: 45px;">{{pctWarning}}% Warning</div>
 					
-				<div title="{{sPending}} hosts Pending/Unknown" class="progress-bar progress-bar-info quickinfo" 
+				<div title="{{sPending}} services Pending/Unknown" class="progress-bar progress-bar-info quickinfo" 
 					data-original-title='{{sPending}} Pending' 
 					style="width: {{pctPending}}%; vertical-align:midddle; line-height: 45px;">{{pctPending}}% Pending</div>
 					
-				<div title="{{sPending}} hosts Pending/Unknown" class="progress-bar progress-bar-info quickinfo" 
+				<div title="{{sPending}} services Pending/Unknown" class="progress-bar progress-bar-info quickinfo" 
 					data-original-title='{{sUnknown}} Unknown' 
 					style="width: {{pctUnknown}}%; vertical-align:midddle; line-height: 45px;">{{pctUnknown}}% Unknown</div>
 			</div>
@@ -112,6 +112,7 @@ Invalid group name
 			<tbody>
 				<tr>
 					<th>State</th>
+					<th>Host</th>
 					<th>Service</th>
 					<th>Output</th>
 					<th>Last Check</th>
@@ -120,10 +121,13 @@ Invalid group name
 					<th>Status Information</th>
 				</tr>
 				%for s in services:
-					<tr id="host_{{s.get_name()}}" class="{{s.state.lower()}}">
+					<tr id="service_{{s.get_name()}}" class="{{s.state.lower()}}">
 						<td >{{s.state}}</td>
 						<td>
-							<span><a href="/service/{{s.get_name()}}">{{s.get_name()}}</a></span>
+							<span><a href="/host/{{s.host.host_name}}">{{s.host.host_name}}</a></span>
+						</td>
+						<td>
+							<span><a href="/service/{{s.host.host_name}}/{{s.get_name()}}">{{s.get_name()}}</a></span>
 						</td>
 
 						<td style="white-space: normal">
