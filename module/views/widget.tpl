@@ -74,7 +74,7 @@
 
 <div class="widget movable collapsable removable {{editable}} closeconfirm {{collapsed_s}}" id="{{wid}}">
   <div class="widget-header">
-    <span class="icon"><i class="icon-camera"></i> </span>
+    <span class="icon"><i class="fa fa-camera"></i> </span>
     <strong>{{title}}</strong>
   </div>
   <div class="widget-editbox">
@@ -88,7 +88,7 @@
           <span class="help-inline">{{label}}</span>
         %end
 
-        %# """ Manage the differents types of values"""
+        %# """ Manage the different types of values"""
         %if t in ['text', 'int', 'hst_srv']:
           <input name='{{k}}' value='{{value}}' id='input-{{wid}}-{{k}}'/>
           %if t == 'hst_srv':
@@ -121,8 +121,7 @@
       %end
 
       <label></label>
-      <a class="widget-close-editbox btn btn-success" onclick="return submit_{{wid}}_form();" title="Save changes"><i class="icon-search icon-white"></i> Save changes</a>
-
+      <a class="widget-close-editbox btn btn-success" onclick="return submit_{{wid}}_form();" title="Save changes"><i class="fa fa-save fa-white"></i> Save changes</a>
     </form>
 
   </div>
