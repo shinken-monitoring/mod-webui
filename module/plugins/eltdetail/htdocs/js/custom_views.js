@@ -26,6 +26,7 @@ var _already_loaded = {};
 
 // when we show a custom view tab, we lazy load it :D
 function show_custom_view(p){
+	// console.log('Show', p)
 	var hname = p.attr('data-elt-name');
 	var cvname = p.attr('data-cv-name');
 
@@ -37,11 +38,10 @@ function show_custom_view(p){
 	var spinner = get_spinner('cv'+cvname);
 	$('#cv'+cvname).load('/cv/'+cvname+'/'+hname+"?_="+_t, function(response, status, xhr) {
 		if (status == "error") {
-			// var msg = "Sorry but there was an error: ";
-			// $('#cv'+cvname).html(msg + xhr.status + " " + xhr.statusText);
-			$('#cv'+cvname).remove();
-			$('#tab-cv-'+cvname).remove();
-			$('#impacts').addClass('active');
+			var msg = "Sorry but there was an error: ";
+			$('#cv'+cvname).html(msg + xhr.status + " " + xhr.statusText);
+			// $('#cv'+cvname).remove();
+			// $('#tab-cv-'+cvname).remove();
 		}
 	});
 
@@ -55,15 +55,14 @@ $(window).ready(function(){
 	})
 
 	// And for each already active on boot, show them directly!
-	$('.cv_pane.active').each(function(index, elt ) {
+	$('.cv_pane').each(function(index, elt ) {
 		show_custom_view($(elt));
 	});
 });
 
 
 function reload_custom_view(name){
-	// Be sure to remove the panel from already view, because if not
-	// won't load
+	// Be sure to remove the panel from already loaded panels, else it won't load
 	delete _already_loaded[name];
 	show_custom_view($('#tab-cv-'+name));
 }

@@ -106,7 +106,7 @@
 			<div class="error" id="dateinversion">
 				<p><strong>Error:</strong> Your ending date is before the starting one!</p>
 			</div>
-			<a href="javascript:submit_local_form();" class="btn btn-primary"> <i class="icon-save"></i> Submit</button>
+			<a href="javascript:submit_local_form();" class="btn btn-primary"> <i class="fa fa-save"></i> Submit</button>
 			<a href="#" class="btn" data-dismiss="modal">Close</a>
 		</div>
 	</div>

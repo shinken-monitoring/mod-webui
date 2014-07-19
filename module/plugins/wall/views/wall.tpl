@@ -16,7 +16,7 @@
 			<img class="wall-icon" src="{{app.helper.get_icon_state(imp)}}"></img>
 		</div>
 		<div class="btn-group right item-button">
-			<a href="{{app.helper.get_link_dest(imp)}}" class='btn' title="Details"> <i class="icon-plus"></i> Details</a>
+			<a href="{{app.helper.get_link_dest(imp)}}" class='btn' title="Details"> <i class="fa fa-plus"></i> Details</a>
 		</div>
 		<div class="item-text">
 			<span class="state_{{imp.state.lower()}}">{{imp.state}} <br/> {{imp.get_full_name()}}</span>

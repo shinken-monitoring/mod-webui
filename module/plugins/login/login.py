@@ -35,7 +35,7 @@ def get_page():
 def user_login():
     user = app.get_user_auth()
     if user:
-        app.bottle.redirect("/problems")
+        app.bottle.redirect("/")
 
     err = app.request.GET.get('error', None)
     login_text = app.login_text
@@ -79,7 +79,7 @@ def user_auth():
     return {'app': app, 'is_auth': is_auth}
 
 
-# manage the /. If the user is known, go to problems page.
+# manage the /. If the user is known, go to home page.
 # Should be /dashboard in the future. If not, go login :)
 def get_root():
     user = app.request.get_cookie("user", secret=app.auth_secret)
@@ -101,7 +101,7 @@ def get_root():
             app.bottle.redirect("/user/login")
         else:
             app.response.set_cookie('user', user_name, secret=app.auth_secret, path='/')
-            app.bottle.redirect("/problems")
+            app.bottle.redirect("/")
     else:
         app.bottle.redirect("/user/login")
 
@@ -117,7 +117,7 @@ def login_mobile():
 
     return {'error': err, 'login_text': login_text, 'company_logo': company_logo}
 
-pages = {user_login: {'routes': ['/user/login', '/user/login/'],
+pages = { user_login: {'routes': ['/user/login', '/user/login/'],
                          'view': 'login', 'static': True},
           user_login_redirect: {'routes': ['/login'], 'static': True},
           user_auth: {'routes': ['/user/auth'],
