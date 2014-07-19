@@ -44,14 +44,14 @@ function postpone_refresh(){
 /* React to an action return of the /action page. Look at status
  to see if it's ok or not */
 function check_gotfirstdata_result(response){
-	if(response.status == 200 && response.text == '1'){
+	if (response.status == 200 && response.text == '1'){
 		// Go Refresh
 		location.reload();
 
 		reinit_refresh();
-	}else{
+	} else {
 		postpone_refresh();
-    }
+  }
 }
 
 
@@ -59,8 +59,14 @@ function check_gotfirstdata_result(response){
    don't have enough data to refresh the page as it should. (force login) */
 function check_for_data(){
 	// this code will send a data object via a GET request and alert the retrieved data.
-	$.jsonp({
+	// $.jsonp({
+		// "url": '/gotfirstdata?callback=?',
+		// "success": check_gotfirstdata_result,
+		// "error": postpone_refresh
+	// });
+	$.ajax({
 		"url": '/gotfirstdata?callback=?',
+    "dataType": "jsonp",
 		"success": check_gotfirstdata_result,
 		"error": postpone_refresh
 	});
@@ -70,7 +76,6 @@ function check_for_data(){
 
 /* Each second, we check for timeout and restart page */
 function check_refresh(){
-	// console.log('Check refresh timeout ' + refresh_timeout);
 	if (refresh_timeout < 0){
 		// We will first check if the backend is available or not. It's useless to refresh
 		// if the backend is reloading, because it will prompt for login, when wait a little bit
