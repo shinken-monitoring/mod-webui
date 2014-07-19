@@ -44,6 +44,8 @@ params['tab_timeline'] = 'yes'
 params['tab_graphs'] = 'yes'
 params['tab_depgraph'] = 'yes'
 
+params['cfg_nb_impacts'] = 5
+
 def load_cfg():
     global params
     

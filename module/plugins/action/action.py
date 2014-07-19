@@ -74,6 +74,7 @@ def get_page(cmd=None):
 
     print app.request.query.__dict__
     callback = app.request.query.get('callback', None)
+    response_text = app.request.query.get('response_text', 'Command launched')
 
     # First we look for the user sid
     # so we bail out if it's a false one
@@ -112,6 +113,6 @@ def get_page(cmd=None):
     print "Creating the command", e.__dict__
     app.push_external_command(e)
 
-    return forge_response(callback, 200, 'Command launched')
+    return forge_response(callback, 200, response_text)
 
 pages = {get_page: {'routes': ['/action/:cmd#.+#']}}

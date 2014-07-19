@@ -50,7 +50,7 @@
 		</div>
 		
 		<div class="modal-footer">
-			<a href="javascript:submit_local_form();" class="btn btn-primary"> <i class="icon-save"></i> Submit</a>
+			<a href="javascript:submit_local_form();" class="btn btn-primary"> <i class="fa fa-save"></i> Submit</a>
 			<a href="#" class="btn" data-dismiss="modal">Close</a>
 		</div>
 	</div>

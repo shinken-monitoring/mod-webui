@@ -1,0 +1,59 @@
+.toggler  { cursor:pointer; /*font-weight:bold;*/ margin-left: 20px; /*margin-bottom: 5px;*/ width: 70%;float:left;
+}
+.toggler:hover   { background:#ddd; }
+.element   { margin-left: 30px;}
+
+
+/* Move the tool bar from the show/hide button */
+#toolbar-ext{
+    padding-top: 30px;
+}
+
+
+.actions {}
+
+
+.tick {
+    border-radius: 1px;
+    border: 1px solid #ffffff;
+    margin: 0px 4px 8px 0px;
+    width: 16px;
+    height: 16px;
+}
+
+.tick .img_tick{
+    max-width: none;
+    height: 15px;
+    width : 15px;
+    /* Make the image a bit more center :p*/
+    margin-top : -10px;
+    margin-left : 0px;
+}
+
+
+.img_status{
+    width: 24px;
+    height: 24px;
+}
+
+.img_status img{
+    width: 24px;
+    height: 24px;
+    /* Make the image a bit more center
+    margin-top : -20px;
+    margin-left : -20px;
+    */
+}
+
+
+
+
+
+
+.in_panel_filter{
+    background-color : white;
+    margin : 10px;
+    padding : 10px;
+    border-radius: 4px;
+    color : black;
+}

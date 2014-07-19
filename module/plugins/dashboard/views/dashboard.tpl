@@ -13,7 +13,7 @@
 <div id="warn-pref" class="hero-unit alert-critical">
 	<h2>Warning:</h2>
 	<p>You didn't define a WebUI module for saving user preferences like the MongoDB one. You won't be able to use this page!</p>
-	<p><a href="https://github.com/shinken-monitoring/mod-webui/blob/master/doc/index.rst" class="btn btn-success">Learn more <i class="icon-hand-right"></i></a></p>
+	<p><a href="https://github.com/shinken-monitoring/mod-webui/blob/master/doc/index.rst" class="btn btn-success">Learn more <i class="fa fa-hand-right"></i></a></p>
 </div>
 %end
 
@@ -22,7 +22,7 @@
 		<li class="col-sm-1"></li>
 		
 		<li class="col-sm-2">
-			<a href="/problems" class="btn btn-sm"><i class="icon-plus" style="color: #333"></i>
+			<a href="/problems" class="btn btn-sm">
 				<svg version="1.0" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="50px" height="42px" viewBox="0 0 100 83.419" enable-background="new 0 0 100 83.419" fill="#333" xml:space="preserve">
 					<path fill-opacity="0.875" d="M68.2,55.555l4.742,4.792c6.451-6.143,10.461-14.861,10.461-24.532c0-9.521-3.901-18.122-10.184-24.25
 					l-5.159,5.356c5.06,4.861,8.228,11.724,8.228,19.317C76.288,43.797,73.217,50.701,68.2,55.555z"></path>
@@ -40,7 +40,7 @@
 					C47.703,32.033,45.838,33.917,45.838,36.237z"></path>
 					<path fill-opacity="0.875" d="M45.313,46.234L34.497,83.419h30.286L53.966,46.234C51.102,46.874,48.226,47.098,45.313,46.234z"></path>
 				</svg>
-				<span class="badger-title itproblem">IT Problems</span>
+				<span class="badger-title itproblem"><i class="fa fa-plus" style="color: #ccc"></i>&nbsp;IT Problems</span>
 				%if app:
 					%overall_itproblem = app.datamgr.get_overall_it_state()
 					%if overall_itproblem == 0:
@@ -55,7 +55,7 @@
 		</li>
 
 		<li class="col-sm-2">
-			<a href="/impacts" class="slidelink btn btn-sm"><i class="icon-plus" style="color: #333"></i>
+			<a href="/impacts" class="slidelink btn btn-sm">
 				<svg version="1.0" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="50px" height="42px" viewBox="0 0 100 82.922" enable-background="new 0 0 100 82.922" fill="#333" xml:space="preserve">
 					<path d="M77.958,11.073c-3.73,0-7.339,0.933-10.544,2.685C63.515,5.537,55.108,0,45.693,0C32.842,0,22.314,10.141,21.694,22.838
 					c-5.901,0.704-10.96,4.619-13.149,10.09C3.642,34.151,0,38.595,0,43.873c0,6.223,5.062,11.283,11.281,11.283h27.821l-4.238,8.501
@@ -66,7 +66,7 @@
 					c7.695,0,14.391,5.462,15.917,12.988l1.405,6.906l5.097-4.871c2.667-2.545,6.163-3.95,9.846-3.95c7.865,0,14.26,6.398,14.26,14.26
 					S85.823,47.375,77.958,47.375z"/>
 				</svg>
-				<span class="badger-title impacts">Impacts</span>
+				<span class="badger-title impacts"><i class="fa fa-plus" style="color: #ccc"></i>&nbsp;Impacts</span>
 				%if app:
 					%overall_state = app.datamgr.get_overall_state()
 					%if overall_state == 0:
@@ -83,16 +83,16 @@
 		<li class="col-sm-2">
 			%# If we got no widget, we should put the button at the center fo the screen
 			%if len(widgets) > 0:
-			<a id="small_show_panel" data-toggle="popover" href="#widgets" class="btn btn-sm btn-success"><i class="icon-plus"></i> Add a new widget</a>
+			<a id="small_show_panel" data-toggle="popover" href="#widgets" class="btn btn-sm btn-success"><i class="fa fa-plus"></i> Add a new widget</a>
 			%end
 		</li>
 		
 		<li class="col-sm-2">
-			<a href="/servicegroup/all" class="slidelink btn btn-sm"><i class="icon-plus" style="color: #333"></i>
+			<a href="/servicegroup/all" class="slidelink btn btn-sm">
 				<svg version="1.0" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="50px" height="42px" viewBox="0 0 100 82.922" enable-background="new 0 0 100 82.922" fill="#333" xml:space="preserve">
 					<path fill-rule="evenodd" clip-rule="evenodd" d="M17.15,47.28V85.2l31.601,13.543v-37.92L17.15,47.28z M84,45.437  L49.653,60.823v37.92L84,83.357V45.437z M61.458,2.445l-33.466,14.83v32.759l9.043,3.747l-0.022-22.753  c0,0,12.31-5.395,24.445-10.691V2.445z M22.575,15.695L22.56,47.784l4.507,1.865V17.485L22.575,15.695z M22.936,14.311l4.484,1.791  l32.759-14.28L55.665,0L22.936,14.311z M38.818,54.525l4.5,1.866V35.543l-4.492-1.791L38.818,54.525z M44.243,56.775l5.41,2.242  l28.057-12.52V20.502l-33.467,14.83V56.775z M39.188,32.368l4.484,1.791l32.76-14.28l-4.515-1.821L39.188,32.368z"/>
 				</svg>
-				<span class="badger-title services">Services OK</span>
+				<span class="badger-title services"><i class="fa fa-plus" style="color: #ccc"></i>&nbsp;Services OK</span>
 				%if app:
 					%service_state = app.datamgr.get_per_service_state()
 					%if service_state <= 0:
@@ -109,11 +109,11 @@
 		</li>
 
 		<li class="col-sm-2">
-			<a href="/hostgroup/all" class="slidelink btn btn-sm"><i class="icon-plus" style="color: #333"></i>
+			<a href="/hostgroup/all" class="slidelink btn btn-sm">
 				<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Layer_1" x="0px" y="0px" width="50px" height="42px" viewBox="0 0 50 50" enable-background="new 0 0 50 50" fill="#333" xml:space="preserve">
 				<polygon points="45.91,26.078 40.467,26.078 40.467,44.177 25.517,44.177 25.517,34.844 16.105,34.844 16.105,44.177 8.73,44.177   8.732,26.078 3.687,26.078 24.596,5.168 "/>
 				</svg>
-				<span class="badger-title hosts">Hosts UP</span>
+				<span class="badger-title hosts"><i class="fa fa-plus" style="color: #ccc"></i>&nbsp;Hosts UP</span>
 				%if app:
 					%service_state = app.datamgr.get_per_hosts_state()
 					%if service_state <= 0:
@@ -140,7 +140,7 @@
 <span id="center-button" class="col-sm-4 col-sm-offset-4 page-center" >
 	<h3>You don't have any widget yet ...</h3>
 	<!-- Button trigger widgets modal -->
-	<a id="small_show_panel" data-toggle="popover" href="#widgets" class="btn btn-block btn-success"><i class="icon-plus"></i>... add a new widget</a>
+	<a id="small_show_panel" data-toggle="popover" href="#widgets" class="btn btn-block btn-success"><i class="fa fa-plus"></i>... add a new widget</a>
 </span>
 %end
 
@@ -188,7 +188,7 @@
 				</span>
 				<span>{{!w['widget_desc']}}</span>
 			</div>
-			<p class="add_button"><a class="btn btn-sm btn-success" href="javascript:AddNewWidget('{{w['base_uri']}}', 'widget-place-1');"> <i class="icon-chevron-left"></i> Add {{w['widget_name']}} widget</a></p>
+			<p class="add_button"><a class="btn btn-sm btn-success" href="javascript:AddNewWidget('{{w['base_uri']}}', 'widget-place-1');"> <i class="fa fa-chevron-left"></i> Add {{w['widget_name']}} widget</a></p>
 		</div>
 	%end
 </div>

@@ -6,38 +6,42 @@
 
 %top_right_banner_state = datamgr.get_overall_state()
 
-%rebase widget globals(), css=['problems/css/accordion.css', 'problems/css/pagenavi.css', 'problems/css/perfometer.css', 'problems/css/img_hovering.css'], js=['problems/js/img_hovering.js']
-
-%#rebase layout globals(), title='All problems', top_right_banner_state=top_right_banner_state, js=['problems/js/img_hovering.js', 'problems/js/accordion.js'], css=['problems/css/accordion.css', 'problems/css/pagenavi.css', 'problems/css/perfometer.css', 'problems/css/img_hovering.css'], refresh=True, menu_part='/'+page, user=user
-
+%rebase widget globals()
 
 %if len(pbs) == 0:
   <span>No IT problems! Congrats.</span>
-%end
-
-%for pb in pbs:
-
-<div class="tableCriticity pull-left row-fluid">
-  <div class='img_status pull-left'>
-    <div class="aroundpulse">
-      %# " We put a 'pulse' around the elements if it's an important one "
-      %if pb.business_impact > 2 and pb.state_id in [1, 2, 3]:
-      <span class="pulse"></span>
+%else:
+  <table class="table table-condensed" style="margin:0;">
+    <tbody style="border: none;">
+      %for pb in pbs:
+      <tr>
+        <th style="width: 2%;">
+          <div class='img_status'>
+          <span class="medium-pulse aroundpulse pull-left">
+            %# " We put a 'pulse' around the elements if it's an important one "
+            %if pb.business_impact > 2 and pb.state_id in [1, 2, 3]:
+              <span class="medium-pulse pulse"></span>
+            %end
+            <img src="{{helper.get_icon_state(pb)}}" />
+          </span>
+          </div>
+        </th>
+        
+        <th style="font-size: small; font-weight: normal;">
+          {{!helper.get_link(pb)}}
+        </th>
+        
+        <th style="font-size: small; font-weight: normal; width: 10%;" class="background-{{pb.state.lower()}}">
+          <span class='txt_status'> {{pb.state}}</span>
+        </th>
+        
+        <th style="font-size: small; font-weight: normal; width: 15%;">
+          %for j in range(0, pb.business_impact-2):
+          <img src='/static/images/star.png' alt="star">
+          %end
+        </th>
+      </tr>
       %end
-      <img src="{{helper.get_icon_state(pb)}}" />
-    </div>
-  </div>
-
-
-    <span class="alert-small alert-{{pb.state.lower()}}">{{pb.state}}</span> for {{!helper.get_link(pb)}}
-    <div class='pull-right'>
-    %for j in range(0, pb.business_impact-2):
-    <img src='/static/images/star.png' alt="star">
-    %end
-    </div>
-
-</div>
-<div style="clear:both;"/>
+    </tbody>
+  </table>
 %end
-
-

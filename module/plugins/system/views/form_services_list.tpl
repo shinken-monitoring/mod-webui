@@ -28,8 +28,8 @@
 				</div>
 				
 				<div class="form-group">
-					<button class="btn btn-primary" type="submit" name="setList" value="setList" ><i class="icon-gears"></i> Configure</button>
-					<button class="btn" type="submit" name="cancel" value="cancel"><i class="icon-remove"></i> Cancel</button>
+					<button class="btn btn-primary" type="submit" name="setList" value="setList" ><i class="glyphicon glyphicon-cog"></i> Configure</button>
+					<button class="btn" type="submit" name="cancel" value="cancel"><i class="glyphicon glyphicon-remove"></i> Cancel</button>
 				</div>
 			</form>
 		</div>
