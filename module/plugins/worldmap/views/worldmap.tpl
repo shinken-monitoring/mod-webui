@@ -1,4 +1,4 @@
-%rebase layout globals(), css=['worldmap/css/worldmap.css'], title='Worldmap', refresh=True
+%rebase layout globals(), css=['worldmap/css/worldmap.css'], title='Worldmap', refresh=False
 
 <!-- HTML map container -->
 <div class="map_container">
@@ -26,6 +26,9 @@
 	var defLat={{params['default_Lat']}};
 	var defLng={{params['default_Lng']}};
 	var defaultZoom={{params['default_zoom']}};
+
+	// Default map layer ...
+	var mapLayer='{{params['map_layer']}}';
 
 	// Markers ...
 	var allMarkers = [];
@@ -120,13 +123,33 @@
 				$.getScript(debugJs ? "/static/worldmap/js/markerwithlabel.js" : "/static/worldmap/js/markerwithlabel_packed.js", function( data, textStatus, jqxhr ) {
 					if (debugJs) console.log('Google labeled marker API loaded ...');
 					
-					map = new google.maps.Map(document.getElementById('map'),{
-						center: new google.maps.LatLng (defLat, defLng),
-						zoom: defaultZoom,
-						mapTypeId: google.maps.MapTypeId.ROADMAP
-					});
+          if (mapLayer=='OSM') {
+            // Define OSM map type pointing at the OpenStreetMap tile server
+            map = new google.maps.Map(document.getElementById('map'),{
+              center: new google.maps.LatLng (defLat, defLng),
+              zoom: defaultZoom,
+              mapTypeId: "OSM",
+              mapTypeControl: false,
+              streetViewControl: false
+            });
 
-					var bounds = new google.maps.LatLngBounds();
+            map.mapTypes.set("OSM", new google.maps.ImageMapType({
+                getTileUrl: function(coord, zoom) {
+                    return "http://tile.openstreetmap.org/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
+                },
+                tileSize: new google.maps.Size(256, 256),
+                name: "OpenStreetMap",
+                maxZoom: 18
+            }));
+          } else {
+            map = new google.maps.Map(document.getElementById('map'),{
+              center: new google.maps.LatLng (defLat, defLng),
+              zoom: defaultZoom,
+  						mapTypeId: google.maps.MapTypeId.ROADMAP
+            });
+          }
+          
+          var bounds = new google.maps.LatLngBounds();
 					infoWindow = new google.maps.InfoWindow;
 					
 					%# For all hosts ...
@@ -136,8 +159,6 @@
 						// Creating a marker for all hosts having GPS coordinates ...
 						if (debugJs) console.log("host {{h.get_name()}} is {{h.state}}. GPS is {{h.customs.get('_LOC_LAT')}} / {{h.customs.get('_LOC_LNG')}} :");
 						var gpsLocation = new google.maps.LatLng( {{float(h.customs.get('_LOC_LAT', params['default_Lat']))}} , {{float(h.customs.get('_LOC_LNG', params['default_Lng']))}} );
-						//gpsLocation = new google.maps.LatLng( {{h.customs.get('_LOC_LAT', params['default_Lat'])}} , {{h.customs.get('_LOC_LNG', params['default_Lng'])}} );
-						//gpsLocation = new google.maps.LatLng( defLat , defLng );
 						
 						var hostGlobalState = 0;
 						var hostState = "{{h.state}}";
