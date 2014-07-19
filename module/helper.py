@@ -216,7 +216,7 @@ class Helper(object):
             d = {'id': self.strip_html_id(hname+n['full_path']), 'name': n['full_path'],
                  'data': {'$type': 'custom',
                           'business_impact': 2,#elt.business_impact,
-                          'img_src': '/static/img/icons/state_%s.png' % n['state'],
+                          'img_src': '/static/images/icons/state_%s.png' % n['state'],
                           },
                  'adjacencies': []
                  }
@@ -284,7 +284,7 @@ class Helper(object):
         d['data']['infos'] = r'''%s <h2 class="%s"><img style="width: 64px; height:64px" src="%s"/> %s: %s</h2>
                    <p>since %s</p>
                    <div style="float:right;"> <a href="%s">%s</a></div>''' % (
-            '<img src="/static/img/icons/star.png" alt="star">' * (elt.business_impact - 2),
+            '<img src="/static/images/star.png" alt="star">' * (elt.business_impact - 2),
             elt.state.lower(), self.get_icon_state(elt), elt.state, elt.get_full_name(),
             self.print_duration(elt.last_state_change, just_duration=True, x_elts=2),
             self.get_link_dest(elt), self.get_button('Go to details', img='/static/images/search.png'))
@@ -558,7 +558,7 @@ class Helper(object):
         txts = {0: 'None', 1: 'Low', 2: 'Normal',
                 3: 'High', 4: 'Very important', 5: 'Top for business'}
         nb_stars = max(0, obj.business_impact - 2)
-        stars = '<img src="/static/img/icons/star.png" alt="star">\n' * nb_stars
+        stars = '<img src="/static/images/star.png" alt="star">\n' * nb_stars
 
         res = "%s %s" % (txts.get(obj.business_impact, 'Unknown'), stars)
         return res
@@ -621,7 +621,7 @@ class Helper(object):
         if getattr(obj, 'icon_set', '') != '':
             return '/static/images/sets/%s/state_%s.png' % (obj.icon_set, ico)
         else:
-            return '/static/img/icons/state_%s.png' % ico
+            return '/static/images/icons/state_%s.png' % ico
 
     # Get
     def get_navi(self, total, pos, step=30):
