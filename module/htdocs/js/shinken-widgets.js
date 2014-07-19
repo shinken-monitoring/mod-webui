@@ -23,17 +23,18 @@
 
 // We are adding a typeahead on the input
 function link_elt_typeahead(id){
-    $(document).ready(function(){
-	$('#'+id).typeahead({
-	    source: function (typeahead, query) {
-		$.ajax({url: "/lookup/"+query,
-	                success: function (data){
-	                    typeahead.process(data)}
-	               });
-	    },
-	    onselect: function(obj) {
-	        $("ul.typeahead.dropdown-menu").find('li.active').data(obj);
-	    }
-	});
+  $(document).ready(function(){
+    $('#'+id).typeahead({
+      source: function (typeahead, query) {
+        $.ajax({url: "/lookup/"+query,
+          success: function (data){
+            typeahead.process(data)
+          }
+        });
+      },
+      onselect: function(obj) {
+        $("ul.typeahead.dropdown-menu").find('li.active').data(obj);
+      }
     });
+  });
 }
