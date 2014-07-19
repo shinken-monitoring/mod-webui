@@ -12,6 +12,9 @@ Invalid group name
 %else:
 %groupname = group.get_name()
 %groupalias = group.alias
+%if groupalias == '':
+%groupalias = groupname
+%end
 %end
 
 %helper = app.helper
@@ -53,7 +56,7 @@ Invalid group name
 
 %end
 
-%rebase layout globals(), title='Services group detail for ' + groupname, refresh=True
+%rebase layout globals(), title='Services group detail for ' + groupalias, refresh=True
 
 <style>
 .warning, .unreachable {
@@ -73,7 +76,7 @@ Invalid group name
 <div id="content_container">
 	<div class="panel panel-default">
 		<div class="panel-heading">
-			<h3 class="panel-title">{{groupname}} ({{groupalias}})</h3>
+			<h3 class="panel-title">{{groupalias}} ({{groupname}})</h3>
 		</div>
 		<div class="panel-body">
 			<div class="pull-left col-lg-4">

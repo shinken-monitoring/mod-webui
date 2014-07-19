@@ -29,7 +29,7 @@
 		</div>
 
 		<div class="modal-footer">
-			<a href="javascript:submit_local_form();" class="btn btn-danger"> <i class="icon-trash"></i> Delete</button></a>
+			<a href="javascript:submit_local_form();" class="btn btn-danger"> <i class="fa fa-trash"></i> Delete</button></a>
 			<a href="#" class="btn" data-dismiss="modal"> Close</a>
 		</div>
 	</div>

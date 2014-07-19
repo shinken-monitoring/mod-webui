@@ -25,12 +25,6 @@
 
 /* The panel that will contain all problem panels*/
 .problems-panels {
-    position: fixed;
-    /*left: 450px;*/
-    right: 0;
-    top: 55px;
-    /*width: 100%;*/
-	margin-left: 0;
 }
 
 /* problem impact panel */
@@ -53,7 +47,6 @@
 
 /* The whole left panel for impacts*/
 .impacts-panel {
-    /*width: 445px;*/
     float: left;
     display: inline-block;
     border-radius: 6px;
@@ -89,35 +82,14 @@
 .impact-blade {
     padding-left: 0px !important;
     padding-right: 0px !important;
-/*    background-image: url("alpha.png");*/
 }
-
-.alpha_red {
-    background-image: url("images/alpha_red.png");
-}
-
-.alpha_orange {
-    background-image: url("images/alpha_orange.png");
-}
-
-.alpha_black {
-    background-image: url("images/alpha_black.png");
-}
-
 .impact-active, .impact:hover {
     background-color: #0088CC;
     color: #FFFFFF !important;
 }
-
 .impact:hover span {
     color: #FFFFFF !important;
 }
-
-/*p.impact-active {
-            background:  url('../feature-tab-current.png');
-            color: #FFF;
-        }
-*/
 
 .impact-active, .impact-active span, .impact-state-text {
     color: #FFFFFF;
@@ -161,8 +133,15 @@
 .impact-icon {
     float: left;
     overflow: hidden;
-
     margin-top: 3px;
+}
+.impact-icon img {
+    height: 32px;
+    width: 32px;
+}
+.problem img {
+    height: 32px;
+    width: 32px;
 }
 
 .impact-icon-big {
@@ -193,74 +172,46 @@
     width: 20px;
     height: 20px;
     position: absolute;
-    margin-left: 45px;
-    z-index: 1;
-    outline: none;
-    left: 20px;
+    left: 35px;
 }
-
-
-/* The show problem image, on the right of the impact*/
 .criticity-icon-2 {
     width: 20px;
     height: 20px;
     position: absolute;
-    margin-left: 59px;
-    z-index: 1;
-    outline: none;
-    left: 20px;
+    left: 50px;
 }
-
 .criticity-icon-3 {
     width: 20px;
     height: 20px;
     position: absolute;
-    margin-left: 71px;
-    z-index: 1;
-    outline: none;
-    left: 20px;
+    left: 65px;
 }
 
-/* The same stars, but in the proble panel */
+/* The same stars, but in the problem panel */
 .criticity-inpb-icon-1 {
     width: 20px;
     height: 20px;
     position: absolute;
-    margin-left: 80px;
-    z-index: 1;
-    outline: none;
-    left: 20px;
+    left: 80px;
 }
-
-
-/* The show problem image, on the right of the impact*/
 .criticity-inpb-icon-2 {
     width: 20px;
     height: 20px;
     position: absolute;
-    margin-left: 92px;
-    z-index: 1;
-    outline: none;
-    left: 20px;
+    left: 95px;
 }
-
-
-/* The show problem image, on the right of the impact*/
 .criticity-inpb-icon-3 {
     width: 20px;
     height: 20px;
     position: absolute;
-    margin-left: 104px;
-    z-index: 1;
-    outline: none;
-    left: 20px;
+    left: 110px;
 }
 
 
 /* The show problem status image, on the right of the impact*/
 .impact-rows {
     position: relative;
-    margin-top: 7px;
+    margin-top: 20px;
     z-index: 1;
     outline: none;
 /*    left: 20px;*/
@@ -341,10 +292,6 @@
     display: block;
 }
 
-.pblink {
-    cursor: pointer;
-}
-
 
 /* OK/UP */
 .divstate0, .divhstate0, .sivstate0 a, .sivhstate0 a {
@@ -367,7 +314,7 @@
 }
 
 /* CRIT/DOWN */
-.div state2, .divhstate1, .divstate2 a, .divhstate2 a {
+.divstate2, .divhstate1, .divstate2 a, .divhstate2 a {
   background-color: #FA5858; color: #fff;
   border-top-right-radius: 6px;
   border-bottom-right-radius: 6px;

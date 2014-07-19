@@ -98,6 +98,35 @@ def show_tag(name):
         
     return {'app': app, 'user': user, 'params': params, 'navi': navi, 'tag': name, 'hosts': items, 'length': total}
     
+def show_stag(name):
+    user = checkauth()
+
+    if name == 'all':
+        items = []
+        items.extend(app.datamgr.get_hosts())
+
+    else:
+        items = app.datamgr.get_hosts_tagged_with(name)
+
+    elts_per_page = params['elts_per_page']
+    # We want to limit the number of elements
+    start = int(app.request.GET.get('start', '0'))
+    end = int(app.request.GET.get('end', elts_per_page))
+        
+    # Now sort hosts list ..
+    # items.sort(hst_srv_sort)
+        
+    # If we overflow, came back as normal
+    total = len(items)
+    if start > total:
+        start = 0
+        end = elts_per_page
+
+    navi = app.helper.get_navi(total, start, step=elts_per_page)
+    items = items[start:end]
+        
+    return {'app': app, 'user': user, 'params': params, 'navi': navi, 'tag': name, 'hosts': items, 'length': total}
+    
 def show_tags():
     user = checkauth()    
 
@@ -122,8 +151,9 @@ load_cfg()
 #    the dummy/htdocs/ directory. Beware: it will take the plugin name to match.
 #  * optional: you can add 'method': 'POST' so this address will be only available for
 #    POST calls. By default it's GET. Look at the lookup module for sample about this.
-pages = {reload_cfg: {'routes': ['/tags/reload'], 'view': 'tags-overview', 'static': True},
-         show_tag: {'routes': ['/tag/:name'], 'view': 'tag', 'static': True},
-         show_tags: {'routes': ['/tags'], 'view': 'tags-overview', 'static': True},
-         show_stags: {'routes': ['/servicetags'], 'view': 'servicetags-overview', 'static': True},
+pages = {reload_cfg: {'routes': ['/tags/reload'], 'view': 'hosts-tags-overview', 'static': True},
+         show_tag: {'routes': ['/hosts-tag/:name'], 'view': 'hosts-tag', 'static': True},
+         show_stag: {'routes': ['/services-tag/:name'], 'view': 'services-tag', 'static': True},
+         show_tags: {'routes': ['/hosts-tags'], 'view': 'hosts-tags-overview', 'static': True},
+         show_stags: {'routes': ['/services-tags'], 'view': 'services-tags-overview', 'static': True},
          }

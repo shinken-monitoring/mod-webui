@@ -24,8 +24,7 @@
 /* Add for > icons a toggle root problem panel of this impact
    and hide all previously open ones
 */
-$(document).ready(
-    function(){
+$(document).ready(function(){
 
 	/* Keep a pointer to the currently open problem*/
 	var old_problem = null;
@@ -49,23 +48,19 @@ $(document).ready(
 
 
 	/* Register the toggle function for all problem links*/
-	var clicks = $('.pblink');
-
-	/* And we register our toggle function */
-	clicks.click(function(){
-	    var pb_nb = $(this).attr('id');
-	    toggleBox(pb_nb);
-
+	$('.pblink').click(function(){
+    var pb_nb = $(this).attr('id');
+    toggleBox(pb_nb);
 	});
 
 	function get_impact(impacts, id){
-	    for(var i = 0; i< impacts.length; i++) {
-		var impact = impacts.eq(i);
-		if (impact.attr('id') == id){
-		    return impact;
-		}
-	    }
-	    return null;
+    for(var i = 0; i< impacts.length; i++) {
+      var impact = impacts.eq(i);
+      if (impact.attr('id') == id){
+          return impact;
+      }
+    }
+    return null;
 	}
 
 
@@ -129,12 +124,12 @@ $(document).ready(
 	}
 
 
-	// This values is filled by teh /impact page. By default ti's -1
+	// This values is filled by the /impact page. By default it's -1
 	// and so it do not ask for a default expand. But it will ask for the first value if
 	// it's an bad state
-	if(impact_to_expand != -1){
-	    toggleBox(impact_to_expand);
+	if (impact_to_expand != -1){
+    toggleBox(impact_to_expand);
 	}
 
-    });
+});
 

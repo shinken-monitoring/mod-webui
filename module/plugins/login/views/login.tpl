@@ -1,26 +1,26 @@
-%rebase layout title='Shinken UI Login', print_header=False, print_nav=False, js=['login/js/detectmobilebrowser.js','login/js/capslock.js'], css=['login/css/login.css']
+%rebase layout title='Shinken Web UI Login', print_header=False, print_menu=False, print_title=False, js=['login/js/detectmobilebrowser.js','login/js/capslock.js'], css=['login/css/login.css']
 
 %from shinken.bin import VERSION
 
 <script type="text/javascript">
-// If we are a mobile device, go in the /mobile part :)
-$(document).ready(function(){
-  // jQuery.browser.mobile is filled by login/js/detectmobilebrowser.js
-  if($.browser.mobile){
-    window.location = '/mobile/';
-  }
-});
+  // If we are a mobile device, go in the /mobile part :)
+  $(document).ready(function(){
+    // jQuery.browser.mobile is filled by login/js/detectmobilebrowser.js
+    if($.browser.mobile){
+      window.location = '/mobile/';
+    }
+  });
 </script>
 
-<div class="row page-header no-topmargin">
-	<h1 class="col-xs-6 col-sm-8 col-md-8">Shinken <small>v {{VERSION}}</small></h1>
+<div class="row page-header">
+	<h1 class="col-sm-12 col-md-6">Shinken <small>v {{VERSION}}</small></h1>
 	%if company_logo:
-	<div class="col-xs-2 col-sm-4 col-md-4"> <img src="/static/img/{{company_logo}}" /></div>
+	<div class="col-sm-12 col-md-6"> <img src="/static/images/logo/{{company_logo}}" /></div>
 	%end
 </div>
 
 <div class="row">
-	<div class="col-xs-6 col-sm-8 col-md-8">
+	<div class="col-sm-12 col-md-6">
 		<noscript>
 			<div class="row alert">
 				<button type="button" class="close" data-dismiss="alert">×</button>
@@ -32,13 +32,13 @@ $(document).ready(function(){
 		<p class="lead">{{login_text}}</p>
 		%end
 
-		<img src="/static/img/logo.png" />
+		<img src="/static/images/logo/logo.png" />
 	</div>
 
-	<div class="col-xs-6 col-sm-4 col-md-4">
+	<div class="col-sm-12 col-md-6">
 		<div class="panel panel-default">
 			<div class="panel-heading">
-				<h4 class="panel-title">Login</h4>
+				<h2 class="panel-title">Login</h2>
 			</div>
 			<div class="panel-body">
 				<form method="post" id="loginform" role="form" action="/user/auth">
@@ -56,7 +56,7 @@ $(document).ready(function(){
 							</div>
 						</div>
 						<div class="form-group pull-right">
-							<button class=" btn btn-success" type="submit" href="javascript: submitform()"><i class="icon-signin"></i> Login</button>
+							<button class=" btn btn-default" type="submit" href="javascript: submitform()"><i class="fa fa-sign-in"></i> Login</button>
 						</div>
 					</fieldset>
 				</form>

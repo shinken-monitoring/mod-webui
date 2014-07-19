@@ -1,51 +1,32 @@
-%# If got no group, bailout
-%if not group:
-%rebase layout title='Invalid group name'
-
-Invalid group name
-
-%else:
-
-%if group=='all':
-%groupname = 'all'
-%groupalias = 'All hosts and services'
-%else:
-%groupname = group.get_name()
-%groupalias = group.alias
-%if groupalias == '':
-%groupalias = groupname
-%end
-%end
-
 %helper = app.helper
 %datamgr = app.datamgr
 
-%nHosts=0
-%hUp=0
-%hDown=0
-%hUnreachable=0
-%hPending=0
-%hUnknown=0
+%nServices=0
+%sOk=0
+%sCritical=0
+%sWarning=0
+%sPending=0
+%sUnknown=0
 %for h in hosts:
-	%nHosts=nHosts+1
+	%nServices=nServices+1
 	%if h.state == 'UP':
-		%hUp=hUp+1
+		%sOk=sOk+1
 	%elif h.state == 'DOWN':
-		%hDown=hDown+1
+		%sCritical=sCritical+1
 	%elif h.state == 'UNREACHABLE':
-		%hUnreachable=hUnreachable+1
+		%sWarning=sWarning+1
 	%elif h.state == 'PENDING':
-		%hPending=hPending+1
+		%sPending=sPending+1
 	%else:
-		%hUnknown=hUnknown+1
+		%sUnknown=sUnknown+1
 	%end
 %end
-%if nHosts != 0:
-	%pctUp			= round(100.0 * hUp / nHosts, 2)
-	%pctDown		= round(100.0 * hDown / nHosts, 2)
-	%pctUnreachable	= round(100.0 * hUnreachable / nHosts, 2)
-	%pctPending		= round(100.0 * hPending / nHosts, 2)
-	%pctUnknown		= round(100.0 * hUnknown / nHosts, 2)
+%if nServices != 0:
+	%pctUp			= round(100.0 * sOk / nServices, 2)
+	%pctDown		= round(100.0 * sCritical / nServices, 2)
+	%pctUnreachable	= round(100.0 * sWarning / nServices, 2)
+	%pctPending		= round(100.0 * sPending / nServices, 2)
+	%pctUnknown		= round(100.0 * sUnknown / nServices, 2)
 %else:
 	%pctUp			= 0
 	%pctDown		= 0
@@ -54,9 +35,7 @@ Invalid group name
 	%pctUnknown		= 0
 %end
 
-%end
-
-%rebase layout globals(), title='Hosts group detail for ' + groupalias, refresh=True
+%rebase layout globals(), title="Services tagged '" + tag + "'", refresh=True
 
 <style>
 .warning, .unreachable {
@@ -76,38 +55,38 @@ Invalid group name
 <div id="content_container">
 	<div class="panel panel-default">
 		<div class="panel-heading">
-			<h3 class="panel-title">{{groupalias}} ({{groupname}})</h3>
+			<h3 class="panel-title">{{tag}}</h3>
 		</div>
 		<div class="panel-body">
 			<div class="pull-left col-lg-4">
-				<span>Currently displaying {{nHosts}} hosts out of {{length}}</span>
+				<span>Currently displaying {{nServices}} services out of {{length}}</span>
 			</div>
 			<div class="pull-right progress col-lg-7 no-bottommargin no-leftpadding no-rightpadding" style="height: 45px;">
-				<div title="{{hUp}} hosts Up" class="progress-bar progress-bar-success quickinfo" role="progressbar" 
-					data-original-title='{{hUp}} Up' 
+				<div title="{{sOk}} hosts Up" class="progress-bar progress-bar-success quickinfo" role="progressbar" 
+					data-original-title='{{sOk}} Up' 
 					style="width: {{pctUp}}%; vertical-align:midddle; line-height: 45px;">{{pctUp}}% Up</div>
 					
-				<div title="{{hDown}} hosts Down" class="progress-bar progress-bar-danger quickinfo" 
-					data-original-title='{{hDown}} Down' 
+				<div title="{{sCritical}} hosts Down" class="progress-bar progress-bar-danger quickinfo" 
+					data-original-title='{{sCritical}} Down' 
 					style="width: {{pctDown}}%; vertical-align:midddle; line-height: 45px;">{{pctDown}}% Down</div>
 					
-				<div title="{{hUnreachable}} hosts Unreachable" class="progress-bar progress-bar-warning quickinfo" 
-					data-original-title='{{hUnreachable}} Unreachable' 
+				<div title="{{sWarning}} hosts Unreachable" class="progress-bar progress-bar-warning quickinfo" 
+					data-original-title='{{sWarning}} Unreachable' 
 					style="width: {{pctUnreachable}}%; vertical-align:midddle; line-height: 45px;">{{pctUnreachable}}% Unreachable</div>
 					
-				<div title="{{hPending}} hosts Pending" class="progress-bar progress-bar-info quickinfo" 
-					data-original-title='{{hPending}} Pending' 
+				<div title="{{sPending}} hosts Pending" class="progress-bar progress-bar-info quickinfo" 
+					data-original-title='{{sPending}} Pending' 
 					style="width: {{pctPending}}%; vertical-align:midddle; line-height: 45px;">{{pctPending}}% Pending</div>
 					
-				<div title="{{hPending}} hosts Pending/Unknown" class="progress-bar progress-bar-info quickinfo" 
-					data-original-title='{{hUnknown}} Unknown' 
+				<div title="{{sPending}} hosts Pending/Unknown" class="progress-bar progress-bar-info quickinfo" 
+					data-original-title='{{sUnknown}} Unknown' 
 					style="width: {{pctPending}}%; vertical-align:midddle; line-height: 45px;">{{pctUnknown}}% Unknown</div>
 			</div>
 		</div>
 	</div>
 
 	<div class='col-lg-12'>
-		%include pagination_element navi=navi, app=app, page="hostgroup/"+groupname, div_class="center no-margin"
+		%include pagination_element navi=navi, app=app, page="tag/"+tag, div_class="center no-margin"
 	</div>
 
 	<div class="clearfix">
@@ -157,7 +136,7 @@ Invalid group name
 	</div>
 
 	<div class='col-lg-12'>
-		%include pagination_element navi=navi, app=app, page="hostgroup/"+groupname, div_class="center no-margin"
+		%include pagination_element navi=navi, app=app, page="tag/"+tag, div_class="center no-margin"
 	</div>
 </div>
 
