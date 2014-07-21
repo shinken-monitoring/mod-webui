@@ -46,6 +46,7 @@
     <link href="/static/css/Shinken-webUI.css" rel="stylesheet">
 
     <link href="/static/css/jquery.meow.css" rel="stylesheet">
+    <link href="/static/css/typeahead.css" rel="stylesheet">
     
     <link href="/static/css/shinken-layout.css" rel="stylesheet">
     
