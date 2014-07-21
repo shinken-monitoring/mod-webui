@@ -35,20 +35,20 @@
 	   return true;
 	}
 
-	$('.typeahead').typeahead({
-    // note that "value" is the default setting for the property option
-	  /*source: [{value: 'Charlie'}, {value: 'Gudbergur'}, {value: 'Charlie2'}],*/
-    source: function (typeahead, query) {
-      $.ajax({url: "/lookup/"+query,
-        success: function (data){
-        typeahead.process(data)}
-      });
-    },
-    onselect: function(obj) {
-      $("ul.typeahead.dropdown-menu").find('li.active').data(obj);
+  // Typeahead: builds suggestion engine
+  var hosts = new Bloodhound({
+    datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
+    queryTokenizer: Bloodhound.tokenizers.whitespace,
+    remote: {
+      url: '/lookup/%QUERY',
+      filter: function (hosts) {
+        return $.map(hosts, function (host) { return { value: host }; });
+      }
     }
-	});
-
+  });
+  hosts.initialize();
+ 
+ 
 	var active_filters = [];
 
 	// List of the bookmarks
@@ -80,6 +80,18 @@
     $('.form_in_dropdown').on('click', function (e) {
       e.stopPropagation()
     });
+    
+    // Typeahead: activation
+    $('#filtering .typeahead').typeahead({
+      hint: true,
+      highlight: true,
+      minLength: 1
+    },
+    {
+      name: 'hosts',
+      displayKey: 'value',
+      source: hosts.ttAdapter(),
+    });
   });
 </script>
 
@@ -96,7 +108,7 @@
           <div class="form-group">
             <label for="search" class="col-sm-3 control-label">Name</label>
             <div class="col-sm-7">
-              <input class="form-control" name="search" placeholder="...">
+              <input class="form-control typeahead" name="search" autofocus autocomplete="off" placeholder="...">
             </div>
             <a class='btn btn-default col-sm-1' href="javascript:save_name_filter();"> <i class="fa fa-plus"></i> </a>
           </div>

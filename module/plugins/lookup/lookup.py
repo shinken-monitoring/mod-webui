@@ -47,9 +47,9 @@ def lookup(name=''):
     if not user:
         return []
 
-    if len(name) < 3:
-        print "Lookup %s too short, bail out" % name
-        return []
+    # if len(name) < 3:
+        # print "Lookup %s too short, bail out" % name
+        # return []
 
     filtered_hosts = only_related_to(app.datamgr.get_hosts(), user)
     hnames = (h.host_name for h in filtered_hosts)
