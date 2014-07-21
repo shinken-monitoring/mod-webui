@@ -1,4 +1,4 @@
-%rebase layout globals(), js=['dashboard/js/widgets.js','dashboard/js/screenfull.js', 'dashboard/js/jquery.easywidgets.js'], css=['dashboard/css/shinken-currently.css'], title='Shinken currently', print_header=False, print_menu=False, print_title=False, print_footer=False, refresh=True
+%rebase layout globals(), js=['dashboard/js/screenfull.js'], css=['dashboard/css/shinken-currently.css'], title='Shinken currently', print_header=False, print_menu=False, print_title=False, print_footer=False, refresh=True
 
 %from shinken.bin import VERSION
 %helper = app.helper
@@ -21,7 +21,7 @@
 		}
 
 		$('#request2').click(function() {
-			screenfull.request();
+			screenfull.request("#currently");
 		});
 
 		// Trigger the onchange() to set the initial values
@@ -40,7 +40,7 @@
 %end
 
 
-<div class="row">
+<div class="row" id="currently">
 %if username != 'anonymous':
   <ul class="nav nav-pills">
     <li> <a href="/dashboard" class="font-darkgrey"><i class="fa fa-home"></i></a> </li>

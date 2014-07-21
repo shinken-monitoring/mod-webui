@@ -25,7 +25,7 @@
 
 /*  Currently basics
     ------------------------------------------------------- */
-section.content {
+body, section.content {
 	background: #232426 !important;
 	padding-top: 0px !important;
 	color: #ededef;
