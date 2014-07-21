@@ -136,6 +136,16 @@
           %include
         </section>
       </aside>
+      %if not print_menu:
+        <script type="text/javascript">
+        $(document).ready(function(){
+          window.setTimeout(function() { 
+            $('.left-side').toggleClass("collapse-left");
+            $(".right-side").toggleClass("strech");
+          }, 0);
+        });
+        </script>
+      %end
     </div>
 
     <!-- A modal div that will be filled and shown when we want ... -->
