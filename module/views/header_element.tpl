@@ -27,6 +27,17 @@
       <span class="icon-bar"></span>
     </a>
     
+    <div class="col-sm-2 col-md-2 pull-left">
+      <form id="host-search" class="navbar-form navbar-left" role="search">
+      <div class="input-group">
+          <div class="input-group-btn">
+              <button class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i></button>
+          </div>
+          <input type="text" class="form-control typeahead" placeholder="Search hosts ..." name="host-search">
+      </div>
+      </form>
+    </div>
+
     <div class="navbar-left hidden-sm hidden-xs">
       <ul class="nav navbar-nav">
         <li class="pull-left"><a class="quickinfo" data-original-title='Currently' href="#">
@@ -49,7 +60,7 @@
         
         <li class="pull-right dropdown user user-menu">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-              <i class="ion ion-person"></i>
+              <i class="fa fa-user"></i>
               <span><span class="username">{{username}}</span> <i class="caret"></i></span>
           </a>
           
@@ -107,3 +118,62 @@
     </div>
   </nav>
 </header>
+<script type="text/javascript">
+  // Typeahead: builds suggestion engine
+  var hosts = new Bloodhound({
+    datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
+    queryTokenizer: Bloodhound.tokenizers.whitespace,
+    remote: {
+      url: '/lookup/%QUERY',
+      filter: function (hosts) {
+        return $.map(hosts, function (host) { return { value: host }; });
+      }
+    }
+  });
+  hosts.initialize();
+ 
+  var hostSubmittable = false;
+  $( "#host-search" ).submit(function( event ) {
+    if (hostSubmittable) {
+      var hostname = $('input[name="host-search"]').val();
+      window.location = '/host/'+hostname;
+    }
+    event.preventDefault();
+  });
+
+	/* Catch the key ENTER and launch the form
+	 Will be link in the password field
+	function submitenter(myfield,e){
+	  var keycode;
+	  if (window.event) keycode = window.event.keyCode;
+	  else if (e) keycode = e.which;
+	  else return true;
+
+	  if (keycode == 13){
+	    submitform();
+	    return false;
+	  }else
+	   return true;
+	}
+	*/
+
+  // On page loaded ...
+  $(function() {
+    // Typeahead: activation
+    var typeahead = $('#host-search .typeahead').typeahead({
+      hint: true,
+      highlight: true,
+      minLength: 1
+    },
+    {
+      name: 'hosts',
+      displayKey: 'value',
+      source: hosts.ttAdapter(),
+    });
+  
+    typeahead.on('typeahead:selected', function (eventObject, suggestionObject, suggestionDataset) {
+      $('input[name="host-search"]').val(suggestionObject.value).html(suggestionObject.value);
+      hostSubmittable = true;
+    });
+  });
+</script>
