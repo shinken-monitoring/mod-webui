@@ -261,12 +261,12 @@
   <div class="row" style="padding: 0px;">
     <!-- Left panel, toolbar and active filters -->
     <div id="toolbar" class="col-lg-3 col-md-4 col-sm-4">
-    <div class="panel panel-info" id="image_panel">
-      <div class="panel-heading">Perfdatas</div>
-      <div class="panel-body">
-        <div id="img_hover"></div>
+      <div class="panel panel-info" id="image_panel">
+        <div class="panel-heading">Perfdatas</div>
+        <div class="panel-body">
+          <div id="img_hover"></div>
+        </div>
       </div>
-    </div>
 
       <div class="panel panel-info" id="actions">
         <div class="panel-heading">Actions</div>
@@ -444,26 +444,25 @@
         %last_output = pb.output
         
         %if pb.host_name != last_hname:
-        <!-- {{last_hname}} / {{pb.host_name}} -->
-        %if last_hname != '' and last_hname != 'first':
+          %if last_hname != '' and last_hname != 'first':
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        %end
-        <div class="panel panel-default" style="margin: 0">
-          <div class="panel-heading">
-            <h4 class="panel-title table-responsive" data-toggle="collapse" data-parent="#accordion" href="#group_{{pb.host_name}}">
-              {{pb.host_name}}
-              <a class="pull-right">
-                <i class="fa fa-chevron-down pull-right"></i>
-              </a>
-            </h4>
-          </div>
-          <div id="group_{{pb.host_name}}" class="panel-collapse collapse host-panel">
-            <div class="panel-body">
-              <div class="panel-group" id="problems_{{pb.host_name}}">
-          %last_hname = pb.host_name
+          %end
+          <div class="panel panel-default" style="margin: 0">
+            <div class="panel-heading">
+              <h4 class="panel-title table-responsive" data-toggle="collapse" data-parent="#accordion" href="#group_{{pb.host_name}}">
+                {{pb.host_name}}
+                <a class="pull-right">
+                  <i class="fa fa-chevron-down pull-right"></i>
+                </a>
+              </h4>
+            </div>
+            <div id="group_{{pb.host_name}}" class="panel-collapse collapse host-panel">
+              <div class="panel-body">
+                <div class="panel-group" id="problems_{{pb.host_name}}">
+            %last_hname = pb.host_name
         %end
         
         %div_class = ''
@@ -607,7 +606,6 @@
           </div>
         </div>
       </div>
-
     </div>
     
     <script type="text/javascript">
