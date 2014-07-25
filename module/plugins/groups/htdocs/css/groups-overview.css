@@ -96,3 +96,6 @@ ul.grid li:hover section.right span.darkview a { opacity: 1; color: #FFF; font-s
 
 ul.grid li section.right span.darkview a.firstbtn { display: block; margin-bottom: 10px; text-decoration:none !important;}
 ul.grid li section.right span.darkview a.firstbtn:hover { display: block; margin-bottom: 10px; text-decoration:none !important;}
+
+/* Down hosts and critical services are bold */
+tr.down, tr.critical { font-weight: bold; }

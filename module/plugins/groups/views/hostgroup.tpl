@@ -56,7 +56,7 @@ Invalid group name
 
 %end
 
-%rebase layout globals(), title='Hosts group detail for ' + groupalias, refresh=True
+%rebase layout globals(), title='Hosts group detail for ' + groupalias, css=['groups/css/groups-overview.css'], refresh=True
 
 <style>
 .warning, .unreachable {
