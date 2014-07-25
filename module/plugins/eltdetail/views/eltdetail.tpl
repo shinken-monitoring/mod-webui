@@ -74,20 +74,6 @@ Invalid element name
     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
       window.location.hash = $(e.target).attr('href');
     })
-
-		// Now we hook the global search thing
-		$('.typeahead').typeahead({
-			// note that "value" is the default setting for the property option
-			source: function (typeahead, query) {
-				$.ajax({url: "/lookup/"+query,
-					success: function (data){
-						typeahead.process(data)}
-					});
-			},
-			onselect: function(obj) { 
-				$("ul.typeahead.dropdown-menu").find('li.active').data(obj);
-			}
-		});
   });
 </script>
 
@@ -338,7 +324,7 @@ Invalid element name
   
 	<!-- Fourth row : host/service -->
 	<div class="row" style="padding: 5px;">
-		<div class="col-md-6 col-lg-4 tabbable verticaltabs-container">
+		<div class="col-md-6 col-lg-3 tabbable verticaltabs-container">
 			<ul class="nav nav-tabs">
 				%if params['tab_information']=='yes':
 				<li class="active"><a href="#information" data-toggle="tab">Information</a></li>
@@ -362,7 +348,7 @@ Invalid element name
 				<div class="tab-pane fade in active" id="information">
 					<h4>{{elt_type.capitalize()}} information:</h4>
 
-					<table class="table-condensed" style="table-layout: fixed; word-wrap: break-word;">
+					<table class="table-condensed col-sm-12" style="table-layout: fixed; word-wrap: break-word;">
 						<thead>
 							<tr>
 								<th style="width: 40%"></th>
@@ -441,7 +427,7 @@ Invalid element name
 				<div class="tab-pane fade" id="additional">
 					<h4>Additional Informations</h4>
 					
-					<table class="table-condensed" style="table-layout: fixed; word-wrap: break-word;">
+					<table class="table-condensed col-sm-12" style="table-layout: fixed; word-wrap: break-word;">
 						<thead>
 							<tr>
 								<th style="width: 40%"></th>
@@ -475,12 +461,16 @@ Invalid element name
 										<div class='check-output check-output-{{elt.state.lower()}}'> {{elt.output}} </div>
 									%end
 								%end
-								%if elt.long_output:
-									<br/>
-                  <div class='check-output check-output-{{elt.state.lower()}}'> {{elt.long_output}} </div>
-								%end
 								</td>
 							</tr>
+              %if elt.long_output:
+							<tr>
+								<td><strong>Long output:</strong></td>
+								<td class="truncate_output">
+                  <div class='check-output check-output-{{elt.state.lower()}}'> {{elt.long_output}} </div>
+								</td>
+							</tr>
+              %end
 							<tr>
 								<td><strong>Performance data:</strong></td>
 								<td class="truncate_perf">
@@ -526,7 +516,7 @@ Invalid element name
 				<script type="text/javascript">
 					$(document).ready(function() {
 						$('.truncate_output').jTruncate({
-							length: 100,
+							length: 200,
 							minTrail: 0,
 							moreText: "[see all]",
 							lessText: "[hide extra]",
@@ -534,11 +524,9 @@ Invalid element name
 							moreAni: "fast",
 							lessAni: 2000
 						});
-					});
 
-					$(document).ready(function() {
 						$('.truncate_perf').jTruncate({
-							length: 50,
+							length: 100,
 							minTrail: 0,
 							moreText: "[see all]",
 							lessText: "[hide extra]",
@@ -554,7 +542,7 @@ Invalid element name
 				<div class="tab-pane fade" id="commands">
 					<h4>Commands:</h4>
 
-					<table class="table-condensed" style="table-layout: fixed; word-wrap: break-word;">
+					<table class="table-condensed col-sm-12" style="table-layout: fixed; word-wrap: break-word;">
 						<thead>
 							<tr>
 								<th style="width: 60%"></th>
@@ -761,7 +749,7 @@ Invalid element name
 				<div class="tab-pane fade" id="configuration">
 					<h4>{{elt_type.capitalize()}} configuration:</h4>
 
-          <table class="table-condensed table-bordered" style="table-layout: fixed; word-wrap: break-word;">
+          <table class="table-condensed col-sm-12 table-bordered" style="table-layout: fixed; word-wrap: break-word;">
 						<colgroup>
 							<col style="width: 70%"></col>
 							<col style="width: 30%"></col>
