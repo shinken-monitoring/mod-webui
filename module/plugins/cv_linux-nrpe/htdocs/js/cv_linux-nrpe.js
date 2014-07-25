@@ -1,11 +1,17 @@
 
-
 $(function(){
-    var host_canvas = $("#cv_windows canvas[name='host_canvas']");
+    if (! customView) {
+      console.error('Custom view identifier should be defined in tpl Template file !');
+      return;
+    }
+    if (! imgSrc) {
+      var imgSrc = '/static/'+customView+'/img/';
+    }
+    
+    var host_canvas = $('#'+customView+' canvas[name="host_canvas"]');
     var ctx = host_canvas[0].getContext('2d');
 
-
-	// Purple : '#c1bad9', '#a79fcb'
+    // Purple : '#c1bad9', '#a79fcb'
     // Green  : '#A6CE8D', '#81BA6B'
     // Blue   : '#DEF3F5', '#89C3C6'
     // Red    : '#dc4950', '#e05e65'
@@ -44,14 +50,13 @@ $(function(){
     /////////////// The status icon
     var img_status = document.createElement('img');
     img_status.onload=function(){
-		// Image ratio
-		var f = img_status.height / img_status.width;
-		var donut_canvas = $("#cv_windows canvas[name='donut_CPU']");
-		var newWidth = (donut_canvas.width() - 40);
-		var newHeight = newWidth * f;
-		ctx.drawImage(img_status, donut_canvas.width() - newWidth, donut_canvas.height() - newHeight, newWidth, newHeight);
+      // Image ratio
+      var f = img_status.width / img_status.height;
+      var newHeight = 128;
+      var newWidth = newHeight * f;
+      ctx.drawImage(img_status, 48, 48, newWidth, newHeight);
     };
-    img_status.src = '/static/cv_windows/img/'+host_canvas.data('host-state-image');
+    img_status.src = imgSrc+host_canvas.data('host-state-image');
     
     //////////////// Lines part
     // Now the line from the left part to down, in 3 parts
@@ -75,7 +80,7 @@ $(function(){
 		img_network.onload=function(){
 			ctx.drawImage(img_network, 75, posNetwork, 64, 64);
 		};
-		img_network.src = '/static/cv_windows/img/'+host_canvas.data('host-network-image');
+		img_network.src = imgSrc+host_canvas.data('host-network-image');
 		
 		var ip = host_canvas.data('host-network-address');
 		ctx.font      = "bold 10px Verdana";
@@ -98,7 +103,7 @@ $(function(){
 		img_printer.onload=function(){
 			ctx.drawImage(img_printer, 75, posPrinter, 64, 64);
 		};
-		img_printer.src = '/static/cv_windows/img/'+host_canvas.data('host-printer-image');
+		img_printer.src = imgSrc+host_canvas.data('host-printer-image');
 		
 		var pages = host_canvas.data('host-printer-pages');
 		ctx.font      = "bold 10px Verdana";
@@ -138,7 +143,7 @@ $(function(){
 			}
 		};
 		// An img for disks image background ...
-		img_disks.src = '/static/cv_windows/img/bar_horizontal.png';
+		img_disks.src = imgSrc+'bar_horizontal.png';
 
 		// And a small vertical line for disks
 		draw_line(ctx, 150, 180, 150, 220, line_color, 1, 0.5);
@@ -165,14 +170,14 @@ $(function(){
 		
 		// Draw the services.
 		var sources = {
-			ok:				'/static/cv_windows/img/service_ok.png',
-			warning:		'/static/cv_windows/img/service_warning.png',
-			critical:		'/static/cv_windows/img/service_critical.png',
-			unknown:		'/static/cv_windows/img/service_unknown.png',
-			pending:		'/static/cv_windows/img/service_pending.png',
-			downtime:		'/static/cv_windows/img/service_downtime.png',
-			flapping:		'/static/cv_windows/img/service_flapping.png',
-			uninstalled:	'/static/cv_windows/img/service_uninstalled.png'
+			ok:				    imgSrc+'/service_ok.png',
+			warning:		  imgSrc+'/service_warning.png',
+			critical:		  imgSrc+'/service_critical.png',
+			unknown:		  imgSrc+'/service_unknown.png',
+			pending:		  imgSrc+'/service_pending.png',
+			downtime:		  imgSrc+'/service_downtime.png',
+			flapping:		  imgSrc+'/service_flapping.png',
+			uninstalled:	imgSrc+'/service_uninstalled.png'
 		};
 		function loadImages(sources, callback) {
 			var images = {};
@@ -197,7 +202,7 @@ $(function(){
 		var dev_y = 10;
 		var img_size = 64;
 		var img_spacing = 100;
-		var packagesPerColumn = 5;
+		var packagesPerColumn = 6;
 		loadImages(sources, function(images){
 			for (var i=0, column=1, line=1; i<all_services.length; i++, line++){
 				var p_name = all_services[i][0];
@@ -216,9 +221,9 @@ $(function(){
 				
 				// And draw the service name
 				ctx.font      = "bold 10px Verdana";
-				ctx.fillStyle = "#222";
+				ctx.fillStyle = "#000";
 				ctx.textAlign = 'center';
-				wrapText(ctx, p_name, dev_x + (img_size/2), dev_y+5, 20, 15)
+				wrapText(ctx, p_name, dev_x + (img_size/2), dev_y, 20, 15)
 
 				var span = $(document.createElement('span'));
 				span.html('');
@@ -234,7 +239,7 @@ $(function(){
 				span.on('click', function(){
 					window.location.href="/service/"+host_canvas.data('name')+"/"+$(this).attr('name');
 				});
-				$('#cv_windows').append(span);
+				$('#'+customView).append(span);
 
 				// Now prepare the next package
 				dev_y += img_spacing;

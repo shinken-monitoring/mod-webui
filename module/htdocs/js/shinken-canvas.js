@@ -120,8 +120,11 @@ function draw_text_along_arc(ctx, str, centerX, centerY, radius, angle_offset, f
 
 function wrapText(context, text, x, y, maxWidth, lineHeight) {
 	var words = text.split(' ');
+  if (words.length == 1) {
+    words = text.split('-');
+  }
 	var line = '';
-
+  
 	for(var n = 0; n < words.length; n++) {
 		var testLine = line + words[n] + ' ';
 		var metrics = context.measureText(testLine);
