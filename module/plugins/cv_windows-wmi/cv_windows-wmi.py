@@ -23,98 +23,117 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 
+import re
 from shinken.misc.perfdata import PerfDatas
 
 ### Will be populated by the UI with it's own value
 app = None
 
+# Get plugin's parameters from configuration file
+params = {}
+params['view_name'] = "cv_windows-wmi"
+params['svc_cpu_name'] = "cpu"
+params['svc_cpu_used'] = "cpu_all_usr"
+params['svc_disk_name'] = "Disks"
+params['svc_disk_used'] = "Utilisation"
+params['svc_mem_name'] = "Memory"
+params['svc_mem_used'] = "Utilisation"
+params['svc_swap_name'] = "Swap"
+params['svc_swap_used'] = "Utilisation"
+
+import os,sys
+from shinken.log import logger
+from config_parser import config_parser
+plugin_name = os.path.splitext(os.path.basename(__file__))[0]
+try:
+    currentdir = os.path.dirname(os.path.realpath(__file__))
+    configuration_file = "%s/%s" % (currentdir, 'plugin.cfg')
+    logger.debug("Plugin configuration file: %s", configuration_file)
+    scp = config_parser('#', '=')
+    params = scp.parse_config(configuration_file)
+
+    logger.debug("WebUI plugin '%s', configuration loaded.", plugin_name)
+    logger.debug("Plugin %s configuration, view: %s", plugin_name, params['view_name'])
+    logger.debug("Plugin %s configuration, cpu: %s (%s)", plugin_name, params['svc_cpu_name'], params['svc_cpu_used'])
+    logger.debug("Plugin %s configuration, disk: %s (%s)", plugin_name, params['svc_disk_name'], params['svc_disk_used'])
+    logger.debug("Plugin %s configuration, memory: %s (%s)", plugin_name, params['svc_mem_name'], params['svc_mem_used'])
+    logger.debug("Plugin %s configuration, swap: %s (%s)", plugin_name, params['svc_swap_name'], params['svc_swap_used'])
+except Exception, exp:
+    logger.warning("WebUI plugin '%s', configuration file (%s) not available: %s", plugin_name, configuration_file, str(exp))
+
 def _findServiceByName(host, service):
     for s in host.services:
-        if service.lower() in s.get_name().lower():
+        if re.search(service, s.get_name()):
             return s
     return None
     
     
 def get_disks(h):
     all_disks = []
-    s = _findServiceByName(h, 'disk')
-    if not s:
-        return 'UNKNOWN',all_disks
-    print "Service found", s.get_full_name()
-
-    disks_state = s.state
-    p = PerfDatas(s.perf_data)
-    print "PERFDATA", p, p.__dict__
-    for m in p:
-        print "KEY", m
-        # Skip void disks?
-        if not m.name or m.value is None or m.max is None or m.max == 0:
-            continue
-        # Skip device we don't care about
-        if m.name == '/dev' or m.name.startswith('/sys/'):
-            continue
-
-        pct = 100*float(m.value)/m.max
-        pct = int(pct)
-
-        all_disks.append((m.name, pct))
-
+    disks_state = 'UNKNOWN'
+    s = _findServiceByName(h, params['svc_disk_name'])
+    if s:
+        logger.debug("Plugin %s, found %s", plugin_name, s.get_full_name())
+        disks_state = s.state
+        p = PerfDatas(s.perf_data)
+        for m in p:
+            if m.name and m.value is not None:
+                if re.search(params['svc_disk_used'], m.name):
+                    logger.debug("Plugin %s, got %s = %s", plugin_name, m.name, m.value)
+                    # Only first word, limited to two digits ...
+                    name = m.name.split()[0] 
+                    all_disks.append((name if len(name)<=2 else name[0:2], float(m.value)))
+            
     return disks_state,all_disks
 
 
 def get_memory(h):
+    mem_state = paged_state = 'UNKNOWN'
+    mem = paged = 0
+    
+    s = _findServiceByName(h, params['svc_mem_name'])
+    if s:
+        logger.debug("Plugin %s, found %s", plugin_name, s.get_full_name())
+        mem_state = s.state
+        # Now grep perfdata in it
+        p = PerfDatas(s.perf_data)
+        for m in p:
+            if m.name and m.value is not None:
+                if params['svc_mem_used'] in m.name:
+                    logger.debug("Plugin %s, got %s = %s", plugin_name, m.name, m.value)
+                    mem = float(m.value)
 
-    mem_state = swap_state = 'UNKNOWN'
 
-    s = _findServiceByName(h, 'memory')
-    if not s:
-        return (mem_state,swap_state,0,0)
-    print "Service found", s.get_full_name()
+    s = _findServiceByName(h, params['svc_swap_name'])
+    if s:
+        logger.debug("Plugin %s, found %s", plugin_name, s.get_full_name())
+        paged_state = s.state
+        # Now grep perfdata in it
+        p = PerfDatas(s.perf_data)
+        for m in p:
+            if m.name and m.value is not None:
+                if params['svc_swap_used'] in m.name:
+                    logger.debug("Plugin %s, got %s = %s", plugin_name, m.name, m.value)
+                    paged = float(m.value)
 
-    mem_state = swap_state = s.state
-    # Now grep perfdata in it
-    p = PerfDatas(s.perf_data)
-    mem = 0
-    swap = 0
-
-    if 'ram_used' in p:
-        m = p['ram_used']
-        # Maybe it's an invalid metric?
-        if m.name and m.value is not None and m.max is not None and m.max != 0:
-            # Classic pct compute
-            pct = 100*float(m.value)/m.max
-            mem = int(pct)
-
-    if 'swap_used' in p:
-        m = p['swap_used']
-        # Maybe it's an invalid metric?
-        if m.name and m.value is not None and m.max is not None and m.max != 0:
-            # Classic pct compute
-            pct = 100*float(m.value)/m.max
-            swap = int(pct)
-
-    return mem_state,swap_state,mem,swap
+    return mem_state,paged_state,mem,paged
 
 
 def get_cpu(h):
     cpu_state = 'UNKNOWN'
-    s = _findServiceByName(h, 'cpu')
-    if not s:
-        return 'UNKNOWN',0
-    print "Service found", s.get_full_name()
-
-    cpu_state = s.state
-    # Now perfdata
-    p = PerfDatas(s.perf_data)
-    print "PERFDATA", p, p.__dict__
     cpu = 0
 
-    if 'cpu_prct_used' in p:
-        m = p['cpu_prct_used']
-        # Maybe it's an invalid metric?
-        if m.name and m.value is not None:
-            cpu = m.value
-            print "Cpu", m.value
+    s = _findServiceByName(h, params['svc_cpu_name'])
+    if s:
+        logger.debug("Plugin %s, found %s", plugin_name, s.get_full_name())
+        cpu_state = s.state
+        # Now grep perfdata in it
+        p = PerfDatas(s.perf_data)
+        for m in p:
+            if m.name and m.value is not None:
+                if params['svc_cpu_used'] in m.name:
+                    logger.debug("Plugin %s, got %s = %s", plugin_name, m.name, m.value)
+                    cpu = float(m.value)
 
     return cpu_state, cpu
 
@@ -176,17 +195,17 @@ def get_network(h):
     
 def get_services(h):
     all_services = []
-    packages_state = {}
+    services_states = {}
 
     # Get host's services list
     for item in h.services:
         all_services.append((item.get_name(), item.state))
-        packages_state[item.get_name()] = item.state
+        services_states[item.get_name()] = item.state
 
     # Compute the worst state of all packages
-    packages_state = compute_worst_state(packages_state)
+    services_states = compute_worst_state(services_states)
     
-    return packages_state,all_services
+    return services_states,all_services
 
 
 def compute_worst_state(d):
@@ -213,16 +232,16 @@ def get_page(hname):
     all_states = {"global": "UNKNOWN", "cpu": "UNKNOWN", "disks": "UNKNOWN", "memory": "UNKNOWN", "virtual": "UNKNOWN", "paged": "UNKNOWN", "printer": "UNKNOWN"}
 
     if h:
-        # Set the host state firt
+        # Set the host state first
         all_states["global"] = h.state
         # First look at disks
         all_states["disks"], all_perfs['all_disks'] = get_disks(h)
         # Then memory
-        mem_state, swap_state, mem,swap = get_memory(h)
+        mem_state, paged_state, mem, paged = get_memory(h)
         all_perfs["memory"] = mem
-        all_perfs["swap"] = swap
-        all_states['swap'] = swap_state
+        all_perfs["paged"] = paged
         all_states['memory'] = mem_state
+        all_states['paged'] = paged_state
         # And CPU too
         all_states['cpu'], all_perfs['cpu'] = get_cpu(h)
         # Then printer
@@ -236,10 +255,8 @@ def get_page(hname):
         # Then global
         all_states["view"] = compute_worst_state(all_states)
         
-    return {'app': app, 'elt': h, 'all_perfs':all_perfs, 'all_states':all_states}
-
-
+    return {'app': app, 'elt': h, 'all_perfs':all_perfs, 'all_states':all_states, 'view_name':params['view_name']}
 
 
 # Void plugin
-pages = {get_page: {'routes': ['/cv/linux/:hname'], 'view': 'cv_linux', 'static': True}}
+pages = {get_page: {'routes': ['/cv/windows-wmi/:hname'], 'view': 'cv_windows-wmi', 'static': True}}

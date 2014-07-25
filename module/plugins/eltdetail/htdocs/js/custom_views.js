@@ -22,11 +22,11 @@
 */
 
 
+var _cv_list = {};
 var _already_loaded = {};
 
 // when we show a custom view tab, we lazy load it :D
 function show_custom_view(p){
-	// console.log('Show', p)
 	var hname = p.attr('data-elt-name');
 	var cvname = p.attr('data-cv-name');
 
@@ -35,14 +35,12 @@ function show_custom_view(p){
 	}
 
 	var _t = new Date().getTime();
-	var spinner = get_spinner('cv'+cvname);
 	$('#cv'+cvname).load('/cv/'+cvname+'/'+hname+"?_="+_t, function(response, status, xhr) {
 		if (status == "error") {
 			var msg = "Sorry but there was an error: ";
 			$('#cv'+cvname).html(msg + xhr.status + " " + xhr.statusText);
-			// $('#cv'+cvname).remove();
-			// $('#tab-cv-'+cvname).remove();
-		}
+		} else {
+    }
 	});
 
 	_already_loaded[cvname] = true;
@@ -56,7 +54,15 @@ $(window).ready(function(){
 
 	// And for each already active on boot, show them directly!
 	$('.cv_pane').each(function(index, elt ) {
-		show_custom_view($(elt));
+    var cvname = $(elt).attr('data-cv-name');
+    if (! _cv_list[cvname]) {
+      _cv_list[cvname] = true;
+      show_custom_view($(elt));
+    } else {
+      console.log('Custom view '+cvname+' already exists !');
+			// $('#cv'+cvname).remove();
+			// $('#tab-cv-'+cvname).remove();
+    }
 	});
 });
 
