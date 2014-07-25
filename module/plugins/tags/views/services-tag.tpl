@@ -35,7 +35,7 @@
 	%pctUnknown		= 0
 %end
 
-%rebase layout globals(), title="Services tagged '" + tag + "'", refresh=True
+%rebase layout globals(), title="Services tagged '" + tag + "'", css=['tags/css/tags-overview.css'], refresh=True
 
 <style>
 .warning, .unreachable {
