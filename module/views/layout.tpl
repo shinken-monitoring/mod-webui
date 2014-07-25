@@ -87,7 +87,7 @@
     %end
     <!--Shinken ones : dashboard widgets -->
     <script src="/static/js/shinken-ui.js"></script>
-    <script src="/static/js/shinken-widgets.js"></script>
+    <!--<script src="/static/js/shinken-widgets.js"></script>-->
     <script src="/static/js/shinken-actions.js"></script>
     <script src="/static/js/shinken-aggregation.js"></script>
     <script src="/static/js/shinken-deptree.js"></script>
