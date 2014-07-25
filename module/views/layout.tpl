@@ -74,6 +74,7 @@
     <script src="/static/js/shinken-layout.js"></script>
 
     <script src="/static/js/jquery.jclock.js"></script>
+    <script src="/static/js/jquery.jTruncate.js"></script>
     <script src="/static/js/jquery.meow.js"></script>
     <script src="/static/js/typeahead.bundle.min.js"></script>
 
@@ -88,14 +89,14 @@
     <script src="/static/js/shinken-ui.js"></script>
     <script src="/static/js/shinken-widgets.js"></script>
     <script src="/static/js/shinken-actions.js"></script>
-<!--
+    <script src="/static/js/shinken-aggregation.js"></script>
     <script src="/static/js/shinken-deptree.js"></script>
+    <script src="/static/js/shinken-canvas.js"></script>
+<!--
     <script src="/static/js/shinken-greeting.js"></script>
     <script src="/static/js/shinken-opacity.js"></script>
     <script src="/static/js/shinken-modals.js"></script>
-    <script src="/static/js/shinken-canvas.js"></script>
     <script src="/static/js/shinken-treemap.js"></script>
-    <script src="/static/js/shinken-aggregation.js"></script>
 -->
 
     %# End of classic js import. Now call for specific ones
