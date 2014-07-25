@@ -28,20 +28,6 @@ Invalid element
   loadjscssfile('/static/depgraph/js/excanvas.js', 'js');
 
 
-  // Now we hook the global search thing
-  $('.typeahead').typeahead({
-    // note that "value" is the default setting for the property option
-    source: function (typeahead, query) {
-      $.ajax({url: "/lookup/"+query,
-        success: function (data){
-          typeahead.process(data)}
-        });
-      },
-    onselect: function(obj) {
-      $("ul.typeahead.dropdown-menu").find('li.active').data(obj);
-    }
-  });
-  
   var graph = {{!helper.create_json_dep_graph(elt, levels=4)}};
 
   // Get container dimensions
