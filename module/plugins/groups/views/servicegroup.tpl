@@ -114,9 +114,9 @@ Invalid group name
 		<table class="table table-hover">
 			<tbody>
 				<tr>
-					<th>State</th>
 					<th>Host</th>
 					<th>Service</th>
+					<th>State</th>
 					<th>Output</th>
 					<th>Last Check</th>
 					<th>Duration</th>
@@ -125,14 +125,13 @@ Invalid group name
 				</tr>
 				%for s in services:
 					<tr id="service_{{s.get_name()}}" class="{{s.state.lower()}}">
-						<td >{{s.state}}</td>
 						<td>
 							<span><a href="/host/{{s.host.host_name}}">{{s.host.host_name}}</a></span>
 						</td>
 						<td>
 							<span><a href="/service/{{s.host.host_name}}/{{s.get_name()}}">{{s.get_name()}}</a></span>
 						</td>
-
+						<td >{{s.state}}</td>
 						<td style="white-space: normal">
 							<span>{{s.output}}</span>
 						</td>

@@ -114,9 +114,9 @@ Invalid group name
 		<table class="table table-hover">
 			<tbody>
 				<tr>
-					<th>State</th>
 					<th>Host</th>
 					<th>Service</th>
+					<th>State</th>
 					<th>Last Check</th>
 					<th>Duration</th>
 					<th>Attempt</th>
@@ -124,14 +124,13 @@ Invalid group name
 				</tr>
 				%for h in hosts:
 					<tr id="host_{{h.get_name()}}" class="{{h.state.lower()}}">
-						<td >{{h.state}}</td>
 						<td>
 							<span><a href="/host/{{h.get_name()}}">{{h.get_name()}}</a></span>
 						</td>
-
 						<td style="white-space: normal">
 							<span>{{h.get_check_command()}}</span>
 						</td>
+						<td >{{h.state}}</td>
 						<td>{{helper.print_duration(h.last_chk)}}</td>
 						<td>{{h.get_duration()}}</td>
 						<td>{{h.attempt}}/{{h.max_check_attempts}}</td>
