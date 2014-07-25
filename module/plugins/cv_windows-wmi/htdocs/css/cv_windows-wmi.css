@@ -1,17 +1,17 @@
-#cv_windows{
+#cv_windows-wmi{
     position:absolute;
 	background-color: #eee;
 }
 
 /* CPU consumption donut */
-.cpu_container {
+#cv_windows-wmi .cpu_container {
 	position: absolute;
 
 	top: 70px;
 	left: 240px;
 }
 
-.donut_value {
+#cv_windows-wmi .donut_value {
 	font-weight: bold;
 	position: absolute;
 	top: 32px;
@@ -24,7 +24,7 @@
 	font-size: 20px;
 }
 
-.donut_label {
+#cv_windows-wmi .donut_label {
 	font-size: 11px;
 	position: absolute;
 	top: 55px;
@@ -36,30 +36,30 @@
 }
 
 /* Memory consumption cylinders */
-.cylinderContainer {
+#cv_windows-wmi .cylinderContainer {
 	position: absolute;
 	top: 210px;
 	left: 205px;
 }
 
-.cylinderContainer div {
+#cv_windows-wmi .cylinderContainer div {
 	float: left;
 	margin-right: 5px;
 }
 
-.cylinderContainer div[name=cylinder_mem] {
+#cv_windows-wmi .cylinderContainer div[name=cylinder_mem] {
 }
 
-.cylinderContainer div[name=cylinder_swap] {
+#cv_windows-wmi .cylinderContainer div[name=cylinder_swap] {
 }
 
-.cylinderContainer canvas {
+#cv_windows-wmi .cylinderContainer canvas {
 	text-align: center;
 	margin: auto;
 	display: block;
 }
 
-.cylinderContainer span {
+#cv_windows-wmi .cylinderContainer span {
 	font-size: 10px;
 	color: #222;
 	margin: auto;

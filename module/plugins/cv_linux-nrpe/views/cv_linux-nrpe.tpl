@@ -6,12 +6,14 @@
 	all_states = {{! json.dumps(all_states)}};
 	all_services = {{! json.dumps(all_perfs['all_services'])}};
 
-	loadjscssfile('/static/cv_linux/js/host_canvas.js', 'js');
-	loadjscssfile('/static/cv_linux/css/host_canvas.css', 'css');
+  var customView = '{{view_name}}';
+  var imgSrc = '/static/'+customView+'/img/';
+	loadjscssfile('/static/'+customView+'/js/'+customView+'.js', 'js');
+	loadjscssfile('/static/'+customView+'/css/'+customView+'.css', 'css');
 </script>
 
-<div id='cv_linux'>
-	<canvas name='host_canvas' width='800' height='480' 
+<div id='{{view_name}}'>
+	<canvas name='host_canvas' width='1024' height='600' 
 		data-global-state="{{all_states['global']}}" 
 		data-name='{{elt.get_name()}}' 
 		data-host-state-image="host_{{all_states['global'].lower()}}.png"
@@ -50,5 +52,21 @@
 	$('document').ready(function() {
 		register_all_donuts();
 		register_all_cylinders();
+/*
+    // Get container dimensions
+    var container = $('#{{view_name}}').parent();
+    console.log (container);
+    console.log('Container size: ', container.innerWidth(), container.innerHeight());
+    
+    $('#{{view_name}}')
+      .css('width', container.innerWidth() - 20)
+      .css('height', container.innerHeight() - 20);
+    
+    var container = $('#{{view_name}}');
+    console.log('Container size: ', container.innerWidth(), container.innerHeight());
+    $('#{{view_name}} canvas[name="host_canvas"]')
+      .css('width', container.innerWidth() - 4)
+      .css('height', container.innerHeight() - 4);
+*/
 	});
 </script>
