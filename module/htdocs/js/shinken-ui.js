@@ -125,7 +125,6 @@ function dump(arr,level) {
 /**
  * Description:
  * Example: <div class="truncate"> Lorem Ipsum </div>
- */
 
 (function($){
     $.fn.jTruncate = function(options) {
@@ -186,6 +185,7 @@ function dump(arr,level) {
         });
     };
 })(jQuery);
+ */
 
 
 /**
