@@ -1,4 +1,4 @@
-%rebase layout globals(), css=['system/css/system.css'], title='System', menu_part='/system'
+%rebase layout globals(), title='Shinken daemons status', menu_part='/system'
 
 %from shinken.bin import VERSION
 %helper = app.helper
@@ -35,7 +35,7 @@
     %end
   </div>
   <div class="col-sm-4">
-    <div class="well well-sm" style="margin-top: 65px;">
+    <div class="well">
       <!-- <img alt="" src="http://placehold.it/300x200"> -->
       <div class="caption">
         <h3 class="font-blue"><i class="icon-question-sign"></i> Information</h3>
