@@ -111,8 +111,15 @@
 		var snapper = new Snap({
 			element: document.getElementById('content')
 		});
+    var snapOpened = false;
 		addEvent(document.getElementById('ol'), 'click', function(){
-			snapper.open('left');
+      console.log(snapOpened);
+      if (snapOpened) {
+        snapper.close();
+      } else {
+        snapper.open('left');
+      }
+      snapOpened = !snapOpened;
 		});
 	</script>
 
