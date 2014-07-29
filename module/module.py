@@ -502,7 +502,7 @@ class Webui_broker(BaseModule, Daemon):
             # We should warn if we cannot update broks
             # for more than 30s because it can be not good
             if time.time() - start > 30:
-                print "WARNING: we are in lock/read since more than 30s!"
+                logger.warning("WARNING: we are in lock/read since more than 30s!")
                 start = time.time()
 
 

@@ -23,6 +23,9 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 
+# Local import
+from shinken.log import logger
+
 try:
     import json
 except ImportError:
@@ -31,12 +34,11 @@ except ImportError:
     try:
         import simplejson as json
     except ImportError:
-        print "Error: you need the json or simplejson module"
+        logger.error("Error: you need the json or simplejson module")
         raise
 
 ### Will be populated by the UI with it's own value
 app = None
-
 
 # Our page
 def get_page():
@@ -48,6 +50,7 @@ def get_page():
 
     # Look for the widgets as the json entry
     s = app.get_user_preference(user, 'widgets')
+    logger.debug("Loaded widgets %s" % type(s))
     print "Loaded widgets", s, type(s)
     # If void, create an empty one
     if not s:
