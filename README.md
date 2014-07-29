@@ -3,6 +3,13 @@
 ###Description
 Shinken main Web interface
 
+## Find out more
+
+| **[Shinken Docs] [techdocs]**     | **[Setup Guide] [setup]**     | **[Roadmap] [roadmap]**           | **[Contributing] [contributing]**           |
+|-------------------------------------|-------------------------------|-----------------------------------|---------------------------------------------|
+| [![i1] [shinkendocs-image]] [techdocs] | [![i2] [setup-image]] [setup] | [![i3] [roadmap-image]] [roadmap] | [![i4] [contributing-image]] [contributing] |
+
+
 ###Installation
 
 * Install the webui module from shinken.io
@@ -60,3 +67,13 @@ System
 4. Push to the develop branch (`git push develop my_branch`)
 5. Open a [Pull Request](https://github.com/shinken-monitoring/mod-webui/pulls)
 6. Enjoy a refreshing Diet Coke and wait :+1:
+
+[shinkendocs-image]: https://d3i6fms1cm1j0i.cloudfront.net/github/images/techdocs.png
+[setup-image]: https://d3i6fms1cm1j0i.cloudfront.net/github/images/setup.png
+[roadmap-image]: https://d3i6fms1cm1j0i.cloudfront.net/github/images/roadmap.png
+[contributing-image]: https://d3i6fms1cm1j0i.cloudfront.net/github/images/contributing.png
+
+[shinkendocs]: https://shinken.readthedocs.org/en/latest/index.html
+[setup]: https://github.com/shinken-monitoring/mod-webui#installation
+[roadmap]: https://github.com/shinken-monitoring/mod-webui/blob/master/roadmap.md
+[contributing]: https://github.com/shinken-monitoring/mod-webui#contributing
