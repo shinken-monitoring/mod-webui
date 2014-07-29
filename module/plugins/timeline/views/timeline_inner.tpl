@@ -16,8 +16,9 @@
 			};
 
 			// Instantiate our timeline object.
-			timeline = new links.Timeline(document.getElementById('mytimeline'));
+			timeline = new links.Timeline(document.getElementById('mytimeline'), options);
 
+/*
 			function onRangeChanged(properties) {
 				document.getElementById('info').innerHTML += 'rangechanged ' +
 						properties.start + ' - ' + properties.end + '<br>';
@@ -25,11 +26,12 @@
 
 			// attach an event listener using the links events handler
 			links.events.addListener(timeline, 'rangechanged', onRangeChanged);
+*/
 
 			$.ajax({
 				url: '/timeline/json/{{hostname}}',
 				success: function(html){
-					timeline.draw(html, options);
+					timeline.draw(html);
 				},
 				error: function(xhr) {
 					this.html('Error loading data !');

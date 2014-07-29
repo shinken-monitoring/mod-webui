@@ -61,31 +61,40 @@ params['db_name'] = "Logs"
 params['logs_limit'] = 500
 params['logs_type'] = []
 
-import os,sys
-from config_parser import config_parser
-plugin_name = os.path.splitext(os.path.basename(__file__))[0]
-try:
-    currentdir = os.path.dirname(os.path.realpath(__file__))
-    configuration_file = "%s/%s" % (currentdir, 'plugin.cfg')
-    logger.debug("Plugin configuration file: %s" % (configuration_file))
-    scp = config_parser('#', '=')
-    params = scp.parse_config(configuration_file)
-
-    # params['mongo_host'] = params['mongo_host']
-    params['mongo_port'] = int(params['mongo_port'])
-    params['logs_limit'] = int(params['logs_limit'])
-    params['logs_type'] = [item.strip() for item in params['logs_type'].split(',')]
+def load_cfg():
+    global params
     
-    logger.debug("WebUI plugin '%s', configuration loaded." % (plugin_name))
-    logger.debug("Plugin configuration, database: %s (%s)" % (params['mongo_host'], params['mongo_port']))
-    logger.debug("Plugin configuration, fetching: %d %s" % (params['logs_limit'], params['logs_type']))
-except Exception, exp:
-    logger.warning("WebUI plugin '%s', configuration file (%s) not available: %s" % (plugin_name, configuration_file, str(exp)))
+    import os,sys
+    from config_parser import config_parser
+    plugin_name = os.path.splitext(os.path.basename(__file__))[0]
+    try:
+        currentdir = os.path.dirname(os.path.realpath(__file__))
+        configuration_file = "%s/%s" % (currentdir, 'plugin.cfg')
+        logger.debug("Plugin configuration file: %s", configuration_file)
+        scp = config_parser('#', '=')
+        params = scp.parse_config(configuration_file)
+
+        params['mongo_host'] = params['mongo_host']
+        params['mongo_port'] = int(params['mongo_port'])
+        params['logs_limit'] = int(params['logs_limit'])
+        params['logs_type'] = [item.strip() for item in params['logs_type'].split(',')]
+        
+        logger.debug("WebUI plugin '%s', configuration loaded.", plugin_name)
+        logger.debug("Plugin %s configuration, database: %s (%s) : %s", plugin_name, params['mongo_host'], params['mongo_port'], params['db_name'])
+        logger.debug("Plugin %s configuration, fetching: %d %s", plugin_name, params['logs_limit'], params['logs_type'])
+        return True
+    except Exception, exp:
+        logger.warning("WebUI plugin '%s', configuration file (%s) not available: %s" % (plugin_name, configuration_file, str(exp)))
+        return False
+
+
+def reload_cfg():
+    load_cfg()
+    app.bottle.redirect("/")
 
 
 def checkauth():
     user = app.get_user_auth()
-
     if not user:
         app.bottle.redirect("/user/login")
     else:
@@ -142,12 +151,11 @@ def get_json(hostname):
             'records': []
         }
 
-    logger.info("[Timeline] Fetching records from database for host %s" % (hostname))
-    
     records=[]
 
     try:
-        logger.info("[Timeline] Fetching records from database: %s (max %d)" % (params['logs_type'], params['logs_limit']))
+        logger.info("[Timeline] Fetching records from database for host %s: %s (max %d)", hostname, params['logs_type'], params['logs_limit'])
+
         # {
         # "_id" : ObjectId("53140d923dbf176872000014"),
         # "comment" : "",
@@ -176,7 +184,7 @@ def get_json(hostname):
                 "message" : log['message'].split(":")[1].lstrip()
             })
         message = "%d records fetched from database." % len(records)
-        logger.debug(message)
+        logger.info("[Timeline] %d records fetched from database.", len(records))
     except Exception, exp:
         logger.error("[Logs] Exception when querying database: %s" % (str(exp)))
         return
@@ -188,12 +196,11 @@ def get_json(hostname):
         t=datetime.datetime.fromtimestamp(record['date'])
         logger.warning("[Timeline] Record: %s / %s -> %s" % (t.strftime('%Y,%m,%d %H:%m'), t.isoformat(), record['message']))
         message = record['message'].split(";")
-        content = 'Downtime %s<br>' % message[1].lower()
-        content +='<img src="/static/timeline/img/host_downtime.png" style="width:32px; height:32px;"><br/>'
+        content = 'Host is %s<br>' % message[2].lower()
+        content +='<img src="/static/timeline/img/host_%s.png" style="width:32px; height:32px;"><br/>' % message[2].lower()
         timeline.append({
                 "start": t.isoformat(),
                 "content" : content,
-                # "group": 'Transitions'
         })
     
     # timeline = []
@@ -229,7 +236,11 @@ def get_json(hostname):
     logger.debug("[Timeline] Finished compiling fetched records")
     return json.dumps(timeline)
 
+load_cfg()
 
-pages = {get_page: {'routes': ['/timeline/:hostname'], 'view': 'timeline', 'static': True},
-         get_page: {'routes': ['/timeline/inner/:hostname'], 'view': 'timeline_inner', 'static': True},
-         get_json: {'routes': ['/timeline/json/:hostname'], 'view': 'timeline', 'static': True},}
+pages = {   
+    reload_cfg: {'routes': ['/timeline/reload'], 'view': '', 'static': True},
+    get_page: {'routes': ['/timeline/:hostname'], 'view': 'timeline', 'static': True},
+    get_page: {'routes': ['/timeline/inner/:hostname'], 'view': 'timeline_inner', 'static': True},
+    get_json: {'routes': ['/timeline/json/:hostname'], 'view': 'timeline', 'static': True},
+}
