@@ -54,7 +54,7 @@ try:
     params = scp.parse_config(configuration_file)
 
     # mongo_host = params['mongo_host']
-    params['fake'] = int(params['fake'])
+    params['fake'] = params['fake']
     
     logger.debug("WebUI plugin '%s', configuration loaded." % (plugin_name))
     # logger.debug("Plugin %s configuration, database: %s (%s)", plugin_name, params['mongo_host'], params['mongo_port'])
