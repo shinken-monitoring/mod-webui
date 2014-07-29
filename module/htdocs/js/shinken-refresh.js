@@ -25,6 +25,7 @@
 /* By default, we set the page to reload each period defined in WebUI configuration */
 var refresh_timeout = app_refresh_period;
 var nb_refresh_try = 0;
+var refresh_stopped = false;
 
 
 function postpone_refresh(){
@@ -32,7 +33,7 @@ function postpone_refresh(){
 	if (nb_refresh_try > 0){
 		$.meow({
 			message: 'The UI backend is not available.',
-			icon: '/static/images/errorMedium.png'
+			icon: '/static/images/ui_notifications/ko.png'
 		});
 	}
 	nb_refresh_try += 1;
@@ -44,9 +45,11 @@ function postpone_refresh(){
 /* React to an action return of the /action page. Look at status
  to see if it's ok or not */
 function check_gotfirstdata_result(response){
-	if (response.status == 200 && response.text == '1'){
-		// Go Refresh
-		location.reload();
+	if (response.status == 200 && response.text == '1') {
+    if (! refresh_stopped) {
+      // Go Refresh
+      location.reload();
+    }
 
 		reinit_refresh();
 	} else {
@@ -58,12 +61,6 @@ function check_gotfirstdata_result(response){
 /* We will try to see if the UI is not in restating mode, and so
    don't have enough data to refresh the page as it should. (force login) */
 function check_for_data(){
-	// this code will send a data object via a GET request and alert the retrieved data.
-	// $.jsonp({
-		// "url": '/gotfirstdata?callback=?',
-		// "success": check_gotfirstdata_result,
-		// "error": postpone_refresh
-	// });
 	$.ajax({
 		"url": '/gotfirstdata?callback=?',
     "dataType": "jsonp",
@@ -71,7 +68,6 @@ function check_for_data(){
 		"error": postpone_refresh
 	});
 }
-
 
 
 /* Each second, we check for timeout and restart page */
@@ -83,6 +79,19 @@ function check_refresh(){
 		check_for_data();
 	}
 	refresh_timeout = refresh_timeout - 1;
+}
+
+
+/* Someone ask us to start the refresh so the page will reload */
+function start_refresh(){
+  refresh_stopped = false;
+}
+
+
+/* Someone ask us to stop the refresh so the user will have time to
+   do some things like ask actions or something like that */
+function stop_refresh(){
+  refresh_stopped = true;
 }
 
 

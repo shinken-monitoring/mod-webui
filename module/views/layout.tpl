@@ -47,6 +47,11 @@
 
     <link href="/static/css/jquery.meow.css" rel="stylesheet">
     <link href="/static/css/typeahead.css" rel="stylesheet">
+
+    <link href="/static/css/daterangepicker.css" rel="stylesheet">
+    <!--
+    <link href="/static/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
+    -->
     
     <link href="/static/css/shinken-layout.css" rel="stylesheet">
     
@@ -54,11 +59,6 @@
     <!--[IF !IE]> -->
     <link href="/static/css/pulse.css" rel="stylesheet">
     <!-- <![ENDIF]-->
-
-    <!-- Warning, this version of datepicker came from http://dl.dropbox.com/u/143355/datepicker/datepicker.html -->
-    <!-- TODO : find a more recent version ! 
-    <link href="/static/css/custom/datepicker.css" rel="stylesheet">
-    -->
 
     %# And now for css files
     %for p in css:
@@ -71,6 +71,15 @@
     <script src="/static/js/jquery-ui-1.10.3.min.js"></script>
     <script src="/static/js/bootstrap.min.js"></script>
 
+    <script src="/static/js/moment.min.js"></script>
+    
+    <!-- See: https://github.com/dangrossman/bootstrap-daterangepicker -->
+    <script src="/static/js/daterangepicker.js"></script>
+    
+    <!-- See: http://www.malot.fr/bootstrap-datetimepicker/demo.php 
+    <script src="/static/js/bootstrap-datetimepicker.min.js"></script>
+    -->
+    
     <script src="/static/js/shinken-layout.js"></script>
 
     <script src="/static/js/jquery.jclock.js"></script>
@@ -87,7 +96,6 @@
     %end
     <!--Shinken ones : dashboard widgets -->
     <script src="/static/js/shinken-ui.js"></script>
-    <!--<script src="/static/js/shinken-widgets.js"></script>-->
     <script src="/static/js/shinken-actions.js"></script>
     <script src="/static/js/shinken-aggregation.js"></script>
     <script src="/static/js/shinken-deptree.js"></script>
@@ -150,16 +158,40 @@
       %end
     </div>
 
-    <!-- A modal div that will be filled and shown when we want ... -->
-    <div class="modal fade" id="modal"></div>
-
-    <!-- About modal window -->
-    <div class="modal fade" id="about">
-      <div class="modal-dialog">
+    <!-- A modal div that will be filled and shown when we want for forms ... -->
+    <div class="modal fade" id="modal" role="dialog" aria-labelledby="Generic modal box" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h4 class="modal-title">Shinken</h4>
+            <h4 class="modal-title">About Shinken Web UI:</h4>
+          </div>
+          <div class="modal-body">
+            <!--  ... -->
+          </div>
+          <div class="modal-footer">
+            <a href="#" class="btn btn-default" data-dismiss="modal">Close</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <script type="text/javascript">
+    $(function() {
+      $('#modal').on('hidden.bs.modal', function () {
+        // Clean modal content when hidden ...
+        $(this).removeData('bs.modal');
+      });
+    });
+    </script>
+
+    <!-- About modal window -->
+    <div class="modal fade" role="dialog" aria-labelledby="About box" aria-hidden="true" id="about">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title">About Shinken Web UI:</h4>
           </div>
           <div class="modal-body">
             <!-- About Form -->
