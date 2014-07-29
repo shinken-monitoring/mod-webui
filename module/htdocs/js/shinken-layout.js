@@ -147,6 +147,9 @@ function loadjscssfile(filename, filetype){
   }
 }
 
+/*
+ * Pace page loading indicator ...
+*/
 $(function() {
     /*! pace 0.4.17 */
     (function() {

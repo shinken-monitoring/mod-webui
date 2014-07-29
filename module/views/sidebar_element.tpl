@@ -97,7 +97,7 @@
       </a>
     </li>
     <li>
-      <a href="/system/logs">
+      <a href="/logs">
         <i class="fa fa-th-list"></i> Logs
       </a>
     </li>
