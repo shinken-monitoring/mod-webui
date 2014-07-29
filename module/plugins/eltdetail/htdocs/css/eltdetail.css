@@ -183,43 +183,6 @@ div.content {
     position: relative;
 }
 
-.info, .success, .warn, .error, .validation {
-  border: 1px solid;
-  margin: 10px 0px;
-  padding:5px 10px 5px 60px;
-  background-repeat: no-repeat;
-  background-position: 10px center;
-  height: 40px;
-}
-.info {
-  color: #00529B;
-  background-color: #BDE5F8;
-  background-image: url('info.png');
-}
-.success {
-  color: #4F8A10;
-  background-color: #DFF2BF;
-  background-image:url('success.png');
-}
-.warn {
-  color: #9F6000;
-  background-color: #FEEFB3;
-  background-image: url('warning.png');
-}
-.error {
-  color: #D8000C;
-  background-color: #FFBABA;
-  background-image: url('/static/images/errorMedium.png');
-}
-
-/*.icon_down {
-	background: url("/static/images/state_unreachable.png") no-repeat scroll transparent;
-	background-position: 4px;
-    padding-left: 24px;
-    height: 25px;
-    width: 25px;
-}*/
-
 
 #messagebox {
     margin-top: 10px;

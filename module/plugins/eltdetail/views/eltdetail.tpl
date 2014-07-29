@@ -46,7 +46,7 @@ Invalid element name
   %end
 %end
 
-%rebase layout title=elt_type.capitalize() + ' / ' + elt.get_full_name(), js=['eltdetail/js/jquery.color.js', 'eltdetail/js/bootstrap-switch.js', 'eltdetail/js/jquery.Jcrop.js', 'eltdetail/js/hide.js', 'eltdetail/js/dollar.js', 'eltdetail/js/gesture.js', 'eltdetail/js/graphs.js', 'eltdetail/js/depgraph.js', 'eltdetail/js/custom_views.js', 'eltdetail/js/screenfull.js', 'eltdetail/js/shinken-gauge.js', 'eltdetail/js/timeline.js', 'timeline/js/timeline.js'], css=['eltdetail/css/bootstrap-switch.css', 'eltdetail/css/eltdetail.css', 'eltdetail/css/hide.css', 'eltdetail/css/gesture.css', 'eltdetail/css/jquery.Jcrop.css', 'eltdetail/css/shinken-gauge.css', 'timeline/css/timeline.css'], user=user, app=app, refresh=True
+%rebase layout title=elt_type.capitalize() + ' ' + elt.get_full_name(), js=['eltdetail/js/jquery.color.js', 'eltdetail/js/bootstrap-switch.js', 'eltdetail/js/jquery.Jcrop.js', 'eltdetail/js/hide.js', 'eltdetail/js/dollar.js', 'eltdetail/js/gesture.js', 'eltdetail/js/graphs.js', 'eltdetail/js/depgraph.js', 'eltdetail/js/custom_views.js', 'eltdetail/js/screenfull.js', 'eltdetail/js/shinken-gauge.js', 'eltdetail/js/timeline.js', 'timeline/js/timeline.js'], css=['eltdetail/css/bootstrap-switch.css', 'eltdetail/css/eltdetail.css', 'eltdetail/css/hide.css', 'eltdetail/css/gesture.css', 'eltdetail/css/jquery.Jcrop.css', 'eltdetail/css/shinken-gauge.css', 'timeline/css/timeline.css'], user=user, app=app, refresh=True
 
 <script type="text/javascript">
 	var elt_name = '{{elt.get_full_name()}}';
@@ -74,6 +74,30 @@ Invalid element name
     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
       window.location.hash = $(e.target).attr('href');
     })
+    
+    // Buttons tooltips
+    $('button').tooltip();
+    
+    // Long text truncation
+    $('.truncate_output').jTruncate({
+      length: 200,
+      minTrail: 0,
+      moreText: "[see all]",
+      lessText: "[hide extra]",
+      ellipsisText: " <strong>(...)</strong>",
+      moreAni: "fast",
+      lessAni: 2000
+    });
+
+    $('.truncate_perf').jTruncate({
+      length: 100,
+      minTrail: 0,
+      moreText: "[see all]",
+      lessText: "[hide extra]",
+      ellipsisText: " <strong>(...)</strong>",
+      moreAni: "fast",
+      lessAni: 2000
+    });
   });
 </script>
 
@@ -147,18 +171,20 @@ Invalid element name
       %if len(elt.get_host_tags()) != 0:
 			<div id="tags" class="btn-group pull-right">
 				<script>
+					%i=0
 					%for t in sorted(elt.get_host_tags()):
-					var a = $('<a href="/all?search=htag:{{t}}"/>').appendTo($('#tags'));
+					var a{{i}} = $('<a href="/all?search=htag:{{t}}"/>').appendTo($('#tags'));
 					$('<img />')
             .attr({ 'src': '/static/images/tags/{{t.lower()}}.png', 'alt': '{{t.lower()}}', 'title': 'Tag: {{t.lower()}}' })
             .load(function() {
             })
             .error(function() {
-              $(this).hide();
-              $("<span/>").attr({ 'class': 'btn btn-default btn-xs'}).append('{{t}}').appendTo(a);
+              $(this).remove();
+              $("<span/>").attr({ 'class': 'btn btn-default btn-xs'}).append('{{t}}').appendTo(a{{i}});
             })
-            .appendTo(a);
+            .appendTo(a{{i}});
 					var span = $("<span/>").append('&nbsp;').appendTo($('#tags'));
+          %i=i+1
 					%end
 				</script>
 			</div>
@@ -173,7 +199,7 @@ Invalid element name
     <div class="panel-group" id="Overview">
       <div class="panel panel-default">
         <div class="panel-heading">
-          <div class="panel-heading fitted-header cursor" data-toggle="collapse" data-parent="#Overview" href="#collapseOne">
+          <div class="panel-heading fitted-header cursor" data-toggle="collapse" data-parent="#Overview" href="#collapseOverview">
             <h4 class="panel-title">Overview {{elt_name}}
               %if elt.display_name or elt.alias:
                 %if elt.display_name:
@@ -189,7 +215,7 @@ Invalid element name
           </div>
         </div>
         
-        <div id="collapseOne" class="panel-collapse collapse">
+        <div id="collapseOverview" class="panel-collapse collapse">
           <div class="row">
             %if elt_type=='host':
               <dl class="col-lg-4 dl-horizontal">
@@ -279,22 +305,13 @@ Invalid element name
                 %end
               </dl>
             %end
-              
-            %if len(elt.customs) > 0:
-            <dl class="col-lg-4 dl-horizontal">
-              %for p in sorted(elt.customs):
-                <dt>{{p}}</dt>
-                <dd>{{elt.customs[p]}}</dd>
-              %end
-            </dl>
-            %end
           </div>
 
           %if elt_type=='host':
           <div class="row" style="padding: 3px; border-top: 1px dotted #ccc;" >
             <ul class="list-inline list-unstyled">
               <li class="col-lg-1"></li>
-              <li class="col-lg-2"> <span class="fa-stack font-ok"> <i class="fa fa-circle fa-stack-2x"></i> <i class="glyphicon glyphicon-ok fa-stack-1x fa-inverse"></i></span> <span class="num">{{sOK}}</span> Ok</li>
+              <li class="col-lg-2"> <span class="fa-stack font-ok"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-check fa-stack-1x fa-inverse"></i></span> <span class="num">{{sOK}}</span> Ok</li>
               <li class="col-lg-2"> <span class="fa-stack font-warning"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-exclamation fa-stack-1x fa-inverse"></i></span> <span class="num">{{sWARNING}}</span> Warning</li>
               <li class="col-lg-2"> <span class="fa-stack font-critical"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-arrow-down fa-stack-1x fa-inverse"></i></span> <span class="num">{{sCRITICAL}}</span> Critical</li>
               <li class="col-lg-2"> <span class="fa-stack font-pending"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-arrow-right fa-stack-1x fa-inverse"></i></span> <span class="num">{{sPENDING}}</span> Pending</li>
@@ -313,9 +330,16 @@ Invalid element name
 	<div class="row" style="padding: 5px;">
     <div class="col-lg-2 hidden-md"></div>
     <div class="col-lg-8 col-md-12">
-      <div style="padding: 10px 35px 5px 15px;" class="alert alert-critical no-bottommargin pulsate row">
-        <div class="col-lg-2 font-white" style="font-size: 30px; padding-top: 0px;"> <i class="fa fa-bolt"></i> </div>
-        <p class="col-lg-10 font-white">This element has got an important impact on your business, please <b>fix it</b> or <b>acknowledge it</b>.</p>
+      <div class="col-lg-1 font-yellow pull-left">
+        <span class="medium-pulse aroundpulse">
+          <span class="medium-pulse pulse"></span>
+          <i class="fa fa-3x fa-bolt"></i>
+        </span>
+      </div>
+      <div class="col-lg-11 font-white">
+        %disabled_ack = '' if elt.is_problem and not elt.problem_has_been_acknowledged else 'disabled'
+        %disabled_fix = '' if elt.is_problem and elt.event_handler else 'disabled'
+        <p class="alert alert-critical">This element has an important impact on your business, you may <button name="bt-acknowledge" class="{{disabled_ack}} {{global_disabled}} btn btn-primary btn-xs" data-toggle="tooltip" data-placement="bottom" title="Acknowledge this {{elt_type}} problem">acknowledge it</button> or <button name="bt-event-handler" class="{{disabled_fix}} {{global_disabled}} btn btn-primary btn-xs" data-toggle="tooltip" data-placement="bottom" title="Launch the event handler for this {{elt_type}}">try to fix it</button>.</p>
       </div>
     </div>
     <div class="col-lg-2 hidden-md"></div>
@@ -349,29 +373,28 @@ Invalid element name
 					<h4>{{elt_type.capitalize()}} information:</h4>
 
 					<table class="table-condensed col-sm-12" style="table-layout: fixed; word-wrap: break-word;">
-						<thead>
-							<tr>
-								<th style="width: 40%"></th>
-								<th style="width: 60%"></th>
-							</tr>
-						</thead>
-						<tbody>
+						<colgroup>
+							<col style="width: 40%" />
+							<col style="width: 60%" />
+						</colgroup>
+						<tbody style="font-size:small;">
 							<tr>
 								<td><strong>Status:</strong></td>
 								<td>
-									<button class="col-lg-12 btn alert-small alert-{{elt.state.lower()}} quickinforight" data-original-title="since {{helper.print_duration(elt.last_state_change, just_duration=True, x_elts=2)}}">{{elt.state}}</button>
+									%acked = 'check' if elt.problem_has_been_acknowledged else ''
+									<button class="col-lg-12 btn trim trim-{{elt.state.lower()}}" data-toggle="tooltip" data-placement="bottom" title="since {{helper.print_duration(elt.last_state_change, just_duration=True, x_elts=2)}}">{{elt.state}} <i class='fa fa-{{acked}}'></i></button>
 								</td>
 							</tr>
 							<tr>
 								<td><strong>Flapping:</strong></td>
 								<td>
-									<button class="col-lg-12 btn alert-small trim-{{helper.yes_no(elt.is_flapping)}} quickinforight" data-original-title="{{helper.print_float(elt.percent_state_change)}}% state change">{{helper.yes_no(elt.is_flapping)}}</button>
+									<button class="col-lg-12 btn trim trim-{{helper.yes_no(elt.is_flapping)}}" data-toggle="tooltip" data-placement="bottom" title="{{helper.print_float(elt.percent_state_change)}}% state change">{{helper.yes_no(elt.is_flapping)}}</button>
 								</td>
 							</tr>
 							<tr>
 								<td><strong>Downtime:</strong></td>
 								<td>
-									<button class="col-lg-12 btn alert-small trim-{{helper.yes_no(elt.in_scheduled_downtime)}}" type="button">{{helper.yes_no(elt.in_scheduled_downtime)}}</button>
+									<button class="col-lg-12 btn trim trim-{{helper.yes_no(elt.in_scheduled_downtime)}}">{{helper.yes_no(elt.in_scheduled_downtime)}}</button>
 								</td>
 							</tr>
 							
@@ -384,7 +407,7 @@ Invalid element name
 								<td><span class="quickinfo" data-original-title='Last check was at {{time.asctime(time.localtime(elt.last_chk))}}'>was {{helper.print_duration(elt.last_chk)}}</span></td>
 							</tr>
 							<tr>
-								<td><strong></strong></td>
+								<td></td>
 								<td class="truncate_output"><em>
 								%if len(elt.output) > app.max_output_length:
 									%if app.allow_html_output:
@@ -428,13 +451,11 @@ Invalid element name
 					<h4>Additional Informations</h4>
 					
 					<table class="table-condensed col-sm-12" style="table-layout: fixed; word-wrap: break-word;">
-						<thead>
-							<tr>
-								<th style="width: 40%"></th>
-								<th style="width: 60%"></th>
-							</tr>
-						</thead>
-						<tbody>
+						<colgroup>
+							<col style="width: 40%" />
+							<col style="width: 60%" />
+						</colgroup>
+						<tbody style="font-size:small;">
 							<tr>
 								<td><strong>Check command:</strong></td>
 								<td>
@@ -513,53 +534,32 @@ Invalid element name
 						</tbody>
 					</table>
 				</div>
-				<script type="text/javascript">
-					$(document).ready(function() {
-						$('.truncate_output').jTruncate({
-							length: 200,
-							minTrail: 0,
-							moreText: "[see all]",
-							lessText: "[hide extra]",
-							ellipsisText: " <strong>(...)</strong>",
-							moreAni: "fast",
-							lessAni: 2000
-						});
-
-						$('.truncate_perf').jTruncate({
-							length: 100,
-							minTrail: 0,
-							moreText: "[see all]",
-							lessText: "[hide extra]",
-							ellipsisText: " <strong>(...)</strong>",
-							moreAni: "fast",
-							lessAni: 2000
-						});
-					});
-				</script>
 				%end
 
 				%if params['tab_commands']=='yes' and app.manage_acl and helper.can_action(user):
 				<div class="tab-pane fade" id="commands">
 					<h4>Commands:</h4>
-
 					<table class="table-condensed col-sm-12" style="table-layout: fixed; word-wrap: break-word;">
-						<thead>
+						<colgroup>
+							<col class="col-sm-1" />
+							<col class="col-sm-11" />
+						</colgroup>
+						<tbody style="font-size:small;">
 							<tr>
-								<th style="width: 60%"></th>
-								<th style="width: 40%"></th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<td><strong>Try to fix:</strong></td>
+								<td></td>
 								<td>
 									%disabled_s = ''
-									%if not elt.event_handler:
-									%disabled_s = 'disabled'
-									%end
-									<button type="button" id="bt-event-handler" class="col-lg-12 {{disabled_s}} {{global_disabled}} btn btn-primary btn-sm">Try to fix</button>
+									<button name="bt-add-comment" class="col-lg-12 {{disabled_s}} {{global_disabled}} btn btn-primary btn-sm" data-toggle="tooltip" data-placement="bottom" title="Add a comment for this {{elt_type}}">Add a comment</button>
+								</td>
+							</tr>
+							
+							<tr>
+								<td></td>
+								<td>
+									%disabled_s = '' if elt.is_problem and elt.event_handler else 'disabled'
+									<button name="bt-event-handler" class="col-lg-12 {{disabled_s}} {{global_disabled}} btn btn-primary btn-sm" data-toggle="tooltip" data-placement="bottom" title="Launch the event handler for this {{elt_type}}">Try to fix problem</button>
 									<script>
-										$('#bt-event-handler').click(function () {
+										$('button[name="bt-event-handler"]').click(function () {
 											try_to_fix('{{elt.get_full_name()}}');
 										});
 									</script>
@@ -567,25 +567,42 @@ Invalid element name
 							</tr>
 							
 							<tr>
-								<td><strong>Acknowledge:</strong></td>
+                %if elt.state != elt.ok_up and not elt.problem_has_been_acknowledged:
+								<td></td>
 								<td>
-									%disabled_s = ''
-									%if elt.problem_has_been_acknowledged:
-									%disabled_s = 'disabled'
-									%end
-									<button type="button" id="bt-acknowledge" class="col-lg-12 {{disabled_s}} {{global_disabled}} btn btn-primary btn-sm">Acknowledge</button>
+									%disabled_s = '' if elt.state != elt.ok_up and not elt.problem_has_been_acknowledged else 'disabled'
+									<button id="bt-acknowledge" name="bt-acknowledge" class="col-lg-12 {{disabled_s}} {{global_disabled}} btn btn-primary btn-sm" data-toggle="tooltip" data-placement="bottom" title="Acknowledge this {{elt_type}} problem">Add an acknowledgement</button>
 									<script>
-										$('#bt-acknowledge').click(function () {
-											// href="/forms/acknowledge/{{helper.get_uri_name(elt)}}"
+										$('button[name="bt-acknowledge"]').click(function () {
+                      stop_refresh();
+                      $('#modal').modal({
+                        keyboard: true,
+                        show: true,
+                        backdrop: 'static',
+                        remote: "/forms/acknowledge/{{helper.get_uri_name(elt)}}"
+                      });
 										});
 									</script>
 								</td>
+                %else:
+								<td></td>
+								<td>
+									%disabled_s = '' if elt.problem_has_been_acknowledged else 'disabled'
+									<button id="bt-acknowledge" name="bt-acknowledge" class="col-lg-12 {{disabled_s}} {{global_disabled}} btn btn-primary btn-sm" data-toggle="tooltip" data-placement="bottom" title="Acknowledge this {{elt_type}} problem">Remove acknowledgement</button>
+									<script>
+										$('button[name="bt-acknowledge"]').click(function () {
+											delete_acknowledge('{{elt.get_full_name()}}');
+										});
+									</script>
+								</td>
+                %end
 							</tr>
 							
 							<tr>
-								<td><strong>Recheck now:</strong></td>
+								<td></td>
 								<td>
-									<button type="button" id="bt-recheck" class="col-lg-12 {{disabled_s}} {{global_disabled}} btn btn-primary btn-sm">Recheck</button>
+									%disabled_s = '' if elt.active_checks_enabled else 'disabled'
+									<button id="bt-recheck" class="col-lg-12 {{disabled_s}} {{global_disabled}} btn btn-primary btn-sm" data-toggle="tooltip" data-placement="bottom" title="Launch a check for this {{elt_type}} now">Recheck now</button>
 									<script>
 										$('#bt-recheck').click(function () {
 											recheck_now('{{elt.get_full_name()}}');
@@ -595,60 +612,74 @@ Invalid element name
 							</tr>
 							
 							<tr>
-								<td><strong>Check result:</strong></td>
+								<td></td>
 								<td>
-									<button type="button" id="bt-check-result" class="col-lg-12 {{disabled_s}} {{global_disabled}} btn btn-primary btn-sm">Submit</button>
+									%disabled_s = '' if elt.passive_checks_enabled else 'disabled'
+									<button name="bt-check-result" class="col-lg-12 {{disabled_s}} {{global_disabled}} btn btn-primary btn-sm" data-toggle="tooltip" data-placement="bottom" title="Submit a check result for this {{elt_type}}">Submit a check result</button>
 									<script>
-										$('#bt-check-result').click(function () {
-											// href="/forms/submit_check/{{helper.get_uri_name(elt)}}"
-										});
-									</script>
-								</td>
+                  $('button[name="bt-check-result"]').click(function () {
+                    stop_refresh();
+                    $('#modal').modal({
+                      keyboard: true,
+                      show: true,
+                      backdrop: 'static',
+                      remote: "/forms/submit_check/{{helper.get_uri_name(elt)}}"
+                    });
+                  });
+                </script>
+							</td>
 							</tr>
 							
-							<tr>
-								<td><strong>Custom notification:</strong></td>
+							<!--
+              <tr>
+								<td></td>
 								<td>
 									%disabled_s = 'disabled'
-									<button type="button" id="bt-custom-notification" class="col-lg-12 {{disabled_s}} {{global_disabled}} btn btn-primary btn-sm">Submit</button>
+									<button id="bt-custom-notification" class="col-lg-12 {{disabled_s}} {{global_disabled}} btn btn-primary btn-sm" data-toggle="tooltip" data-placement="bottom" title="Send a custom notification for this {{elt_type}}">Send a custom notification</button>
 									<script>
 										$('#bt-custom-notification').click(function () {
 										});
 									</script>
 								</td>
 							</tr>
-							
-							<tr>
-								<td><strong>Schedule downtime:</strong></td>
+              -->
+              <tr>
+								<td></td>
 								<td>
 									%disabled_s = ''
-									<button type="button" id="bt-schedule-downtime" class="col-lg-12 {{disabled_s}} {{global_disabled}} btn btn-primary btn-sm">Submit</button>
+									<button id="bt-custom-var" class="col-lg-12 {{disabled_s}} {{global_disabled}} btn btn-primary btn-sm" data-toggle="tooltip" data-placement="bottom" title="Send a custom notification for this {{elt_type}}">Change a custom variable</button>
 									<script>
-										$('#bt-schedule-downtime').click(function () {
-											// href="/forms/downtime/{{helper.get_uri_name(elt)}}"
-										});
+                  $('#bt-custom-var').click(function () {
+                    stop_refresh();
+                    $('#modal').modal({
+                      keyboard: true,
+                      show: true,
+                      backdrop: 'static',
+                      remote: "/forms/custom_var/{{helper.get_uri_name(elt)}}"
+                    });
+                  });
 									</script>
 								</td>
 							</tr>
-							
-							<!--
-              <tr>
-								<td><strong>Edit host:</strong></td>
-								<td>
-									%disabled_s = 'disabled'
-									<button type="button" id="bt-edit-host" class="col-lg-12 {{disabled_s}} {{global_disabled}} btn btn-primary btn-sm">Edit</button>
-									<script>
-										$('#bt-edit-host').click(function () {
-										});
-									</script>
-								</td>
-							</tr>
-              -->
 							
 							<tr>
-								<td colspan="2"><hr/></td>
+								<td></td>
+								<td>
+									%disabled_s = ''
+									<button id="bt-schedule-downtime" name="bt-schedule-downtime" data-toggle="modal" data-target="#modal" class="col-lg-12 {{disabled_s}} {{global_disabled}} btn btn-primary btn-sm" data-toggle="tooltip" data-placement="bottom" title="Schedule a downtime for this {{elt_type}}">Schedule a downtime</button>
+								</td>
 							</tr>
+						</tbody>
+					</table>
 							
+					<br/>
+          <h4>Currently:</h4>
+					<table class="table-condensed col-sm-12" style="table-layout: fixed; word-wrap: break-word;">
+						<colgroup>
+							<col class="col-sm-6" />
+							<col class="col-sm-5" />
+						</colgroup>
+						<tbody style="font-size:small;">
 							<tr>
 								<td><strong>Active checks:</strong></td>
 								<td>
@@ -698,7 +729,6 @@ Invalid element name
 									</script>
 								</td>
 							</tr>
-							%if elt.event_handler:
 							<tr>
 								<td><strong>Event handler:</strong></td>
 								<td>
@@ -711,7 +741,6 @@ Invalid element name
 									</script>
 								</td>
 							</tr>
-							%end
 							<tr>
 								<td><strong>Flap detection:</strong></td>
 								<td>
@@ -749,48 +778,97 @@ Invalid element name
 				<div class="tab-pane fade" id="configuration">
 					<h4>{{elt_type.capitalize()}} configuration:</h4>
 
-          <table class="table-condensed col-sm-12 table-bordered" style="table-layout: fixed; word-wrap: break-word;">
+          <table class="table-condensed col-sm-12 table-bordered" >
 						<colgroup>
-							<col style="width: 70%"></col>
-							<col style="width: 30%"></col>
+							<col style="width: 70%" />
+							<col style="width: 30%" />
 						</colgroup>
-						<tbody>
+						<thead>
+              <tr>
+								<th colspan="2">{{elt_type.capitalize()}}:</td>
+              </tr>
+						</thead>
+						<tbody style="font-size:x-small;">
 							<tr>
-								<td><strong>Active checks:</strong></td>
+								<td>Active checks:</td>
 								<td><span class="{{'glyphicon glyphicon-ok font-green' if elt.active_checks_enabled else 'glyphicon glyphicon-remove font-red'}}"></span></td>
 							</tr>
 							<tr>
-								<td><strong>Passive checks:</strong></td>
+								<td>Passive checks:</td>
+								<td><i class="{{'glyphicon glyphicon-ok font-green' if elt.passive_checks_enabled else 'glyphicon glyphicon-remove font-red'}}"></span></td>
+							</tr>
+						</tbody>
+					</table>
+
+          <table class="table-condensed col-sm-12 table-bordered" >
+						<colgroup>
+							<col style="width: 70%" />
+							<col style="width: 30%" />
+						</colgroup>
+						<thead>
+              <tr>
+								<th colspan="2">Check:</td>
+              </tr>
+						</thead>
+						<tbody style="font-size:x-small;">
+							<tr>
+								<td>Active checks:</td>
+								<td><span class="{{'glyphicon glyphicon-ok font-green' if elt.active_checks_enabled else 'glyphicon glyphicon-remove font-red'}}"></span></td>
+							</tr>
+							<tr>
+								<td>Passive checks:</td>
 								<td><i class="{{'glyphicon glyphicon-ok font-green' if elt.passive_checks_enabled else 'glyphicon glyphicon-remove font-red'}}"></span></td>
 							</tr>
 							
 							%if (elt.passive_checks_enabled):
 							<tr>
-								<td><strong>Freshness check:</strong></td>
+								<td>Freshness check:</td>
 								<td><span class="{{'glyphicon glyphicon-ok font-green' if elt.check_freshness else 'glyphicon glyphicon-remove font-red'}}"></span></td>
 							</tr>
 							%if (elt.check_freshness):
 							<tr>
-								<td><strong>Freshness threshold:</strong></td>
+								<td>Freshness threshold:</td>
 								<td>{{elt.freshness_threshold}}</td>
 							</tr>
 							%end
 							%end
 							
 							<tr>
-								<td><strong>Notifications:</strong></td>
+								<td>Notifications:</td>
 								<td><span class="{{'glyphicon glyphicon-ok font-green' if elt.notifications_enabled else 'glyphicon glyphicon-remove font-red'}}"></span></td>
 							</tr>
 							<tr>
-								<td><strong>Event handlers:</strong></td>
+								<td>Event handlers:</td>
 								<td><span class="{{'glyphicon glyphicon-ok font-green' if elt.event_handler_enabled else 'glyphicon glyphicon-remove font-red'}}"></span></td>
 							</tr>
 							<tr>
-								<td><strong>Flap detection:</strong></td>
+								<td>Flap detection:</td>
 								<td><span class="{{'glyphicon glyphicon-ok font-green' if elt.flap_detection_enabled else 'glyphicon glyphicon-remove font-red'}}"></span></td>
 							</tr>
 						</tbody>
 					</table>
+              
+          %if len(elt.customs) > 0:
+          <table class="table-condensed col-sm-12 table-bordered" style="table-layout: fixed; word-wrap: break-word;">
+						<colgroup>
+							<col style="width: 50%" />
+							<col style="width: 50%" />
+						</colgroup>
+						<thead>
+              <tr>
+								<th colspan="2">Customs:</td>
+              </tr>
+						</thead>
+						<tbody style="font-size:x-small;">
+                %for p in sorted(elt.customs):
+                  <tr>
+                    <td>{{p}}</td>
+                    <td>{{elt.customs[p]}}</td>
+                  </tr>
+                %end
+						</tbody>
+					</table>
+          %end
 				</div>
 				%end
 			</div>
@@ -934,9 +1012,9 @@ Invalid element name
 								<tbody>
 								%for c in elt.comments:
 									<tr>
-										<td><strong>{{c.author}}</strong></td>
-										<td><strong>{{c.comment}}</strong></td>
-										<td><strong>{{helper.print_date(c.entry_time)}} - {{helper.print_date(c.expire_time)}}</strong></td>
+										<td>{{c.author}}</td>
+										<td>{{c.comment}}</td>
+										<td>{{helper.print_date(c.entry_time)}} - {{helper.print_date(c.expire_time)}}</td>
 										<td><a class="fa fa-trash-o {{global_disabled}} font-red" href="javascript:delete_comment('{{elt.get_full_name()}}', {{c.id}})"></a></td>
 									</tr>
 								%end
@@ -950,8 +1028,28 @@ Invalid element name
 							%end
 						</div>
 						
-						<button type="button" class="btn btn-primary btn-sm" href="/forms/comment/{{helper.get_uri_name(elt)}}" data-toggle="modal" data-target="#modal"><i class="fa fa-plus"></i> Add a comment</button>
-						<button type="button" class="btn btn-primary btn-sm" href="/forms/comment_delete/{{helper.get_uri_name(elt)}}" data-toggle="modal" data-target="#modal"><i class="fa fa-minus"></i> Delete all comments</button>
+						<button name="bt-add-comment" data-toggle="modal" data-target="#modal" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> Add a comment</button>
+						<button name="bt-delete-comments" data-toggle="modal" data-target="#modal" class="btn btn-primary btn-sm"><i class="fa fa-minus"></i> Delete all comments</button>
+            <script>
+              $('button[name="bt-add-comment"]').click(function () {
+                stop_refresh();
+                $('#modal').modal({
+                  keyboard: true,
+                  show: true,
+                  backdrop: 'static',
+                  remote: "/forms/comment/{{helper.get_uri_name(elt)}}"
+                });
+              });
+              $('button[name="bt-delete-comments"]').click(function () {
+                stop_refresh();
+                $('#modal').modal({
+                  keyboard: true,
+                  show: true,
+                  backdrop: 'static',
+                  remote: "/forms/comment_delete/{{helper.get_uri_name(elt)}}"
+                });
+              });
+            </script>
 					</div>
 				</div>
 				%end
@@ -963,29 +1061,26 @@ Invalid element name
 					<div class='row-fluid well col-lg-12'>
 						<div id="log_container" class="row-fluid">
 							%if len(elt.downtimes) > 0:
-							<table class="table table-condensed table-hover">
+							<table class="table table-condensed table-bordered">
 							  <thead>
 								<tr>
-								  <th class="col-lg-2"></th>
-								  <th class="col-lg-1"></th>
-								  <th class="col-lg-5"></th>
-								  <th class="col-lg-5"></th>
+								  <th class="col-lg-2">Author</th>
+								  <th class="col-lg-5">Reason</th>
+								  <th class="col-lg-5">Period</th>
 								  <th class="col-lg-1"></th>
 								</tr>
 							  </thead>
 							  <tbody>
 								%for dt in elt.downtimes:
 								<tr>
-								  <td><strong>{{dt.author}}</strong></td>
-								  <td><span class="label pull-right">Downtime</span></td>
-								  <td><strong>{{dt.comment}}</strong></td>
-								  <td><strong>{{helper.print_date(dt.start_time)}} - {{helper.print_date(dt.end_time)}}</strong></td>
+								  <td>{{dt.author}}</td>
+								  <td>{{dt.comment}}</td>
+								  <td>{{helper.print_date(dt.start_time)}} - {{helper.print_date(dt.end_time)}}</td>
 								  <td><a class="fa fa-trash-o {{global_disabled}} font-red" href="javascript:delete_downtime('{{elt.get_full_name()}}', {{dt.id}})"></a></td>
 								</tr>
 								%end
 							  </tbody>
 							</table>
-
 							%else:
 							<div class="alert alert-info">
 								<p class="font-blue">No downtimes available</p>
@@ -993,8 +1088,28 @@ Invalid element name
 							%end
 						</div>
 						
-						<button type="button" class="btn btn-primary btn-sm" href="/forms/downtime/{{helper.get_uri_name(elt)}}" data-toggle="modal" data-target="#modal" class="btn btn-primary"><i class="fa fa-plus"></i> Add a downtime</button>
-						<button type="button" class="btn btn-primary btn-sm" href="/forms/downtime_delete/{{helper.get_uri_name(elt)}}" data-toggle="modal" data-target="#modal" class="btn btn-primary"><i class="fa fa-minus"></i> Delete all downtimes</button>
+						<button name="bt-schedule-downtime" data-toggle="modal" data-target="#modal" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> Add a downtime</button>
+						<button name="bt-delete-downtimes" data-toggle="modal" data-target="#modal" class="btn btn-primary btn-sm"><i class="fa fa-minus"></i> Delete all downtimes</button>
+            <script>
+              $('button[name="bt-schedule-downtime"]').click(function () {
+                stop_refresh();
+                $('#modal').modal({
+                  keyboard: true,
+                  show: true,
+                  backdrop: 'static',
+                  remote: "/forms/downtime/{{helper.get_uri_name(elt)}}"
+                });
+              });
+              $('button[name="bt-delete-downtimes"]').click(function () {
+                stop_refresh();
+                $('#modal').modal({
+                  keyboard: true,
+                  show: true,
+                  backdrop: 'static',
+                  remote: "/forms/downtime_delete/{{helper.get_uri_name(elt)}}"
+                });
+              });
+            </script>
 					</div>
 				</div>
 				%end
@@ -1163,7 +1278,7 @@ Invalid element name
 				<div class="tab-pane fade" id="depgraph" class="col-lg-12">
 					<div class='row-fluid well col-lg-12 jcrop'>
 						<div class="btn-group btn-group-sm pull-right">
-							<button type="button" id="fullscreen-request" class="btn btn-primary"><i class="fa fa-plus"></i> Fullscreen</button>
+							<button id="fullscreen-request" class="btn btn-primary"><i class="fa fa-plus"></i> Fullscreen</button>
 						</div>
 						<div id="inner_depgraph" data-elt-name='{{elt.get_full_name()}}'>
 							<span class="alert alert-error">Cannot load dependency graph.</span>

@@ -1,11 +1,18 @@
+%username = 'anonymous'
+%if user is not None: 
+%if hasattr(user, 'alias'):
+%	username = user.alias
+%else:
+%	username = user.get_name()
+%end
+%end
+
 <script type="text/javascript">
 	function submit_local_form() {
-		var form = document.forms['modal_form'];
-
-		var reason = form.reason.value;
-
-		do_acknowledge("{{name}}", reason, '{{user.get_name()}}');
-		$('#modal').modal('hide')
+		// Launch acknowledge request and bailout this modal view
+		do_acknowledge("{{name}}", $('#reason').val(), '{{username}}');
+    start_refresh();
+		$('#modal').modal('hide');
 	}
 </script>
 
@@ -17,15 +24,14 @@
 		</div>
 
 		<div class="modal-body">
-			<form class="well" name='modal_form'>
-				<input type="textarea" name='reason' class="span3" placeholder="Reason…">
-				<span class="help-inline">Reason</span>
+			<form name="input_form" role="form">
+        <div class="form-group">
+          <label>Reason</label>
+          <textarea type="textarea" name="reason" id="reason" autofocus="" class="input-group col-sm-offset-1 col-sm-10" rows="5" placeholder="Reason..."/>
+        </div>
+        
+        <a href="javascript:submit_local_form();" class="btn btn-primary btn-lg btn-block"> <i class="fa fa-save"></i> Submit</a>
 			</form>
-		</div>
-		
-		<div class="modal-footer">
-			<a href="javascript:submit_local_form();" class="btn btn-primary">Submit</a>
-			<a href="#" class="btn" data-dismiss="modal">Close</a>
 		</div>
 	</div>
 </div>
