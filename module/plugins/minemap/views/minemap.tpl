@@ -9,9 +9,11 @@ Invalid group name
 %if group=='all':
 %groupname = 'all'
 %groupalias = 'All hosts and services'
+%title = 'Minemap for all hosts and services'
 %else:
 %groupname = group.get_name()
 %groupalias = group.alias
+%title = "Minemap for: <a href='/hosts-group/%s'>%s</a>" % (groupname, groupalias)
 %end
 
 %helper = app.helper
@@ -72,7 +74,7 @@ Invalid group name
 %columns.sort()
 %end
 
-%rebase layout globals(), title='Minemap view for ' + groupname + ' group', refresh=True, css=['minemap/css/minemap.css'], js=['minemap/js/minemap.js']
+%rebase layout globals(), title=title, refresh=True, css=['minemap/css/minemap.css'], js=['minemap/js/minemap.js']
 
 <style>
 .warning, .unreachable {
