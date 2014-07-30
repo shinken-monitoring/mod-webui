@@ -27,15 +27,6 @@ import time
 
 from shinken.log import logger
 
-# Mongodb lib
-try:
-    import pymongo
-    from pymongo.connection import Connection
-    import gridfs
-except ImportError:
-    Connection = None
-
-
 ### Will be populated by the UI with it's own value
 app = None
 
