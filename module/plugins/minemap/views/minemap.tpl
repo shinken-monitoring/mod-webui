@@ -29,8 +29,6 @@ Invalid group name
 %hUnknown=0
 %for h in hosts:
 	%if not h.get_name() in rows:
-		%rows.append(h.get_name())
-		
 		%nServices=0
 		%for s in h.services:
 			%nServices=nServices+1
@@ -40,6 +38,7 @@ Invalid group name
 		%end
 
 		%if nServices > 0:
+      %rows.append(h.get_name())
 			%nHosts=nHosts+1
 			%if h.state == 'UP':
 				%hUp=hUp+1

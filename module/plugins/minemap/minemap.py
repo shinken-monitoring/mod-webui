@@ -49,7 +49,6 @@ def get_page(groupname):
 
     else:
         my_group = app.datamgr.get_hostgroup(groupname)
-
         if not my_group:
             return "Unknown group %s" % groupname
             

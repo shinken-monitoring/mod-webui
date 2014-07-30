@@ -56,7 +56,8 @@ Invalid group name
 
 %end
 
-%rebase layout globals(), css=['groups/css/groups-overview.css'], title='Services group detail for ' + groupalias, refresh=True
+%# Specific content for breadrumb
+%rebase layout globals(), css=['groups/css/groups-overview.css'], title='Services group detail for ' + groupalias, refresh=True, breadcrumb=[ ['Groups', '/services-groups'], [groupalias, '/services-group/'+groupname] ]
 
 <style>
 .warning, .unreachable {
@@ -107,7 +108,7 @@ Invalid group name
 	</div>
 
 	<div class='col-lg-12'>
-		%include pagination_element navi=navi, app=app, page="servicegroup/"+groupname, div_class="center no-margin"
+		%include pagination_element navi=navi, app=app, page="services-group/"+groupname, div_class="center no-margin"
 	</div>
 
 	<div class="clearfix">
@@ -146,6 +147,6 @@ Invalid group name
 	</div>
 
 	<div class='col-lg-12'>
-		%include pagination_element navi=navi, app=app, page="servicegroup/"+groupname, div_class="center no-margin"
+		%include pagination_element navi=navi, app=app, page="services-group/"+groupname, div_class="center no-margin"
 	</div>
 </div>

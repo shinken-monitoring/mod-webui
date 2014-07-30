@@ -90,7 +90,7 @@ def load_cfg():
 
 def reload_cfg():
     load_cfg()
-    app.bottle.redirect("/")
+    app.bottle.redirect("/config")
 
 
 def checkauth():
@@ -236,10 +236,11 @@ def get_json(hostname):
     logger.debug("[Timeline] Finished compiling fetched records")
     return json.dumps(timeline)
 
+# Load plugin configuration parameters
 load_cfg()
 
 pages = {   
-    reload_cfg: {'routes': ['/timeline/reload'], 'view': '', 'static': True},
+    reload_cfg: {'routes': ['/reload/timeline'], 'view': '', 'static': True},
     get_page: {'routes': ['/timeline/:hostname'], 'view': 'timeline', 'static': True},
     get_page: {'routes': ['/timeline/inner/:hostname'], 'view': 'timeline_inner', 'static': True},
     get_json: {'routes': ['/timeline/json/:hostname'], 'view': 'timeline', 'static': True},

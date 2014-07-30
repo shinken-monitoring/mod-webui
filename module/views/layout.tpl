@@ -17,6 +17,9 @@
 %if not 'print_header' in locals(): print_header = True
 %if not 'print_title' in locals(): print_title = True
 %if not 'print_footer' in locals(): print_footer = True
+%# For breadcrub, declare as is when rebasing layout: 
+%# - breadcrumb=[ ['Groups', '/servicegroups'], [groupalias, '/servicegroup/'+groupname] ]
+%if not 'breadcrumb' in locals(): breadcrumb = ''
 
 %# Current page may be refreshed or not
 %if not 'refresh' in locals(): refresh = False
@@ -136,10 +139,22 @@
 
           <ol class="breadcrumb">
             <li><a href="/">Home</a></li>
+            %if breadcrumb == '':
             <li class="active">{{title or 'No title'}}</li>
+            %else:
+            %_go_active = 'active'
+            %for p in breadcrumb:
+              %_go_active = ''
+              %if p[0]:
+              <li class="{{_go_active}}"><a href="{{p[1]}}">{{p[0]}}</a></li>
+              %else:
+              <li class="{{_go_active}}">{{p}}</li>
+              %end
+            %end
+            %end
           </ol>
         </section>
-        %end	
+        %end
 
         <!-- Page content -->
         <section class="content">

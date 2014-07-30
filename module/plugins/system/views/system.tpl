@@ -1,4 +1,4 @@
-%rebase layout globals(), title='Shinken daemons status', menu_part='/system'
+%rebase layout globals(), title='Shinken daemons status'
 
 %from shinken.bin import VERSION
 %helper = app.helper
