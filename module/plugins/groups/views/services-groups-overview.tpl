@@ -1,4 +1,4 @@
-%rebase layout globals(), css=['groups/css/groups-overview.css'], js=['groups/js/groups-overview.js'], title='Services groups overview', menu_part='', refresh=True
+%rebase layout globals(), css=['groups/css/groups-overview.css'], js=['groups/js/groups-overview.js'], title='Services groups overview', refresh=True
 
 %helper = app.helper
 %datamgr = app.datamgr
@@ -83,7 +83,7 @@
 				<span class="sum">{{nServices}} services</span>
 				%end
 				<span class="darkview">
-				<a href="/servicegroup/all" class="firstbtn"><i class="fa fa-angle-double-down"></i> Details</a>
+				<a href="/services-group/all" class="firstbtn"><i class="fa fa-angle-double-down"></i> Details</a>
 				<a href="/minemap/all" class="firstbtn"><i class="fa fa-table"></i> Minemap</a>
 				</span>
 			</section>
@@ -172,7 +172,7 @@
               <span class="sumGroups">{{'%d group' % nGroups if nGroups == 1 else '' if nGroups == 0 else '%d groups' % nGroups}}</span>
             </div>
             <span class="darkview">
-              <a href="/servicegroup/{{group.get_name()}}" class="firstbtn"><i class="fa fa-angle-double-down"></i> Details</a>
+              <a href="/services-group/{{group.get_name()}}" class="firstbtn"><i class="fa fa-angle-double-down"></i> Details</a>
               <a href="/minemap/{{group.get_name()}}" class="firstbtn"><i class="fa fa-table"></i> Minemap</a>
             </span>
           </section>

@@ -1,4 +1,4 @@
-%rebase layout globals(), css=['groups/css/groups-overview.css'], js=['groups/js/groups-overview.js'], title='Hosts groups overview', menu_part='', refresh=True
+%rebase layout globals(), css=['groups/css/groups-overview.css'], js=['groups/js/groups-overview.js'], title='Hosts groups overview', refresh=True
 
 %helper = app.helper
 %datamgr = app.datamgr
@@ -82,7 +82,7 @@
           <span class="sumGroups">{{'%d group' % nGroups if nGroups == 1 else '' if nGroups == 0 else '%d groups' % nGroups}}</span>
         </div>
         <span class="darkview">
-          <a href="/hostgroup/all" class="firstbtn"><i class="fa fa-angle-double-down"></i> Details</a>
+          <a href="/hosts-group/all" class="firstbtn"><i class="fa fa-angle-double-down"></i> Details</a>
           <a href="/minemap/all" class="firstbtn"><i class="fa fa-table"></i> Minemap</a>
         </span>
       </section>
@@ -171,7 +171,7 @@
               <span class="sumGroups">{{'%d group' % nGroups if nGroups == 1 else '' if nGroups == 0 else '%d groups' % nGroups}}</span>
             </div>
             <span class="darkview">
-              <a href="/hostgroup/{{group.get_name()}}" class="firstbtn"><i class="fa fa-angle-double-down"></i> Details</a>
+              <a href="/hosts-group/{{group.get_name()}}" class="firstbtn"><i class="fa fa-angle-double-down"></i> Details</a>
               <a href="/minemap/{{group.get_name()}}" class="firstbtn"><i class="fa fa-table"></i> Minemap</a>
             </span>
           </section>

@@ -82,7 +82,7 @@ def load_cfg():
 
 def reload_cfg():
     load_cfg()
-    app.bottle.redirect("/logs")
+    app.bottle.redirect("/config")
 
 
 def checkauth():
@@ -251,18 +251,18 @@ def set_logs_type_list():
     app.bottle.redirect("/logs")
     return
 
-
+# Load plugin configuration parameters
 load_cfg()
 
 pages = {   
-    reload_cfg: {'routes': ['/logs/reload'], 'view': '', 'static': True},
+        reload_cfg: {'routes': ['/reload/logs']},
 
-    show_logs: {'routes': ['/logs'], 'view': 'logs', 'static': True},
-    
-    form_hosts_list: {'routes': ['/logs/hosts_list'], 'view': 'form_hosts_list'},
-    set_hosts_list: {'routes': ['/logs/set_hosts_list'], 'view': 'logs', 'method': 'POST'},
-    form_services_list: {'routes': ['/logs/services_list'], 'view': 'form_services_list'},
-    set_services_list: {'routes': ['/logs/set_services_list'], 'view': 'logs', 'method': 'POST'},
-    form_logs_type_list: {'routes': ['/logs/logs_type_list'], 'view': 'form_logs_type_list'},
-    set_logs_type_list: {'routes': ['/logs/set_logs_type_list'], 'view': 'logs', 'method': 'POST'},
+        show_logs: {'routes': ['/logs'], 'view': 'logs', 'static': True},
+        
+        form_hosts_list: {'routes': ['/logs/hosts_list'], 'view': 'form_hosts_list'},
+        set_hosts_list: {'routes': ['/logs/set_hosts_list'], 'view': 'logs', 'method': 'POST'},
+        form_services_list: {'routes': ['/logs/services_list'], 'view': 'form_services_list'},
+        set_services_list: {'routes': ['/logs/set_services_list'], 'view': 'logs', 'method': 'POST'},
+        form_logs_type_list: {'routes': ['/logs/logs_type_list'], 'view': 'form_logs_type_list'},
+        set_logs_type_list: {'routes': ['/logs/set_logs_type_list'], 'view': 'logs', 'method': 'POST'},
 }

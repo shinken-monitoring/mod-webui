@@ -76,7 +76,7 @@ def checkauth():
 
 def reload_cfg():
     load_cfg()
-    app.bottle.redirect("/")
+    app.bottle.redirect("/config")
 
 
 # Main impacts view
@@ -121,9 +121,11 @@ def show_service(hname, desc):
     return {'app': app, 'elt': s, 'valid_user': True, 'user': user, 'params': params, 'graphstart': graphstart,
             'graphend': graphend}
 
+# Load plugin configuration parameters
 load_cfg()
 
-pages = {reload_cfg: {'routes': ['/eltview/reload'], 'view': 'groups', 'static': True},
-         show_host: {'routes': ['/host/:name'], 'view': 'eltdetail', 'static': True},
-         show_service: {'routes': ['/service/:hname/:desc#.+#'], 'view': 'eltdetail', 'static': True},
-         }
+pages = {
+        reload_cfg: {'routes': ['/reload/eltdetail'], 'view': 'groups', 'static': True},
+        show_host: {'routes': ['/host/:name'], 'view': 'eltdetail', 'static': True},
+        show_service: {'routes': ['/service/:hname/:desc#.+#'], 'view': 'eltdetail', 'static': True},
+        }

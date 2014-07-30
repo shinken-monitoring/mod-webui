@@ -1,4 +1,4 @@
-%rebase layout globals(), css=['tags/css/tags-overview.css'], js=['tags/js/tags-overview.js'], title='Services tags overview', menu_part='', refresh=True
+%rebase layout globals(), css=['tags/css/tags-overview.css'], js=['tags/js/tags-overview.js'], title='Services tags overview', refresh=True
 
 <div class="row">
   <span class="btn-group pull-right">
@@ -64,10 +64,10 @@
             </span> 
             <span class="fa-stack font-unknown"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-question fa-stack-1x fa-inverse"></i></span> 
             <span class="num">
-              %if sPenging > 0:
-              {{sPenging}}
+              %if sPending > 0:
+              {{sPending}}
               %else:
-              <em>{{sPenging}}</em>
+              <em>{{sPending}}</em>
               %end
             </span>
           </span>

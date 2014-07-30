@@ -67,7 +67,7 @@ def checkauth():
 
 def reload_cfg():
     load_cfg()
-    app.bottle.redirect("/tags")
+    app.bottle.redirect("/config")
 
 def show_tag(name):
     user = checkauth()
@@ -106,7 +106,7 @@ def show_stag(name):
         items.extend(app.datamgr.get_hosts())
 
     else:
-        items = app.datamgr.get_hosts_tagged_with(name)
+        items = app.datamgr.get_services_tagged_with(name)
 
     elts_per_page = params['elts_per_page']
     # We want to limit the number of elements
@@ -125,7 +125,7 @@ def show_stag(name):
     navi = app.helper.get_navi(total, start, step=elts_per_page)
     items = items[start:end]
         
-    return {'app': app, 'user': user, 'params': params, 'navi': navi, 'tag': name, 'hosts': items, 'length': total}
+    return {'app': app, 'user': user, 'params': params, 'navi': navi, 'tag': name, 'services': items, 'length': total}
     
 def show_tags():
     user = checkauth()    
@@ -143,17 +143,11 @@ def show_stags():
 # Load plugin configuration parameters
 load_cfg()
 
-# This is the dict the webui will try to "load".
-#  *here we register one page with both addresses /dummy/:arg1 and /dummy/, both addresses
-#   will call the function get_page.
-#  * we say that for this page, we are using the template file dummy (so view/dummy.tpl)
-#  * we said this page got some static stuffs. So the webui will match /static/dummy/ to
-#    the dummy/htdocs/ directory. Beware: it will take the plugin name to match.
-#  * optional: you can add 'method': 'POST' so this address will be only available for
-#    POST calls. By default it's GET. Look at the lookup module for sample about this.
-pages = {reload_cfg: {'routes': ['/tags/reload'], 'view': 'hosts-tags-overview', 'static': True},
-         show_tag: {'routes': ['/hosts-tag/:name'], 'view': 'hosts-tag', 'static': True},
-         show_stag: {'routes': ['/services-tag/:name'], 'view': 'services-tag', 'static': True},
-         show_tags: {'routes': ['/hosts-tags'], 'view': 'hosts-tags-overview', 'static': True},
-         show_stags: {'routes': ['/services-tags'], 'view': 'services-tags-overview', 'static': True},
-         }
+pages = {
+        reload_cfg: {'routes': ['/reload/tags']},
+        
+        show_tag: {'routes': ['/hosts-tag/:name'], 'view': 'hosts-tag', 'static': True},
+        show_stag: {'routes': ['/services-tag/:name'], 'view': 'services-tag', 'static': True},
+        show_tags: {'routes': ['/hosts-tags'], 'view': 'hosts-tags-overview', 'static': True},
+        show_stags: {'routes': ['/services-tags'], 'view': 'services-tags-overview', 'static': True},
+        }
