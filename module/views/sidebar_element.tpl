@@ -57,12 +57,12 @@
       </a>
     </li>
     <li>
-      <a href="/hostgroups">
+      <a href="/hosts-groups">
         <i class="fa fa-sitemap"></i> Hosts groups
       </a>
     </li>
     <li>
-      <a href="/servicegroups">
+      <a href="/services-groups">
         <i class="fa fa-sitemap"></i> Services groups
       </a>
     </li>

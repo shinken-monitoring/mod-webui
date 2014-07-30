@@ -67,7 +67,7 @@ def checkauth():
 
 def reload_cfg():
     load_cfg()
-    app.bottle.redirect("/hostgroups")
+    app.bottle.redirect("/config")
 
 def show_hostgroup(name):
     user = checkauth()
@@ -161,17 +161,11 @@ def show_servicegroups():
 # Load plugin configuration parameters
 load_cfg()
 
-# This is the dict the webui will try to "load".
-#  *here we register one page with both addresses /dummy/:arg1 and /dummy/, both addresses
-#   will call the function get_page.
-#  * we say that for this page, we are using the template file dummy (so view/dummy.tpl)
-#  * we said this page got some static stuffs. So the webui will match /static/dummy/ to
-#    the dummy/htdocs/ directory. Beware: it will take the plugin name to match.
-#  * optional: you can add 'method': 'POST' so this address will be only available for
-#    POST calls. By default it's GET. Look at the lookup module for sample about this.
-pages = {reload_cfg: {'routes': ['/hostgroups/reload','/servicegroups/reload'], 'view': 'hostgroups-overview', 'static': True},
-         show_hostgroup: {'routes': ['/hostgroup/:name'], 'view': 'hostgroup', 'static': True},
-         show_hostgroups: {'routes': ['/hostgroups'], 'view': 'hostgroups-overview', 'static': True},
-         show_servicegroup: {'routes': ['/servicegroup/:name'], 'view': 'servicegroup', 'static': True},
-         show_servicegroups: {'routes': ['/servicegroups'], 'view': 'servicegroups-overview', 'static': True},
-         }
+pages = {
+        reload_cfg: {'routes': ['/reload/groups']},
+        
+        show_hostgroup: {'routes': ['/hosts-group/:name'], 'view': 'hosts-group', 'static': True},
+        show_hostgroups: {'routes': ['/hosts-groups'], 'view': 'hosts-groups-overview', 'static': True},
+        show_servicegroup: {'routes': ['/services-group/:name'], 'view': 'services-group', 'static': True},
+        show_servicegroups: {'routes': ['/services-groups'], 'view': 'services-groups-overview', 'static': True},
+        }

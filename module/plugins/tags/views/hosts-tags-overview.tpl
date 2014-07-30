@@ -1,4 +1,4 @@
-%rebase layout globals(), css=['tags/css/tags-overview.css'], js=['tags/js/tags-overview.js'], title='Hosts tags overview', menu_part='', refresh=True
+%rebase layout globals(), css=['tags/css/tags-overview.css'], js=['tags/js/tags-overview.js'], title='Hosts tags overview', refresh=True
 
 <div class="row">
   <span class="btn-group pull-right">

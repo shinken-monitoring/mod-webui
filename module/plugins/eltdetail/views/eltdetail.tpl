@@ -119,11 +119,11 @@ Invalid element name
         <ul class="dropdown-menu pull-right">
           %if elt_type=='host':
             %for hg in elt.hostgroups:
-            <li><a href="/hostgroup/{{hg.get_name()}}">{{hg.get_name()}} ({{hg.alias}})</a></li>
+            <li><a href="/hosts-group/{{hg.get_name()}}">{{hg.get_name()}} ({{hg.alias}})</a></li>
             %end
           %else:
             %for sg in elt.servicegroups:
-            <li><a href="/servicegroup/{{sg.get_name()}}">{{sg.get_name()}} ({{sg.alias}})</a></li>
+            <li><a href="/services-group/{{sg.get_name()}}">{{sg.get_name()}} ({{sg.alias}})</a></li>
             %end
           %end
 				</ul>

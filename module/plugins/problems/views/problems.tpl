@@ -3,7 +3,7 @@
 %helper = app.helper
 %datamgr = app.datamgr
 
-%rebase layout globals(), title='All problems', js=['problems/js/img_hovering.js', 'problems/js/problems.js', 'problems/js/filters.js', 'problems/js/bookmarks.js'], css=['problems/css/problems.css', 'problems/css/perfometer.css', 'problems/css/img_hovering.css', 'problems/css/filters.css'], refresh=True, menu_part='/'+page, user=user
+%rebase layout globals(), title='All problems', js=['problems/js/img_hovering.js', 'problems/js/problems.js', 'problems/js/filters.js', 'problems/js/bookmarks.js'], css=['problems/css/problems.css', 'problems/css/perfometer.css', 'problems/css/img_hovering.css', 'problems/css/filters.css'], refresh=True, user=user
 
 %# Look for actions if we must show them or not
 %global_disabled = ''
