@@ -35,7 +35,7 @@
 	%pctUnknown		= 0
 %end
 
-%rebase layout globals(), title="Hosts tagged '" + tag + "'", css=['tags/css/tags-overview.css'], refresh=True
+%rebase layout globals(), title="Hosts tagged '" + tag + "'", css=['tags/css/tags-overview.css'], refresh=True, breadcrumb=[ ['All hosts tags', '/hosts-tags'], [tag, '/hosts-tag/'+tag] ]
 
 <style>
 .warning, .unreachable {

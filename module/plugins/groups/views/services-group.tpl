@@ -57,7 +57,7 @@ Invalid group name
 %end
 
 %# Specific content for breadrumb
-%rebase layout globals(), css=['groups/css/groups-overview.css'], title='Services group detail for ' + groupalias, refresh=True, breadcrumb=[ ['Groups', '/services-groups'], [groupalias, '/services-group/'+groupname] ]
+%rebase layout globals(), css=['groups/css/groups-overview.css'], title='Services group detail for ' + groupalias, refresh=True, breadcrumb=[ ['All groups', '/services-groups'], [groupalias, '/services-group/'+groupname] ]
 
 <style>
 .warning, .unreachable {

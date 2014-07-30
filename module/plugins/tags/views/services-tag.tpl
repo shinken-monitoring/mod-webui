@@ -36,7 +36,7 @@
 %end
 
 %# Specific content for breadrumb
-%rebase layout globals(), title="Services tagged '" + tag + "'", css=['tags/css/tags-overview.css'], refresh=True, breadcrumb=[ ['Tags', '/services-tags'], [tag, '/service-tag/'+tag] ]
+%rebase layout globals(), title="Services tagged '" + tag + "'", css=['tags/css/tags-overview.css'], refresh=True, breadcrumb=[ ['All services tags', '/services-tags'], [tag, '/services-tag/'+tag] ]
 
 <div id="content_container">
 	<div class="panel panel-default">
