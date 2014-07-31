@@ -43,6 +43,7 @@ params['tab_downtimes'] = 'yes'
 params['tab_timeline'] = 'yes'
 params['tab_graphs'] = 'yes'
 params['tab_depgraph'] = 'yes'
+params['tab_history'] = 'yes'
 
 params['cfg_nb_impacts'] = 5
 
