@@ -109,6 +109,18 @@
   /* background-image: url('error.png'); */
 }
 
+/*  Special background colors (for hosts/services tags)
+    ------------------------------------------------------- */
+.bg-host {
+  color: #f9f9f9 !important;
+  background-color: #85144b !important;
+}
+.bg-service {
+  color: #f9f9f9 !important;
+  background-color: #004f3f !important;
+}
+
+
 /*  Special Font Awesome styles (Font Color)
     ------------------------------------------------------- */
 .font-white {color: #FFFFFF;}

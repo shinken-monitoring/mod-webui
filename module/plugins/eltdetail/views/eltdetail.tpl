@@ -46,7 +46,7 @@ Invalid element name
   %end
 %end
 
-%rebase layout title=elt_type.capitalize() + ' ' + elt.get_full_name(), js=['eltdetail/js/jquery.color.js', 'eltdetail/js/bootstrap-switch.js', 'eltdetail/js/jquery.Jcrop.js', 'eltdetail/js/hide.js', 'eltdetail/js/dollar.js', 'eltdetail/js/gesture.js', 'eltdetail/js/graphs.js', 'eltdetail/js/depgraph.js', 'eltdetail/js/custom_views.js', 'eltdetail/js/screenfull.js', 'eltdetail/js/shinken-gauge.js', 'eltdetail/js/timeline.js', 'timeline/js/timeline.js'], css=['eltdetail/css/bootstrap-switch.css', 'eltdetail/css/eltdetail.css', 'eltdetail/css/hide.css', 'eltdetail/css/gesture.css', 'eltdetail/css/jquery.Jcrop.css', 'eltdetail/css/shinken-gauge.css', 'timeline/css/timeline.css'], user=user, app=app, refresh=True
+%rebase layout title=elt_type.capitalize() + ' ' + elt.get_full_name(), js=['eltdetail/js/jquery.color.js', 'eltdetail/js/bootstrap-switch.js', 'eltdetail/js/jquery.Jcrop.js', 'eltdetail/js/hide.js', 'eltdetail/js/dollar.js', 'eltdetail/js/gesture.js', 'eltdetail/js/graphs.js', 'eltdetail/js/depgraph.js', 'eltdetail/js/custom_views.js', 'eltdetail/js/screenfull.js', 'eltdetail/js/shinken-gauge.js', 'eltdetail/js/timeline.js', 'timeline/js/timeline.js', 'eltdetail/js/history.js'], css=['eltdetail/css/bootstrap-switch.css', 'eltdetail/css/eltdetail.css', 'eltdetail/css/hide.css', 'eltdetail/css/gesture.css', 'eltdetail/css/jquery.Jcrop.css', 'eltdetail/css/shinken-gauge.css', 'timeline/css/timeline.css'], user=user, app=app, refresh=True
 
 <script type="text/javascript">
 	var elt_name = '{{elt.get_full_name()}}';
@@ -107,7 +107,7 @@ Invalid element name
 %elt_display_name = elt.display_name if elt_type=='host' else elt.service_description
 
 	<!-- First row : tags and actions ... -->
-	%if elt.action_url != '' or len(elt.get_host_tags()) != 0 or (elt_type=='host' and len(elt.hostgroups) > 0) or (elt_type=='service' and len(elt.servicegroups) > 0):
+	%if elt.action_url != '' or (elt_type=='host' and len(elt.get_host_tags()) != 0) or (elt_type=='service' and len(elt.get_service_tags()) != 0) or (elt_type=='host' and len(elt.hostgroups) > 0) or (elt_type=='service' and len(elt.servicegroups) > 0):
 	<div class="row">
     <div class="col-sm-12">
       %if (elt_type=='host' and len(elt.hostgroups) > 0) or (elt_type=='service' and len(elt.servicegroups) > 0):
@@ -168,23 +168,46 @@ Invalid element name
 				&nbsp;&nbsp;
 			</div>
 			%end
-      %if len(elt.get_host_tags()) != 0:
-			<div id="tags" class="btn-group pull-right">
+      %if hasattr(elt, 'get_host_tags') and len(elt.get_host_tags()) != 0:
+			<div id="host_tags" class="btn-group pull-right">
 				<script>
 					%i=0
 					%for t in sorted(elt.get_host_tags()):
-					var a{{i}} = $('<a href="/all?search=htag:{{t}}"/>').appendTo($('#tags'));
+					var a{{i}} = $('<a href="/all?search=htag:{{t}}"/>').appendTo($('#host_tags'));
 					$('<img />')
             .attr({ 'src': '/static/images/tags/{{t.lower()}}.png', 'alt': '{{t.lower()}}', 'title': 'Tag: {{t.lower()}}' })
+            .css({height: "24px"})
             .load(function() {
             })
             .error(function() {
               $(this).remove();
-              $("<span/>").attr({ 'class': 'btn btn-default btn-xs'}).append('{{t}}').appendTo(a{{i}});
+              $("<span/>").attr({ 'class': 'btn btn-default btn-xs bg-host'}).append('{{t}}').appendTo(a{{i}});
             })
             .appendTo(a{{i}});
-					var span = $("<span/>").append('&nbsp;').appendTo($('#tags'));
+					var span = $("<span/>").append('&nbsp;').appendTo($('#host_tags'));
           %i=i+1
+					%end
+				</script>
+			</div>
+			%end
+      %if hasattr(elt, 'get_service_tags') and len(elt.get_service_tags()) != 0:
+			<div id="service_tags" class="btn-group pull-right">
+				<script>
+					%j=0
+					%for t in sorted(elt.get_service_tags()):
+					var b{{j}} = $('<a href="/all?search=htag:{{t}}"/>').appendTo($('#service_tags'));
+					$('<img />')
+            .attr({ 'src': '/static/images/tags/{{t.lower()}}.png', 'alt': '{{t.lower()}}', 'title': 'Tag: {{t.lower()}}' })
+            .css({height: "24px"})
+            .load(function() {
+            })
+            .error(function() {
+              $(this).remove();
+              $("<span/>").attr({ 'class': 'btn btn-default btn-xs bg-service'}).append('{{t}}').appendTo(b{{j}});
+            })
+            .appendTo(b{{j}});
+					var span = $("<span/>").append('&nbsp;').appendTo($('#service_tags'));
+          %j=j+1
 					%end
 				</script>
 			</div>
@@ -875,7 +898,7 @@ Invalid element name
 		</div>
 
 		<!-- Detail info box start -->
-		<div class="col-md-6 col-lg-8 tabbable">
+		<div class="col-md-6 col-lg-9 tabbable">
 			<ul class="nav nav-tabs">
 				%_go_active = 'active'
 				%if params['tab_custom_views']=='yes':
@@ -896,13 +919,16 @@ Invalid element name
 				<li><a class='link_to_tab' href="#downtimes" data-toggle="tab">Downtimes</a></li>
 				%end
 				%if params['tab_timeline']=='yes':
-				<li class='timeline_pane'><a class='link_to_tab' href="#timeline" data-toggle="tab" id='tab_to_timeline'>Timeline</a></li>
+				<li class="timeline_pane"><a class="link_to_tab" href="#timeline" data-toggle="tab" id="tab_to_timeline">Timeline</a></li>
 				%end
 				%if params['tab_graphs']=='yes':
-				<li><a class='link_to_tab' href="#graphs" data-toggle="tab" id='tab_to_graphs'>Graphs</a></li>
+				<li><a class="link_to_tab" href="#graphs" data-toggle="tab" id="tab_to_graphs">Graphs</a></li>
 				%end
 				%if params['tab_depgraph']=='yes':
-				<li><a class='link_to_tab' href="#depgraph" data-toggle="tab" id='tab_to_depgraph'>Impact graph</a></li>
+				<li><a class="link_to_tab" href="#depgraph" data-toggle="tab" id="tab_to_depgraph">Impact graph</a></li>
+				%end
+				%if params['tab_history']=='yes':
+				<li class="history_pane"><a class="link_to_tab" href="#history" data-toggle="tab" id="tab_to_history">History</a></li>
 				%end
 			</ul>
 			
@@ -1023,7 +1049,7 @@ Invalid element name
 
 							%else:
 							<div class="alert alert-info">
-								<p class="font-blue">No comments available</p>
+								<p class="font-blue">No comments available.</p>
 							</div>
 							%end
 						</div>
@@ -1083,7 +1109,7 @@ Invalid element name
 							</table>
 							%else:
 							<div class="alert alert-info">
-								<p class="font-blue">No downtimes available</p>
+								<p class="font-blue">No downtimes available.</p>
 							</div>
 							%end
 						</div>
@@ -1118,12 +1144,10 @@ Invalid element name
 				<!-- Tab Timeline Start -->
 				%if params['tab_timeline']=='yes':
 				<div class="tab-pane fade" id="timeline">
-					<div class='row-fluid well col-lg-12'>
-					<div class='row-fluid well col-lg-12 jcrop'>
+					<div class="row-fluid well col-lg-12">
 						<div id="inner_timeline" data-elt-name='{{elt.get_full_name()}}'>
-							<span class="alert alert-error">Cannot load the timeline graph.</span>
+							<span class="alert alert-error">Sorry, I cannot load the timeline graph!</span>
 						</div>
-					</div>
 					</div>
 				</div>
 				%end
@@ -1281,12 +1305,26 @@ Invalid element name
 							<button id="fullscreen-request" class="btn btn-primary"><i class="fa fa-plus"></i> Fullscreen</button>
 						</div>
 						<div id="inner_depgraph" data-elt-name='{{elt.get_full_name()}}'>
-							<span class="alert alert-error">Cannot load dependency graph.</span>
+							<span class="alert alert-error">Sorry, I cannot load the dependency graph!</span>
 						</div>
 					</div>
 				</div>
 				%end
 				<!-- Tab Dep graph End -->
+        
+				<!-- Tab History Start -->
+				%if params['tab_history']=='yes':
+				<div class="tab-pane fade" id="history">
+					<div class="row-fluid well col-lg-12">
+						<div id="inner_history" data-elt-name='{{elt.get_full_name()}}'>
+							<div class="alert alert-danger">
+								<p class="font-red">Sorry, I cannot load the {{elt_type}} history!</p>
+							</div>
+						</div>
+					</div>
+				</div>
+				%end
+				<!-- Tab History End -->
 			</div>
 		<!-- Detail info box end -->
 		</div>
