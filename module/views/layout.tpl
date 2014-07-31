@@ -135,7 +135,7 @@
         %if print_title:
         <!-- Page header -->
         <section class="content-header">
-          <h1>{{title or 'Untitled ...'}}</h1>
+          <h1>{{!title or 'Untitled ...'}}</h1>
 
           <ol class="breadcrumb">
             <li><a href="/">Home</a></li>
