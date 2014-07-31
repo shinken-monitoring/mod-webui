@@ -27,6 +27,18 @@ import time
 
 from shinken.log import logger
 
+# Json lib
+try:
+    import json
+except ImportError:
+    # For old Python version, load
+    # simple json (it can be hard json?! It's 2 functions guy!)
+    try:
+        import simplejson as json
+    except ImportError:
+        print "Error: you need the json or simplejson module"
+        raise
+
 # Mongodb lib
 try:
     import pymongo
@@ -251,6 +263,62 @@ def set_logs_type_list():
     app.bottle.redirect("/logs")
     return
 
+def get_json(hostname):
+    user = checkauth()    
+
+    message,db = getdb(params['db_name'])
+    if not db:
+        return {
+            'app': app,
+            'user': user, 
+            'message': message,
+            'params': params,
+            'records': []
+        }
+
+    records=[]
+
+    try:
+        logger.info("[Logs] Fetching records from database for host: %s" % (hostname))
+
+        logs_limit = 100
+        logs_type = []
+        logs_hosts = [ hostname ]
+        logs_services = []
+
+        query = []
+        if len(logs_type) > 0 and logs_type[0] != '':
+            query.append({ "type" : { "$in": logs_type }})
+        if len(logs_hosts) > 0 and logs_hosts[0] != '':
+            query.append({ "host_name" : { "$in": logs_hosts }})
+        if len(logs_services) > 0 and logs_services[0] != '':
+            query.append({ "service_description" : { "$in": logs_services }})
+            
+        records=[]
+        if len(query) > 0:
+            for log in db.logs.find({'$and': query}).sort("time",-1).limit(logs_limit):
+                records.append({
+                    "timestamp":    int(log["time"]),
+                    "host":         log['host_name'],
+                    "service":      log['service_description'],
+                    "message":      log['message']
+                })
+        else:
+            for log in db.logs.find().sort("time",-1).limit(logs_limit):
+                records.append({
+                    "timestamp":    int(log["time"]),
+                    "host":         log['host_name'],
+                    "service":      log['service_description'],
+                    "message":      log['message']
+                })
+        message = "%d records fetched from database." % len(records)
+        logger.info("[Logs] %d records fetched from database.", len(records))
+    except Exception, exp:
+        logger.error("[Logs] Exception when querying database: %s", str(exp))
+    
+    logger.debug("[Logs] Finished compiling fetched records")
+    return json.dumps(records)
+
 # Load plugin configuration parameters
 load_cfg()
 
@@ -259,6 +327,8 @@ pages = {
 
         show_logs: {'routes': ['/logs'], 'view': 'logs', 'static': True},
         
+        get_json: {'routes': ['/logs/inner/:hostname']},
+    
         form_hosts_list: {'routes': ['/logs/hosts_list'], 'view': 'form_hosts_list'},
         set_hosts_list: {'routes': ['/logs/set_hosts_list'], 'view': 'logs', 'method': 'POST'},
         form_services_list: {'routes': ['/logs/services_list'], 'view': 'form_services_list'},
