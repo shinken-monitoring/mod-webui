@@ -42,13 +42,12 @@ try:
     params['default_Lat'] = float(params['default_Lat'])
     params['default_Lng'] = float(params['default_Lng'])
     params['default_zoom'] = int(params['default_zoom'])
-    
+
     logger.debug("WebUI plugin '%s', configuration loaded." % (plugin_name))
     logger.debug("Plugin configuration, default position: %s / %s" % (params['default_Lat'], params['default_Lng']))
     logger.debug("Plugin configuration, default zoom level: %d" % (params['default_zoom']))
 except Exception, exp:
     logger.warning("WebUI plugin '%s', configuration file (%s) not available: %s" % (plugin_name, configuration_file, str(exp)))
-
 
 def checkauth():
     user = app.get_user_auth()
@@ -61,7 +60,7 @@ def checkauth():
 
 # Our page. If the user call /worldmap
 def get_page():
-    user = checkauth()    
+    user = checkauth()
 
     # We are looking for hosts that got valid GPS coordinates,
     # and we just give them to the template to print them.
@@ -91,7 +90,7 @@ def get_page():
 
 
 def worldmap_widget():
-    user = checkauth()    
+    user = checkauth()
 
     wid = app.request.GET.get('wid', 'widget_system_' + str(int(time.time())))
     collapsed = (app.request.GET.get('collapsed', 'False') == 'True')
@@ -120,7 +119,7 @@ def worldmap_widget():
             # Look for good range, lat/long must be between -180/180
             if -180 <= _lat <= 180 and -180 <= _lng <= 180:
                 valid_hosts.append(h)
-                
+
     return {'app': app, 'user': user, 'wid': wid,
             'collapsed': collapsed, 'options': options,
             'base_url': '/widget/worldmap', 'title': 'Worldmap',
