@@ -29,25 +29,34 @@ app = None
 # Get plugin's parameters from configuration file
 params = {}
 
-import os,sys
-from config_parser import config_parser
-plugin_name = os.path.splitext(os.path.basename(__file__))[0]
-try:
-    currentdir = os.path.dirname(os.path.realpath(__file__))
-    configuration_file = "%s/%s" % (currentdir, 'plugin.cfg')
-    logger.debug("Plugin configuration file: %s" % (configuration_file))
-    scp = config_parser('#', '=')
-    params = scp.parse_config(configuration_file)
-
-    params['default_Lat'] = float(params['default_Lat'])
-    params['default_Lng'] = float(params['default_Lng'])
-    params['default_zoom'] = int(params['default_zoom'])
+def load_cfg():
+    global params
     
-    logger.debug("WebUI plugin '%s', configuration loaded." % (plugin_name))
-    logger.debug("Plugin configuration, default position: %s / %s" % (params['default_Lat'], params['default_Lng']))
-    logger.debug("Plugin configuration, default zoom level: %d" % (params['default_zoom']))
-except Exception, exp:
-    logger.warning("WebUI plugin '%s', configuration file (%s) not available: %s" % (plugin_name, configuration_file, str(exp)))
+
+    import os,sys
+    from config_parser import config_parser
+    plugin_name = os.path.splitext(os.path.basename(__file__))[0]
+    try:
+        currentdir = os.path.dirname(os.path.realpath(__file__))
+        configuration_file = "%s/%s" % (currentdir, 'plugin.cfg')
+        logger.debug("Plugin configuration file: %s" % (configuration_file))
+        scp = config_parser('#', '=')
+        params = scp.parse_config(configuration_file)
+
+        params['default_Lat'] = float(params['default_Lat'])
+        params['default_Lng'] = float(params['default_Lng'])
+        params['default_zoom'] = int(params['default_zoom'])
+        
+        logger.debug("WebUI plugin '%s', configuration loaded." % (plugin_name))
+        logger.debug("Plugin configuration, default position: %s / %s" % (params['default_Lat'], params['default_Lng']))
+        logger.debug("Plugin configuration, default zoom level: %d" % (params['default_zoom']))
+    except Exception, exp:
+        logger.warning("WebUI plugin '%s', configuration file (%s) not available: %s" % (plugin_name, configuration_file, str(exp)))
+
+
+def reload_cfg():
+    load_cfg()
+    app.bottle.redirect("/config")
 
 
 def checkauth():
@@ -132,7 +141,13 @@ widget_desc = '''<h4>Worldmap</h4>
 Show a map of all monitored hosts.
 '''
 
+# Load plugin configuration parameters
+load_cfg()
+
 # We export our properties to the webui
-pages = {get_page: {'routes': ['/worldmap'], 'view': 'worldmap', 'static': True}, 
-         worldmap_widget: {'routes': ['/widget/worldmap'], 'view': 'worldmap_widget', 'static': True, 'widget': ['dashboard'], 'widget_desc': widget_desc, 'widget_name': 'worldmap', 'widget_picture': '/static/worldmap/img/widget_worldmap.png'},
+pages = {
+    reload_cfg: {'routes': ['/reload/worldmap']},
+    
+    get_page: {'routes': ['/worldmap'], 'view': 'worldmap', 'static': True}, 
+    worldmap_widget: {'routes': ['/widget/worldmap'], 'view': 'worldmap_widget', 'static': True, 'widget': ['dashboard'], 'widget_desc': widget_desc, 'widget_name': 'worldmap', 'widget_picture': '/static/worldmap/img/widget_worldmap.png'},
 }
