@@ -11,6 +11,8 @@ For more details on what has been done, please have a look at the [CHANGELOG](/c
 
 ## Milestone 1.1 - Contis:
 
+Current version: 1.1.0-dev.3 (07af768)
+
 Overall goals: 
 - New views
 - Customizable views (Issue #50)
@@ -22,6 +24,8 @@ Featurelist:
 - New: Worldmap view (Issue #52)
 - New: Timeline view (Issue #53)
 - New: Tag view (Issue #60)
+- New: Log history in element view (Issue #73)
+- New: Contact view (Issue #74)
 - Enhanced: Dashboard (Issue #53)
 - Enhanced: Impact view (backport from Enterprise 1.0 UI)
 - New: Problems view (backport from Enterprise 1.0 UI)
