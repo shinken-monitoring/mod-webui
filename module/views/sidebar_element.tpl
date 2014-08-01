@@ -77,6 +77,11 @@
       </a>
     </li>
     <li>
+      <a href="/contacts">
+        <i class="fa fa-user"></i> Contacts
+      </a>
+    </li>
+    <li>
       <a href="/minemaps">
         <i class="fa fa-table"></i> Minemap
       </a>
