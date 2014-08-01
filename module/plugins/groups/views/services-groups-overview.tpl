@@ -12,7 +12,7 @@
 
 <div class="row">
 	<ul id="groups" class="grid row">
-		%even=''
+		%even='alt'
     %nGroups=0
 		%nServices=0
 		%sOk=0
@@ -31,7 +31,7 @@
 				%sPenging=sPenging+1
 			%end
 		%end
-    %for group in sgroups:
+    %for group in servicegroups:
       %nGroups=nGroups+1
     %end
 		<li class="clearfix {{even}}">
@@ -83,14 +83,15 @@
 				<span class="sum">{{nServices}} services</span>
 				%end
 				<span class="darkview">
-				<a href="/services-group/all" class="firstbtn"><i class="fa fa-angle-double-down"></i> Details</a>
-				<a href="/minemap/all" class="firstbtn"><i class="fa fa-table"></i> Minemap</a>
+          <a href="/services-group/all" class="firstbtn"><i class="fa fa-angle-double-down"></i> Details</a>
+          <br/>
+          <a href="/minemap/all" class="firstbtn"><i class="fa fa-table"></i> Minemap</a>
 				</span>
 			</section>
 		</li>
 
 		%even='alt'
-		%for group in sgroups:
+		%for group in servicegroups:
 			%if even =='':
 				%even='alt'
 			%else:
@@ -173,6 +174,7 @@
             </div>
             <span class="darkview">
               <a href="/services-group/{{group.get_name()}}" class="firstbtn"><i class="fa fa-angle-double-down"></i> Details</a>
+              <br/>
               <a href="/minemap/{{group.get_name()}}" class="firstbtn"><i class="fa fa-table"></i> Minemap</a>
             </span>
           </section>
