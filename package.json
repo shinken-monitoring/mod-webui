@@ -1,7 +1,7 @@
 {
   "name": "webui",
   "types": ["module"],
-  "version": "1.0",
+  "version": "1.1.0-dev.3",
   "homepage": "http://github.com/shinken-monitoring/mod-webui",
   "author": "Jean Gabès",
   "description": "Main Web interface for Shinken",
@@ -30,7 +30,7 @@
     "interface"
   ],
   "dependencies": {
-    "shinken": ">=1.4"
+    "shinken": ">=2.0.3"
   },
   "license": "AGPL"
 }
