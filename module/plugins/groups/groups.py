@@ -101,16 +101,17 @@ def show_hostgroup(name):
         end = elts_per_page
 
     navi = app.helper.get_navi(total, start, step=elts_per_page)
-    items = items[start:end]
+    hosts = items[start:end]
         
-    return {'app': app, 'user': user, 'params': params, 'navi': navi, 'group': my_group, 'hosts': items, 'length': total}
+    return {'app': app, 'user': user, 'params': params, 'navi': navi, 'group': my_group, 'hosts': hosts, 'all_hosts': items, 'length': total}
 
 def show_hostgroups():
     user = checkauth()    
 
-    my_hostgroups = app.datamgr.get_hostgroups()
-
-    return {'app': app, 'user': user, 'params': params, 'hgroups': my_hostgroups}
+    return {
+        'app': app, 'user': user, 'params': params, 
+        'hostgroups': sorted(app.datamgr.get_hostgroups(), key=lambda hostgroup: hostgroup.hostgroup_name)
+        }
 
 
 def show_servicegroup(name):
@@ -153,9 +154,10 @@ def show_servicegroup(name):
 def show_servicegroups():
     user = checkauth()    
 
-    my_servicegroups = app.datamgr.get_servicegroups()
-
-    return {'app': app, 'user': user, 'params': params, 'sgroups': my_servicegroups}
+    return {
+        'app': app, 'user': user, 'params': params, 
+        'servicegroups': sorted(app.datamgr.get_servicegroups(), key=lambda servicegroup: servicegroup.servicegroup_name)
+        }
 
 
 # Load plugin configuration parameters
