@@ -420,17 +420,26 @@ Invalid element name
 									<button class="col-lg-12 btn trim trim-{{helper.yes_no(elt.in_scheduled_downtime)}}">{{helper.yes_no(elt.in_scheduled_downtime)}}</button>
 								</td>
 							</tr>
+						</tbody>
+					</table>
 							
-							<tr>
-								<td colspan="2"><hr/></td>
-							</tr>
-							
+					<table class="table table-condensed col-sm-12" style="table-layout: fixed; word-wrap: break-word;">
+						<colgroup>
+							<col style="width: 40%" />
+							<col style="width: 60%" />
+						</colgroup>
+						<thead>
+              <tr>
+								<th colspan="2">Last check:</td>
+              </tr>
+						</thead>
+						<tbody style="font-size:x-small;">
 							<tr>
 								<td><strong>Last Check:</strong></td>
 								<td><span class="quickinfo" data-original-title='Last check was at {{time.asctime(time.localtime(elt.last_chk))}}'>was {{helper.print_duration(elt.last_chk)}}</span></td>
 							</tr>
 							<tr>
-								<td></td>
+								<td><strong>Output:</strong></td>
 								<td class="truncate_output"><em>
 								%if len(elt.output) > app.max_output_length:
 									%if app.allow_html_output:
@@ -446,6 +455,26 @@ Invalid element name
 									%end
 								%end
 								</em></td>
+							</tr>
+              %if elt.long_output:
+							<tr>
+								<td><strong>Long output:</strong></td>
+								<td class="truncate_output">
+                  <div class='check-output check-output-{{elt.state.lower()}}'> {{elt.long_output}} </div>
+								</td>
+							</tr>
+              %end
+							<tr>
+								<td><strong>Performance data:</strong></td>
+								<td class="truncate_perf">
+									{{elt.perf_data if len(elt.perf_data) > 0 else '(none)'}}
+								</td>
+							</tr>
+							<tr>
+								<td><strong>Check latency / duration:</strong></td>
+								<td>
+									{{'%.2f' % elt.latency}} / {{'%.2f' % elt.execution_time}} seconds
+								</td>
 							</tr>
 							
 							<tr>
@@ -473,12 +502,21 @@ Invalid element name
 				<div class="tab-pane fade" id="additional">
 					<h4>Additional Informations</h4>
 					
-					<table class="table-condensed col-sm-12" style="table-layout: fixed; word-wrap: break-word;">
+					<table class="table table-condensed col-sm-12" style="table-layout: fixed; word-wrap: break-word;">
 						<colgroup>
 							<col style="width: 40%" />
 							<col style="width: 60%" />
 						</colgroup>
-						<tbody style="font-size:small;">
+						<thead>
+              <tr>
+								<th colspan="2">Checks:</td>
+              </tr>
+						</thead>
+						<tbody style="font-size:x-small;">
+              <tr>
+								<td><strong>Check period:</strong></td>
+								<td>{{elt.check_period.get_name()}}</td>
+							</tr>
 							<tr>
 								<td><strong>Check command:</strong></td>
 								<td>
@@ -489,69 +527,124 @@ Invalid element name
                 %end
                 </td>
 							</tr>
-							<tr>
-								<td><strong>Check output:</strong></td>
-								<td class="truncate_output">
-								%if len(elt.output) > app.max_output_length:
-									%if app.allow_html_output:
-										<div class='check-output check-output-{{elt.state.lower()}}' rel="tooltip" data-original-title="{{elt.output}}"> {{!helper.strip_html_output(elt.output[:app.max_output_length])}}</div>
-									%else:
-										<div class='check-output check-output-{{elt.state.lower()}}' rel="tooltip" data-original-title="{{elt.output}}"> {{elt.output[:app.max_output_length]}}</div>
-									%end
-								%else:
-									%if app.allow_html_output:
-										<div class='check-output check-output-{{elt.state.lower()}}'> {{!helper.strip_html_output(elt.output)}}</div>
-									%else:
-										<div class='check-output check-output-{{elt.state.lower()}}'> {{elt.output}} </div>
-									%end
-								%end
-								</td>
+              <tr>
+								<td><strong>Check interval:</strong></td>
+								<td>{{elt.check_interval}}</td>
 							</tr>
-              %if elt.long_output:
+              <tr>
+								<td><strong>Retry interval:</strong></td>
+								<td>{{elt.retry_interval}}</td>
+							</tr>
 							<tr>
-								<td><strong>Long output:</strong></td>
-								<td class="truncate_output">
-                  <div class='check-output check-output-{{elt.state.lower()}}'> {{elt.long_output}} </div>
-								</td>
+								<td><strong>Active checks:</strong></td>
+								<td><span class="{{'glyphicon glyphicon-ok font-green' if elt.active_checks_enabled else 'glyphicon glyphicon-remove font-red'}}"></span></td>
+							</tr>
+							<tr>
+								<td><strong>Passive checks:</strong></td>
+								<td><i class="{{'glyphicon glyphicon-ok font-green' if elt.passive_checks_enabled else 'glyphicon glyphicon-remove font-red'}}"></span></td>
+							</tr>
+							%if (elt.passive_checks_enabled):
+							<tr>
+								<td><strong>Freshness check:</strong></td>
+								<td><span class="{{'glyphicon glyphicon-ok font-green' if elt.check_freshness else 'glyphicon glyphicon-remove font-red'}}"></span></td>
+							</tr>
+							%if (elt.check_freshness):
+							<tr>
+								<td><strong>Freshness threshold:</strong></td>
+								<td>{{elt.freshness_threshold}}</td>
+							</tr>
+							%end
+							%end
+							<tr>
+								<td><strong>Process performance data:</strong></td>
+								<td><i class="{{'glyphicon glyphicon-ok font-green' if elt.process_perf_data else 'glyphicon glyphicon-remove font-red'}}"></span></td>
+							</tr>
+							<tr>
+								<td><strong>Obsess over {{elt_type}}:</strong></td>
+								<td><span class="{{'glyphicon glyphicon-ok font-green' if (hasattr(elt, 'obsess_over_host') and elt.obsess_over_host) or (hasattr(elt, 'obsess_over_service') and elt.obsess_over_service) else 'glyphicon glyphicon-remove font-red'}}"></span></td>
+							</tr>
+							<tr>
+								<td><strong>Event handler:</strong></td>
+								<td><span class="glyphicon glyphicon-ok font-green"></span>{{elt.event_handler if elt.event_handler else ''}}</td>
+							</tr>
+						</tbody>
+					</table>
+          
+					<table class="table table-condensed col-sm-12" style="table-layout: fixed; word-wrap: break-word;">
+						<colgroup>
+							<col style="width: 40%" />
+							<col style="width: 60%" />
+						</colgroup>
+						<thead>
+              <tr>
+								<th colspan="2">Flapping:</td>
+              </tr>
+						</thead>
+						<tbody style="font-size:x-small;">
+							<tr>
+								<td><strong>Flapping detection:</strong></td>
+								<td><span class="{{'glyphicon glyphicon-ok font-green' if elt.flap_detection_enabled else 'glyphicon glyphicon-remove font-red'}}"></span></td>
+							</tr>
+              %if elt.flap_detection_enabled:
+							<tr>
+								<td><strong>Options:</strong></td>
+								<td>{{', '.join(elt.flap_detection_options)}}</td>
+							</tr>
+							<tr>
+								<td><strong>Low threshold:</strong></td>
+								<td>{{elt.low_flap_threshold}}</td>
+							</tr>
+							<tr>
+								<td><strong>High threshold:</strong></td>
+								<td>{{elt.high_flap_threshold}}</td>
 							</tr>
               %end
+						</tbody>
+					</table>
+          
+					<table class="table table-condensed col-sm-12" style="table-layout: fixed; word-wrap: break-word;">
+						<colgroup>
+							<col style="width: 40%" />
+							<col style="width: 60%" />
+						</colgroup>
+						<thead>
+              <tr>
+								<th colspan="2">Notifications:</td>
+              </tr>
+						</thead>
+						<tbody style="font-size:x-small;">
 							<tr>
-								<td><strong>Performance data:</strong></td>
-								<td class="truncate_perf">
-									{{elt.perf_data if len(elt.perf_data) > 0 else '(none)'}}
-								</td>
+								<td><strong>Notifications:</strong></td>
+								<td><span class="{{'glyphicon glyphicon-ok font-green' if elt.notifications_enabled else 'glyphicon glyphicon-remove font-red'}}"></span></td>
 							</tr>
-							
-							<tr>
-								<td colspan="2"><hr/></td>
+              %if elt.notifications_enabled:
+              <tr>
+								<td><strong>Notification period:</strong></td>
+								<td>{{elt.notification_period.get_name()}}</td>
 							</tr>
-							
 							<tr>
-								<td><strong>Check latency / duration:</strong></td>
-								<td>
-									{{'%.2f' % elt.latency}} / {{'%.2f' % elt.execution_time}} seconds
-								</td>
+								<td><strong>Notification options:</strong></td>
+								<td>{{', '.join(elt.notification_options)}}</td>
 							</tr>
 							<tr>
 								<td><strong>Last notification:</strong></td>
-								<td>
-									{{helper.print_date(elt.last_notification)}} (notification {{elt.current_notification_number}})
-								</td>
+								<td>{{helper.print_date(elt.last_notification)}} (notification {{elt.current_notification_number}})</td>
 							</tr>
-              %if elt.notification_interval:
 							<tr>
 								<td><strong>Notification interval:</strong></td>
-								<td>
-									{{elt.notification_interval}} mn
-								</td>
+								<td>{{elt.notification_interval}} mn</td>
 							</tr>
-              %end
-              %if elt.notification_period:
-              <tr>
-								<td><strong>Notification period:</strong></td>
-								<td>
-									{{elt.notification_period.get_name()}}
-								</td>
+							<tr>
+                %contacts=[]
+                %[contacts.append('<a href="/contact/'+item.contact_name+'">'+item.alias+'</a>' if item.alias else item.get_name()) for item in elt.contacts if item not in contacts]
+								<td><strong>Contacts:</strong></td>
+								<td>{{!', '.join(contacts)}}</td>
+							</tr>
+							<tr>
+                %#contacts_groups=[]
+                %#[contacts_groups.append(item.alias if item.alias else item.get_name()) for item in elt.contact_groups if item not in contacts_groups]
+								<td><strong>Contacts groups:</strong></td>
+								<td>{{elt.contact_groups}}</td>
 							</tr>
               %end
 						</tbody>
@@ -801,76 +894,6 @@ Invalid element name
 				<div class="tab-pane fade" id="configuration">
 					<h4>{{elt_type.capitalize()}} configuration:</h4>
 
-          <table class="table-condensed col-sm-12 table-bordered" >
-						<colgroup>
-							<col style="width: 70%" />
-							<col style="width: 30%" />
-						</colgroup>
-						<thead>
-              <tr>
-								<th colspan="2">{{elt_type.capitalize()}}:</td>
-              </tr>
-						</thead>
-						<tbody style="font-size:x-small;">
-							<tr>
-								<td>Active checks:</td>
-								<td><span class="{{'glyphicon glyphicon-ok font-green' if elt.active_checks_enabled else 'glyphicon glyphicon-remove font-red'}}"></span></td>
-							</tr>
-							<tr>
-								<td>Passive checks:</td>
-								<td><i class="{{'glyphicon glyphicon-ok font-green' if elt.passive_checks_enabled else 'glyphicon glyphicon-remove font-red'}}"></span></td>
-							</tr>
-						</tbody>
-					</table>
-
-          <table class="table-condensed col-sm-12 table-bordered" >
-						<colgroup>
-							<col style="width: 70%" />
-							<col style="width: 30%" />
-						</colgroup>
-						<thead>
-              <tr>
-								<th colspan="2">Check:</td>
-              </tr>
-						</thead>
-						<tbody style="font-size:x-small;">
-							<tr>
-								<td>Active checks:</td>
-								<td><span class="{{'glyphicon glyphicon-ok font-green' if elt.active_checks_enabled else 'glyphicon glyphicon-remove font-red'}}"></span></td>
-							</tr>
-							<tr>
-								<td>Passive checks:</td>
-								<td><i class="{{'glyphicon glyphicon-ok font-green' if elt.passive_checks_enabled else 'glyphicon glyphicon-remove font-red'}}"></span></td>
-							</tr>
-							
-							%if (elt.passive_checks_enabled):
-							<tr>
-								<td>Freshness check:</td>
-								<td><span class="{{'glyphicon glyphicon-ok font-green' if elt.check_freshness else 'glyphicon glyphicon-remove font-red'}}"></span></td>
-							</tr>
-							%if (elt.check_freshness):
-							<tr>
-								<td>Freshness threshold:</td>
-								<td>{{elt.freshness_threshold}}</td>
-							</tr>
-							%end
-							%end
-							
-							<tr>
-								<td>Notifications:</td>
-								<td><span class="{{'glyphicon glyphicon-ok font-green' if elt.notifications_enabled else 'glyphicon glyphicon-remove font-red'}}"></span></td>
-							</tr>
-							<tr>
-								<td>Event handlers:</td>
-								<td><span class="{{'glyphicon glyphicon-ok font-green' if elt.event_handler_enabled else 'glyphicon glyphicon-remove font-red'}}"></span></td>
-							</tr>
-							<tr>
-								<td>Flap detection:</td>
-								<td><span class="{{'glyphicon glyphicon-ok font-green' if elt.flap_detection_enabled else 'glyphicon glyphicon-remove font-red'}}"></span></td>
-							</tr>
-						</tbody>
-					</table>
-              
           %if len(elt.customs) > 0:
           <table class="table-condensed col-sm-12 table-bordered" style="table-layout: fixed; word-wrap: break-word;">
 						<colgroup>
@@ -937,7 +960,9 @@ Invalid element name
 				%if params['tab_custom_views']=='yes':
 				%_go_active = 'active'
 				%_go_fadein = 'in'
-				%for cvname in elt.custom_views:
+        %cvs = []
+        %[cvs.append(item) for item in elt.custom_views if item not in cvs]
+				%for cvname in cvs:
 				<div class="tab-pane fade {{_go_active}} {{_go_fadein}}" data-cv-name="{{cvname}}" data-elt-name='{{elt.get_full_name()}}' id="cv{{cvname}}">
 					Cannot load the pane {{cvname}}.
 				</div>
@@ -1000,7 +1025,7 @@ Invalid element name
 											<a href="javascript:show_hidden_impacts_or_services()"> {{!helper.get_button('Show all impacts', img='/static/images/expand.png')}}</a>
 										</div>
 										%end
-										<div class="service {{"hidden_impacts_services" if nb > max_impacts_displayed else ""}}">
+										<div class=" {{"hidden_impacts_services" if nb > max_impacts_displayed else ""}}">
 											<div>
 												<img style="width:16px; height:16px" alt="icon state" src="{{helper.get_icon_state(i)}}">
 												<span class='alert-small alert-{{i.state.lower()}}' style="font-size:110%">{{i.state}}</span> for <span style="font-size:110%">{{!helper.get_link(i, short=True)}}</span> since {{helper.print_duration(i.last_state_change, just_duration=True, x_elts=2)}}
