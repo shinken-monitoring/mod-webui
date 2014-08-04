@@ -28,6 +28,7 @@ app = None
 # We will need external commands here
 import time
 from shinken.external_command import ExternalCommand, ExternalCommandManager
+from shinken.log import logger
 import re
 
 
@@ -108,7 +109,10 @@ def get_page(cmd=None):
     print "Got after macro expansion", extcmd
 
     # Ok, if good, we can launch the command
-    extcmd = extcmd.decode('utf8', 'replace')
+    # extcmd = extcmd.decode('utf8', 'replace')
+	# Fix #69
+    extcmd = extcmd.decode('utf8', 'ignore')
+    logger.debug("WebUI plugin 'action', external command: %s." % (extcmd))
     e = ExternalCommand(extcmd)
     print "Creating the command", e.__dict__
     app.push_external_command(e)
