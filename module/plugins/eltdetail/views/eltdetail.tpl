@@ -23,6 +23,7 @@ Invalid element name
   %global_disabled = 'disabled-link'
 %end
 
+%business_rule = False
 %if elt_type=='host':
   %# Count hosts services for different states
   %sOK=0
@@ -44,6 +45,10 @@ Invalid element name
       %sUNKNOWN=sUNKNOWN+1
     %end
   %end
+%else:
+%if elt.get_check_command().startswith('bp_rule'):
+%business_rule = True
+%end
 %end
 
 %rebase layout title=elt_type.capitalize() + ' ' + elt.get_full_name(), js=['eltdetail/js/jquery.color.js', 'eltdetail/js/bootstrap-switch.js', 'eltdetail/js/jquery.Jcrop.js', 'eltdetail/js/hide.js', 'eltdetail/js/dollar.js', 'eltdetail/js/gesture.js', 'eltdetail/js/graphs.js', 'eltdetail/js/depgraph.js', 'eltdetail/js/custom_views.js', 'eltdetail/js/screenfull.js', 'eltdetail/js/shinken-gauge.js', 'eltdetail/js/timeline.js', 'timeline/js/timeline.js', 'eltdetail/js/history.js'], css=['eltdetail/css/bootstrap-switch.css', 'eltdetail/css/eltdetail.css', 'eltdetail/css/hide.css', 'eltdetail/css/gesture.css', 'eltdetail/css/jquery.Jcrop.css', 'eltdetail/css/shinken-gauge.css', 'timeline/css/timeline.css'], user=user, app=app, refresh=True
@@ -79,6 +84,16 @@ Invalid element name
     $('button').tooltip();
     
     // Long text truncation
+    $('.truncate_command').jTruncate({
+      length: 200,
+      minTrail: 0,
+      moreText: "[see all]",
+      lessText: "[hide extra]",
+      ellipsisText: " <strong>(...)</strong>",
+      moreAni: "fast",
+      lessAni: 2000
+    });
+
     $('.truncate_output').jTruncate({
       length: 200,
       minTrail: 0,
@@ -369,6 +384,25 @@ Invalid element name
   </div>
   %end
   
+	<!-- Third row (bis) : business rule ... -->
+  %if business_rule:
+	<div class="row" style="padding: 5px;">
+    <div class="col-lg-2 hidden-md"></div>
+    <div class="col-lg-8 col-md-12">
+      <div class="col-lg-1 pull-left">
+        <span class="medium-pulse aroundpulse">
+          <span class="medium-pulse pulse"></span>
+          <i class="fa fa-3x fa-university"></i>
+        </span>
+      </div>
+      <div class="col-lg-11 font-white">
+        <p class="alert alert-warning">This element is a business rule.</p>
+      </div>
+    </div>
+    <div class="col-lg-2 hidden-md"></div>
+  </div>
+  %end
+  
 	<!-- Fourth row : host/service -->
 	<div class="row" style="padding: 5px;">
 		<div class="col-md-6 col-lg-3 tabbable verticaltabs-container">
@@ -519,12 +553,14 @@ Invalid element name
 							</tr>
 							<tr>
 								<td><strong>Check command:</strong></td>
+								<td class="truncate_command">
+                  %try:
+                    {{ MacroResolver().resolve_simple_macros_in_string(elt.get_check_command(), elt.get_data_for_checks()) }}
+                  %except:
+                    {{elt.get_check_command()}}
+                  %end
+								</td>
 								<td>
-                %try:
-                  {{ MacroResolver().resolve_simple_macros_in_string(elt.get_check_command(), elt.get_data_for_checks()) }}
-                %except:
-                  {{elt.get_check_command()}}
-                %end
                 </td>
 							</tr>
               <tr>
