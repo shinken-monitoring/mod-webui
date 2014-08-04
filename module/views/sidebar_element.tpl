@@ -68,27 +68,27 @@
     </li>
     <li>
       <a href="/hosts-tags">
-        <i class="fa fa-sitemap"></i> Hosts tags
+        <i class="fa fa-tags"></i> Hosts tags
       </a>
     </li>
     <li>
       <a href="/services-tags">
-        <i class="fa fa-sitemap"></i> Services tags
+        <i class="fa fa-tags"></i> Services tags
       </a>
     </li>
     <li>
       <a href="/contacts">
-        <i class="fa fa-user"></i> Contacts
+        <i class="fa fa-users"></i> Contacts
       </a>
     </li>
     <li>
       <a href="/commands">
-        <i class="fa fa-gear"></i> Commands
+        <i class="fa fa-terminal"></i> Commands
       </a>
     </li>
     <li>
       <a href="/timeperiods">
-        <i class="fa fa-gear"></i> Timeperiods
+        <i class="fa fa-calendar"></i> Timeperiods
       </a>
     </li>
     <li>
