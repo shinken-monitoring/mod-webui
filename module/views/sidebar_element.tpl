@@ -87,6 +87,11 @@
       </a>
     </li>
     <li>
+      <a href="/timeperiods">
+        <i class="fa fa-gear"></i> Timeperiods
+      </a>
+    </li>
+    <li>
       <a href="/minemaps">
         <i class="fa fa-table"></i> Minemap
       </a>
