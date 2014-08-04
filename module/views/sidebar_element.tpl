@@ -82,6 +82,11 @@
       </a>
     </li>
     <li>
+      <a href="/commands">
+        <i class="fa fa-gear"></i> Commands
+      </a>
+    </li>
+    <li>
       <a href="/minemaps">
         <i class="fa fa-table"></i> Minemap
       </a>
