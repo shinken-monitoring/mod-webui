@@ -768,9 +768,6 @@ class Helper(object):
                 tree['sons'].append(s)
                 tree = s
         return tree
-                
-
-    
 
 
     def get_host_service_aggregation_tree(self, h):
@@ -835,5 +832,29 @@ class Helper(object):
         return s
 
     
+    def get_timeperiod_html(self, tp):
+        if len(tp.dateranges) == 0:
+            return ''
+            
+        content = '<table class="table table-condensed pull-left" style="table-layout: fixed; word-wrap: break-word;"><tbody style="font-size:x-small;">'
+        for dr in tp.dateranges:
+            (dr_start, dr_end) = dr.get_start_and_end_time()
+            dr_start = time.strftime("%d %b %Y", time.localtime(dr_start))
+            dr_end = time.strftime("%d %b %Y", time.localtime(dr_end))
+            content += '''<tr><td>From: <strong>%s</strong> to: <strong>%s</strong>''' % (dr_start, dr_end)
+            if len(dr.timeranges) > 0:
+                content += ''' ('''
+                idx=1
+                for timerange in dr.timeranges:
+                    if idx != 1 and idx != len(dr.timeranges):
+                        content += ''', '''
+                    content += '''<strong>%s-%s</strong>''' % ("%02d:%02d" % (timerange.hstart, timerange.mstart), "%02d:%02d" % (timerange.hend, timerange.mend))
+                    idx += 1
+                content += ''')'''
+            content += '''</td></tr>'''
+        content += '''</tbody></table>'''
+    
+        return content
 
+                  
 helper = Helper()
