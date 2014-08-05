@@ -89,7 +89,7 @@ def show_contacts():
 load_cfg()
 
 pages = {
-        reload_cfg: {'routes': ['/reload/contact']},
+        reload_cfg: {'routes': ['/reload/contacts']},
         
         show_contact: {'routes': ['/contact/:name'], 'view': 'contact', 'static': True},
         show_contacts: {'routes': ['/contacts'], 'view': 'contacts', 'static': True},
