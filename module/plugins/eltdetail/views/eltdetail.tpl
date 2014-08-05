@@ -392,7 +392,7 @@ Invalid element name
       <div class="col-lg-1 pull-left">
         <span class="medium-pulse aroundpulse">
           <span class="medium-pulse pulse"></span>
-          <i class="fa fa-3x fa-university"></i>
+          <i class="fa fa-2x fa-university"></i>
         </span>
       </div>
       <div class="col-lg-11 font-white">
@@ -549,7 +549,14 @@ Invalid element name
 						<tbody style="font-size:x-small;">
               <tr>
 								<td><strong>Check period:</strong></td>
-								<td>{{elt.check_period.get_name()}}</td>
+								<td name="check_period" class="popover-dismiss" data-html="true" data-toggle="popover" title="Check period" data-placement="bottom" data-content="...">{{elt.check_period.get_name()}}</td>
+                <script>
+                  %tp=datamgr.get_timeperiod(elt.check_period.get_name())
+                  $('td[name="check_period"]')
+                    .attr('title', '{{tp.alias if hasattr(tp, "alias") else tp.timeperiod_name}}')
+                    .attr('data-content', '{{!helper.get_timeperiod_html(tp)}}')
+                    .popover();
+                </script>
 							</tr>
 							<tr>
 								<td><strong>Check command:</strong></td>
@@ -656,7 +663,14 @@ Invalid element name
               %if elt.notifications_enabled:
               <tr>
 								<td><strong>Notification period:</strong></td>
-								<td>{{elt.notification_period.get_name()}}</td>
+								<td name="notification_period" class="popover-dismiss" data-html="true" data-toggle="popover" title="Notification period" data-placement="top" data-content="...">{{elt.notification_period.get_name()}}</td>
+                <script>
+                  %tp=datamgr.get_timeperiod(elt.notification_period.get_name())
+                  $('td[name="notification_period"]')
+                    .attr('title', '{{tp.alias if hasattr(tp, "alias") else tp.timeperiod_name}}')
+                    .attr('data-content', '{{!helper.get_timeperiod_html(tp)}}')
+                    .popover();
+                </script>
 							</tr>
 							<tr>
 								<td><strong>Notification options:</strong></td>
