@@ -53,7 +53,8 @@ def lookup(name=''):
 
     filtered_hosts = only_related_to(app.datamgr.get_hosts(), user)
     hnames = (h.host_name for h in filtered_hosts)
-    r = [n for n in hnames if n.startswith(name)]
+    # r = [n for n in hnames if n.startswith(name)]
+    r = [n for n in hnames if name in n]
 
     return json.dumps(r)
 
