@@ -55,13 +55,6 @@
 	var bookmarks = [];
 	var bookmarksro = [];
 
-  // Ok not the best way to restrict the admin functions to admin, but I can't find another way around.
-  %if user.is_admin:
-  var advfct=1;
-  %else:
-  var advfct=0;
-  %end
-
 	%for b in bookmarks:
     declare_bookmark("{{!b['name']}}","{{!b['uri']}}");
 	%end
@@ -92,6 +85,9 @@
       displayKey: 'value',
       source: hosts.ttAdapter(),
     });
+    
+    // Buttons tooltips
+    $('span').tooltip();
   });
 </script>
 
@@ -420,13 +416,13 @@
       %for pb in pbs:
         %if pb.business_impact != imp_level:
           %if imp_level != 10:
-            %# "Close last panel group  ..."
+            %# Close last panel group  ...
                   </div>
                 </div>
               </div>
             </div>
           %end
-          %# "Set title ..."
+          %# Business level title ...
           <h3> Business impact: {{!helper.get_business_impact_text(pb)}} </h3>
           %# "We reset the last_hname so we won't overlap this feature across tables"
           %last_hname = 'first'
@@ -445,10 +441,11 @@
         
         %if pb.host_name != last_hname:
           %if last_hname != '' and last_hname != 'first':
+            %# Close last panel group  ...
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
           %end
           <div class="panel panel-default" style="margin: 0">
             <div class="panel-heading">
@@ -465,6 +462,7 @@
             %last_hname = pb.host_name
         %end
         
+        %# Panel for an host and all its services ...
         %div_class = ''
         %div_style = ''
         <div class="panel panel-default" style="margin: 0">
@@ -490,7 +488,7 @@
                 </th>
                 
                 <th style="font-size: small; font-weight: normal;" class="col-md-5">
-                  <span class="srvdescription cut_long">{{!helper.get_link(pb, short=True)}}</span>
+                  <span class="cut_long">{{!helper.get_link(pb, short=True)}}</span>
                 </th>
                 
                 <th style="font-size: small; font-weight: normal;" class="col-md-1">
@@ -543,68 +541,69 @@
                   <td>Next check</td>
                   <td >Actions</td>
                 </tr></thead>
-                <tr>
-                  <td><a href="/host/{{pb.host_name}}">{{pb.host_name}}</a></td>
-                  %if pb.__class__.my_type == 'service':
-                  <td>{{!helper.get_link(pb, short=True)}}</td>
-                  %end
-                  <td>{{pb.get_realm()}}</td>
-                  <td><span class='txt_status state_{{pb.state.lower()}} '> {{pb.state}}</span></td>
-                  <td>{{helper.print_duration(pb.last_state_change, just_duration=True, x_elts=2)}}</td>
-                  <td>{{helper.print_duration(pb.last_chk, just_duration=True, x_elts=2)}} ago</td>
-                  <td>in {{helper.print_duration(pb.next_chk, just_duration=True, x_elts=2)}}</td>
-                  <td >
-                    <button type="button" id="bt-recheck-{{helper.get_html_id(pb)}}" class="{{global_disabled}} btn btn-primary btn-sm">Recheck</button>
-                    <script>
-                      $('#bt-recheck-{{helper.get_html_id(pb)}}').click(function () {
-                        recheck_now('{{pb.get_full_name()}}');
-                      });
-                    </script>
-                  </td>
-                </tr>
-                <tr>
-                  <td colspan="{{8 if pb.__class__.my_type == 'service' else 7}}">
-                  %if len(pb.output) > 100:
-                    %if app.allow_html_output:
-                      <span class='output' rel="tooltip" data-original-title="{{pb.output}}"> {{!helper.strip_html_output(pb.output[:app.max_output_length])}}</span>
-                    %else:
-                      <span class='output' rel="tooltip" data-original-title="{{pb.output}}"> {{pb.output[:app.max_output_length]}}</span>
+                <tbody>
+                  <tr>
+                    <td><a href="/host/{{pb.host_name}}">{{pb.host_name}}</a></td>
+                    %if pb.__class__.my_type == 'service':
+                    <td>{{!helper.get_link(pb, short=True)}}</td>
                     %end
-                  %else:
-                    %if app.allow_html_output:
-                      <span class='output'> {{!helper.strip_html_output(pb.output)}} </span>
+                    <td>{{pb.get_realm()}}</td>
+                    <td><span class='txt_status state_{{pb.state.lower()}} '> {{pb.state}}</span></td>
+                    <td>{{helper.print_duration(pb.last_state_change, just_duration=True, x_elts=2)}}</td>
+                    <td>{{helper.print_duration(pb.last_chk, just_duration=True, x_elts=2)}} ago</td>
+                    <td>in {{helper.print_duration(pb.next_chk, just_duration=True, x_elts=2)}}</td>
+                    <td >
+                      <button type="button" id="bt-recheck-{{helper.get_html_id(pb)}}" class="{{global_disabled}} btn btn-primary btn-sm">Recheck</button>
+                      <script>
+                        $('#bt-recheck-{{helper.get_html_id(pb)}}').click(function () {
+                          recheck_now('{{pb.get_full_name()}}');
+                        });
+                      </script>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="{{8 if pb.__class__.my_type == 'service' else 7}}">
+                    %if len(pb.output) > 100:
+                      %if app.allow_html_output:
+                        <span class='output' rel="tooltip" data-original-title="{{pb.output}}"> {{!helper.strip_html_output(pb.output[:app.max_output_length])}}</span>
+                      %else:
+                        <span class='output' rel="tooltip" data-original-title="{{pb.output}}"> {{pb.output[:app.max_output_length]}}</span>
+                      %end
                     %else:
-                      <span class='output'> {{pb.output}} </span>
+                      %if app.allow_html_output:
+                        <span class='output'> {{!helper.strip_html_output(pb.output)}} </span>
+                      %else:
+                        <span class='output'> {{pb.output}} </span>
+                      %end
                     %end
-                  %end
-                  </td>
-                </tr>
+                    </td>
+                  </tr>
+                </tbody>
               </table>
 
               <div>
                 %if len(pb.impacts) > 0:
-                <hr />
-                <h5>Impacts:</h5>
-                %end
-                %for i in helper.get_impacts_sorted(pb):
-                <div>
-                  <p><img style="width: 16px; height: 16px;" src="{{helper.get_icon_state(i)}}" />
-                    <span class="alert-small alert-{{i.state.lower()}}">{{i.state}}</span> for {{!helper.get_link(i)}}
-                    %for j in range(0, i.business_impact-2):
-                      <img src='/static/images/star.png' alt="Star">
-                    %end
-                  </p>
-                </div>
+                  <hr />
+                  <h4>Impacts:</h4>
+                  %end
+                  %for i in helper.get_impacts_sorted(pb):
+                  <div>
+                    <p><img style="width: 16px; height: 16px;" src="{{helper.get_icon_state(i)}}" />
+                      <span class="alert-small alert-{{i.state.lower()}}">{{i.state}}</span> for {{!helper.get_link(i)}}
+                    </p>
+                  </div>
                 %end
               </div>
             </div>
           </div>
         </div>
       %end
+      %# Close last panel group  ...
               </div>
             </div>
           </div>
         </div>
+    %# Close accordion and problems div ...
       </div>
     </div>
     
