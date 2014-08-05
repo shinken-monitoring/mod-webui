@@ -28,12 +28,12 @@
       %else:
       %	username = contact.get_name()
       %end
-      %username = contact.alias if hasattr(contact, 'alias') and contact.alias != '' else contact.get_name()
+      %username = contact.alias if hasattr(contact, 'alias') and contact.alias != 'none' else contact.get_name()
       <li class="clearfix {{even}} ">
-        <section class="left">
-          <a href="/contact/{{contact.get_name()}}"><h3>{{username}} ({{contact.contact_name}})</h3></a>
+        <section class="left col-sm-6">
+          <a href="/contact/{{contact.get_name()}}"><h3>{{"%s (%s)" % (contact.alias, contact.contact_name) if contact.alias != 'none' else contact.contact_name}}</h3></a>
           <div class="meta">
-            <table class="table table-condensed col-sm-6 pull-left" style="table-layout: fixed; word-wrap: break-word;">
+            <table class="table table-condensed pull-left" style="table-layout: fixed; word-wrap: break-word;">
               <colgroup>
                 <col style="width: 40%" />
                 <col style="width: 60%" />

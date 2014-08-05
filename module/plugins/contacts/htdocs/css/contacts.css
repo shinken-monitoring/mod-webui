@@ -11,8 +11,8 @@ ul.list li { display: block; background: #F9F9F9; padding: 10px 15px; }
 
 ul.list li.alt { background: #FFF; }
 
-ul.list li section.left { display: block; float: left; width: 350px; position: relative; padding-left: 20px; }
-ul.list li section.right { display: block; float: right; margin-right: 10px; width: 250px; text-align: right; }
+ul.list li section.left { display: block; float: left; position: relative; padding-left: 20px; }
+ul.list li section.right { display: block; float: right; margin-right: 10px; text-align: right; }
 
 ul.list li section.left img.thumb { float: left; margin-right: 10px; }
 ul.list li section.left img.featured-banner { position: absolute; left: -18px; top: 35px; }

@@ -15,7 +15,15 @@
 %end
 %end
 
-%rebase layout title='Contact ' + username, user=user, app=app, refresh=True, css=['contacts/css/contacts.css']
+%rebase layout title='Contact ' + username, user=user, app=app, refresh=True, css=['contacts/css/contacts.css'], breadcrumb=[ ['All contacts', '/contacts'], [username, '/contact/'+username] ]
+
+%#Contact currently in downtime ?
+%in_scheduled_downtime=False
+%for dt in contact.downtimes:
+%if dt.is_in_effect:
+%in_scheduled_downtime=True
+%end
+%end
 
 %if not 'app' in locals(): app = None
 %if not 'user' in locals(): user = None
@@ -57,7 +65,11 @@
               <tbody style="font-size:x-small;">
                 <tr>
                   <td><strong>Identification:</strong></td>
-                  <td>{{contact.alias}} ({{contact.contact_name}})</td>
+                  <td>{{"%s (%s)" % (contact.alias, contact.contact_name) if contact.alias != 'none' else contact.contact_name}}</td>
+                </tr>
+                <tr>
+                  <td><strong>Active:</strong></td>
+                  <td><span class="{{'glyphicon glyphicon-ok font-green' if not in_scheduled_downtime else 'glyphicon glyphicon-remove font-red'}}"></span></td>
                 </tr>
                 <tr>
                   <td><strong>Mail:</strong></td>
@@ -107,66 +119,135 @@
                 </tr>
               </thead>
               <tbody style="font-size:x-small;">
+                %i=1
+                %for nw in contact.notificationways:
                 <tr>
-                  <td><strong>Minimum business impact:</strong></td>
-                  <td>{{contact.min_business_impact}}</td>
+                  <td><strong>{{"Notification way:" if i==1 else "Notification way %d:"%i}}</strong></td>
+                  <td>{{nw.notificationway_name}}</td>
                 </tr>
-                <tr>
-                  <td><strong>Notification way:</strong></td>
-                  <td><span class="{{contact.notificationways}}"></span></td>
-                </tr>
-                <tr>
-                  <td><strong>Host notifications:</strong></td>
-                  <td><span class="{{'glyphicon glyphicon-ok font-green' if contact.host_notifications_enabled else 'glyphicon glyphicon-remove font-red'}}"></span></td>
-                </tr>
-                %if contact.host_notifications_enabled:
-                <tr>
-                  <td><strong>Period:</strong></td>
-                  <td>{{contact.host_notification_period if hasattr(contact, 'host_notification_period') else 'Not set'}}</td>
-                </tr>
-                <tr>
-                  <td><strong>Options:</strong></td>
-                  <td>{{', '.join(contact.host_notification_options)}}</td>
-                </tr>
-                <tr>
-                  <td><strong>Command:</strong></td>
-                  <td>{{contact.host_notification_commands if hasattr(contact, 'host_notification_commands') else 'Not set'}}</td>
-                </tr>
+                
+                  <tr>
+                    <td><strong>&raquo;Minimum business impact:</strong></td>
+                    <td>{{nw.min_business_impact}}</td>
+                  </tr>
+                  
+                  <tr>
+                    <td><strong>&raquo;Hosts notifications:</strong></td>
+                    <td><span class="{{'glyphicon glyphicon-ok font-green' if contact.host_notifications_enabled else 'glyphicon glyphicon-remove font-red'}}"></span></td>
+                  </tr>
+                  %if nw.host_notifications_enabled:
+                  <tr>
+                    <td><strong>&nbsp;&ndash;period:</strong></td>
+                    <td name="{{"host_notification_period%s" % i}}" class="popover-dismiss" data-html="true" data-toggle="popover" title="Host notification period" data-placement="top" data-content="...">{{nw.host_notification_period.get_name()}}</td>
+                    <script>
+                      %tp=app.datamgr.get_timeperiod(nw.host_notification_period.get_name())
+                      $('td[name="{{"host_notification_period%s" % i}}"]')
+                        .attr('title', '{{tp.alias if hasattr(tp, "alias") else tp.timeperiod_name}}')
+                        .attr('data-content', '{{!app.helper.get_timeperiod_html(tp)}}')
+                        .popover();
+                    </script>
+                  </tr>
+                  
+                  %if nw.host_notification_options != '':
+                  %options = nw.host_notification_options
+                  %message = {}
+                  %# [d,u,r,f,s,n]
+                  %message['d'] = 'Down'
+                  %message['u'] = 'Unreachable'
+                  %message['r'] = 'Recovery'
+                  %message['f'] = 'Flapping'
+                  %message['s'] = 'Downtimes'
+                  %message['n'] = 'None'
+                  <tr>
+                    <td><strong>&nbsp;&ndash;options:</strong></td>
+                    <td>
+                    %for m in message:
+                      <span class="{{'glyphicon glyphicon-ok font-green' if m in options else 'glyphicon glyphicon-remove font-red'}}">{{message[m]}}&nbsp;</span>
+                    %end
+                    </td>
+                  </tr>
+                  %end
+                  
+                  %i=0
+                  %for command in nw.host_notification_commands:
+                    %i += 1
+                    <tr>
+                      <td><strong>&nbsp;&ndash;command:</strong></td>
+                      <td name="host_command{{i}}" class="popover-dismiss" data-html="true" data-toggle="popover" title="Service notification command" data-placement="top" data-content="...">{{command.get_name()}}</td>
+                      <script>
+                        $('td[name="host_command{{i}}"]')
+                          .attr('title', '{{command.get_name()}}')
+                          .attr('data-content', '{{command.command.command_line}}')
+                          .popover();
+                      </script>
+                    </tr>
+                  %end
+                  %end
+                  %# If host notifications enabled ...
+                  
+                
+                  <tr>
+                    <td><strong>&raquo;Services notifications:</strong></td>
+                    <td><span class="{{'glyphicon glyphicon-ok font-green' if contact.service_notifications_enabled else 'glyphicon glyphicon-remove font-red'}}"></span></td>
+                  </tr>
+                  %if nw.service_notifications_enabled:
+                  <tr>
+                    <td><strong>&nbsp;&ndash;period:</strong></td>
+                    <td name="{{"service_notification_period%s" % i}}" class="popover-dismiss" data-html="true" data-toggle="popover" title="service notification period" data-placement="top" data-content="...">{{nw.service_notification_period.get_name()}}</td>
+                    <script>
+                      %tp=app.datamgr.get_timeperiod(nw.service_notification_period.get_name())
+                      $('td[name="{{"service_notification_period%s" % i}}"]')
+                        .attr('title', '{{tp.alias if hasattr(tp, "alias") else tp.timeperiod_name}}')
+                        .attr('data-content', '{{!app.helper.get_timeperiod_html(tp)}}')
+                        .popover();
+                    </script>
+                  </tr>
+                  
+                  %if nw.service_notification_options != '':
+                  %options = nw.service_notification_options
+                  %message = {}
+                  %# [w,u,c,r,f,s,n]
+                  %message['w'] = 'Warning'
+                  %message['u'] = 'Unknown'
+                  %message['c'] = 'Critical'
+                  %message['r'] = 'Recovery'
+                  %message['f'] = 'Flapping'
+                  %message['s'] = 'Downtimes'
+                  %message['n'] = 'None'
+                  <tr>
+                    <td><strong>&nbsp;&ndash;options:</strong></td>
+                    <td>
+                    %for m in message:
+                      <span class="{{'glyphicon glyphicon-ok font-green' if m in options else 'glyphicon glyphicon-remove font-red'}}">{{message[m]}}&nbsp;</span>
+                    %end
+                    </td>
+                  </tr>
+                  %end
+                  
+                  %i=0
+                  %for command in nw.service_notification_commands:
+                    %i += 1
+                    <tr>
+                      <td><strong>&nbsp;&ndash;command:</strong></td>
+                      <td name="service_command{{i}}" class="popover-dismiss" data-html="true" data-toggle="popover" title="Service notification command" data-placement="top" data-content="...">{{command.get_name()}}</td>
+                      <script>
+                        $('td[name="service_command{{i}}"]')
+                          .attr('title', '{{command.get_name()}}')
+                          .attr('data-content', '{{command.command.command_line}}')
+                          .popover();
+                      </script>
+                    </tr>
+                  %end
+                  %end
+                  %# If service notifications enabled ...
+                  
+                
+                %i+=1
                 %end
-                <tr>
-                  <td><strong>Service notifications:</strong></td>
-                  <td><span class="{{'glyphicon glyphicon-ok font-green' if contact.service_notifications_enabled else 'glyphicon glyphicon-remove font-red'}}"></span></td>
-                </tr>
-                %if contact.service_notifications_enabled:
-                <tr>
-                  <td><strong>Period:</strong></td>
-                  <td>{{contact.service_notification_period if hasattr(contact, 'service_notification_period') else 'Not set'}}</td>
-                </tr>
-                <tr>
-                  <td><strong>Options:</strong></td>
-                  <td>{{', '.join(contact.service_notification_options)}}</td>
-                </tr>
-                <tr>
-                  <td><strong>Command:</strong></td>
-                  <td>{{contact.service_notification_commands if hasattr(contact, 'service_notification_commands') else 'Not set'}}</td>
-                </tr>
-                %end
+                %# For notificationways ...
               </tbody>
             </table>
           </div>
-          
-<!--
-          <div class="user-footer">
-            <div class="pull-left">
-              <a href="https://shinken.readthedocs.org/en/latest/" target="_blank" class="btn btn-default btn-flat"><i class="fa fa-book"></i> </a>
-              <a href="#settings" data-toggle="modal" class="btn btn-default btn-flat disabled"><span class="fa fa-gear"></span> </a>
-              <a href="#profile" data-toggle="modal" class="btn btn-default btn-flat disabled"><span class="fa fa-pencil"></span> </a>
-            </div>
-            <div class="pull-right">
-                <a href="/user/logout" class="btn btn-default btn-flat" data-toggle="modal" data-target="/user/logout"><span class="fa fa-sign-out"></span> </a>
-            </div>
-          </div>
--->
 			</div>
 		</div>
 	</div>
