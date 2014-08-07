@@ -51,7 +51,13 @@ Invalid element name
 %end
 %end
 
-%rebase layout title=elt_type.capitalize() + ' ' + elt.get_full_name(), js=['eltdetail/js/jquery.color.js', 'eltdetail/js/bootstrap-switch.js', 'eltdetail/js/jquery.Jcrop.js', 'eltdetail/js/hide.js', 'eltdetail/js/dollar.js', 'eltdetail/js/gesture.js', 'eltdetail/js/graphs.js', 'eltdetail/js/depgraph.js', 'eltdetail/js/custom_views.js', 'eltdetail/js/screenfull.js', 'eltdetail/js/shinken-gauge.js', 'eltdetail/js/timeline.js', 'timeline/js/timeline.js', 'eltdetail/js/history.js'], css=['eltdetail/css/bootstrap-switch.css', 'eltdetail/css/eltdetail.css', 'eltdetail/css/hide.css', 'eltdetail/css/gesture.css', 'eltdetail/css/jquery.Jcrop.css', 'eltdetail/css/shinken-gauge.css', 'timeline/css/timeline.css'], user=user, app=app, refresh=True
+%if elt_type=='host':
+%breadcrumb = [ ['All hosts', '/hosts-groups'], [elt.get_full_name(), '#information'] ]
+%else:
+%breadcrumb = [ ['All services', '/services-groups'], [elt.get_full_name(), '#information'] ]
+%end
+
+%rebase layout title=elt_type.capitalize() + ' ' + elt.get_full_name(), js=['eltdetail/js/jquery.color.js', 'eltdetail/js/bootstrap-switch.js', 'eltdetail/js/jquery.Jcrop.js', 'eltdetail/js/hide.js', 'eltdetail/js/dollar.js', 'eltdetail/js/gesture.js', 'eltdetail/js/graphs.js', 'eltdetail/js/depgraph.js', 'eltdetail/js/custom_views.js', 'eltdetail/js/screenfull.js', 'eltdetail/js/shinken-gauge.js', 'eltdetail/js/timeline.js', 'timeline/js/timeline.js', 'eltdetail/js/history.js'], css=['eltdetail/css/bootstrap-switch.css', 'eltdetail/css/eltdetail.css', 'eltdetail/css/hide.css', 'eltdetail/css/gesture.css', 'eltdetail/css/jquery.Jcrop.css', 'eltdetail/css/shinken-gauge.css', 'timeline/css/timeline.css'], user=user, app=app, refresh=True, breadcrumb=breadcrumb
 
 <script type="text/javascript">
 	var elt_name = '{{elt.get_full_name()}}';
@@ -210,7 +216,7 @@ Invalid element name
 				<script>
 					%j=0
 					%for t in sorted(elt.get_service_tags()):
-					var b{{j}} = $('<a href="/all?search=htag:{{t}}"/>').appendTo($('#service_tags'));
+					var b{{j}} = $('<a href="/all?search=stag:{{t}}"/>').appendTo($('#service_tags'));
 					$('<img />')
             .attr({ 'src': '/static/images/tags/{{t.lower()}}.png', 'alt': '{{t.lower()}}', 'title': 'Tag: {{t.lower()}}' })
             .css({height: "24px"})

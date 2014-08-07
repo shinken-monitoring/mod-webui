@@ -56,7 +56,7 @@ def get_view(page):
     print 'DUMP COMMON GET', app.request.GET.__dict__
 
 
-   # Look for the toolbar pref
+    # Look for the toolbar pref
     tool_pref = app.get_user_preference(user, 'toolbar')
     # If void, create an empty one
     if not tool_pref:
@@ -76,7 +76,7 @@ def get_view(page):
 
     # We will keep a trace of our filters
     filters = {}
-    ts = ['hst_srv', 'hg', 'realm', 'htag', 'ack', 'downtime', 'crit']
+    ts = ['hst_srv', 'hg', 'realm', 'htag', 'stag', 'ack', 'downtime', 'crit']
     for t in ts:
         filters[t] = []
 
@@ -180,6 +180,10 @@ def get_view(page):
         if t == 'htag':
             print 'Add a htag filter', s
             items = [i for i in items if s in i.get_host_tags()]
+
+        if t == 'stag':
+            print 'Add a stag filter', s
+            items = [i for i in items if i.__class__.my_type == 'service' and s in i.get_service_tags()]
 
         if t == 'ack':
             print "Got an ack filter", s
