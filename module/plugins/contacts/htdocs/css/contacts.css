@@ -95,7 +95,7 @@ ul.grid li section.right span.darkview a.firstbtn:hover { display: block; margin
  * Contact page view
  */
 div.user-header {
-  height: 175px;
+  height: 120px;
   padding: 10px;
   background: #3c8dbc;
   text-align: center;
@@ -107,6 +107,16 @@ div.user-header > img {
   border: 8px solid;
   border-color: transparent;
   border-color: rgba(255, 255, 255, 0.2);
+}
+div.user-header > img.company-logo {
+  float: left;
+  height: 80px;
+  width: 80px;
+}
+div.user-header > img.user-logo {
+  float: right;
+  height: 100px;
+  width: 100px;
 }
 div.user-header > p.username {
   z-index: 5;
