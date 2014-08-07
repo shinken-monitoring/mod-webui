@@ -109,7 +109,7 @@
   /* background-image: url('error.png'); */
 }
 
-/*  Special background colors (for hosts/services tags)
+/*  Special background colors (for hosts/services/contacts tags)
     ------------------------------------------------------- */
 .bg-host {
   color: #f9f9f9 !important;
@@ -118,6 +118,14 @@
 .bg-service {
   color: #f9f9f9 !important;
   background-color: #004f3f !important;
+}
+.bg-contact {
+  color: #f9f9f9 !important;
+  background-color: #f56954 !important;
+}
+.bg-host:hover, .bg-service:hover, .bg-contact:hover {
+  color: #000 !important;
+  background-color: #fff !important;
 }
 
 

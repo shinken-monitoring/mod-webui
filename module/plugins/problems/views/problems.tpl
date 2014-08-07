@@ -140,6 +140,21 @@
           </div>
         </form>
 
+        <form class="form-horizontal" role="form" name='stagfilter'>
+          <div class="form-group">
+            <label for="stag" class="col-sm-3 control-label">Tags</label>
+            <div class="col-sm-7">
+              <select class="form-control" name='stag'>
+                <option value='None'> None</option>
+                %for (t, n) in datamgr.get_service_tags_sorted():
+                <option value='{{t}}'> {{t}} ({{n}})</option>
+                %end
+              </select>
+            </div>
+            <a class='btn btn-default col-sm-1' href="javascript:save_stag_filter();"> <i class="fa fa-plus"></i> </a>
+          </div>
+        </form>
+
         <form class="form-horizontal" role="form" name='realmfilter'>
           <div class="form-group">
             <label for="realm" class="col-sm-3 control-label">Realms</label>
@@ -324,11 +339,20 @@
 
               %for r in filters['htag']:
               <li class="list-group-item">
-                <span class="filter_color htag_filter_color">&nbsp;</span>
-                <span class="htag_filter_name">Tag: {{r}}</span>
+                <span class="filter_color tag_filter_color">&nbsp;</span>
+                <span class="tag_filter_name">Tag: {{r}}</span>
                 <span class="filter_delete"><a href='javascript:remove_current_filter("htag", "{{r}}", "/{{page}}");' class="close">&times;</a></span>
               </li>
               <script>add_active_htag_filter('{{r}}');</script>
+              %end
+
+              %for r in filters['stag']:
+              <li class="list-group-item">
+                <span class="filter_color stag_filter_color">&nbsp;</span>
+                <span class="stag_filter_name">Tag: {{r}}</span>
+                <span class="filter_delete"><a href='javascript:remove_current_filter("stag", "{{r}}", "/{{page}}");' class="close">&times;</a></span>
+              </li>
+              <script>add_active_stag_filter('{{r}}');</script>
               %end
 
               %for r in filters['ack']:

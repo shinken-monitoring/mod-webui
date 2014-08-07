@@ -45,6 +45,12 @@ function save_htag_filter(){
     add_htag_filter(r);
 }
 
+function save_stag_filter(){
+    var f = document.forms['stagfilter'];
+    var r = f.stag.value;
+    add_stag_filter(r);
+}
+
 
 function save_state_ack_filter(){
     var r = document.forms.ack_filter.show_ack.checked;
@@ -225,6 +231,27 @@ function add_htag_filter(name){
     if(already_got_filter('htag', name)){return;}
     f = {};
     f.type = 'htag';
+    f.long_type = 'Tag';
+    f.search = name;
+    new_filters.push(f);
+    refresh_new_search_div();
+}
+
+
+// ******************* Service Tag ******************
+function add_active_stag_filter(name){
+    f = {};
+    f.type = 'stag';
+    f.long_type = 'Tag';
+    f.search = name;
+    current_filters.push(f);
+    add_stag_filter(name);
+}
+
+function add_stag_filter(name){
+    if(already_got_filter('stag', name)){return;}
+    f = {};
+    f.type = 'stag';
     f.long_type = 'Tag';
     f.search = name;
     new_filters.push(f);
