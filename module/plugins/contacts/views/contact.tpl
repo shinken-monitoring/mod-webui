@@ -25,6 +25,31 @@
 %end
 %end
 
+%# Contact is linked to hosts/services
+%items=[]
+%for item in app.datamgr.get_hosts():
+  %for item_contact in item.contacts:
+    %if item_contact.contact_name == contact.contact_name and item not in items:
+      %items.append(item)
+    %end
+  %end
+%end
+%for item in app.datamgr.get_contactgroups():
+  %for item_contact in item.get_contacts():
+    %if item_contact.contact_name == contact.contact_name and item not in items:
+      %items.append(item)
+    %end
+  %end
+%end
+%for service in app.datamgr.get_services():
+  %for item_contact in service.contacts:
+    %if item_contact.contact_name == contact.contact_name and item not in items:
+      %items.append(item)
+    %end
+  %end
+%end
+
+
 %if not 'app' in locals(): app = None
 %if not 'user' in locals(): user = None
 
@@ -38,24 +63,39 @@
           <!-- User image -->
           <div class="user-header bg-light-blue">
             %if app is not None and app.company_logo:
-            <img src="/static/images/logo/{{app.company_logo}}" class="img-circle" alt="User logo" />
+            <img src="/static/images/logo/{{app.company_logo}}" class="img-circle company-logo" alt="User logo" />
             %else:
-            <img src="/static/images/logo/logo_small.png" class="img-circle" alt="User logo" />
+            <img src="/static/images/logo/logo_small.png" class="img-circle company-logo" alt="User logo" />
             %end
+            
+            <script>
+              $('<img />')
+                .attr({ 'src': '/static/images/logo/{{contact.contact_name}}.png', 'class': 'img-circle user-logo', 'alt': '{{username}}', 'title': 'Photo: {{username}}' })
+                .css({display: "none"})
+                .load(function() {
+                  $(this).show();
+                })
+                .error(function() {
+                  $(this).remove();
+                })
+                .appendTo('div.user-header');
+            </script>
             
             <p class="username">
               {{username}}
             </p>
+            %if app.manage_acl:
             <p class="usercategory">
-              <small>{{'Administrator' if app.manage_acl and app.helper.can_action(contact) else 'Guest'}}</small>
+              <small>{{'Administrator' if contact.is_admin else 'User'}}</small>
             </p>
+            %end
           </div>
           
           <div class="user-body">
             <table class="table table-condensed col-sm-12" style="table-layout: fixed; word-wrap: break-word;">
               <colgroup>
-                <col style="width: 40%" />
-                <col style="width: 60%" />
+                <col style="width: 30%" />
+                <col style="width: 70%" />
               </colgroup>
               <thead>
                 <tr>
@@ -66,6 +106,10 @@
                 <tr>
                   <td><strong>Identification:</strong></td>
                   <td>{{"%s (%s)" % (contact.alias, contact.contact_name) if contact.alias != 'none' else contact.contact_name}}</td>
+                </tr>
+                <tr>
+                  <td><strong>Commands authorized:</strong></td>
+                  <td><span class="{{'glyphicon glyphicon-ok font-green' if app.helper.can_action(contact) else 'glyphicon glyphicon-remove font-red'}}"></span></td>
                 </tr>
                 <tr>
                   <td><strong>Active:</strong></td>
@@ -110,22 +154,48 @@
             
             <table class="table table-condensed col-sm-12" style="table-layout: fixed; word-wrap: break-word;">
               <colgroup>
-                <col style="width: 40%" />
-                <col style="width: 60%" />
+                <col style="width: 30%" />
+                <col style="width: 70%" />
               </colgroup>
               <thead>
                 <tr>
-                  <th colspan="2">Configuration:</td>
+                  <th colspan="2">Configuration: {{contact.tags}}</td>
                 </tr>
               </thead>
               <tbody style="font-size:x-small;">
+                <tr>
+                  <td><strong>Tags:</strong></td>
+                  <td>
+      %if len(contact.tags) > 0:
+			<div id="contact_tags" class="btn-group pull-right">
+				<script>
+					%j=0
+					%for t in sorted(contact.tags):
+					var b{{j}} = $('<a href="/all?search=stag:{{t}}"/>').appendTo($('#contact_tags'));
+					$('<img />')
+            .attr({ 'src': '/static/images/tags/{{t.lower()}}.png', 'alt': '{{t.lower()}}', 'title': 'Tag: {{t.lower()}}' })
+            .css({height: "24px"})
+            .load(function() {
+            })
+            .error(function() {
+              $(this).remove();
+              $("<span/>").attr({ 'class': 'btn btn-default btn-xs bg-contact'}).append('{{t}}').appendTo(b{{j}});
+            })
+            .appendTo(b{{j}});
+					var span = $("<span/>").append('&nbsp;').appendTo($('#contact_tags'));
+          %j=j+1
+					%end
+				</script>
+			</div>
+			%end
+                  </td>
+                </tr>
                 %i=1
                 %for nw in contact.notificationways:
                 <tr>
                   <td><strong>{{"Notification way:" if i==1 else "Notification way %d:"%i}}</strong></td>
                   <td>{{nw.notificationway_name}}</td>
                 </tr>
-                
                   <tr>
                     <td><strong>&raquo;Minimum business impact:</strong></td>
                     <td>{{nw.min_business_impact}}</td>
@@ -245,6 +315,56 @@
                 %i+=1
                 %end
                 %# For notificationways ...
+              </tbody>
+            </table>
+            
+            <table class="table table-condensed col-sm-12" style="table-layout: fixed; word-wrap: break-word;">
+              <colgroup>
+                <col style="width: 30%" />
+                <col style="width: 70%" />
+              </colgroup>
+              <thead>
+                <tr>
+                  <th colspan="2">Links:</td>
+                </tr>
+              </thead>
+              <tbody style="font-size:x-small;">
+                %my_hosts = [i for i in items if i.my_type == 'host']
+                <tr>
+                  <td><strong>Hosts:</strong></td>
+                  <td>
+                  %i=1
+                  %for item in my_hosts:
+                    {{', ' if i!=1 else ''}}{{!app.helper.get_link(item, short=True)}}
+                    %i+=1
+                  %end
+                  {{!'<span class="glyphicon glyphicon-remove font-red"></span> Does not monitor any host' if i==1 else ''}}
+                  </td>
+                </tr>
+                %my_services = [i for i in items if i.my_type == 'service']
+                <tr>
+                  <td><strong>Services:</strong></td>
+                  <td>
+                  %i=1
+                  %for item in my_services:
+                    {{', ' if i!=1 else ''}}{{!app.helper.get_link(item, short=True)}}
+                    %i+=1
+                  %end
+                  {{!'<span class="glyphicon glyphicon-remove font-red"></span> Does not monitor any service' if i==1 else ''}}
+                  </td>
+                </tr>
+                %my_contactgroups = [i for i in items if i.my_type == 'contactgroup']
+                <tr>
+                  <td><strong>Contacts groups:</strong></td>
+                  <td>
+                  %i=1
+                  %for item in my_contactgroups:
+                    {{', ' if i!=1 else ''}}{{item.alias if item.alias!='' else item.get_name()}}
+                    %i+=1
+                  %end
+                  {{!'<span class="glyphicon glyphicon-remove font-red"></span> Does not belong to any group' if i==1 else ''}}
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
