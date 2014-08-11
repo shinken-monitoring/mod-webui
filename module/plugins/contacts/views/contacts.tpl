@@ -1,4 +1,4 @@
-%title='All known contacts (%d contacts)' % len(app.datamgr.get_contacts())
+%title='All known contacts (%d contacts)' % len(contacts)
 %rebase layout globals(), css=['contacts/css/contacts.css'], js=['contacts/js/contacts-overview.js'], title=title, refresh=True
 
 %helper = app.helper
@@ -15,7 +15,7 @@
 <div class="row">
   <ul id="contacts" class="list row col-sm-10 pull-right">
     %even=''
-    %for contact in app.datamgr.get_contacts():
+    %for contact in contacts:
       %if even =='':
         %even='alt'
       %else:
@@ -58,7 +58,7 @@
             </table>
           </div>
         </section>
-        
+
         <section class="right">
           <span class="darkview">
             <a href="/contact/{{contact.get_name()}}" class="firstbtn"><i class="fa fa-angle-double-down"></i> Detail</a>
