@@ -34,7 +34,7 @@ params = {}
 
 def load_cfg():
     global params
-    
+
     import os,sys
     from config_parser import config_parser
     from shinken.log import logger
@@ -69,28 +69,34 @@ def reload_cfg():
 def show_contact(name):
     user = checkauth()
 
+    if not user.is_admin and user.get_name != name:
+      app.bottle.redirect('/contacts')
+
     return {
-        'app': app, 'user': user, 'params': params, 
+        'app': app, 'user': user, 'params': params,
         'contact': app.datamgr.get_contact(name)
         }
-
 
 # All contacts
 def show_contacts():
     user = checkauth()
 
+    if user.is_admin:
+        contacts = app.datamgr.get_contacts()
+    else:
+        contacts = (user,)
+
     return {
-        'app': app, 'user': user, 'params': params, 
+        'app': app, 'user': user, 'params': params,
         'contacts': sorted(app.datamgr.get_contacts(), key=lambda contact: contact.contact_name)
         }
-
 
 # Load plugin configuration parameters
 load_cfg()
 
 pages = {
         reload_cfg: {'routes': ['/reload/contacts']},
-        
+
         show_contact: {'routes': ['/contact/:name'], 'view': 'contact', 'static': True},
         show_contacts: {'routes': ['/contacts'], 'view': 'contacts', 'static': True},
         }
