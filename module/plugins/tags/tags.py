@@ -35,7 +35,7 @@ params['elts_per_page'] = 10
 
 def load_cfg():
     global params
-    
+
     import os,sys
     from shinken.log import logger
     from webui.config_parser import config_parser
@@ -48,10 +48,10 @@ def load_cfg():
         params = scp.parse_config(configuration_file)
 
         params['elts_per_page'] = int(params['elts_per_page'])
-        
+
         logger.debug("WebUI plugin '%s', configuration loaded." % (plugin_name))
         logger.debug("Plugin configuration, elts_per_page: %d" % (params['elts_per_page']))
-        
+
         return True
     except Exception, exp:
         logger.warning("WebUI plugin '%s', configuration file (%s) not available: %s" % (plugin_name, configuration_file, str(exp)))
@@ -83,10 +83,10 @@ def show_tag(name):
     # We want to limit the number of elements
     start = int(app.request.GET.get('start', '0'))
     end = int(app.request.GET.get('end', elts_per_page))
-        
+
     # Now sort hosts list ..
     # items.sort(hst_srv_sort)
-        
+
     # If we overflow, came back as normal
     total = len(items)
     if start > total:
@@ -95,9 +95,9 @@ def show_tag(name):
 
     navi = app.helper.get_navi(total, start, step=elts_per_page)
     items = items[start:end]
-        
+
     return {'app': app, 'user': user, 'params': params, 'navi': navi, 'tag': name, 'hosts': items, 'length': total}
-    
+
 def show_stag(name):
     user = checkauth()
 
@@ -112,10 +112,10 @@ def show_stag(name):
     # We want to limit the number of elements
     start = int(app.request.GET.get('start', '0'))
     end = int(app.request.GET.get('end', elts_per_page))
-        
+
     # Now sort hosts list ..
     # items.sort(hst_srv_sort)
-        
+
     # If we overflow, came back as normal
     total = len(items)
     if start > total:
@@ -124,18 +124,22 @@ def show_stag(name):
 
     navi = app.helper.get_navi(total, start, step=elts_per_page)
     items = items[start:end]
-        
+
     return {'app': app, 'user': user, 'params': params, 'navi': navi, 'tag': name, 'services': items, 'length': total}
-    
+
 def show_tags():
-    user = checkauth()    
+    user = checkauth()
 
-    my_tags = app.datamgr.get_host_tags_sorted()
+    fake_htags = []
+    for tag in app.datamgr.get_host_tags_sorted():
+        hosts = only_related_to(app.datamgr.get_hosts_tagged_with(tag[0]),user)
+        if len(hosts) > 0:
+            fake_htags.append({'name': tag[0], 'hosts': hosts})
 
-    return {'app': app, 'user': user, 'params': params, 'htags': my_tags}
+    return {'app': app, 'user': user, 'params': params, 'htags': fake_htags}
 
 def show_stags():
-    user = checkauth()    
+    user = checkauth()
     my_tags = app.datamgr.get_service_tags_sorted()
 
     return {'app': app, 'user': user, 'params': params, 'stags': my_tags}
@@ -145,7 +149,7 @@ load_cfg()
 
 pages = {
         reload_cfg: {'routes': ['/reload/tags']},
-        
+
         show_tag: {'routes': ['/hosts-tag/:name'], 'view': 'hosts-tag', 'static': True},
         show_stag: {'routes': ['/services-tag/:name'], 'view': 'services-tag', 'static': True},
         show_tags: {'routes': ['/hosts-tags'], 'view': 'hosts-tags-overview', 'static': True},
