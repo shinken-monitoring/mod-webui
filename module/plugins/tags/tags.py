@@ -28,6 +28,7 @@ app = None
 
 from shinken.util import safe_print
 from shinken.misc.sorter import hst_srv_sort
+from shinken.misc.filter import only_related_to
 
 # Get plugin's parameters from configuration file
 params = {}
