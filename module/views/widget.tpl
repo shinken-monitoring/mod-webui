@@ -24,23 +24,21 @@
 
 <script type="text/javascript">
   // For Typeahead: builds suggestion engine ... use same as defined in layout.tpl.
-  
-  $(document).ready(function(){
-    var w = {'id': '{{wid}}', 'base_url': '{{base_url}}', 'collapsed': {{collapsed_j}}, 'position': 'widget-place-1',
-            'options': {'key': 'value'}};
 
-    %for (k, v) in options.iteritems():
-       %value = v.get('value', '')
-       w.options['{{k}}'] = '{{value}}';
-    %end
+  var w = {'id': '{{wid}}', 'base_url': '{{base_url}}', 'collapsed': {{collapsed_j}}, 'position': 'widget-place-1',
+          'options': {'key': 'value'}};
 
-    // save into widgets
-    widgets.push(w);
-    if( new_widget) {
-      new_widget = false;
-      saveWidgets();
-    }
-  });
+  %for (k, v) in options.iteritems():
+      %value = v.get('value', '')
+      w.options['{{k}}'] = '{{value}}';
+  %end
+
+  // save into widgets
+  widgets.push(w);
+  if( new_widget) {
+    new_widget = false;
+    saveWidgets();
+  }
 
   function submit_{{wid}}_form(){
     var form = document.forms["options-{{wid}}"];
@@ -48,7 +46,7 @@
     var widget = find_widget('{{wid}}');
     // If we can't find the widget, bail out
     if(widget == -1){console.log('cannot find the widget for saving options!'); return;}
-    
+
     console.log('We found the widget: '+widget);
     %for (k, v) in options.iteritems():
        %# """ for checkbox, the 'value' is useless, we must look at checked """
@@ -65,7 +63,7 @@
       // If save is successfull we reload the widget
       reloadWidget('{{wid}}');
     });
-    
+
     // Prevent the form to be actually sent.
     return false;
   }
@@ -111,7 +109,7 @@
                   displayKey: 'value',
                   source: hosts.ttAdapter(),
                 });
-              
+
                 typeahead.on('typeahead:selected', function (eventObject, suggestionObject, suggestionDataset) {
                   $('#input-{{wid}}-{{k}}').val(suggestionObject.value).html(suggestionObject.value);
                   hostSubmittable = true;
@@ -135,7 +133,7 @@
             <option value="{{sub_val}}" {{selected}}>{{sub_name}}</option>
           %end
           </select>
-        %end 
+        %end
         %if t == 'bool':
           %checked = ''
           %if value:
