@@ -22,6 +22,7 @@
 import time
 
 from shinken.log import logger
+from shinken.misc.filter import only_related_to
 
 ### Will be populated by the UI with it's own value
 app = None
@@ -65,7 +66,7 @@ def get_page():
     # We are looking for hosts that got valid GPS coordinates,
     # and we just give them to the template to print them.
     valid_hosts = []
-    for h in app.datamgr.get_hosts():
+    for h in only_related_to(app.datamgr.get_hosts(),user):
         _lat = h.customs.get('_LOC_LAT', params['default_Lat'])
         _lng = h.customs.get('_LOC_LNG', params['default_Lng'])
 
@@ -100,7 +101,7 @@ def worldmap_widget():
     # We are looking for hosts that got valid GPS coordinates,
     # and we just give them to the template to print them.
     valid_hosts = []
-    for h in app.datamgr.get_hosts():
+    for h in only_related_to(app.datamgr.get_hosts(),user):
         _lat = h.customs.get('_LOC_LAT', params['default_Lat'])
         _lng = h.customs.get('_LOC_LNG', params['default_Lng'])
 
