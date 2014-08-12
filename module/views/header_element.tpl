@@ -2,8 +2,8 @@
 %if not 'user' in locals(): user = None
 
 %username = 'anonymous'
-%if user is not None: 
-%if hasattr(user, 'alias'):
+%if user is not None:
+%if hasattr(user, 'alias') and user.alias != 'none':
 %	username = user.alias
 %else:
 %	username = user.get_name()
@@ -16,7 +16,7 @@
   <a href="#about" data-toggle="modal" data-target="#about" class="logo">
     <img src="/static/images/logo/logo.png" alt="Logo" />
   </a>
-  
+
   <!-- Header Navbar -->
   <nav class="navbar navbar-static-top" role="navigation">
     <!-- Sidebar toggle button-->
@@ -26,7 +26,7 @@
       <span class="icon-bar"></span>
       <span class="icon-bar"></span>
     </a>
-    
+
     <div class="col-sm-2 col-md-2 pull-left">
       <form id="host-search" class="navbar-form navbar-left" role="search">
       <div class="input-group">
@@ -57,13 +57,13 @@
 
     <div class="navbar-right">
       <ul class="nav navbar-nav">
-        
+
         <li class="pull-right dropdown user user-menu">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
               <i class="fa fa-user"></i>
               <span><span class="username">{{username}}</span> <i class="caret"></i></span>
           </a>
-          
+
           <ul class="dropdown-menu">
             <!-- User image -->
             <li class="user-header bg-light-blue">
@@ -131,7 +131,7 @@
     }
   });
   hosts.initialize();
- 
+
   var hostSubmittable = false;
   $( "#host-search" ).submit(function( event ) {
     if (hostSubmittable) {
@@ -170,7 +170,7 @@
       displayKey: 'value',
       source: hosts.ttAdapter(),
     });
-  
+
     typeahead.on('typeahead:selected', function (eventObject, suggestionObject, suggestionDataset) {
       $('input[name="host-search"]').val(suggestionObject.value).html(suggestionObject.value);
       hostSubmittable = true;
