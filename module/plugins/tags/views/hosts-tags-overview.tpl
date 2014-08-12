@@ -16,8 +16,7 @@
 			%hUnreachable=0
 			%hPending=0
 			%business_impact = 0
-			%hosts = app.datamgr.get_hosts_tagged_with(tag[0])
-			%for h in hosts:
+			%for h in tag['hosts']:
 				%business_impact = max(business_impact, h.business_impact)
 				%nHosts=nHosts+1
 				%if h.state == 'UP':
@@ -32,13 +31,13 @@
 			%end
 			<li class="clearfix">
 				<section class="left">
-					<h3>{{tag[0]}}
+					<h3>{{tag['name']}}
 						%for i in range(0, business_impact-2):
 						<img alt="icon state" src="/static/images/star.png">
 						%end
 					</h3>
           <span class="meta">
-            <span class="fa-stack font-up"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-check fa-stack-1x fa-inverse"></i></span> 
+            <span class="fa-stack font-up"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-check fa-stack-1x fa-inverse"></i></span>
             <span class="num">
               %if hUp > 0:
               {{hUp}}
@@ -46,7 +45,7 @@
               <em>{{hUp}}</em>
               %end
             </span>
-            <span class="fa-stack font-unreachable"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-exclamation fa-stack-1x fa-inverse"></i></span> 
+            <span class="fa-stack font-unreachable"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-exclamation fa-stack-1x fa-inverse"></i></span>
             <span class="num">
               %if hUnreachable > 0:
               {{hUnreachable}}
@@ -54,15 +53,15 @@
               <em>{{hUnreachable}}</em>
               %end
             </span>
-            <span class="fa-stack font-down"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-arrow-down fa-stack-1x fa-inverse"></i></span> 
+            <span class="fa-stack font-down"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-arrow-down fa-stack-1x fa-inverse"></i></span>
             <span class="num">
               %if hDown > 0:
               {{hDown}}
               %else:
               <em>{{hDown}}</em>
               %end
-            </span> 
-            <span class="fa-stack font-unknown"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-question fa-stack-1x fa-inverse"></i></span> 
+            </span>
+            <span class="fa-stack font-unknown"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-question fa-stack-1x fa-inverse"></i></span>
             <span class="num">
               %if hPending > 0:
               {{hPending}}
@@ -72,7 +71,7 @@
             </span>
           </span>
 				</section>
-				
+
 				<section class="right">
 					%if nHosts == 1:
 					<span class="sum">{{nHosts}} element</span>
@@ -80,7 +79,7 @@
 					<span class="sum">{{nHosts}} elements</span>
 					%end
 					<span class="darkview">
-					<a href="/hosts-tag/{{tag[0]}}" class="firstbtn"><i class="fa fa-angle-double-down"></i> Details</a>
+					<a href="/hosts-tag/{{tag['name']}}" class="firstbtn"><i class="fa fa-angle-double-down"></i> Details</a>
 					</span>
 				</section>
 			</li>
