@@ -28,6 +28,7 @@ app = None
 
 from shinken.util import safe_print
 from shinken.misc.sorter import hst_srv_sort
+from shinken.misc.filter import only_related_to
 
 def get_page(groupname):
     # First we look for the user sid
@@ -42,7 +43,7 @@ def get_page(groupname):
     # populate app with it's own value.
     if groupname == 'all':
         my_group = 'all'
-        
+
         hosts = []
         hosts.extend(app.datamgr.get_hosts())
         items = hosts
@@ -51,16 +52,18 @@ def get_page(groupname):
         my_group = app.datamgr.get_hostgroup(groupname)
         if not my_group:
             return "Unknown group %s" % groupname
-            
+
         items = my_group.get_hosts()
+
+    items = only_related_to(items,user)
 
     # Now sort hosts list ..
     items.sort(hst_srv_sort)
-        
+
     # We want to limit the number of elements
     start = int(app.request.GET.get('start', '0'))
     end = int(app.request.GET.get('end', '30'))
-        
+
     # If we overflow, came back as normal
     total = len(items)
     if start > total:
@@ -69,7 +72,7 @@ def get_page(groupname):
 
     navi = app.helper.get_navi(total, start, step=30)
     items = items[start:end]
-        
+
     # we return values for the template (view). But beware, theses values are the
     # only one the template will have, so we must give it an app link and the
     # user we are logged with (it's a contact object in fact)
