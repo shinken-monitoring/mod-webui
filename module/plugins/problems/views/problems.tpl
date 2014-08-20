@@ -47,8 +47,8 @@
     }
   });
   hosts.initialize();
- 
- 
+
+
 	var active_filters = [];
 
 	// List of the bookmarks
@@ -66,14 +66,14 @@
   // This should be outside the "pageslide" div. I don't know why
   new_filters = [];
   current_filters = [];
-  
+
   // On page loaded ...
   $(function(){
     // We prevent the dropdown to close when we go on a form into it.
     $('.form_in_dropdown').on('click', function (e) {
       e.stopPropagation()
     });
-    
+
     // Typeahead: activation
     $('#filtering .typeahead').typeahead({
       hint: true,
@@ -85,7 +85,7 @@
       displayKey: 'value',
       source: hosts.ttAdapter(),
     });
-    
+
     // Buttons tooltips
     $('span').tooltip();
   });
@@ -170,7 +170,7 @@
         </form>
 
         <hr/>
-        
+
         <h4>States</h4>
         <form class="form-horizontal" role="form" name='ack_filter'>
           <div class="form-group">
@@ -179,7 +179,7 @@
                 <div class="checkbox">
                   <label>
                     %if page=='problems':
-                    <input name="show_ack" type="checkbox" > 
+                    <input name="show_ack" type="checkbox" >
                     %else:
                     <input name="show_ack" type="checkbox" checked>
                     %end
@@ -192,12 +192,12 @@
                   </label>
                 </div>
               </div>
-              
+
             </div>
             <a class='btn btn-default col-sm-1' href="javascript:save_state_ack_filter();"> <i class="fa fa-plus"></i> </a>
           </div>
         </form>
-        
+
         <form class="form-horizontal" role="form" name='downtime_filter'>
           <div class="form-group">
             <div class="col-sm-offset-1 col-sm-9">
@@ -205,7 +205,7 @@
                 <div class="checkbox">
                   <label>
                     %if page=='problems':
-                    <input name="show_downtime" type="checkbox" > 
+                    <input name="show_downtime" type="checkbox" >
                     %else:
                     <input name="show_downtime" type="checkbox" checked>
                     %end
@@ -218,7 +218,7 @@
                   </label>
                 </div>
               </div>
-              
+
             </div>
             <a class='btn btn-default col-sm-1' href="javascript:save_state_downtime_filter();"> <i class="fa fa-plus"></i> </a>
           </div>
@@ -231,7 +231,7 @@
                 <div class="checkbox">
                   <label>
                     %if page=='problems':
-                    <input name="show_critical" type="checkbox" > 
+                    <input name="show_critical" type="checkbox" >
                     %else:
                     <input name="show_critical" type="checkbox" checked>
                     %end
@@ -254,12 +254,12 @@
   </div>
 </div>
 
-    
+
 <!-- Buttons and page navigation -->
 <div class="row" style="padding: 0px;">
   <div class='col-md-4 pull-left'>
     <a id="hide_toolbar_btn" href="javascript:hide_toolbar()" class="btn btn-default"><i class="fa fa-minus"></i> Hide toolbar</a>
-    <a id='show_toolbar_btn' href="javascript:show_toolbar()" class="btn btn-default"><i class="fa fa-plus"></i> Show toolbar</a>      
+    <a id='show_toolbar_btn' href="javascript:show_toolbar()" class="btn btn-default"><i class="fa fa-plus"></i> Show toolbar</a>
     <a id='select_all_btn' href="javascript:select_all_problems()" class="btn btn-default"><i class="fa fa-check"></i> Select all</a>
     <a id='unselect_all_btn' href="javascript:unselect_all_problems()" class="btn btn-default"><i class="fa fa-minus"></i> Unselect all</a>
   </div>
@@ -309,7 +309,7 @@
           %if got_filters:
             <br/>
             <ul class="list-group">
-              Active filters: 
+              Active filters:
               %for n in filters['hst_srv']:
               <li class="list-group-item">
                 <span class="filter_color hst_srv_filter_color">&nbsp;</span>
@@ -382,7 +382,7 @@
               <script>add_active_state_criticity_filter('{{r}}');</script>
               %end
             </ul>
-            
+
             <br/>
             <div class="btn-group">
               <button class="btn btn-primary active dropdown-toggle" data-toggle="dropdown"> <i class="fa fa-tags"></i> Bookmark</button>
@@ -462,7 +462,7 @@
           %nb_same_output = 0
         %end
         %last_output = pb.output
-        
+
         %if pb.host_name != last_hname:
           %if last_hname != '' and last_hname != 'first':
             %# Close last panel group  ...
@@ -473,32 +473,32 @@
           %end
           <div class="panel panel-default" style="margin: 0">
             <div class="panel-heading">
-              <h4 class="panel-title table-responsive" data-toggle="collapse" data-parent="#accordion" href="#group_{{pb.host_name}}">
+              <h4 class="panel-title table-responsive" data-toggle="collapse" data-parent="#accordion" href="#group_{{pb.current_problem_id}}">
                 {{pb.host_name}}
                 <a class="pull-right">
                   <i class="fa fa-chevron-down pull-right"></i>
                 </a>
               </h4>
             </div>
-            <div id="group_{{pb.host_name}}" class="panel-collapse collapse host-panel">
+            <div id="group_{{pb.current_problem_id}}" class="panel-collapse collapse host-panel">
               <div class="panel-body">
-                <div class="panel-group" id="problems_{{pb.host_name}}">
+                <div class="panel-group" id="problems_{{pb.current_problem_id}}">
             %last_hname = pb.host_name
         %end
-        
+
         %# Panel for an host and all its services ...
         %div_class = ''
         %div_style = ''
         <div class="panel panel-default" style="margin: 0">
           <div class="panel-heading">
             <h4 class="panel-title table-responsive">
-              <table class="table table-condensed" style="margin:0;"><thead style="border: none;"><tr class="background-{{pb.state.lower()}}" data-toggle="collapse" data-parent="#problems_{{pb.host_name}}" href="#{{helper.get_html_id(pb)}}">
+              <table class="table table-condensed" style="margin:0;"><thead style="border: none;"><tr class="background-{{pb.state.lower()}}" data-toggle="collapse" data-parent="#problems_{{pb.current_problem_id}}" href="#{{helper.get_html_id(pb)}}">
                 <th style="font-size: small; font-weight: normal;" class="col-md-1">
                   <div class='tick' style="cursor:pointer;" onmouseover="hovering_selection('{{helper.get_html_id(pb)}}')" onclick="add_remove_elements('{{helper.get_html_id(pb)}}')">
                     <img class='img_tick' id='selector-{{helper.get_html_id(pb)}}' src='/static/images/tick.png' />
                   </div>
                 </th>
-                
+
                 <th style="font-size: small; font-weight: normal;" class="col-md-1">
                   <div class='img_status'>
                   <span class="medium-pulse aroundpulse pull-left">
@@ -510,15 +510,15 @@
                   </span>
                   </div>
                 </th>
-                
+
                 <th style="font-size: small; font-weight: normal;" class="col-md-5">
                   <span class="cut_long">{{!helper.get_link(pb, short=True)}}</span>
                 </th>
-                
+
                 <th style="font-size: small; font-weight: normal;" class="col-md-1">
                   <span class='txt_status'> {{pb.state}}</span>
                 </th>
-                
+
                 <th style="font-size: small; font-weight: normal;" class="col-lg-2 hidden-md">
                   %if len(pb.output) > 100:
                     %if app.allow_html_output:
@@ -534,7 +534,7 @@
                     %end
                   %end
                 </th>
-                
+
                 <th style="font-size: small; font-weight: normal;" class="col-lg-4 hidden-md">
                   %graphs = app.get_graph_uris(pb, now-4*3600, now, 'dashboard')
                   %onmouse_code = ''
@@ -543,7 +543,7 @@
                   %end
                   <span class="perfometer" {{!onmouse_code}}>{{!helper.get_perfometer(pb)}}</span>
                 </th>
-                
+
                 <th style="font-size: small; font-weight: normal;" class="col-sm-1">
                   <a class="pull-right"><i class="fa fa-chevron-down pull-right"></i></a>
                 </th>
@@ -630,7 +630,7 @@
     %# Close accordion and problems div ...
       </div>
     </div>
-    
+
     <script type="text/javascript">
       // Open the first host collapsable element
       $('.host-panel:first').addClass('in');
