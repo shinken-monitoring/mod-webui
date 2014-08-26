@@ -26,7 +26,14 @@
 #inner_depgraph {
   background: #FFFFFF;
   padding: 15px;
-} 
+}
+
+/* Graph tab */
+#graphs img {
+  max-width: 100%;
+  height: auto;
+  width: auto\9;
+}
 
 
 #event_command {
@@ -68,7 +75,7 @@
 }
 
 /*
-    Special elt view classes 
+    Special elt view classes
 */
 
 .verticaltabs-container td { border-top: none; }
@@ -315,7 +322,7 @@ div.marginbottom {
 .verticaltabs-container > .nav-tabs {
   display: block;
   position: relative;
-  left: 100%; 
+  left: 100%;
   width: 1000%;
   -webkit-transform-origin: 0 0;
   -moz-transform-origin: 0 0;
