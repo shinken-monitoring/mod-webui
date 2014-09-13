@@ -16,8 +16,7 @@
 			%sWarning=0
 			%sPending=0
 			%business_impact = 0
-			%services = app.datamgr.get_services_tagged_with(tag[0])
-			%for s in services:
+			%for s in tag['services']:
 				%business_impact = max(business_impact, s.business_impact)
 				%nServices=nServices+1
 				%if s.state == 'OK':
@@ -32,7 +31,7 @@
 			%end
 			<li class="clearfix">
 				<section class="left">
-					<h3>{{tag[0]}}
+					<h3>{{tag['name']}}
 						%for i in range(0, business_impact-2):
 						<img alt="icon state" src="/static/images/star.png">
 						%end
@@ -80,7 +79,7 @@
 					<span class="sum">{{nServices}} elements</span>
 					%end
 					<span class="darkview">
-					<a href="/services-tag/{{tag[0]}}" class="firstbtn"><i class="fa fa-angle-double-down"></i> Details</a>
+					<a href="/services-tag/{{tag['name']}}" class="firstbtn"><i class="fa fa-angle-double-down"></i> Details</a>
 					</span>
 				</section>
 			</li>
