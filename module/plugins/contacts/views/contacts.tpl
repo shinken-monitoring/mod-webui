@@ -31,7 +31,11 @@
       %username = contact.alias if hasattr(contact, 'alias') and contact.alias != 'none' else contact.get_name()
       <li class="clearfix {{even}} ">
         <section class="left col-sm-6">
+          %if user.is_admin:
           <a href="/contact/{{contact.get_name()}}"><h3>{{"%s (%s)" % (contact.alias, contact.contact_name) if contact.alias != 'none' else contact.contact_name}}</h3></a>
+          %else:
+          <h3>{{"%s (%s)" % (contact.alias, contact.contact_name) if contact.alias != 'none' else contact.contact_name}}</h3>
+          %end
           <div class="meta">
             <table class="table table-condensed pull-left" style="table-layout: fixed; word-wrap: break-word;">
               <colgroup>
