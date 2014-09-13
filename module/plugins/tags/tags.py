@@ -141,9 +141,14 @@ def show_tags():
 
 def show_stags():
     user = checkauth()
-    my_tags = app.datamgr.get_service_tags_sorted()
+    
+    fake_stags = []
+    for tag in app.datamgr.get_service_tags_sorted():
+        services = only_related_to(app.datamgr.get_services_tagged_with(tag[0]),user)
+        if len(services) > 0:
+            fake_stags.append({'name': tag[0], 'services': services})
 
-    return {'app': app, 'user': user, 'params': params, 'stags': my_tags}
+    return {'app': app, 'user': user, 'params': params, 'stags': fake_stags}
 
 # Load plugin configuration parameters
 load_cfg()
