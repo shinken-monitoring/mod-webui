@@ -15,6 +15,9 @@
 	var apiLoading=false;
 	// Set true to activate javascript console logs
 	var debugJs=false;
+if (debugJs && !window.console) {
+  alert('Your web browser does not have any console object ... you should stop using IE ;-) !');
+}
 
 	var map;
 	var infoWindow;
@@ -36,10 +39,11 @@
 	//------------------------------------------------------------------------------
 	// Create a marker on specified position for specified host/state with IW content
 	//------------------------------------------------------------------------------
-	// point : GPS coordinates
+	// position : GPS coordinates
 	// name : host name
 	// state : host state
 	// content : infoWindow content
+	// iconBase : icone name base
 	//------------------------------------------------------------------------------
 	markerCreate = function(name, state, content, position, iconBase) {
 		if (debugJs) console.log("-> marker creation for "+name+", state : "+state);
@@ -234,17 +238,6 @@
 					
 					map.fitBounds(bounds);
 
-					var mcOptions = {
-						zoomOnClick: true, showText: true, averageCenter: true, gridSize: 40, maxZoom: 20, 
-						styles: [
-							{ height: 53, width: 53, url: imagesDir+"m1.png" },
-							{ height: 56, width: 56, url: imagesDir+"m2.png" },
-							{ height: 66, width: 66, url: imagesDir+"m3.png" },
-							{ height: 78, width: 78, url: imagesDir+"m4.png" },
-							{ height: 90, width: 90, url: imagesDir+"m5.png" }
-						]
-					};
-					
 					var mcOptions = {
 						zoomOnClick: true, showText: true, averageCenter: true, gridSize: 10, minimumClusterSize: 2, maxZoom: 18,
 						styles: [
