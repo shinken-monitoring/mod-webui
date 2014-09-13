@@ -159,35 +159,35 @@
               </colgroup>
               <thead>
                 <tr>
-                  <th colspan="2">Configuration: {{contact.tags}}</td>
+                  <th colspan="2">Configuration:</td>
                 </tr>
               </thead>
               <tbody style="font-size:x-small;">
                 <tr>
                   <td><strong>Tags:</strong></td>
                   <td>
-      %if len(contact.tags) > 0:
-			<div id="contact_tags" class="btn-group pull-right">
-				<script>
-					%j=0
-					%for t in sorted(contact.tags):
-					var b{{j}} = $('<a href="/all?search=stag:{{t}}"/>').appendTo($('#contact_tags'));
-					$('<img />')
-            .attr({ 'src': '/static/images/tags/{{t.lower()}}.png', 'alt': '{{t.lower()}}', 'title': 'Tag: {{t.lower()}}' })
-            .css({height: "24px"})
-            .load(function() {
-            })
-            .error(function() {
-              $(this).remove();
-              $("<span/>").attr({ 'class': 'btn btn-default btn-xs bg-contact'}).append('{{t}}').appendTo(b{{j}});
-            })
-            .appendTo(b{{j}});
-					var span = $("<span/>").append('&nbsp;').appendTo($('#contact_tags'));
-          %j=j+1
-					%end
-				</script>
-			</div>
-			%end
+                    %if len(contact.tags) > 0:
+                    <div id="contact_tags" class="btn-group pull-right">
+                      <script>
+                        %j=0
+                        %for t in sorted(contact.tags):
+                        var b{{j}} = $('<a href="/all?search=stag:{{t}}"/>').appendTo($('#contact_tags'));
+                        $('<img />')
+                          .attr({ 'src': '/static/images/tags/{{t.lower()}}.png', 'alt': '{{t.lower()}}', 'title': 'Tag: {{t.lower()}}' })
+                          .css({height: "24px"})
+                          .load(function() {
+                          })
+                          .error(function() {
+                            $(this).remove();
+                            $("<span/>").attr({ 'class': 'btn btn-default btn-xs bg-contact'}).append('{{t}}').appendTo(b{{j}});
+                          })
+                          .appendTo(b{{j}});
+                        var span = $("<span/>").append('&nbsp;').appendTo($('#contact_tags'));
+                        %j=j+1
+                        %end
+                      </script>
+                    </div>
+                    %end
                   </td>
                 </tr>
                 %i=1
