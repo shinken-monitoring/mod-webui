@@ -3,10 +3,13 @@
 %helper = app.helper
 %datamgr = app.datamgr
 
+%from shinken.misc.filter import only_related_to
+
 %nHosts=0
+%hosts=only_related_to(datamgr.get_hosts(),user)
 %hUp=hDown=hUnreachable=hPending=hUnknown=0
 %pctUp=pctDown=pctUnreachable=pctPending=pctUnknown=0
-%for h in datamgr.get_hosts():
+%for h in hosts:
 	%nHosts=nHosts+1
 	%if h.state == 'UP':
 		%hUp=hUp+1
@@ -30,7 +33,7 @@
 
 <div class="row">
   <div class="pull-left col-sm-2">
-    <span class="pull-right">Total hosts: {{len(datamgr.get_hosts())}}</span>
+    <span class="pull-right">Total hosts: {{len(hosts)}}</span>
   </div>
   <div class="pull-left progress col-sm-8 no-leftpadding no-rightpadding" style="height: 25px;">
     <div title="{{hUp}} hosts Up" class="progress-bar progress-bar-success quickinfo" role="progressbar" 
@@ -70,7 +73,7 @@
     %hDown=0
     %hUnreachable=0
     %hPending=0 # Pending / unknown
-    %for h in datamgr.get_hosts():
+    %for h in hosts:
       %nHosts=nHosts+1
       %if h.state == 'UP':
         %hUp=hUp+1
@@ -150,12 +153,13 @@
 
       %nGroups=0
       %nHosts=0
+      %hosts=only_related_to(group.get_hosts(),user)
       %hUp=0
       %hDown=0
       %hUnreachable=0
       %hPending=0
       %business_impact = 0
-      %for h in group.get_hosts():
+      %for h in hosts:
         %business_impact = max(business_impact, h.business_impact)
         %nHosts=nHosts+1
         %if h.state == 'UP':
@@ -174,11 +178,17 @@
       %end
       <!-- <li>{{group.get_name()}} - {{nHosts}} - {{nGroups}} - {{group.get_hostgroup_members()}}</li> -->
       %if nHosts > 0 or nGroups > 0:
-        <li class="clearfix {{even}}">
+        
+        <li class="clearfix {{even}} {{'alert' if nHosts == hDown else ''}}">
           <section class="left">
             <h3>{{group.alias if group.alias != '' else group.get_name()}}
               %for i in range(0, business_impact-2):
               <img alt="icon state" src="/static/images/star.png">
+              %end
+              %if hasattr(group, 'customs') and len(group.customs) > 0:
+                %if hasattr(group.customs, '_GROUP_LEVEL') > 0:
+                  - level {{group.customs['_GROUP_LEVEL']}}
+                %end
               %end
             </h3>
             <span class="meta">
