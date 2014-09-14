@@ -28,6 +28,7 @@ app = None
 
 from shinken.util import safe_print
 from shinken.misc.sorter import hst_srv_sort
+from shinken.misc.filter import only_related_to
 
 # Get plugin's parameters from configuration file
 params = {}
@@ -76,7 +77,7 @@ def show_hostgroup(name):
         my_group = 'all'
         
         items = []
-        items.extend(app.datamgr.get_hosts())
+        items.extend(only_related_to(app.datamgr.get_hosts(),user))
 
     else:
         my_group = app.datamgr.get_hostgroup(name)
@@ -84,7 +85,7 @@ def show_hostgroup(name):
         if not my_group:
             return "Unknown group %s" % name
             
-        items = my_group.get_hosts()
+        items = only_related_to(my_group.get_hosts(),user)
 
     elts_per_page = params['elts_per_page']
     # We want to limit the number of elements
