@@ -1,3 +1,4 @@
+<a href='https://travis-ci.org/shinken-monitoring/mod-webui'><img src='https://api.travis-ci.org/shinken-monitoring/mod-webui.svg?branch=master' alt='Travis Build'></a>
 #mod-webui
 
 ###Description

@@ -1,2 +1,0 @@
-pymongo
--e git+https://github.com/naparuba/shinken.git#egg=shinken
