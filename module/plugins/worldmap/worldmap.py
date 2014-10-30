@@ -39,11 +39,11 @@ try:
     scp = config_parser('#', '=')
     params = scp.parse_config(configuration_file)
 
-    params['only_geo_hosts'] = bool(params['only_geo_hosts'])
+    params['only_geo_hosts'] = params['only_geo_hosts'].lower() in ("yes", "true", "1")
     params['default_Lat'] = float(params['default_Lat'])
     params['default_Lng'] = float(params['default_Lng'])
     params['default_zoom'] = int(params['default_zoom'])
-    
+
     logger.debug("WebUI plugin '%s', configuration loaded." % (plugin_name))
     logger.debug("Plugin configuration, default position: %s / %s" % (params['default_Lat'], params['default_Lng']))
     logger.debug("Plugin configuration, default zoom level: %d" % (params['default_zoom']))
@@ -97,7 +97,7 @@ def _get_coords(host):
 
 # Our page. If the user call /worldmap
 def get_page():
-    user = checkauth()    
+    user = checkauth()
 
     # We are looking for hosts that got valid GPS coordinates,
     # and we just give them to the template to print them.
@@ -114,7 +114,7 @@ def get_page():
 
 
 def worldmap_widget():
-    user = checkauth()    
+    user = checkauth()
 
     wid = app.request.GET.get('wid', 'widget_system_' + str(int(time.time())))
     collapsed = (app.request.GET.get('collapsed', 'False') == 'True')
@@ -130,7 +130,7 @@ def worldmap_widget():
             h.customs['_LOC_LAT'] = _lat
             h.customs['_LOC_LNG'] = _lng
             valid_hosts.append(h)
-                
+
     return {'app': app, 'user': user, 'wid': wid,
             'collapsed': collapsed, 'options': options,
             'base_url': '/widget/worldmap', 'title': 'Worldmap',
@@ -143,6 +143,6 @@ Show a map of all monitored hosts.
 '''
 
 # We export our properties to the webui
-pages = {get_page: {'routes': ['/worldmap'], 'view': 'worldmap', 'static': True}, 
+pages = {get_page: {'routes': ['/worldmap'], 'view': 'worldmap', 'static': True},
          worldmap_widget: {'routes': ['/widget/worldmap'], 'view': 'worldmap_widget', 'static': True, 'widget': ['dashboard'], 'widget_desc': widget_desc, 'widget_name': 'worldmap', 'widget_picture': '/static/worldmap/img/widget_worldmap.png'},
 }
