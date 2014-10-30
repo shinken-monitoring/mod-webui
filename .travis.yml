@@ -4,9 +4,12 @@ python:
   - "2.6"
 
 install:
-  - "[ -d test ] && ./test/setup_module_test.sh || : "
+  - "pip install pycurl"
+  - "sudo useradd shinken"
+  - "pip install -r requirements.txt"
+  - "pip install coveralls"
 
-script: "[ -d test ] && cd ~/shinken/test && nosetests -vx --with-coverage --cover-package=module || :"
+script: nosetests -vx --with-coverage --cover-package=module
 
 after_success:
   coveralls
