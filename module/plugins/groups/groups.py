@@ -35,7 +35,7 @@ params['elts_per_page'] = 10
 
 def load_cfg():
     global params
-    
+
     import os,sys
     from shinken.log import logger
     from config_parser import config_parser
@@ -48,10 +48,10 @@ def load_cfg():
         params = scp.parse_config(configuration_file)
 
         params['elts_per_page'] = int(params['elts_per_page'])
-        
+
         logger.debug("WebUI plugin '%s', configuration loaded." % (plugin_name))
         logger.debug("Plugin configuration, elts_per_page: %d" % (params['elts_per_page']))
-        
+
         return True
     except Exception, exp:
         logger.warning("WebUI plugin '%s', configuration file (%s) not available: %s" % (plugin_name, configuration_file, str(exp)))
@@ -74,7 +74,7 @@ def show_hostgroup(name):
 
     if name == 'all':
         my_group = 'all'
-        
+
         items = []
         items.extend(app.datamgr.get_hosts())
 
@@ -83,17 +83,17 @@ def show_hostgroup(name):
 
         if not my_group:
             return "Unknown group %s" % name
-            
+
         items = my_group.get_hosts()
 
     elts_per_page = params['elts_per_page']
     # We want to limit the number of elements
     start = int(app.request.GET.get('start', '0'))
     end = int(app.request.GET.get('end', elts_per_page))
-        
+
     # Now sort hosts list ..
     items.sort(hst_srv_sort)
-        
+
     # If we overflow, came back as normal
     total = len(items)
     if start > total:
@@ -101,12 +101,12 @@ def show_hostgroup(name):
         end = elts_per_page
 
     navi = app.helper.get_navi(total, start, step=elts_per_page)
-    items = items[start:end]
-        
-    return {'app': app, 'user': user, 'params': params, 'navi': navi, 'group': my_group, 'hosts': items, 'length': total}
+    items_page = items[start:end]
+
+    return {'app': app, 'user': user, 'params': params, 'navi': navi, 'group': my_group, 'hosts': items_page, 'all_hosts': items, 'length': total}
 
 def show_hostgroups():
-    user = checkauth()    
+    user = checkauth()
 
     my_hostgroups = app.datamgr.get_hostgroups()
 
@@ -114,11 +114,11 @@ def show_hostgroups():
 
 
 def show_servicegroup(name):
-    user = checkauth()    
+    user = checkauth()
 
     if name == 'all':
         my_group = 'all'
-        
+
         services = []
         services.extend(app.datamgr.get_services())
         items = services
@@ -128,17 +128,17 @@ def show_servicegroup(name):
 
         if not my_group:
             return "Unknown group %s" % name
-            
+
         items = my_group.get_services()
 
     elts_per_page = params['elts_per_page']
     # We want to limit the number of elements
     start = int(app.request.GET.get('start', '0'))
     end = int(app.request.GET.get('end', elts_per_page))
-        
+
     # Now sort services list ..
     items.sort(hst_srv_sort)
-        
+
     # If we overflow, came back as normal
     total = len(items)
     if start > total:
@@ -147,11 +147,11 @@ def show_servicegroup(name):
 
     navi = app.helper.get_navi(total, start, step=elts_per_page)
     items = items[start:end]
-        
+
     return {'app': app, 'user': user, 'params': params, 'navi': navi, 'group': my_group, 'services': items, 'length': total}
 
 def show_servicegroups():
-    user = checkauth()    
+    user = checkauth()
 
     my_servicegroups = app.datamgr.get_servicegroups()
 
