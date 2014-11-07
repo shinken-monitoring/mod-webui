@@ -77,7 +77,7 @@ Invalid group name
 		</div>
 		<div class="panel-body">
 			<div class="pull-left col-lg-4">
-				<span>Currently displaying {{nHosts}} hosts out of {{length}}</span>
+				<span>Currently displaying {{nHosts}} hosts</span>
 			</div>
 			<div class="pull-right progress col-lg-7 no-bottommargin no-leftpadding no-rightpadding" style="height: 45px;">
 				<div title="{{hUp}} hosts Up" class="progress-bar progress-bar-success quickinfo" role="progressbar" 
