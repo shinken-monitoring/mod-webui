@@ -306,7 +306,7 @@ class Webui_broker(BaseModule, Daemon):
             l = self.to_q.get()
             # DBG: t1 = time.time()
             # DBG: print "WEBUI :: GET FINISH with", len(l), "in ", t1 - t0
-
+            self.check_and_del_zombie_modules()
             for b in l:
                 # DBG: t0 = time.time()
                 b.prepare()
