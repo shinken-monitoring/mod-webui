@@ -46,9 +46,10 @@ params['tab_depgraph'] = 'yes'
 
 def load_cfg():
     global params
-    
     import os,sys
-    from config_parser import config_parser
+    currentdir = os.path.dirname(os.path.realpath(__file__)) 
+    sys.path.insert(0,currentdir+"/../..") 
+    from config_parser import config_parser 
     from shinken.log import logger
     plugin_name = os.path.splitext(os.path.basename(__file__))[0]
     try:

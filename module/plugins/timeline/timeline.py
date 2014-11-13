@@ -62,10 +62,11 @@ params['logs_limit'] = 500
 params['logs_type'] = []
 
 import os,sys
-from config_parser import config_parser
+currentdir = os.path.dirname(os.path.realpath(__file__)) 
+sys.path.insert(0,currentdir+"/../..") 
+from config_parser import config_parser 
 plugin_name = os.path.splitext(os.path.basename(__file__))[0]
 try:
-    currentdir = os.path.dirname(os.path.realpath(__file__))
     configuration_file = "%s/%s" % (currentdir, 'plugin.cfg')
     logger.debug("Plugin configuration file: %s" % (configuration_file))
     scp = config_parser('#', '=')
