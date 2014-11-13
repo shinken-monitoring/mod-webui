@@ -137,7 +137,7 @@ class Webui_broker(BaseModule, Daemon):
         self.rg = Regenerator()
 
         self.bottle = bottle
-+    
+    
     # We check if the photo directory exists. If not, try to create it
     def check_photo_dir(self):
         logger.info("Checking photo path", self.photo_dir)
