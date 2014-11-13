@@ -28,6 +28,8 @@
 
 import time
 from shinken.util import safe_print
+currentdir = os.path.dirname(os.path.realpath(__file__)) 
+sys.path.insert(0,currentdir+"/../..") 
 from helper import hst_srv_sort
 from shinken.misc.sorter import worse_first
 
