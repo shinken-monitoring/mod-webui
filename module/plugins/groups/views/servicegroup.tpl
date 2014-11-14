@@ -103,9 +103,17 @@ Invalid group name
 		</div>
 	</div>
 
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<a href="#" id="togglerefresh"><span class="icon-refresh" id="labelrefresh"> Disable refresh</span></a>    
+		</div>
+	</div>
+
 	<div class='col-lg-12'>
 		%include pagination_element navi=navi, app=app, page="servicegroup/"+groupname, div_class="center no-margin"
 	</div>
+
+
 
 	<div class="clearfix">
 		<table class="table table-hover">
