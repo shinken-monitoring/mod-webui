@@ -48,13 +48,13 @@ def get_page():
 
     # Look for the widgets as the json entry
     s = app.get_user_preference(user, 'widgets')
-    print "Loaded widgets", s, type(s)
+    logger.info("Loaded widgets", s, type(s))
     # If void, create an empty one
     if not s:
         app.set_user_preference(user, 'widgets', '[]')
         s = '[]'
     widget_names = json.loads(s)
-    print "And now objects", widget_names
+    logger.info("And now objects", widget_names)
     widgets = []
 
     for w in widget_names:
