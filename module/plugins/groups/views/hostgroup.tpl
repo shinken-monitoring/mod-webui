@@ -53,7 +53,7 @@ Invalid group name
 
 %end
 
-%rebase layout globals(), title='Hosts group detail for ' + groupname, refresh=True
+%rebase layout globals(), title='Hosts group detail for ' + groupname, refresh=True, js=['groups/js/groups.js']
 
 <style>
 .warning, .unreachable {
@@ -100,6 +100,12 @@ Invalid group name
 					data-original-title='{{hUnknown}} Unknown' 
 					style="width: {{pctPending}}%; vertical-align:midddle; line-height: 45px;">{{pctUnknown}}% Unknown</div>
 			</div>
+		</div>
+	</div>
+
+	<div class="panel panel-default">
+		<div class="panel-heading">
+			<a href="#" id="togglerefresh"><span class="icon-refresh" id="labelrefresh"> Disable refresh</span></a>    
 		</div>
 	</div>
 
