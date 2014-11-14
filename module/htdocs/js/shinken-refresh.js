@@ -25,7 +25,7 @@
 /* By default, we set the page to reload each period defined in WebUI configuration */
 var refresh_timeout = app_refresh_period;
 var nb_refresh_try = 0;
-
+var refresh_enabled = true;
 
 function postpone_refresh(){
 	// If we are not in our first try, warn the user
@@ -46,7 +46,9 @@ function postpone_refresh(){
 function check_gotfirstdata_result(response){
 	if(response.status == 200 && response.text == '1'){
 		// Go Refresh
-		location.reload();
+		if (refresh_enabled) {
+			location.reload();
+		}
 
 		reinit_refresh();
 	}else{
