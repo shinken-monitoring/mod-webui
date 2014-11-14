@@ -665,7 +665,7 @@ class Webui_broker(BaseModule, Daemon):
 
         for mod in self.modules_manager.get_internal_instances():
             try:
-                logger.debugf('Try to get pref %s from %s' % (key, mod.get_name()))
+                logger.debug('Try to get pref %s from %s' % (key, mod.get_name()))
                 f = getattr(mod, 'get_ui_user_preference', None)
                 if f and callable(f):
                     r = f(user, key)
