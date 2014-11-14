@@ -27,6 +27,8 @@
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 
 import time
+import os
+import sys
 from shinken.util import safe_print
 from helper import hst_srv_sort
 from shinken.misc.sorter import worse_first
