@@ -52,8 +52,7 @@ Invalid group name
 %end
 
 %end
-
-%rebase layout globals(), title='Services group detail for ' + groupname, refresh=True
+%rebase layout globals(), title='Services group detail for ' + groupname, refresh=True, js=['groups/js/groups.js']
 
 <style>
 .warning, .unreachable {
