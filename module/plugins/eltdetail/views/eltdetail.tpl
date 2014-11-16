@@ -475,7 +475,7 @@ Invalid element name
 						</tr>
 						<tr>
 							<td class="column1"><b>Notification interval</b></td>
-							<td class="column2">{{elt.notification_interval}} mn (period : {{elt.notification_period.timeperiod_name}})</td>
+							<td class="column2">{{elt.notification_interval}} mn (period : {{elt.notification_period.timeperiod_name if elt.notification_period else "None"}})</td>
 						</tr>
 						<tr>
 							<td class="column1"><b>Current Attempt</b></td>
