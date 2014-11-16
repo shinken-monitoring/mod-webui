@@ -297,12 +297,18 @@ class Webui_broker(BaseModule, Daemon):
         # DBG: time_preparing = 0
 
         print "Data thread started"
+
+
+        
         while True:
             # DBG: t0 = time.time()
             # DBG: print "WEBUI :: GET START"
             l = self.to_q.get()
             # DBG: t1 = time.time()
             # DBG: print "WEBUI :: GET FINISH with", len(l), "in ", t1 - t0
+
+            # try to relaunch dead module (like mongo one when mongo is not available at startup for example)
+            self.check_and_del_zombie_modules()
 
             for b in l:
                 # DBG: t0 = time.time()
