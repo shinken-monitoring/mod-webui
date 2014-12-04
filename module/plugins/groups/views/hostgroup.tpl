@@ -23,7 +23,7 @@ Invalid group name
 %hUnreachable=0
 %hPending=0
 %hUnknown=0
-%for h in hosts:
+%for h in all_hosts:
 	%nHosts=nHosts+1
 	%if h.state == 'UP':
 		%hUp=hUp+1
@@ -38,11 +38,11 @@ Invalid group name
 	%end
 %end
 %if nHosts != 0:
-	%pctUp			= round(100.0 * hUp / nHosts, 2)
-	%pctDown		= round(100.0 * hDown / nHosts, 2)
-	%pctUnreachable	= round(100.0 * hUnreachable / nHosts, 2)
-	%pctPending		= round(100.0 * hPending / nHosts, 2)
-	%pctUnknown		= round(100.0 * hUnknown / nHosts, 2)
+	%pctUp			= round(100.0 * hUp / length, 2)
+	%pctDown		= round(100.0 * hDown / length, 2)
+	%pctUnreachable	= round(100.0 * hUnreachable / length, 2)
+	%pctPending		= round(100.0 * hPending / length, 2)
+	%pctUnknown		= round(100.0 * hUnknown / length, 2)
 %else:
 	%pctUp			= 0
 	%pctDown		= 0
@@ -77,7 +77,7 @@ Invalid group name
 		</div>
 		<div class="panel-body">
 			<div class="pull-left col-lg-4">
-				<span>Currently displaying {{nHosts}} hosts out of {{length}}</span>
+				<span>Currently displaying {{nHosts}} hosts</span>
 			</div>
 			<div class="pull-right progress col-lg-7 no-bottommargin no-leftpadding no-rightpadding" style="height: 45px;">
 				<div title="{{hUp}} hosts Up" class="progress-bar progress-bar-success quickinfo" role="progressbar" 
