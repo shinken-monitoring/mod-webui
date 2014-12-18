@@ -1,3 +1,4 @@
+
 from pymongo.connection import Connection
 
 id="GLPI"
@@ -5,10 +6,8 @@ records = []
 con = Connection('localhost')
 db = con.shinken
 app = None # app is not otherwise
-if not db:
-    message = "Error : Unable to connect to mongo database"
-    return {'app': app, 'eue_data': {}, 'message': message }
 
+eueid = ""
 parts = eueid.split(".")
 parts.pop(0)
 id =  ".".join(parts)
