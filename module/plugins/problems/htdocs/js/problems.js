@@ -54,7 +54,7 @@ function hide_toolbar(){
   $('#toolbar').hide();
   $('#hide_toolbar_btn').hide();
   $('#show_toolbar_btn').show();
-  
+
   $('#problems').addClass('col-lg-12 col-md-12 col-sm-12');
   $('#problems').removeClass('col-lg-9 col-md-8 col-sm-8');
 
@@ -65,7 +65,7 @@ function show_toolbar(){
   $('#toolbar').show();
   $('#hide_toolbar_btn').show();
   $('#show_toolbar_btn').hide();
-  
+
   $('#problems').addClass('col-lg-9 col-md-8 col-sm-8');
   $('#problems').removeClass('col-lg-12 col-md-12 col-sm-12');
 
@@ -83,17 +83,18 @@ $(document).ready(function(){
   $('.panel .hide').hide();
 });
 
-// The user asks to show the hidden problems 
+// The user asks to show the hidden problems
 function show_hidden_problems(cls){
   $('.hide_for_'+cls).show();
   // And hide the vvv button
   $('.show_for_'+cls).hide();
 }
 
-// On page loaded ... 
+// On page loaded ...
 $(document).ready(function(){
   // ... we hide the unselect all button
   $('#unselect_all_btn').hide();
+  $('#collapse_all').hide()
   if (toolbar_hide) {
     hide_toolbar();
   } else {
@@ -128,6 +129,21 @@ function show_select_all_button(){
   $('#unselect_all_btn').hide();
   $('#select_all_btn').show();
 }
+
+// Expand all collapsed block
+function expand_all_block(){
+  $('#accordion .collapse').collapse('show');
+  $('#expand_all').hide();
+  $('#collapse_all').show();
+}
+ 
+// Collapse all block
+function collapse_all_block(){
+  $('#accordion .in').collapse('hide');
+  $('#collapse_all').hide();
+  $('#expand_all').show();
+}
+
 
 // When we select all, add all in the selected list,
 // and hide the select all button, and swap it with
@@ -185,7 +201,7 @@ function add_element(name){
 /* And of course when we remove it... */
 function remove_element(name){
   selected_elements.splice($.inArray(name, selected_elements),1);
-  
+
   if (selected_elements.length == 0){
     $('#actions').hide();
     show_select_all_button();
