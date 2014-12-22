@@ -262,6 +262,8 @@
     <a id='show_toolbar_btn' href="javascript:show_toolbar()" class="btn btn-default"><i class="fa fa-plus"></i> Show toolbar</a>
     <a id='select_all_btn' href="javascript:select_all_problems()" class="btn btn-default"><i class="fa fa-check"></i> Select all</a>
     <a id='unselect_all_btn' href="javascript:unselect_all_problems()" class="btn btn-default"><i class="fa fa-minus"></i> Unselect all</a>
+    <a id='expand_all' href="javascript:expand_all_block()" class="btn btn-default"><i class="fa fa-plus"></i> Expand all</a>
+    <a id='collapse_all' href="javascript:collapse_all_block()" class="btn btn-default"><i class="fa fa-minus"></i> Collapse all</a>
   </div>
   <div class='col-md-8 pull-right'>
   %include pagination_element navi=navi, app=app, page=page, div_class="pull-right"
