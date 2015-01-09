@@ -28,7 +28,7 @@ app = None
 
 import time
 
-from helper import hst_srv_sort
+from webui.helper import hst_srv_sort
 from shinken.util import safe_print
 from shinken.misc.filter  import only_related_to
 try:

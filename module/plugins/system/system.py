@@ -50,7 +50,7 @@ params['logs_hosts'] = []
 params['logs_services'] = []
 
 import os,sys
-from config_parser import config_parser
+from webui.config_parser import config_parser
 plugin_name = os.path.splitext(os.path.basename(__file__))[0]
 try:
     currentdir = os.path.dirname(os.path.realpath(__file__))
