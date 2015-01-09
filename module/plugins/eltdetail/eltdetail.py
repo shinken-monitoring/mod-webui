@@ -48,7 +48,7 @@ def load_cfg():
     global params
     
     import os,sys
-    from config_parser import config_parser
+    from webui.config_parser import config_parser
     from shinken.log import logger
     plugin_name = os.path.splitext(os.path.basename(__file__))[0]
     try:
