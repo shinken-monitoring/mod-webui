@@ -1,6 +1,6 @@
 %import time
-%now = time.gmtime(int(time.time()))
-%nxt = time.gmtime(int(time.time()) + 3600*2)
+%now = time.localtime(int(time.time()))
+%nxt = time.localtime(int(time.time()) + 3600*2)
 
 %s_now_day = time.strftime("%Y/%m/%d", now)
 %s_now_hour = time.strftime("%H:%M", now)
