@@ -32,7 +32,7 @@ Invalid group name
     %cg_users = []
     %for cg in hcg:
         %cg_users = cg_users + datamgr.get_contactgroup(cg).get_contacts()
-    %if app.manage_acl and user in cg_users:
+    %if (app.manage_acl and user in cg_users) or user.is_admin:
 		%if not h.get_name() in rows:
 			%rows.append(h.get_name())
 			
