@@ -28,7 +28,7 @@
 
 import time
 from shinken.util import safe_print
-from helper import hst_srv_sort
+from webui.helper import hst_srv_sort
 from shinken.misc.sorter import worse_first
 
 try:

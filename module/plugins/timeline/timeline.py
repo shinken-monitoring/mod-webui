@@ -62,7 +62,7 @@ params['logs_limit'] = 500
 params['logs_type'] = []
 
 import os,sys
-from config_parser import config_parser
+from webui.config_parser import config_parser
 plugin_name = os.path.splitext(os.path.basename(__file__))[0]
 try:
     currentdir = os.path.dirname(os.path.realpath(__file__))
