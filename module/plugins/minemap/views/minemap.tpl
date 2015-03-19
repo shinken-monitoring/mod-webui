@@ -29,7 +29,10 @@ Invalid group name
 %hUnknown=0
 %for h in hosts:
     %hcg = getattr(h, 'contact_groups')
-    %if app.manage_acl and  user in datamgr.get_contactgroup(hcg).get_contacts() :
+    %cg_users = []
+    %for cg in hcg:
+        %cg_users = cg_users + datamgr.get_contactgroup(cg).get_contacts()
+    %if app.manage_acl and user in cg_users:
 		%if not h.get_name() in rows:
 			%rows.append(h.get_name())
 			
