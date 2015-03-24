@@ -769,9 +769,16 @@ class Helper(object):
                 tree = s
         return tree
                 
+    def filter_services_tree_on_user(self, tree, app):    
+        if tree['services']:
+            for i, s in enumerate(tree['services']):
+                if not app.can_see_this_elt(s):
+                   del tree['services'][i]
+        elif tree['sons']:
+            for son in tree['sons']:
+              tree =  self.filter_services_tree_on_user(son, app)
 
-    
-
+        return tree
 
     def get_host_service_aggregation_tree(self, h):
         tree = {'path' : '/', 'sons' : [], 'services':[], 'state':'unknown', 'full_path':'/'}

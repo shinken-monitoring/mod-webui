@@ -627,7 +627,9 @@ Invalid element name
 						<div class="col-lg-10 host-services">
 							<div class='pull-left'>
 								%_html_id = helper.get_html_id(elt)
-								{{!helper.print_aggregation_tree(helper.get_host_service_aggregation_tree(elt), _html_id)}}
+                                %_html_id = helper.get_html_id(elt) 
+                                %tree = helper.filter_services_tree_on_user(helper.get_host_service_aggregation_tree(elt), app)
+                                {{!helper.print_aggregation_tree(tree, _html_id)}}
 							</div>
 						</div>
 						%end #of the only host part
