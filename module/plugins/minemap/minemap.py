@@ -45,7 +45,10 @@ def get_page(groupname):
         
         hosts = []
         hosts.extend(app.datamgr.get_hosts())
-        items = hosts
+        items = []
+        for host in hosts:
+            if app.can_see_this_elt(host)
+                items.append(host)
 
     else:
         my_group = app.datamgr.get_hostgroup(groupname)

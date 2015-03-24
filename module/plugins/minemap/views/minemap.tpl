@@ -28,35 +28,29 @@ Invalid group name
 %hPending=0
 %hUnknown=0
 %for h in hosts:
-    %hcg = getattr(h, 'contact_groups')
-    %cg_users = []
-    %for cg in hcg:
-        %cg_users = cg_users + datamgr.get_contactgroup(cg).get_contacts()
-    %if (app.manage_acl and user in cg_users) or user.is_admin:
-		%if not h.get_name() in rows:
-			%rows.append(h.get_name())
-			
-			%nServices=0
-			%for s in h.services:
-				%nServices=nServices+1
-				%if not s.get_name() in columns:
-					%columns.append(s.get_name())
-				%end
+	%if not h.get_name() in rows:
+		%rows.append(h.get_name())
+		
+		%nServices=0
+		%for s in h.services:
+			%nServices=nServices+1
+			%if not s.get_name() in columns:
+				%columns.append(s.get_name())
 			%end
+		%end
 
-			%if nServices > 0:
-				%nHosts=nHosts+1
-				%if h.state == 'UP':
-					%hUp=hUp+1
-				%elif h.state == 'DOWN':
-					%hDown=hDown+1
-				%elif h.state == 'UNREACHABLE':
-					%hUnreachable=hUnreachable+1
-				%elif h.state == 'PENDING':
-					%hPending=hPending+1
-				%else:
-					%hUnknown=hUnknown+1
-				%end
+		%if nServices > 0:
+			%nHosts=nHosts+1
+			%if h.state == 'UP':
+				%hUp=hUp+1
+			%elif h.state == 'DOWN':
+				%hDown=hDown+1
+			%elif h.state == 'UNREACHABLE':
+				%hUnreachable=hUnreachable+1
+			%elif h.state == 'PENDING':
+				%hPending=hPending+1
+			%else:
+				%hUnknown=hUnknown+1
 			%end
 		%end
     %end
