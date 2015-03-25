@@ -769,30 +769,21 @@ class Helper(object):
                 tree['sons'].append(s)
                 tree = s
         return tree
-                
-    def filter_services_tree_on_user(self, tree, app):    
-        if tree['services']:
-            for i, s in enumerate(tree['services']):
-                if not app.can_see_this_elt(s):
-                   del tree['services'][i]
-        elif tree['sons']:
-            for son in tree['sons']:
-              tree =  self.filter_services_tree_on_user(son, app)
 
-        return tree
 
-    def get_host_service_aggregation_tree(self, h):
+    def get_host_service_aggregation_tree(self, h, app=None):
         tree = {'path' : '/', 'sons' : [], 'services':[], 'state':'unknown', 'full_path':'/'}
         for s in h.services:
-            p = s.aggregation
-            paths = self.get_aggregation_paths(p)
-            #print "Service", s.get_name(), "with path", paths
-            leaf = self.assume_and_get_path_in_tree(tree, paths)
-            leaf['services'].append(s)
-        self.compute_aggregation_tree_worse_state(tree)
-        
-        return tree
+            if app.can_see_this_elt(s):
+                p = s.aggregation
+                paths = self.get_aggregation_paths(p)
+                #print "Service", s.get_name(), "with path", paths
+                leaf = self.assume_and_get_path_in_tree(tree, paths)
+                leaf['services'].append(s)
 
+        self.compute_aggregation_tree_worse_state(tree)
+
+        return tree
 
     def print_aggregation_tree(self, tree, html_id):
         path = tree['path']
