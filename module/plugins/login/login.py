@@ -72,7 +72,7 @@ def user_auth():
         if is_mobile == '1':
             app.bottle.redirect("/mobile/main")
         else:
-            app.bottle.redirect("/problems")
+            app.bottle.redirect("/dashboard")
     else:
         app.bottle.redirect("/user/login?error=Invalid user or Password")
 
@@ -84,7 +84,7 @@ def user_auth():
 def get_root():
     user = app.request.get_cookie("user", secret=app.auth_secret)
     if user:
-        app.bottle.redirect("/problems")
+        app.bottle.redirect("/dashboard")
     elif app.remote_user_enable in ['1', '2']:
         user_name=None
         if app.remote_user_variable in app.request.headers and app.remote_user_enable == '1':
