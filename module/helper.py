@@ -772,13 +772,16 @@ class Helper(object):
 
     def get_host_service_aggregation_tree(self, h, app=None):
         tree = {'path' : '/', 'sons' : [], 'services':[], 'state':'unknown', 'full_path':'/'}
+        # user = self.get_user_auth()
         for s in h.services:
-            if app.can_see_this_elt(s):
-                p = s.aggregation
-                paths = self.get_aggregation_paths(p)
-                #print "Service", s.get_name(), "with path", paths
-                leaf = self.assume_and_get_path_in_tree(tree, paths)
-                leaf['services'].append(s)
+            # if app.can_see_this_elt(s):
+            # if user.is_admin or user in s.contacts:
+
+            p = s.aggregation
+            paths = self.get_aggregation_paths(p)
+            #print "Service", s.get_name(), "with path", paths
+            leaf = self.assume_and_get_path_in_tree(tree, paths)
+            leaf['services'].append(s)
 
         self.compute_aggregation_tree_worse_state(tree)
 
@@ -831,7 +834,6 @@ class Helper(object):
         s += "</ul>"
         #safe_print("Returning s:", s)
         return s
-
     
     def get_timeperiod_html(self, tp):
         if len(tp.dateranges) == 0:
@@ -857,5 +859,31 @@ class Helper(object):
     
         return content
 
+    # Those functions should be located in Shinken core DataManager class ... should be useful for other modules than WebUI ?
+    def get_timeperiods(self, app):
+        return app.datamgr.rg.timeperiods
+                  
+    def get_timeperiod(self, app, name):
+        return app.datamgr.rg.timeperiods.find_by_name(name)
+    
+    def get_commands(self, app):
+        return app.datamgr.rg.commands
+                  
+    def get_command(self, app, name):
+        name = name.decode('utf8', 'ignore')
+        return app.datamgr.rg.commands.find_by_name(name)
+
+    def get_contactgroups(self, app):
+        return app.datamgr.rg.contactgroups
+                  
+    def get_contactgroup(self, app, name):
+        name = name.decode('utf8', 'ignore')
+        return app.datamgr.rg.contactgroups.find_by_name(name)
+
+    def get_servicegroups(self, app):
+        return app.datamgr.rg.servicegroups
+
+    def get_servicegroup(self, app, name):
+        return app.datamgr.rg.servicegroups.find_by_name(name)
                   
 helper = Helper()
