@@ -22,7 +22,7 @@
 				%if not s.alive:
 					<span class="medium-pulse pulse"></span>
 				%end
-					<img style="width: 16px; height: 16px;" src="{{helper.get_icon_state(s)}}" />
+					<img class="medium-pulse" src="{{helper.get_icon_state(s)}}" />
 				</div>
 			</td>
 			<td> {{s.attempt}}/{{s.max_check_attempts}}</td>

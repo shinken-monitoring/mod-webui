@@ -24,7 +24,7 @@
             %if impact.business_impact > 2 and impact.state_id in [1, 2, 3]:
               <span class="medium-pulse pulse"></span>
             %end
-            <img src="{{helper.get_icon_state(impact)}}" />
+            <img class="medium-pulse" src="{{helper.get_icon_state(impact)}}" />
           </span>
           </div>
         </th>
