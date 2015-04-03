@@ -85,11 +85,16 @@ try:
     scp = config_parser('#', '=')
     params = scp.parse_config(configuration_file)
 
+    # Sidebar menu content
     params['sidebar_menu'] = [item.strip() for item in params['sidebar_menu'].split(',')]
+
+    # Filter hosts in WebUI
+    params['hosts_filter'] = [item.strip() for item in params['hosts_filter'].split(',')]
     
     logger.debug("WebUI, configuration loaded.")
     # logger.debug("WebUI configuration, default position: %s / %s" % (plugin_name, params['default_Lat'], params['default_Lng']))
     logger.info("WebUI configuration, sidebar menu: %s" % (params['sidebar_menu']))
+    logger.info("WebUI configuration, hosts filtered: %s" % (params['hosts_filter']))
 except Exception, exp:
     logger.warning("WebUI, configuration file (%s) not available: %s" % (configuration_file, str(exp)))
     
@@ -154,6 +159,9 @@ class Webui_broker(BaseModule, Daemon):
         
         if params['sidebar_menu'] is not None:
             self.menu = params['sidebar_menu']
+        
+        if params['hosts_filter'] is not None:
+            self.hosts_filter = params['hosts_filter']
         
         # We will save all widgets
         self.widgets = {}
@@ -801,15 +809,28 @@ class Webui_broker(BaseModule, Daemon):
 
     def can_see_this_elt(self, elt):
         user = self.get_user_auth()
-        elt_cg = getattr(elt, 'contact_groups')
-        cg_users = []
+        if user.is_admin:
+            return True
+            
+        if user in elt.contacts:
+            return True
+            
+        return False
+            
+        # if elt in only_related_to(app.datamgr.get_hosts(),user):
+            # return True
+        # else:
+            # return False
+        # user = self.get_user_auth()
+        # elt_cg = getattr(elt, 'contact_groups')
+        # cg_users = []
 
         # Compile a users list with all contacts in these contactgroups
-        for cg in elt_cg:
-            cg_users = cg_users + self.datamgr.get_contactgroup(cg).get_contacts()
+        # for cg in elt_cg:
+            # cg_users = cg_users + self.datamgr.get_contactgroup(cg).get_contacts()
 
-        if (self.manage_acl and user in cg_users) or user.is_admin:
-            return True
-        return False 
+        # if (self.manage_acl and user in cg_users) or user.is_admin:
+            # return True
+        # return False 
 
 
