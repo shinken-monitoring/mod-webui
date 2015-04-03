@@ -35,7 +35,7 @@ def load_cfg():
 
 
     import os,sys
-    from config_parser import config_parser
+    from webui.config_parser import config_parser
     plugin_name = os.path.splitext(os.path.basename(__file__))[0]
     try:
         currentdir = os.path.dirname(os.path.realpath(__file__))
@@ -48,9 +48,12 @@ def load_cfg():
         params['default_Lng'] = float(params['default_Lng'])
         params['default_zoom'] = int(params['default_zoom'])
 
+        params['hosts_filter'] = [item.strip() for item in params['hosts_filter'].split(',')]
+        
         logger.debug("WebUI plugin '%s', configuration loaded." % (plugin_name))
-        logger.debug("Plugin configuration, default position: %s / %s" % (params['default_Lat'], params['default_Lng']))
-        logger.debug("Plugin configuration, default zoom level: %d" % (params['default_zoom']))
+        logger.debug("Plugin %s configuration, default position: %s / %s" % (plugin_name, params['default_Lat'], params['default_Lng']))
+        logger.debug("Plugin %s configuration, default zoom level: %d" % (plugin_name, params['default_zoom']))
+        logger.debug("Plugin %s configuration, hosts filtered: %s" % (plugin_name, params['hosts_filter']))
     except Exception, exp:
         logger.warning("WebUI plugin '%s', configuration file (%s) not available: %s" % (plugin_name, configuration_file, str(exp)))
 
@@ -77,6 +80,9 @@ def get_page():
     # and we just give them to the template to print them.
     valid_hosts = []
     for h in only_related_to(app.datamgr.get_hosts(),user):
+        if h.get_name() in params['hosts_filter']:
+            continue
+            
         _lat = h.customs.get('_LOC_LAT', params['default_Lat'])
         _lng = h.customs.get('_LOC_LNG', params['default_Lng'])
 
