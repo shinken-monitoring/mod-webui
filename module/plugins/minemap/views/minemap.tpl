@@ -40,7 +40,7 @@ Invalid group name
 		%end
 
 		%if nServices > 0:
-                    #%rows.append(h.get_name())
+			%rows.append(h.get_name())
 			%nHosts=nHosts+1
 			%if h.state == 'UP':
 				%hUp=hUp+1

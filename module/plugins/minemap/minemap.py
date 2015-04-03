@@ -40,22 +40,29 @@ def get_page(groupname):
         app.bottle.redirect("/user/login")
         return
 
-    # Here we can call app.datamgr because when the webui "loaded" us, it
-    # populate app with it's own value.
     if groupname == 'all':
         my_group = 'all'
 
         hosts = []
         hosts.extend(app.datamgr.get_hosts())
-        items = hosts
 
     else:
         my_group = app.datamgr.get_hostgroup(groupname)
         if not my_group:
             return "Unknown group %s" % groupname
 
-        items = my_group.get_hosts()
+        hosts = []
+        hosts = my_group.get_hosts()
 
+    # Filter hosts list with configured filter (menu.cfg) ...
+    r = set()
+    for h in hosts:
+        for filter in app.hosts_filter:
+            if not h.get_name().startswith(filter):
+                r.add(h)
+
+    items = list(r)
+    
     items = only_related_to(items,user)
 
     # Now sort hosts list ..
