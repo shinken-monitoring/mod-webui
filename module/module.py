@@ -129,7 +129,7 @@ class Webui_broker(BaseModule, Daemon):
 
         self.embeded_graph = to_bool(getattr(modconf, 'embeded_graph', '0'))
 
-        # Look for an additonnal pages dir
+        # Look for an additional pages dir
         self.additional_plugins_dir = getattr(modconf, 'additional_plugins_dir', '')
         if self.additional_plugins_dir:
             self.additional_plugins_dir = os.path.abspath(self.additional_plugins_dir)
@@ -297,12 +297,18 @@ class Webui_broker(BaseModule, Daemon):
         # DBG: time_preparing = 0
 
         print "Data thread started"
+
+
+        
         while True:
             # DBG: t0 = time.time()
             # DBG: print "WEBUI :: GET START"
             l = self.to_q.get()
             # DBG: t1 = time.time()
             # DBG: print "WEBUI :: GET FINISH with", len(l), "in ", t1 - t0
+
+            # try to relaunch dead module (like mongo one when mongo is not available at startup for example)
+            self.check_and_del_zombie_modules()
 
             for b in l:
                 # DBG: t0 = time.time()
@@ -356,77 +362,77 @@ class Webui_broker(BaseModule, Daemon):
 
 
     def load_plugin(self, fdir, plugin_dir):
-            print "Try to load", fdir, "from", plugin_dir
-            try:
-                logger.debug("Loading WebUI module %s from %s" % (fdir, plugin_dir))
-                # Put the full qualified path of the module we want to load
-                # for example we will give  webui/plugins/eltdetail/
-                mod_path = os.path.join(plugin_dir, fdir)
-                # Then we load the eltdetail.py inside this directory
-                m = imp.load_module('%s' % (fdir), *imp.find_module(fdir, [mod_path]))
-                m_dir = os.path.abspath(os.path.dirname(m.__file__))
-                sys.path.append(m_dir)
+        print "Try to load", fdir, "from", plugin_dir
+        try:
+            logger.debug("Loading WebUI module %s from %s" % (fdir, plugin_dir))
+            # Put the full qualified path of the module we want to load
+            # for example we will give  webui/plugins/eltdetail/
+            mod_path = os.path.join(plugin_dir, fdir)
+            # Then we load the eltdetail.py inside this directory
+            m = imp.load_module('%s' % (fdir), *imp.find_module(fdir, [mod_path]))
+            m_dir = os.path.abspath(os.path.dirname(m.__file__))
+            sys.path.append(m_dir)
 
-                print "Loaded module m", m
-                logger.debug("Loaded WebUI module %s" % (m))
-                print m.__file__
-                pages = m.pages
-                print "Try to load pages", pages
-                for (f, entry) in pages.items():
-                    routes = entry.get('routes', None)
-                    v = entry.get('view', None)
-                    static = entry.get('static', False)
-                    widget_lst = entry.get('widget', [])
-                    widget_desc = entry.get('widget_desc', None)
-                    widget_name = entry.get('widget_name', None)
-                    widget_picture = entry.get('widget_picture', None)
+            print "Loaded module m", m
+            logger.debug("Loaded WebUI module %s" % (m))
+            print m.__file__
+            pages = m.pages
+            print "Try to load pages", pages
+            for (f, entry) in pages.items():
+                routes = entry.get('routes', None)
+                v = entry.get('view', None)
+                static = entry.get('static', False)
+                widget_lst = entry.get('widget', [])
+                widget_desc = entry.get('widget_desc', None)
+                widget_name = entry.get('widget_name', None)
+                widget_picture = entry.get('widget_picture', None)
 
-                    # IMPORTANT: apply VIEW BEFORE route!
-                    if v:
-                        print "Link function", f, "and view", v
-                        f = view(v)(f)
+                # IMPORTANT: apply VIEW BEFORE route!
+                if v:
+                    print "Link function", f, "and view", v
+                    f = view(v)(f)
 
-                    # Maybe there is no route to link, so pass
-                    if routes:
-                        for r in routes:
-                            method = entry.get('method', 'GET')
-                            print "link function", f, "and route", r, "method", method
+                # Maybe there is no route to link, so pass
+                if routes:
+                    for r in routes:
+                        method = entry.get('method', 'GET')
+                        print "link function", f, "and route", r, "method", method
 
-                            # Ok, we will just use the lock for all
-                            # plugin page, but not for static objects
-                            # so we set the lock at the function level.
-                            lock_version = self.lockable_function(f)
-                            f = route(r, callback=lock_version, method=method)
+                        # Ok, we will just use the lock for all
+                        # plugin page, but not for static objects
+                        # so we set the lock at the function level.
+                        lock_version = self.lockable_function(f)
+                        f = route(r, callback=lock_version, method=method)
 
-                    # If the plugin declare a static entry, register it
-                    # and remember: really static! because there is no lock
-                    # for them!
-                    if static:
-                        self.add_static(fdir, m_dir)
+                # If the plugin declare a static entry, register it
+                # and remember: really static! because there is no lock
+                # for them!
+                if static:
+                    self.add_static(fdir, m_dir)
 
-                    # It's a valid widget entry if it got all data, and at least one route
-                    # ONLY the first route will be used for Add!
-                    #print "Should I load a widget?",widget_name, widget_desc, widget_lst!=[], routes
-                    if widget_name and widget_desc and widget_lst != [] and routes:
-                        for place in widget_lst:
-                            if place not in self.widgets:
-                                self.widgets[place] = []
-                            w = {'widget_name': widget_name, 'widget_desc': widget_desc, 'base_uri': routes[0],
-                                 'widget_picture': widget_picture}
-                            print "Loading widget", w
-                            self.widgets[place].append(w)
+                # It's a valid widget entry if it got all data, and at least one route
+                # ONLY the first route will be used for Add!
+                #print "Should I load a widget?",widget_name, widget_desc, widget_lst!=[], routes
+                if widget_name and widget_desc and widget_lst != [] and routes:
+                    for place in widget_lst:
+                        if place not in self.widgets:
+                            self.widgets[place] = []
+                        w = {'widget_name': widget_name, 'widget_desc': widget_desc, 'base_uri': routes[0],
+                             'widget_picture': widget_picture}
+                        print "Loading widget", w
+                        self.widgets[place].append(w)
 
-                # And we add the views dir of this plugin in our TEMPLATE
-                # PATH
-                bottle.TEMPLATE_PATH.append(os.path.join(m_dir, 'views'))
+            # And we add the views dir of this plugin in our TEMPLATE
+            # PATH
+            bottle.TEMPLATE_PATH.append(os.path.join(m_dir, 'views'))
 
-                # And finally register me so the pages can get data and other
-                # useful stuff
-                m.app = self
+            # And finally register me so the pages can get data and other
+            # useful stuff
+            m.app = self
 
 
-            except Exception, exp:
-                logger.warning("Loading WebUI plugin %s: %s" % (fdir, exp))
+        except Exception, exp:
+            logger.warning("Loading WebUI plugin %s: %s" % (fdir, exp))
         
 
 
@@ -531,8 +537,8 @@ class Webui_broker(BaseModule, Daemon):
         @route('/static/photos/:path#.+#')
         def give_photo(path):
             # If the file really exist, give it. If not, give a dummy image.
-            if os.path.exists(os.path.join(self.photo_dir, path+'.jpg')):
-                return static_file(path+'.jpg', root=self.photo_dir)
+            if os.path.exists(os.path.join(self.photo_dir, path+'.png')):
+                return static_file(path+'.png', root=self.photo_dir)
             else:
                 return static_file('images/user.png', root=htdocs_dir)
 
@@ -771,5 +777,18 @@ class Webui_broker(BaseModule, Daemon):
     def get_skonf_active_state(self):
         state = self.show_skonf
         return state
+
+    def can_see_this_elt(self, elt):
+        user = self.get_user_auth()
+        elt_cg = getattr(elt, 'contact_groups')
+        cg_users = []
+
+        # Compile a users list with all contacts in these contactgroups
+        for cg in elt_cg:
+            cg_users = cg_users + self.datamgr.get_contactgroup(cg).get_contacts()
+
+        if (self.manage_acl and user in cg_users) or user.is_admin:
+            return True
+        return False 
 
 

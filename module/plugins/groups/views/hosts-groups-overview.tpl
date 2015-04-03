@@ -190,6 +190,11 @@
                   - level {{group.customs['_GROUP_LEVEL']}}
                 %end
               %end
+              %if group.has('hostgroup_members'):
+                %for g in sorted(group.get_hostgroup_members()):
+                    <span>{{g.get_name()}}</span>
+                %end
+              %end
             </h3>
             <span class="meta">
               <span class="fa-stack font-up"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-check fa-stack-1x fa-inverse"></i></span> 

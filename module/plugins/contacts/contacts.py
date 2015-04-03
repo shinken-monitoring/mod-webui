@@ -36,7 +36,7 @@ def load_cfg():
     global params
 
     import os,sys
-    from config_parser import config_parser
+    from webui.config_parser import config_parser
     from shinken.log import logger
     plugin_name = os.path.splitext(os.path.basename(__file__))[0]
     try:
@@ -88,7 +88,7 @@ def show_contacts():
 
     return {
         'app': app, 'user': user, 'params': params,
-        'contacts': sorted(app.datamgr.get_contacts(), key=lambda contact: contact.contact_name)
+        'contacts': sorted(contacts, key=lambda contact: contact.contact_name)
         }
 
 # Load plugin configuration parameters

@@ -281,7 +281,7 @@ class Helper(object):
 
         
         # Set the right info panel
-        d['data']['infos'] = r'''%s <h2 class="%s"><img style="width: 64px; height:64px" src="%s"/> %s: %s</h2>
+        d['data']['infos'] = r'''%s <h2 class="%s"><img style="width: 48px; height:48px" src="%s"/> %s: %s</h2>
                    <p>since %s</p>
                    <div style="float:right;"> <a href="%s">%s</a></div>''' % (
             '<img src="/static/images/star.png" alt="star">' * (elt.business_impact - 2),
@@ -770,18 +770,19 @@ class Helper(object):
         return tree
 
 
-    def get_host_service_aggregation_tree(self, h):
+    def get_host_service_aggregation_tree(self, h, app=None):
         tree = {'path' : '/', 'sons' : [], 'services':[], 'state':'unknown', 'full_path':'/'}
         for s in h.services:
-            p = s.aggregation
-            paths = self.get_aggregation_paths(p)
-            #print "Service", s.get_name(), "with path", paths
-            leaf = self.assume_and_get_path_in_tree(tree, paths)
-            leaf['services'].append(s)
-        self.compute_aggregation_tree_worse_state(tree)
-        
-        return tree
+            if app.can_see_this_elt(s):
+                p = s.aggregation
+                paths = self.get_aggregation_paths(p)
+                #print "Service", s.get_name(), "with path", paths
+                leaf = self.assume_and_get_path_in_tree(tree, paths)
+                leaf['services'].append(s)
 
+        self.compute_aggregation_tree_worse_state(tree)
+
+        return tree
 
     def print_aggregation_tree(self, tree, html_id):
         path = tree['path']

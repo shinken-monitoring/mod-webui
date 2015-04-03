@@ -47,8 +47,8 @@
     }
   });
   hosts.initialize();
-
-
+ 
+ 
 	var active_filters = [];
 
 	// List of the bookmarks
@@ -66,14 +66,14 @@
   // This should be outside the "pageslide" div. I don't know why
   new_filters = [];
   current_filters = [];
-
+  
   // On page loaded ...
   $(function(){
     // We prevent the dropdown to close when we go on a form into it.
     $('.form_in_dropdown').on('click', function (e) {
       e.stopPropagation()
     });
-
+    
     // Typeahead: activation
     $('#filtering .typeahead').typeahead({
       hint: true,
@@ -85,7 +85,7 @@
       displayKey: 'value',
       source: hosts.ttAdapter(),
     });
-
+    
     // Buttons tooltips
     $('span').tooltip();
   });
@@ -127,7 +127,7 @@
 
         <form class="form-horizontal" role="form" name='htagfilter'>
           <div class="form-group">
-            <label for="htag" class="col-sm-3 control-label">Tags</label>
+            <label for="htag" class="col-sm-3 control-label">Hosts tags</label>
             <div class="col-sm-7">
               <select class="form-control" name='htag'>
                 <option value='None'> None</option>
@@ -142,7 +142,7 @@
 
         <form class="form-horizontal" role="form" name='stagfilter'>
           <div class="form-group">
-            <label for="stag" class="col-sm-3 control-label">Tags</label>
+            <label for="stag" class="col-sm-3 control-label">Services tags</label>
             <div class="col-sm-7">
               <select class="form-control" name='stag'>
                 <option value='None'> None</option>
@@ -170,7 +170,7 @@
         </form>
 
         <hr/>
-
+        
         <h4>States</h4>
         <form class="form-horizontal" role="form" name='ack_filter'>
           <div class="form-group">
@@ -179,7 +179,7 @@
                 <div class="checkbox">
                   <label>
                     %if page=='problems':
-                    <input name="show_ack" type="checkbox" >
+                    <input name="show_ack" type="checkbox" > 
                     %else:
                     <input name="show_ack" type="checkbox" checked>
                     %end
@@ -192,12 +192,12 @@
                   </label>
                 </div>
               </div>
-
+              
             </div>
             <a class='btn btn-default col-sm-1' href="javascript:save_state_ack_filter();"> <i class="fa fa-plus"></i> </a>
           </div>
         </form>
-
+        
         <form class="form-horizontal" role="form" name='downtime_filter'>
           <div class="form-group">
             <div class="col-sm-offset-1 col-sm-9">
@@ -205,7 +205,7 @@
                 <div class="checkbox">
                   <label>
                     %if page=='problems':
-                    <input name="show_downtime" type="checkbox" >
+                    <input name="show_downtime" type="checkbox" > 
                     %else:
                     <input name="show_downtime" type="checkbox" checked>
                     %end
@@ -218,7 +218,7 @@
                   </label>
                 </div>
               </div>
-
+              
             </div>
             <a class='btn btn-default col-sm-1' href="javascript:save_state_downtime_filter();"> <i class="fa fa-plus"></i> </a>
           </div>
@@ -231,7 +231,7 @@
                 <div class="checkbox">
                   <label>
                     %if page=='problems':
-                    <input name="show_critical" type="checkbox" >
+                    <input name="show_critical" type="checkbox" > 
                     %else:
                     <input name="show_critical" type="checkbox" checked>
                     %end
@@ -254,12 +254,12 @@
   </div>
 </div>
 
-
+    
 <!-- Buttons and page navigation -->
 <div class="row" style="padding: 0px;">
   <div class='col-md-4 pull-left'>
     <a id="hide_toolbar_btn" href="javascript:hide_toolbar()" class="btn btn-default"><i class="fa fa-minus"></i> Hide toolbar</a>
-    <a id='show_toolbar_btn' href="javascript:show_toolbar()" class="btn btn-default"><i class="fa fa-plus"></i> Show toolbar</a>
+    <a id='show_toolbar_btn' href="javascript:show_toolbar()" class="btn btn-default"><i class="fa fa-plus"></i> Show toolbar</a>      
     <a id='select_all_btn' href="javascript:select_all_problems()" class="btn btn-default"><i class="fa fa-check"></i> Select all</a>
     <a id='unselect_all_btn' href="javascript:unselect_all_problems()" class="btn btn-default"><i class="fa fa-minus"></i> Unselect all</a>
     <a id='expand_all' href="javascript:expand_all_block()" class="btn btn-default"><i class="fa fa-plus"></i> Expand all</a>
@@ -270,258 +270,328 @@
   </div>
 </div>
 
-  <!-- Problems filtering and display -->
-  <div class="row" style="padding: 0px;">
-    <!-- Left panel, toolbar and active filters -->
-    <div id="toolbar" class="col-lg-3 col-md-4 col-sm-4">
-      <div class="panel panel-info" id="image_panel">
-        <div class="panel-heading">Perfdatas</div>
-        <div class="panel-body">
-          <div id="img_hover"></div>
-        </div>
-      </div>
-
-      <div class="panel panel-info" id="actions">
-        <div class="panel-heading">Actions</div>
-        <div class="panel-body">
-          <ul class="list-group">
-            <li class="list-group-item"><a href="javascript:try_to_fix_all();"><i class="fa fa-ambulance"></i> Try to fix</a></li>
-            <li class="list-group-item"><a href="javascript:recheck_now_all()"><i class="fa fa-refresh"></i> Recheck</a></li>
-            <li class="list-group-item"><a href="javascript:submit_check_ok_all()"><i class="fa fa-share"></i> Submit Result OK</a></li>
-            <li class="list-group-item"><a href="javascript:acknowledge_all('{{user.get_name()}}')"><i class="fa fa-check"></i> Acknowledge</a></li>
-            <li class="list-group-item"><a href="javascript:remove_all('{{user.get_name()}}')"><i class="fa fa-eraser"></i> Delete</a></li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="panel panel-info">
-        <div class="panel-heading">Filtering</div>
-        <div class="panel-body">
-          <div class="btn-group btn-group-justified">
-            <a href="#filtering" data-toggle="modal" data-target="#filtering" class="btn btn-success"><i class="fa fa-plus"></i> </a>
-            <a id='remove_all_filters2' href='javascript:remove_all_current_filter("/{{page}}");' class="btn btn-danger"><i class="fa fa-minus"></i> </a>
-          </div>
-          <script>
-          $(function(){
-            clean_new_search();
-          });
-          </script>
-
-          %got_filters = sum([len(v) for (k,v) in filters.iteritems()]) > 0
-          %if got_filters:
-            <br/>
-            <ul class="list-group">
-              Active filters:
-              %for n in filters['hst_srv']:
-              <li class="list-group-item">
-                <span class="filter_color hst_srv_filter_color">&nbsp;</span>
-                <span class="hst_srv_filter_name">Name: {{n}}</span>
-                <span class="filter_delete"><a href='javascript:remove_current_filter("hst_srv", "{{n}}", "/{{page}}");' class="close">&times;</a></span>
-              </li>
-              <script>add_active_hst_srv_filter('{{n}}');</script>
-              %end
-
-              %for hg in filters['hg']:
-              <li class="list-group-item">
-                <span class="filter_color hg_filter_color">&nbsp;</span>
-                <span class="hg_filter_name">Group: {{hg}}</span>
-                <span class="filter_delete"><a href='javascript:remove_current_filter("hg", "{{hg}}", "/{{page}}");' class="close">&times;</a></span>
-              </li>
-              <script>add_active_hg_filter('{{hg}}');</script>
-              %end
-
-              %for r in filters['realm']:
-              <li class="list-group-item">
-                <span class="filter_color realm_filter_color">&nbsp;</span>
-                <span class="realm_filter_name">Realm: {{r}}</span>
-                <span class="filter_delete"><a href='javascript:remove_current_filter("realm", "{{r}}", "/{{page}}");' class="close">&times;</a></span>
-              </li>
-              <script>add_active_realm_filter('{{r}}');</script>
-              %end
-
-              %for r in filters['htag']:
-              <li class="list-group-item">
-                <span class="filter_color tag_filter_color">&nbsp;</span>
-                <span class="tag_filter_name">Tag: {{r}}</span>
-                <span class="filter_delete"><a href='javascript:remove_current_filter("htag", "{{r}}", "/{{page}}");' class="close">&times;</a></span>
-              </li>
-              <script>add_active_htag_filter('{{r}}');</script>
-              %end
-
-              %for r in filters['stag']:
-              <li class="list-group-item">
-                <span class="filter_color stag_filter_color">&nbsp;</span>
-                <span class="stag_filter_name">Tag: {{r}}</span>
-                <span class="filter_delete"><a href='javascript:remove_current_filter("stag", "{{r}}", "/{{page}}");' class="close">&times;</a></span>
-              </li>
-              <script>add_active_stag_filter('{{r}}');</script>
-              %end
-
-              %for r in filters['ack']:
-              <li class="list-group-item">
-                <span class="filter_color ack_filter_color">&nbsp;</span>
-                <span class="ack_filter_name">Ack: {{r}}</span>
-                <span class="filter_delete"><a href='javascript:remove_current_filter("ack", "{{r}}", "/{{page}}");' class="close">&times;</a></span>
-              </li>
-              <script>add_active_state_ack_filter('{{r}}');</script>
-              %end
-
-              %for r in filters['downtime']:
-              <li class="list-group-item">
-                <span class="filter_color downtime_filter_color">&nbsp;</span>
-                <span class="downtime_filter_name">Downtime: {{r}}</span>
-                <span class="filter_delete"><a href='javascript:remove_current_filter("downtime", "{{r}}", "/{{page}}");' class="close">&times;</a></span>
-              </li>
-              <script>add_active_state_downtime_filter('{{r}}');</script>
-              %end
-
-              %for r in filters['crit']:
-              <li class="list-group-item">
-                <span class="filter_color criticity_filter_color">&nbsp;</span>
-                <span class="criticity_filter_name">Criticity: {{r}}</span>
-                <span class="filter_delete"><a href='javascript:remove_current_filter("crit", "{{r}}", "/{{page}}");' class="close">&times;</a></span>
-              </li>
-              <script>add_active_state_criticity_filter('{{r}}');</script>
-              %end
-            </ul>
-
-            <br/>
-            <div class="btn-group">
-              <button class="btn btn-primary active dropdown-toggle" data-toggle="dropdown"> <i class="fa fa-tags"></i> Bookmark</button>
-              <ul class="dropdown-menu" role="menu">
-                <li role="presentation">
-                  <div style="padding: 15px; padding-bottom: 0px;">
-                    <form class="form_in_dropdown" role="form" name='bookmark_save' id='bookmark_save'>
-                      <div class="form-group">
-                        <label for="bookmark_name" class="control-label">Bookmark name</label>
-                        <div>
-                          <input class="form-control" name="bookmark_name" placeholder="...">
-                        </div>
-                        <a class='btn btn-success' href='javascript:add_new_bookmark("/{{page}}");'> <i class="fa fa-save"></i> Save</a>
-                      </div>
-                    </form>
-                  </div>
-                </li>
-              </ul>
-            </div>
-          %end
-        </div>
-      </div>
-
-      <div class="panel panel-info">
-        <div class="panel-heading">Bookmarks</div>
-        <div class="panel-body">
-          <div id='bookmarks'></div>
-          <div id='bookmarksro'></div>
-          <script>
-            $(function(){
-              refresh_bookmarks(); refresh_bookmarksro();
-            });
-          </script>
-        </div>
+<!-- Problems filtering and display -->
+<div class="row" style="padding: 0px;">
+  <!-- Left panel, toolbar and active filters -->
+  <div id="toolbar" class="col-lg-3 col-md-4 col-sm-4">
+    <div class="panel panel-info" id="image_panel">
+      <div class="panel-heading">Perfdatas</div>
+      <div class="panel-body">
+        <div id="img_hover"></div>
       </div>
     </div>
 
-    <!-- Right panel, with all problems -->
-    <div id="problems" class="col-lg-9 col-md-8 col-sm-8">
-      <div class="panel-group" id="accordion">
+    <div class="panel panel-info" id="actions">
+      <div class="panel-heading">Actions</div>
+      <div class="panel-body">
+        <ul class="list-group">
+          <li class="list-group-item"><a href="javascript:try_to_fix_all();"><i class="fa fa-ambulance"></i> Try to fix</a></li>
+          <li class="list-group-item"><a href="javascript:recheck_now_all()"><i class="fa fa-refresh"></i> Recheck</a></li>
+          <li class="list-group-item"><a href="javascript:submit_check_ok_all()"><i class="fa fa-share"></i> Submit Result OK</a></li>
+          <li class="list-group-item"><a href="javascript:acknowledge_all('{{user.get_name()}}')"><i class="fa fa-check"></i> Acknowledge</a></li>
+          <li class="list-group-item"><a href="javascript:remove_all('{{user.get_name()}}')"><i class="fa fa-eraser"></i> Delete</a></li>
+        </ul>
+      </div>
+    </div>
 
-      %# " We will print Business impact level of course"
-      %imp_level = 10
+    <div class="panel panel-info">
+      <div class="panel-heading">Filtering</div>
+      <div class="panel-body">
+        <div class="btn-group btn-group-justified">
+          <a href="#filtering" data-toggle="modal" data-target="#filtering" class="btn btn-success"><i class="fa fa-plus"></i> </a>
+          <a id='remove_all_filters2' href='javascript:remove_all_current_filter("/{{page}}");' class="btn btn-danger"><i class="fa fa-minus"></i> </a>
+        </div>
+        <script>
+        $(function(){
+          clean_new_search();
+        });
+        </script>
 
-      %# " We remember the last hname so see if we print or not the host for a 2nd service"
-      %last_hname = ''
+        %got_filters = sum([len(v) for (k,v) in filters.iteritems()]) > 0
+        %if got_filters:
+          <br/>
+          <ul class="list-group">
+            Active filters: 
+            %for n in filters['hst_srv']:
+            <li class="list-group-item">
+              <span class="filter_color hst_srv_filter_color">&nbsp;</span>
+              <span class="hst_srv_filter_name">Name: {{n}}</span>
+              <span class="filter_delete"><a href='javascript:remove_current_filter("hst_srv", "{{n}}", "/{{page}}");' class="close">&times;</a></span>
+            </li>
+            <script>add_active_hst_srv_filter('{{n}}');</script>
+            %end
 
-      %# " We try to make only importants things shown on same output "
-      %last_output = ''
-      %nb_same_output = 0
-      %if app.datamgr.get_nb_problems() > 0 and page == 'problems' and app.play_sound:
-         <EMBED src="/static/sound/alert.wav" autostart=true loop=false volume=100 hidden=true>
+            %for hg in filters['hg']:
+            <li class="list-group-item">
+              <span class="filter_color hg_filter_color">&nbsp;</span>
+              <span class="hg_filter_name">Group: {{hg}}</span>
+              <span class="filter_delete"><a href='javascript:remove_current_filter("hg", "{{hg}}", "/{{page}}");' class="close">&times;</a></span>
+            </li>
+            <script>add_active_hg_filter('{{hg}}');</script>
+            %end
+
+            %for r in filters['realm']:
+            <li class="list-group-item">
+              <span class="filter_color realm_filter_color">&nbsp;</span>
+              <span class="realm_filter_name">Realm: {{r}}</span>
+              <span class="filter_delete"><a href='javascript:remove_current_filter("realm", "{{r}}", "/{{page}}");' class="close">&times;</a></span>
+            </li>
+            <script>add_active_realm_filter('{{r}}');</script>
+            %end
+
+            %for r in filters['htag']:
+            <li class="list-group-item">
+              <span class="filter_color tag_filter_color">&nbsp;</span>
+              <span class="tag_filter_name">Tag: {{r}}</span>
+              <span class="filter_delete"><a href='javascript:remove_current_filter("htag", "{{r}}", "/{{page}}");' class="close">&times;</a></span>
+            </li>
+            <script>add_active_htag_filter('{{r}}');</script>
+            %end
+
+            %for r in filters['stag']:
+            <li class="list-group-item">
+              <span class="filter_color stag_filter_color">&nbsp;</span>
+              <span class="stag_filter_name">Tag: {{r}}</span>
+              <span class="filter_delete"><a href='javascript:remove_current_filter("stag", "{{r}}", "/{{page}}");' class="close">&times;</a></span>
+            </li>
+            <script>add_active_stag_filter('{{r}}');</script>
+            %end
+
+            %for r in filters['ack']:
+            <li class="list-group-item">
+              <span class="filter_color ack_filter_color">&nbsp;</span>
+              <span class="ack_filter_name">Ack: {{r}}</span>
+              <span class="filter_delete"><a href='javascript:remove_current_filter("ack", "{{r}}", "/{{page}}");' class="close">&times;</a></span>
+            </li>
+            <script>add_active_state_ack_filter('{{r}}');</script>
+            %end
+
+            %for r in filters['downtime']:
+            <li class="list-group-item">
+              <span class="filter_color downtime_filter_color">&nbsp;</span>
+              <span class="downtime_filter_name">Downtime: {{r}}</span>
+              <span class="filter_delete"><a href='javascript:remove_current_filter("downtime", "{{r}}", "/{{page}}");' class="close">&times;</a></span>
+            </li>
+            <script>add_active_state_downtime_filter('{{r}}');</script>
+            %end
+
+            %for r in filters['crit']:
+            <li class="list-group-item">
+              <span class="filter_color criticity_filter_color">&nbsp;</span>
+              <span class="criticity_filter_name">Criticity: {{r}}</span>
+              <span class="filter_delete"><a href='javascript:remove_current_filter("crit", "{{r}}", "/{{page}}");' class="close">&times;</a></span>
+            </li>
+            <script>add_active_state_criticity_filter('{{r}}');</script>
+            %end
+          </ul>
+          
+          <br/>
+          <div class="btn-group">
+            <button class="btn btn-primary active dropdown-toggle" data-toggle="dropdown"> <i class="fa fa-tags"></i> Bookmark</button>
+            <ul class="dropdown-menu" role="menu">
+              <li role="presentation">
+                <div style="padding: 15px; padding-bottom: 0px;">
+                  <form class="form_in_dropdown" role="form" name='bookmark_save' id='bookmark_save'>
+                    <div class="form-group">
+                      <label for="bookmark_name" class="control-label">Bookmark name</label>
+                      <div>
+                        <input class="form-control" name="bookmark_name" placeholder="...">
+                      </div>
+                      <a class='btn btn-success' href='javascript:add_new_bookmark("/{{page}}");'> <i class="fa fa-save"></i> Save</a>
+                    </div>
+                  </form>
+                </div>
+              </li>
+            </ul>
+          </div>
+        %end
+      </div>
+    </div>
+
+    <div class="panel panel-info">
+      <div class="panel-heading">Bookmarks</div>
+      <div class="panel-body">
+        <div id='bookmarks'></div>
+        <div id='bookmarksro'></div>
+        <script>
+          $(function(){
+            refresh_bookmarks(); refresh_bookmarksro();
+          });
+        </script>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right panel, with all problems -->
+  <div id="problems" class="col-lg-9 col-md-8 col-sm-8">
+    <div class="panel-group" id="accordion">
+
+    %# " We will print Business impact level of course"
+    %imp_level = 10
+
+    %# " We remember the last hname so see if we print or not the host for a 2nd service"
+    %last_hname = ''
+
+    %# " We try to make only importants things shown on same output "
+    %last_output = ''
+    %nb_same_output = 0
+    %if app.datamgr.get_nb_problems() > 0 and page == 'problems' and app.play_sound:
+       <EMBED src="/static/sound/alert.wav" autostart=true loop=false volume=100 hidden=true>
+    %end
+
+    %for pb in pbs:
+      %if pb.business_impact != imp_level:
+        %if imp_level != 10:
+          %# Close last panel group  ...
+                </div>
+              </div>
+            </div>
+          </div>
+        %end
+        %# Business level title ...
+        <h3> Business impact: {{!helper.get_business_impact_text(pb)}} </h3>
+        %# "We reset the last_hname so we won't overlap this feature across tables"
+        %last_hname = 'first'
+        %last_output = ''
+        %nb_same_output = 0
       %end
+      %imp_level = pb.business_impact
 
-      %for pb in pbs:
-        %if pb.business_impact != imp_level:
-          %if imp_level != 10:
-            %# Close last panel group  ...
-                  </div>
+      %# " We check for the same output and the same host. If we got more than 3 of same, make them opacity effect"
+      %if pb.output == last_output and pb.host_name == last_hname:
+        %nb_same_output += 1
+      %else:
+        %nb_same_output = 0
+      %end
+      %last_output = pb.output
+      
+      %if pb.host_name != last_hname:
+        %if last_hname != '' and last_hname != 'first':
+          %# Close last panel group  ...
                 </div>
               </div>
             </div>
-          %end
-          %# Business level title ...
-          <h3> Business impact: {{!helper.get_business_impact_text(pb)}} </h3>
-          %# "We reset the last_hname so we won't overlap this feature across tables"
-          %last_hname = 'first'
-          %last_output = ''
-          %nb_same_output = 0
+          </div>
         %end
-        %imp_level = pb.business_impact
-
-        %# " We check for the same output and the same host. If we got more than 3 of same, make them opacity effect"
-        %if pb.output == last_output and pb.host_name == last_hname:
-          %nb_same_output += 1
-        %else:
-          %nb_same_output = 0
-        %end
-        %last_output = pb.output
-
-        %if pb.host_name != last_hname:
-          %if last_hname != '' and last_hname != 'first':
-            %# Close last panel group  ...
-                  </div>
-                </div>
-              </div>
-            </div>
-          %end
-          <div class="panel panel-default" style="margin: 0">
-            <div class="panel-heading">
-              <h4 class="panel-title table-responsive" data-toggle="collapse" data-parent="#accordion" href="#group_{{pb.current_problem_id}}">
-                {{pb.host_name}}
-                <a class="pull-right">
-                  <i class="fa fa-chevron-down pull-right"></i>
-                </a>
-              </h4>
-            </div>
-            <div id="group_{{pb.current_problem_id}}" class="panel-collapse collapse host-panel">
-              <div class="panel-body">
-                <div class="panel-group" id="problems_{{pb.current_problem_id}}">
-            %last_hname = pb.host_name
-        %end
-
-        %# Panel for an host and all its services ...
-        %div_class = ''
-        %div_style = ''
         <div class="panel panel-default" style="margin: 0">
           <div class="panel-heading">
-            <h4 class="panel-title table-responsive">
-              <table class="table table-condensed" style="margin:0;"><thead style="border: none;"><tr class="background-{{pb.state.lower()}}" data-toggle="collapse" data-parent="#problems_{{pb.current_problem_id}}" href="#{{helper.get_html_id(pb)}}">
-                <th style="font-size: small; font-weight: normal;" class="col-md-1">
-                  <div class='tick' style="cursor:pointer;" onmouseover="hovering_selection('{{helper.get_html_id(pb)}}')" onclick="add_remove_elements('{{helper.get_html_id(pb)}}')">
-                    <img class='img_tick' id='selector-{{helper.get_html_id(pb)}}' src='/static/images/tick.png' />
-                  </div>
-                </th>
-
-                <th style="font-size: small; font-weight: normal;" class="col-md-1">
-                  <div class='img_status'>
-                  <span class="medium-pulse aroundpulse pull-left">
-                    %# " We put a 'pulse' around the elements if it's an important one "
-                    %if pb.business_impact > 2 and pb.state_id in [1, 2, 3]:
-                      <span class="medium-pulse pulse"></span>
-                    %end
-                    <img src="{{helper.get_icon_state(pb)}}" />
-                  </span>
-                  </div>
-                </th>
-
-                <th style="font-size: small; font-weight: normal;" class="col-md-5">
-                  <span class="cut_long">{{!helper.get_link(pb, short=True)}}</span>
-                </th>
-
-                <th style="font-size: small; font-weight: normal;" class="col-md-1">
-                  <span class='txt_status'> {{pb.state}}</span>
-                </th>
-
-                <th style="font-size: small; font-weight: normal;" class="col-lg-2 hidden-md">
+            <div class='tick pull-left' style="cursor:pointer;" onmouseover="hovering_selection('{{helper.get_html_id(pb)}}')" onclick="add_remove_elements('{{helper.get_html_id(pb)}}')">
+              <img class='img_tick' id='selector-{{helper.get_html_id(pb)}}' src='/static/images/tick.png' />
+            </div>
+            <h4 class="panel-title table-responsive" data-toggle="collapse" data-parent="#accordion" href="#group_{{pb.host_name}}">
+              {{pb.host_name}}
+              <a class="pull-right">
+                <i class="fa fa-chevron-down pull-right"></i>
+              </a>
+            </h4>
+          </div>
+          <div id="group_{{pb.host_name}}" class="panel-collapse collapse host-panel">
+            <div class="panel-body">
+              <div class="panel-group" id="problems_{{pb.host_name}}">
+          %last_hname = pb.host_name
+      %end
+      
+      %# Panel for an host and all its services ...
+      %div_class = ''
+      %div_style = ''
+      <div class="panel panel-default" style="margin: 0">
+        <div class="panel-heading">
+          <h4 class="panel-title table-responsive">
+            <table class="table table-condensed" style="margin:0;"><thead style="border: none;"><tr class="background-{{pb.state.lower()}}" data-toggle="collapse" data-parent="#problems_{{pb.host_name}}" href="#{{helper.get_html_id(pb)}}">
+              <th style="font-size: small; font-weight: normal;" class="col-md-1">
+                <div class='tick' style="cursor:pointer;" onmouseover="hovering_selection('{{helper.get_html_id(pb)}}')" onclick="add_remove_elements('{{helper.get_html_id(pb)}}')">
+                  <img class='img_tick' id='selector-{{helper.get_html_id(pb)}}' src='/static/images/tick.png' />
+                </div>
+              </th>
+              
+              <th style="font-size: small; font-weight: normal;" class="col-md-1">
+                <div class='img_status'>
+                <span class="medium-pulse aroundpulse pull-left">
+                  %# " We put a 'pulse' around the elements if it's an important one "
+                  %if pb.business_impact > 2 and pb.state_id in [1, 2, 3]:
+                    <span class="medium-pulse pulse"></span>
+                  %end
+                  <img src="{{helper.get_icon_state(pb)}}" />
+                </span>
+                </div>
+              </th>
+              
+              <th style="font-size: small; font-weight: normal;" class="col-md-5">
+                <span class="cut_long">{{!helper.get_link(pb, short=True)}}</span>
+              </th>
+              
+              <th style="font-size: small; font-weight: normal;" class="col-md-1">
+                <span class='txt_status'> {{pb.state}}</span>
+              </th>
+              
+              <th style="font-size: small; font-weight: normal;" class="col-lg-2 hidden-md">
+                %if len(pb.output) > 100:
+                  %if app.allow_html_output:
+                    <span class='output' rel="tooltip" data-original-title="{{pb.output}}"> {{!helper.strip_html_output(pb.output[:app.max_output_length])}}</span>
+                  %else:
+                    <span class='output' rel="tooltip" data-original-title="{{pb.output}}"> {{pb.output[:app.max_output_length]}}</span>
+                  %end
+                %else:
+                  %if app.allow_html_output:
+                    <span class='output'> {{!helper.strip_html_output(pb.output)}} </span>
+                  %else:
+                    <span class='output'> {{pb.output}} </span>
+                  %end
+                %end
+              </th>
+              
+              <th style="font-size: small; font-weight: normal;" class="col-lg-4 hidden-md">
+                %graphs = app.get_graph_uris(pb, now-4*3600, now, 'dashboard')
+                %onmouse_code = ''
+                %if len(graphs) > 0:
+                  %onmouse_code = 'onmouseover="display_hover_img(\'%s\',\'\');" onmouseout="hide_hover_img();" ' % graphs[0]['img_src']
+                %end
+                <span class="perfometer" {{!onmouse_code}}>{{!helper.get_perfometer(pb)}}</span>
+              </th>
+              
+              <th style="font-size: small; font-weight: normal;" class="col-sm-1">
+                <a class="pull-right"><i class="fa fa-chevron-down pull-right"></i></a>
+              </th>
+            </tr></thead></table>
+          </h4>
+        </div>
+        <div id="{{helper.get_html_id(pb)}}" data-raw-obj-name='{{pb.get_full_name()}}' class="detail panel-collapse collapse">
+          <div class="panel-body">
+            <table class="table table-bordered">
+              <thead><tr>
+                <td>Host</td>
+                %if pb.__class__.my_type == 'service':
+                <td>Service</td>
+                %end
+                <td>Realm</td>
+                <td>State</td>
+                <td>Since</td>
+                <td>Last check</td>
+                <td>Next check</td>
+                <td >Actions</td>
+              </tr></thead>
+              <tbody>
+                <tr>
+                  <td><a href="/host/{{pb.host_name}}">{{pb.host_name}}</a></td>
+                  %if pb.__class__.my_type == 'service':
+                  <td>{{!helper.get_link(pb, short=True)}}</td>
+                  %end
+                  <td>{{pb.get_realm()}}</td>
+                  <td><span class='txt_status state_{{pb.state.lower()}} '> {{pb.state}}</span></td>
+                  <td>{{helper.print_duration(pb.last_state_change, just_duration=True, x_elts=2)}}</td>
+                  <td>{{helper.print_duration(pb.last_chk, just_duration=True, x_elts=2)}} ago</td>
+                  <td>in {{helper.print_duration(pb.next_chk, just_duration=True, x_elts=2)}}</td>
+                  <td >
+                    <button type="button" id="bt-recheck-{{helper.get_html_id(pb)}}" class="{{global_disabled}} btn btn-primary btn-sm">Recheck</button>
+                    <script>
+                      $('#bt-recheck-{{helper.get_html_id(pb)}}').click(function () {
+                        recheck_now('{{pb.get_full_name()}}');
+                      });
+                    </script>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="{{8 if pb.__class__.my_type == 'service' else 7}}">
                   %if len(pb.output) > 100:
                     %if app.allow_html_output:
                       <span class='output' rel="tooltip" data-original-title="{{pb.output}}"> {{!helper.strip_html_output(pb.output[:app.max_output_length])}}</span>
@@ -535,107 +605,40 @@
                       <span class='output'> {{pb.output}} </span>
                     %end
                   %end
-                </th>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
 
-                <th style="font-size: small; font-weight: normal;" class="col-lg-4 hidden-md">
-                  %graphs = app.get_graph_uris(pb, now-4*3600, now, 'dashboard')
-                  %onmouse_code = ''
-                  %if len(graphs) > 0:
-                    %onmouse_code = 'onmouseover="display_hover_img(\'%s\',\'\');" onmouseout="hide_hover_img();" ' % graphs[0]['img_src']
-                  %end
-                  <span class="perfometer" {{!onmouse_code}}>{{!helper.get_perfometer(pb)}}</span>
-                </th>
-
-                <th style="font-size: small; font-weight: normal;" class="col-sm-1">
-                  <a class="pull-right"><i class="fa fa-chevron-down pull-right"></i></a>
-                </th>
-              </tr></thead></table>
-            </h4>
-          </div>
-          <div id="{{helper.get_html_id(pb)}}" data-raw-obj-name='{{pb.get_full_name()}}' class="detail panel-collapse collapse">
-            <div class="panel-body">
-              <table class="table table-bordered">
-                <thead><tr>
-                  <td>Host</td>
-                  %if pb.__class__.my_type == 'service':
-                  <td>Service</td>
-                  %end
-                  <td>Realm</td>
-                  <td>State</td>
-                  <td>Since</td>
-                  <td>Last check</td>
-                  <td>Next check</td>
-                  <td >Actions</td>
-                </tr></thead>
-                <tbody>
-                  <tr>
-                    <td><a href="/host/{{pb.host_name}}">{{pb.host_name}}</a></td>
-                    %if pb.__class__.my_type == 'service':
-                    <td>{{!helper.get_link(pb, short=True)}}</td>
-                    %end
-                    <td>{{pb.get_realm()}}</td>
-                    <td><span class='txt_status state_{{pb.state.lower()}} '> {{pb.state}}</span></td>
-                    <td>{{helper.print_duration(pb.last_state_change, just_duration=True, x_elts=2)}}</td>
-                    <td>{{helper.print_duration(pb.last_chk, just_duration=True, x_elts=2)}} ago</td>
-                    <td>in {{helper.print_duration(pb.next_chk, just_duration=True, x_elts=2)}}</td>
-                    <td >
-                      <button type="button" id="bt-recheck-{{helper.get_html_id(pb)}}" class="{{global_disabled}} btn btn-primary btn-sm">Recheck</button>
-                      <script>
-                        $('#bt-recheck-{{helper.get_html_id(pb)}}').click(function () {
-                          recheck_now('{{pb.get_full_name()}}');
-                        });
-                      </script>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td colspan="{{8 if pb.__class__.my_type == 'service' else 7}}">
-                    %if len(pb.output) > 100:
-                      %if app.allow_html_output:
-                        <span class='output' rel="tooltip" data-original-title="{{pb.output}}"> {{!helper.strip_html_output(pb.output[:app.max_output_length])}}</span>
-                      %else:
-                        <span class='output' rel="tooltip" data-original-title="{{pb.output}}"> {{pb.output[:app.max_output_length]}}</span>
-                      %end
-                    %else:
-                      %if app.allow_html_output:
-                        <span class='output'> {{!helper.strip_html_output(pb.output)}} </span>
-                      %else:
-                        <span class='output'> {{pb.output}} </span>
-                      %end
-                    %end
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-
-              <div>
-                %if len(pb.impacts) > 0:
-                  <hr />
-                  <h4>Impacts:</h4>
-                  %end
-                  %for i in helper.get_impacts_sorted(pb):
-                  <div>
-                    <p><img style="width: 16px; height: 16px;" src="{{helper.get_icon_state(i)}}" />
-                      <span class="alert-small alert-{{i.state.lower()}}">{{i.state}}</span> for {{!helper.get_link(i)}}
-                    </p>
-                  </div>
+            <div>
+              %if len(pb.impacts) > 0:
+                <hr />
+                <h4>Impacts:</h4>
                 %end
-              </div>
+                %for i in helper.get_impacts_sorted(pb):
+                <div>
+                  <p><img style="width: 16px; height: 16px;" src="{{helper.get_icon_state(i)}}" />
+                    <span class="alert-small alert-{{i.state.lower()}}">{{i.state}}</span> for {{!helper.get_link(i)}}
+                  </p>
+                </div>
+              %end
             </div>
           </div>
         </div>
-      %end
-      %# Close last panel group  ...
-              </div>
-            </div>
-          </div>
-        </div>
-    %# Close accordion and problems div ...
       </div>
+    %end
+    %# Close last panel group  ...
+            </div>
+          </div>
+        </div>
+      </div>
+  %# Close accordion and problems div ...
     </div>
-
-    <script type="text/javascript">
-      // Open the first host collapsable element
-      $('.host-panel:first').addClass('in');
-    </script>
-    %include pagination_element navi=navi, app=app, page=page, div_class="pull-right"
   </div>
+  
+  <script type="text/javascript">
+    // Open the first host collapsable element
+    $('.host-panel:first').addClass('in');
+  </script>
+  %include pagination_element navi=navi, app=app, page=page, div_class="pull-right"
+</div>
