@@ -75,6 +75,24 @@ properties = {
     }
 
 
+import os,sys
+from webui.config_parser import config_parser
+# plugin_name = os.path.splitext(os.path.basename(__file__))[0]
+try:
+    currentdir = os.path.dirname(os.path.realpath(__file__))
+    configuration_file = "%s/%s" % (currentdir, 'menu.cfg')
+    logger.warning("WebUI configuration file: %s" % (configuration_file))
+    scp = config_parser('#', '=')
+    params = scp.parse_config(configuration_file)
+
+    params['sidebar_menu'] = [item.strip() for item in params['sidebar_menu'].split(',')]
+    
+    logger.debug("WebUI, configuration loaded.")
+    # logger.debug("WebUI configuration, default position: %s / %s" % (plugin_name, params['default_Lat'], params['default_Lng']))
+    logger.info("WebUI configuration, sidebar menu: %s" % (params['sidebar_menu']))
+except Exception, exp:
+    logger.warning("WebUI, configuration file (%s) not available: %s" % (configuration_file, str(exp)))
+    
 # called by the plugin manager to get an instance
 def get_instance(plugin):
     # Only add template if we CALL webui
@@ -133,6 +151,9 @@ class Webui_broker(BaseModule, Daemon):
         self.additional_plugins_dir = getattr(modconf, 'additional_plugins_dir', '')
         if self.additional_plugins_dir:
             self.additional_plugins_dir = os.path.abspath(self.additional_plugins_dir)
+        
+        if params['sidebar_menu'] is not None:
+            self.menu = params['sidebar_menu']
         
         # We will save all widgets
         self.widgets = {}
