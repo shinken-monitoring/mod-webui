@@ -88,6 +88,15 @@ def show_hostgroup(name):
             
         items = only_related_to(my_group.get_hosts(),user)
 
+    # Filter hosts list with configured filter (menu.cfg) ...
+    r = set()
+    for h in items:
+        for filter in app.hosts_filter:
+            if not h.get_name().startswith(filter):
+                r.add(h)
+
+    items = list(r)
+    
     elts_per_page = params['elts_per_page']
     # We want to limit the number of elements
     start = int(app.request.GET.get('start', '0'))

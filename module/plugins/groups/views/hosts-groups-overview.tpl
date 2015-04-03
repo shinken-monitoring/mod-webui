@@ -6,7 +6,16 @@
 %from shinken.misc.filter import only_related_to
 
 %nHosts=0
-%hosts=only_related_to(datamgr.get_hosts(),user)
+%items=only_related_to(datamgr.get_hosts(),user)
+%r = set()
+%for h in items:
+	%for filter in app.hosts_filter:
+		%if not h.get_name().startswith(filter):
+			%r.add(h)
+		%end
+	%end
+%end
+%hosts = list(r)
 %hUp=hDown=hUnreachable=hPending=hUnknown=0
 %pctUp=pctDown=pctUnreachable=pctPending=pctUnknown=0
 %for h in hosts:

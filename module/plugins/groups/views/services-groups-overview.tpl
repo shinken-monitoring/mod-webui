@@ -13,7 +13,7 @@
 <div class="row">
 	<ul id="groups" class="grid row">
 		%even='alt'
-    %nGroups=0
+		%nGroups=0
 		%nServices=0
 		%sOk=0
 		%sCritical=0
