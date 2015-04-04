@@ -212,27 +212,31 @@
             <!-- About Form -->
             <form class="form-horizontal">
               <fieldset>
-                <!-- Version -->
                 <div class="control-group">
-                  <label class="control-label" for="app_version">Version</label>
+                  <label class="control-label" for="app_version">Web User Interface Version</label>
                   <div class="controls">
-                    <input required="" readonly="" name="app_version" type="text" class="form-control" placeholder="Not set" class="input-medium" value="WebUI Version: 1.1.0-dev.3 (Contis) - Shinken Framework Version: {{VERSION}}">
+                    <input required="" readonly="" name="app_version" type="text" class="form-control" placeholder="Not set" class="input-medium" value="Shinken Web UI, version: {{app.app_version}}">
                   </div>
                 </div>
 
-                <!-- Copyright -->
+                <div class="control-group">
+                  <label class="control-label" for="shinken_version">Shinken Framework Version</label>
+                  <div class="controls">
+                    <input required="" readonly="" name="shinken_version" type="text" class="form-control" placeholder="Not set" class="input-medium" value="Shinken Framework, version: {{VERSION}}">
+                  </div>
+                </div>
+
                 <div class="control-group">
                   <label class="control-label" for="app_copyright">Copyright</label>
                   <div class="controls">
-                    <input required="" readonly="" name="app_copyright" type="text" class="form-control" placeholder="Not set" class="input-medium" value="License GNU AGPL as published by the FSF, minimum version 3 of the License.">
+                    <input required="" readonly="" name="app_copyright" type="text" class="form-control" placeholder="Not set" class="input-medium" value="{{app.app_copyright}}">
                   </div>
                 </div>
 
-                <!-- Release notes -->
                 <div class="control-group">
                   <label class="control-label" for="app_release">Release notes</label>
                   <div class="controls">
-                    <input required="" readonly="" name="app_release" type="text" class="form-control" placeholder="Not set" class="input-medium">
+                    <input required="" readonly="" name="app_release" type="text" class="form-control" placeholder="Not set" class="input-medium" value="{{app.app_release}}">
                   </div>
                 </div>
 

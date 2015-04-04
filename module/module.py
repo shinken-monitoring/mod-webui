@@ -125,7 +125,6 @@ class Webui_broker(BaseModule, Daemon):
         if bindAddress:
             self.serveropts['bindAddress'] = str(bindAddress)
 
-        self.webui_version =  getattr(modconf, 'webui_version', '1.1.0-dev.3 - Contis')
         self.port = int(getattr(modconf, 'port', '7767'))
         self.http_port = int(getattr(modconf, 'http_port', '7766'))
         self.host = getattr(modconf, 'host', '0.0.0.0')
@@ -162,6 +161,11 @@ class Webui_broker(BaseModule, Daemon):
         
         if params['hosts_filter'] is not None:
             self.hosts_filter = params['hosts_filter']
+            
+        # Web UI information
+        self.app_version = getattr(modconf, 'about_version', '1.1.0-dev.3 - Contis')
+        self.app_copyright = getattr(modconf, 'about_copyright', 'License GNU AGPL as published by the FSF, minimum version 3 of the License.')
+        self.app_release = getattr(modconf, 'about_release', 'Bootstrap 3 version')
         
         # We will save all widgets
         self.widgets = {}
@@ -290,7 +294,7 @@ class Webui_broker(BaseModule, Daemon):
                 self.load_plugins(mod_plugins_path)
                 
 
-        # Then look at the plugins in toe core and load all we can there
+        # Then look at the plugins into core and load all we can there
         core_plugin_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'plugins')
         self.load_plugins(core_plugin_dir)
 
@@ -404,6 +408,7 @@ class Webui_broker(BaseModule, Daemon):
 
             print "Loaded module m", m
             logger.debug("Loaded WebUI module %s" % (m))
+            logger.info("Loaded WebUI module %s" % (fdir))
             print m.__file__
             pages = m.pages
             print "Try to load pages", pages
@@ -464,8 +469,6 @@ class Webui_broker(BaseModule, Daemon):
             logger.warning("Loading WebUI plugin %s: %s" % (fdir, exp))
         
 
-
-
     # Here we will load all plugins (pages) under the webui/plugins
     # directory. Each one can have a page, views and htdocs dir that we must
     # route correctly
@@ -485,7 +488,6 @@ class Webui_broker(BaseModule, Daemon):
         # our type
         for fdir in plugin_dirs:
             self.load_plugin(fdir, plugin_dir)
-            
     
 
     def add_static(self, fdir, m_dir):
