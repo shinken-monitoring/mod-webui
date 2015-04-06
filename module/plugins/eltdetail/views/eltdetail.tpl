@@ -557,7 +557,7 @@ Invalid element name
 								<td><strong>Check period:</strong></td>
 								<td name="check_period" class="popover-dismiss" data-html="true" data-toggle="popover" title="Check period" data-placement="bottom" data-content="...">{{elt.check_period.get_name()}}</td>
                 <script>
-	          %tp=helper.get_timeperiod(app, elt.check_period.get_name())
+						%tp=helper.get_timeperiod(app, elt.check_period.get_name())
                   $('td[name="check_period"]')
                     .attr('title', '{{tp.alias if hasattr(tp, "alias") else tp.timeperiod_name}}')
                     .attr('data-content', '{{!helper.get_timeperiod_html(tp)}}')
@@ -671,7 +671,7 @@ Invalid element name
 								<td><strong>Notification period:</strong></td>
 								<td name="notification_period" class="popover-dismiss" data-html="true" data-toggle="popover" title="Notification period" data-placement="top" data-content="...">{{elt.notification_period.get_name()}}</td>
                 <script>
-		  %tp=helper.get_timeperiod(app, elt.notification_period.get_name())
+						%tp=helper.get_timeperiod(app, elt.notification_period.get_name())
                   $('td[name="notification_period"]')
                     .attr('title', '{{tp.alias if hasattr(tp, "alias") else tp.timeperiod_name}}')
                     .attr('data-content', '{{!helper.get_timeperiod_html(tp)}}')
