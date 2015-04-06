@@ -215,7 +215,7 @@
                 <div class="control-group">
                   <label class="control-label" for="app_version">Web User Interface Version</label>
                   <div class="controls">
-                    <input required="" readonly="" name="app_version" type="text" class="form-control" placeholder="Not set" class="input-medium" value="Shinken Web UI, version: {{app.app_version}}">
+                    <input required="" readonly="" name="app_version" type="text" class="form-control" placeholder="Not set" class="input-medium" value="Shinken Web UI, version: {{app.app_version if app is not None else ''}}">
                   </div>
                 </div>
 
@@ -229,14 +229,14 @@
                 <div class="control-group">
                   <label class="control-label" for="app_copyright">Copyright</label>
                   <div class="controls">
-                    <input required="" readonly="" name="app_copyright" type="text" class="form-control" placeholder="Not set" class="input-medium" value="{{app.app_copyright}}">
+                    <input required="" readonly="" name="app_copyright" type="text" class="form-control" placeholder="Not set" class="input-medium" value="{{app.app_copyright if app is not None else ''}}">
                   </div>
                 </div>
 
                 <div class="control-group">
                   <label class="control-label" for="app_release">Release notes</label>
                   <div class="controls">
-                    <input required="" readonly="" name="app_release" type="text" class="form-control" placeholder="Not set" class="input-medium" value="{{app.app_release}}">
+                    <input required="" readonly="" name="app_release" type="text" class="form-control" placeholder="Not set" class="input-medium" value="{{app.app_release if app is not None else ''}}">
                   </div>
                 </div>
 
