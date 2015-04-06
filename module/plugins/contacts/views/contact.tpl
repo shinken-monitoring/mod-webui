@@ -34,7 +34,7 @@
     %end
   %end
 %end
-%for item in app.datamgr.get_contactgroups():
+%for item in app.helper.get_contactgroups(app):
   %for item_contact in item.get_contacts():
     %if item_contact.contact_name == contact.contact_name and item not in items:
       %items.append(item)
