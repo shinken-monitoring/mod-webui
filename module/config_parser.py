@@ -49,7 +49,7 @@ class config_parser(object):
                     if option in self.options:
                         if not type(self.options[option]) == list:
                             old_value = self.options[option]
-                            self.options[option] = [value] + [old_value]
+                            self.options[option] = [old_value] + [value]
                         else:
                             self.options[option] += [value]
                     else:
