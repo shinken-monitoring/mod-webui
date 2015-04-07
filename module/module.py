@@ -82,17 +82,14 @@ try:
     currentdir = os.path.dirname(os.path.realpath(__file__))
     configuration_file = "%s/%s" % (currentdir, 'menu.cfg')
     logger.warning("WebUI configuration file: %s" % (configuration_file))
-    scp = config_parser('#', '=')
+    # True to allow duplicate entries ...
+    scp = config_parser('#', '=', True)
     params = scp.parse_config(configuration_file)
-
-    # Sidebar menu content
-    params['sidebar_menu'] = [item.strip() for item in params['sidebar_menu'].split(',')]
 
     # Filter hosts in WebUI
     params['hosts_filter'] = [item.strip() for item in params['hosts_filter'].split(',')]
     
     logger.debug("WebUI, configuration loaded.")
-    # logger.debug("WebUI configuration, default position: %s / %s" % (plugin_name, params['default_Lat'], params['default_Lng']))
     logger.info("WebUI configuration, sidebar menu: %s" % (params['sidebar_menu']))
     logger.info("WebUI configuration, hosts filtered: %s" % (params['hosts_filter']))
 except Exception, exp:
@@ -156,8 +153,9 @@ class Webui_broker(BaseModule, Daemon):
         if self.additional_plugins_dir:
             self.additional_plugins_dir = os.path.abspath(self.additional_plugins_dir)
         
+        self.sidebar_menu = None
         if params['sidebar_menu'] is not None:
-            self.menu = params['sidebar_menu']
+            self.sidebar_menu = params['sidebar_menu']
         
         if params['hosts_filter'] is not None:
             self.hosts_filter = params['hosts_filter']
