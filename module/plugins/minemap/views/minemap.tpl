@@ -8,7 +8,7 @@ Invalid group name
 
 %if group=='all':
 %groupname = 'all'
-%groupalias = 'All hosts and services'
+%groupalias = 'All hosts'
 %title = 'Minemap for all hosts and services'
 %else:
 %groupname = group.get_name()
@@ -76,7 +76,9 @@ Invalid group name
 %columns.sort()
 %end
 
-%rebase layout globals(), title=title, refresh=True, css=['minemap/css/minemap.css'], js=['minemap/js/minemap.js']
+%# Specific content for breadrumb
+%rebase layout globals(), title='Minemap for ' + groupalias, refresh=True, css=['minemap/css/minemap.css'], js=['minemap/js/minemap.js'], breadcrumb=[ ['All hosts', '/minemaps'], [groupalias, '/hosts-group/'+groupname] ]
+
 
 <style>
 .warning, .unreachable {

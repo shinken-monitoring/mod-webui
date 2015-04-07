@@ -8,7 +8,7 @@ Invalid group name
 
 %if group=='all':
 %groupname = 'all'
-%groupalias = 'All hosts and services'
+%groupalias = 'All hosts'
 %else:
 %groupname = group.get_name()
 %groupalias = group.alias
@@ -22,7 +22,7 @@ Invalid group name
 %end
 
 %# Specific content for breadrumb
-%rebase layout globals(), title='Hosts group detail for ' + groupalias, css=['groups/css/groups-overview.css'], refresh=True, breadcrumb=[ ['All groups', '/hosts-groups'], [groupalias, '/hosts-group/'+groupname] ]
+%rebase layout globals(), title='Hosts group detail for ' + groupalias, css=['groups/css/groups-overview.css'], refresh=True, breadcrumb=[ ['All groups', '/hosts-groups'], [groupalias, '/minemap/'+groupname] ]
 
 <div id="content_container">
 	<div class="panel panel-default">
