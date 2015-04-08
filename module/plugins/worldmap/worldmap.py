@@ -109,7 +109,7 @@ def get_page():
 def worldmap_widget():
     user = checkauth()
 
-    wid = app.request.GET.get('wid', 'widget_system_' + str(int(time.time())))
+    wid = app.request.GET.get('wid', 'widget_worldmap_' + str(int(time.time())))
     collapsed = (app.request.GET.get('collapsed', 'False') == 'True')
 
     options = {}
