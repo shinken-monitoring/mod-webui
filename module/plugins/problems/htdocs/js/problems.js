@@ -24,7 +24,7 @@
 /*
   Look for Shift key up and down
 */
-is_shift_pressed = false;
+var is_shift_pressed = false;
 function shift_pressed(){
   is_shift_pressed = true;
 }
@@ -78,11 +78,6 @@ function save_toolbar(toolbar){
 
 
 
-// At start we hide the details panels
-$(document).ready(function(){
-  $('.panel .hide').hide();
-});
-
 // The user asks to show the hidden problems 
 function show_hidden_problems(cls){
   $('.hide_for_'+cls).show();
@@ -92,17 +87,20 @@ function show_hidden_problems(cls){
 
 // On page loaded ... 
 $(document).ready(function(){
+   // At start we hide the details panels
+  $('.panel .hide').hide();
+  
   // ... we hide the unselect all button
   $('#unselect_all_btn').hide();
   $('#collapse_all').hide()
-  if (toolbar_hide) {
+  if ("toolbar_hide" in window && toolbar_hide) {
     hide_toolbar();
   } else {
     $('#show_toolbar_btn').hide();
   }
 
   // If actions are not allowed, disable the button 'select all'
-  if (!actions_enabled) {
+  if ("actions_enabled" in window && !actions_enabled) {
     $('#select_all_btn').addClass('disabled');
     // And put in low opacity the 'selectors'
     $('.tick').css({'opacity' : 0.4});

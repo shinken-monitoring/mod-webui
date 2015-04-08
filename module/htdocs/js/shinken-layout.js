@@ -136,7 +136,7 @@ function loadjscssfile(filename, filetype){
       url: filename,
       dataType: "script",
       error: function () {
-        console.error('Not loaded: ', filename);
+        console.error('Shinken script error, not loaded: ', filename);
       }
     });
   } else if (filetype=="css"){ //if filename is an external CSS file

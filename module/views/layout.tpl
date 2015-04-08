@@ -70,7 +70,7 @@
 
     <!-- Scripts
     ================================================== -->
-    <script src="/static/js/jquery-1.11.0.min.js"></script>
+    <script src="/static/js/jquery-1.11.1.min.js"></script>
     <script src="/static/js/jquery-ui-1.10.3.min.js"></script>
     <script src="/static/js/bootstrap.min.js"></script>
 

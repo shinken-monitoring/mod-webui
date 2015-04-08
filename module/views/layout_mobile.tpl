@@ -17,10 +17,10 @@
     <meta charset="utf-8">
     <title>{{title or 'No title'}}</title>
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <link rel="stylesheet" href="/static/css/jquery.mobile-1.1.0.min.css" />
+    <link rel="stylesheet" href="/static/css/jquery.mobile-1.4.4.min.css" />
     <link rel="stylesheet" href="/static/css/shinken-mobile.min.css" />
-    <script src="/static/js/jquery-1.6.4.min.js"></script>
-    <script src="/static/js/jquery.mobile-1.1.0.min.js"></script>
+    <script src="/static/js/jquery-1.11.1.min.js"></script>
+    <script src="/static/js/jquery.mobile-1.4.4.min.js"></script>
   </head>
 
 <body>

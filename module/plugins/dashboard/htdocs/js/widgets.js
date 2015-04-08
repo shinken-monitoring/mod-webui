@@ -57,8 +57,7 @@ function AddWidget(url, placeId, replace){
             $.fn.AddEasyWidget(html, this.attr('id'), {});
         },
         error: function(xhr) {
-            this.html('Error loading this widget!');
-            console.log( xhr);
+            this.html('Error loading this widget: '+url);
         },
         complete: function() {
             nb_widgets_loading -= 1;
@@ -207,7 +206,6 @@ $(function(){
                 saveWidgets();
             },
             onExtend : function(link, widget){
-                console.log('onentend callback :: Link: ' + link + ' - Widget: ' + widget.attr('id'));
                 var w = find_widget(widget.attr('id'));
                 if(w != -1){
                     // We finally save the new position
@@ -221,14 +219,13 @@ $(function(){
 
                 // If we got not more widget, we get back the center button,
                 // and hide the little one.
-                // WARNING : we are before the real DEL, so we remvoe if it's the last one
-                if(widgets.length == 1){
+                // WARNING : we are before the real DEL, so we remove if it's the last one
+                if (widgets.length == 1){
                     $('#center-button').show();
                     $('#small_show_panel').hide();
                 }
             },
             onChangePositions : function(positions){
-                console.log('We are changing position of '+positions);
                 saveWidgets();
             },
             onEditQuery : function(link, widget){
