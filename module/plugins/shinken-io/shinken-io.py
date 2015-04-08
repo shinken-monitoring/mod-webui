@@ -97,7 +97,7 @@ def shinken_io_widget():
 
     return {'app': app, 'user': user, 'wid': wid,
             'collapsed': collapsed, 'options': options,
-            'base_url': '/widget/system', 'title': 'System Information',
+            'base_url': '/widget/shinken-io', 'title': 'shinken-io Information',
             'schedulers': schedulers,
             'brokers': brokers, 'reactionners': reactionners,
             'receivers': receivers, 'pollers': pollers,
@@ -105,10 +105,10 @@ def shinken_io_widget():
 
 
 
-widget_desc = '''<h4>System state</h4>
-Show an aggregated view of all Shinken daemons.
+widget_desc = '''<h4>Shinken IO</h4>
+Show states and metrics for all Shinken daemons.
 '''
 
 pages = {shinken_io_page: {'routes': ['/shinken-io', '/shinken-io/'], 'view': 'shinken-io', 'static': True},
-         shinken_io_widget: {'routes': ['/widget/system'], 'view': 'shinken-io_widget', 'static': True, 'widget': ['dashboard'], 'widget_desc': widget_desc, 'widget_name': 'shinken_io', 'widget_picture': '/static/system/img/widget_shinken-io.png'},
+         shinken_io_widget: {'routes': ['/widget/shinken-io'], 'view': 'shinken-io_widget', 'static': True, 'widget': ['dashboard'], 'widget_desc': widget_desc, 'widget_name': 'shinken_io', 'widget_picture': '/static/shinken-io/img/widget_shinken-io.png'},
          }
