@@ -101,38 +101,25 @@
       <section class="left">
         <h3>All hosts</h3>
         <span class="meta">
-          <span class="fa-stack font-up"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-check fa-stack-1x fa-inverse"></i></span> 
-          <span class="num">
-            %if hUp > 0:
-            {{hUp}}
-            %else:
-            <em>{{hUp}}</em>
-            %end
-          </span>
-          <span class="fa-stack font-unreachable"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-exclamation fa-stack-1x fa-inverse"></i></span> 
-          <span class="num">
-            %if hUnreachable > 0:
-            {{hUnreachable}}
-            %else:
-            <em>{{hUnreachable}}</em>
-            %end
-          </span>
-          <span class="fa-stack font-down"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-arrow-down fa-stack-1x fa-inverse"></i></span> 
-          <span class="num">
-            %if hDown > 0:
-            {{hDown}}
-            %else:
-            <em>{{hDown}}</em>
-            %end
-          </span> 
-          <span class="fa-stack font-unknown"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-question fa-stack-1x fa-inverse"></i></span> 
-          <span class="num">
-            %if hPending > 0:
-            {{hPending}}
-            %else:
-            <em>{{hPending}}</em>
-            %end
-          </span>
+         <span class="{{'font-up' if hUp > 0 else 'font-greyed'}}">
+            <span class="fa-stack"><i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-check fa-stack-1x fa-inverse"></i></span> 
+            <span class="num">{{hUp}}</span>
+         </span> 
+          
+         <span class="{{'font-unreachable' if hUnreachable > 0 else 'font-greyed'}}">
+            <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-exclamation fa-stack-1x fa-inverse"></i></span> 
+            <span class="num">{{hUnreachable}}</span>
+         </span> 
+
+         <span class="{{'font-down' if hDown > 0 else 'font-greyed'}}">
+            <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-arrow-down fa-stack-1x fa-inverse"></i></span> 
+            <span class="num">{{hDown}}</span>
+         </span> 
+
+         <span class="{{'font-pending' if hPending > 0 else 'font-greyed'}}">
+            <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-question fa-stack-1x fa-inverse"></i></span> 
+            <span class="num">{{hPending}}</span>
+         </span> 
         </span>
         <!--
         <span class="meta"> <span class="label label-important pulsate">Business impact</span> </span>
@@ -205,40 +192,27 @@
                 %end
               %end
             </h3>
-            <span class="meta">
-              <span class="fa-stack font-up"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-check fa-stack-1x fa-inverse"></i></span> 
-              <span class="num">
-                %if hUp > 0:
-                {{hUp}}
-                %else:
-                <em>{{hUp}}</em>
-                %end
+              <span class="meta">
+               <span class="{{'font-up' if hUp > 0 else 'font-greyed'}}">
+                  <span class="fa-stack"><i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-check fa-stack-1x fa-inverse"></i></span> 
+                  <span class="num">{{hUp}}</span>
+               </span> 
+                
+               <span class="{{'font-unreachable' if hUnreachable > 0 else 'font-greyed'}}">
+                  <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-exclamation fa-stack-1x fa-inverse"></i></span> 
+                  <span class="num">{{hUnreachable}}</span>
+               </span> 
+
+               <span class="{{'font-down' if hDown > 0 else 'font-greyed'}}">
+                  <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-arrow-down fa-stack-1x fa-inverse"></i></span> 
+                  <span class="num">{{hDown}}</span>
+               </span> 
+
+               <span class="{{'font-pending' if hPending > 0 else 'font-greyed'}}">
+                  <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-question fa-stack-1x fa-inverse"></i></span> 
+                  <span class="num">{{hPending}}</span>
+               </span> 
               </span>
-              <span class="fa-stack font-unreachable"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-exclamation fa-stack-1x fa-inverse"></i></span> 
-              <span class="num">
-                %if hUnreachable > 0:
-                {{hUnreachable}}
-                %else:
-                <em>{{hUnreachable}}</em>
-                %end
-              </span>
-              <span class="fa-stack font-down"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-arrow-down fa-stack-1x fa-inverse"></i></span> 
-              <span class="num">
-                %if hDown > 0:
-                {{hDown}}
-                %else:
-                <em>{{hDown}}</em>
-                %end
-              </span> 
-              <span class="fa-stack font-unknown"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-question fa-stack-1x fa-inverse"></i></span> 
-              <span class="num">
-                %if hPending > 0:
-                {{hPending}}
-                %else:
-                <em>{{hPending}}</em>
-                %end
-              </span>
-            </span>
           </section>
           
           <section class="right">
