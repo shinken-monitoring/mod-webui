@@ -170,13 +170,14 @@ $(function(){
 		
 		// Draw the services.
 		var sources = {
-			ok:				    imgSrc+'/service_ok.png',
-			warning:		  imgSrc+'/service_warning.png',
-			critical:		  imgSrc+'/service_critical.png',
-			unknown:		  imgSrc+'/service_unknown.png',
-			pending:		  imgSrc+'/service_pending.png',
-			downtime:		  imgSrc+'/service_downtime.png',
-			flapping:		  imgSrc+'/service_flapping.png',
+			ok:				imgSrc+'/service_ok.png',
+			warning:			imgSrc+'/service_warning.png',
+			critical:		imgSrc+'/service_critical.png',
+			unknown:			imgSrc+'/service_unknown.png',
+			pending:			imgSrc+'/service_pending.png',
+			ack:				imgSrc+'/service_ack.png',
+			downtime:		imgSrc+'/service_downtime.png',
+			flapping:		imgSrc+'/service_flapping.png',
 			uninstalled:	imgSrc+'/service_uninstalled.png'
 		};
 		function loadImages(sources, callback) {

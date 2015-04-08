@@ -200,7 +200,12 @@ def get_services(h):
 
     # Get host's services list
     for item in h.services:
-        all_services.append((item.get_name(), item.state))
+        view_state = item.state
+        if item.problem_has_been_acknowledged:
+            view_state = 'ACK'
+        if item.in_scheduled_downtime:
+            view_state = 'DOWNTIME'
+        all_services.append((item.get_name(), view_state))
         services_states[item.get_name()] = item.state
 
     # Compute the worst state of all packages
