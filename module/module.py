@@ -633,8 +633,6 @@ class Webui_broker(BaseModule, Daemon):
             c = self.datamgr.get_contact('anonymous')
             if c:
                 return c
-            else:
-                return None
 
         c = self.datamgr.get_contact(user_name)
         return c
