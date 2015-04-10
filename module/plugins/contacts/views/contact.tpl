@@ -27,27 +27,30 @@
 
 %# Contact is linked to hosts/services
 %items=[]
-%for item in app.datamgr.get_hosts():
-  %for item_contact in item.contacts:
+%for item in app.get_hosts():
+   %for item_contact in item.contacts:
+      %if item_contact.contact_name == contact.contact_name and item not in items:
+         %items.append(item)
+      %end
+   %end
+%end
+%my_hosts = [i for i in items if i.my_type == 'host']
+%for item in app.get_services():
+   %for item_contact in item.contacts:
+      %if item_contact.contact_name == contact.contact_name and item not in items:
+         %items.append(item)
+      %end
+   %end
+%end
+%my_services = [i for i in items if i.my_type == 'service']
+%for item in app.get_contactgroups():
+  %for item_contact in item.members:
     %if item_contact.contact_name == contact.contact_name and item not in items:
       %items.append(item)
     %end
   %end
 %end
-%for item in app.helper.get_contactgroups(app):
-  %for item_contact in item.get_contacts():
-    %if item_contact.contact_name == contact.contact_name and item not in items:
-      %items.append(item)
-    %end
-  %end
-%end
-%for service in app.datamgr.get_services():
-  %for item_contact in service.contacts:
-    %if item_contact.contact_name == contact.contact_name and item not in items:
-      %items.append(item)
-    %end
-  %end
-%end
+%my_contactgroups = [i for i in items if i.my_type == 'contactgroup']
 
 
 %if not 'app' in locals(): app = None
@@ -210,7 +213,7 @@
                     <td><strong>&nbsp;&ndash;period:</strong></td>
                     <td name="{{"host_notification_period%s" % i}}" class="popover-dismiss" data-html="true" data-toggle="popover" title="Host notification period" data-placement="top" data-content="...">{{nw.host_notification_period.get_name()}}</td>
                     <script>
-                      %tp=app.datamgr.get_timeperiod(nw.host_notification_period.get_name())
+                      %tp=app.get_timeperiod(nw.host_notification_period.get_name())
                       $('td[name="{{"host_notification_period%s" % i}}"]')
                         .attr('title', '{{tp.alias if hasattr(tp, "alias") else tp.timeperiod_name}}')
                         .attr('data-content', '{{!app.helper.get_timeperiod_html(tp)}}')
@@ -265,7 +268,7 @@
                     <td><strong>&nbsp;&ndash;period:</strong></td>
                     <td name="{{"service_notification_period%s" % i}}" class="popover-dismiss" data-html="true" data-toggle="popover" title="service notification period" data-placement="top" data-content="...">{{nw.service_notification_period.get_name()}}</td>
                     <script>
-                      %tp=app.datamgr.get_timeperiod(nw.service_notification_period.get_name())
+                      %tp=app.get_timeperiod(nw.service_notification_period.get_name())
                       $('td[name="{{"service_notification_period%s" % i}}"]')
                         .attr('title', '{{tp.alias if hasattr(tp, "alias") else tp.timeperiod_name}}')
                         .attr('data-content', '{{!app.helper.get_timeperiod_html(tp)}}')
@@ -329,7 +332,6 @@
                 </tr>
               </thead>
               <tbody style="font-size:x-small;">
-                %my_hosts = [i for i in items if i.my_type == 'host']
                 <tr>
                   <td><strong>Hosts:</strong></td>
                   <td>
@@ -341,7 +343,6 @@
                   {{!'<span class="glyphicon glyphicon-remove font-red"></span> Does not monitor any host' if i==1 else ''}}
                   </td>
                 </tr>
-                %my_services = [i for i in items if i.my_type == 'service']
                 <tr>
                   <td><strong>Services:</strong></td>
                   <td>
@@ -353,7 +354,6 @@
                   {{!'<span class="glyphicon glyphicon-remove font-red"></span> Does not monitor any service' if i==1 else ''}}
                   </td>
                 </tr>
-                %my_contactgroups = [i for i in items if i.my_type == 'contactgroup']
                 <tr>
                   <td><strong>Contacts groups:</strong></td>
                   <td>

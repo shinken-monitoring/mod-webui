@@ -859,31 +859,4 @@ class Helper(object):
     
         return content
 
-    # Those functions should be located in Shinken core DataManager class ... should be useful for other modules than WebUI ?
-    def get_timeperiods(self, app):
-        return app.datamgr.rg.timeperiods
-                  
-    def get_timeperiod(self, app, name):
-        return app.datamgr.rg.timeperiods.find_by_name(name)
-    
-    def get_commands(self, app):
-        return app.datamgr.rg.commands
-                  
-    def get_command(self, app, name):
-        name = name.decode('utf8', 'ignore')
-        return app.datamgr.rg.commands.find_by_name(name)
-
-    def get_contactgroups(self, app):
-        return app.datamgr.rg.contactgroups
-                  
-    def get_contactgroup(self, app, name):
-        name = name.decode('utf8', 'ignore')
-        return app.datamgr.rg.contactgroups.find_by_name(name)
-
-    def get_servicegroups(self, app):
-        return app.datamgr.rg.servicegroups
-
-    def get_servicegroup(self, app, name):
-        return app.datamgr.rg.servicegroups.find_by_name(name)
-                  
 helper = Helper()

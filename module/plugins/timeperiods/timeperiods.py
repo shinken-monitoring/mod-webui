@@ -75,8 +75,7 @@ def show_timeperiods():
     user = checkauth()
 
     return {
-        'app': app, 'user': user, 'params': params, 
-        'timeperiods': sorted(app.datamgr.get_timeperiods(), key=lambda timeperiod: timeperiod.timeperiod_name)
+        'app': app, 'user': user, 'params': params
         }
 
 

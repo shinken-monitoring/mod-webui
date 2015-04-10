@@ -263,7 +263,7 @@ def set_logs_type_list():
     app.bottle.redirect("/logs")
     return
 
-def get_json(hostname):
+def get_json(hostname, service=None):
     user = checkauth()    
 
     message,db = getdb(params['db_name'])
@@ -279,12 +279,17 @@ def get_json(hostname):
     records=[]
 
     try:
-        logger.info("[Logs] Fetching records from database for host: %s" % (hostname))
-
+        logger.info("[Logs] Fetching records from database for host/service: %s/%s", hostname, service)
+        
         logs_limit = 100
         logs_type = []
         logs_hosts = [ hostname ]
         logs_services = []
+        if service is not None:
+            # logger.info("[Logs] Fetching records from database for host/service: %s/%s", hostname, service)
+            logs_services = [ service ]
+        else:
+            logger.info("[Logs] Fetching records from database for host: %s", hostname)
 
         query = []
         if len(logs_type) > 0 and logs_type[0] != '':
@@ -312,7 +317,7 @@ def get_json(hostname):
                     "message":      log['message']
                 })
         message = "%d records fetched from database." % len(records)
-        logger.info("[Logs] %d records fetched from database.", len(records))
+        logger.debug("[Logs] %d records fetched from database.", len(records))
     except Exception, exp:
         logger.error("[Logs] Exception when querying database: %s", str(exp))
     
@@ -327,6 +332,7 @@ pages = {
 
         show_logs: {'routes': ['/logs'], 'view': 'logs', 'static': True},
         
+        get_json: {'routes': ['/logs/inner/:hostname/:service']},
         get_json: {'routes': ['/logs/inner/:hostname']},
     
         form_hosts_list: {'routes': ['/logs/hosts_list'], 'view': 'form_hosts_list'},

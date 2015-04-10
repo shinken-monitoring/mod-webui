@@ -153,6 +153,12 @@ class Webui_broker(BaseModule, Daemon):
         if self.additional_plugins_dir:
             self.additional_plugins_dir = os.path.abspath(self.additional_plugins_dir)
         
+        self.timezone = getattr(modconf, 'timezone', 'Europe/Paris')
+        if self.timezone:
+            logger.info("[%s] Setting our timezone to %s", self.name, self.timezone)
+            os.environ['TZ'] = self.timezone
+            time.tzset()
+
         self.sidebar_menu = None
         if params['sidebar_menu'] is not None:
             self.sidebar_menu = params['sidebar_menu']
@@ -404,9 +410,9 @@ class Webui_broker(BaseModule, Daemon):
             m_dir = os.path.abspath(os.path.dirname(m.__file__))
             sys.path.append(m_dir)
 
-            print "Loaded module m", m
-            logger.debug("WebUI, loaded WebUI module %s" % (m))
-            logger.info("WebUI, loaded module %s" % (fdir))
+            print "Loaded plugin m", m
+            logger.debug("WebUI, loaded WebUI plugin %s" % (m))
+            logger.info("WebUI, loaded plugin %s" % (fdir))
             print m.__file__
             pages = m.pages
             print "Try to load pages", pages
@@ -602,6 +608,7 @@ class Webui_broker(BaseModule, Daemon):
             try:
                 f = getattr(mod, 'check_auth', None)
                 print "Get check_auth", f, "from", mod.get_name()
+                logger.error("[%s] Check auth with: %s, for %s/%s" % (self.name, mod.get_name(), user, password))
                 if f and callable(f):
                     r = f(user, password)
                     if r:
@@ -832,3 +839,37 @@ class Webui_broker(BaseModule, Daemon):
         # return False 
 
 
+    # Those functions should be located in Shinken core DataManager class ... should be useful for other modules than WebUI ?
+    def get_hosts(self):
+        return self.datamgr.get_hosts()
+                  
+    def get_services(self):
+        return self.datamgr.get_services()
+                  
+    def get_timeperiods(self):
+        return self.datamgr.rg.timeperiods
+                  
+    def get_timeperiod(self, name):
+        return self.datamgr.rg.timeperiods.find_by_name(name)
+    
+    def get_commands(self):
+        return self.datamgr.rg.commands
+                  
+    def get_command(self, name):
+        name = name.decode('utf8', 'ignore')
+        return self.datamgr.rg.commands.find_by_name(name)
+
+    def get_contactgroups(self):
+        # return self.datamgr.get_contactgroups()
+        return self.datamgr.rg.contactgroups
+                  
+    def get_contactgroup(self, name):
+        name = name.decode('utf8', 'ignore')
+        return self.datamgr.rg.contactgroups.find_by_name(name)
+
+    def get_servicegroups(self):
+        return self.datamgr.rg.servicegroups
+
+    def get_servicegroup(self, name):
+        return self.datamgr.rg.servicegroups.find_by_name(name)
+                  

@@ -1,10 +1,9 @@
-%title='All timeperiods (%d time periods)' % len(app.datamgr.get_timeperiods())
+%timeperiods = app.get_timeperiods()
+%title='All timeperiods (%d time periods)' % len(timeperiods)
 %rebase layout globals(), css=['timeperiods/css/timeperiods.css'], js=['timeperiods/js/timeperiods-overview.js'], title=title, refresh=True
 
 %import time
 
-%helper = app.helper
-%datamgr = app.datamgr
 %display_all = True if params['display']=='all' else False
 
 <div class="row">
@@ -18,7 +17,7 @@
 <div class="row">
   <ul id="timeperiods" class="list row pull-right">
     %even=''
-    %for timeperiod in app.datamgr.get_timeperiods():
+    %for timeperiod in timeperiods:
       %if even =='':
         %even='alt'
       %else:

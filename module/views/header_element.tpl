@@ -68,7 +68,8 @@
             <!-- User image -->
             <li class="user-header bg-light-blue">
               %if app is not None and app.company_logo:
-              <img src="/static/images/logo/{{app.company_logo}}" class="img-circle" alt="User logo" />
+              <!-- <img src="/static/images/logo/{{app.company_logo}}" class="img-circle" alt="User logo" /> -->
+              <img src="/static/images/logo/{{user.get_name()}}.png" class="img-circle" alt="User logo" />
               %else:
               <img src="/static/images/logo/logo_small.png" class="img-circle" alt="User logo" />
               %end
