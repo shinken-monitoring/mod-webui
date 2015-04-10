@@ -40,5 +40,5 @@ On top of the Dashboard page, a summary bar with main information about the syst
 
 On the page, some widgets that main be chosen by the logged in user:
 
-![Dashboard page](https://github.com/shinken-monitoring/mod-webui/edit/bs3/doc/user/Capture01.jpg "Dashboard")
+![Dashboard page](./Capture01.JPG "Dashboard")
 
