@@ -1,10 +1,8 @@
-====================================
-User's guide
-====================================
+# User's guide
 
 Shinken Web User Interface is built with a modern Javascript library (Bootstrap 3) to allow access with most Web browser.
 
-Logging in
+## Logging in
 ------------------------------------
 
 On the application login page, log in with the provided username and password.
@@ -31,7 +29,7 @@ On the left side of the page a side bar menu to switch between application pages
 
 The following chapters introduce every feature.
 
-Dashboard
+## Dashboard
 ------------------------------------
 On top of the Dashboard page, a summary bar with main information about the system status : 
 - current problems 
@@ -46,7 +44,7 @@ On the page, some widgets that main be chosen by the logged in user:
 To add a widget on the dashboard page, click on "Add a new widget" and then choose the desired widget.
 
 
-Problems
+## Problems
 ------------------------------------
 The problems page displays the current detected problems on the system. Problems are presented in a list of collapsible elements sorted by level of criticity.
 
@@ -55,7 +53,7 @@ On the left side of the page, it is possible to filter the problems list and to 
 ![Problems page](./Capture02.JPG "Problems")
 
 
-Hosts groups
+## Hosts groups
 ------------------------------------
 The hosts groups page is a view of the monitored hosts grouped by hosts groups. This view is switchable from box to list thanks to the upper right icons.
 
@@ -68,7 +66,7 @@ Hovering a group allows to switch to the details or minemap view for the group.
 Groups are logical hosts grouping.
 
 
-Hosts tags
+## Hosts tags
 ------------------------------------
 The hosts tags page is a view of the monitored hosts grouped by hosts tags. This view is switchable from box to list thanks to the upper right icons.
 
@@ -81,7 +79,7 @@ Hovering a group allows to switch to the details view for the group.
 Tags are monitoring profiles hosts grouping.
 
 
-Minemap
+## Minemap
 ------------------------------------
 The minemap page is a view of the monitored hosts and services in a matrix (you know the famous minemap game ...).
 
@@ -89,7 +87,7 @@ The minemap page is a view of the monitored hosts and services in a matrix (you 
 ![Minemap page](./Capture05.JPG "Minemap")
 
 
-Worldmap
+## Worldmap
 ------------------------------------
 The worldmap page is a view of the monitored hosts on a Google map.
 
@@ -111,7 +109,7 @@ Host overall state is computed as is:
 Note that it is possible to view an OSM map layout instead of Google's one ...
 
 
-Logs
+## Logs
 ------------------------------------
 The logs page displays the monitoring system logs for all the system.
 
@@ -119,7 +117,7 @@ The logs page displays the monitoring system logs for all the system.
 ![Logs page](./Capture07.JPG "Logs")
 
 
-System
+## System
 ------------------------------------
 The system page displays the status of all the Shinken daemons.
 
@@ -136,7 +134,7 @@ In the navigation bar, the eye icon enables to switch to this view that is a ful
 An icon of top left of this view allows to go back to Dashboard page.
 
 
-Host view
+## Host view
 ------------------------------------
 When an host is selected, the host element view displays all information known about this host.
 
@@ -169,7 +167,7 @@ On the right side, the user can :
 ![Host view](./Capture10.JPG "Host view")
 
 
-Service view
+## Service view
 ------------------------------------
 When a service is selected, the service element view displays all information known about this service.
 
