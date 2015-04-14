@@ -646,8 +646,15 @@ class Webui_broker(BaseModule, Daemon):
         c = self.datamgr.get_contact(user_name)
         return c
 
-    def get_user_gravatar(self, user):
-        url = "https://secure.gravatar.com/avatar/" + hashlib.md5(user.email.lower()).hexdigest() + "?"
+    def get_gravatar(self, email):
+        """
+        Given an email, returns a gravatar url for that email.
+
+        :param basestring email:
+        :rtype: basestring
+        :return: The gravatar url for the given email.
+        """
+        url = "https://secure.gravatar.com/avatar/" + hashlib.md5(email.lower()).hexdigest() + "?"
         return url
 
 
