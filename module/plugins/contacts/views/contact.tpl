@@ -67,7 +67,7 @@
           <div class="user-header bg-light-blue">
             %if app is not None and contact is not None:
                 %if app.gravatar:
-                <img src={{app.get_gravatar(contact.email)}}" class="img-circle user-logo" alt="{{contact.contact_name}}" />
+                <img src="{{app.get_gravatar(contact.email)}}" class="img-circle user-logo" alt="{{contact.contact_name}}" />
                 %else:
                 <img src="/static/images/logo/{{contact.contact_name}}.png" class="img-circle user-logo" alt="{{contact.contact_name}}" />
                 %end

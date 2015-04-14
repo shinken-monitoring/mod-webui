@@ -69,7 +69,7 @@
             <li class="user-header bg-light-blue">
               %if app is not None and user is not None:
                 %if app.gravatar:
-                <img src={{app.get_gravatar(user.email)}}" class="img-circle" alt="{{user.get_name()}}" />
+                <img src="{{app.get_gravatar(user.email)}}" class="img-circle" alt="{{user.get_name()}}" />
                 %else:
                 <img src="/static/images/logo/{{user.get_name()}}.png" class="img-circle" alt="{{user.get_name()}}" />
                 %end
