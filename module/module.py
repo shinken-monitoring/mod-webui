@@ -593,9 +593,8 @@ class Webui_broker(BaseModule, Daemon):
         def give_favicon():
             return static_file('favicon.ico', root=os.path.join(htdocs_dir, 'images'))
 
-
     def check_auth(self, user, password):
-        print "Checking auth of", user  # , password
+        print "Checking auth of", user
         c = self.datamgr.get_contact(user)
         print "Got", c
         if not c:
@@ -608,7 +607,7 @@ class Webui_broker(BaseModule, Daemon):
             try:
                 f = getattr(mod, 'check_auth', None)
                 print "Get check_auth", f, "from", mod.get_name()
-                logger.error("[%s] Check auth with: %s, for %s/%s" % (self.name, mod.get_name(), user, password))
+                logger.debug("[%s] Check auth with: %s, for %s" % (self.name, mod.get_name(), user))
                 if f and callable(f):
                     r = f(user, password)
                     if r:
@@ -624,7 +623,6 @@ class Webui_broker(BaseModule, Daemon):
 
         # Ok if we got a real contact, and if a module auth it
         return (is_ok and c is not None)
-
 
     def get_user_auth(self, allow_anonymous=False):
         # First we look for the user sid
