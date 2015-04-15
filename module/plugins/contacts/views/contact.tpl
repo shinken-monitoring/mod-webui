@@ -65,24 +65,17 @@
 			<div class="panel-body">
           <!-- User image -->
           <div class="user-header bg-light-blue">
-            %if app is not None and app.company_logo:
-            <img src="/static/images/logo/{{app.company_logo}}" class="img-circle company-logo" alt="User logo" />
-            %else:
-            <img src="/static/images/logo/logo_small.png" class="img-circle company-logo" alt="User logo" />
-            %end
-            
-            <script>
-              $('<img />')
-                .attr({ 'src': '/static/images/logo/{{contact.contact_name}}.png', 'class': 'img-circle user-logo', 'alt': '{{username}}', 'title': 'Photo: {{username}}' })
-                .css({display: "none"})
-                .load(function() {
-                  $(this).show();
-                })
-                .error(function() {
-                  $(this).remove();
-                })
-                .appendTo('div.user-header');
-            </script>
+            %if app is not None and contact is not None:
+                %if app.gravatar:
+                <img src="{{app.get_gravatar(contact.email)}}" class="img-circle user-logo" alt="{{contact.contact_name}}" />
+                %else:
+                <img src="/static/images/logo/{{contact.contact_name}}.png" class="img-circle user-logo" alt="{{contact.contact_name}}" />
+                %end
+              %elif app is not None and app.company_logo:
+              <img src="/static/images/logo/{{app.company_logo}}" class="img-circle company-logo" alt="Company logo" />
+              %else:
+              <img src="/static/images/logo/logo_small.png" class="img-circle company-logo" alt="Generic logo" />
+              %end
             
             <p class="username">
               {{username}}

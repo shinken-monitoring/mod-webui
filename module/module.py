@@ -39,6 +39,7 @@ import base64
 import cPickle
 import imp
 import urllib
+import hashlib
 
 from shinken.basemodule import BaseModule
 from shinken.message import Message
@@ -131,6 +132,7 @@ class Webui_broker(BaseModule, Daemon):
         self.http_backend = getattr(modconf, 'http_backend', 'auto')
         self.login_text = getattr(modconf, 'login_text', None)
         self.company_logo = getattr(modconf, 'company_logo', None)
+        self.gravatar = to_bool(getattr(modconf, 'gravatar', '0'))
         self.allow_html_output = to_bool(getattr(modconf, 'allow_html_output', '0'))
         self.max_output_length = int(getattr(modconf, 'max_output_length', '100'))
         self.refresh_period = int(getattr(modconf, 'refresh_period', '60'))
@@ -642,6 +644,17 @@ class Webui_broker(BaseModule, Daemon):
         c = self.datamgr.get_contact(user_name)
         return c
 
+    def get_gravatar(self, email):
+        """
+        Given an email, returns a gravatar url for that email.
+
+        :param basestring email:
+        :rtype: basestring
+        :return: The gravatar url for the given email.
+        """
+        url = "https://secure.gravatar.com/avatar/" + hashlib.md5(email.lower()).hexdigest() + "?"
+        return url
+
 
     # Try to got for an element the graphs uris from modules
     # The source variable describes the source of the calling. Are we displaying 
@@ -743,7 +756,6 @@ class Webui_broker(BaseModule, Daemon):
                 logger.debug("[%s] Exception type: %s" % (self.name, type(exp)))
                 logger.debug("Back trace of this kill: %s" % (traceback.format_exc()))
                 self.modules_manager.set_to_restart(mod)
-
                 
     def set_common_preference(self, key, value):
         safe_print("Saving common preference", key, value)
