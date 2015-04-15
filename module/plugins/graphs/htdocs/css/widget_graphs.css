@@ -2,3 +2,9 @@
     padding-left : 5px;
     padding-right : 5px;
 }
+
+.widget_graph img {
+    max-width: 100%;
+    height: auto;
+    width: auto\9;
+}
