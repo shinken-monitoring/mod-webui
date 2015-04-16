@@ -13,47 +13,51 @@
 
 <!-- Header -->
 <header class="header">
-  <a href="#about" data-toggle="modal" data-target="#about" class="logo">
-    <img src="/static/images/logo/logo.png" alt="Logo" />
-  </a>
+   <a href="#about" data-toggle="modal" data-target="#about" class="logo">
+      %if app.company_logo:
+      <img src="/static/images/logo/{{app.company_logo}}" />
+      %else:
+      <img src="/static/images/logo/default_logo.png" alt="Logo" />
+      %end
+   </a>
 
-  <!-- Header Navbar -->
-  <nav class="navbar navbar-static-top" role="navigation">
-    <!-- Sidebar toggle button-->
-    <a href="#" class="navbar-btn sidebar-toggle" data-toggle="offcanvas" role="button">
-      <span class="sr-only">Toggle navigation</span>
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
-    </a>
+   <!-- Header Navbar -->
+   <nav class="navbar navbar-static-top" role="navigation">
+      <!-- Sidebar toggle button-->
+      <a href="#" class="navbar-btn sidebar-toggle" data-toggle="offcanvas" role="button">
+         <span class="sr-only">Toggle navigation</span>
+         <span class="icon-bar"></span>
+         <span class="icon-bar"></span>
+         <span class="icon-bar"></span>
+      </a>
 
-    <div class="col-sm-2 col-md-2 pull-left">
-      <form id="host-search" class="navbar-form navbar-left" role="search">
-      <div class="input-group">
-          <div class="input-group-btn">
-              <button class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i></button>
-          </div>
-          <input type="text" class="form-control typeahead" placeholder="Search hosts ..." name="host-search">
+      <div class="col-sm-2 col-md-2 pull-left">
+         <form id="host-search" class="navbar-form navbar-left" role="search">
+            <div class="input-group">
+               <div class="input-group-btn">
+                  <button class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i></button>
+               </div>
+               <input type="text" class="form-control typeahead" placeholder="Search hosts ..." name="host-search">
+            </div>
+         </form>
       </div>
-      </form>
-    </div>
 
-    <div class="navbar-left hidden-sm hidden-xs">
-      <ul class="nav navbar-nav">
-        <li class="pull-left"><a class="quickinfo" data-original-title='Currently' href="#">
-        <span class="headClock">
-          <span class="date">&nbsp;</span> - <span class="time">&nbsp;</span>
-        </span>
-        </a></li>
-        </ul>
-    </div>
-    <script type="text/javascript">
-    $(document).ready(function(){
-      // Date / time
-      $('.headClock .time').jclock({ format: '%H:%M:%S' });
-      $('.headClock .date').jclock({ format: '%d/%m/%Y' });
-    });
-    </script>
+      <div class="navbar-left hidden-sm hidden-xs">
+         <ul class="nav navbar-nav">
+            <li class="pull-left"><a class="quickinfo" data-original-title='Currently' href="#">
+               <span class="headClock">
+                  <span class="date">&nbsp;</span> - <span class="time">&nbsp;</span>
+               </span>
+            </a></li>
+         </ul>
+      </div>
+      <script type="text/javascript">
+         $(document).ready(function(){
+            // Date / time
+            $('.headClock .time').jclock({ format: '%H:%M:%S' });
+            $('.headClock .date').jclock({ format: '%d/%m/%Y' });
+         });
+      </script>
 
     <div class="navbar-right">
       <ul class="nav navbar-nav">
@@ -65,28 +69,43 @@
           </a>
 
           <ul class="dropdown-menu">
-            <!-- User image -->
+            <!-- User image / name -->
             <li class="user-header bg-light-blue">
-              %if app is not None and user is not None:
-                %if app.gravatar:
-                <img src="{{app.get_gravatar(user.email)}}" class="img-circle" alt="{{user.get_name()}}" />
-                %else:
-                <img src="/static/images/logo/{{user.get_name()}}.png" class="img-circle" alt="{{user.get_name()}}" />
-                %end
-              %elif app is not None and app.company_logo:
-              <img src="/static/images/logo/{{app.company_logo}}" class="img-circle" alt="Company logo" />
-              %else:
-              <img src="/static/images/logo/logo_small.png" class="img-circle" alt="Generic logo" />
-              %end
               <p class="username">
                   {{username}}
               </p>
               %if app.manage_acl and helper.can_action(user):
-                <p class="usercategory">
-                    <small>Administrator</small>
-                </p>
+               <p class="usercategory">
+                  <small>{{'Administrator' if user.is_admin else 'User'}}</small>
+               </p>
               %end
             </li>
+            <script>
+               %if app is not None and app.gravatar:
+               $('<img src="{{app.get_gravatar(user.email, 32)}}" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}" style="display=none">')
+                  .load(function() { $(this).show(); })
+                  .error(function() { 
+                     $(this).remove(); 
+                     $('<img src="/static/images/logo/default_user.png" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}" style="display=none">')
+                        .load(function() { $(this).show(); })
+                        .error(function() { $(this).remove(); })
+                        .appendTo('li.user-header');
+                  })
+                  .appendTo('li.user-header');
+               %else:
+               $('<img src="/static/images/logo/{{user.get_name()}}.png" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}" style="display=none">')
+                  .load(function() { $(this).show(); })
+                  .error(function() { 
+                     $(this).remove(); 
+                     $('<img src="/static/images/logo/default_user.png" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}" style="display=none">')
+                        .load(function() { $(this).show(); })
+                        .error(function() { $(this).remove(); })
+                        .appendTo('li.user-header');
+                  })
+                  .appendTo('li.user-header');
+               %end
+            </script>
+            
             <!-- Menu Footer-->
             <li class="user-footer">
               <div class="pull-left">

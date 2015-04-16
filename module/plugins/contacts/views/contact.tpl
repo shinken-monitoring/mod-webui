@@ -1,4 +1,5 @@
 %import time
+%import json
 
 %# If got no element, bailout
 %if not contact:
@@ -57,43 +58,57 @@
 %if not 'user' in locals(): user = None
 
 <div class="row">
-	<div class="col-sm-12 col-md-6">
-		<div class="panel panel-default">
-			<div class="panel-heading">
-				<h2 class="panel-title">Contact</h2>
-			</div>
-			<div class="panel-body">
-          <!-- User image -->
-          <div class="user-header bg-light-blue">
-            %if app is not None and contact is not None:
-                %if app.gravatar:
-                <img src="{{app.get_gravatar(contact.email)}}" class="img-circle user-logo" alt="{{contact.contact_name}}" />
-                %else:
-                <img src="/static/images/logo/{{contact.contact_name}}.png" class="img-circle user-logo" alt="{{contact.contact_name}}" />
-                %end
-              %elif app is not None and app.company_logo:
-              <img src="/static/images/logo/{{app.company_logo}}" class="img-circle company-logo" alt="Company logo" />
-              %else:
-              <img src="/static/images/logo/logo_small.png" class="img-circle company-logo" alt="Generic logo" />
-              %end
+   <div class="col-sm-12 col-md-6">
+      <div class="panel panel-default">
+         <div class="panel-heading">
+            <h2 class="panel-title">Contact</h2>
+         </div>
+         <div class="panel-body">
+            <!-- User image -->
+            <div class="user-header bg-light-blue">
+               <script>
+                  %if app is not None and app.gravatar:
+                  $('<img src="{{app.get_gravatar(contact.email, 32)}}" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}" style="display=none">')
+                     .load(function() { $(this).show(); })
+                     .error(function() { 
+                        $(this).remove(); 
+                        $('<img src="/static/images/logo/default_user.png" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}" style="display=none">')
+                           .load(function() { $(this).show(); })
+                           .error(function() { $(this).remove(); })
+                           .prependTo('div.user-header');
+                     })
+                     .prependTo('div.user-header');
+                  %else:
+               $('<img src="/static/images/logo/{{user.get_name()}}.png" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}" style="display=none">')
+                  .load(function() { $(this).show(); })
+                  .error(function() { 
+                     $(this).remove(); 
+                     $('<img src="/static/images/logo/default_user.png" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}" style="display=none">')
+                        .load(function() { $(this).show(); })
+                        .error(function() { $(this).remove(); })
+                        .prependTo('div.user-header');
+                  })
+                  .prependTo('div.user-header');
+                  %end
+               </script>
             
-            <p class="username">
-              {{username}}
-            </p>
-            %if app.manage_acl:
-            <p class="usercategory">
-              <small>{{'Administrator' if contact.is_admin else 'User'}}</small>
-            </p>
-            %end
-          </div>
+               <p class="username">
+                 {{username}}
+               </p>
+               %if app.manage_acl:
+               <p class="usercategory">
+                  <small>{{'Administrator' if contact.is_admin else 'User'}}</small>
+               </p>
+               %end
+            </div>
           
-          <div class="user-body">
-            <table class="table table-condensed col-sm-12" style="table-layout: fixed; word-wrap: break-word;">
-              <colgroup>
-                <col style="width: 30%" />
-                <col style="width: 70%" />
-              </colgroup>
-              <thead>
+            <div class="user-body">
+               <table class="table table-condensed col-sm-12" style="table-layout: fixed; word-wrap: break-word;">
+                  <colgroup>
+                     <col style="width: 30%" />
+                     <col style="width: 70%" />
+                  </colgroup>
+                  <thead>
                 <tr>
                   <th colspan="2"></td>
                 </tr>
@@ -243,7 +258,7 @@
                       <script>
                         $('td[name="host_command{{i}}"]')
                           .attr('title', '{{command.get_name()}}')
-                          .attr('data-content', '{{command.command.command_line}}')
+                          .attr('data-content', {{json.dumps(command.command.command_line)}})
                           .popover();
                       </script>
                     </tr>
@@ -299,7 +314,7 @@
                       <script>
                         $('td[name="service_command{{i}}"]')
                           .attr('title', '{{command.get_name()}}')
-                          .attr('data-content', '{{command.command.command_line}}')
+                          .attr('data-content', {{json.dumps(command.command.command_line)}})
                           .popover();
                       </script>
                     </tr>
