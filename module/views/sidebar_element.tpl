@@ -10,7 +10,7 @@
 %end
 
 <!-- Sidebar menu -->
-<div class="visible-md visible-lg">
+<div>
   <!-- Sidebar clock -->
   <div class="sideClock visible-sm visible-xs">
     <span class="date">&nbsp;</span>
