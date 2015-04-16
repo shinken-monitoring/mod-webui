@@ -886,3 +886,37 @@ class Webui_broker(BaseModule, Daemon):
     def get_servicegroup(self, name):
         return self.datamgr.rg.servicegroups.find_by_name(name)
                   
+    # Get the hosts tags sorted by names, and zero size in the end
+    def get_host_tags_sorted(self):
+        r = []
+        names = self.datamgr.rg.tags.keys()
+        names.sort()
+        for n in names:
+            r.append((n, self.datamgr.rg.tags[n]))
+        return r
+
+    # Get the hosts tagged with a specific tag
+    def get_hosts_tagged_with(self, tag):
+        r = []
+        for h in self.get_hosts():
+            if tag in h.get_host_tags():
+                r.append(h)
+        return r
+
+    # Get the services tags sorted by names, and zero size in the end
+    def get_service_tags_sorted(self):
+        r = []
+        names = self.datamgr.rg.services_tags.keys()
+        names.sort()
+        for n in names:
+            r.append((n, self.datamgr.rg.services_tags[n]))
+        return r
+
+    # Get the services tagged with a specific tag
+    def get_services_tagged_with(self, tag):
+        r = []
+        for s in self.get_services():
+            if tag in s.get_service_tags():
+                r.append(s)
+        return r
+
