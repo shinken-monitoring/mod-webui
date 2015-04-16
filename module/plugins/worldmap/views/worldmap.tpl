@@ -10,14 +10,14 @@
 </div>
 
 <script>
-	// Google API not yet loaded ...
-	var apiLoaded=false;
-	var apiLoading=false;
-	// Set true to activate javascript console logs
-	var debugJs=false;
-if (debugJs && !window.console) {
-  alert('Your web browser does not have any console object ... you should stop using IE ;-) !');
-}
+   // Google API not yet loaded ...
+   var apiLoaded=false;
+   var apiLoading=false;
+   // Set true to activate javascript console logs
+   var debugJs=false;
+   if (debugJs && !window.console) {
+      alert('Your web browser does not have any console object ... you should stop using IE ;-) !');
+   }
 
 	var map;
 	var infoWindow;
@@ -36,74 +36,60 @@ if (debugJs && !window.console) {
 	// Markers ...
 	var allMarkers = [];
 
-	//------------------------------------------------------------------------------
-	// Create a marker on specified position for specified host/state with IW content
-	//------------------------------------------------------------------------------
-	// position : GPS coordinates
-	// name : host name
-	// state : host state
-	// content : infoWindow content
-	// iconBase : icone name base
-	//------------------------------------------------------------------------------
-	markerCreate = function(name, state, content, position, iconBase) {
-		if (debugJs) console.log("-> marker creation for "+name+", state : "+state);
-		if (iconBase == undefined) iconBase='host';
+   //------------------------------------------------------------------------------
+   // Create a marker on specified position for specified host/state with IW content
+   //------------------------------------------------------------------------------
+   // position : GPS coordinates
+   // name : host name
+   // state : host state
+   // content : infoWindow content
+   // iconBase : icone name base
+   //------------------------------------------------------------------------------
+   markerCreate = function(name, state, content, position, iconBase) {
+      if (debugJs) console.log("-> marker creation for "+name+", state : "+state);
+      if (iconBase == undefined) iconBase='host';
 
-		var iconUrl=imagesDir+'/'+iconBase+"-"+state+".png";
-		if (state == '') iconUrl=imagesDir+'/'+iconBase+".png";
-		
-		var markerImage = new google.maps.MarkerImage(
-			iconUrl,
-			new google.maps.Size(32,32), 
-			new google.maps.Point(0,0), 
-			new google.maps.Point(16,32)
-		);
+      var iconUrl=imagesDir+'/'+iconBase+"-"+state+".png";
+      if (state == '') iconUrl=imagesDir+'/'+iconBase+".png";
 
-		try {
-			/* Standard Google maps marker */
-			var marker = new google.maps.Marker({
-				map: map, 
-				position: position,
-				icon: markerImage, 
-				raiseOnDrag: false, draggable: true,
-				title: name,
-				hoststate: state,
-				hostname: name,
-				iw_content: content
-			});
+      var markerImage = new google.maps.MarkerImage(
+         iconUrl,
+         new google.maps.Size(32,32), 
+         new google.maps.Point(0,0), 
+         new google.maps.Point(16,32)
+      );
 
-			/* Marker with label ...
-			var marker = new MarkerWithLabel({
-				map: map, 
-				position: position,
-				icon: markerImage, 
-				raiseOnDrag: false, draggable: true,
-				title: name,
-				hoststate: state,
-				hostname: name,
-				iw_content: content,
+      try {
+         /* Marker with label ...
+         */
+         var marker = new MarkerWithLabel({
+            map: map, 
+            position: position,
+            icon: new google.maps.MarkerImage(
+              iconUrl,
+              new google.maps.Size(32,32), 
+              new google.maps.Point(0,0), 
+              new google.maps.Point(16,16)
+            ), 
+            raiseOnDrag: false, draggable: true,
+            title: name,
+            hoststate: state,
+            hostname: name,
+            iw_content: content,
 
-				// Half the CSS width to get a centered label ...
-				labelAnchor: new google.maps.Point(50, -20),
-				labelClass: "labels",
-				labelContent: name,
-				labelStyle: {opacity: 0.8},
-				labelInBackground: true
-			});
-			*/
-			
-			// Register Custom "dragend" Event
-			google.maps.event.addListener(marker, 'dragend', function() {
-				// Center the map at given point
-				map.panTo(marker.getPosition());
-			});
-		
-		} catch (e) {
-			console.error('markerCreate, exception : '+e.message);
-		}
-		
-		return marker;
-	}
+            // Half the CSS width to get a centered label ...
+            labelAnchor: new google.maps.Point(50, -20),
+            labelClass: "labels",
+            labelContent: name,
+            labelStyle: {opacity: 0.8},
+            labelInBackground: true
+         });
+      } catch (e) {
+         console.error('markerCreate, exception : '+e.message);
+      }
+
+      return marker;
+   }
 
 	//------------------------------------------------------------------------------
 	// Map initialization
@@ -164,6 +150,10 @@ if (debugJs && !window.console) {
 						if (debugJs) console.log("host {{h.get_name()}} is {{h.state}}. GPS is {{h.customs.get('_LOC_LAT')}} / {{h.customs.get('_LOC_LNG')}} :");
 						var gpsLocation = new google.maps.LatLng( {{float(h.customs.get('_LOC_LAT', params['default_Lat']))}} , {{float(h.customs.get('_LOC_LNG', params['default_Lng']))}} );
 						
+                  var hostAcknowledged = false;
+                  %if h.is_problem and h.problem_has_been_acknowledged:
+                  hostAcknowledged = true;
+                  %end
 						var hostGlobalState = 0;
 						var hostState = "{{h.state}}";
 						switch(hostState.toUpperCase()) {
@@ -172,9 +162,11 @@ if (debugJs && !window.console) {
 								break;
 							case "DOWN":
 								hostGlobalState=2;
+                        if (hostAcknowledged) hostGlobalState=3;
 								break;
 							default:
 								hostGlobalState=1;
+                        if (hostAcknowledged) hostGlobalState=3;
 								break;
 						}
 						if (debugJs) console.log('-> host global state : '+hostGlobalState);
@@ -187,7 +179,11 @@ if (debugJs && !window.console) {
 							%if h.services:
 							'<ul class="map-servicesList">',
 							%for s in h.services:
+                        %if s.problem_has_been_acknowledged:
+								'<li><span class="map-service map-service-ACK map-service-{{s.state_type}}"></span><a href="/service/{{h.get_name()}}/{{s.get_name()}}">{{s.get_name()}}</a> is {{s.state}}.</li>',
+                        %else:
 								'<li><span class="map-service map-service-{{s.state}} map-service-{{s.state_type}}"></span><a href="/service/{{h.get_name()}}/{{s.get_name()}}">{{s.get_name()}}</a> is {{s.state}}.</li>',
+                        %end
 							%end
 							'</ul>',
 							%end
@@ -195,6 +191,10 @@ if (debugJs && !window.console) {
 						].join('');
 						%if h.services:
 							%for s in h.services:
+                        var serviceAcknowledged = false;
+                        %if s.problem_has_been_acknowledged:
+                        serviceAcknowledged = true;
+                        %end
 								var serviceState = "{{s.state}}";
 								switch(serviceState.toUpperCase()) {
 									case "OK":
@@ -202,13 +202,13 @@ if (debugJs && !window.console) {
 									case "UNKNOWN":
 									case "PENDING":
 									case "WARNING":
-										if (hostGlobalState < 1) hostGlobalState=1;
+                              if (hostGlobalState < 1) if (serviceAcknowledged) hostGlobalState=3; else hostGlobalState=1;
 										break;
 									case "CRITICAL":
-										if (hostGlobalState < 2) hostGlobalState=2;
+                              if (hostGlobalState < 2) if (serviceAcknowledged) hostGlobalState=3; else hostGlobalState=2;
 										break;
 								}
-								//if (debugJs) console.log('-> host global state : '+hostGlobalState);
+								if (debugJs) console.log('-> host global state : '+hostGlobalState);
 							%end
 						%end
 						
@@ -220,17 +220,20 @@ if (debugJs && !window.console) {
 							case 2:
 								markerState = "KO";
 								break;
+                     case 3:
+                        markerState = "ACK";
+                        break;
 							default:
 								markerState = "WARNING";
 								break;
 						}
 						
 						// Create marker and append to markers list ...
-						allMarkers.push(markerCreate('{{h.get_name()}}', markerState, markerInfoWindowContent, gpsLocation, 'host'));
+						allMarkers.push(markerCreate('{{h.get_name()}}', markerState, markerInfoWindowContent, gpsLocation, 'mark-host-monitored'));
 						bounds.extend(gpsLocation);
 						if (debugJs) console.log('-> marker created at '+gpsLocation+'.');
 					} catch (e) {
-						if (debugJs) console.error('markerCreate, exception : '+e.message);
+						if (debugJs) console.error('mapInit, exception : '+e.message);
 					}
 						
 					%end

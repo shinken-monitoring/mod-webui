@@ -55,16 +55,16 @@
 	margin-left: -30px;
 }
 .map-service-OK {
-	background-color: rgb(76,180,73);
+	background-color: #99ff99;
 }
 .map-service-WARNING {
-	background-color: rgb(212,161,94);
+	background-color: #ffff99;
 }
 .map-service-CRITICAL {
-	background-color: rgb(159,48,48);
+	background-color: #ff9999;
 }
-.map-service-UNKNOWN {
-	background-color: rgb(240,230,140);
+.map-service-UNKNOWN, .map-service-ACK {
+	background-color: #cccccc;
 }
 .map-service-PENDING {
 	background-color: rgb(18,158,255);
