@@ -131,7 +131,7 @@ class Webui_broker(BaseModule, Daemon):
         self.play_sound = to_bool(getattr(modconf, 'play_sound', '0'))
         self.http_backend = getattr(modconf, 'http_backend', 'auto')
         self.login_text = getattr(modconf, 'login_text', None)
-        self.company_logo = getattr(modconf, 'company_logo', None)
+        self.company_logo = getattr(modconf, 'company_logo', 'logo.png')
         self.gravatar = to_bool(getattr(modconf, 'gravatar', '0'))
         self.allow_html_output = to_bool(getattr(modconf, 'allow_html_output', '0'))
         self.max_output_length = int(getattr(modconf, 'max_output_length', '100'))
@@ -644,15 +644,18 @@ class Webui_broker(BaseModule, Daemon):
         c = self.datamgr.get_contact(user_name)
         return c
 
-    def get_gravatar(self, email):
+    def get_gravatar(self, email, size=64, default='404'):
         """
         Given an email, returns a gravatar url for that email.
+        
+        From : https://fr.gravatar.com/site/implement/images/
 
         :param basestring email:
         :rtype: basestring
         :return: The gravatar url for the given email.
         """
-        url = "https://secure.gravatar.com/avatar/" + hashlib.md5(email.lower()).hexdigest() + "?"
+        parameters = { 's' : size, 'd' : default}
+        url = "https://secure.gravatar.com/avatar/%s?%s" % (hashlib.md5(email.lower()).hexdigest(), urllib.urlencode(parameters))
         return url
 
 
