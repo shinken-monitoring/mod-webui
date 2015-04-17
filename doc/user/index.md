@@ -2,6 +2,12 @@
 
 Shinken Web User Interface is built with a modern Javascript library (Bootstrap 3) to allow access with most Web browser.
 
+## Pre-requisites
+------------------------------------
+
+It is important to be aware of the monitoring strategies that are used to monitor the hosts/services. Especially if the hosts/services are monitored using passive mode. 
+
+
 ## Logging in
 ------------------------------------
 
@@ -12,11 +18,11 @@ Once logged in the user is relocated on the home page.
 On the top of the page a navigation bar that allows to :
 
 - hide / show the side bar menu
-- search for an host
+- search for an host to go directly to the host view
 - display the "one eye monitoring view"
 - show logged in user information / settings
 
-On the left side of the page a side bar menu to switch between application pages : 
+On the left side of the page a side bar menu to switch between Web UI pages : 
 - Dashboard
 - Problems
 - Hosts groups
