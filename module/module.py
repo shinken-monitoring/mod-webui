@@ -403,7 +403,7 @@ class Webui_broker(BaseModule, Daemon):
     def load_plugin(self, fdir, plugin_dir):
         print "Try to load", fdir, "from", plugin_dir
         try:
-            logger.debug("WebUI, loading module %s from %s" % (fdir, plugin_dir))
+            logger.info("[%s] loading plugin %s from %s" % (self.name, fdir, plugin_dir))
             # Put the full qualified path of the module we want to load
             # for example we will give  webui/plugins/eltdetail/
             mod_path = os.path.join(plugin_dir, fdir)
@@ -412,12 +412,8 @@ class Webui_broker(BaseModule, Daemon):
             m_dir = os.path.abspath(os.path.dirname(m.__file__))
             sys.path.append(m_dir)
 
-            print "Loaded plugin m", m
-            logger.debug("WebUI, loaded WebUI plugin %s" % (m))
-            logger.info("WebUI, loaded plugin %s" % (fdir))
-            print m.__file__
+            logger.info("[%s] loaded plugin %s" % (self.name, fdir))
             pages = m.pages
-            print "Try to load pages", pages
             for (f, entry) in pages.items():
                 routes = entry.get('routes', None)
                 v = entry.get('view', None)
@@ -429,14 +425,12 @@ class Webui_broker(BaseModule, Daemon):
 
                 # IMPORTANT: apply VIEW BEFORE route!
                 if v:
-                    print "Link function", f, "and view", v
                     f = view(v)(f)
 
                 # Maybe there is no route to link, so pass
                 if routes:
                     for r in routes:
                         method = entry.get('method', 'GET')
-                        print "link function", f, "and route", r, "method", method
 
                         # Ok, we will just use the lock for all
                         # plugin page, but not for static objects
@@ -459,7 +453,6 @@ class Webui_broker(BaseModule, Daemon):
                             self.widgets[place] = []
                         w = {'widget_name': widget_name, 'widget_desc': widget_desc, 'base_uri': routes[0],
                              'widget_picture': widget_picture}
-                        print "Loading widget", w
                         self.widgets[place].append(w)
 
             # And we add the views dir of this plugin in our TEMPLATE
@@ -472,7 +465,7 @@ class Webui_broker(BaseModule, Daemon):
 
 
         except Exception, exp:
-            logger.warning("Loading WebUI plugin %s: %s" % (fdir, exp))
+            logger.error("[%s] loading plugin %s, exception: %s" % (self.name, fdir, exp))
         
 
     # Here we will load all plugins (pages) under the webui/plugins
