@@ -162,8 +162,12 @@ class Webui_broker(BaseModule, Daemon):
             time.tzset()
 
         self.sidebar_menu = None
+        self.menu_items = []
         if params['sidebar_menu'] is not None:
             self.sidebar_menu = params['sidebar_menu']
+            for (menu) in self.sidebar_menu: 
+                menu = [item.strip() for item in menu.split(',')]
+                self.menu_items.append(menu[0])
         
         if params['hosts_filter'] is not None:
             self.hosts_filter = params['hosts_filter']
