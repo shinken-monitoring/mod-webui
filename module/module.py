@@ -401,9 +401,8 @@ class Webui_broker(BaseModule, Daemon):
 
 
     def load_plugin(self, fdir, plugin_dir):
-        print "Try to load", fdir, "from", plugin_dir
+        logger.info("[%s] loading plugin %s ..." % (self.name, fdir))
         try:
-            logger.info("[%s] loading plugin %s from %s" % (self.name, fdir, plugin_dir))
             # Put the full qualified path of the module we want to load
             # for example we will give  webui/plugins/eltdetail/
             mod_path = os.path.join(plugin_dir, fdir)
@@ -472,7 +471,7 @@ class Webui_broker(BaseModule, Daemon):
     # directory. Each one can have a page, views and htdocs dir that we must
     # route correctly
     def load_plugins(self, plugin_dir):
-        print "Loading plugin directory: %s" % plugin_dir
+        logger.info("[%s] load plugins directory: %s" % (self.name, plugin_dir))
 
         # Load plugin directories
         if not os.path.exists(plugin_dir):
@@ -481,7 +480,6 @@ class Webui_broker(BaseModule, Daemon):
         plugin_dirs = [fname for fname in os.listdir(plugin_dir)
                        if os.path.isdir(os.path.join(plugin_dir, fname))]
 
-        print "Plugin dirs", plugin_dirs
         sys.path.append(plugin_dir)
         # We try to import them, but we keep only the one of
         # our type
