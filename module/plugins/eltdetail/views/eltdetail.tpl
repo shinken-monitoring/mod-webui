@@ -555,22 +555,12 @@ Invalid element name
                      </tr>
                   </thead>
                   <tbody style="font-size:x-small;">
-                     %timeperiod = False
-                     %for (menu) in app.sidebar_menu: 
-                        %menu = [item.strip() for item in menu.split(',')]
-                        %if menu[0] == 'timeperiods':
-                        %timeperiod=True
-                        %end
-                     %end
                      <tr>
                         <td><strong>Check period:</strong></td>
-                        %if timeperiod: 
+                        %if 'timeperiods' in app.menu_items:
                         <td name="check_period" class="popover-dismiss" data-html="true" data-toggle="popover" data-trigger="hover" title="Check period" data-placement="bottom" data-content="...">
                         <a href="/timeperiods">{{elt.check_period.alias}}</a>
                         </td>
-                        %else:
-                        <td name="check_period" class="popover-dismiss" data-html="true" data-toggle="popover" title="Check period" data-placement="bottom" data-content="...">{{elt.check_period.alias}}</td>
-                        %end
                         <script>
                            %tp=app.get_timeperiod(elt.check_period.get_name())
                            $('td[name="check_period"]')
@@ -578,6 +568,9 @@ Invalid element name
                              .attr('data-content', '{{!helper.get_timeperiod_html(tp)}}')
                              .popover();
                         </script>
+                        %else:
+                        <td name="check_period" class="popover-dismiss" data-html="true" data-toggle="popover" title="Check period" data-placement="bottom" data-content="...">{{elt.check_period.alias}}</td>
+                        %end
                      </tr>
                      <tr>
                         <td><strong>Check command:</strong></td>
@@ -674,26 +667,32 @@ Invalid element name
                      <col style="width: 60%" />
                   </colgroup>
                   <thead>
-              <tr>
+                     <tr>
                         <th colspan="2">Notifications:</td>
-              </tr>
+                     </tr>
                   </thead>
                   <tbody style="font-size:x-small;">
                      <tr>
                         <td><strong>Notifications:</strong></td>
                         <td><span class="{{'glyphicon glyphicon-ok font-green' if elt.notifications_enabled else 'glyphicon glyphicon-remove font-red'}}"></span></td>
                      </tr>
-              %if elt.notifications_enabled:
-              <tr>
+                     %if elt.notifications_enabled:
+                     <tr>
                         <td><strong>Notification period:</strong></td>
-                        <td name="notification_period" class="popover-dismiss" data-html="true" data-toggle="popover" title="Notification period" data-placement="top" data-content="...">{{elt.notification_period.get_name()}}</td>
-                <script>
-                  %tp=app.get_timeperiod(elt.notification_period.get_name())
-                  $('td[name="notification_period"]')
-                    .attr('title', '{{tp.alias if hasattr(tp, "alias") else tp.timeperiod_name}}')
-                    .attr('data-content', '{{!helper.get_timeperiod_html(tp)}}')
-                    .popover();
-                </script>
+                        %if 'timeperiods' in app.menu_items:
+                        <td name="notification_period" class="popover-dismiss" data-html="true" data-toggle="popover" data-trigger="hover" title="Notification period" data-placement="top" data-content="...">
+                        <a href="/timeperiods">{{elt.notification_period.alias}}</a>
+                        </td>
+                        <script>
+                           %tp=app.get_timeperiod(elt.notification_period.get_name())
+                           $('td[name="notification_period"]')
+                             .attr('title', '{{tp.alias if hasattr(tp, "alias") else tp.timeperiod_name}}')
+                             .attr('data-content', '{{!helper.get_timeperiod_html(tp)}}')
+                             .popover();
+                        </script>
+                        %else:
+                        <td name="notification_period" class="popover-dismiss" data-html="true" data-toggle="popover" title="Notification period" data-placement="top" data-content="...">{{elt.notification_period.alias}}</td>
+                        %end
                      </tr>
                      <tr>
                         <td><strong>Notification options:</strong></td>
