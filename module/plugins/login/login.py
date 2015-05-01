@@ -26,6 +26,8 @@
 ### Will be populated by the UI with it's own value
 app = None
 
+from shinken.log import logger
+
 
 # Our page
 def get_page():
@@ -56,19 +58,22 @@ def user_logout():
         app.response.set_cookie('user', False, secret=app.auth_secret, path='/')
     else:
         app.response.set_cookie('user', '', secret=app.auth_secret, path='/')
+        
+    logger.info("[%s] user '%s' logged out" % (app.name, user_name))
     app.bottle.redirect("/user/login")
     return {}
 
 
 def user_auth():
-    print "Got forms"
     login = app.request.forms.get('login', '')
     password = app.request.forms.get('password', '')
     is_mobile = app.request.forms.get('is_mobile', '0')
+    logger.info("[%s] user '%s' logging in ..." % (app.name, login))
     is_auth = app.check_auth(login, password)
 
     if is_auth:
         app.response.set_cookie('user', login, secret=app.auth_secret, path='/', expires='Fri, 01 Jan 2100 00:00:00 GMT')
+        logger.info("[%s] user '%s' logged in" % (app.name, login))
         if is_mobile == '1':
             app.bottle.redirect("/mobile/main")
         else:

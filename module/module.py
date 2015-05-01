@@ -587,25 +587,23 @@ class Webui_broker(BaseModule, Daemon):
             return static_file('favicon.ico', root=os.path.join(htdocs_dir, 'images'))
 
     def check_auth(self, user, password):
-        print "Checking auth of", user
+        logger.info("[%s] Checking authentication for user: %s" % (self.name, user))
         c = self.datamgr.get_contact(user)
-        print "Got", c
         if not c:
-            print "Warning: You need to have a contact having the same name as your user %s" % user
+            logger.error("[%s] You need to have a contact having the same name as your user: %s" % (self.name, user))
+            return False
 
-        # TODO: do not forgot the False when release!
-        is_ok = False  # (c is not None)
-
+        is_ok = False
         for mod in self.modules_manager.get_internal_instances():
             try:
                 f = getattr(mod, 'check_auth', None)
-                print "Get check_auth", f, "from", mod.get_name()
                 logger.debug("[%s] Check auth with: %s, for %s" % (self.name, mod.get_name(), user))
                 if f and callable(f):
                     r = f(user, password)
                     if r:
                         is_ok = True
                         # No need for other modules
+                        logger.info("[%s] User '%s' is authenticated by %s" % (self.name, user, mod.get_name()))
                         break
             except Exception, exp:
                 print exp.__dict__
