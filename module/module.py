@@ -50,6 +50,7 @@ from shinken.modulesctx import modulesctx
 from shinken.modulesmanager import ModulesManager
 from shinken.daemon import Daemon
 from shinken.util import safe_print, to_bool
+from shinken.misc.filter  import only_related_to
 
 # Local import
 from shinken.misc.datamanager import datamgr
@@ -87,9 +88,6 @@ try:
     scp = config_parser('#', '=', True)
     params = scp.parse_config(configuration_file)
 
-    # Filter hosts in WebUI
-    params['hosts_filter'] = [item.strip() for item in params['hosts_filter'].split(',')]
-    
     logger.debug("WebUI, configuration loaded.")
     logger.info("WebUI configuration, sidebar menu: %s" % (params['sidebar_menu']))
     logger.info("WebUI configuration, hosts filtered: %s" % (params['hosts_filter']))
@@ -160,6 +158,7 @@ class Webui_broker(BaseModule, Daemon):
             logger.info("[%s] Setting our timezone to %s", self.name, self.timezone)
             os.environ['TZ'] = self.timezone
             time.tzset()
+        logger.info("[%s] parameter timezone: %s", self.name, self.timezone)
 
         self.sidebar_menu = None
         self.menu_items = []
@@ -168,9 +167,12 @@ class Webui_broker(BaseModule, Daemon):
             for (menu) in self.sidebar_menu: 
                 menu = [item.strip() for item in menu.split(',')]
                 self.menu_items.append(menu[0])
+        logger.info("[%s] parameter sidebar_menu: %s", self.name, self.sidebar_menu)
         
+        self.hosts_filter = None
         if params['hosts_filter'] is not None:
             self.hosts_filter = params['hosts_filter']
+        logger.info("[%s] parameter host_filter: %s", self.name, self.hosts_filter)
             
         # Web UI information
         self.app_version = getattr(modconf, 'about_version', '1.1.0-dev.3 - Contis')
@@ -201,7 +203,7 @@ class Webui_broker(BaseModule, Daemon):
     # TODO: add conf param to get pass with init
     # Conf from arbiter!
     def init(self):
-        print "Init of the Webui '%s'" % self.name
+        logger.info("[%s] Initializing ...", self.name)
         self.rg.load_external_queue(self.from_q)
 
 
@@ -267,7 +269,7 @@ class Webui_broker(BaseModule, Daemon):
     # A plugin send us en external command. We just put it
     # in the good queue
     def push_external_command(self, e):
-        print "WebUI: got an external command", e.__dict__
+        logger.info("[%s] Got an external command: %s", self.name, e.__dict__)
         self.from_q.put(e)
 
 
@@ -846,11 +848,29 @@ class Webui_broker(BaseModule, Daemon):
 
 
     # Those functions should be located in Shinken core DataManager class ... should be useful for other modules than WebUI ?
-    def get_hosts(self):
-        return self.datamgr.get_hosts()
+    # -----------------------------------------------------------------------------------------------------------------------
+    def get_hosts(self, user=None):
+        items=self.datamgr.get_hosts()
+        r = set()
+        for h in items:
+            filtered = False
+            for filter in self.hosts_filter:
+                if h.host_name.startswith(filter):
+                    filtered = True
+            if not filtered:
+                    r.add(h)
+                    
+        if user is not None:
+            r=only_related_to(r,user)
+
+        return r
                   
-    def get_services(self):
-        return self.datamgr.get_services()
+    def get_services(self, user=None):
+        items=self.datamgr.get_services()
+        if user is not None:
+            return only_related_to(items,user)
+
+        return items
                   
     def get_timeperiods(self):
         return self.datamgr.rg.timeperiods
@@ -873,6 +893,12 @@ class Webui_broker(BaseModule, Daemon):
         name = name.decode('utf8', 'ignore')
         return self.datamgr.rg.contactgroups.find_by_name(name)
 
+    def get_hostgroups(self):
+        return self.datamgr.rg.hostgroups
+
+    def get_hostgroup(self, name):
+        return self.datamgr.rg.hostgroups.find_by_name(name)
+                  
     def get_servicegroups(self):
         return self.datamgr.rg.servicegroups
 
@@ -913,3 +939,108 @@ class Webui_broker(BaseModule, Daemon):
                 r.append(s)
         return r
 
+    # Returns all problems
+    def get_all_problems(self, user=None, to_sort=True, get_acknowledged=False):
+        res = []
+        if not get_acknowledged:
+            res.extend([s for s in self.get_services(user) if s.state not in ['OK', 'PENDING'] and not s.is_impact and not s.problem_has_been_acknowledged and not s.host.problem_has_been_acknowledged])
+            res.extend([h for h in self.get_hosts(user) if h.state not in ['UP', 'PENDING'] and not h.is_impact and not h.problem_has_been_acknowledged])
+        else:
+            res.extend([s for s in self.get_services(user) if s.state not in ['OK', 'PENDING'] and not s.is_impact])
+            res.extend([h for h in self.get_hosts(user) if h.state not in ['UP', 'PENDING'] and not h.is_impact])
+
+        if to_sort:
+            res.sort(hst_srv_sort)
+        return res
+
+    # For all business impacting elements, and give the worse state
+    # if warning or critical
+    def get_overall_state(self, user=None):
+        h_states = [h.state_id for h in self.get_hosts(user) if h.business_impact > 2 and h.is_impact and h.state_id in [1, 2]]
+        s_states = [s.state_id for s in self.get_services(user) if s.business_impact > 2 and s.is_impact and s.state_id in [1, 2]]
+        if len(h_states) == 0:
+            h_state = 0
+        else:
+            h_state = max(h_states)
+        if len(s_states) == 0:
+            s_state = 0
+        else:
+            s_state = max(s_states)
+
+        return max(h_state, s_state)
+
+     # For all business impacting elements, and give the worse state
+    # if warning or critical
+    def get_overall_state_problems_count(self, user=None):
+        h_states = [h.state_id for h in self.get_hosts(user) if h.business_impact > 2 and h.is_impact and h.state_id in [1, 2]]
+        logger.warning("[%s] get_overall_state_problems_count, hosts: %d", self.name, len(h_states))
+        s_states = [s.state_id for s in self.get_services(user) if  s.business_impact > 2 and s.is_impact and s.state_id in [1, 2]]
+        logger.warning("[%s] get_overall_state_problems_count, hosts+services: %d", self.name, len(s_states))
+        
+        return len(h_states) + len(s_states)
+
+   # Same but for pure IT problems
+    def get_overall_it_state(self, user=None):
+        # worst_host_state = 0
+        # for h in self.get_hosts(user):
+            # if h.is_problem and h.state_id in [1, 2]:
+                # worst_host_state = max(worst_host_state, h.state_id)
+        # logger.warning("[%s] get_overall_it_state, worst host state: %d", self.name, worst_host_state)
+        
+        # worst_service_state = 0
+        # for s in self.get_services(user):
+            # if s.is_problem and s.state_id in [1, 2]:
+                # worst_service_state = max(worst_service_state, s.state_id)
+        # logger.warning("[%s] get_overall_it_state, worst service state: %d", self.name, worst_service_state)
+        
+        # return max(worst_host_state, worst_service_state)
+        h_states = [h.state_id for h in self.get_hosts(user) if h.is_problem and h.state_id in [1, 2]]
+        s_states = [s.state_id for s in self.get_services(user) if s.is_problem and s.state_id in [1, 2]]
+        if len(h_states) == 0:
+            h_state = 0
+        else:
+            h_state = max(h_states)
+        if len(s_states) == 0:
+            s_state = 0
+        else:
+            s_state = max(s_states)
+            
+        return max(h_state, s_state)
+
+    # Get the number of all problems, even the ack ones
+    def get_overall_it_problems_count(self, user=None, get_acknowledged=False):
+        logger.warning("[%s] get_overall_it_problems_count, user: %s, get_acknowledged: %d", self.name, user.contact_name, get_acknowledged)
+        
+        if not get_acknowledged:
+            h_states = [h for h in self.get_hosts(user) if h.state not in ['UP', 'PENDING'] and not h.is_impact and not h.problem_has_been_acknowledged]
+            s_states = [s for s in self.get_services(user) if s.state not in ['OK', 'PENDING'] and not s.is_impact and not s.problem_has_been_acknowledged and not s.host.problem_has_been_acknowledged]
+        else:
+            h_states = [h for h in self.get_hosts(user) if h.state not in ['UP', 'PENDING'] and not h.is_impact]
+            s_states = [s for s in self.get_services(user) if s.state not in ['OK', 'PENDING'] and not s.is_impact]
+            
+        logger.warning("[%s] get_overall_it_problems_count, hosts: %d", self.name, len(h_states))
+        logger.warning("[%s] get_overall_it_problems_count, services: %d", self.name, len(s_states))
+        
+        return len(h_states) + len(s_states)
+
+    # Get percentage of all Services
+    def get_percentage_service_state(self, user=None):
+        all_services = self.get_services(user)
+        problem_services = []
+        problem_services.extend([s for s in all_services if s.state not in ['OK', 'PENDING'] and not s.is_impact])
+        if len(all_services) == 0:
+            res = 0
+        else:
+            res = int(100-(len(problem_services) *100)/float(len(all_services)))
+        return res
+              
+    # Get percentage of all Hosts
+    def get_percentage_hosts_state(self, user=None):
+        all_hosts = self.get_hosts(user)
+        problem_hosts = []
+        problem_hosts.extend([s for s in all_hosts if s.state not in ['UP', 'PENDING'] and not s.is_impact])
+        if len(all_hosts) == 0:
+            res = 0
+        else:
+            res = int(100-(len(problem_hosts) *100)/float(len(all_hosts)))
+        return res
