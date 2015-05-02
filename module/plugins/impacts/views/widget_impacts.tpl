@@ -17,7 +17,7 @@
     <tbody style="border: none;">
       %for impact in impacts:
       <tr>
-        <th style="width: 2%;">
+        <td>
           <div class='img_status'>
           <span class="medium-pulse aroundpulse pull-left">
             %# " We put a 'pulse' around the elements if it's an important one "
@@ -27,21 +27,21 @@
             <img class="medium-pulse" src="{{helper.get_icon_state(impact)}}" />
           </span>
           </div>
-        </th>
+        </td>
         
-        <th style="font-size: small; font-weight: normal;">
+        <td style="font-size: x-small; font-weight: normal;">
           {{!helper.get_link(impact)}}
-        </th>
+        </td>
         
-        <th style="font-size: small; font-weight: normal; width: 10%;" class="background-{{impact.state.lower()}}">
+        <td style="font-size: x-small; font-weight: normal; width: 10%;" class="background-{{impact.state.lower()}}">
           <span class='txt_status'> {{impact.state}}</span>
-        </th>
+        </td>
         
-        <th style="font-size: small; font-weight: normal; width: 15%;">
+        <td style="font-size: x-small; font-weight: normal; width: 15%;">
           %for j in range(0, impact.business_impact-2):
           <img src='/static/images/star.png' alt="star">
           %end
-        </th>
+        </td>
       </tr>
       %end
     </tbody>
