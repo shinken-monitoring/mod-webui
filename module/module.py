@@ -940,6 +940,7 @@ class Webui_broker(BaseModule, Daemon):
         return r
 
     # Returns all problems
+    # Not really useful ... to be confirmed !
     def get_all_problems(self, user=None, to_sort=True, get_acknowledged=False):
         res = []
         if not get_acknowledged:
@@ -973,27 +974,14 @@ class Webui_broker(BaseModule, Daemon):
     # if warning or critical
     def get_overall_state_problems_count(self, user=None):
         h_states = [h.state_id for h in self.get_hosts(user) if h.business_impact > 2 and h.is_impact and h.state_id in [1, 2]]
-        logger.warning("[%s] get_overall_state_problems_count, hosts: %d", self.name, len(h_states))
+        logger.debug("[%s] get_overall_state_problems_count, hosts: %d", self.name, len(h_states))
         s_states = [s.state_id for s in self.get_services(user) if  s.business_impact > 2 and s.is_impact and s.state_id in [1, 2]]
-        logger.warning("[%s] get_overall_state_problems_count, hosts+services: %d", self.name, len(s_states))
+        logger.debug("[%s] get_overall_state_problems_count, hosts+services: %d", self.name, len(s_states))
         
         return len(h_states) + len(s_states)
 
    # Same but for pure IT problems
     def get_overall_it_state(self, user=None):
-        # worst_host_state = 0
-        # for h in self.get_hosts(user):
-            # if h.is_problem and h.state_id in [1, 2]:
-                # worst_host_state = max(worst_host_state, h.state_id)
-        # logger.warning("[%s] get_overall_it_state, worst host state: %d", self.name, worst_host_state)
-        
-        # worst_service_state = 0
-        # for s in self.get_services(user):
-            # if s.is_problem and s.state_id in [1, 2]:
-                # worst_service_state = max(worst_service_state, s.state_id)
-        # logger.warning("[%s] get_overall_it_state, worst service state: %d", self.name, worst_service_state)
-        
-        # return max(worst_host_state, worst_service_state)
         h_states = [h.state_id for h in self.get_hosts(user) if h.is_problem and h.state_id in [1, 2]]
         s_states = [s.state_id for s in self.get_services(user) if s.is_problem and s.state_id in [1, 2]]
         if len(h_states) == 0:
@@ -1009,7 +997,7 @@ class Webui_broker(BaseModule, Daemon):
 
     # Get the number of all problems, even the ack ones
     def get_overall_it_problems_count(self, user=None, get_acknowledged=False):
-        logger.warning("[%s] get_overall_it_problems_count, user: %s, get_acknowledged: %d", self.name, user.contact_name, get_acknowledged)
+        logger.debug("[%s] get_overall_it_problems_count, user: %s, get_acknowledged: %d", self.name, user.contact_name, get_acknowledged)
         
         if not get_acknowledged:
             h_states = [h for h in self.get_hosts(user) if h.state not in ['UP', 'PENDING'] and not h.is_impact and not h.problem_has_been_acknowledged]
@@ -1018,8 +1006,8 @@ class Webui_broker(BaseModule, Daemon):
             h_states = [h for h in self.get_hosts(user) if h.state not in ['UP', 'PENDING'] and not h.is_impact]
             s_states = [s for s in self.get_services(user) if s.state not in ['OK', 'PENDING'] and not s.is_impact]
             
-        logger.warning("[%s] get_overall_it_problems_count, hosts: %d", self.name, len(h_states))
-        logger.warning("[%s] get_overall_it_problems_count, services: %d", self.name, len(s_states))
+        logger.debug("[%s] get_overall_it_problems_count, hosts: %d", self.name, len(h_states))
+        logger.debug("[%s] get_overall_it_problems_count, services: %d", self.name, len(s_states))
         
         return len(h_states) + len(s_states)
 
