@@ -824,7 +824,10 @@ class Helper(object):
         services.sort(hst_srv_sort)
         for svc in services:
             s += '<li class="%s">' % svc.state.lower()
-            s += """<span class='alert-small alert-%s' style="">%s</span> for <span style="">%s since %s</span>""" % (svc.state.lower(), svc.state, self.get_link(svc, short=True), self.print_duration(svc.last_state_change, just_duration=True, x_elts=2))
+            s += """<span class='alert-small alert-%s'>%s</span>""" % (svc.state.lower(), svc.state)
+            if svc.problem_has_been_acknowledged :
+                s+="""<i class="fa fa-check"></i>"""
+            s += """ for <span style="">%s since %s</span>""" % (self.get_link(svc, short=True), self.print_duration(svc.last_state_change, just_duration=True, x_elts=2))
             for i in range(0, svc.business_impact-2):
                 s += '<img alt="icon state" src="/static/images/star.png">'
             s += '</li>'
