@@ -72,16 +72,8 @@
         <path fill-opacity="0.875" d="M45.313,46.234L34.497,83.419h30.286L53.966,46.234C51.102,46.874,48.226,47.098,45.313,46.234z"></path>
       </svg>
       <span class="badger-title itproblem"><i class="fa fa-plus" style="color: #ccc"></i>&nbsp;IT Problems</span>
-      %if app:
-        %overall_itproblem = app.datamgr.get_overall_it_state()
-        %if overall_itproblem == 0:
-        <span class=" badger-big badger-ok">OK!</span>
-        %elif overall_itproblem == 1:
-        <span class="badger-big badger-warning">{{app.datamgr.get_nb_all_problems(user)}}</span>
-        %elif overall_itproblem == 2:
-        <span class=" badger-big badger-critical">{{app.datamgr.get_nb_all_problems(user)}}</span>
-        %end
-      %end
+      %overall_itproblem = app.get_overall_it_state(app.get_user_auth())
+      <span title="Number of not acknowledged IT problems." class="badger-big badger-{{'ok' if overall_itproblem == 0 else 'warning' if overall_itproblem == 1 else 'critical'}}">{{app.get_overall_it_problems_count(app.get_user_auth(), False)}}</span>
       %if username != 'anonymous':
       </a>
       %end
@@ -102,14 +94,8 @@
         S85.823,47.375,77.958,47.375z"/>
       </svg>
       <span class="badger-title impacts"><i class="fa fa-plus" style="color: #ccc"></i>&nbsp;Impacts</span>
-      %if app:
-        %overall_state = app.datamgr.get_overall_state()
-        %if overall_state == 2:
-        <span class="badger-big badger-critical">{{app.datamgr.get_len_overall_state()}}</span>
-        %elif overall_state == 1:
-        <span class="badger-big badger-critical">{{app.datamgr.get_len_overall_state()}}</span>
-        %end
-      %end
+      %overall_state = app.get_overall_state(app.get_user_auth())
+      <span title="Number of not acknownledged IT problems." class="badger-big badger-{{'ok' if overall_state == 0 else 'warning' if overall_state == 1 else 'critical'}}">{{app.get_overall_state_problems_count(app.get_user_auth())}}</span>
       %if username != 'anonymous':
       </a>
       %end
@@ -123,18 +109,8 @@
         <path fill-rule="evenodd" clip-rule="evenodd" d="M17.15,47.28V85.2l31.601,13.543v-37.92L17.15,47.28z M84,45.437  L49.653,60.823v37.92L84,83.357V45.437z M61.458,2.445l-33.466,14.83v32.759l9.043,3.747l-0.022-22.753  c0,0,12.31-5.395,24.445-10.691V2.445z M22.575,15.695L22.56,47.784l4.507,1.865V17.485L22.575,15.695z M22.936,14.311l4.484,1.791  l32.759-14.28L55.665,0L22.936,14.311z M38.818,54.525l4.5,1.866V35.543l-4.492-1.791L38.818,54.525z M44.243,56.775l5.41,2.242  l28.057-12.52V20.502l-33.467,14.83V56.775z M39.188,32.368l4.484,1.791l32.76-14.28l-4.515-1.821L39.188,32.368z"/>
       </svg>
       <span class="badger-title services"><i class="fa fa-plus" style="color: #ccc"></i>&nbsp;Services OK</span>
-      %if app:
-        %service_state = app.datamgr.get_per_service_state()
-        %if service_state <= 0:
-        <span class="badger-big badger-critical">{{app.datamgr.get_per_service_state()}}%</span>
-        %elif service_state <= 33:
-        <span class="badger-big badger-critical">{{app.datamgr.get_per_service_state()}}%</span>
-        %elif service_state <= 66:
-        <span class="badger-big badger-warning">{{app.datamgr.get_per_service_state()}}%</span>
-        %elif service_state <= 100:
-        <span class="badger-big badger-ok">{{app.datamgr.get_per_service_state()}}%</span>
-        %end
-      %end
+      %service_state = app.get_percentage_service_state(app.get_user_auth())
+      <span class="badger-big badger-{{'critical' if service_state <= 33 else 'warning' if service_state <= 66 else 'ok'}}">{{service_state}}%</span>
       %if username != 'anonymous':
       </a>
       %end
@@ -148,18 +124,8 @@
       <polygon points="45.91,26.078 40.467,26.078 40.467,44.177 25.517,44.177 25.517,34.844 16.105,34.844 16.105,44.177 8.73,44.177   8.732,26.078 3.687,26.078 24.596,5.168 "/>
       </svg>
       <span class="badger-title hosts"><i class="fa fa-plus" style="color: #ccc"></i>&nbsp;Hosts UP</span>
-      %if app:
-        %service_state = app.datamgr.get_per_hosts_state()
-        %if service_state <= 0:
-        <span class="badger-big badger-critical">{{app.datamgr.get_per_hosts_state()}}%</span>
-        %elif service_state <= 33:
-        <span class="badger-big badger-critical">{{app.datamgr.get_per_hosts_state()}}%</span>
-        %elif service_state <= 66:
-        <span class="badger-big badger-warning">{{app.datamgr.get_per_hosts_state()}}%</span>
-        %elif service_state <= 100:
-        <span class="badger-big badger-ok">{{app.datamgr.get_per_hosts_state()}}%</span>
-        %end
-      %end
+      %service_state = app.get_percentage_hosts_state(app.get_user_auth())
+      <span class="badger-big badger-{{'critical' if service_state <= 33 else 'warning' if service_state <= 66 else 'ok'}}">{{service_state}}%</span>
       %if username != 'anonymous':
       </a>
       %end

@@ -152,6 +152,10 @@ ul#Navigation li {
   display: inline;
 }
 
+.popover {
+    min-width: 640px ! important;
+}
+
 /*  Title styles
     ------------------------------------------------------- */
 
