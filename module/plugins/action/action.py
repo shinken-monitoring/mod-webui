@@ -93,9 +93,7 @@ def get_page(cmd=None):
     elts = cmd.split('/')
     cmd_name = elts[0]
     cmd_args = elts[1:]
-    logger.warning("WebUI plugin 'action', got command: %s with args: %s.", cmd_name, cmd_args)
-    print "Got command", cmd_name
-    print "And args", cmd_args
+    logger.warning("[webui] action, got command: %s with args: %s.", cmd_name, cmd_args)
 
     # Check if the command exist in the external command list
     if cmd_name not in ExternalCommandManager.commands:
@@ -106,15 +104,13 @@ def get_page(cmd=None):
 
     # Expand macros
     extcmd = expand_macros(extcmd)
-    print "Got after macro expansion", extcmd
 
     # Ok, if good, we can launch the command
     # extcmd = extcmd.decode('utf8', 'replace')
-	# Fix #69
+    # Fix #69
     extcmd = extcmd.decode('utf8', 'ignore')
-    logger.warning("WebUI plugin 'action', external command: %s." % (extcmd))
+    logger.warning("[webui] action, external command: %s." % (extcmd))
     e = ExternalCommand(extcmd)
-    print "Creating the command", e.__dict__
     app.push_external_command(e)
 
     return forge_response(callback, 200, response_text)

@@ -81,14 +81,14 @@ def load_cfg():
         params['logs_hosts'] = [item.strip() for item in params['logs_hosts'].split(',')]
         params['logs_services'] = [item.strip() for item in params['logs_services'].split(',')]
         
-        logger.debug("WebUI plugin '%s', configuration loaded." % (plugin_name))
-        logger.debug("Plugin %s configuration, database: %s (%s)", plugin_name, params['mongo_host'], params['mongo_port'])
-        logger.debug("Plugin %s configuration, fetching: %d %s", plugin_name, params['logs_limit'], params['logs_type'])
-        logger.debug("Plugin %s configuration, hosts: %s", plugin_name, params['logs_hosts'])
-        logger.debug("Plugin %s configuration, services: %s", plugin_name, params['logs_services'])
+        logger.debug("webui plugin '%s', configuration loaded." % (plugin_name))
+        logger.debug("webui plugin %s configuration, database: %s (%s)", plugin_name, params['mongo_host'], params['mongo_port'])
+        logger.debug("webui plugin %s configuration, fetching: %d %s", plugin_name, params['logs_limit'], params['logs_type'])
+        logger.debug("webui plugin %s configuration, hosts: %s", plugin_name, params['logs_hosts'])
+        logger.debug("webui plugin %s configuration, services: %s", plugin_name, params['logs_services'])
         return True
     except Exception, exp:
-        logger.warning("WebUI plugin '%s', configuration file (%s) not available: %s", plugin_name, configuration_file, str(exp))
+        logger.warning("webui plugin '%s', configuration file (%s) not available: %s", plugin_name, configuration_file, str(exp))
         return False
 
 
@@ -148,7 +148,7 @@ def show_logs():
     records=[]
 
     try:
-        logger.info("[Logs] Fetching records from database: %s / %s / %s (max %d)" % (params['logs_type'], params['logs_hosts'], params['logs_services'], params['logs_limit']))
+        logger.info("[webui] Logs, fetching records from database: %s / %s / %s (max %d)" % (params['logs_type'], params['logs_hosts'], params['logs_services'], params['logs_limit']))
 
         logs_limit = params['logs_limit']
         logs_type = params['logs_type']
@@ -181,9 +181,9 @@ def show_logs():
                     "message" : log['message']
                 })
         message = "%d records fetched from database." % len(records)
-        logger.info("[Logs] %d records fetched from database.", len(records))
+        logger.info("[webui] Logs, %d records fetched from database.", len(records))
     except Exception, exp:
-        logger.error("[Logs] Exception when querying database: %s", str(exp))
+        logger.error("[webui] Logs, Exception when querying database: %s", str(exp))
 
     return {
         'app': app,
@@ -279,7 +279,7 @@ def get_json(hostname, service=None):
     records=[]
 
     try:
-        logger.info("[Logs] Fetching records from database for host/service: %s/%s", hostname, service)
+        logger.info("[webui] Logs, Fetching records from database for host/service: %s/%s", hostname, service)
         
         logs_limit = 100
         logs_type = []
@@ -289,7 +289,7 @@ def get_json(hostname, service=None):
             # logger.info("[Logs] Fetching records from database for host/service: %s/%s", hostname, service)
             logs_services = [ service ]
         else:
-            logger.info("[Logs] Fetching records from database for host: %s", hostname)
+            logger.info("[webui] Logs, Fetching records from database for host: %s", hostname)
 
         query = []
         if len(logs_type) > 0 and logs_type[0] != '':
@@ -317,11 +317,11 @@ def get_json(hostname, service=None):
                     "message":      log['message']
                 })
         message = "%d records fetched from database." % len(records)
-        logger.debug("[Logs] %d records fetched from database.", len(records))
+        logger.debug("[webui] Logs, %d records fetched from database.", len(records))
     except Exception, exp:
-        logger.error("[Logs] Exception when querying database: %s", str(exp))
+        logger.error("[webui] Logs, Exception when querying database: %s", str(exp))
     
-    logger.debug("[Logs] Finished compiling fetched records")
+    logger.debug("[webui] Logs, Finished compiling fetched records")
     return json.dumps(records)
 
 # Load plugin configuration parameters
