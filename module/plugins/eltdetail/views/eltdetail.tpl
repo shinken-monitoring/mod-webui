@@ -467,7 +467,7 @@ Invalid element name
                   </tbody>
                </table>
                      
-               <table class="table table-condensed col-sm-12" style="table-layout: fixed; word-wrap: break-word;">
+               <table class="table-condensed col-sm-12" style="table-layout: fixed; word-wrap: break-word;">
                   <colgroup>
                      <col style="width: 40%" />
                      <col style="width: 60%" />
@@ -572,8 +572,32 @@ Invalid element name
                         %end
                      </tr>
                      <tr>
+                        %if elt_type=='host':
+                           %message = {}
+                           %# [d,u,r,f,s,n]
+                           %message['d'] = 'Down'
+                           %message['u'] = 'Unreachable'
+                           %message['r'] = 'Recovery'
+                           %message['f'] = 'Flapping'
+                           %message['s'] = 'Downtimes'
+                           %message['n'] = 'None'
+                        %else:
+                           %message = {}
+                           %# [w,u,c,r,f,s,n]
+                           %message['w'] = 'Warning'
+                           %message['u'] = 'Unknown'
+                           %message['c'] = 'Critical'
+                           %message['r'] = 'Recovery'
+                           %message['f'] = 'Flapping'
+                           %message['s'] = 'Downtimes'
+                           %message['n'] = 'None'
+                        %end
                         <td><strong>Notification options:</strong></td>
-                        <td>{{', '.join(elt.notification_options)}}</td>
+                        <td>
+                        %for m in message:
+                           <span class="{{'glyphicon glyphicon-ok font-green' if m in elt.notification_options else 'glyphicon glyphicon-remove font-red'}}">&nbsp;{{message[m]}}&nbsp;</span>
+                        %end
+                        </td>
                      </tr>
                      <tr>
                         <td><strong>Last notification:</strong></td>
@@ -588,7 +612,6 @@ Invalid element name
                         %contacts=[]
                         %[contacts.append('<a href="/contact/'+item.contact_name+'">'+item.alias+'</a>' if item.alias else item.get_name()) for item in elt.contacts if item not in contacts]
                         <td>{{!', '.join(contacts)}}</td>
-                        %i=i+1
                      </tr>
                      <tr>
                         <td><strong>Contacts groups:</strong></td>
@@ -599,7 +622,6 @@ Invalid element name
                      <tr>
                         %cg = app.get_contactgroup(group)
                         <td style="text-align: right; font-style: italic;"><strong>{{cg.alias if cg.alias else cg.get_name()}}</strong></td>
-                        <hr/>
                         %contacts=[]
                         %[contacts.append('<a href="/contact/'+item.contact_name+'">'+item.alias+'</a>' if item.alias else item.get_name()) for item in cg.members if item not in contacts]
                         <td>{{!', '.join(contacts)}}</td>
@@ -764,7 +786,7 @@ Invalid element name
             %if params['tab_commands']=='yes' and app.manage_acl and helper.can_action(user):
             <div class="tab-pane fade" id="commands">
                <h4>Commands:</h4>
-               <table class="table-condensed col-sm-12" style="table-layout: fixed; word-wrap: break-word;">
+               <table class="table table-condensed col-sm-12" style="table-layout: fixed; word-wrap: break-word;">
                   <colgroup>
                      <col class="col-sm-1" />
                      <col class="col-sm-11" />
@@ -898,8 +920,9 @@ Invalid element name
                </table>
                      
                <br/>
+               <br/>
                <h4>Currently:</h4>
-               <table class="table-condensed col-sm-12" style="table-layout: fixed; word-wrap: break-word;">
+               <table class="table table-condensed col-sm-12" style="table-layout: fixed; word-wrap: break-word;">
                   <colgroup>
                      <col class="col-sm-6" />
                      <col class="col-sm-5" />
@@ -1004,7 +1027,7 @@ Invalid element name
                <h4>{{elt_type.capitalize()}} configuration:</h4>
 
                %if len(elt.customs) > 0:
-               <table class="table-condensed col-sm-12 table-bordered" style="table-layout: fixed; word-wrap: break-word;">
+               <table class="table table-condensed col-sm-12 table-bordered" style="table-layout: fixed; word-wrap: break-word;">
                   <colgroup>
                      <col style="width: 50%" />
                      <col style="width: 50%" />

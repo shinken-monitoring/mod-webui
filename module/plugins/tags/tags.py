@@ -76,10 +76,10 @@ def show_tag(name):
 
     if name == 'all':
         items = []
-        items.extend(app.datamgr.get_hosts())
+        items.extend(app.get_hosts())
 
     else:
-        items = app.datamgr.get_hosts_tagged_with(name)
+        items = app.get_hosts_tagged_with(name)
 
     elts_per_page = params['elts_per_page']
     # We want to limit the number of elements
@@ -105,10 +105,10 @@ def show_stag(name):
 
     if name == 'all':
         items = []
-        items.extend(app.datamgr.get_hosts())
+        items.extend(app.get_hosts())
 
     else:
-        items = app.datamgr.get_services_tagged_with(name)
+        items = app.get_services_tagged_with(name)
 
     elts_per_page = params['elts_per_page']
     # We want to limit the number of elements
@@ -133,8 +133,8 @@ def show_tags():
     user = checkauth()
 
     fake_htags = []
-    for tag in app.datamgr.get_host_tags_sorted():
-        hosts = only_related_to(app.datamgr.get_hosts_tagged_with(tag[0]),user)
+    for tag in app.get_host_tags_sorted():
+        hosts = only_related_to(app.get_hosts_tagged_with(tag[0]),user)
         if len(hosts) > 0:
             fake_htags.append({'name': tag[0], 'hosts': hosts})
 
@@ -144,8 +144,8 @@ def show_stags():
     user = checkauth()
     
     fake_stags = []
-    for tag in app.datamgr.get_service_tags_sorted():
-        services = only_related_to(app.datamgr.get_services_tagged_with(tag[0]),user)
+    for tag in app.get_service_tags_sorted():
+        services = only_related_to(app.get_services_tagged_with(tag[0]),user)
         if len(services) > 0:
             fake_stags.append({'name': tag[0], 'services': services})
 

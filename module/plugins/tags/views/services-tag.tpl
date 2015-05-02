@@ -1,5 +1,4 @@
 %helper = app.helper
-%datamgr = app.datamgr
 
 %nServices=0
 %sOk=0

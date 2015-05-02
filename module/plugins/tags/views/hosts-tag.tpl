@@ -1,5 +1,4 @@
 %helper = app.helper
-%datamgr = app.datamgr
 
 %nHosts=0
 %hUp=0
