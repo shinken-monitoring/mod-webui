@@ -1,21 +1,18 @@
-%username = 'anonymous'
-%if user is not None: 
-%if hasattr(user, 'alias'):
-%	username = user.alias
-%else:
-%	username = user.get_name()
-%end
-%end
-
 <script type="text/javascript">
-  // Initial start/stop for downtime, do not consider seconds ...
-  var downtime_start = moment().seconds(0);
-  var downtime_stop = moment().seconds(0).add('hours', 1);
+	/*
+	-%now = time.gmtime(int(time.time()))
+	-%nxt = time.gmtime(int(time.time()) + 3600*2)
+	+%now = time.localtime(int(time.time()))
+	+%nxt = time.localtime(int(time.time()) + 3600*2)
+	*/
+	// Initial start/stop for downtime, do not consider seconds ...
+	var downtime_start = moment().seconds(0);
+	var downtime_stop = moment().seconds(0).add('hours', 1);
   
 	function submit_local_form(){
 		// Launch downtime request and bailout this modal view
-		do_schedule_downtime("{{name}}", downtime_start.format('X'), downtime_stop.format('X'), '{{username}}', $('#reason').val());
-    start_refresh();
+		do_schedule_downtime("{{name}}", downtime_start.format('X'), downtime_stop.format('X'), '{{user.get_name()}}', $('#reason').val());
+		start_refresh();
 		$('#modal').modal('hide');
 	}
 

@@ -1,16 +1,7 @@
-%username = 'anonymous'
-%if user is not None: 
-%if hasattr(user, 'alias'):
-%	username = user.alias
-%else:
-%	username = user.get_name()
-%end
-%end
-
 <script type="text/javascript">
 	function submit_local_form() {
 		// Launch acknowledge request and bailout this modal view
-		add_comment("{{name}}", '{{username}}', $('#comment').val());
+		add_comment("{{name}}", '{{user.get_name()}}', $('#comment').val());
     start_refresh();
 		$('#modal').modal('hide');
 	}

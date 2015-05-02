@@ -1,12 +1,3 @@
-%username = 'anonymous'
-%if user is not None: 
-%if hasattr(user, 'alias'):
-%	username = user.alias
-%else:
-%	username = user.get_name()
-%end
-%end
-
 <script type="text/javascript">
 	function submit_local_form() {
 		submit_check("{{name}}", $('#return_code').val(), $('#output').val());

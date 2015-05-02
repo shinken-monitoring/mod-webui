@@ -123,21 +123,11 @@
         <li class="pull-right"><a class="quickinfo" data-original-title='Currently' href="/dashboard/currently"><i class="fa fa-eye"></i></a></li>
 
         %if app:
-        %overall_itproblem = app.datamgr.get_overall_it_state()
-        %if overall_itproblem == 0:
-        <li class="pull-right"><a href="/problems" class="quickinfo" data-original-title='IT Problems'><i class="fa fa-ambulance"></i><span class="pulsate badger badger-ok">OK!</span> </a></li>
-        %elif overall_itproblem == 1:
-        <li class="pull-right"><a href="/problems" class="quickinfo" data-original-title='IT Problems'><i class="fa fa-ambulance"></i><span class="pulsate badger badger-warning">{{app.datamgr.get_nb_all_problems(app.get_user_auth())}}</span> </a></li>
-        %elif overall_itproblem == 2:
-        <li class="pull-right"><a href="/problems" class="quickinfo" data-original-title='IT Problems'><i class="fa fa-ambulance"></i><span class="pulsate badger badger-critical">{{app.datamgr.get_nb_all_problems(app.get_user_auth())}}</span> </a></li>
-        %end
-
-        %overall_state = app.datamgr.get_overall_state()
-        %if overall_state == 2:
-        <li class="pull-right"><a href="/impacts" class="quickinfo" data-original-title='Impacts'><i class="fa fa-bolt"></i><span class="pulsate badger badger-critical">{{app.datamgr.get_len_overall_state()}}</span> </a></li>
-        %elif overall_state == 1:
-        <li class="pull-right"><a href="/impacts" class="quickinfo" data-original-title='Impacts'><i class="fa fa-bolt"></i><span class="pulsate badger badger-warning">{{app.datamgr.get_len_overall_state()}}</span> </a></li>
-        %end
+        %overall_state = app.get_overall_state(app.get_user_auth())
+        <li class="pull-right"><a href="/impacts" class="quickinfo" data-original-title='Impacts'><i class="fa fa-bolt"></i><span class="pulsate badger badger-{{'ok' if overall_state == 0 else 'warning' if overall_state == 1 else 'critical'}}">{{app.get_overall_state_problems_count(app.get_user_auth())}}</span> </a></li>
+        
+        %overall_itproblem = app.get_overall_it_state(app.get_user_auth())
+        <li class="pull-right"><a href="/problems" class="quickinfo" data-original-title='IT Problems'><i class="fa fa-ambulance"></i><span class="pulsate badger badger-{{'ok' if overall_itproblem == 0 else 'warning' if overall_itproblem == 1 else 'critical'}}">{{app.get_overall_it_problems_count(user, False)}}</span> </a></li>
         %end
       </ul>
     </div>
