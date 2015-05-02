@@ -263,6 +263,18 @@ function acknowledge_all(user){
 }
 
 
+function downtime_all(user){
+  // Initial start/stop for downtime, do not consider seconds ...
+  var downtime_start = moment().seconds(0);
+  var downtime_stop = moment().seconds(0).add('day', 1);
+  
+  $.each(selected_elements, function(idx, name){
+    do_schedule_downtime(unid_name(name), downtime_start.format('X'), downtime_stop.format('X'), user, 'Downtime scheduled from WebUI by '+user);
+  });
+  flush_selected_elements();
+}
+
+
 function remove_all(user){
   $.each(selected_elements, function(idx, name){
     do_remove(unid_name(name), 'Removed from WebUI by '+user, user);
