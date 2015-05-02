@@ -1,43 +1,33 @@
 %rebase layout globals(), css=['groups/css/groups-overview.css'], js=['groups/js/groups-overview.js'], title='Hosts groups overview', refresh=True
 
 %helper = app.helper
-%datamgr = app.datamgr
 
 %from shinken.misc.filter import only_related_to
 
 %nHosts=0
-%items=only_related_to(datamgr.get_hosts(),user)
-%r = set()
-%for h in items:
-	%for filter in app.hosts_filter:
-		%if not h.get_name().startswith(filter):
-			%r.add(h)
-		%end
-	%end
-%end
-%hosts = list(r)
+%hosts=app.get_hosts(user)
 %hUp=hDown=hUnreachable=hPending=hUnknown=0
 %pctUp=pctDown=pctUnreachable=pctPending=pctUnknown=0
 %for h in hosts:
-	%nHosts=nHosts+1
-	%if h.state == 'UP':
-		%hUp=hUp+1
-	%elif h.state == 'DOWN':
-		%hDown=hDown+1
-	%elif h.state == 'UNREACHABLE':
-		%hUnreachable=hUnreachable+1
-	%elif h.state == 'PENDING':
-		%hPending=hPending+1
-	%else:
-		%hUnknown=hUnknown+1
-	%end
+   %nHosts=nHosts+1
+   %if h.state == 'UP':
+      %hUp=hUp+1
+   %elif h.state == 'DOWN':
+      %hDown=hDown+1
+   %elif h.state == 'UNREACHABLE':
+      %hUnreachable=hUnreachable+1
+   %elif h.state == 'PENDING':
+      %hPending=hPending+1
+   %else:
+      %hUnknown=hUnknown+1
+   %end
 %end
 %if nHosts != 0:
-	%pctUp			= round(100.0 * hUp / nHosts, 2)
-	%pctDown		= round(100.0 * hDown / nHosts, 2)
-	%pctUnreachable	= round(100.0 * hUnreachable / nHosts, 2)
-	%pctPending		= round(100.0 * hPending / nHosts, 2)
-	%pctUnknown		= round(100.0 * hUnknown / nHosts, 2)
+   %pctUp            = round(100.0 * hUp / nHosts, 2)
+   %pctDown          = round(100.0 * hDown / nHosts, 2)
+   %pctUnreachable   = round(100.0 * hUnreachable / nHosts, 2)
+   %pctPending       = round(100.0 * hPending / nHosts, 2)
+   %pctUnknown       = round(100.0 * hUnknown / nHosts, 2)
 %end
 
 <div class="row">
@@ -94,9 +84,7 @@
         %hPending=hPending+1
       %end
     %end
-    %for group in hostgroups:
-      %nGroups=nGroups+1
-    %end
+    %nGroups=len(hostgroups)
     <li class="clearfix {{even}}">
       <section class="left">
         <h3>All hosts</h3>
@@ -169,9 +157,7 @@
         %end
       %end
       
-      %for h in group.get_hostgroup_members():
-        %nGroups=nGroups+1
-      %end
+      %nGroups=len(group.get_hostgroup_members())
       <!-- <li>{{group.get_name()}} - {{nHosts}} - {{nGroups}} - {{group.get_hostgroup_members()}}</li> -->
       %if nHosts > 0 or nGroups > 0:
         

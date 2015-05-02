@@ -893,8 +893,22 @@ class Webui_broker(BaseModule, Daemon):
         name = name.decode('utf8', 'ignore')
         return self.datamgr.rg.contactgroups.find_by_name(name)
 
-    def get_hostgroups(self):
-        return self.datamgr.rg.hostgroups
+    def get_hostgroups(self, user=None):
+        items=self.datamgr.rg.hostgroups
+        r = set()
+        for g in items:
+            logger.debug("[%s] get_hostgroups, group: %s", self.name, g.hostgroup_name)
+            filtered = False
+            for filter in self.hosts_filter:
+                if g.hostgroup_name.startswith(filter):
+                    filtered = True
+            if not filtered:
+                    r.add(g)
+                    
+        if user is not None:
+            r=only_related_to(r,user)
+
+        return r
 
     def get_hostgroup(self, name):
         return self.datamgr.rg.hostgroups.find_by_name(name)

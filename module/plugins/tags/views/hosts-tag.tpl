@@ -1,6 +1,18 @@
 %helper = app.helper
 
+%from shinken.misc.filter import only_related_to
+
 %nHosts=0
+%items=only_related_to(app.get_hosts_tagged_with(tag),user)
+%r = set()
+%for h in items:
+	%for filter in app.hosts_filter:
+		%if not h.get_name().startswith(filter):
+			%r.add(h)
+		%end
+	%end
+%end
+%hosts = list(r)
 %hUp=0
 %hDown=0
 %hUnreachable=0

@@ -78,10 +78,10 @@ def show_hostgroup(name):
         my_group = 'all'
         
         items = []
-        items.extend(only_related_to(app.datamgr.get_hosts(),user))
+        items.extend(app.get_hosts(user))
 
     else:
-        my_group = app.datamgr.get_hostgroup(name)
+        my_group = app.get_hostgroup(name)
 
         if not my_group:
             return "Unknown group %s" % name
@@ -89,13 +89,13 @@ def show_hostgroup(name):
         items = only_related_to(my_group.get_hosts(),user)
 
     # Filter hosts list with configured filter (menu.cfg) ...
-    r = set()
-    for h in items:
-        for filter in app.hosts_filter:
-            if not h.get_name().startswith(filter):
-                r.add(h)
+    # r = set()
+    # for h in items:
+        # for filter in app.hosts_filter:
+            # if not h.get_name().startswith(filter):
+                # r.add(h)
 
-    items = list(r)
+    # items = list(r)
     
     elts_per_page = params['elts_per_page']
     # We want to limit the number of elements
@@ -121,7 +121,7 @@ def show_hostgroups():
 
     return {
         'app': app, 'user': user, 'params': params, 
-        'hostgroups': sorted(app.datamgr.get_hostgroups(), key=lambda hostgroup: hostgroup.hostgroup_name)
+        'hostgroups': sorted(app.get_hostgroups(), key=lambda hostgroup: hostgroup.hostgroup_name)
         }
 
 
@@ -132,7 +132,7 @@ def show_servicegroup(name):
         my_group = 'all'
         
         services = []
-        services.extend(app.datamgr.get_services())
+        services.extend(app.get_services(user))
         items = services
 
     else:

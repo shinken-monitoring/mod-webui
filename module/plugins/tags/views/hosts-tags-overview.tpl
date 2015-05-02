@@ -1,5 +1,7 @@
 %rebase layout globals(), css=['tags/css/tags-overview.css'], js=['tags/js/tags-overview.js'], title='Hosts tags overview', refresh=True
 
+%from shinken.misc.filter import only_related_to
+
 <div class="row">
   <span class="btn-group pull-right">
     <a href="#" id="listview" class="btn btn-small switcher quickinfo pull-right" data-original-title='List'> <i class="fa fa-align-justify"></i> </a>
@@ -8,34 +10,42 @@
 </div>
 
 <div class="row">
-	<ul id="groups" class="grid row">
-		%for tag in htags:
-			%nHosts=0
-			%hUp=0
-			%hDown=0
-			%hUnreachable=0
-			%hPending=0
-			%business_impact = 0
-			%for h in tag['hosts']:
-				%business_impact = max(business_impact, h.business_impact)
-				%nHosts=nHosts+1
-				%if h.state == 'UP':
-					%hUp=hUp+1
-				%elif h.state == 'DOWN':
-					%hDown=hDown+1
-				%elif h.state == 'UNREACHABLE':
-					%hUnreachable=hUnreachable+1
-				%else:
-					%hPending=hPending+1
-				%end
-			%end
-			<li class="clearfix">
-				<section class="left">
-					<h3>{{tag['name']}}
-						%for i in range(0, business_impact-2):
-						<img alt="icon state" src="/static/images/star.png">
-						%end
-					</h3>
+   <ul id="groups" class="grid row">
+      %for tag in htags:
+         %filtered=False
+         %for filter in app.hosts_filter:
+            %if tag['name'].startswith(filter):
+               %filtered=True
+            %end
+         %end
+         %if filtered:
+            %continue
+         %end
+         %nHosts=0
+         %hUp=hDown=hUnreachable=hPending=hUnknown=0
+         %business_impact = 0
+         %for h in tag['hosts']:
+            %business_impact = max(business_impact, h.business_impact)
+            %nHosts=nHosts+1
+            %if h.state == 'UP':
+               %hUp=hUp+1
+            %elif h.state == 'DOWN':
+               %hDown=hDown+1
+            %elif h.state == 'UNREACHABLE':
+               %hUnreachable=hUnreachable+1
+            %elif h.state == 'PENDING':
+               %hPending=hPending+1
+            %else:
+               %hUnknown=hUnknown+1
+            %end
+         %end
+         <li class="clearfix">
+            <section class="left">
+               <h3>{{tag['name']}}
+                  %for i in range(0, business_impact-2):
+                  <img alt="icon state" src="/static/images/star.png">
+                  %end
+               </h3>
           <span class="meta">
             <span class="fa-stack font-up"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-check fa-stack-1x fa-inverse"></i></span>
             <span class="num">
@@ -70,19 +80,19 @@
               %end
             </span>
           </span>
-				</section>
+            </section>
 
-				<section class="right">
-					%if nHosts == 1:
-					<span class="sum">{{nHosts}} element</span>
-					%else:
-					<span class="sum">{{nHosts}} elements</span>
-					%end
-					<span class="darkview">
-					<a href="/hosts-tag/{{tag['name']}}" class="firstbtn"><i class="fa fa-angle-double-down"></i> Details</a>
-					</span>
-				</section>
-			</li>
-		%end
-	</ul>
+            <section class="right">
+               %if nHosts == 1:
+               <span class="sum">{{nHosts}} element</span>
+               %else:
+               <span class="sum">{{nHosts}} elements</span>
+               %end
+               <span class="darkview">
+               <a href="/hosts-tag/{{tag['name']}}" class="firstbtn"><i class="fa fa-angle-double-down"></i> Details</a>
+               </span>
+            </section>
+         </li>
+      %end
+   </ul>
 </div>
