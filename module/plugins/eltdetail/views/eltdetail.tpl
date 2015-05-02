@@ -25,26 +25,30 @@ Invalid element name
 
 %business_rule = False
 %if elt_type=='host':
-  %# Count hosts services for different states
-  %sOK=0
-  %sWARNING=0
-  %sCRITICAL=0
-  %sPENDING=0
-  %sUNKNOWN=0
+   %# Count hosts services for different states
+   %sOK=0
+   %sWARNING=0
+   %sCRITICAL=0
+   %sPENDING=0
+   %sUNKNOWN=0
+   %sACK=0
 
-  %for s in elt.services:
-    %if s.state == 'OK':
-      %sOK=sOK+1
-    %elif s.state == 'WARNING':
-      %sWARNING=sWARNING+1
-    %elif s.state == 'CRITICAL':
-      %sCRITICAL=sCRITICAL+1
-    %elif s.state == 'PENDING':
-      %sPENDING=sPENDING+1
-    %else:
-      %sUNKNOWN=sUNKNOWN+1
-    %end
-  %end
+   %for s in elt.services:
+      %if s.state == 'OK':
+         %sOK=sOK+1
+      %elif s.state == 'WARNING':
+         %sWARNING=sWARNING+1
+      %elif s.state == 'CRITICAL':
+         %sCRITICAL=sCRITICAL+1
+      %elif s.state == 'PENDING':
+         %sPENDING=sPENDING+1
+      %else:
+         %sUNKNOWN=sUNKNOWN+1
+      %end
+      %if s.is_problem and s.problem_has_been_acknowledged:
+         %sACK=sACK+1
+      %end
+   %end
 %else:
 %if elt.get_check_command().startswith('bp_rule'):
 %business_rule = True
@@ -132,83 +136,83 @@ Invalid element name
    <!-- First row : tags and actions ... -->
    %if elt.action_url != '' or (elt_type=='host' and len(elt.get_host_tags()) != 0) or (elt_type=='service' and len(elt.get_service_tags()) != 0) or (elt_type=='host' and len(elt.hostgroups) > 0) or (elt_type=='service' and len(elt.servicegroups) > 0):
    <div class="row">
-    <div class="col-sm-12">
-      %if (elt_type=='host' and len(elt.hostgroups) > 0) or (elt_type=='service' and len(elt.servicegroups) > 0):
+      <div class="col-sm-12">
+         %if (elt_type=='host' and len(elt.hostgroups) > 0) or (elt_type=='service' and len(elt.servicegroups) > 0):
          <div class="btn-group pull-right">
             <button class="btn btn-primary btn-xs"><i class="fa fa-sitemap"></i> Groups</button>
-            <button class="btn btn-primary btn-xs dropdown-toggle" data-toggle="dropdown">
-               <span class="caret"></span>
-            </button>
+            <button class="btn btn-primary btn-xs dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>
             <ul class="dropdown-menu pull-right">
             %if elt_type=='host':
                %for hg in elt.hostgroups:
-               <li><a href="/hosts-group/{{hg.get_name()}}">{{hg.get_name()}} ({{hg.alias}})</a></li>
+               <li>
+               %if 'hosts-groups' in app.menu_items:
+               <a href="/hosts-group/{{hg.get_name()}}">{{hg.get_name()}} ({{hg.alias}})</a>
+               %else:
+               {{hg.get_name()}} ({{hg.alias}})
+               %end
+               </li>
                %end
             %else:
                %for sg in elt.servicegroups:
-               <li><a href="/services-group/{{sg.get_name()}}">{{sg.get_name()}} ({{sg.alias}})</a></li>
+               <li>
+               %if 'services-groups' in app.menu_items:
+               <a href="/services-group/{{sg.get_name()}}">{{sg.get_name()}} ({{sg.alias}})</a>
+               %else:
+               {{sg.get_name()}} ({{sg.alias}})
+               %end
+               </li>
                %end
             %end
             </ul>
          </div>
-         <div class="pull-right">
-            &nbsp;&nbsp;
-         </div>
-      %end
+         <div class="pull-right">&nbsp;&nbsp;</div>
+         %end
          %if elt.action_url != '':
          <div class="btn-group pull-right">
             %action_urls = elt.action_url.split('|')
-            %if len(action_urls) == 1:
-            <button class="btn btn-info btn-xs"><i class="fa fa-external-link"></i> Action</button>
-            %else:
-            <button class="btn btn-info btn-xs"><i class="icon-cog"></i> Actions</button>
-            %end
-            <button class="btn btn-info btn-xs dropdown-toggle" data-toggle="dropdown">
-               <span class="caret"></span>
-            </button>
+            <button class="btn btn-info btn-xs"><i class="fa fa-external-link"></i> {{'Action' if len(action_urls) == 1 else 'Actions'}}</button>
+            <button class="btn btn-info btn-xs dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>
             <!-- Do not know why but MacroResolver sometimes throws an exception !!! -->
             <ul class="dropdown-menu pull-right">
                %action_urls = elt.action_url.split('|')
                %if len(action_urls) > 0:
                   %for triplet in action_urls:
-              %try:
-                %if len(triplet.split(',')) == 3:
-                  %( action_url, icon, alt) = triplet.split(',')
-                  <li><a href="{{ MacroResolver().resolve_simple_macros_in_string(action_url, elt.get_data_for_checks()) }}" target=_blank><img src={{icon}} alt="{{alt}}"></a></li>
-                %else:
+                  %try:
+                  %if len(triplet.split(',')) == 3:
+                     %( action_url, icon, alt) = triplet.split(',')
+                     <li><a href="{{ MacroResolver().resolve_simple_macros_in_string(action_url, elt.get_data_for_checks()) }}" target=_blank><img src={{icon}} alt="{{alt}}"></a></li>
+                  %else:
                   %if len(triplet.split(',')) == 1:
                     <li><a id="action-link" href="{{ MacroResolver().resolve_simple_macros_in_string(triplet, elt.get_data_for_checks()) }}" target=_blank>{{ MacroResolver().resolve_simple_macros_in_string(triplet, elt.get_data_for_checks()) }}</a></li>
                   %end
-                %end
-              %except:
-                <li><a id="action-link" href="{{ triplet }}" target=_blank>{{ triplet }}</a></li>
-              %end
+                  %end
+                  %except:
+                     <li><a id="action-link" href="{{ triplet }}" target=_blank>{{ triplet }}</a></li>
+                  %end
                   %end
                %end
             </ul>
          </div>
-         <div class="pull-right">
-            &nbsp;&nbsp;
-         </div>
+         <div class="pull-right">&nbsp;&nbsp;</div>
          %end
          %if hasattr(elt, 'get_host_tags') and len(elt.get_host_tags()) != 0:
          <div id="host_tags" class="btn-group pull-right">
             <script>
                %i=0
                %for t in sorted(elt.get_host_tags()):
-               var a{{i}} = $('<a href="/all?search=htag:{{t}}"/>').appendTo($('#host_tags'));
-               $('<img />')
-            .attr({ 'src': '/static/images/tags/{{t.lower()}}.png', 'alt': '{{t.lower()}}', 'title': 'Tag: {{t.lower()}}' })
-            .css({height: "24px"})
-            .load(function() {
-            })
-            .error(function() {
-              $(this).remove();
-              $("<span/>").attr({ 'class': 'btn btn-default btn-xs bg-host'}).append('{{t}}').appendTo(a{{i}});
-            })
-            .appendTo(a{{i}});
-               var span = $("<span/>").append('&nbsp;').appendTo($('#host_tags'));
-          %i=i+1
+                  var a{{i}} = $('<a href="/all?search=htag:{{t}}"/>').appendTo($('#host_tags'));
+                  $('<img />')
+                     .attr({ 'src': '/static/images/tags/{{t.lower()}}.png', 'alt': '{{t.lower()}}', 'title': 'Tag: {{t.lower()}}' })
+                     .css({height: "24px"})
+                     .load(function() {
+                     })
+                     .error(function() {
+                       $(this).remove();
+                       $("<span/>").attr({ 'class': 'btn btn-default btn-xs bg-host'}).append('{{t}}').appendTo(a{{i}});
+                     })
+                     .appendTo(a{{i}});
+                  var span = $("<span/>").append('&nbsp;').appendTo($('#host_tags'));
+                  %i=i+1
                %end
             </script>
          </div>
@@ -236,190 +240,188 @@ Invalid element name
          </div>
          %end
          <div class="clearfix"></div>
-    </div>
+      </div>
    </div>
    %end
 
    <!-- Second row : host/service overview ... -->
    <div class="row" style="padding: 5px;">
-    <div class="panel-group" id="Overview">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <div class="panel-heading fitted-header cursor" data-toggle="collapse" data-parent="#Overview" href="#collapseOverview">
-            <h4 class="panel-title">Overview {{elt_name}}
-              %if elt.display_name or elt.alias:
-                %if elt.display_name:
-                  ({{elt.display_name}})
-                %else:
-                  ({{elt.alias}})
-                %end
-              %end
-              %for i in range(0, elt.business_impact-2):
-              <img alt="icon state" src="/static/images/star.png">
-              %end
-            </h4>
-          </div>
-        </div>
+      <div class="panel-group" id="Overview">
+         <div class="panel panel-default">
+            <div class="panel-heading">
+               <div class="panel-heading fitted-header cursor" data-toggle="collapse" data-parent="#Overview" href="#collapseOverview">
+                  <h4 class="panel-title"><span class="caret"></span>&nbsp;Overview {{elt_name}} ({{elt.display_name if elt.display_name else elt.alias if elt.alias else 'none'}})
+                     %for i in range(0, elt.business_impact-2):
+                     <img src="/static/images/star.png">
+                     %end
+                  </h4>
+               </div>
+            </div>
         
-        <div id="collapseOverview" class="panel-collapse collapse">
-          <div class="row">
-            %if elt_type=='host':
-              <dl class="col-lg-4 dl-horizontal">
-                <dt>Alias:</dt>
-                <dd>{{elt.alias}}</dd>
+            <div id="collapseOverview" class="panel-collapse collapse in">
+               <div class="row">
+               %if elt_type=='host':
+               <dl class="col-sm-6 dl-horizontal">
+                  <dt>Alias:</dt>
+                  <dd>{{elt.alias}}</dd>
 
-                <dt>Address:</dt>
-                <dd>{{elt.address}}</dd>
+                  <dt>Address:</dt>
+                  <dd>{{elt.address}}</dd>
 
-                <dt>Importance:</dt>
-                <dd>{{!helper.get_business_impact_text(elt)}}</dd>
-              </dl>
+                  <dt>Importance:</dt>
+                  <dd>{{!helper.get_business_impact_text(elt)}}</dd>
+               </dl>
               
-              <dl class="col-lg-4 dl-horizontal">
-                <dt>Parents:</dt>
-                %if len(elt.parents) > 0:
-                <dd>
-                %for parent in elt.parents:
-                <a href="/host/{{parent.get_name()}}" class="link">{{parent.alias}} ({{parent.get_name()}})</a>
-                %end
-                </dd>
-                %else:
-                <dd>(none)</dd>
-                %end
-
-
-                <dt>Member of:</dt>
-                %if len(elt.hostgroups) > 0:
-                <dd>
-                %for hg in elt.hostgroups:
-                <a href="/hostgroup/{{hg.get_name()}}" class="link">{{hg.alias}} ({{hg.get_name()}})</a>
-                %end
-                </dd>
-                %else:
-                <dd>(none)</dd>
-                %end
-
-                <dt>Notes:</dt>
-                %if elt.notes != '' and elt.notes_url != '':
-                <dd><a href="{{elt.notes_url}}" target=_blank>{{elt.notes}}</a></dd>
-                %elif elt.notes == '' and elt.notes_url != '':
-                <dd><a href="{{elt.notes_url}}" target=_blank>{{elt.notes_url}}</a></dd>
-                %elif elt.notes != '' and elt.notes_url == '':
-                <dd>{{elt.notes}}</dd>
-                %else:
-                <dd>(none)</dd>
-                %end
-              </dl>
-            %else:
-              <dl class="col-lg-4 dl-horizontal">
-                <dt>Host:</dt>
-                <dd><a href="/host/{{elt.host.host_name}}" class="link">{{elt.host.host_name}}
-                %if elt.host.display_name or elt.host.alias:
-                  %if elt.host.display_name:
-                    ({{elt.host.display_name}})
-                  %else:
-                    ({{elt.host.alias}})
+               <dl class="col-sm-6 dl-horizontal">
+                  <dt>Parents:</dt>
+                  %if len(elt.parents) > 0:
+                  <dd>
+                  %for parent in elt.parents:
+                  <a href="/host/{{parent.get_name()}}" class="link">{{parent.alias}} ({{parent.get_name()}})</a>
                   %end
-                %end
-                </a></dd>
+                  </dd>
+                  %else:
+                  <dd>(none)</dd>
+                  %end
 
-                <dt>Importance:</dt>
-                <dd>{{!helper.get_business_impact_text(elt)}}</dd>
-              </dl>
+
+                  <dt>Member of:</dt>
+                  %if len(elt.hostgroups) > 0:
+                  <dd>
+                  %for hg in elt.hostgroups:
+                  %if 'hosts-groups' in app.menu_items:
+                  <a href="/hosts-group/{{hg.get_name()}}" class="link">{{hg.alias}} ({{hg.get_name()}})</a>
+                  %else:
+                  {{hg.alias}} ({{hg.get_name()}})
+                  %end
+                  %end
+                  </dd>
+                  %else:
+                  <dd>(none)</dd>
+                  %end
+
+                  <dt>Notes:</dt>
+                  %if elt.notes != '' and elt.notes_url != '':
+                  <dd><a href="{{elt.notes_url}}" target=_blank>{{elt.notes}}</a></dd>
+                  %elif elt.notes == '' and elt.notes_url != '':
+                  <dd><a href="{{elt.notes_url}}" target=_blank>{{elt.notes_url}}</a></dd>
+                  %elif elt.notes != '' and elt.notes_url == '':
+                  <dd>{{elt.notes}}</dd>
+                  %else:
+                  <dd>(none)</dd>
+                  %end
+               </dl>
+               %else:
+               <dl class="col-sm-6 dl-horizontal">
+                  <dt>Host:</dt>
+                  <dd>
+                     <a href="/host/{{elt.host.host_name}}" class="link">{{elt.host.host_name}} ({{elt.host.display_name if elt.host.display_name else elt.host.alias if elt.host.alias else 'none'}})</a>
+                  </dd>
+
+                  <dt>Importance:</dt>
+                  <dd>{{!helper.get_business_impact_text(elt)}}</dd>
+               </dl>
               
-              <dl class="col-lg-4 dl-horizontal">
-                <dt>Member of:</dt>
-                %if len(elt.servicegroups) > 0:
-                <dd>
-                %for sg in elt.servicegroups:
-                <a href="/servicegroup/{{sg.get_name()}}" class="link">{{sg.alias}} ({{sg.get_name()}})</a>
-                %end
-                </dd>
-                %else:
-                <dd>(none)</dd>
-                %end
+               <dl class="col-sm-6 dl-horizontal">
+                  <dt>Member of:</dt>
+                  %if len(elt.servicegroups) > 0:
+                  <dd>
+                  %for sg in elt.servicegroups:
+                  %if 'services-groups' in app.menu_items:
+                  <a href="/services-group/{{sg.get_name()}}" class="link">{{sg.alias}} ({{sg.get_name()}})</a>
+                  %else:
+                  {{sg.alias}} ({{sg.get_name()}})
+                  %end
+                  %end
+                  </dd>
+                  %else:
+                  <dd>(none)</dd>
+                  %end
 
-                <dt>Notes: </dt>
-                %if elt.notes != '' and elt.notes_url != '':
-                <dd><a href="{{elt.notes_url}}" target=_blank>{{elt.notes}}</a></dd>
-                %elif elt.notes == '' and elt.notes_url != '':
-                <dd><a href="{{elt.notes_url}}" target=_blank>{{elt.notes_url}}</a></dd>
-                %elif elt.notes != '' and elt.notes_url == '':
-                <dd>{{elt.notes}}</dd>
-                %else:
-                <dd>(none)</dd>
-                %end
-              </dl>
-            %end
-          </div>
+                  <dt>Notes: </dt>
+                  %if elt.notes != '' and elt.notes_url != '':
+                  <dd><a href="{{elt.notes_url}}" target=_blank>{{elt.notes}}</a></dd>
+                  %elif elt.notes == '' and elt.notes_url != '':
+                  <dd><a href="{{elt.notes_url}}" target=_blank>{{elt.notes_url}}</a></dd>
+                  %elif elt.notes != '' and elt.notes_url == '':
+                  <dd>{{elt.notes}}</dd>
+                  %else:
+                  <dd>(none)</dd>
+                  %end
+               </dl>
+               %end
+               </div>
 
-          %if elt_type=='host':
-          <div class="row" style="padding: 3px; border-top: 1px dotted #ccc;" >
-            <ul class="list-inline list-unstyled">
-              <li class="col-lg-1"></li>
-              <li class="col-lg-2"> <span class="fa-stack font-ok"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-check fa-stack-1x fa-inverse"></i></span> <span class="num">{{sOK}}</span> Ok</li>
-              <li class="col-lg-2"> <span class="fa-stack font-warning"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-exclamation fa-stack-1x fa-inverse"></i></span> <span class="num">{{sWARNING}}</span> Warning</li>
-              <li class="col-lg-2"> <span class="fa-stack font-critical"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-arrow-down fa-stack-1x fa-inverse"></i></span> <span class="num">{{sCRITICAL}}</span> Critical</li>
-              <li class="col-lg-2"> <span class="fa-stack font-pending"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-arrow-right fa-stack-1x fa-inverse"></i></span> <span class="num">{{sPENDING}}</span> Pending</li>
-              <li class="col-lg-2"> <span class="fa-stack font-unknown"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-question fa-stack-1x fa-inverse"></i></span> <span class="num">{{sUNKNOWN}}</span> Unknown</li>
-              <li class="col-lg-1"></li>
-            </ul>
-          </div>
-          %end
-        </div>
+               %if elt_type=='host':
+               <div class="row" style="padding: 3px; border-top: 1px dotted #ccc;" >
+                  <ul class="list-inline list-unstyled">
+                     <li class="col-lg-1"></li>
+                     <li class="col-lg-2"> <span class="fa-stack font-ok"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-check fa-stack-1x fa-inverse"></i></span> <span class="num">{{sOK}}</span> Ok</li>
+                     <li class="col-lg-2"> <span class="fa-stack font-warning"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-exclamation fa-stack-1x fa-inverse"></i></span> <span class="num">{{sWARNING}}</span> Warning</li>
+                     <li class="col-lg-2"> <span class="fa-stack font-critical"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-arrow-down fa-stack-1x fa-inverse"></i></span> <span class="num">{{sCRITICAL}}</span> Critical</li>
+                     <li class="col-lg-2"> <span class="fa-stack font-pending"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-arrow-right fa-stack-1x fa-inverse"></i></span> <span class="num">{{sPENDING}}</span> Pending</li>
+                     <li class="col-lg-2"> <span class="fa-stack font-unknown"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-question fa-stack-1x fa-inverse"></i></span> <span class="num">{{sUNKNOWN}}</span> Unknown</li>
+                     <li class="col-lg-1"></li>
+                  </ul>
+               </div>
+               %end
+            </div>
+         </div>
       </div>
-    </div>
    </div>
 
    <!-- Third row : business impact alerting ... -->
-  %if elt.is_problem and elt.business_impact > 2 and not elt.problem_has_been_acknowledged:
+   %if elt.is_problem and elt.business_impact > 2 and not elt.problem_has_been_acknowledged:
    <div class="row" style="padding: 5px;">
-    <div class="col-lg-2 hidden-md"></div>
-    <div class="col-lg-8 col-md-12">
-      <div class="col-lg-1 font-yellow pull-left">
-        <span class="medium-pulse aroundpulse">
-          <span class="medium-pulse pulse"></span>
-          <i class="fa fa-3x fa-bolt"></i>
-        </span>
+      <div class="col-lg-2 hidden-md"></div>
+      <div class="col-lg-8 col-md-12">
+         <div class="col-lg-1 font-yellow pull-left">
+            <span class="medium-pulse aroundpulse">
+               <span class="medium-pulse pulse"></span>
+               <i class="fa fa-3x fa-bolt"></i>
+            </span>
+         </div>
+         <div class="col-lg-11 font-white">
+            %disabled_ack = '' if elt.is_problem and not elt.problem_has_been_acknowledged else 'disabled'
+            %disabled_fix = '' if elt.is_problem and elt.event_handler else 'disabled'
+            <p class="alert alert-critical">This element has an important impact on your business, you may <button name="bt-acknowledge" class="{{disabled_ack}} {{global_disabled}} btn btn-primary btn-xs" data-toggle="tooltip" data-placement="bottom" title="Acknowledge this {{elt_type}} problem">acknowledge it</button> or <button name="bt-event-handler" class="{{disabled_fix}} {{global_disabled}} btn btn-primary btn-xs" data-toggle="tooltip" data-placement="bottom" title="Launch the event handler for this {{elt_type}}">try to fix it</button>.</p>
+         </div>
       </div>
-      <div class="col-lg-11 font-white">
-        %disabled_ack = '' if elt.is_problem and not elt.problem_has_been_acknowledged else 'disabled'
-        %disabled_fix = '' if elt.is_problem and elt.event_handler else 'disabled'
-        <p class="alert alert-critical">This element has an important impact on your business, you may <button name="bt-acknowledge" class="{{disabled_ack}} {{global_disabled}} btn btn-primary btn-xs" data-toggle="tooltip" data-placement="bottom" title="Acknowledge this {{elt_type}} problem">acknowledge it</button> or <button name="bt-event-handler" class="{{disabled_fix}} {{global_disabled}} btn btn-primary btn-xs" data-toggle="tooltip" data-placement="bottom" title="Launch the event handler for this {{elt_type}}">try to fix it</button>.</p>
-      </div>
-    </div>
-    <div class="col-lg-2 hidden-md"></div>
-  </div>
-  %end
+      <div class="col-lg-2 hidden-md"></div>
+   </div>
+   %end
   
    <!-- Third row (bis) : business rule ... -->
-  %if business_rule:
+   %if business_rule:
    <div class="row" style="padding: 5px;">
-    <div class="col-lg-2 hidden-md"></div>
-    <div class="col-lg-8 col-md-12">
-      <div class="col-lg-1 pull-left">
-        <span class="medium-pulse aroundpulse">
-          <span class="medium-pulse pulse"></span>
-          <i class="fa fa-2x fa-university"></i>
-        </span>
+      <div class="col-lg-2 hidden-md"></div>
+      <div class="col-lg-8 col-md-12">
+         <div class="col-lg-1 pull-left">
+            <span class="medium-pulse aroundpulse">
+               <span class="medium-pulse pulse"></span>
+               <i class="fa fa-2x fa-university"></i>
+            </span>
+         </div>
+         <div class="col-lg-11 font-white">
+            <p class="alert alert-warning">This element is a business rule.</p>
+         </div>
       </div>
-      <div class="col-lg-11 font-white">
-        <p class="alert alert-warning">This element is a business rule.</p>
-      </div>
-    </div>
-    <div class="col-lg-2 hidden-md"></div>
-  </div>
-  %end
+      <div class="col-lg-2 hidden-md"></div>
+   </div>
+   %end
   
    <!-- Fourth row : host/service -->
    <div class="row" style="padding: 5px;">
-      <div class="col-md-6 col-lg-3 tabbable verticaltabs-container">
+      <div class="col-md-4 col-lg-3 tabbable verticaltabs-container">
          <ul class="nav nav-tabs">
             %if params['tab_information']=='yes':
             <li class="active"><a href="#information" data-toggle="tab">Information</a></li>
             %end
+            %if params['tab_notification']=='yes':
+            <li><a href="#notification" data-toggle="tab">Notification</a></li>
+            %end
             %if params['tab_additional']=='yes':
-            <li><a href="#additional" data-toggle="tab">Additional information</a></li>
+            <li><a href="#additional" data-toggle="tab">Additional</a></li>
             %end
             %if params['tab_commands']=='yes' and app.manage_acl and helper.can_action(user):
             <li><a href="#commands" data-toggle="tab">Commands</a></li>
@@ -471,9 +473,9 @@ Invalid element name
                      <col style="width: 60%" />
                   </colgroup>
                   <thead>
-              <tr>
+                     <tr>
                         <th colspan="2">Last check:</td>
-              </tr>
+                     </tr>
                   </thead>
                   <tbody style="font-size:x-small;">
                      <tr>
@@ -484,28 +486,20 @@ Invalid element name
                         <td><strong>Output:</strong></td>
                         <td class="truncate_output"><em>
                         %if len(elt.output) > app.max_output_length:
-                           %if app.allow_html_output:
-                              <div class='check-output check-output-{{elt.state.lower()}}' rel="tooltip" data-original-title="{{elt.output}}"> {{!helper.strip_html_output(elt.output[:app.max_output_length])}}</div>
-                           %else:
-                              <div class='check-output check-output-{{elt.state.lower()}}' rel="tooltip" data-original-title="{{elt.output}}"> {{elt.output[:app.max_output_length]}}</div>
-                           %end
+                           <div class='check-output check-output-{{elt.state.lower()}}' rel="tooltip" data-original-title="{{elt.output}}"> {{!helper.strip_html_output(elt.output[:app.max_output_length]) if app.allow_html_output else elt.output[:app.max_output_length]}}</div>
                         %else:
-                           %if app.allow_html_output:
-                              <div class='check-output check-output-{{elt.state.lower()}}'> {{!helper.strip_html_output(elt.output)}}</div>
-                           %else:
-                              <div class='check-output check-output-{{elt.state.lower()}}'> {{elt.output}} </div>
-                           %end
+                           <div class='check-output check-output-{{elt.state.lower()}}'> {{!helper.strip_html_output(elt.output) if app.allow_html_output else elt.output}}</div>
                         %end
                         </em></td>
                      </tr>
-              %if elt.long_output:
+                     %if elt.long_output:
                      <tr>
                         <td><strong>Long output:</strong></td>
                         <td class="truncate_output">
-                  <div class='check-output check-output-{{elt.state.lower()}}'> {{elt.long_output}} </div>
+                           <div class='check-output check-output-{{elt.state.lower()}}'> {{elt.long_output}} </div>
                         </td>
                      </tr>
-              %end
+                     %end
                      <tr>
                         <td><strong>Performance data:</strong></td>
                         <td class="truncate_perf">
@@ -540,9 +534,87 @@ Invalid element name
             </div>
             %end
 
+            %if params['tab_notification']=='yes':
+            <div class="tab-pane fade" id="notification">
+               <h4>{{elt_type.capitalize()}} notification:</h4>
+               
+               <table class="table table-condensed col-sm-12" style="table-layout: fixed; word-wrap: break-word;">
+                  <colgroup>
+                     <col style="width: 40%" />
+                     <col style="width: 60%" />
+                  </colgroup>
+                  <thead>
+                     <tr>
+                        <th colspan="2">Notifications:</td>
+                     </tr>
+                  </thead>
+                  <tbody style="font-size:x-small;">
+                     <tr>
+                        <td><strong>Notifications:</strong></td>
+                        <td><span class="{{'glyphicon glyphicon-ok font-green' if elt.notifications_enabled else 'glyphicon glyphicon-remove font-red'}}"></span></td>
+                     </tr>
+                     %if elt.notifications_enabled:
+                     <tr>
+                        <td><strong>Notification period:</strong></td>
+                        %if 'timeperiods' in app.menu_items:
+                        <td name="notification_period" class="popover-dismiss" data-html="true" data-toggle="popover" data-trigger="hover" title="Notification period" data-placement="bottom" data-content="...">
+                        <a href="/timeperiods">{{elt.notification_period.alias}}</a>
+                        </td>
+                        <script>
+                           %tp=app.get_timeperiod(elt.notification_period.get_name())
+                           $('td[name="notification_period"]')
+                             .attr('title', '{{tp.alias if hasattr(tp, "alias") else tp.timeperiod_name}}')
+                             .attr('data-content', '{{!helper.get_timeperiod_html(tp)}}')
+                             .popover();
+                        </script>
+                        %else:
+                        <td name="notification_period" class="popover-dismiss" data-html="true" data-toggle="popover" title="Notification period" data-placement="top" data-content="...">{{elt.notification_period.alias}}</td>
+                        %end
+                     </tr>
+                     <tr>
+                        <td><strong>Notification options:</strong></td>
+                        <td>{{', '.join(elt.notification_options)}}</td>
+                     </tr>
+                     <tr>
+                        <td><strong>Last notification:</strong></td>
+                        <td>{{helper.print_date(elt.last_notification)}} (notification {{elt.current_notification_number}})</td>
+                     </tr>
+                     <tr>
+                        <td><strong>Notification interval:</strong></td>
+                        <td>{{elt.notification_interval}} mn</td>
+                     </tr>
+                     <tr>
+                        <td><strong>Contacts:</strong></td>
+                        %contacts=[]
+                        %[contacts.append('<a href="/contact/'+item.contact_name+'">'+item.alias+'</a>' if item.alias else item.get_name()) for item in elt.contacts if item not in contacts]
+                        <td>{{!', '.join(contacts)}}</td>
+                        %i=i+1
+                     </tr>
+                     <tr>
+                        <td><strong>Contacts groups:</strong></td>
+                        <td></td>
+                     </tr>
+                     %i=0
+                     %for (group) in elt.contact_groups: 
+                     <tr>
+                        %cg = app.get_contactgroup(group)
+                        <td style="text-align: right; font-style: italic;"><strong>{{cg.alias if cg.alias else cg.get_name()}}</strong></td>
+                        <hr/>
+                        %contacts=[]
+                        %[contacts.append('<a href="/contact/'+item.contact_name+'">'+item.alias+'</a>' if item.alias else item.get_name()) for item in cg.members if item not in contacts]
+                        <td>{{!', '.join(contacts)}}</td>
+                        %i=i+1
+                     </tr>
+                     %end
+                     %end
+                  </tbody>
+               </table>
+            </div>
+            %end
+            
             %if params['tab_additional']=='yes':
             <div class="tab-pane fade" id="additional">
-               <h4>Additional Informations</h4>
+               <h4>Additional information:</h4>
                
                <table class="table table-condensed col-sm-12" style="table-layout: fixed; word-wrap: break-word;">
                   <colgroup>
@@ -572,6 +644,25 @@ Invalid element name
                         <td name="check_period" class="popover-dismiss" data-html="true" data-toggle="popover" title="Check period" data-placement="bottom" data-content="...">{{elt.check_period.alias}}</td>
                         %end
                      </tr>
+                     %if elt.maintenance_period is not None:
+                     <tr>
+                        <td><strong>Maintenance period:</strong></td>
+                        %if 'timeperiods' in app.menu_items:
+                        <td name="maintenance_period" class="popover-dismiss" data-html="true" data-toggle="popover" data-trigger="hover" title="Check period" data-placement="bottom" data-content="...">
+                        <a href="/timeperiods">{{elt.maintenance_period.alias}}</a>
+                        </td>
+                        <script>
+                           %tp=app.get_timeperiod(elt.maintenance_period.get_name())
+                           $('td[name="maintenance_period"]')
+                             .attr('title', '{{tp.alias if hasattr(tp, "alias") else tp.timeperiod_name}}')
+                             .attr('data-content', '{{!helper.get_timeperiod_html(tp)}}')
+                             .popover();
+                        </script>
+                        %else:
+                        <td name="maintenance_period" class="popover-dismiss" data-html="true" data-toggle="popover" title="Check period" data-placement="bottom" data-content="...">{{elt.maintenance_period.alias}}</td>
+                        %end
+                     </tr>
+                     %end
                      <tr>
                         <td><strong>Check command:</strong></td>
                         <td class="truncate_command">
@@ -591,11 +682,15 @@ Invalid element name
                      %if (elt.active_checks_enabled):
                      <tr>
                         <td><strong>Check interval:</strong></td>
-                        <td>{{elt.check_interval}}</td>
+                        <td>{{elt.check_interval}} minutes</td>
                      </tr>
                      <tr>
                         <td><strong>Retry interval:</strong></td>
-                        <td>{{elt.retry_interval}}</td>
+                        <td>{{elt.retry_interval}} minutes</td>
+                     </tr>
+                     <tr>
+                        <td><strong>Max check attempts:</strong></td>
+                        <td>{{elt.max_check_attempts}}</td>
                      </tr>
                      %end
                      <tr>
@@ -618,10 +713,12 @@ Invalid element name
                         <td><strong>Process performance data:</strong></td>
                         <td><i class="{{'glyphicon glyphicon-ok font-green' if elt.process_perf_data else 'glyphicon glyphicon-remove font-red'}}"></span></td>
                      </tr>
+                     <!--
                      <tr>
                         <td><strong>Obsess over {{elt_type}}:</strong></td>
                         <td><span class="{{'glyphicon glyphicon-ok font-green' if (hasattr(elt, 'obsess_over_host') and elt.obsess_over_host) or (hasattr(elt, 'obsess_over_service') and elt.obsess_over_service) else 'glyphicon glyphicon-remove font-red'}}"></span></td>
                      </tr>
+                     -->
                      <tr>
                         <td><strong>Event handler:</strong></td>
                         <td><span class="glyphicon glyphicon-ok font-green"></span>{{elt.event_handler if elt.event_handler else ''}}</td>
@@ -635,16 +732,16 @@ Invalid element name
                      <col style="width: 60%" />
                   </colgroup>
                   <thead>
-              <tr>
+                     <tr>
                         <th colspan="2">Flapping:</td>
-              </tr>
+                     </tr>
                   </thead>
                   <tbody style="font-size:x-small;">
                      <tr>
                         <td><strong>Flapping detection:</strong></td>
                         <td><span class="{{'glyphicon glyphicon-ok font-green' if elt.flap_detection_enabled else 'glyphicon glyphicon-remove font-red'}}"></span></td>
                      </tr>
-              %if elt.flap_detection_enabled:
+                     %if elt.flap_detection_enabled:
                      <tr>
                         <td><strong>Options:</strong></td>
                         <td>{{', '.join(elt.flap_detection_options)}}</td>
@@ -657,70 +754,10 @@ Invalid element name
                         <td><strong>High threshold:</strong></td>
                         <td>{{elt.high_flap_threshold}}</td>
                      </tr>
-              %end
+                     %end
                   </tbody>
                </table>
           
-               <table class="table table-condensed col-sm-12" style="table-layout: fixed; word-wrap: break-word;">
-                  <colgroup>
-                     <col style="width: 40%" />
-                     <col style="width: 60%" />
-                  </colgroup>
-                  <thead>
-                     <tr>
-                        <th colspan="2">Notifications:</td>
-                     </tr>
-                  </thead>
-                  <tbody style="font-size:x-small;">
-                     <tr>
-                        <td><strong>Notifications:</strong></td>
-                        <td><span class="{{'glyphicon glyphicon-ok font-green' if elt.notifications_enabled else 'glyphicon glyphicon-remove font-red'}}"></span></td>
-                     </tr>
-                     %if elt.notifications_enabled:
-                     <tr>
-                        <td><strong>Notification period:</strong></td>
-                        %if 'timeperiods' in app.menu_items:
-                        <td name="notification_period" class="popover-dismiss" data-html="true" data-toggle="popover" data-trigger="hover" title="Notification period" data-placement="top" data-content="...">
-                        <a href="/timeperiods">{{elt.notification_period.alias}}</a>
-                        </td>
-                        <script>
-                           %tp=app.get_timeperiod(elt.notification_period.get_name())
-                           $('td[name="notification_period"]')
-                             .attr('title', '{{tp.alias if hasattr(tp, "alias") else tp.timeperiod_name}}')
-                             .attr('data-content', '{{!helper.get_timeperiod_html(tp)}}')
-                             .popover();
-                        </script>
-                        %else:
-                        <td name="notification_period" class="popover-dismiss" data-html="true" data-toggle="popover" title="Notification period" data-placement="top" data-content="...">{{elt.notification_period.alias}}</td>
-                        %end
-                     </tr>
-                     <tr>
-                        <td><strong>Notification options:</strong></td>
-                        <td>{{', '.join(elt.notification_options)}}</td>
-                     </tr>
-                     <tr>
-                        <td><strong>Last notification:</strong></td>
-                        <td>{{helper.print_date(elt.last_notification)}} (notification {{elt.current_notification_number}})</td>
-                     </tr>
-                     <tr>
-                        <td><strong>Notification interval:</strong></td>
-                        <td>{{elt.notification_interval}} mn</td>
-                     </tr>
-                     <tr>
-                %contacts=[]
-                %[contacts.append('<a href="/contact/'+item.contact_name+'">'+item.alias+'</a>' if item.alias else item.get_name()) for item in elt.contacts if item not in contacts]
-                        <td><strong>Contacts:</strong></td>
-                        <td>{{!', '.join(contacts)}}</td>
-                     </tr>
-                     <tr>
-                %#contacts_groups=[]
-                %#[contacts_groups.append(item.alias if item.alias else item.get_name()) for item in elt.contact_groups if item not in contacts_groups]
-                        <td><strong>Contacts groups:</strong></td>
-                        <td>{{elt.contact_groups}}</td>
-                     </tr>
-              %end
-                  </tbody>
-               </table>
             </div>
             %end
 
@@ -755,24 +792,24 @@ Invalid element name
                      </tr>
                      
                      <tr>
-                %if elt.state != elt.ok_up and not elt.problem_has_been_acknowledged:
+                     %if elt.state != elt.ok_up and not elt.problem_has_been_acknowledged:
                         <td></td>
                         <td>
                            %disabled_s = '' if elt.state != elt.ok_up and not elt.problem_has_been_acknowledged else 'disabled'
                            <button id="bt-acknowledge" name="bt-acknowledge" class="col-lg-12 {{disabled_s}} {{global_disabled}} btn btn-primary btn-sm" data-toggle="tooltip" data-placement="bottom" title="Acknowledge this {{elt_type}} problem">Add an acknowledgement</button>
                            <script>
                               $('button[name="bt-acknowledge"]').click(function () {
-                      stop_refresh();
-                      $('#modal').modal({
-                        keyboard: true,
-                        show: true,
-                        backdrop: 'static',
-                        remote: "/forms/acknowledge/{{helper.get_uri_name(elt)}}"
-                      });
+                                 stop_refresh();
+                                 $('#modal').modal({
+                                    keyboard: true,
+                                    show: true,
+                                    backdrop: 'static',
+                                    remote: "/forms/acknowledge/{{helper.get_uri_name(elt)}}"
+                                 });
                               });
                            </script>
                         </td>
-                %else:
+                     %else:
                         <td></td>
                         <td>
                            %disabled_s = '' if elt.problem_has_been_acknowledged else 'disabled'
@@ -783,7 +820,7 @@ Invalid element name
                               });
                            </script>
                         </td>
-                %end
+                     %end
                      </tr>
                      
                      <tr>
@@ -805,17 +842,17 @@ Invalid element name
                            %disabled_s = '' if elt.passive_checks_enabled else 'disabled'
                            <button name="bt-check-result" class="col-lg-12 {{disabled_s}} {{global_disabled}} btn btn-primary btn-sm" data-toggle="tooltip" data-placement="bottom" title="Submit a check result for this {{elt_type}}">Submit a check result</button>
                            <script>
-                  $('button[name="bt-check-result"]').click(function () {
-                    stop_refresh();
-                    $('#modal').modal({
-                      keyboard: true,
-                      show: true,
-                      backdrop: 'static',
-                      remote: "/forms/submit_check/{{helper.get_uri_name(elt)}}"
-                    });
-                  });
-                </script>
-                     </td>
+                              $('button[name="bt-check-result"]').click(function () {
+                                 stop_refresh();
+                                 $('#modal').modal({
+                                    keyboard: true,
+                                    show: true,
+                                    backdrop: 'static',
+                                    remote: "/forms/submit_check/{{helper.get_uri_name(elt)}}"
+                                 });
+                              });
+                           </script>
+                        </td>
                      </tr>
                      
                      <!--
@@ -831,21 +868,21 @@ Invalid element name
                         </td>
                      </tr>
               -->
-              <tr>
+                     <tr>
                         <td></td>
                         <td>
                            %disabled_s = ''
                            <button id="bt-custom-var" class="col-lg-12 {{disabled_s}} {{global_disabled}} btn btn-primary btn-sm" data-toggle="tooltip" data-placement="bottom" title="Send a custom notification for this {{elt_type}}">Change a custom variable</button>
                            <script>
-                  $('#bt-custom-var').click(function () {
-                    stop_refresh();
-                    $('#modal').modal({
-                      keyboard: true,
-                      show: true,
-                      backdrop: 'static',
-                      remote: "/forms/custom_var/{{helper.get_uri_name(elt)}}"
-                    });
-                  });
+                              $('#bt-custom-var').click(function () {
+                                 stop_refresh();
+                                 $('#modal').modal({
+                                    keyboard: true,
+                                    show: true,
+                                    backdrop: 'static',
+                                    remote: "/forms/custom_var/{{helper.get_uri_name(elt)}}"
+                                 });
+                              });
                            </script>
                         </td>
                      </tr>
@@ -861,7 +898,7 @@ Invalid element name
                </table>
                      
                <br/>
-          <h4>Currently:</h4>
+               <h4>Currently:</h4>
                <table class="table-condensed col-sm-12" style="table-layout: fixed; word-wrap: break-word;">
                   <colgroup>
                      <col class="col-sm-6" />
@@ -949,7 +986,7 @@ Invalid element name
             %if params['tab_gesture']=='yes':
             <div class="tab-pane fade" id="gesture">
                <h4>Gesture</h4>
-               <canvas id="gestureCanvas" height="200" class="" style="border: 1px solid black;"></canvas>
+               <canvas id="gestureCanvas" width="200" height="200" class="" style="border: 3px solid black;"></canvas>
                <div class="gesture_button">
                   <img title="By keeping a left click pressed and drawing a check, you will launch an acknowledgement." alt="gesture acknowledge" src="/static/eltdetail/images/gesture-check.png"/> Acknowledge
                </div>
@@ -966,34 +1003,34 @@ Invalid element name
             <div class="tab-pane fade" id="configuration">
                <h4>{{elt_type.capitalize()}} configuration:</h4>
 
-          %if len(elt.customs) > 0:
-          <table class="table-condensed col-sm-12 table-bordered" style="table-layout: fixed; word-wrap: break-word;">
+               %if len(elt.customs) > 0:
+               <table class="table-condensed col-sm-12 table-bordered" style="table-layout: fixed; word-wrap: break-word;">
                   <colgroup>
                      <col style="width: 50%" />
                      <col style="width: 50%" />
                   </colgroup>
                   <thead>
-              <tr>
+                     <tr>
                         <th colspan="2">Customs:</td>
-              </tr>
+                     </tr>
                   </thead>
                   <tbody style="font-size:x-small;">
-                %for p in sorted(elt.customs):
-                  <tr>
-                    <td>{{p}}</td>
-                    <td>{{elt.customs[p]}}</td>
-                  </tr>
-                %end
+                  %for p in sorted(elt.customs):
+                     <tr>
+                        <td>{{p}}</td>
+                        <td>{{elt.customs[p]}}</td>
+                     </tr>
+                  %end
                   </tbody>
                </table>
-          %end
+               %end
             </div>
             %end
          </div>
       </div>
 
       <!-- Detail info box start -->
-      <div class="col-md-6 col-lg-9 tabbable">
+      <div class="col-md-8 col-lg-9 tabbable">
          <ul class="nav nav-tabs">
             %_go_active = 'active'
             %if params['tab_custom_views']=='yes':
@@ -1032,8 +1069,8 @@ Invalid element name
             %if params['tab_custom_views']=='yes':
             %_go_active = 'active'
             %_go_fadein = 'in'
-        %cvs = []
-        %[cvs.append(item) for item in elt.custom_views if item not in cvs]
+            %cvs = []
+            %[cvs.append(item) for item in elt.custom_views if item not in cvs]
             %for cvname in cvs:
             <div class="tab-pane fade {{_go_active}} {{_go_fadein}}" data-cv-name="{{cvname}}" data-elt-name='{{elt.get_full_name()}}' id="cv{{cvname}}">
                Cannot load the pane {{cvname}}.
@@ -1153,26 +1190,26 @@ Invalid element name
                   
                   <button name="bt-add-comment" data-toggle="modal" data-target="#modal" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> Add a comment</button>
                   <button name="bt-delete-comments" data-toggle="modal" data-target="#modal" class="btn btn-primary btn-sm"><i class="fa fa-minus"></i> Delete all comments</button>
-            <script>
-              $('button[name="bt-add-comment"]').click(function () {
-                stop_refresh();
-                $('#modal').modal({
-                  keyboard: true,
-                  show: true,
-                  backdrop: 'static',
-                  remote: "/forms/comment/{{helper.get_uri_name(elt)}}"
-                });
-              });
-              $('button[name="bt-delete-comments"]').click(function () {
-                stop_refresh();
-                $('#modal').modal({
-                  keyboard: true,
-                  show: true,
-                  backdrop: 'static',
-                  remote: "/forms/comment_delete/{{helper.get_uri_name(elt)}}"
-                });
-              });
-            </script>
+                  <script>
+                    $('button[name="bt-add-comment"]').click(function () {
+                      stop_refresh();
+                      $('#modal').modal({
+                        keyboard: true,
+                        show: true,
+                        backdrop: 'static',
+                        remote: "/forms/comment/{{helper.get_uri_name(elt)}}"
+                      });
+                    });
+                    $('button[name="bt-delete-comments"]').click(function () {
+                      stop_refresh();
+                      $('#modal').modal({
+                        keyboard: true,
+                        show: true,
+                        backdrop: 'static',
+                        remote: "/forms/comment_delete/{{helper.get_uri_name(elt)}}"
+                      });
+                    });
+                  </script>
                </div>
             </div>
             %end
@@ -1213,26 +1250,26 @@ Invalid element name
                   
                   <button name="bt-schedule-downtime" data-toggle="modal" data-target="#modal" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> Add a downtime</button>
                   <button name="bt-delete-downtimes" data-toggle="modal" data-target="#modal" class="btn btn-primary btn-sm"><i class="fa fa-minus"></i> Delete all downtimes</button>
-            <script>
-              $('button[name="bt-schedule-downtime"]').click(function () {
-                stop_refresh();
-                $('#modal').modal({
-                  keyboard: true,
-                  show: true,
-                  backdrop: 'static',
-                  remote: "/forms/downtime/{{helper.get_uri_name(elt)}}"
-                });
-              });
-              $('button[name="bt-delete-downtimes"]').click(function () {
-                stop_refresh();
-                $('#modal').modal({
-                  keyboard: true,
-                  show: true,
-                  backdrop: 'static',
-                  remote: "/forms/downtime_delete/{{helper.get_uri_name(elt)}}"
-                });
-              });
-            </script>
+                  <script>
+                    $('button[name="bt-schedule-downtime"]').click(function () {
+                      stop_refresh();
+                      $('#modal').modal({
+                        keyboard: true,
+                        show: true,
+                        backdrop: 'static',
+                        remote: "/forms/downtime/{{helper.get_uri_name(elt)}}"
+                      });
+                    });
+                    $('button[name="bt-delete-downtimes"]').click(function () {
+                      stop_refresh();
+                      $('#modal').modal({
+                        keyboard: true,
+                        show: true,
+                        backdrop: 'static',
+                        remote: "/forms/downtime_delete/{{helper.get_uri_name(elt)}}"
+                      });
+                    });
+                  </script>
                </div>
             </div>
             %end
@@ -1253,7 +1290,7 @@ Invalid element name
             <!-- Tab Graph Start -->
             %if params['tab_graphs']=='yes':
             <div class="tab-pane fade" id="graphs">
-          %# Set source as '' or module ui-graphite will try to fetch templates from default 'detail'
+               %# Set source as '' or module ui-graphite will try to fetch templates from default 'detail'
                %uris = app.get_graph_uris(elt, graphstart, graphend, '')
                %if len(uris) == 0:
                <div class="alert alert-info">
@@ -1274,7 +1311,7 @@ Invalid element name
                   %lastyear =  now - 86400*365
 
                   %# Let's get all the uris at once.
-            %# Set source as '' or module ui-graphite will trye to fetch from default 'detail'
+                  %# Set source as '' or module ui-graphite will trye to fetch from default 'detail'
                   %uris_4h = app.get_graph_uris(elt, fourhours, now, '')
                   %uris_1d = app.get_graph_uris(elt, lastday, now, '')
                   %uris_1w = app.get_graph_uris(elt, lastweek, now, '')
