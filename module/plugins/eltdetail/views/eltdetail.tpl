@@ -610,7 +610,11 @@ Invalid element name
                      <tr>
                         <td><strong>Contacts:</strong></td>
                         %contacts=[]
+                        %if 'contacts' in app.menu_items:
                         %[contacts.append('<a href="/contact/'+item.contact_name+'">'+item.alias+'</a>' if item.alias else item.get_name()) for item in elt.contacts if item not in contacts]
+                        %else:
+                        %[contacts.append(item.alias if item.alias else item.get_name()) for item in elt.contacts if item not in contacts]
+                        %end
                         <td>{{!', '.join(contacts)}}</td>
                      </tr>
                      <tr>
@@ -623,7 +627,11 @@ Invalid element name
                         %cg = app.get_contactgroup(group)
                         <td style="text-align: right; font-style: italic;"><strong>{{cg.alias if cg.alias else cg.get_name()}}</strong></td>
                         %contacts=[]
+                        %if 'contacts' in app.menu_items:
                         %[contacts.append('<a href="/contact/'+item.contact_name+'">'+item.alias+'</a>' if item.alias else item.get_name()) for item in cg.members if item not in contacts]
+                        %else:
+                        %[contacts.append(item.alias if item.alias else item.get_name()) for item in cg.members if item not in contacts]
+                        %end
                         <td>{{!', '.join(contacts)}}</td>
                         %i=i+1
                      </tr>
