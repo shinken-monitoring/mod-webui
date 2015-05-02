@@ -1,9 +1,5 @@
-%title='All commands (%d commands)' % len(app.datamgr.get_commands())
+%title='All commands (%d commands)' % len(app.get_commands())
 %rebase layout globals(), css=['commands/css/commands.css'], js=['commands/js/commands-overview.js'], title=title, refresh=True
-
-%helper = app.helper
-%datamgr = app.datamgr
-%display_all = True if params['display']=='all' else False
 
 <div class="row">
   <div class="pull-right col-sm-2">
@@ -16,7 +12,7 @@
 <div class="row">
   <ul id="commands" class="list row pull-right">
     %even=''
-    %for command in app.datamgr.get_commands():
+    %for command in app.get_commands():
       %if even =='':
         %even='alt'
       %else:
