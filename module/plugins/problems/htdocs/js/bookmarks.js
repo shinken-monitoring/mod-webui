@@ -1,5 +1,4 @@
 function add_new_bookmark(page){
-   // console.log('We will try to save the user bookmark');
    var f = document.forms['bookmark_save'];
    var name = f.bookmark_name.value;
    if (name=='') return;
@@ -23,7 +22,6 @@ function add_new_bookmark(page){
 }
 
 function save_bookmarks(){
-   // console.log('Need to save bookmarks list: '+JSON.stringify(bookmarks));
    $.post("/user/save_pref", { 'key' : 'bookmarks', 'value' : JSON.stringify(bookmarks)});
 
    // And refresh it
@@ -64,6 +62,8 @@ function declare_bookmarksro(name, uri){
    bookmarksro.push(b);
 }
 
+
+// Refresh bookmarks in HTML
 function refresh_bookmarks(){
    if (bookmarks.length == 0){
       $('#bookmarks').html('<ul class="list-group"><li class="list-group-item list-group-item-danger">No user bookmarks</li></ul>');
@@ -105,8 +105,7 @@ function refresh_bookmarksro(){
 
 
 
-
-// We want to delete one specific bookmark by its name
+// Delete a specific bookmark by its name
 function delete_bookmark(name){
    new_bookmarks = [];
    $.each(bookmarks, function(idx, b){

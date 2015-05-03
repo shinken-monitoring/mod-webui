@@ -386,42 +386,40 @@
             %end
           </ul>
           
-          <br/>
-          <div class="btn-group">
-            <button class="btn btn-primary active dropdown-toggle" data-toggle="dropdown"> <i class="fa fa-tags"></i> Bookmark</button>
-            <ul class="dropdown-menu" role="menu">
-              <li role="presentation">
-                <div style="padding: 15px; padding-bottom: 0px;">
-                  <form class="form_in_dropdown" role="form" name='bookmark_save' id='bookmark_save'>
-                    <div class="form-group">
-                      <label for="bookmark_name" class="control-label">Bookmark name</label>
-                      <div>
-                        <input class="form-control" name="bookmark_name" placeholder="...">
-                      </div>
-                      <a class='btn btn-success' href='javascript:add_new_bookmark("/{{page}}");'> <i class="fa fa-save"></i> Save</a>
-                    </div>
-                  </form>
-                </div>
-              </li>
-            </ul>
-          </div>
-        %end
+            <br/>
+            <!-- Bookmarks creation -->
+            <div class="btn-group btn-group-justified" role="group">
+               <div class="btn-group btn-group-sm" role="group">
+                  <button type="button" class="btn btn-primary btn-lg btn-block dropdown-toggle" data-toggle="dropdown" aria-expanded="true" id="dropdownMenu1"> <i class="fa fa-tags"></i> Bookmark the current filter</button>
+                  <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+                     <li role="presentation">
+                        <div style="padding: 15px; padding-bottom: 0px;">
+                           <form class="form_in_dropdown" role="form" name='bookmark_save' id='bookmark_save'>
+                              <div class="form-group">
+                                 <label for="bookmark_name" class="control-label">Bookmark name</label>
+                                 <input class="form-control input-sm" id="bookmark_name" name="bookmark_name" placeholder="..." aria-describedby="help_bookmark_name">
+                                 <span id="help_bookmark_name" class="help-block">Use an identifier to create a bookmark referencing the current applied filters.</span>
+                              </div>
+                              <a class='btn btn-success' href='javascript:add_new_bookmark("/{{page}}");'> <i class="fa fa-save"></i> Save</a>
+                           </form>
+                        </div>
+                     </li>
+                  </ul>
+               </div>
+            </div>
+            %end
+         </div>
       </div>
-    </div>
 
-    <div class="panel panel-info">
-      <div class="panel-heading">Bookmarks</div>
-      <div class="panel-body">
-        <div id='bookmarks'></div>
-        <div id='bookmarksro'></div>
-        <script>
-          $(function(){
-            refresh_bookmarks(); refresh_bookmarksro();
-          });
-        </script>
+      <!-- Bookmarks panel -->
+      <div class="panel panel-info">
+         <div class="panel-heading">Bookmarks</div>
+         <div class="panel-body">
+            <div id='bookmarks'></div>
+            <div id='bookmarksro'></div>
+         </div>
       </div>
-    </div>
-  </div>
+   </div>
 
   <!-- Right panel, with all problems -->
   <div id="problems" class="col-lg-9 col-md-8 col-sm-8">
