@@ -139,13 +139,14 @@ class Webui_broker(BaseModule, Daemon):
         self.remote_user_enable = getattr(modconf, 'remote_user_enable', '0')
         self.remote_user_variable = getattr(modconf, 'remote_user_variable', 'X_REMOTE_USER')
 
+        # Load the share dir and make it an absolute path
         self.share_dir = getattr(modconf, 'share_dir', 'share')
         self.share_dir = os.path.abspath(self.share_dir)
-        print "SHARE DIR IS" * 10, self.share_dir
-        # Load the photo dir and make it a absolute path
+        logger.info("[%s] Share dir: %s", self.name, self.share_dir)
+        # Load the photo dir and make it an absolute path
         self.photo_dir = getattr(modconf, 'photo_dir', 'photos')
         self.photo_dir = os.path.abspath(self.photo_dir)
-        print "Webui: using the backend", self.http_backend
+        logger.info("[%s] Photo dir: %s", self.name, self.photo_dir)
 
         self.embeded_graph = to_bool(getattr(modconf, 'embeded_graph', '0'))
 
