@@ -202,13 +202,21 @@ Invalid element name
                %for t in sorted(elt.get_host_tags()):
                   var a{{i}} = $('<a href="/all?search=htag:{{t}}"/>').appendTo($('#host_tags'));
                   $('<img />')
-                     .attr({ 'src': '/static/images/tags/{{t.lower()}}.png', 'alt': '{{t.lower()}}', 'title': 'Tag: {{t.lower()}}' })
+                     .attr({ 'src': '{{app.share_dir}}/images/sets/{{t.lower()}}/tag.png', 'alt': '{{t.lower()}}', 'title': 'Tag: {{t.lower()}}' })
                      .css({height: "24px"})
                      .load(function() {
                      })
                      .error(function() {
-                       $(this).remove();
-                       $("<span/>").attr({ 'class': 'btn btn-default btn-xs bg-host'}).append('{{t}}').appendTo(a{{i}});
+                        $(this).remove();
+                        $('<img />')
+                           .attr({ 'src': '/static/images/tags/{{t.lower()}}.png', 'alt': '{{t.lower()}}', 'title': 'Tag: {{t.lower()}}' })
+                           .css({height: "24px"})
+                           .load(function() {})
+                           .error(function() {
+                             $(this).remove();
+                             $("<span/>").attr({ 'class': 'btn btn-default btn-xs bg-host'}).append('{{t}}').appendTo(a{{i}});
+                           })
+                           .appendTo(a{{i}});
                      })
                      .appendTo(a{{i}});
                   var span = $("<span/>").append('&nbsp;').appendTo($('#host_tags'));
