@@ -19,7 +19,7 @@
 </script>
 
 <div class="row page-header">
-	<h1 class="col-sm-12 col-md-6">Shinken <small>v {{VERSION}}</small></h1>
+	<h1 class="col-sm-12 col-md-6">Shinken <small>version {{VERSION}}</small></h1>
 	%if company_logo:
 	<div class="col-sm-12 col-md-6"> <img src="/static/images/logo/{{company_logo}}" /></div>
 	%end
