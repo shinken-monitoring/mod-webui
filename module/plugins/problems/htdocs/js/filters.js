@@ -392,4 +392,8 @@ function launch_current_search(page){
     document.location.href = uri;
 }
 
-
+// On page loaded ... 
+$(document).ready(function(){
+   // At start we clean all ...
+   clean_new_search();
+});

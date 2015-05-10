@@ -85,61 +85,35 @@ function show_hidden_problems(cls){
   $('.show_for_'+cls).hide();
 }
 
-// On page loaded ... 
-$(document).ready(function(){
-   // At start we hide the details panels
-  $('.panel .hide').hide();
-  
-  // ... we hide the unselect all button
-  $('#unselect_all_btn').hide();
-  $('#collapse_all').hide()
-  if ("toolbar_hide" in window && toolbar_hide) {
-    hide_toolbar();
-  } else {
-    $('#show_toolbar_btn').hide();
-  }
-
-  // If actions are not allowed, disable the button 'select all'
-  if ("actions_enabled" in window && !actions_enabled) {
-    $('#select_all_btn').addClass('disabled');
-    // And put in low opacity the 'selectors'
-    $('.tick').css({'opacity' : 0.4});
-  }
-
-  // ... we hide the selected images.
-  $('.img_tick').hide();
-  $('#actions').hide();
-});
-
 
 
 function toggle_select_buttons(){
-  $('#select_all_btn').toggle();
-  $('#unselect_all_btn').toggle();
+   $('#select_all_btn').toggle();
+   $('#unselect_all_btn').toggle();
 }
 
 function show_unselect_all_button(){
-  $('#select_all_btn').hide();
-  $('#unselect_all_btn').show();
+   $('#select_all_btn').hide();
+   $('#unselect_all_btn').show();
 }
 
 function show_select_all_button(){
-  $('#unselect_all_btn').hide();
-  $('#select_all_btn').show();
+   $('#unselect_all_btn').hide();
+   $('#select_all_btn').show();
 }
 
 // Expand all collapsed block
 function expand_all_block(){
-  $('#accordion .collapse').collapse('show');
-  $('#expand_all').hide();
-  $('#collapse_all').show();
+   $('#accordion .collapse').collapse('show');
+   $('#expand_all').hide();
+   $('#collapse_all').show();
 }
  
 // Collapse all block
 function collapse_all_block(){
-  $('#accordion .in').collapse('hide');
-  $('#collapse_all').hide();
-  $('#expand_all').show();
+   $('#accordion .in').collapse('hide');
+   $('#collapse_all').hide();
+   $('#expand_all').show();
 }
 
 
@@ -147,23 +121,23 @@ function collapse_all_block(){
 // and hide the select all button, and swap it with
 // unselect all one
 function select_all_problems(){
-    // Maybe the actions are not allwoed. If so, don't act
-    if (!actions_enabled){return;}
+   // Maybe the actions are not allwoed. If so, don't act
+   if (!actions_enabled){return;}
 
-    toggle_select_buttons();
+   toggle_select_buttons();
 
-    // we will get all elements by looking at .details and get their ids
-    $('.detail').each(function(){
+   // we will get all elements by looking at .details and get their ids
+   $('.detail').each(function(){
       add_element($(this).attr('id'));
-    });
+   });
 }
 
 // guess what? unselect is the total oposite...
 function unselect_all_problems(){
-    toggle_select_buttons();
-    /*$('#unselect_all_btn').hide();
-    $('#select_all_btn').show();*/
-    flush_selected_elements();
+   toggle_select_buttons();
+   /*$('#unselect_all_btn').hide();
+   $('#select_all_btn').show();*/
+   flush_selected_elements();
 }
 
 
@@ -171,53 +145,54 @@ function unselect_all_problems(){
 var selected_elements = [];
 
 function add_remove_elements(name){
-  // Maybe the actions are not allwoed. If so, don't act
-  if(!actions_enabled){return;}
+   // Maybe the actions are not allowed. If so, don't act
+   if (!actions_enabled) {return;}
 
-  if( selected_elements.indexOf(name) != -1 ){
-    remove_element(name);
-  }else{
-    add_element(name);
-  }
+   if (selected_elements.indexOf(name) != -1) {
+      remove_element(name);
+   } else {
+      add_element(name);
+   }
 }
 
 
 /* function when we add an element*/
 function add_element(name){
-  selected_elements.push(name);
+   selected_elements.push(name);
 
-  // Show the 'tick' image of the selector
-  $('#selector-'+name).show();
+   // Show the 'tick' image of the selector
+   $('#selector-'+name).show();
 
-  $('#actions').show();
-  show_unselect_all_button();
+   show_toolbar();
+   $('#actions').show();
+   show_unselect_all_button();
 
-  // Restart page refresh timer
-  reinit_refresh();
+   // Restart page refresh timer
+   reinit_refresh();
 }
 
 /* And of course when we remove it... */
 function remove_element(name){
-  selected_elements.splice($.inArray(name, selected_elements),1);
-  
-  if (selected_elements.length == 0){
-    $('#actions').hide();
-    show_select_all_button();
-  }
-  // And hide the tick image
-  $('#selector-'+name).hide();
+   selected_elements.splice($.inArray(name, selected_elements),1);
+
+   if (selected_elements.length == 0){
+      $('#actions').hide();
+      show_select_all_button();
+   }
+   // And hide the tick image
+   $('#selector-'+name).hide();
 }
 
 
 /* Flush selected elements, so clean the list
-but also untick thems in the UI */
+but also untick them in the UI */
 function flush_selected_elements(){
-  /* We must copy the list so we can parse it in a clean way
+   /* We must copy the list so we can parse it in a clean way
    without fearing some bugs */
-  var cpy = $.extend({}, selected_elements);
-  $.each(cpy, function(idx, name) {
-    selected_elements.splice($.inArray(name, selected_elements),1);
-  });
+   var cpy = $.extend({}, selected_elements);
+   $.each(cpy, function(idx, name) {
+      selected_elements.splice($.inArray(name, selected_elements),1);
+   });
 }
 
 
@@ -228,56 +203,97 @@ function unid_name(name){
 }
 
 /* Now actions buttons : */
+function recheck_now_one(name){
+   recheck_now(name);
+}
 function recheck_now_all(){
-  $.each(selected_elements,function(idx, name){
-    // console.log('Recheck: ', name, unid_name(name));
-    recheck_now(unid_name(name));
-  });
-  flush_selected_elements();
+   $.each(selected_elements,function(idx, name){
+      recheck_now(unid_name(name));
+   });
+   flush_selected_elements();
+}
+
+
+function submit_check_ok_one(name, user){
+   submit_check(name, '0', 'Forced OK from WebUI by '+user);
+}
+function submit_check_ok_all(user){
+   $.each(selected_elements, function(idx, name){
+      submit_check(unid_name(name), '0', 'Forced OK from WebUI by '+user);
+   });
+   flush_selected_elements();
 }
 
 
 /* Now actions buttons : */
-function submit_check_ok_all(){
-  $.each(selected_elements, function(idx, name){
-      submit_check(unid_name(name), '0', 'Forced OK from WebUI');
-  });
-  flush_selected_elements();
+function try_to_fix_one(name){
+   try_to_fix(name);
 }
-
-
-/* Now actions buttons : */
 function try_to_fix_all(){
-  $.each(selected_elements, function(idx, name){
+   $.each(selected_elements, function(idx, name){
       try_to_fix(unid_name(name));
-  });
-  flush_selected_elements();
+   });
+   flush_selected_elements();
 }
 
 
+function acknowledge_one(name, user){
+   do_acknowledge(name, 'Acknowledged from WebUI by '+user, user);
+}
 function acknowledge_all(user){
-  $.each(selected_elements, function(idx, name){
-    do_acknowledge(unid_name(name), 'Acknowledged from WebUI by '+user, user);
-  });
-  flush_selected_elements();
+   $.each(selected_elements, function(idx, name){
+      do_acknowledge(unid_name(name), 'Acknowledged from WebUI by '+user, user);
+   });
+   flush_selected_elements();
 }
 
 
+function downtime_one(name, user){
+   // Initial start/stop for downtime, do not consider seconds ...
+   var downtime_start = moment().seconds(0);
+   var downtime_stop = moment().seconds(0).add('day', 1);
+
+   do_schedule_downtime(name, downtime_start.format('X'), downtime_stop.format('X'), user, 'Downtime scheduled from WebUI by '+user);
+}
 function downtime_all(user){
-  // Initial start/stop for downtime, do not consider seconds ...
-  var downtime_start = moment().seconds(0);
-  var downtime_stop = moment().seconds(0).add('day', 1);
-  
-  $.each(selected_elements, function(idx, name){
-    do_schedule_downtime(unid_name(name), downtime_start.format('X'), downtime_stop.format('X'), user, 'Downtime scheduled from WebUI by '+user);
-  });
-  flush_selected_elements();
+   // Initial start/stop for downtime, do not consider seconds ...
+   var downtime_start = moment().seconds(0);
+   var downtime_stop = moment().seconds(0).add('day', 1);
+
+   $.each(selected_elements, function(idx, name){
+      do_schedule_downtime(unid_name(name), downtime_start.format('X'), downtime_stop.format('X'), user, 'Downtime scheduled from WebUI by '+user);
+   });
+   flush_selected_elements();
 }
 
 
+function remove_one(name, user){
+   do_remove(name, 'Removed from WebUI by '+user, user);
+}
 function remove_all(user){
-  $.each(selected_elements, function(idx, name){
-    do_remove(unid_name(name), 'Removed from WebUI by '+user, user);
-  });
-  flush_selected_elements();
+   $.each(selected_elements, function(idx, name){
+      do_remove(unid_name(name), 'Removed from WebUI by '+user, user);
+   });
+   flush_selected_elements();
 }
+
+// On page loaded ... 
+$(document).ready(function(){
+   // At start we hide the toolbar
+   hide_toolbar();
+
+   // ... we hide the unselect all and collapse all buttons
+   $('#unselect_all_btn').hide();
+   $('#collapse_all').hide()
+
+   // If actions are not allowed, disable the button 'select all'
+   if ("actions_enabled" in window && !actions_enabled) {
+      $('#select_all_btn').addClass('disabled');
+      // And put in low opacity the 'selectors'
+      $('.tick').css({'opacity' : 0.4});
+   }
+
+   // ... we hide the selected images.
+   $('.img_tick').hide();
+   $('#actions').hide();
+});

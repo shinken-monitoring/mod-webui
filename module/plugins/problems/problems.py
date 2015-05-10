@@ -26,6 +26,7 @@
 from shinken.misc.filter  import only_related_to
 from shinken.misc.sorter import hst_srv_sort
 from shinken.objects.service import Service
+from shinken.log import logger
 
 ### Will be populated by the UI with it's own value
 app = None
@@ -57,17 +58,17 @@ def get_view(page):
 
 
     # Look for the toolbar pref
-    tool_pref = app.get_user_preference(user, 'toolbar')
+    toolbar_pref = app.get_user_preference(user, 'toolbar')
     # If void, create an empty one
-    if not tool_pref:
+    if not toolbar_pref:
         app.set_user_preference(user, 'toolbar', 'show')
-        tool_pref = 'show'
+        toolbar_pref = 'show'
     toolbar = app.request.GET.get('toolbar', '')
-    print "Toolbar", tool_pref, toolbar
-    if toolbar != tool_pref and len(toolbar) > 0:
+    print "Toolbar", toolbar_pref, toolbar
+    if toolbar != toolbar_pref and len(toolbar) > 0:
         print "Need to change user prefs for Toolbar",
         app.set_user_preference(user, 'toolbar', toolbar)
-    tool_pref = app.get_user_preference(user, 'toolbar')
+    toolbar_pref = app.get_user_preference(user, 'toolbar')
 
 
     # We want to limit the number of elements
@@ -108,14 +109,19 @@ def get_view(page):
 
     items = []
     if page == 'problems':
-        items = app.datamgr.get_all_problems(to_sort=False, get_acknowledged=True)
+        items = app.get_all_problems(user, to_sort=True, get_acknowledged=False)
     elif page == 'all':
-        items = app.datamgr.get_all_hosts_and_services()
-    else:  # WTF?!?
+        items = app.get_all_hosts_and_services(user)
+    else:
         app.bottle.redirect("/problems")
 
+    logger.info("[%s] problems", app.name)
+    for i in items:
+        logger.info("[%s] problems, item: %s", app.name, i.get_full_name())
+        
     # Filter with the user interests
-    my_items = only_related_to(items, user)
+    # my_items = only_related_to(items, user)
+    my_items = items
 
     # Check for related host contacts
     if not user.is_admin:
@@ -126,8 +132,12 @@ def get_view(page):
             continue
 
     items = my_items
+    logger.info("[%s] problems after user filtering", app.name)
+    for i in items:
+        logger.info("[%s] problems, item: %s", app.name, i.get_full_name())
+        
 
-    # Ok, if need, appli the search filter
+    # Ok, if needed, apply the search filter
     for s in search:
         s = s.strip()
         if not s:
@@ -228,8 +238,8 @@ def get_view(page):
         # Now ok for hosts, but look for services, and service hosts
         items = [i for i in items if i.__class__.my_type == 'host' or (not i.problem_has_been_acknowledged and not i.host.problem_has_been_acknowledged)]
 
-    # If we are in the /problems and we do not have an ack filter
-    # we apply by default the ack:false one
+    # If we are in the /problems and we do not have an downtime filter
+    # we apply by default the downtime:false one
     print "Late problem filtering?", page == 'problems', len(filters['downtime']) == 0
     if page == 'problems' and len(filters['downtime']) == 0:
         # First look for hosts, so ok for services, but remove problem_has_been_acknowledged elements
@@ -237,8 +247,16 @@ def get_view(page):
         # Now ok for hosts, but look for services, and service hosts
         items = [i for i in items if i.__class__.my_type == 'host' or (not i.in_scheduled_downtime and not i.host.in_scheduled_downtime)]
 
+    logger.info("[%s] problems after search filtering", app.name)
+    for i in items:
+        logger.info("[%s] problems, item: %s, %d, %d", app.name, i.get_full_name(), i.business_impact, i.state_id)
+
     # Now sort it!
     items.sort(hst_srv_sort)
+
+    logger.info("[%s] problems after host/service sort", app.name)
+    for i in items:
+        logger.info("[%s] problems, item: %s, %d, %d", app.name, i.get_full_name(), i.business_impact, i.state_id)
 
     total = len(items)
     # If we overflow, came back as normal
@@ -249,11 +267,7 @@ def get_view(page):
     navi = app.helper.get_navi(total, start, step=30)
     items = items[start:end]
 
-    ## print "get all problems:", pbs
-    ## for pb in pbs:
-    ##     print pb.get_name()
-    print 'Give filters', filters
-    return {'app': app, 'pbs': items, 'user': user, 'navi': navi, 'search': search_str, 'page': page, 'filters': filters, 'bookmarks': bookmarks, 'bookmarksro': bookmarksro, 'toolbar': tool_pref }
+    return {'app': app, 'pbs': items, 'user': user, 'navi': navi, 'search': search_str, 'page': page, 'filters': filters, 'bookmarks': bookmarks, 'bookmarksro': bookmarksro, 'toolbar': toolbar_pref }
 
 
 # Our page

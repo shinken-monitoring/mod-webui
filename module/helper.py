@@ -701,7 +701,7 @@ class Helper(object):
     def strip_html_output(self, s):
         return s
 
-    # We want the html id of an hostor a service. It's basically
+    # We want the html id of an host or a service. It's basically
     # the full_name with / changed as -- (because in html, / is not valid :) )
     def get_html_id(self, elt):
         return self.strip_html_id(elt.get_full_name())
@@ -842,7 +842,7 @@ class Helper(object):
         if len(tp.dateranges) == 0:
             return ''
             
-        content = '<table class="table table-condensed pull-left" style="table-layout: fixed; word-wrap: break-word;"><tbody style="font-size:x-small;">'
+        content = '''<table class="table table-condensed pull-left" style="table-layout: fixed; word-wrap: break-word;"><tbody style="font-size:x-small;">'''
         for dr in tp.dateranges:
             (dr_start, dr_end) = dr.get_start_and_end_time()
             dr_start = time.strftime("%d %b %Y", time.localtime(dr_start))
@@ -860,6 +860,301 @@ class Helper(object):
             content += '''</td></tr>'''
         content += '''</tbody></table>'''
     
+        return content
+    
+    def get_problem_html(self, pb, app, actions_allowed=True, user=None, graphs=True, details=True):
+        # Panel for an host and all its problems ...
+        pb_id = self.get_html_id(pb)
+        
+        # Start of host panel
+        content = '''
+            <div class="panel panel-default">
+        '''
+
+        # Start of panel heading
+        content += '''
+                <div class="panel-heading">
+                <h4 data-toggle="collapse" data-parent="#problems_%s" href="#%s">
+                    <table class="table table-condensed">
+                        <thead style="border: none;">
+                        <tr class="background-%s" style="font-size: x-small; font-weight: normal;">
+        ''' % (pb.host_name, pb_id, pb.state.lower())
+            
+        # Tick ...
+        # content += '''
+            # <th class="col-md-1">
+                # <div class='tick2' style="cursor:pointer;" onmouseover="hovering_selection('%s')" onclick="add_remove_elements('%s')">
+                    # <img class='img_tick' id='selector-%s' src='/static/images/tick.png' />
+                # </div>
+            # </th>
+            # ''' % (pb_id, pb_id, pb_id)
+            
+        # Status image ...
+        # content += '''
+            # <th class="col-md-1">
+                # <div class='img_status'>
+                    # <span class="medium-pulse aroundpulse pull-left">
+        # '''
+        # if pb.business_impact > 2 and pb.state_id in [1, 2, 3]:
+            # content += '''
+                    # <span class="medium-pulse pulse"></span>
+            # '''
+        # content += '''
+                    # <img src="%s" />
+                    # </span>
+                # </div>
+            # </th>
+        # ''' % (self.get_icon_state(pb))
+        
+        # Host / service link ...
+        content += '''
+            <th class="col-md-5">
+                <span class="cut_long">%s</span>
+            </th>
+        ''' % (self.get_link(pb, short=False))
+        
+        # Status text ...
+        content += '''
+            <th class="col-md-1">
+                <span class='txt_status'>%s</span>
+            </th>
+        ''' % (pb.state)
+        
+        # Status output ...
+        if len(pb.output) > 100:
+            if app.allow_html_output:
+                content += '''
+                    <th class="col-lg-2 hidden-md">
+                        <span class='output' rel="tooltip" data-original-title="%s">%s</span>
+                    </th>
+                ''' % (pb.output, self.strip_html_output(pb.output[:app.max_output_length]))
+            else:
+                content += '''
+                    <th class="col-lg-2 hidden-md">
+                        <span class='output' rel="tooltip" data-original-title="{{pb.output}}">%s</span>
+                    </th>
+                ''' % (pb.output, pb.output[:app.max_output_length])
+        else:
+            if app.allow_html_output:
+                content += '''
+                    <th class="col-lg-2 hidden-md">
+                        <span class='output'>%s</span>
+                    </th>
+                ''' % (self.strip_html_output(pb.output))
+            else:
+                content += '''
+                    <th class="col-lg-2 hidden-md">
+                        <span class='output'>%s</span>
+                    </th>
+                ''' % (pb.output)
+                    
+        # Graphs
+        if graphs:
+            now = time.time()
+            graphs = app.get_graph_uris(pb, now-4*3600, now, 'dashboard')
+            onmouse_code = ''
+            if len(graphs) > 0:
+                onmouse_code = 'onmouseover="display_hover_img(\'%s\',\'\');" onmouseout="hide_hover_img();" ' % graphs[0]['img_src']
+            content += '''
+                <th class="col-lg-4 hidden-md">
+                    <span class="perfometer" %s>%s</span>
+                </th>
+            ''' % (onmouse_code, self.get_perfometer(pb))
+        
+        # Status text ...
+        if details:
+            content += '''
+                <th class="col-sm-1">
+                    <a class="pull-right"><i class="fa fa-chevron-down pull-right"></i></a>
+                </th>
+            '''
+        else:
+            content += '''
+                <th class="col-sm-1"></th>
+            '''
+        
+        # End of panel heading
+        content += '''
+                        </tr>
+                        </thead>
+                    </table>
+                </h4>
+                </div>
+        '''
+        
+        if not details:
+            # End of host panel
+            content += '''
+                </div>
+            '''
+            return content
+            
+        # Start of panel body
+        content += '''
+                <div id="%s" data-raw-obj-name='%s' class="detail panel-collapse collapse in">
+                    <div class="panel-body">
+        ''' % (pb_id, pb.get_full_name())
+            
+        content += '''
+            <table class="table table-bordered">
+                <thead><tr>
+                    <th>Host</th>
+        '''
+        if pb.__class__.my_type == 'service':
+            content += '''
+                    <th>Service</th>
+            '''
+        content += '''
+                    <th>Realm</th>
+                    <th>State</th>
+                    <th>Since</th>
+                    <th>Last check</th>
+                    <th>Next check</th>
+        '''
+        if actions_allowed:
+            content += '''
+                        <th>Actions</th>
+            '''
+        content += '''
+                </tr></thead>
+        '''
+
+        content += '''
+                <tbody>
+                    <tr>
+                        <td><a href="/host/%s">%s</a></td>
+        ''' %(pb.host_name, pb.host_name)
+        if pb.__class__.my_type == 'service':
+            content += '''
+                         <td>%s</td>
+            ''' %(self.get_link(pb, short=True))
+        content += '''
+                        <td>%s</td>
+        ''' %(pb.get_realm())
+        content += '''
+                        <td><span class='txt_status state_%s'>%s</span></td>
+        ''' %(pb.state.lower(), pb.state)
+        content += '''
+                        <td>%s</td>
+        ''' %(self.print_duration(pb.last_state_change, just_duration=True, x_elts=2))
+        content += '''
+                        <td>%s ago</td>
+        ''' %(self.print_duration(pb.last_chk, just_duration=True, x_elts=2))
+        content += '''
+                        <td>in %s</td>
+        ''' %(self.print_duration(pb.next_chk, just_duration=True, x_elts=2))
+        if actions_allowed:
+            content += '''
+                        <td >
+                            <div class="btn-group" role="group" aria-label="...">
+            '''
+            content += '''
+                                <button type="button" class="btn btn-default" title="Try to fix (launch event handler if defined)" onClick="try_to_fix_one('%s');">
+                                    <i class="fa fa-magic"></i>
+                                </button>
+            ''' %(pb.get_full_name())
+            content += '''
+                                <button type="button" class="btn btn-default" title="Launch the check command " onClick="recheck_now_one('%s');">
+                                    <i class="fa fa-refresh"></i>
+                                </button>
+            ''' %(pb.get_full_name())
+            content += '''
+                                <button type="button" class="btn btn-default" title="Force service to be considered as Ok" onClick="submit_check_ok_one('%s', '%s');">
+                                    <i class="fa fa-share"></i>
+                                </button>
+            ''' %(pb.get_full_name(), user)
+            content += '''
+                                <button type="button" class="btn btn-default" title="Acknowledge the problem" onClick="acknowledge_one('%s', '%s');">
+                                    <i class="fa fa-check"></i>
+                                </button>
+            ''' %(pb.get_full_name(), user)
+            content += '''
+                                <button type="button" class="btn btn-default" title="Schedule a one day downtime for the problem" onClick="downtime_one('%s', '%s');">
+                                    <i class="fa fa-ambulance"></i>
+                                </button>
+            ''' %(pb.get_full_name(), user)
+            content += '''
+                                <button type="button" class="btn btn-default" title="Ignore checks for the service (disable checks, notifications, event handlers and force Ok)" onClick="remove_one('%s', '%s');">
+                                    <i class="fa fa-eraser"></i>
+                                </button>
+            ''' %(pb.get_full_name(), user)
+            content += '''
+                            </div>
+                        </td>
+            '''
+        content += '''
+                    </tr>
+                    <tr>
+        '''
+        if pb.__class__.my_type == 'service':
+            content += '''
+                        <td colspan="8">
+            '''
+        else:
+            content += '''
+                        <td colspan="7">
+            '''
+            
+        # Status output ...
+        if len(pb.output) > 100:
+            if app.allow_html_output:
+                content += '''
+                            <span class='output' rel="tooltip" data-original-title="%s">%s</span>
+                        </td>
+                ''' % (pb.output, self.strip_html_output(pb.output[:app.max_output_length]))
+            else:
+                content += '''
+                            <span class='output' rel="tooltip" data-original-title="{{pb.output}}">%s</span>
+                        </td>
+                ''' % (pb.output, pb.output[:app.max_output_length])
+        else:
+            if app.allow_html_output:
+                content += '''
+                            <span class='output'>%s</span>
+                        </td>
+                ''' % (self.strip_html_output(pb.output))
+            else:
+                content += '''
+                            <span class='output'>%s</span>
+                        </td>
+                ''' % (pb.output)
+                
+        content += '''
+                        </tr>
+                    </tbody>
+                </table>
+        '''
+        
+        if len(pb.impacts) > 0:
+            content += '''
+                <div>
+                    <hr />
+                    <h4>Impacts:</h4>
+            '''
+            
+            for i in helper.get_impacts_sorted(pb):
+                content += '''
+                        <div>
+                            <p><img style="width: 16px; height: 16px;" src="%s" />
+                            <span class="alert-small alert-%s">%s</span> for %s
+                            </p>
+                        </div>
+            ''' % (self.get_icon_state(i), i.state.lower(), i.state.lower(), self.get_link(i))
+            content += '''
+                </div>
+            '''
+        
+        # End of panel body
+        content += '''
+                    </div>
+                </div>
+        '''
+    
+        # End of host panel
+        content += '''
+            </div>
+        '''
+
         return content
 
 helper = Helper()
