@@ -76,31 +76,31 @@ def checkauth():
 def get_page():
     user = checkauth()
 
-    # We are looking for hosts that got valid GPS coordinates,
+    # We are looking for hosts with valid GPS coordinates,
     # and we just give them to the template to print them.
     valid_hosts = []
-    for h in only_related_to(app.datamgr.get_hosts(),user):
-        # Filter hosts list with configured filter (menu.cfg) ...
-        for filter in app.hosts_filter:
-            if not h.get_name().startswith(filter):
-                _lat = h.customs.get('_LOC_LAT', params['default_Lat'])
-                _lng = h.customs.get('_LOC_LNG', params['default_Lng'])
+    for h in app.get_hosts(user):
+        logger.debug("[%s] worldmap host: %s", app.name, h.get_name())
+        
+        _lat = h.customs.get('_LOC_LAT', params['default_Lat'])
+        _lng = h.customs.get('_LOC_LNG', params['default_Lng'])
 
-                try:
-                    print "Host", h.get_name(), _lat, _lng
-                except:
-                    pass
-                if _lat and _lng:
-                    try:
-                        # Maybe the customs are set, but with invalid float?
-                        _lat = float(_lat)
-                        _lng = float(_lng)
-                    except ValueError:
-                        print "Host invalid coordinates !"
-                        continue
-                    # Look for good range, lat/long must be between -180/180
-                    if -180 <= _lat <= 180 and -180 <= _lng <= 180:
-                        valid_hosts.append(h)
+        try:
+            print "Host", h.get_name(), _lat, _lng
+        except:
+            pass
+        if _lat and _lng:
+            try:
+                # Maybe the customs are set, but with invalid float?
+                _lat = float(_lat)
+                _lng = float(_lng)
+            except ValueError:
+                print "Host invalid coordinates !"
+                continue
+            # Look for good range, lat/long must be between -180/180
+            if -180 <= _lat <= 180 and -180 <= _lng <= 180:
+                logger.debug("[%s] host '%s' on worldmap: %f - %f", app.name, h.get_name(), _lat, _lng)
+                valid_hosts.append(h)
 
     # So now we can just send the valid hosts to the template
     return {'app': app, 'user': user, 'params': params, 'hosts' : valid_hosts}
@@ -117,28 +117,25 @@ def worldmap_widget():
     # We are looking for hosts that got valid GPS coordinates,
     # and we just give them to the template to print them.
     valid_hosts = []
-    for h in only_related_to(app.datamgr.get_hosts(),user):
-        # Filter hosts list with configured filter (menu.cfg) ...
-        for filter in app.hosts_filter:
-            if not h.get_name().startswith(filter):
-                _lat = h.customs.get('_LOC_LAT', params['default_Lat'])
-                _lng = h.customs.get('_LOC_LNG', params['default_Lng'])
+    for h in app.get_hosts(user):
+        _lat = h.customs.get('_LOC_LAT', params['default_Lat'])
+        _lng = h.customs.get('_LOC_LNG', params['default_Lng'])
 
-                try:
-                    print "Host", h.get_name(), _lat, _lng
-                except:
-                    pass
-                if _lat and _lng:
-                    try:
-                        # Maybe the customs are set, but with invalid float?
-                        _lat = float(_lat)
-                        _lng = float(_lng)
-                    except ValueError:
-                        print "Host invalid coordinates !"
-                        continue
-                    # Look for good range, lat/long must be between -180/180
-                    if -180 <= _lat <= 180 and -180 <= _lng <= 180:
-                        valid_hosts.append(h)
+        try:
+            print "Host", h.get_name(), _lat, _lng
+        except:
+            pass
+        if _lat and _lng:
+            try:
+                # Maybe the customs are set, but with invalid float?
+                _lat = float(_lat)
+                _lng = float(_lng)
+            except ValueError:
+                print "Host invalid coordinates !"
+                continue
+            # Look for good range, lat/long must be between -180/180
+            if -180 <= _lat <= 180 and -180 <= _lng <= 180:
+                valid_hosts.append(h)
 
     return {'app': app, 'user': user, 'wid': wid,
             'collapsed': collapsed, 'options': options,
