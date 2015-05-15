@@ -24,6 +24,7 @@
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 
 import time
+import re
 
 from shinken.log import logger
 
@@ -70,7 +71,7 @@ def load_cfg():
     try:
         currentdir = os.path.dirname(os.path.realpath(__file__))
         configuration_file = "%s/%s" % (currentdir, 'plugin.cfg')
-        logger.debug("Plugin configuration file: %s", configuration_file)
+        logger.debug("[webui-logs] Plugin configuration file: %s", configuration_file)
         scp = config_parser('#', '=')
         params = scp.parse_config(configuration_file)
 
@@ -81,14 +82,14 @@ def load_cfg():
         params['logs_hosts'] = [item.strip() for item in params['logs_hosts'].split(',')]
         params['logs_services'] = [item.strip() for item in params['logs_services'].split(',')]
         
-        logger.debug("webui plugin '%s', configuration loaded." % (plugin_name))
-        logger.debug("webui plugin %s configuration, database: %s (%s)", plugin_name, params['mongo_host'], params['mongo_port'])
-        logger.debug("webui plugin %s configuration, fetching: %d %s", plugin_name, params['logs_limit'], params['logs_type'])
-        logger.debug("webui plugin %s configuration, hosts: %s", plugin_name, params['logs_hosts'])
-        logger.debug("webui plugin %s configuration, services: %s", plugin_name, params['logs_services'])
+        logger.info("[webui-logs] configuration loaded.")
+        logger.debug("[webui-logs] configuration, database: %s (%s)", params['mongo_host'], params['mongo_port'])
+        logger.debug("[webui-logs] configuration, fetching: %d %s", params['logs_limit'], params['logs_type'])
+        logger.debug("[webui-logs] configuration, hosts: %s", params['logs_hosts'])
+        logger.debug("[webui-logs] configuration, services: %s", params['logs_services'])
         return True
     except Exception, exp:
-        logger.warning("webui plugin '%s', configuration file (%s) not available: %s", plugin_name, configuration_file, str(exp))
+        logger.warning("[webui-logs] configuration file (%s) not available: %s", configuration_file, str(exp))
         return False
 
 
@@ -148,7 +149,7 @@ def show_logs():
     records=[]
 
     try:
-        logger.info("[webui] Logs, fetching records from database: %s / %s / %s (max %d)" % (params['logs_type'], params['logs_hosts'], params['logs_services'], params['logs_limit']))
+        logger.debug("[webui-logs] fetching records from database: %s / %s / %s (max %d)", params['logs_type'], params['logs_hosts'], params['logs_services'], params['logs_limit'])
 
         logs_limit = params['logs_limit']
         logs_type = params['logs_type']
@@ -181,9 +182,9 @@ def show_logs():
                     "message" : log['message']
                 })
         message = "%d records fetched from database." % len(records)
-        logger.info("[webui] Logs, %d records fetched from database.", len(records))
+        logger.info("[webui-logs] %d records fetched from database.", len(records))
     except Exception, exp:
-        logger.error("[webui] Logs, Exception when querying database: %s", str(exp))
+        logger.error("[webui-logs] Exception when querying database: %s", str(exp))
 
     return {
         'app': app,
@@ -209,9 +210,9 @@ def set_hosts_list():
     params['logs_hosts'] = []
     
     hostsList = app.request.forms.getall('hostsList[]')
-    logger.debug("Selected hosts : ")
+    logger.debug("[webui-logs] Selected hosts : ")
     for host in hostsList:
-        logger.debug("- host : %s" % (host))
+        logger.debug("[webui-logs] - host : %s" % (host))
         params['logs_hosts'].append(host)
 
     app.bottle.redirect("/logs")
@@ -232,9 +233,9 @@ def set_services_list():
     params['logs_services'] = []
     
     servicesList = app.request.forms.getall('servicesList[]')
-    logger.debug("Selected services : ")
+    logger.debug("[webui-logs] Selected services : ")
     for service in servicesList:
-        logger.debug("- service : %s" % (service))
+        logger.debug("[webui-logs] - service : %s" % (service))
         params['logs_services'].append(service)
 
     app.bottle.redirect("/logs")
@@ -255,9 +256,9 @@ def set_logs_type_list():
     params['logs_type'] = []
     
     logs_typeList = app.request.forms.getall('logs_typeList[]')
-    logger.debug("Selected logs types : ")
+    logger.debug("[webui-logs] Selected logs types : ")
     for log_type in logs_typeList:
-        logger.debug("- log type : %s" % (log_type))
+        logger.debug("[webui-logs] - log type : %s" % (log_type))
         params['logs_type'].append(log_type)
 
     app.bottle.redirect("/logs")
@@ -279,17 +280,15 @@ def get_json(hostname, service=None):
     records=[]
 
     try:
-        logger.info("[webui] Logs, Fetching records from database for host/service: %s/%s", hostname, service)
-        
         logs_limit = 100
         logs_type = []
         logs_hosts = [ hostname ]
         logs_services = []
         if service is not None:
-            # logger.info("[Logs] Fetching records from database for host/service: %s/%s", hostname, service)
+            logger.debug("[Logs] Fetching records from database for host/service: %s/%s", hostname, service)
             logs_services = [ service ]
         else:
-            logger.info("[webui] Logs, Fetching records from database for host: %s", hostname)
+            logger.debug("[webui-logs] Fetching records from database for host: %s", hostname)
 
         query = []
         if len(logs_type) > 0 and logs_type[0] != '':
@@ -302,26 +301,36 @@ def get_json(hostname, service=None):
         records=[]
         if len(query) > 0:
             for log in db.logs.find({'$and': query}).sort("time",-1).limit(logs_limit):
+                message = log['message']
+                m = re.search(r"\[(\d+)\] (.*)", message)
+                if m and m.group(2):
+                    message = m.group(2)
+                    
                 records.append({
                     "timestamp":    int(log["time"]),
                     "host":         log['host_name'],
                     "service":      log['service_description'],
-                    "message":      log['message']
+                    "message":      message
                 })
         else:
             for log in db.logs.find().sort("time",-1).limit(logs_limit):
+                message = log['message']
+                m = re.search(r"\[(\d+)\] (.*)", message)
+                if m and m.group(2):
+                    message = m.group(2)
+                    
                 records.append({
                     "timestamp":    int(log["time"]),
                     "host":         log['host_name'],
                     "service":      log['service_description'],
-                    "message":      log['message']
+                    "message":      message
                 })
         message = "%d records fetched from database." % len(records)
-        logger.debug("[webui] Logs, %d records fetched from database.", len(records))
+        logger.debug("[webui-logs] %d records fetched from database.", len(records))
     except Exception, exp:
-        logger.error("[webui] Logs, Exception when querying database: %s", str(exp))
+        logger.error("[webui-logs] Exception when querying database: %s", str(exp))
     
-    logger.debug("[webui] Logs, Finished compiling fetched records")
+    logger.debug("[webui-logs] Finished compiling fetched records")
     return json.dumps(records)
 
 # Load plugin configuration parameters
