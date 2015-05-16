@@ -7,7 +7,7 @@
 #    Gerhard Lausser, Gerhard.Lausser@consol.de
 #    Gregory Starck, g.starck@gmail.com
 #    Hartmut Goebel, h.goebel@goebel-consult.de
-#    Frédéric Mohier, frederic.mohier@gmail.com
+#    Frederic Mohier, frederic.mohier@gmail.com
 #
 # This file is part of Shinken.
 #
