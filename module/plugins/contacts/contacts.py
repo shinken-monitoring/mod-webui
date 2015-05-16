@@ -47,10 +47,10 @@ def load_cfg():
         scp = config_parser('#', '=')
         params = scp.parse_config(configuration_file)
 
-        logger.debug("WebUI plugin '%s', configuration loaded." % (plugin_name))
+        logger.info("[webui-contacts] configuration loaded.")
         return True
     except Exception, exp:
-        logger.warning("WebUI plugin '%s', configuration file (%s) not available: %s" % (plugin_name, configuration_file, str(exp)))
+        logger.warning("[webui-contacts] configuration file (%s) not available: %s", configuration_file, str(exp))
         return False
 
 def checkauth():
