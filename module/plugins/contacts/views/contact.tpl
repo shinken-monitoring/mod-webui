@@ -347,8 +347,12 @@
                   %for item in my_hosts:
                     {{', ' if i!=1 else ''}}{{!app.helper.get_link(item, short=True)}}
                     %i+=1
+                    %if i > 20:
+                    <span> ... </span>
+                    %break
+                    %end
                   %end
-                  {{!'<span class="glyphicon glyphicon-remove font-red"></span> Does not monitor any host' if i==1 else ''}}
+                  {{!'<span class="glyphicon glyphicon-remove font-red"></span> Do not monitor any host' if i==1 else ''}}
                   </td>
                 </tr>
                 <tr>
@@ -358,8 +362,12 @@
                   %for item in my_services:
                     {{', ' if i!=1 else ''}}{{!app.helper.get_link(item, short=True)}}
                     %i+=1
+                    %if i > 20:
+                    <span> ... </span>
+                    %break
+                    %end
                   %end
-                  {{!'<span class="glyphicon glyphicon-remove font-red"></span> Does not monitor any service' if i==1 else ''}}
+                  {{!'<span class="glyphicon glyphicon-remove font-red"></span> Do not monitor any service' if i==1 else ''}}
                   </td>
                 </tr>
                 <tr>
@@ -369,8 +377,12 @@
                   %for item in my_contactgroups:
                     {{', ' if i!=1 else ''}}{{item.alias if item.alias!='' else item.get_name()}}
                     %i+=1
+                    %if i > 20:
+                    <span> ... </span>
+                    %break
+                    %end
                   %end
-                  {{!'<span class="glyphicon glyphicon-remove font-red"></span> Does not belong to any group' if i==1 else ''}}
+                  {{!'<span class="glyphicon glyphicon-remove font-red"></span> Do not belong to any group' if i==1 else ''}}
                   </td>
                 </tr>
               </tbody>
