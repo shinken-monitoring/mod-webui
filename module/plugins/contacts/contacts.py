@@ -75,7 +75,7 @@ def show_contact(name):
 
     return {
         'app': app, 'user': user, 'params': params,
-        'contact': app.datamgr.get_contact(name)
+        'contact': app.get_contact(name)
         }
 
 # All contacts
@@ -83,7 +83,7 @@ def show_contacts():
     user = checkauth()
 
     if user.is_admin:
-        contacts = app.datamgr.get_contacts()
+        contacts = app.get_contacts()
     else:
         contacts = (user,)
 

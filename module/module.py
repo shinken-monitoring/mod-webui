@@ -893,6 +893,13 @@ class Webui_broker(BaseModule, Daemon):
         name = name.decode('utf8', 'ignore')
         return self.datamgr.rg.commands.find_by_name(name)
 
+    def get_contacts(self):
+        return self.datamgr.rg.contacts
+                  
+    def get_contact(self, name):
+        name = name.decode('utf8', 'ignore')
+        return self.datamgr.rg.contacts.find_by_name(name)
+
     def get_contactgroups(self):
         # return self.datamgr.get_contactgroups()
         return self.datamgr.rg.contactgroups
