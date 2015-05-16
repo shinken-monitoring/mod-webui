@@ -167,19 +167,29 @@ def show_logs():
         records=[]
         if len(query) > 0:
             for log in db.logs.find({'$and': query}).sort("time",-1).limit(logs_limit):
+                message = log['message']
+                m = re.search(r"\[(\d+)\] (.*)", message)
+                if m and m.group(2):
+                    message = m.group(2)
+                    
                 records.append({
                     "date" : int(log["time"]),
                     "host" : log['host_name'],
                     "service" : log['service_description'],
-                    "message" : log['message']
+                    "message" : message
                 })
         else:
             for log in db.logs.find().sort("time",-1).limit(logs_limit):
+                message = log['message']
+                m = re.search(r"\[(\d+)\] (.*)", message)
+                if m and m.group(2):
+                    message = m.group(2)
+                    
                 records.append({
                     "date" : int(log["time"]),
                     "host" : log['host_name'],
                     "service" : log['service_description'],
-                    "message" : log['message']
+                    "message" : message
                 })
         message = "%d records fetched from database." % len(records)
         logger.info("[webui-logs] %d records fetched from database.", len(records))
