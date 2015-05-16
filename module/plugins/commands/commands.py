@@ -50,11 +50,11 @@ def load_cfg():
 
         params['display'] = params['display']
         
-        logger.debug("WebUI plugin '%s', configuration loaded." % (plugin_name))
-        logger.debug("Plugin configuration, display: %s" % (params['display']))
+        logger.info("[webui-commands] configuration loaded.")
+        logger.debug("[webui-commands] configuration, display: %s", params['display'])
         return True
     except Exception, exp:
-        logger.warning("WebUI plugin '%s', configuration file (%s) not available: %s" % (plugin_name, configuration_file, str(exp)))
+        logger.warning("[webui-commands] configuration file (%s) not available: %s", configuration_file, str(exp))
         return False
 
 def checkauth():
