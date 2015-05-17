@@ -65,21 +65,35 @@
  background-color: #78CCE3;
 }
 
+.background-acknowledge{
+ background-color: #158CBA;
+}
 
-.state_down, .state_critical{
+
+.state_down, .state_critical, .state_DOWN, .state_CRITICAL{
  background-color: #FF858B;
 }
 
-.state_warning{
+.state_warning, .state_WARNING {
  background-color: #E3B778;
 }
 
-.state_ok, .state_up{
+.state_ok, .state_up, .state_OK, .state_UP{
  background-color: #8EE378;
 }
 
-.state_unknown, .state_unreachable{
+.state_unknown, .state_unreachable, .state_UNKNOWN, .state_UNREACHABLE {
  background-color: #78CCE3;
+}
+
+.state_acknowledge, .state_ACKNOWLEDGE {
+   background-color: #158CBA;
+}
+
+.state_HARD{
+}
+.state_SOFT{
+   background-image:radial-gradient(rgba(255,255,255,.7), rgba(255,255,255,0) 100%);
 }
 
 /*
@@ -260,7 +274,7 @@
   min-height: 600px;
 }
 .no-leftpadding {
-	padding-left: 0;
+   padding-left: 0;
 }
 
 .no-rightpadding {
@@ -276,19 +290,19 @@
 }
 
 .no-leftmargin {
-	margin-left: 0 !important;
+   margin-left: 0 !important;
 }
 
 .no-bottommargin {
-	margin-bottom: 0 !important;
+   margin-bottom: 0 !important;
 }
 
 .no-rightmargin {
-	margin-right: 0 !important;
+   margin-right: 0 !important;
 }
 
 .no-topmargin {
-	margin-top: 0 !important;
+   margin-top: 0 !important;
 }
 
 .no-margin {
@@ -408,7 +422,7 @@
   border-radius: 3px 3px 3px 3px;
   color: #FFFFFF;
   font-size: 11.05px;
-  font-weight: bold;
+  font-weight: normal;
   padding: 2px 4px 3px;
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
 }
