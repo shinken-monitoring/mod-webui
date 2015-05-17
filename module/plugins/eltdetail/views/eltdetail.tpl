@@ -743,7 +743,7 @@ Invalid element name
                      %if (elt.check_freshness):
                      <tr>
                         <td><strong>Freshness threshold:</strong></td>
-                        <td>{{elt.freshness_threshold}}</td>
+                        <td>{{elt.freshness_threshold}} seconds</td>
                      </tr>
                      %end
                      %end
@@ -812,7 +812,7 @@ Invalid element name
                         <td></td>
                         <td>
                            %disabled_s = ''
-                           <button name="bt-add-comment" class="col-lg-12 {{disabled_s}} {{global_disabled}} btn btn-primary btn-sm" data-toggle="tooltip" data-placement="bottom" title="Add a comment for this {{elt_type}}">Add a comment</button>
+                           <button name="bt-add-comment" class="col-lg-12 {{disabled_s}} {{global_disabled}} btn btn-primary btn-sm" data-toggle="tooltip" data-placement="bottom" title="Add a comment for this {{elt_type}}"><i class="fa fa-check"></i> Add a comment</button>
                         </td>
                      </tr>
                      
@@ -820,7 +820,7 @@ Invalid element name
                         <td></td>
                         <td>
                            %disabled_s = '' if elt.is_problem and elt.event_handler else 'disabled'
-                           <button name="bt-event-handler" class="col-lg-12 {{disabled_s}} {{global_disabled}} btn btn-primary btn-sm" data-toggle="tooltip" data-placement="bottom" title="Launch the event handler for this {{elt_type}}">Try to fix problem</button>
+                           <button name="bt-event-handler" class="col-lg-12 {{disabled_s}} {{global_disabled}} btn btn-primary btn-sm" data-toggle="tooltip" data-placement="bottom" title="Launch the event handler for this {{elt_type}}"><i class="fa fa-magic"></i> Try to fix problem</button>
                            <script>
                               $('button[name="bt-event-handler"]').click(function () {
                                  try_to_fix('{{elt.get_full_name()}}');
@@ -834,7 +834,7 @@ Invalid element name
                         <td></td>
                         <td>
                            %disabled_s = '' if elt.state != elt.ok_up and not elt.problem_has_been_acknowledged else 'disabled'
-                           <button id="bt-acknowledge" name="bt-acknowledge" class="col-lg-12 {{disabled_s}} {{global_disabled}} btn btn-primary btn-sm" data-toggle="tooltip" data-placement="bottom" title="Acknowledge this {{elt_type}} problem">Add an acknowledgement</button>
+                           <button id="bt-acknowledge" name="bt-acknowledge" class="col-lg-12 {{disabled_s}} {{global_disabled}} btn btn-primary btn-sm" data-toggle="tooltip" data-placement="bottom" title="Acknowledge this {{elt_type}} problem"><i class="fa fa-check"></i> Add an acknowledgement</button>
                            <script>
                               $('button[name="bt-acknowledge"]').click(function () {
                                  stop_refresh();
@@ -851,7 +851,7 @@ Invalid element name
                         <td></td>
                         <td>
                            %disabled_s = '' if elt.problem_has_been_acknowledged else 'disabled'
-                           <button id="bt-acknowledge" name="bt-acknowledge" class="col-lg-12 {{disabled_s}} {{global_disabled}} btn btn-primary btn-sm" data-toggle="tooltip" data-placement="bottom" title="Acknowledge this {{elt_type}} problem">Remove acknowledgement</button>
+                           <button id="bt-acknowledge" name="bt-acknowledge" class="col-lg-12 {{disabled_s}} {{global_disabled}} btn btn-primary btn-sm" data-toggle="tooltip" data-placement="bottom" title="Acknowledge this {{elt_type}} problem"><i class="fa fa-check"></i> Remove acknowledgement</button>
                            <script>
                               $('button[name="bt-acknowledge"]').click(function () {
                                  delete_acknowledge('{{elt.get_full_name()}}');
@@ -865,7 +865,7 @@ Invalid element name
                         <td></td>
                         <td>
                            %disabled_s = '' if elt.active_checks_enabled else 'disabled'
-                           <button id="bt-recheck" class="col-lg-12 {{disabled_s}} {{global_disabled}} btn btn-primary btn-sm" data-toggle="tooltip" data-placement="bottom" title="Launch a check for this {{elt_type}} now">Recheck now</button>
+                           <button id="bt-recheck" class="col-lg-12 {{disabled_s}} {{global_disabled}} btn btn-primary btn-sm" data-toggle="tooltip" data-placement="bottom" title="Launch a check for this {{elt_type}} now"><i class="fa fa-refresh"></i> Recheck now</button>
                            <script>
                               $('#bt-recheck').click(function () {
                                  recheck_now('{{elt.get_full_name()}}');
@@ -878,7 +878,7 @@ Invalid element name
                         <td></td>
                         <td>
                            %disabled_s = '' if elt.passive_checks_enabled else 'disabled'
-                           <button name="bt-check-result" class="col-lg-12 {{disabled_s}} {{global_disabled}} btn btn-primary btn-sm" data-toggle="tooltip" data-placement="bottom" title="Submit a check result for this {{elt_type}}">Submit a check result</button>
+                           <button name="bt-check-result" class="col-lg-12 {{disabled_s}} {{global_disabled}} btn btn-primary btn-sm" data-toggle="tooltip" data-placement="bottom" title="Submit a check result for this {{elt_type}}"><i class="fa fa-share"></i> Submit a check result</button>
                            <script>
                               $('button[name="bt-check-result"]').click(function () {
                                  stop_refresh();
@@ -910,7 +910,7 @@ Invalid element name
                         <td></td>
                         <td>
                            %disabled_s = ''
-                           <button id="bt-custom-var" class="col-lg-12 {{disabled_s}} {{global_disabled}} btn btn-primary btn-sm" data-toggle="tooltip" data-placement="bottom" title="Send a custom notification for this {{elt_type}}">Change a custom variable</button>
+                           <button id="bt-custom-var" class="col-lg-12 {{disabled_s}} {{global_disabled}} btn btn-primary btn-sm" data-toggle="tooltip" data-placement="bottom" title="Change a custom variable for this {{elt_type}}"><i class="fa fa-gears"></i> Change a custom variable</button>
                            <script>
                               $('#bt-custom-var').click(function () {
                                  stop_refresh();
@@ -929,7 +929,7 @@ Invalid element name
                         <td></td>
                         <td>
                            %disabled_s = ''
-                           <button id="bt-schedule-downtime" name="bt-schedule-downtime" data-toggle="modal" data-target="#modal" class="col-lg-12 {{disabled_s}} {{global_disabled}} btn btn-primary btn-sm" data-toggle="tooltip" data-placement="bottom" title="Schedule a downtime for this {{elt_type}}">Schedule a downtime</button>
+                           <button id="bt-schedule-downtime" name="bt-schedule-downtime" data-toggle="modal" data-target="#modal" class="col-lg-12 {{disabled_s}} {{global_disabled}} btn btn-primary btn-sm" data-toggle="tooltip" data-placement="bottom" title="Schedule a downtime for this {{elt_type}}"><i class="fa fa-ambulance"></i> Schedule a downtime</button>
                         </td>
                      </tr>
                   </tbody>
@@ -1368,7 +1368,7 @@ Invalid element name
                <script language="javascript">
                function setHTML(html,start) {
                   <!-- change the content of the div --!>
-                  document.getElementById("real_graphs").innerHTML=html;
+                  $("real_graphs").innerHTML=html;
 
                   <!-- and call the jcrop javascript --!>
                   $('.jcropelt').Jcrop({
