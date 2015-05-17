@@ -1,13 +1,13 @@
 th.vertical {
-	height: 120px;
-	width: 15px;
-	vertical-align: bottom;
-	text-align: center;
-	overflow: visible!important;
-	white-space: nowrap;
-	border-top: 0;
-	padding-left: 2px;
-	padding-right: 2px;
+   height: 120px;
+   width: 15px;
+   vertical-align: bottom;
+   text-align: center;
+   overflow: visible!important;
+   white-space: nowrap;
+   border-top: 0;
+   padding-left: 2px;
+   padding-right: 2px;
 }
 
 /** 
@@ -15,28 +15,28 @@ th.vertical {
 * Example: http://jsbin.com/afAQAWA/2/
 */
 .rotated-text {
-    display: inline-block;
-    overflow: hidden;
-	font-weight: normal;
-	padding-left: 2px;
-	padding-right: 2px;
-	width: 18px;
-	margin: 0;
-	margin-bottom: 4px;
+   display: inline-block;
+   overflow: hidden;
+   font-weight: normal;
+   padding-left: 2px;
+   padding-right: 2px;
+   width: 18px;
+   margin: 0;
+   margin-bottom: 4px;
 }
 .rotated-text__inner {
-    display: inline-block;
-    white-space: nowrap;
-    /* this is for shity "non IE" browsers
-       that doesn't support writing-mode */
-    -webkit-transform: translate(1.1em,0) rotate(90deg);
-       -moz-transform: translate(1.1em,0) rotate(90deg);
-         -o-transform: translate(1.1em,0) rotate(90deg);
-            transform: translate(1.1em,0) rotate(90deg);
-    -webkit-transform-origin: 0 0;
-       -moz-transform-origin: 0 0;
-         -o-transform-origin: 0 0;
-            transform-origin: 0 0;
+   display: inline-block;
+   white-space: nowrap;
+   /* this is for shity "non IE" browsers
+    that doesn't support writing-mode */
+   -webkit-transform: translate(1.1em,0) rotate(90deg);
+    -moz-transform: translate(1.1em,0) rotate(90deg);
+      -o-transform: translate(1.1em,0) rotate(90deg);
+         transform: translate(1.1em,0) rotate(90deg);
+   -webkit-transform-origin: 0 0;
+    -moz-transform-origin: 0 0;
+      -o-transform-origin: 0 0;
+         transform-origin: 0 0;
    /* IE9+ */
    -ms-transform: none;
    -ms-transform-origin: none;
@@ -46,60 +46,7 @@ th.vertical {
    *writing-mode: tb-rl;
 }
 .rotated-text__inner:before {
-    content: "";
-    float: left;
-    margin-top: 100%;
-}
-
-/* Host state pill */
-.host {
-	float: left;
-	width: 15px;
-	height: 15px;
-	margin-right: 5px;
-	border-radius: 50%;
-}
-.hostUP {
-	background-color: #468847;
-}
-.hostUNREACHABLE {
-	background-color: #c09853;
-}
-.hostDOWN {
-	background-color: #b94a48;
-}
-.hostUNKNOWN, .hostPENDING {
-	background-color: #3a87ad;
-}
-.hostACKNOWLEDGE {
-	background-color: rgb(18,158,255);
-}
-.hostSOFT{
-	background-image:radial-gradient(rgba(255,255,255,.7), rgba(255,255,255,0) 100%);
-}
-
-/* Service state pill */
-.service {
-	width: 15px;
-	height: 15px;
-	margin: auto;
-	border-radius: 50%;
-}
-.serviceOK {
-	background-color: #468847;
-}
-.serviceWARNING {
-	background-color: #c09853;
-}
-.serviceCRITICAL {
-	background-color: #b94a48;
-}
-.serviceUNKNOWN, .servicePENDING {
-	background-color: #3a87ad;
-}
-.serviceACKNOWLEDGE {
-	background-color: rgb(18,158,255);
-}
-.serviceSOFT{
-	background-image:radial-gradient(rgba(255,255,255,.7), rgba(255,255,255,0) 100%);
+   content: "";
+   float: left;
+   margin-top: 100%;
 }
