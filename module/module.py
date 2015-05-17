@@ -164,15 +164,15 @@ class Webui_broker(BaseModule, Daemon):
 
         self.sidebar_menu = None
         self.menu_items = []
-        if params['sidebar_menu'] is not None:
+        if params['sidebar_menu'] and params['sidebar_menu'] is not None:
             self.sidebar_menu = params['sidebar_menu']
             for (menu) in self.sidebar_menu: 
                 menu = [item.strip() for item in menu.split(',')]
                 self.menu_items.append(menu[0])
         logger.info("[%s] parameter sidebar_menu: %s", self.name, self.sidebar_menu)
         
-        self.hosts_filter = None
-        if params['hosts_filter'] is not None:
+        self.hosts_filter = []
+        if 'hosts_filter' in params and params['hosts_filter'] is not None:
             self.hosts_filter = params['hosts_filter']
         logger.info("[%s] parameter host_filter: %s", self.name, self.hosts_filter)
             
@@ -660,18 +660,16 @@ class Webui_broker(BaseModule, Daemon):
     # The source variable describes the source of the calling. Are we displaying 
     # graphs for the element detail page (detail), or a widget in the dashboard (dashboard) ?
     def get_graph_uris(self, elt, graphstart, graphend, source = 'detail'):
-        #safe_print("Checking graph uris ", elt.get_full_name())
-
         uris = []
         for mod in self.modules_manager.get_internal_instances():
             try:
+                logger.debug("[%s] module %s, get_graph_uris", self.name, mod)
                 f = getattr(mod, 'get_graph_uris', None)
                 #safe_print("Get graph uris ", f, "from", mod.get_name())
                 if f and callable(f):
                     r = f(elt, graphstart, graphend, source)
                     uris.extend(r)
             except Exception, exp:
-                print exp.__dict__
                 logger.warning("[%s] The mod %s raise an exception: %s, I'm tagging it to restart later" % (self.name, mod.get_name(), str(exp)))
                 logger.debug("[%s] Exception type: %s" % (self.name, type(exp)))
                 logger.debug("Back trace of this kill: %s" % (traceback.format_exc()))
@@ -873,7 +871,16 @@ class Webui_broker(BaseModule, Daemon):
             return only_related_to(items,user)
 
         return items
-                  
+
+    def get_host(self, hname):
+        hname = hname.decode('utf8', 'ignore')
+        return self.rg.hosts.find_by_name(hname)
+
+    def get_service(self, hname, sdesc):
+        hname = hname.decode('utf8', 'ignore')
+        sdesc = sdesc.decode('utf8', 'ignore')
+        return self.rg.services.find_srv_by_name_and_hostname(hname, sdesc)
+
     def get_all_hosts_and_services(self, user=None):
         all = []
         all.extend(self.get_hosts())
