@@ -51,7 +51,6 @@ def show_impacts():
     # First we look for the user sid
     # so we bail out if it's a false one
     user = app.get_user_auth()
-
     if not user:
         app.bottle.redirect("/user/login")
         #return {'app': app, 'impacts': {}, 'valid_user': False, 'user': user}
@@ -92,7 +91,7 @@ def impacts_widget():
 
     return d
 
-widget_desc = '<h4>Impacts</h3>Show an aggregated view of the most business impacts!</h4>'
+widget_desc = '<h4>Impacts</h3>Show an aggregated view of the more important business impacts!</h4>'
 
 pages = {show_impacts: {'routes': ['/impacts'], 'view': 'impacts', 'static': True},
          impacts_widget: {'routes': ['/widget/impacts'], 'view': 'widget_impacts', 'static': True, 'widget': ['dashboard'], 'widget_desc': widget_desc, 'widget_name': 'impacts', 'widget_picture': '/static/impacts/img/widget_impacts.png'},
