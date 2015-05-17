@@ -53,9 +53,7 @@ def expand_macros(cmd=None):
     for macro in macros:
         subfunc = subs.get(macro)
         if subfunc is None:
-            print "Macro ", macro, " is unknown, do nothing"
             continue
-        print "Expand macro ", macro, " in '", cmd_expanded, "'"
         cmd_expanded = cmd_expanded.replace(macro, subfunc())
 
     return cmd_expanded
@@ -73,7 +71,6 @@ def get_page(cmd=None):
 
     app.response.content_type = 'application/json'
 
-    print app.request.query.__dict__
     callback = app.request.query.get('callback', None)
     response_text = app.request.query.get('response_text', 'Command launched')
 
@@ -93,14 +90,13 @@ def get_page(cmd=None):
     elts = cmd.split('/')
     cmd_name = elts[0]
     cmd_args = elts[1:]
-    logger.warning("[webui] action, got command: %s with args: %s.", cmd_name, cmd_args)
+    logger.info("[webui-actions] got command: %s with args: %s.", cmd_name, cmd_args)
 
     # Check if the command exist in the external command list
     if cmd_name not in ExternalCommandManager.commands:
         return forge_response(callback, 404, 'Unknown command %s' % cmd_name)
 
     extcmd = '[%d] %s' % (now, ';'.join(elts))
-    print "Got the; form", extcmd
 
     # Expand macros
     extcmd = expand_macros(extcmd)
@@ -109,7 +105,7 @@ def get_page(cmd=None):
     # extcmd = extcmd.decode('utf8', 'replace')
     # Fix #69
     extcmd = extcmd.decode('utf8', 'ignore')
-    logger.warning("[webui] action, external command: %s." % (extcmd))
+    logger.info("[webui-actions] external command: %s." % (extcmd))
     e = ExternalCommand(extcmd)
     app.push_external_command(e)
 
