@@ -49,12 +49,16 @@ def load_cfg():
         params['default_zoom'] = int(params['default_zoom'])
 
         params['map_hostsLevel'] = [int(item) for item in params['map_hostsLevel'].split(',')]
+        params['map_hostsShow'] = [item for item in params['map_hostsShow'].split(',')]
+        params['map_hostsHide'] = [item for item in params['map_hostsHide'].split(',')]
         params['map_servicesLevel'] = [int(item) for item in params['map_servicesLevel'].split(',')]
         params['map_servicesHide'] = [item for item in params['map_servicesHide'].split(',')]
         
         logger.info("[webui-worldmap] configuration loaded.")
         logger.debug("[webui-worldmap] configuration, default position and zoom level: %s / %s - zoom: %s", params['default_Lat'], params['default_Lng'], params['default_zoom'])
         logger.debug("[webui-worldmap] configuration, map hosts level: %s", params['map_hostsLevel'])
+        logger.debug("[webui-worldmap] configuration, map hosts always shown: %s", params['map_hostsShow'])
+        logger.debug("[webui-worldmap] configuration, map hosts always hidden: %s", params['map_hostsHide'])
         logger.debug("[webui-worldmap] configuration, map services level: %s", params['map_servicesLevel'])
         logger.debug("[webui-worldmap] configuration, map services hide: %s", params['map_servicesHide'])
     except Exception, exp:
@@ -76,7 +80,7 @@ def checkauth():
 
 
 # Our page. If the user call /worldmap
-def get_page():
+def show_worldmap():
     user = checkauth()
 
     # We are looking for hosts with valid GPS coordinates,
@@ -116,7 +120,7 @@ def get_page():
     return {'app': app, 'user': user, 'params': params, 'hosts': valid_hosts}
 
 
-def worldmap_widget():
+def show_worldmap_widget():
     user = checkauth()
 
     wid = app.request.GET.get('wid', 'widget_worldmap_' + str(int(time.time())))
@@ -172,6 +176,6 @@ load_cfg()
 pages = {
     reload_cfg: {'routes': ['/reload/worldmap']},
 
-    get_page: {'routes': ['/worldmap'], 'view': 'worldmap', 'static': True},
-    worldmap_widget: {'routes': ['/widget/worldmap'], 'view': 'worldmap_widget', 'static': True, 'widget': ['dashboard'], 'widget_desc': widget_desc, 'widget_name': 'worldmap', 'widget_picture': '/static/worldmap/img/widget_worldmap.png'},
+    show_worldmap: {'routes': ['/worldmap'], 'view': 'worldmap', 'static': True},
+    show_worldmap_widget: {'routes': ['/widget/worldmap'], 'view': 'worldmap_widget', 'static': True, 'widget': ['dashboard'], 'widget_desc': widget_desc, 'widget_name': 'worldmap', 'widget_picture': '/static/worldmap/img/widget_worldmap.png'},
 }
