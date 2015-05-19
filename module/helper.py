@@ -927,11 +927,11 @@ class Helper(object):
                     <th class="col-lg-2 hidden-md">
                         <span class='output' rel="tooltip" data-original-title="%s">%s</span>
                     </th>
-                ''' % (pb.output, self.strip_html_output(pb.output[:app.max_output_length]))
+                ''' % (self.strip_html_output(pb.output[:app.max_output_length]))
             else:
                 content += '''
                     <th class="col-lg-2 hidden-md">
-                        <span class='output' rel="tooltip" data-original-title="{{pb.output}}">%s</span>
+                        <span class='output' rel="tooltip" data-original-title="%s">%s</span>
                     </th>
                 ''' % (pb.output, pb.output[:app.max_output_length])
         else:
