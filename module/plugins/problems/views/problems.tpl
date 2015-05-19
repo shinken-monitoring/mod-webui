@@ -510,7 +510,7 @@
          %end
       
          %# Host information ...
-         {{!helper.get_problem_html(pb, app, actions_allowed, user.get_name(), True, True)}}
+         %include _problem pb=pb, app=app, graphs=True, actions_allowed=actions_allowed, user=user.get_name()
 
       %# End for pb in pbs:
       %end
