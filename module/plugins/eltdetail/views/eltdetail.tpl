@@ -457,17 +457,27 @@ Invalid element name
                            <button class="col-lg-12 btn trim trim-{{elt.state.lower()}}" data-toggle="tooltip" data-placement="bottom" title="since {{helper.print_duration(elt.last_state_change, just_duration=True, x_elts=2)}}">{{elt.state}} <i class='fa fa-{{acked}}'></i></button>
                         </td>
                      </tr>
+                     %if elt.flap_detection_enabled:
                      <tr>
                         <td><strong>Flapping:</strong></td>
                         <td>
                            <button class="col-lg-12 btn trim trim-{{helper.yes_no(elt.is_flapping)}}" data-toggle="tooltip" data-placement="bottom" title="{{helper.print_float(elt.percent_state_change)}}% state change">{{helper.yes_no(elt.is_flapping)}}</button>
                         </td>
                      </tr>
+                     %end
                      <tr>
                         <td><strong>Downtime:</strong></td>
                         <td>
                            <button class="col-lg-12 btn trim trim-{{helper.yes_no(elt.in_scheduled_downtime)}}">{{helper.yes_no(elt.in_scheduled_downtime)}}</button>
                         </td>
+                     </tr>
+                  </tbody>
+               </table>
+                     
+               <table class="table-condensed col-sm-12" style="table-layout: fixed; word-wrap: break-word;">
+                  <tbody style="font-size:x-small;">
+                     <tr>
+                        <td colspan="2"><hr/></td>
                      </tr>
                   </tbody>
                </table>
@@ -713,7 +723,7 @@ Invalid element name
                      </tr>
                      <tr>
                         <td><strong>Active checks:</strong></td>
-                        <td><span class="{{'glyphicon glyphicon-ok font-green' if elt.active_checks_enabled else 'glyphicon glyphicon-remove font-red'}}"></span></td>
+                        <td>{{! app.helper.get_on_off(elt.active_checks_enabled, 'Is active checking enabled?')}}</td>
                      </tr>
                      %if (elt.active_checks_enabled):
                      <tr>
@@ -731,12 +741,12 @@ Invalid element name
                      %end
                      <tr>
                         <td><strong>Passive checks:</strong></td>
-                        <td><i class="{{'glyphicon glyphicon-ok font-green' if elt.passive_checks_enabled else 'glyphicon glyphicon-remove font-red'}}"></span></td>
+                        <td>{{! app.helper.get_on_off(elt.passive_checks_enabled, 'Is passive checking enabled?')}}</td>
                      </tr>
                      %if (elt.passive_checks_enabled):
                      <tr>
                         <td><strong>Freshness check:</strong></td>
-                        <td><span class="{{'glyphicon glyphicon-ok font-green' if elt.check_freshness else 'glyphicon glyphicon-remove font-red'}}"></span></td>
+                        <td>{{! app.helper.get_on_off(elt.check_freshness, 'Is freshness check enabled?')}}</td>
                      </tr>
                      %if (elt.check_freshness):
                      <tr>
@@ -747,17 +757,11 @@ Invalid element name
                      %end
                      <tr>
                         <td><strong>Process performance data:</strong></td>
-                        <td><i class="{{'glyphicon glyphicon-ok font-green' if elt.process_perf_data else 'glyphicon glyphicon-remove font-red'}}"></span></td>
+                        <td>{{! app.helper.get_on_off(elt.process_perf_data, 'Is perfdata process enabled?')}}</td>
                      </tr>
-                     <!--
-                     <tr>
-                        <td><strong>Obsess over {{elt_type}}:</strong></td>
-                        <td><span class="{{'glyphicon glyphicon-ok font-green' if (hasattr(elt, 'obsess_over_host') and elt.obsess_over_host) or (hasattr(elt, 'obsess_over_service') and elt.obsess_over_service) else 'glyphicon glyphicon-remove font-red'}}"></span></td>
-                     </tr>
-                     -->
                      <tr>
                         <td><strong>Event handler:</strong></td>
-                        <td><span class="glyphicon glyphicon-ok font-green"></span>{{elt.event_handler if elt.event_handler else ''}}</td>
+                        <td>{{! app.helper.get_on_off(elt.event_handler, 'Is an event handler defined?')}}</td>
                      </tr>
                   </tbody>
                </table>
@@ -775,7 +779,7 @@ Invalid element name
                   <tbody style="font-size:x-small;">
                      <tr>
                         <td><strong>Flapping detection:</strong></td>
-                        <td><span class="{{'glyphicon glyphicon-ok font-green' if elt.flap_detection_enabled else 'glyphicon glyphicon-remove font-red'}}"></span></td>
+                        <td>{{! app.helper.get_on_off(elt.flap_detection_enabled, 'Is status flapping detection enabled?')}}</td>
                      </tr>
                      %if elt.flap_detection_enabled:
                      <tr>
