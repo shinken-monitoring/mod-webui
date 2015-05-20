@@ -1,4 +1,4 @@
-%rebase layout_mobile globals(), title="Wall", js=['mobile/js/mobile_main.js', 'mobile/js/mobile_problems.js'], css=['mobile/css/main.css', 'mobile/css/problems.css'], menu_part='/wall'
+%rebase layout_mobile globals(), title="Wall", js=['mobile/js/mobile_main.js', 'mobile/js/mobile_problems.js'], css=['mobile/css/main.css', 'mobile/css/problems.css']
 
 %helper = app.helper
 

@@ -98,7 +98,7 @@ Invalid element name
 			</tr>
 			<tr>
 		    	<td><strong>Importance:</strong></td>
-		    	<td>{{!helper.get_business_impact_text(elt)}}</td>
+		    	<td>{{!helper.get_business_impact_text(elt.business_impact)}}</td>
 			</tr>
 		</table>
 

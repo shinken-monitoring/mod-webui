@@ -1,4 +1,4 @@
-%rebase layout_mobile globals(), title="Impacts View", js=['mobile/js/mobile_impacts.js'], css=['mobile/css/impacts.css'], menu_part='/impacts'
+%rebase layout_mobile globals(), title="Impacts View", js=['mobile/js/mobile_impacts.js'], css=['mobile/css/impacts.css']
 
 %helper = app.helper
 %datamgr = app.datamgr

@@ -28,7 +28,8 @@
 
 import time
 from shinken.util import safe_print
-from helper import hst_srv_sort
+from shinken.misc.sorter import hst_srv_sort
+# from helper import hst_srv_sort
 from shinken.misc.sorter import worse_first
 
 try:
@@ -117,7 +118,7 @@ def problems():
     navi = app.helper.get_navi(total, start, step=5)
     all_pbs = all_pbs[start:end]
 
-    return {'app': app, 'user': user, 'navi': navi, 'problems': all_pbs, 'menu_part': '/problems'}
+    return {'app': app, 'user': user, 'navi': navi, 'problems': all_pbs}
 
 
 def dashboard():
@@ -147,7 +148,7 @@ def dashboard():
     navi = app.helper.get_navi(total, start, step=5)
     all_pbs = all_pbs[start:end]
 
-    return {'app': app, 'user': user, 'navi': navi, 'problems': all_pbs, 'menu_part': '/dashboard'}
+    return {'app': app, 'user': user, 'navi': navi, 'problems': all_pbs}
 
 
 def system_page():
