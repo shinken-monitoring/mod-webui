@@ -258,10 +258,7 @@ Invalid element name
          <div class="panel panel-default">
             <div class="panel-heading">
                <div class="panel-heading fitted-header cursor" data-toggle="collapse" data-parent="#Overview" href="#collapseOverview">
-                  <h4 class="panel-title"><span class="caret"></span>&nbsp;Overview {{elt_name}} ({{elt.display_name if elt.display_name else elt.alias if elt.alias else 'none'}})
-                     %for i in range(0, elt.business_impact-2):
-                     <img src="/static/images/star.png">
-                     %end
+                  <h4 class="panel-title"><span class="caret"></span>&nbsp;Overview {{elt_name}} ({{elt.display_name if elt.display_name else elt.alias if elt.alias else 'none'}}) {{!helper.get_business_impact_text(elt.business_impact)}}
                   </h4>
                </div>
             </div>
@@ -277,7 +274,7 @@ Invalid element name
                   <dd>{{elt.address}}</dd>
 
                   <dt>Importance:</dt>
-                  <dd>{{!helper.get_business_impact_text(elt.business_impact)}}</dd>
+                  <dd>{{!helper.get_business_impact_text(elt.business_impact, True)}}</dd>
                </dl>
               
                <dl class="col-sm-6 dl-horizontal">
@@ -327,7 +324,7 @@ Invalid element name
                   </dd>
 
                   <dt>Importance:</dt>
-                  <dd>{{!helper.get_business_impact_text(elt.business_impact)}}</dd>
+                  <dd>{{!helper.get_business_impact_text(elt.business_impact, True)}}</dd>
                </dl>
               
                <dl class="col-sm-6 dl-horizontal">
@@ -559,13 +556,13 @@ Invalid element name
                   <tbody style="font-size:x-small;">
                      <tr>
                         <td><strong>Notifications:</strong></td>
-                        <td><span title="Are notifications enabled for this element?" class="{{'glyphicon glyphicon-ok font-green' if elt.notifications_enabled else 'glyphicon glyphicon-remove font-red'}}"></span></td>
+                        <td>{{! app.helper.get_on_off(elt.notifications_enabled, "Are notifications enabled for this element?")}}</td>
                      </tr>
                      %if elt.notifications_enabled:
                      <tr>
                         <td><strong>Notification period:</strong></td>
                         <td name="notification_period" class="popover-dismiss" data-html="true" data-toggle="popover" data-trigger="hover" title="Notification period" data-placement="bottom" data-content="...">
-                        <span title="Is notification period currently active?" class="{{'glyphicon glyphicon-ok font-green' if elt.notification_period.is_time_valid(time.time()) else 'glyphicon glyphicon-remove font-red'}}"></span>
+                        {{! app.helper.get_on_off(elt.notification_period.is_time_valid(time.time()), "Is notification period currently active?")}}
                         %if 'timeperiods' in app.menu_items:
                         <a href="/timeperiods">{{elt.notification_period.alias}}</a>
                         <script>
@@ -604,7 +601,7 @@ Invalid element name
                         <td><strong>Notification options:</strong></td>
                         <td>
                         %for m in message:
-                           <span class="{{'glyphicon glyphicon-ok font-green' if m in elt.notification_options else 'glyphicon glyphicon-remove font-red'}}">&nbsp;{{message[m]}}&nbsp;</span>
+                           {{! app.helper.get_on_off(m in elt.notification_options, '', message[m]+'&nbsp;')}}
                         %end
                         </td>
                      </tr>
@@ -1130,6 +1127,11 @@ Invalid element name
                      <div class="col-lg-12">
                         <!-- Show our father dependencies if we got some -->
                         %if len(elt.parent_dependencies) > 0:
+%###
+%### To be replaced !
+!helper.get_button('Show dependency tree', img='/static/images/expand.png')
+%###
+%###
                         <h4>Root cause:</h4>
                         <a id="togglelink-{{elt.get_dbg_name()}}" href="javascript:toggleBusinessElt('{{elt.get_dbg_name()}}')"> {{!helper.get_button('Show dependency tree', img='/static/images/expand.png')}}</a>
                         <div class="clear"></div>
@@ -1171,6 +1173,11 @@ Invalid element name
                               %nb += 1
                               %if nb == max_impacts_displayed+1:
                               <div class="pull-right" id="hidden_impacts_or_services_button">
+%###
+%### To be replaced !
+!helper.get_button('Show dependency tree', img='/static/images/expand.png')
+%###
+%###
                                  <a href="javascript:show_hidden_impacts_or_services()"> {{!helper.get_button('Show all impacts', img='/static/images/expand.png')}}</a>
                               </div>
                               %end

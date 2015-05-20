@@ -60,7 +60,11 @@ def get_div(elt):
                   <img src="/static/images/star.png">
               </div>''' % (i-1)
     lnk = app.helper.get_link_dest(elt)
+    ###
+    ### To be replaced !
     button = app.helper.get_button('', img='/static/images/search.png')
+    ###
+    ###
     pulse = ''
     if elt.is_problem or (elt.state_id != 0 and elt.business_impact > 2):
         pulse = '<span class="wall-pulse pulse" title=""></span>'

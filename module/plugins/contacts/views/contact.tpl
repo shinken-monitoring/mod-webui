@@ -10,9 +10,9 @@
 %username = 'anonymous'
 %if user is not None: 
 %if hasattr(contact, 'alias'):
-%	username = contact.alias
+%username = contact.alias
 %else:
-%	username = contact.get_name()
+%username = contact.get_name()
 %end
 %end
 
@@ -58,7 +58,7 @@
 %if not 'user' in locals(): user = None
 
 <div class="row">
-   <div class="col-sm-12 col-md-6">
+   <div class="col-sm-12">
       <div class="panel panel-default">
          <div class="panel-heading">
             <h2 class="panel-title">Contact</h2>
@@ -178,7 +178,7 @@
                   <td><strong>Tags:</strong></td>
                   <td>
                     %if len(contact.tags) > 0:
-                    <div id="contact_tags" class="btn-group pull-right">
+                    <div id="contact_tags" class="btn-group pull-left">
                       <script>
                         %j=0
                         %for t in sorted(contact.tags):
@@ -208,25 +208,31 @@
                   <td>{{nw.notificationway_name}}</td>
                 </tr>
                   <tr>
-                    <td><strong>&raquo;Minimum business impact:</strong></td>
-                    <td>{{nw.min_business_impact}}</td>
+                    <td><strong>&raquo;&nbsp;Minimum business impact:</strong></td>
+                    <td>{{nw.min_business_impact}} - {{app.helper.get_business_impact_text(nw.min_business_impact, True)}}</td>
                   </tr>
                   
                   <tr>
-                    <td><strong>&raquo;Hosts notifications:</strong></td>
-                    <td><span class="{{'glyphicon glyphicon-ok font-green' if contact.host_notifications_enabled else 'glyphicon glyphicon-remove font-red'}}"></span></td>
+                    <td colspan="2"><strong>&raquo;&nbsp;Hosts notifications:</strong>&nbsp;<i title="Are hosts notifications enabled?" class="{{'glyphicon glyphicon-ok font-green' if contact.host_notifications_enabled else 'glyphicon glyphicon-remove font-red'}}"></i></td>
                   </tr>
                   %if nw.host_notifications_enabled:
                   <tr>
-                    <td><strong>&nbsp;&ndash;period:</strong></td>
-                    <td name="{{"host_notification_period%s" % i}}" class="popover-dismiss" data-html="true" data-toggle="popover" title="Host notification period" data-placement="top" data-content="...">{{nw.host_notification_period.get_name()}}</td>
-                    <script>
-                      %tp=app.get_timeperiod(nw.host_notification_period.get_name())
-                      $('td[name="{{"host_notification_period%s" % i}}"]')
-                        .attr('title', '{{tp.alias if hasattr(tp, "alias") else tp.timeperiod_name}}')
-                        .attr('data-content', '{{!app.helper.get_timeperiod_html(tp)}}')
-                        .popover();
-                    </script>
+                    <td><strong>&nbsp;&ndash;&nbsp;period:</strong></td>
+                    <td name="{{"host_notification_period%s" % i}}" class="popover-dismiss" data-html="true" data-toggle="popover" data-trigger="hover" title="Host notification period" data-placement="top" data-content="...">
+                    <i title="Is notification period currently active?" class="{{'glyphicon glyphicon-ok font-green' if nw.host_notification_period.is_time_valid(time.time()) else 'glyphicon glyphicon-remove font-red'}}"></i>
+                     %if 'timeperiods' in app.menu_items:
+                     <a href="/timeperiods">{{nw.host_notification_period.alias}}</a>
+                     <script>
+                        %tp=app.get_timeperiod(nw.host_notification_period.get_name())
+                        $('td[name="{{"host_notification_period%s" % i}}"]')
+                          .attr('title', '{{tp.alias if hasattr(tp, "alias") else tp.timeperiod_name}}')
+                          .attr('data-content', '{{! app.helper.get_timeperiod_html(tp)}}')
+                          .popover();
+                     </script>
+                     %else:
+                     {{nw.host_notification_period.alias}}
+                     %end
+                    </td>
                   </tr>
                   
                   %if nw.host_notification_options != '':
@@ -240,7 +246,7 @@
                   %message['s'] = 'Downtimes'
                   %message['n'] = 'None'
                   <tr>
-                    <td><strong>&nbsp;&ndash;options:</strong></td>
+                    <td><strong>&nbsp;&ndash;&nbsp;options:</strong></td>
                     <td>
                     %for m in message:
                       <span class="{{'glyphicon glyphicon-ok font-green' if m in options else 'glyphicon glyphicon-remove font-red'}}">{{message[m]}}&nbsp;</span>
@@ -253,14 +259,20 @@
                   %for command in nw.host_notification_commands:
                     %i += 1
                     <tr>
-                      <td><strong>&nbsp;&ndash;command:</strong></td>
-                      <td name="host_command{{i}}" class="popover-dismiss" data-html="true" data-toggle="popover" title="Service notification command" data-placement="top" data-content="...">{{command.get_name()}}</td>
+                      <td><strong>&nbsp;&ndash;&nbsp;command:</strong></td>
+                      <td name="host_command{{i}}" class="popover-dismiss" data-html="true" data-toggle="popover" data-trigger="hover" title="Service notification command" data-placement="top" data-content="...">
+                      %if 'commands' in app.menu_items:
+                      {{command.get_name()}}
                       <script>
                         $('td[name="host_command{{i}}"]')
                           .attr('title', '{{command.get_name()}}')
                           .attr('data-content', {{json.dumps(command.command.command_line)}})
                           .popover();
                       </script>
+                      %else:
+                      {{command.get_name()}}
+                      %end
+                      </td>
                     </tr>
                   %end
                   %end
@@ -268,13 +280,15 @@
                   
                 
                   <tr>
-                    <td><strong>&raquo;Services notifications:</strong></td>
-                    <td><span class="{{'glyphicon glyphicon-ok font-green' if contact.service_notifications_enabled else 'glyphicon glyphicon-remove font-red'}}"></span></td>
+                    <td colspan="2"><strong>&raquo;&nbsp;Services notifications:</strong>&nbsp;<i title="Are services notifications enabled?" class="{{'glyphicon glyphicon-ok font-green' if contact.service_notifications_enabled else 'glyphicon glyphicon-remove font-red'}}"></i></td>
                   </tr>
                   %if nw.service_notifications_enabled:
                   <tr>
-                    <td><strong>&nbsp;&ndash;period:</strong></td>
-                    <td name="{{"service_notification_period%s" % i}}" class="popover-dismiss" data-html="true" data-toggle="popover" title="service notification period" data-placement="top" data-content="...">{{nw.service_notification_period.get_name()}}</td>
+                    <td><strong>&nbsp;&ndash;&nbsp;period:</strong></td>
+                    <td name="{{"service_notification_period%s" % i}}" class="popover-dismiss" data-html="true" data-toggle="popover" data-trigger="hover" title="service notification period" data-placement="top" data-content="...">
+                    <i title="Is notification period currently active?" class="{{'glyphicon glyphicon-ok font-green' if nw.service_notification_period.is_time_valid(time.time()) else 'glyphicon glyphicon-remove font-red'}}"></i>
+                    %if 'timeperiods' in app.menu_items:
+                    <a href="/timeperiods">{{nw.service_notification_period.alias}}</a>
                     <script>
                       %tp=app.get_timeperiod(nw.service_notification_period.get_name())
                       $('td[name="{{"service_notification_period%s" % i}}"]')
@@ -282,6 +296,10 @@
                         .attr('data-content', '{{!app.helper.get_timeperiod_html(tp)}}')
                         .popover();
                     </script>
+                    %else:
+                    {{nw.service_notification_period.alias}}
+                    %end
+                    </td>
                   </tr>
                   
                   %if nw.service_notification_options != '':
@@ -296,7 +314,7 @@
                   %message['s'] = 'Downtimes'
                   %message['n'] = 'None'
                   <tr>
-                    <td><strong>&nbsp;&ndash;options:</strong></td>
+                    <td><strong>&nbsp;&ndash;&nbsp;options:</strong></td>
                     <td>
                     %for m in message:
                       <span class="{{'glyphicon glyphicon-ok font-green' if m in options else 'glyphicon glyphicon-remove font-red'}}">{{message[m]}}&nbsp;</span>
@@ -310,13 +328,19 @@
                     %i += 1
                     <tr>
                       <td><strong>&nbsp;&ndash;command:</strong></td>
-                      <td name="service_command{{i}}" class="popover-dismiss" data-html="true" data-toggle="popover" title="Service notification command" data-placement="top" data-content="...">{{command.get_name()}}</td>
+                      <td name="service_command{{i}}" class="popover-dismiss" data-html="true" data-toggle="popover" data-trigger="hover" title="Service notification command" data-placement="top" data-content="...">
+                      %if 'commands' in app.menu_items:
+                      {{command.get_name()}}
                       <script>
                         $('td[name="service_command{{i}}"]')
                           .attr('title', '{{command.get_name()}}')
                           .attr('data-content', {{json.dumps(command.command.command_line)}})
                           .popover();
                       </script>
+                      %else:
+                      {{command.get_name()}}
+                      %end
+                      </td>
                     </tr>
                   %end
                   %end
@@ -348,7 +372,7 @@
                     {{', ' if i!=1 else ''}}{{!app.helper.get_link(item, short=True)}}
                     %i+=1
                     %if i > 20:
-                    <span> ... </span>
+                    <span title="Only the 20 first hosts are listed ... some more are related to this contact."> ... </span>
                     %break
                     %end
                   %end
@@ -362,8 +386,8 @@
                   %for item in my_services:
                     {{', ' if i!=1 else ''}}{{!app.helper.get_link(item, short=True)}}
                     %i+=1
-                    %if i > 20:
-                    <span> ... </span>
+                    %if i > 50:
+                    <span title="Only the 50 first services are listed ... some more are related to this contact."> ... </span>
                     %break
                     %end
                   %end

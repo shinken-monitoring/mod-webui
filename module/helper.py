@@ -356,6 +356,11 @@ class Helper(object):
 
 
     # Return a button with text, image, id and class (if need)
+###
+###
+## To be removed ... html code will be more clean !
+###
+###
     def get_button(self, text, img=None, id=None, cls=None):
         #s = '<div class="buttons">\n'
         s = '<div class="btn">\n'
@@ -381,15 +386,6 @@ class Helper(object):
         t = copy.copy(host.services)
         t.sort(hst_srv_sort)
         return t
-
-    def get_input_bool(self, b, id=None):
-        id_s = ''
-        if id:
-            id_s = 'id="%s"' % id
-        if b:
-            return """<input type="checkbox" checked="checked" %s/>\n""" % id_s
-        else:
-            return """<input type="checkbox" %s />\n""" % id_s
 
 
     def print_business_rules_mobile(self, tree, level=0, source_problems=[]):
@@ -553,15 +549,31 @@ class Helper(object):
         return 'unknown'
 
     # Give a business impact as text and stars if need
-    def get_business_impact_text(self, business_impact):
+    # If text=True, returns text+stars, else returns stars only ...
+    def get_business_impact_text(self, business_impact, text=False):
         txts = {0: 'None', 1: 'Low', 2: 'Normal',
                 3: 'High', 4: 'Very important', 5: 'Top for business'}
         nb_stars = max(0, business_impact - 2)
         stars = '<i class="fa fa-star text-primary"></i>&nbsp;' * nb_stars
-        #stars = '<img src="/static/images/star.png" alt="star">\n' * nb_stars
 
-        res = "%s %s" % (txts.get(business_impact, 'Unknown'), stars)
+        if text:
+            res = "%s %s" % (txts.get(business_impact, 'Unknown'), stars)
+        else:
+            res = stars
         return res
+
+    # Give an enabled/disabled state based on glyphicons with optional title and message
+    def get_on_off(self, status=False, title=None, message=''):
+        if not title:
+            if status:
+                title = 'Enabled'
+            else:
+                title = 'Disabled'
+
+        if status:
+            return '''<i title="%s" class="glyphicon glyphicon-ok font-green">%s</i>''' % (title, message)
+        else:
+            return '''<i title="%s" class="glyphicon glyphicon-remove font-red">%s</i>''' % (title, message)
 
     # We will output as a ul/li list the impacts of this
     def got_impacts_list_as_li(self, obj):
@@ -862,4 +874,14 @@ class Helper(object):
     
         return content
 
+    def state_to_class(self, state):
+        '''Convert a shinken state to a bootstrap3 class'''
+        classes = {"OK": 'success', "UP": 'success',
+                  "DOWN": 'danger', "CRITICAL": 'danger',
+                  "WARNING": 'warning',
+                  "UNKNOWN": 'info'}
+        if state in classes:
+            return classes[state]
+        else:
+            return 'default'
 helper = Helper()
