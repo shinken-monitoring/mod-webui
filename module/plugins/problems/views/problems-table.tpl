@@ -265,8 +265,8 @@
       <a id='show_toolbar_btn' href="javascript:show_toolbar()" class="btn btn-default"><i class="fa fa-plus"></i> Show toolbar</a>      
       <a id='select_all_btn' href="javascript:select_all_problems()" class="btn btn-default"><i class="fa fa-check"></i> Select all</a>
       <a id='unselect_all_btn' href="javascript:unselect_all_problems()" class="btn btn-default"><i class="fa fa-minus"></i> Unselect all</a>
-      <a id='expand_all' href="javascript:expand_all_block()" class="btn btn-default"><i class="fa fa-plus"></i> Expand all</a>
-      <a id='collapse_all' href="javascript:collapse_all_block()" class="btn btn-default"><i class="fa fa-minus"></i> Collapse all</a>
+      <!--<a id='expand_all' href="javascript:expand_all_block()" class="btn btn-default"><i class="fa fa-plus"></i> Expand all</a>-->
+      <!--<a id='collapse_all' href="javascript:collapse_all_block()" class="btn btn-default"><i class="fa fa-minus"></i> Collapse all</a>-->
    </div>
    <div class='col-lg-7 col-md-8 col-sm-10 pull-right'>
    %include pagination_element navi=navi, app=app, page=page, div_class="pull-right"
@@ -431,97 +431,84 @@
 
    <!-- Right panel, with all problems -->
    <div id="problems" class="col-lg-9 col-md-8 col-sm-8">
-      <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
 
-      %# We will print Business impact level of course
-      %impact_level = 10
-
-      %# We remember the last hostname so see if we print or not the host for a 2nd service
-      %last_hname = ''
-
-      %# We try to make only important things shown on same output
-      %last_output = ''
-      %nb_same_output = 0
-
-      %for pb in pbs:
-         %# New business impact level ...
-         %if pb.business_impact != impact_level:
-            %if impact_level != 10:
-               %# Close last panel group  ...
-               {{'</div></div></div></div>'}}
+      %from itertools import groupby
+      %pbs = sorted(pbs, key=lambda x: x.business_impact, reverse=True)
+      %for business_impact, bi_pbs in groupby(pbs, key=lambda x: x.business_impact):
+        <h3> Business impact: {{!helper.get_business_impact_text(business_impact)}} </h3>
+      <table class="table table-bordered table-condensed table-striped">
+        <thead><tr>
+            <th align="center">Host</th>
+            <th align="center">Service</th>
+            <th align="center">State</th>
+            <th align="center">Since</th>
+            <th align="center">Last check</th>
+            <th align="center">Next check</th>
+            <th align="center">Output</th>
+            %if actions_allowed:
+            <th align="center">Actions</th>
             %end
-            %# Business level title ...
-            <h3> Business impact: {{!helper.get_business_impact_text(pb.business_impact)}} </h3>
-            %# "We reset the last_hname so we won't overlap this feature across tables"
-            %last_hname = 'first'
-            %last_output = ''
-            %nb_same_output = 0
-         %end
-         
-         %impact_level = pb.business_impact
+        </tr></thead>
 
-         %# " We check for the same output and the same host. If we got more than 3 of same, make them opacity effect"
-         %if pb.output == last_output and pb.host_name == last_hname:
-            %nb_same_output += 1
-         %else:
-            %nb_same_output = 0
-         %end
-         %last_output = pb.output
-      
-         %if pb.host_name != last_hname:
-            %if last_hname != '' and last_hname != 'first':
-               %# Close last panel group  ...
-                        </div>
-                     </div>
-                  </div>
-               </div>
-            %end
+        <tbody>
+        %bi_pbs = sorted(bi_pbs, key=lambda x: x.host_name)
+        %for host_name, host_pbs in groupby(bi_pbs, key=lambda x: x.host_name):
+        %for i, pb in enumerate(host_pbs):
             
-         <div class="panel panel-default">
-            <div class="panel-heading">
-%if actions_allowed:
-               <div class='tick pull-left' style="cursor:pointer;" onclick="add_remove_elements('{{helper.get_html_id(pb)}}')">
-                  <img class='img_tick' id='selector-{{helper.get_html_id(pb)}}' src='/static/images/tick.png' />
-               </div>
-               <span class="pull-left">&nbsp;&nbsp;&nbsp;</span>
-%end
-               <span class='img_status'>
-                  <span class="medium-pulse aroundpulse pull-left">
-                  <span class="medium-pulse pulse"></span>
-                     <img src="{{helper.get_icon_state(pb)}}" />
-                  </span>
-               </span>
-               <h4 class="panel-title" data-toggle="collapse" data-parent="#accordion" href="#group_{{pb.host_name}}">
-                  {{pb.host_name}}
-                  %if not pb.__class__.my_type == 'service':
-                     %for s in pb.services:
-                        <a href="/service/{{pb.host_name}}/{{s.get_name()}}">
-                           <span title="{{pb.host_name}}/{{s.get_name()}} - {{s.state}} - {{helper.print_duration(s.last_chk)}} - {{s.output}}" class="service service{{s.state}} service{{s.state_type}}">&nbsp;&nbsp;&nbsp;</span>
-                        </a>
-                     %end
-                  %end
-                  <a class="pull-right"><i class="fa fa-chevron-down pull-right"></i></a>
-               </h4>
-            </div>
-            <div id="group_{{pb.host_name}}" class="panel-collapse collapse host-panel">
-               <div class="panel-body">
-                  <div class="panel-group" id="problems_{{pb.host_name}}" role="tablist" aria-multiselectable="true">
-            %last_hname = pb.host_name
-         %end
-      
          %# Host information ...
-         %include _problem pb=pb, app=app, graphs=True, actions_allowed=actions_allowed, user=user.get_name()
+          <tr>
+            <td>
+              <div class="tick pull-left" style="cursor:pointer;" onclick="add_remove_elements('{{helper.get_html_id(pb)}}')">
+                <img class='img_tick' id='selector-{{helper.get_html_id(pb)}}' src='/static/images/tick.png' />
+              </div>
+              %if i == 0:
+              <a href="/host/{{pb.host_name}}">{{pb.host_name}}</a>
+              %end
+            </td>
+            %if pb.__class__.my_type == 'service':
+            <td>{{!helper.get_link(pb, short=True)}}</td>
+            %else:
+            <td></td>
+            %end
+            <td align="center" class="background-{{pb.state.lower()}}">{{ pb.state }}</td>
+            <td>{{!helper.print_duration(pb.last_state_change, just_duration=True, x_elts=2)}}</td>
+            <td>{{!helper.print_duration(pb.last_chk, just_duration=True, x_elts=2)}} ago</td>
+            <td>in {{!helper.print_duration(pb.next_chk, just_duration=True, x_elts=2)}}</td>
+            <td>{{ pb.output }}</td>
+            %if actions_allowed:
+            <td align="center" width="150px">
+              <div class="btn-group" role="group" aria-label="...">
+                <button type="button" class="btn btn-default btn-xs" title="Try to fix (launch event handler if defined)" onClick="try_to_fix_one('{{ pb.get_full_name() }}');">
+                  <i class="fa fa-magic"></i>
+                </button>
+                <button type="button" class="btn btn-default btn-xs" title="Launch the check command " onClick="recheck_now_one('{{ pb.get_full_name() }}');">
+                  <i class="fa fa-refresh"></i>
+                </button>
+                <button type="button" class="btn btn-default btn-xs" title="Force service to be considered as Ok" onClick="submit_check_ok_one('{{ pb.get_full_name() }}', '{{ user }}');">
+                  <i class="fa fa-share"></i>
+                </button>
+                <button type="button" class="btn btn-default btn-xs" title="Acknowledge the problem" onClick="acknowledge_one('{{ pb.get_full_name() }}', '{{ user }}');">
+                  <i class="fa fa-check"></i>
+                </button>
+                <button type="button" class="btn btn-default btn-xs" title="Schedule a one day downtime for the problem" onClick="downtime_one('{{ pb.get_full_name() }}', '{{ user }}');">
+                  <i class="fa fa-ambulance"></i>
+                </button>
+                <button type="button" class="btn btn-default btn-xs" title="Ignore checks for the service (disable checks, notifications, event handlers and force Ok)" onClick="remove_one('{{ pb.get_full_name() }}', '{{ user }}');">
+                  <i class="fa fa-eraser"></i>
+                </button>
+              </div>
+            </td>
+            %end
+          </tr>
 
-      %# End for pb in pbs:
+        %# End for pb in pbs:
+        %end
+        %end
+        </tbody>
+      </table>
       %end
-      %# Close last panel group  ...
-                  </div>
-               </div>
-            </div>
-         </div>
          
-      %# Close accordion and problems div ...
-      </div>
+      %# Close problems div ...
    </div>
   
   %include pagination_element navi=navi, app=app, page=page, div_class="pull-right"

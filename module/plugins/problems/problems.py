@@ -46,6 +46,11 @@ def get_all():
     return get_view('all')
 
 
+# Our page
+def get_table():
+    return get_view('problems')
+
+
 # Our View code. We will get different data from all and /problems
 # but it's mainly filtering changes
 def get_view(page):
@@ -369,8 +374,10 @@ last_widget_desc = '''<h4>Last IT problems</h4>
 Show the IT problems sorted by time
 '''
 
-pages = {get_page: {'routes': ['/problems'], 'view': 'problems', 'static': True},
-         get_all: {'routes': ['/all'], 'view': 'problems', 'static': True},
-         get_pbs_widget: {'routes': ['/widget/problems'], 'view': 'widget_problems', 'static': True, 'widget': ['dashboard'], 'widget_desc': widget_desc, 'widget_name': 'problems', 'widget_picture': '/static/problems/img/widget_problems.png'},
-         get_last_errors_widget: {'routes': ['/widget/last_problems'], 'view': 'widget_last_problems', 'static': True, 'widget': ['dashboard'], 'widget_desc': last_widget_desc, 'widget_name': 'last_problems', 'widget_picture': '/static/problems/img/widget_problems.png'},
-         }
+pages = {
+    get_page: {'routes': ['/problems'], 'view': 'problems', 'static': True},
+    get_table: {'routes': ['/problems-table'], 'view': 'problems-table', 'static': True},
+    get_all: {'routes': ['/all'], 'view': 'problems', 'static': True},
+    get_pbs_widget: {'routes': ['/widget/problems'], 'view': 'widget_problems', 'static': True, 'widget': ['dashboard'], 'widget_desc': widget_desc, 'widget_name': 'problems', 'widget_picture': '/static/problems/img/widget_problems.png'},
+    get_last_errors_widget: {'routes': ['/widget/last_problems'], 'view': 'widget_last_problems', 'static': True, 'widget': ['dashboard'], 'widget_desc': last_widget_desc, 'widget_name': 'last_problems', 'widget_picture': '/static/problems/img/widget_problems.png'},
+}
