@@ -277,7 +277,7 @@ Invalid element name
                   <dd>{{elt.address}}</dd>
 
                   <dt>Importance:</dt>
-                  <dd>{{!helper.get_business_impact_text(elt)}}</dd>
+                  <dd>{{!helper.get_business_impact_text(elt.business_impact)}}</dd>
                </dl>
               
                <dl class="col-sm-6 dl-horizontal">
@@ -327,7 +327,7 @@ Invalid element name
                   </dd>
 
                   <dt>Importance:</dt>
-                  <dd>{{!helper.get_business_impact_text(elt)}}</dd>
+                  <dd>{{!helper.get_business_impact_text(elt.business_impact)}}</dd>
                </dl>
               
                <dl class="col-sm-6 dl-horizontal">

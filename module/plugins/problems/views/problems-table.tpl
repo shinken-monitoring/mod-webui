@@ -484,16 +484,16 @@
                 <button type="button" class="btn btn-default btn-xs" title="Launch the check command " onClick="recheck_now_one('{{ pb.get_full_name() }}');">
                   <i class="fa fa-refresh"></i>
                 </button>
-                <button type="button" class="btn btn-default btn-xs" title="Force service to be considered as Ok" onClick="submit_check_ok_one('{{ pb.get_full_name() }}', '{{ user }}');">
+                <button type="button" class="btn btn-default btn-xs" title="Force service to be considered as Ok" onClick="submit_check_ok_one('{{ pb.get_full_name() }}', '{{ user.get_name() }}');">
                   <i class="fa fa-share"></i>
                 </button>
-                <button type="button" class="btn btn-default btn-xs" title="Acknowledge the problem" onClick="acknowledge_one('{{ pb.get_full_name() }}', '{{ user }}');">
+                <button type="button" class="btn btn-default btn-xs" title="Acknowledge the problem" onClick="acknowledge_one('{{ pb.get_full_name() }}', '{{ user.get_name() }}');">
                   <i class="fa fa-check"></i>
                 </button>
-                <button type="button" class="btn btn-default btn-xs" title="Schedule a one day downtime for the problem" onClick="downtime_one('{{ pb.get_full_name() }}', '{{ user }}');">
+                <button type="button" class="btn btn-default btn-xs" title="Schedule a one day downtime for the problem" onClick="downtime_one('{{ pb.get_full_name() }}', '{{ user.get_name() }}');">
                   <i class="fa fa-ambulance"></i>
                 </button>
-                <button type="button" class="btn btn-default btn-xs" title="Ignore checks for the service (disable checks, notifications, event handlers and force Ok)" onClick="remove_one('{{ pb.get_full_name() }}', '{{ user }}');">
+                <button type="button" class="btn btn-default btn-xs" title="Ignore checks for the service (disable checks, notifications, event handlers and force Ok)" onClick="remove_one('{{ pb.get_full_name() }}', '{{ user.get_name() }}');">
                   <i class="fa fa-eraser"></i>
                 </button>
               </div>
