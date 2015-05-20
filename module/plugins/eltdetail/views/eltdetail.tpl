@@ -559,15 +559,15 @@ Invalid element name
                   <tbody style="font-size:x-small;">
                      <tr>
                         <td><strong>Notifications:</strong></td>
-                        <td><span class="{{'glyphicon glyphicon-ok font-green' if elt.notifications_enabled else 'glyphicon glyphicon-remove font-red'}}"></span></td>
+                        <td><span title="Are notifications enabled for this element?" class="{{'glyphicon glyphicon-ok font-green' if elt.notifications_enabled else 'glyphicon glyphicon-remove font-red'}}"></span></td>
                      </tr>
                      %if elt.notifications_enabled:
                      <tr>
                         <td><strong>Notification period:</strong></td>
-                        %if 'timeperiods' in app.menu_items:
                         <td name="notification_period" class="popover-dismiss" data-html="true" data-toggle="popover" data-trigger="hover" title="Notification period" data-placement="bottom" data-content="...">
+                        <span title="Is notification period currently active?" class="{{'glyphicon glyphicon-ok font-green' if elt.notification_period.is_time_valid(time.time()) else 'glyphicon glyphicon-remove font-red'}}"></span>
+                        %if 'timeperiods' in app.menu_items:
                         <a href="/timeperiods">{{elt.notification_period.alias}}</a>
-                        </td>
                         <script>
                            %tp=app.get_timeperiod(elt.notification_period.get_name())
                            $('td[name="notification_period"]')
@@ -576,8 +576,9 @@ Invalid element name
                              .popover();
                         </script>
                         %else:
-                        <td name="notification_period" class="popover-dismiss" data-html="true" data-toggle="popover" title="Notification period" data-placement="top" data-content="...">{{elt.notification_period.alias}}</td>
+                        {{elt.notification_period.alias}}
                         %end
+                        </td>
                      </tr>
                      <tr>
                         %if elt_type=='host':
