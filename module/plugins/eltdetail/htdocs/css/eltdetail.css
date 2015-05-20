@@ -26,49 +26,55 @@
 #inner_depgraph {
   background: #FFFFFF;
   padding: 15px;
-} 
+}
 
++/* Graph tab */
+#graphs img {
+   max-width: 100%;
+   height: auto;
+   width: auto\9;
+}
 
 #event_command {
-	margin-bottom: 10px;
-	float:right;
+   margin-bottom: 10px;
+   float:right;
 }
 
 #event_box {
-	margin-top: 15px;
-	background: #FAFAFA;
-	border: 1px solid #E3E3E5;
-	-moz-border-radius-top: 6px; /* FF1-3.6 */
-	-webkit-border-radius: 6px; /* Saf3-4, iOS 1-3.2, Android <1.6 */
+   margin-top: 15px;
+   background: #FAFAFA;
+   border: 1px solid #E3E3E5;
+   -moz-border-radius-top: 6px; /* FF1-3.6 */
+   -webkit-border-radius: 6px; /* Saf3-4, iOS 1-3.2, Android <1.6 */
     border-top-left-radius: 6px; /* Opera 10.5, IE9, Saf5, Chrome, FF4, iOS 4, Android 2.1+ */
     border-top-right-radius: 6px; /* Opera 10.5, IE9, Saf5, Chrome, FF4, iOS 4, Android 2.1+ */
-	/* useful if you don't want a bg color from leaking outside the border: */
-	-moz-background-clip: padding; -webkit-background-clip: padding-box; background-clip: padding-box;
+   /* useful if you don't want a bg color from leaking outside the border: */
+   -moz-background-clip: padding; -webkit-background-clip: padding-box; background-clip: padding-box;
 }
 
 #event_container h3 {
-	font-size: 12px;
-	background: #B40406;
-	color: #FFFFFF;
-	padding-left: 25px;
-	margin-bottom: 0px;
-	-moz-border-radius-top: 6px; /* FF1-3.6 */
-	-webkit-border-radius: 6px; /* Saf3-4, iOS 1-3.2, Android <1.6 */
+   font-size: 12px;
+   background: #B40406;
+   color: #FFFFFF;
+   padding-left: 25px;
+   margin-bottom: 0px;
+   -moz-border-radius-top: 6px; /* FF1-3.6 */
+   -webkit-border-radius: 6px; /* Saf3-4, iOS 1-3.2, Android <1.6 */
     border-top-left-radius: 6px; /* Opera 10.5, IE9, Saf5, Chrome, FF4, iOS 4, Android 2.1+ */
     border-top-right-radius: 6px; /* Opera 10.5, IE9, Saf5, Chrome, FF4, iOS 4, Android 2.1+ */
-	/* useful if you don't want a bg color from leaking outside the border: */
-	-moz-background-clip: padding; -webkit-background-clip: padding-box; background-clip: padding-box;
+   /* useful if you don't want a bg color from leaking outside the border: */
+   -moz-background-clip: padding; -webkit-background-clip: padding-box; background-clip: padding-box;
 }
 
 #event_container p {
-	border-left: solid 12px #B40406;
-	line-height: 30px;
-	margin-bottom: 0px;
-	padding-left: 10px;
+   border-left: solid 12px #B40406;
+   line-height: 30px;
+   margin-bottom: 0px;
+   padding-left: 10px;
 }
 
 /*
-    Special elt view classes 
+    Special elt view classes
 */
 
 .verticaltabs-container td { border-top: none; }
@@ -77,23 +83,23 @@
 .tabletop {width: 100% !important;display: block;}
 
 #elt_container h2 {
-	font-size: 15px;
-	margin-bottom: 5px;
+   font-size: 15px;
+   margin-bottom: 5px;
 
 }
 
 #elt_summary table, #elt_summary tr, #elt_summary th, #elt_summary td, #elt_summary tbody{
-	background: none !important;
-	border: none;
+   background: none !important;
+   border: none;
 
 }
 
 #item_information {
-	margin-bottom: 20px;
+   margin-bottom: 20px;
 }
 
 #item_information dd {
-	margin-left: 20em;
+   margin-left: 20em;
 }
 
 
@@ -116,7 +122,7 @@ li.tab {
     margin-left: 0px;
     list-style: none;
     border: 1px #E3E3E5 solid;
-   	cursor: pointer;
+      cursor: pointer;
     font-size: 12px;
     color: #787878;
 }
@@ -136,7 +142,7 @@ div.content {
     margin: 0 0 1em 0;
     padding: .4em;
     background: #FAFAFA;
-	border: 1px solid #E3E3E5;
+   border: 1px solid #E3E3E5;
 }
 
 .divstate0, .divhstate0, .divstate0 a, .divhstate0 a {
@@ -190,12 +196,12 @@ div.content {
 }
 
 #overview_container dd img {
-	vertical-align: -2px;
-	margin-left:2px;
+   vertical-align: -2px;
+   margin-left:2px;
 }
 
 #overview_container td, #item_information td {
-	border-top: none;
+   border-top: none;
 }
 
 
@@ -204,29 +210,29 @@ div.content {
  */
 
 .log-text {
-	margin-bottom: 5px;
-	width: 100%;
+   margin-bottom: 5px;
+   width: 100%;
 
 }
 
 .log-meta {
-	width: 100%;
-	color: #999999;
+   width: 100%;
+   color: #999999;
 }
 
 .log-meta span{
-	margin-right:10px;
+   margin-right:10px;
 }
 
 .log-action a{
-	color: #e10000;
-	width: 5%;
-	text-decoration:none;
-	line-height: 35px;
+   color: #e10000;
+   width: 5%;
+   text-decoration:none;
+   line-height: 35px;
 }
 
 .log-action a:hover {
-	font-weight:bold;
+   font-weight:bold;
 }
 
 
@@ -242,7 +248,7 @@ div.content {
     margin: 0;
     padding-top: 5px;
     text-shadow: 0 1px #FFFFFF;
-	width: 81.333%;
+   width: 81.333%;
 }
 
 #log_container  ol {
@@ -259,12 +265,12 @@ div.content {
 }
 
 #log_container  li {
-	background: #FAFAFA;
+   background: #FAFAFA;
     border-top: 1px solid #E3E3E5;
     padding: 10px;
-	margin-left: 0px;
+   margin-left: 0px;
     position: relative;
-	min-height:35px;
+   min-height:35px;
 }
 
 #log_container  li:nth-child(2n) {
@@ -273,17 +279,17 @@ div.content {
 }
 
 .switches ul li {
-	display: inline;
+   display: inline;
 }
 
 .switches ul li div{
-	float: left;
+   float: left;
 }
 
 .switches span{
-	/*float: left;*/
-	line-height: 24px;
-	margin-left: 5px;
+   /*float: left;*/
+   line-height: 24px;
+   margin-left: 5px;
 }
 
 
@@ -315,7 +321,7 @@ div.marginbottom {
 .verticaltabs-container > .nav-tabs {
   display: block;
   position: relative;
-  left: 100%; 
+  left: 100%;
   width: 1000%;
   -webkit-transform-origin: 0 0;
   -moz-transform-origin: 0 0;
