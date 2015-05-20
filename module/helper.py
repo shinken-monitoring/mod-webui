@@ -63,6 +63,15 @@ class Helper(object):
         else:
             return 'No'
 
+    def up_down(self, b):
+        """
+          Return 'up' or 'down' regarding first boolean args value
+        """
+        if b:
+            return 'up'
+        else:
+            return 'down'
+
     def print_float(self, f):
         return '%.2f' % f
 
