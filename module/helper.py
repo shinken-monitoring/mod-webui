@@ -552,15 +552,15 @@ class Helper(object):
             return 'ok'
         return 'unknown'
 
-    # For an object, give it's business impact as text
-    # and stars if need
-    def get_business_impact_text(self, obj):
+    # Give a business impact as text and stars if need
+    def get_business_impact_text(self, business_impact):
         txts = {0: 'None', 1: 'Low', 2: 'Normal',
                 3: 'High', 4: 'Very important', 5: 'Top for business'}
-        nb_stars = max(0, obj.business_impact - 2)
-        stars = '<img src="/static/images/star.png" alt="star">\n' * nb_stars
+        nb_stars = max(0, business_impact - 2)
+        stars = '<i class="fa fa-star text-primary"></i>&nbsp;' * nb_stars
+        #stars = '<img src="/static/images/star.png" alt="star">\n' * nb_stars
 
-        res = "%s %s" % (txts.get(obj.business_impact, 'Unknown'), stars)
+        res = "%s %s" % (txts.get(business_impact, 'Unknown'), stars)
         return res
 
     # We will output as a ul/li list the impacts of this
