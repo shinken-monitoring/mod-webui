@@ -417,7 +417,7 @@ Invalid element name
   
    <!-- Fourth row : host/service -->
    <div class="row" style="padding: 5px;">
-      <div class="col-md-4 col-lg-3 tabbable verticaltabs-container">
+      <div class="col-sm-6 col-md-4 col-lg-3 tabbable verticaltabs-container">
          <ul class="nav nav-tabs">
             %if params['tab_information']=='yes':
             <li class="active"><a href="#information" data-toggle="tab">Information</a></li>
@@ -1071,7 +1071,7 @@ Invalid element name
       </div>
 
       <!-- Detail info box start -->
-      <div class="col-md-8 col-lg-9 tabbable">
+      <div class="col-sm-6 col-md-8 col-lg-9 tabbable">
          <ul class="nav nav-tabs">
             %_go_active = 'active'
             %if params['tab_custom_views']=='yes':
