@@ -48,7 +48,7 @@ def get_page(groupname):
         hosts.extend(app.datamgr.get_hosts())
         items = []
         for host in hosts:
-            if app.can_see_this_elt(host)
+            if app.can_see_this_elt(host):
                 items.append(host)
 
     else:
