@@ -78,9 +78,9 @@ def show_hostgroup(name):
     if name == 'all':
         my_group = 'all'
         
-        # items = []
-        # items.extend(app.get_hosts(user))
-        items = all_hosts
+        items = []
+        items.extend(all_hosts)
+        # items = all_hosts
 
     else:
         my_group = app.get_hostgroup(name)
