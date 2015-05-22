@@ -13,13 +13,12 @@
 <div class="row">
    <ul id="groups" class="grid row">
       %even='alt'
-      %nGroups=0
       %nServices=0
       %sOk=0
       %sCritical=0
       %sWarning=0
       %sPenging=0
-      %for h in datamgr.get_services():
+      %for h in app.get_services():
          %nServices=nServices+1
          %if h.state == 'OK':
             %sOk=sOk+1
@@ -31,9 +30,7 @@
             %sPenging=sPenging+1
          %end
       %end
-    %for group in servicegroups:
-      %nGroups=nGroups+1
-    %end
+      %nGroups=len(servicegroups)
       <li class="clearfix {{even}}">
          <section class="left">
             <h3>All services</h3>
@@ -70,9 +67,6 @@
                   <span class="num"><em>{{sPenging}}</em></span>
                %end
               </span>
-        <!--
-        <span class="meta"> <span class="label label-important pulsate">Business impact</span> </span>
-        -->
          </section>
          
          <section class="right">
@@ -97,75 +91,72 @@
             %even=''
          %end
 
-      %nGroups=0
          %nServices=0
          %sOk=0
          %sCritical=0
          %sWarning=0
          %sPenging=0 # Pending / unknown
          %business_impact = 0
-         %for h in group.get_services():
+         %for s in group.get_services():
             %business_impact = max(business_impact, h.business_impact)
             %nServices=nServices+1
-            %if h.state == 'OK':
+            %if s.state == 'OK':
                %sOk=sOk+1
-            %elif h.state == 'CRITICAL':
+            %elif s.state == 'CRITICAL':
                %sCritical=sCritical+1
-            %elif h.state == 'WARNING':
+            %elif s.state == 'WARNING':
                %sWarning=sWarning+1
             %else:
                %sPenging=sPenging+1
             %end
          %end
       
-      %for h in group.get_servicegroup_members():
-        %nGroups=nGroups+1
-      %end
-      <!-- <li>{{group.get_name()}} - {{nServices}} - {{nGroups}} - {{group.get_servicegroup_members()}}</li> -->
-      %if nServices > 0 or nGroups > 0:
-        <li class="clearfix {{even}}">
-          <section class="left">
-            <h3>{{group.alias if group.alias != '' else group.get_name()}}
-               %for i in range(0, business_impact-2):
-               <img alt="icon state" src="/static/images/star.png">
-               %end
-            </h3>
-            <span class="meta">
-               <span class="{{'font-ok' if sOk > 0 else 'font-greyed'}}">
-                  <span class="fa-stack"><i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-check fa-stack-1x fa-inverse"></i></span> 
-                  <span class="num">{{sOk}}</span>
-               </span> 
-                
-               <span class="{{'font-warning' if hUnreachable > 0 else 'font-greyed'}}">
-                  <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-exclamation fa-stack-1x fa-inverse"></i></span> 
-                  <span class="num">{{sWarning}}</span>
-               </span> 
+         %nGroups=len(group.get_servicegroup_members())
+         <!-- <li>{{group.get_name()}} - {{nServices}} - {{nGroups}} - {{group.get_servicegroup_members()}}</li> -->
+         %if nServices > 0 or nGroups > 0:
+           <li class="clearfix {{even}}">
+             <section class="left">
+               <h3>{{group.alias if group.alias != '' else group.get_name()}}
+                  %for i in range(0, business_impact-2):
+                  <img alt="icon state" src="/static/images/star.png">
+                  %end
+               </h3>
+               <span class="meta">
+                  <span class="{{'font-ok' if sOk > 0 else 'font-greyed'}}">
+                     <span class="fa-stack"><i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-check fa-stack-1x fa-inverse"></i></span> 
+                     <span class="num">{{sOk}}</span>
+                  </span> 
+                   
+                  <span class="{{'font-warning' if hUnreachable > 0 else 'font-greyed'}}">
+                     <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-exclamation fa-stack-1x fa-inverse"></i></span> 
+                     <span class="num">{{sWarning}}</span>
+                  </span> 
 
-               <span class="{{'font-critical' if sCritical > 0 else 'font-greyed'}}">
-                  <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-arrow-down fa-stack-1x fa-inverse"></i></span> 
-                  <span class="num">{{sCritical}}</span>
-               </span> 
+                  <span class="{{'font-critical' if sCritical > 0 else 'font-greyed'}}">
+                     <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-arrow-down fa-stack-1x fa-inverse"></i></span> 
+                     <span class="num">{{sCritical}}</span>
+                  </span> 
 
-               <span class="{{'font-pending' if sPending > 0 else 'font-greyed'}}">
-                  <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-question fa-stack-1x fa-inverse"></i></span> 
-                  <span class="num">{{sPending}}</span>
-               </span> 
-            </span>
-          </section>
-          
-          <section class="right">
-            <div class="pull-right">
-              <span class="sumHosts">{{'%d service' % nServices if nServices == 1 else '%d services' % nServices}}</span>
-              <span class="sumGroups">{{'%d group' % nGroups if nGroups == 1 else '' if nGroups == 0 else '%d groups' % nGroups}}</span>
-            </div>
-            <span class="darkview">
-              <a href="/services-group/{{group.get_name()}}" class="firstbtn"><i class="fa fa-angle-double-down"></i> Details</a>
-              <br/>
-              <a href="/minemap/{{group.get_name()}}" class="firstbtn"><i class="fa fa-table"></i> Minemap</a>
-            </span>
-          </section>
-        </li>
-      %end
+                  <span class="{{'font-pending' if sPending > 0 else 'font-greyed'}}">
+                     <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-question fa-stack-1x fa-inverse"></i></span> 
+                     <span class="num">{{sPending}}</span>
+                  </span> 
+               </span>
+             </section>
+             
+             <section class="right">
+               <div class="pull-right">
+                 <span class="sumHosts">{{'%d service' % nServices if nServices == 1 else '%d services' % nServices}}</span>
+                 <span class="sumGroups">{{'%d group' % nGroups if nGroups == 1 else '' if nGroups == 0 else '%d groups' % nGroups}}</span>
+               </div>
+               <span class="darkview">
+                 <a href="/services-group/{{group.get_name()}}" class="firstbtn"><i class="fa fa-angle-double-down"></i> Details</a>
+                 <br/>
+                 <a href="/minemap/{{group.get_name()}}" class="firstbtn"><i class="fa fa-table"></i> Minemap</a>
+               </span>
+             </section>
+           </li>
+         %end
       %end
    </ul>
 </div>

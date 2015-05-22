@@ -29,6 +29,7 @@ Invalid group name
       <div class="panel-heading">
          <h3 class="panel-title">{{groupalias}} ({{groupname}})</h3>
       </div>
+      
       <div class="panel-body">
 %nHosts=0
 %hUp=hDown=hUnreachable=hPending=hUnknown=0
@@ -54,31 +55,64 @@ Invalid group name
    %pctPending    = round(100.0 * hPending / nHosts, 2)
    %pctUnknown    = round(100.0 * hUnknown / nHosts, 2)
 %end
+         %if progress_bar:
          <div class="row">
-           <div class="col-sm-12 text-center center-block"><em>Currently displaying {{nHosts}} hosts ...</em></div>
-           <div class="col-sm-1"></div>
-           <div class="progress col-sm-10 no-bottommargin no-leftpadding no-rightpadding" style="height: 45px;">
-             <div title="{{hUp}} hosts Up" class="progress-bar progress-bar-success quickinfo" role="progressbar" 
-               data-toggle="tooltip" data-placement="bottom" 
-               style="line-height: 45px; width: {{pctUp}}%;">{{pctUp}}% Up</div>
+            <div class="col-sm-12 text-center center-block"><em>Currently displaying {{nHosts}} hosts ...</em></div>
+            <div class="col-sm-1"></div>
+            <div class="progress col-sm-10 no-bottommargin no-leftpadding no-rightpadding" style="height: 45px;">
+               <div title="{{hUp}} hosts Up" class="progress-bar progress-bar-success quickinfo" role="progressbar" 
+                  data-toggle="tooltip" data-placement="bottom" 
+                  style="line-height: 45px; width: {{pctUp}}%;">{{pctUp}}% Up</div>
                
-             <div title="{{hDown}} hosts Down" class="progress-bar progress-bar-danger quickinfo" 
-               data-toggle="tooltip" data-placement="bottom" 
-               style="line-height: 45px; width: {{pctDown}}%;">{{pctDown}}% Down</div>
+               <div title="{{hDown}} hosts Down" class="progress-bar progress-bar-danger quickinfo" 
+                  data-toggle="tooltip" data-placement="bottom" 
+                  style="line-height: 45px; width: {{pctDown}}%;">{{pctDown}}% Down</div>
                
-             <div title="{{hUnreachable}} hosts Unreachable" class="progress-bar progress-bar-warning quickinfo" 
-               data-toggle="tooltip" data-placement="bottom" 
-               style="line-height: 45px; width: {{pctUnreachable}}%;">{{pctUnreachable}}% Unreachable</div>
+               <div title="{{hUnreachable}} hosts Unreachable" class="progress-bar progress-bar-warning quickinfo" 
+                  data-toggle="tooltip" data-placement="bottom" 
+                  style="line-height: 45px; width: {{pctUnreachable}}%;">{{pctUnreachable}}% Unreachable</div>
                
-             <div title="{{hPending}} hosts Pending" class="progress-bar progress-bar-info quickinfo" 
-               data-toggle="tooltip" data-placement="bottom" 
-               style="line-height: 45px; width: {{pctPending}}%;">{{pctPending}}% Pending</div>
+               <div title="{{hPending}} hosts Pending" class="progress-bar progress-bar-info quickinfo" 
+                  data-toggle="tooltip" data-placement="bottom" 
+                  style="line-height: 45px; width: {{pctPending}}%;">{{pctPending}}% Pending</div>
                
-             <div title="{{hPending}} hosts Pending/Unknown" class="progress-bar progress-bar-info quickinfo" 
-               data-toggle="tooltip" data-placement="bottom" 
-               style="line-height: 45px; width: {{pctPending}}%;">{{pctUnknown}}% Unknown</div>
-           </div>
-           <div class="col-sm-1"></div>
+               <div title="{{hPending}} hosts Pending/Unknown" class="progress-bar progress-bar-info quickinfo" 
+                  data-toggle="tooltip" data-placement="bottom" 
+                  style="line-height: 45px; width: {{pctUnknown}}%;">{{pctUnknown}}% Unknown</div>
+            </div>
+            <div class="col-sm-1"></div>
+         </div>
+         %end
+         <div class="row">
+            <div class="col-sm-12 text-center center-block"><em>Currently displaying {{nHosts}} hosts ...</em></div>
+            <div class="col-sm-1"></div>
+            <div class="col-sm-10" >
+               <span class="{{'font-up' if hUp > 0 else 'font-greyed'}}">
+                  <span class="fa-stack"><i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-check fa-stack-1x fa-inverse"></i></span> 
+                  <span class="num">{{hUp}} ({{pctUp}}% Up)</span>
+               </span> 
+                
+               <span class="{{'font-unreachable' if hUnreachable > 0 else 'font-greyed'}}">
+                  <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-exclamation fa-stack-1x fa-inverse"></i></span> 
+                  <span class="num">{{hUnreachable}} ({{pctUnreachable}}% Unreachable)</span>
+               </span> 
+
+               <span class="{{'font-down' if hDown > 0 else 'font-greyed'}}">
+                  <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-arrow-down fa-stack-1x fa-inverse"></i></span> 
+                  <span class="num">{{hDown}} ({{pctDown}}% Down)</span>
+               </span> 
+
+               <span class="{{'font-pending' if hPending > 0 else 'font-greyed'}}">
+                  <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-pause fa-stack-1x fa-inverse"></i></span> 
+                  <span class="num">{{hPending}} ({{pctPending}}% Pending)</span>
+               </span> 
+
+               <span class="{{'font-unknown' if hUnknown > 0 else 'font-greyed'}}">
+                  <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-question fa-stack-1x fa-inverse"></i></span> 
+                  <span class="num">{{hUnknown}} ({{pctUnknown}}% Unknown)</span>
+               </span> 
+            </div>
+            <div class="col-sm-1"></div>
          </div>
 
 %nHosts=0
@@ -105,86 +139,121 @@ Invalid group name
    %pctPending    = round(100.0 * hPending / nHosts, 2)
    %pctUnknown    = round(100.0 * hUnknown / nHosts, 2)
 %end
+         %if progress_bar:
          <div class="row">
-        <div class="col-sm-12 text-center center-block"><em>... out of {{length}} hosts</em></div>
-        <div class="col-sm-1"></div>
-        <div class="progress col-sm-10 no-leftpadding no-rightpadding" style="height: 25px;">
-          <div title="{{hUp}} hosts Up" class="progress-bar progress-bar-success quickinfo" role="progressbar" 
-            data-toggle="tooltip" data-placement="bottom" 
-            style="line-height: 25px; width: {{pctUp}}%;">{{pctUp}}% Up</div>
+            <div class="col-sm-12 text-center center-block"><em>... out of {{nHosts}} hosts.</em></div>
+            <div class="col-sm-1"></div>
+            <div class="progress col-sm-10 no-leftpadding no-rightpadding" style="height: 25px;">
+               <div title="{{hUp}} hosts Up" class="progress-bar progress-bar-success quickinfo" role="progressbar" 
+                  data-toggle="tooltip" data-placement="bottom" 
+                  style="line-height: 25px; width: {{pctUp}}%;">{{pctUp}}% Up</div>
             
-          <div title="{{hDown}} hosts Down" class="progress-bar progress-bar-danger quickinfo" 
-            data-toggle="tooltip" data-placement="bottom" 
-            style="line-height: 25px; width: {{pctDown}}%;">{{pctDown}}% Down</div>
-            
-          <div title="{{hUnreachable}} hosts Unreachable" class="progress-bar progress-bar-warning quickinfo" 
-            data-toggle="tooltip" data-placement="bottom" 
-            style="line-height: 25px; width: {{pctUnreachable}}%;">{{pctUnreachable}}% Unreachable</div>
-            
-          <div title="{{hPending}} hosts Pending" class="progress-bar progress-bar-info quickinfo" 
-            data-toggle="tooltip" data-placement="bottom" 
-            style="line-height: 25px; width: {{pctPending}}%;">{{pctPending}}% Pending</div>
-            
-          <div title="{{hPending}} hosts Pending/Unknown" class="progress-bar progress-bar-info quickinfo" 
-            data-toggle="tooltip" data-placement="bottom" 
-            style="line-height: 25px; width: {{pctPending}}%;">{{pctUnknown}}% Unknown</div>
-        </div>
-        <div class="col-sm-1"></div>
+               <div title="{{hDown}} hosts Down" class="progress-bar progress-bar-danger quickinfo" 
+                  data-toggle="tooltip" data-placement="bottom" 
+                  style="line-height: 25px; width: {{pctDown}}%;">{{pctDown}}% Down</div>
+
+               <div title="{{hUnreachable}} hosts Unreachable" class="progress-bar progress-bar-warning quickinfo" 
+                  data-toggle="tooltip" data-placement="bottom" 
+                  style="line-height: 25px; width: {{pctUnreachable}}%;">{{pctUnreachable}}% Unreachable</div>
+
+               <div title="{{hPending}} hosts Pending" class="progress-bar progress-bar-info quickinfo" 
+                  data-toggle="tooltip" data-placement="bottom" 
+                  style="line-height: 25px; width: {{pctPending}}%;">{{pctPending}}% Pending</div>
+
+               <div title="{{hPending}} hosts Pending/Unknown" class="progress-bar progress-bar-info quickinfo" 
+                  data-toggle="tooltip" data-placement="bottom" 
+                  style="line-height: 25px; width: {{pctUnknown}}%;">{{pctUnknown}}% Unknown</div>
+            </div>
+            <div class="col-sm-1"></div>
+         </div>
+         %end
+         <div class="row">
+            <div class="col-sm-12 text-center center-block"><em>... out of {{nHosts}} hosts</em></div>
+            <div class="col-sm-1"></div>
+            <div class="col-sm-10" >
+               <span class="{{'font-up' if hUp > 0 else 'font-greyed'}}">
+                  <span class="fa-stack"><i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-check fa-stack-1x fa-inverse"></i></span> 
+                  <span class="num">{{hUp}} ({{pctUp}}% Up)</span>
+               </span> 
+                
+               <span class="{{'font-unreachable' if hUnreachable > 0 else 'font-greyed'}}">
+                  <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-exclamation fa-stack-1x fa-inverse"></i></span> 
+                  <span class="num">{{hUnreachable}} ({{pctUnreachable}}% Unreachable)</span>
+               </span> 
+
+               <span class="{{'font-down' if hDown > 0 else 'font-greyed'}}">
+                  <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-arrow-down fa-stack-1x fa-inverse"></i></span> 
+                  <span class="num">{{hDown}} ({{pctDown}}% Down)</span>
+               </span> 
+
+               <span class="{{'font-pending' if hPending > 0 else 'font-greyed'}}">
+                  <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-pause fa-stack-1x fa-inverse"></i></span> 
+                  <span class="num">{{hPending}} ({{pctPending}}% Pending)</span>
+               </span> 
+
+               <span class="{{'font-unknown' if hUnknown > 0 else 'font-greyed'}}">
+                  <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-question fa-stack-1x fa-inverse"></i></span> 
+                  <span class="num">{{hUnknown}} ({{pctUnknown}}% Unknown)</span>
+               </span> 
+            </div>
+            <div class="col-sm-1"></div>
          </div>
       </div>
    </div>
+   
+   <div class="panel panel-default">
+      <div class="panel-body">
+         <div class='col-lg-12'>
+            %include pagination_element navi=navi, app=app, page="hosts-group/"+groupname, div_class="center no-margin"
+         </div>
 
-   <div class='col-lg-12'>
-      %include pagination_element navi=navi, app=app, page="hosts-group/"+groupname, div_class="center no-margin"
-   </div>
-
-   <div class="clearfix">
-      <table class="table table-hover">
-         <tbody>
-            <tr>
-               <th>Host</th>
-               <th>Service</th>
-               <th>State</th>
-               <th>Last Check</th>
-               <th>Duration</th>
-               <th>Attempt</th>
-               <th>Status Information</th>
-            </tr>
-            %for h in hosts:
-               <tr id="host_{{h.get_name()}}" class="font-{{h.state.lower()}}">
-                  <td>
-                     <span><a href="/host/{{h.get_name()}}">{{h.get_name()}}</a></span>
-                  </td>
-                  <td style="white-space: normal">
-                     <span>{{h.get_check_command()}}</span>
-                  </td>
-                  <td >{{h.state}}</td>
-                  <td>{{helper.print_duration(h.last_chk)}}</td>
-                  <td>{{h.get_duration()}}</td>
-                  <td>{{h.attempt}}/{{h.max_check_attempts}}</td>
-                  <td><span class="{{h.state.lower()}}">{{h.state}}</span></td>  
+         <table class="table table-hover">
+            <tbody>
+               <tr>
+                  <th>Host</th>
+                  <th>Service</th>
+                  <th>State</th>
+                  <th>Last Check</th>
+                  <th>Duration</th>
+                  <th>Attempt</th>
+                  <th>Status Information</th>
                </tr>
-               %for s in h.services:
-                  <tr class="service service_{{h.get_name()}} font-{{s.state.lower()}}" style="display: none;">
-                     <td></td>
-                     <td></td>
-
-                     <td style="white-space: normal" class="font-{{s.state.lower()}}">
-                        <span><a href="/service/{{h.get_name()}}/{{s.get_name()}}">{{s.get_name()}}</a></span>
+               %for h in hosts:
+                  <tr id="host_{{h.get_name()}}" class="font-{{h.state.lower()}}">
+                     <td>
+                        <span><a href="/host/{{h.get_name()}}">{{h.get_name()}}</a></span>
                      </td>
-                     <td>{{helper.print_duration(s.last_chk)}}</td>
-                     <td>{{s.get_duration()}}</td>
-                     <td>{{s.attempt}}/{{s.max_check_attempts}}</td>
-                     <td><span class="font-{{s.state.lower()}}">{{s.state}}</span></td>   
+                     <td style="white-space: normal">
+                        <span>{{h.get_check_command()}}</span>
+                     </td>
+                     <td >{{h.state}}</td>
+                     <td>{{helper.print_duration(h.last_chk)}}</td>
+                     <td>{{h.get_duration()}}</td>
+                     <td>{{h.attempt}}/{{h.max_check_attempts}}</td>
+                     <td><span class="{{h.state.lower()}}">{{h.state}}</span></td>  
                   </tr>
-               %end
-            %end
-         </tbody>
-      </table>
-   </div>
+                  %for s in h.services:
+                     <tr class="service service_{{h.get_name()}} font-{{s.state.lower()}}" style="display: none;">
+                        <td></td>
+                        <td></td>
 
-   <div class='col-lg-12'>
-      %include pagination_element navi=navi, app=app, page="hosts-group/"+groupname, div_class="center no-margin"
+                        <td style="white-space: normal" class="font-{{s.state.lower()}}">
+                           <span><a href="/service/{{h.get_name()}}/{{s.get_name()}}">{{s.get_name()}}</a></span>
+                        </td>
+                        <td>{{helper.print_duration(s.last_chk)}}</td>
+                        <td>{{s.get_duration()}}</td>
+                        <td>{{s.attempt}}/{{s.max_check_attempts}}</td>
+                        <td><span class="font-{{s.state.lower()}}">{{s.state}}</span></td>   
+                     </tr>
+                  %end
+               %end
+            </tbody>
+         </table>
+
+         <div class='col-lg-12'>
+            %include pagination_element navi=navi, app=app, page="hosts-group/"+groupname, div_class="center no-margin"
+         </div>
+      </div>
    </div>
 </div>
 

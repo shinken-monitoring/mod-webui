@@ -51,12 +51,11 @@ def load_cfg():
 
         params['elts_per_page'] = int(params['elts_per_page'])
         
-        logger.debug("WebUI plugin '%s', configuration loaded." % (plugin_name))
-        logger.debug("Plugin configuration, elts_per_page: %d" % (params['elts_per_page']))
-        
+        logger.info("[webui-groups] configuration loaded.")
+        logger.debug("[webui-groups] configuration, elts_per_page: %d", params['elts_per_page'])
         return True
     except Exception, exp:
-        logger.warning("WebUI plugin '%s', configuration file (%s) not available: %s" % (plugin_name, configuration_file, str(exp)))
+        logger.warning("[webui-groups] configuration file (%s) not available: %s", configuration_file, str(exp))
         return False
 
 def checkauth():
@@ -74,11 +73,14 @@ def reload_cfg():
 def show_hostgroup(name):
     user = checkauth()
 
+    all_hosts = app.get_hosts(user)
+    
     if name == 'all':
         my_group = 'all'
         
-        items = []
-        items.extend(app.get_hosts(user))
+        # items = []
+        # items.extend(app.get_hosts(user))
+        items = all_hosts
 
     else:
         my_group = app.get_hostgroup(name)
@@ -88,15 +90,6 @@ def show_hostgroup(name):
             
         items = only_related_to(my_group.get_hosts(),user)
 
-    # Filter hosts list with configured filter (menu.cfg) ...
-    # r = set()
-    # for h in items:
-        # for filter in app.hosts_filter:
-            # if not h.get_name().startswith(filter):
-                # r.add(h)
-
-    # items = list(r)
-    
     elts_per_page = params['elts_per_page']
     # We want to limit the number of elements
     start = int(app.request.GET.get('start', '0'))
@@ -114,7 +107,7 @@ def show_hostgroup(name):
     navi = app.helper.get_navi(total, start, step=elts_per_page)
     hosts = items[start:end]
         
-    return {'app': app, 'user': user, 'params': params, 'navi': navi, 'group': my_group, 'hosts': hosts, 'all_hosts': items, 'length': total}
+    return {'app': app, 'user': user, 'params': params, 'navi': navi, 'group': my_group, 'hosts': hosts, 'all_hosts': all_hosts, 'progress_bar': False}
 
 def show_hostgroups():
     user = checkauth()    
@@ -136,7 +129,7 @@ def show_servicegroup(name):
         items = services
 
     else:
-        my_group = app.datamgr.get_servicegroup(name)
+        my_group = app.get_servicegroup(name)
 
         if not my_group:
             return "Unknown group %s" % name
@@ -167,7 +160,7 @@ def show_servicegroups():
 
     return {
         'app': app, 'user': user, 'params': params, 
-        'servicegroups': sorted(app.datamgr.get_servicegroups(), key=lambda servicegroup: servicegroup.servicegroup_name)
+        'servicegroups': sorted(app.get_servicegroups(), key=lambda servicegroup: servicegroup.servicegroup_name)
         }
 
 
