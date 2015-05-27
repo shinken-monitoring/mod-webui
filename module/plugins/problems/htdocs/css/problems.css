@@ -54,3 +54,17 @@
     border-radius: 4px;
     color : black;
 }
+
+
+.hiddenRow {
+    padding: 0 !important;
+    border: 0 !important;
+}
+
+td, th {
+    vertical-align: middle !important;
+}
+
+.progress-bar {
+    color: #333 !important;
+}
