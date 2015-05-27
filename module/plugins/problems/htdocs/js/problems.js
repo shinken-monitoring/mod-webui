@@ -153,6 +153,8 @@ function add_remove_elements(name){
    } else {
       add_element(name);
    }
+
+   //$('#details-'+name).collapse('hide'); // :DEBUG:maethor:150526: Doesn't work
 }
 
 
@@ -191,7 +193,8 @@ function flush_selected_elements(){
    without fearing some bugs */
    var cpy = $.extend({}, selected_elements);
    $.each(cpy, function(idx, name) {
-      selected_elements.splice($.inArray(name, selected_elements),1);
+      remove_element(name)
+      //selected_elements.splice($.inArray(name, selected_elements),1);
    });
 }
 
