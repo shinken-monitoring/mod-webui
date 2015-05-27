@@ -690,21 +690,13 @@ class Helper(object):
             metrics = r['metrics']
             title = r['title']
             s = '<a href="%s">' % lnk
-            s += '''<div class="graph">
-                       <table>
-                          <tbody>
-                            <tr>\n'''
-
-            for (color, pct) in metrics:
-                s += '            <td style="background-color: %s; width: %s%%;"></td>\n' % (color, pct)
-
-            s += '''        </tr>
-                         </tbody>
-                      </table>
-                    </div>
-                    <div class="text">%s</div>
-                    <img class="glow" src="/static/images/glow.png"/>
-                 </a>\n''' % title
+            if metrics:
+                s += '''<div class="progress" style="min-width:100px;">
+                          <div class="progress-bar progress-bar-%s" role="progressbar" aria-valuenow="60" aria-valuemix="0" aria-valuemax="100" style="width:%s%%"> 
+                          %s
+                          </div>
+                        </div>''' % (metrics[0][0], metrics[0][1], title)
+            s +=  '''</a>\n'''
             return s
         return '\n'
 
