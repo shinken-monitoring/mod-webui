@@ -27,67 +27,67 @@
 /*  Shinken basics
     ------------------------------------------------------- */
 .font-ok, .font-up {
-  color: #5bb75b;
+  color: #5bb75b !important;
 }
 
 .font-warning, .font-unreachable {
-  color: #faa732;
+  color: #faa732 !important;
 }
 
 .font-critical, .font-down {
-  color: #da4f49;
+  color: #da4f49 !important;
 }
 
 .font-unknown, .font-pending {
-  color: #49afcd;
+  color: #49afcd !important;
 }
 
 .font-greyed {
-  color: #eee;
+  color: #eee !important;
 }
 
 /* 
  * States
  */
 .background-down, .background-critical{
- background-color: #FF858B;
+ background-color: #FF858B !important;
 }
 
 .background-warning{
- background-color: #E3B778;
+ background-color: #E3B778 !important;
 }
 
 .background-ok, .background-up{
- background-color: #8EE378;
+ background-color: #8EE378 !important;
 }
 
 .background-unknown, .background-unreachable{
- background-color: #78CCE3;
+ background-color: #78CCE3 !important;
 }
 
 .background-acknowledge{
- background-color: #158CBA;
+ background-color: #158CBA !important;
 }
 
 
 .state_down, .state_critical, .state_DOWN, .state_CRITICAL{
- background-color: #FF858B;
+ background-color: #FF858B !important;
 }
 
 .state_warning, .state_WARNING {
- background-color: #E3B778;
+ background-color: #E3B778 !important;
 }
 
 .state_ok, .state_up, .state_OK, .state_UP{
- background-color: #8EE378;
+ background-color: #8EE378 !important;
 }
 
 .state_unknown, .state_unreachable, .state_UNKNOWN, .state_UNREACHABLE {
- background-color: #78CCE3;
+ background-color: #78CCE3 !important;
 }
 
 .state_acknowledge, .state_ACKNOWLEDGE {
-   background-color: #158CBA;
+   background-color: #158CBA !important;
 }
 
 .state_HARD{

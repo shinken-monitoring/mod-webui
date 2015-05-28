@@ -259,7 +259,7 @@
 
     
 <!-- Buttons and page navigation -->
-<div class="row" style="padding: 0px;">
+<div class="row">
    <div class='col-lg-5 col-md-4 col-sm-2 pull-left'>
       <a id="hide_toolbar_btn" href="javascript:hide_toolbar()" class="btn btn-default"><i class="fa fa-minus"></i> Hide toolbar</a>
       <a id='show_toolbar_btn' href="javascript:show_toolbar()" class="btn btn-default"><i class="fa fa-plus"></i> Show toolbar</a>      
@@ -273,21 +273,21 @@
    </div>
 </div>
 
-<hr/>
+<hr>
 
 %if app.get_nb_problems() > 0 and page == 'problems' and app.play_sound:
    <EMBED src="/static/sound/alert.wav" autostart=true loop=false volume=100 hidden=true>
 %end
 
 <!-- Problems filtering and display -->
-<div class="row" style="padding: 0px;">
+<div class="row">
    <!-- Left panel, toolbar and active filters -->
    <div id="toolbar" class="col-lg-3 col-md-4 col-sm-4">
       <!-- Perfdata panel -->
       <div class="panel panel-info" id="image_panel">
          <div class="panel-heading">Perfdatas</div>
          <div class="panel-body">
-            <div id="img_hover"></div>
+            <div id="img_hover">toto</div>
          </div>
       </div>
 
@@ -436,18 +436,14 @@
       %pbs = sorted(pbs, key=lambda x: x.business_impact, reverse=True)
       %for business_impact, bi_pbs in groupby(pbs, key=lambda x: x.business_impact):
         <h3> Business impact: {{!helper.get_business_impact_text(business_impact)}} </h3>
-      <table class="table table-bordered table-condensed table-striped">
+      <table class="table table-condensed">
         <thead><tr>
-            <th align="center">Host</th>
-            <th align="center">Service</th>
-            <th align="center">State</th>
-            <th align="center">Since</th>
-            <th align="center">Last check</th>
-            <th align="center">Next check</th>
+            <th align="center" width="200px">Host</th>
+            <th align="center" width="200px">Service</th>
+            <th align="center" width="90px">State</th>
+            <th align="center" width="110px">Since</th>
+            <th align="center" width="110px">Last check</th>
             <th align="center">Output</th>
-            %if actions_allowed:
-            <th align="center">Actions</th>
-            %end
         </tr></thead>
 
         <tbody>
@@ -456,7 +452,7 @@
         %for i, pb in enumerate(host_pbs):
             
          %# Host information ...
-          <tr>
+           <tr data-toggle="collapse" data-target="#details-{{helper.get_html_id(pb)}}" class="accordion-toggle">
             <td>
               <div class="tick pull-left" style="cursor:pointer;" onclick="add_remove_elements('{{helper.get_html_id(pb)}}')">
                 <img class='img_tick' id='selector-{{helper.get_html_id(pb)}}' src='/static/images/tick.png' />
@@ -465,41 +461,93 @@
               <a href="/host/{{pb.host_name}}">{{pb.host_name}}</a>
               %end
             </td>
-            %if pb.__class__.my_type == 'service':
-            <td>{{!helper.get_link(pb, short=True)}}</td>
-            %else:
-            <td></td>
-            %end
+            <td>
+              %if pb.__class__.my_type == 'service':
+              {{!helper.get_link(pb, short=True)}}
+              %end
+              %# Impacts
+              %if len(pb.impacts) > 0:
+              <button class="btn btn-danger btn-xs"><i class="fa fa-plus"></i> {{ len(pb.impacts) }} impacts</button>
+              %end
+            </td>
             <td align="center" class="background-{{pb.state.lower()}}">{{ pb.state }}</td>
             <td>{{!helper.print_duration(pb.last_state_change, just_duration=True, x_elts=2)}}</td>
             <td>{{!helper.print_duration(pb.last_chk, just_duration=True, x_elts=2)}} ago</td>
-            <td>in {{!helper.print_duration(pb.next_chk, just_duration=True, x_elts=2)}}</td>
-            <td>{{ pb.output }}</td>
-            %if actions_allowed:
-            <td align="center" width="150px">
-              <div class="btn-group" role="group" aria-label="...">
-                <button type="button" class="btn btn-default btn-xs" title="Try to fix (launch event handler if defined)" onClick="try_to_fix_one('{{ pb.get_full_name() }}');">
-                  <i class="fa fa-magic"></i>
-                </button>
-                <button type="button" class="btn btn-default btn-xs" title="Launch the check command " onClick="recheck_now_one('{{ pb.get_full_name() }}');">
-                  <i class="fa fa-refresh"></i>
-                </button>
-                <button type="button" class="btn btn-default btn-xs" title="Force service to be considered as Ok" onClick="submit_check_ok_one('{{ pb.get_full_name() }}', '{{ user.get_name() }}');">
-                  <i class="fa fa-share"></i>
-                </button>
-                <button type="button" class="btn btn-default btn-xs" title="Acknowledge the problem" onClick="acknowledge_one('{{ pb.get_full_name() }}', '{{ user.get_name() }}');">
-                  <i class="fa fa-check"></i>
-                </button>
-                <button type="button" class="btn btn-default btn-xs" title="Schedule a one day downtime for the problem" onClick="downtime_one('{{ pb.get_full_name() }}', '{{ user.get_name() }}');">
-                  <i class="fa fa-ambulance"></i>
-                </button>
-                <button type="button" class="btn btn-default btn-xs" title="Ignore checks for the service (disable checks, notifications, event handlers and force Ok)" onClick="remove_one('{{ pb.get_full_name() }}', '{{ user.get_name() }}');">
-                  <i class="fa fa-eraser"></i>
-                </button>
+            <td class="row">
+              <div class="pull-right">
+                %# Graphs
+                %#if graphs:
+                %import time
+                %now = time.time()
+                %graphs = app.get_graph_uris(pb, now-4*3600, now, 'dashboard')
+                %onmouse_code = ''
+                %if len(graphs) > 0:
+                %onmouse_code = 'onmouseover="display_hover_img(\'%s\',\'\');" onmouseout="hide_hover_img();" ' % graphs[0]['img_src']
+                %end
+                  <span class="perfometer" {{ onmouse_code }}>{{!helper.get_perfometer(pb)}}</span>
+                %#end
+              </div>
+              <div class="">
+                {{ pb.output }}
               </div>
             </td>
-            %end
           </tr>
+           <tr class="detail" id="{{helper.get_html_id(pb)}}" data-raw-obj-name='{{pb.get_full_name()}}'>
+             <td colspan="7" class="hiddenRow">
+               <div class="accordion-body collapse" id="details-{{helper.get_html_id(pb)}}">
+                 <table class="table table-condensed" style="margin:0;">
+                   <tr>
+                     <td align="center">Realm {{pb.get_realm()}}</td>
+                     <td align="center">Next check in {{!helper.print_duration(pb.next_chk, just_duration=True, x_elts=2)}}</td>
+                     %if actions_allowed:
+                     <td align="center">
+                       <div class="btn-group" role="group" aria-label="...">
+                         <button type="button" class="btn btn-default btn-xs" title="Try to fix (launch event handler if defined)" onClick="try_to_fix_one('{{ pb.get_full_name() }}');">
+                           <i class="fa fa-magic"></i> Try to fix
+                         </button>
+                         <button type="button" class="btn btn-default btn-xs" title="Launch the check command " onClick="recheck_now_one('{{ pb.get_full_name() }}');">
+                           <i class="fa fa-refresh"></i> Refresh
+                         </button>
+                         <button type="button" class="btn btn-default btn-xs" title="Force service to be considered as Ok" onClick="submit_check_ok_one('{{ pb.get_full_name() }}', '{{ user.get_name() }}');">
+                           <i class="fa fa-share"></i> OK
+                         </button>
+                         <button type="button" class="btn btn-default btn-xs" title="Acknowledge the problem" onClick="acknowledge_one('{{ pb.get_full_name() }}', '{{ user.get_name() }}');">
+                           <i class="fa fa-check"></i> ACK
+                         </button>
+                         <button type="button" class="btn btn-default btn-xs" title="Schedule a one day downtime for the problem" onClick="downtime_one('{{ pb.get_full_name() }}', '{{ user.get_name() }}');">
+                           <i class="fa fa-ambulance"></i> Downtime
+                         </button>
+                         <button type="button" class="btn btn-default btn-xs" title="Ignore checks for the service (disable checks, notifications, event handlers and force Ok)" onClick="remove_one('{{ pb.get_full_name() }}', '{{ user.get_name() }}');">
+                           <i class="fa fa-eraser"></i> Remove
+                         </button>
+                       </div>
+                     </td>
+                     %end
+                   </tr>
+                 </table>
+                 %if len(pb.impacts) > 0:
+                 <h4 style="margin-left: 20px;">{{ len(pb.impacts) }} impacts</h4>
+                 <table class="table table-condensed" style="margin:0;">
+                   <tr>
+                      %for i in helper.get_impacts_sorted(pb):
+                      %if i.state_id != 0:
+                      <tr>
+                        <td width="200px"></td>
+                        <td width="200px">{{!helper.get_link(i, short=True)}}</td>
+                        <td width="90px" align="center" class="background-{{i.state.lower()}}">{{ i.state }}</td>
+                        <td width="90px">{{!helper.print_duration(i.last_state_change, just_duration=True, x_elts=2)}}</td>
+                        <td width="100px">{{!helper.print_duration(i.last_chk, just_duration=True, x_elts=2)}} ago</td>
+                        <td>
+                          {{ i.output }}
+                        </td>
+                      </tr>
+                      %end
+                      %end
+                 </table>
+                 %end
+               </div>
+             </td>
+           </tr>
 
         %# End for pb in pbs:
         %end
@@ -510,6 +558,13 @@
          
       %# Close problems div ...
    </div>
-  
-  %include pagination_element navi=navi, app=app, page=page, div_class="pull-right"
+
+</div>
+
+<hr>
+
+<div class="row">
+  <div class='col-lg-7 col-md-8 col-sm-10 pull-right'>
+    %include pagination_element navi=navi, app=app, page=page, div_class=""
+  </div>
 </div>

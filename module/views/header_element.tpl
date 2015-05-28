@@ -82,22 +82,22 @@
             </li>
             <script>
                %if app is not None and app.gravatar:
-               $('<img src="{{app.get_gravatar(user.email, 32)}}" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}" style="display=none">')
+               $('<img src="{{app.get_gravatar(user.email, 32)}}" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}" style="display:none">')
                   .load(function() { $(this).show(); })
                   .error(function() { 
                      $(this).remove(); 
-                     $('<img src="/static/images/logo/default_user.png" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}" style="display=none">')
+                     $('<img src="/static/images/logo/default_user.png" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}" style="display:none">')
                         .load(function() { $(this).show(); })
                         .error(function() { $(this).remove(); })
                         .appendTo('li.user-header');
                   })
                   .appendTo('li.user-header');
                %else:
-               $('<img src="/static/images/logo/{{user.get_name()}}.png" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}" style="display=none">')
+               $('<img src="/static/images/logo/{{user.get_name()}}.png" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}" style="display:none">')
                   .load(function() { $(this).show(); })
                   .error(function() { 
                      $(this).remove(); 
-                     $('<img src="/static/images/logo/default_user.png" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}" style="display=none">')
+                     $('<img src="/static/images/logo/default_user.png" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}" style="display:none">')
                         .load(function() { $(this).show(); })
                         .error(function() { $(this).remove(); })
                         .appendTo('li.user-header');
