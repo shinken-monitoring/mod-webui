@@ -120,11 +120,11 @@
                 </tr>
                 <tr>
                   <td><strong>Commands authorized:</strong></td>
-                  <td><span class="{{'glyphicon glyphicon-ok font-green' if app.helper.can_action(contact) else 'glyphicon glyphicon-remove font-red'}}"></span></td>
+                  <td>{{! app.helper.get_on_off(app.helper.can_action(contact), "Is this contact allowed to launch commands from Web UI?")}}</td>
                 </tr>
                 <tr>
                   <td><strong>Active:</strong></td>
-                  <td><span class="{{'glyphicon glyphicon-ok font-green' if not in_scheduled_downtime else 'glyphicon glyphicon-remove font-red'}}"></span></td>
+                  <td>{{! app.helper.get_on_off(not in_scheduled_downtime, "Is this contact available (else in scheduled downtime)?")}}</td>
                 </tr>
                 <tr>
                   <td><strong>Mail:</strong></td>
@@ -213,13 +213,12 @@
                   </tr>
                   
                   <tr>
-                    <td colspan="2"><strong>&raquo;&nbsp;Hosts notifications:</strong>&nbsp;<i title="Are hosts notifications enabled?" class="{{'glyphicon glyphicon-ok font-green' if contact.host_notifications_enabled else 'glyphicon glyphicon-remove font-red'}}"></i></td>
+                    <td colspan="2"><strong>&raquo;&nbsp;Hosts notifications:</strong>&nbsp;{{! app.helper.get_on_off(not in_scheduled_downtime, "Are hosts notifications sent to this contact?")}}</td>
                   </tr>
                   %if nw.host_notifications_enabled:
                   <tr>
                     <td><strong>&nbsp;&ndash;&nbsp;period:</strong></td>
-                    <td name="{{"host_notification_period%s" % i}}" class="popover-dismiss" data-html="true" data-toggle="popover" data-trigger="hover" title="Host notification period" data-placement="top" data-content="...">
-                    <i title="Is notification period currently active?" class="{{'glyphicon glyphicon-ok font-green' if nw.host_notification_period.is_time_valid(time.time()) else 'glyphicon glyphicon-remove font-red'}}"></i>
+                    <td name="{{"host_notification_period%s" % i}}" class="popover-dismiss" data-html="true" data-toggle="popover" data-trigger="hover" title="Host notification period" data-placement="top" data-content="...">{{! app.helper.get_on_off(nw.host_notification_period.is_time_valid(time.time()), "Is notification period currently active?")}}
                      %if 'timeperiods' in app.menu_items:
                      <a href="/timeperiods">{{nw.host_notification_period.alias}}</a>
                      <script>
@@ -249,7 +248,7 @@
                     <td><strong>&nbsp;&ndash;&nbsp;options:</strong></td>
                     <td>
                     %for m in message:
-                      <span class="{{'glyphicon glyphicon-ok font-green' if m in options else 'glyphicon glyphicon-remove font-red'}}">{{message[m]}}&nbsp;</span>
+                      {{! app.helper.get_on_off(m in options, '', message[m]+'&nbsp;')}}
                     %end
                     </td>
                   </tr>
@@ -280,13 +279,13 @@
                   
                 
                   <tr>
-                    <td colspan="2"><strong>&raquo;&nbsp;Services notifications:</strong>&nbsp;<i title="Are services notifications enabled?" class="{{'glyphicon glyphicon-ok font-green' if contact.service_notifications_enabled else 'glyphicon glyphicon-remove font-red'}}"></i></td>
+                    <td colspan="2"><strong>&raquo;&nbsp;Services notifications:</strong>&nbsp;{{! app.helper.get_on_off(nw.service_notifications_enabled, "Are services notifications sent to this contact?")}}</td>
                   </tr>
                   %if nw.service_notifications_enabled:
                   <tr>
                     <td><strong>&nbsp;&ndash;&nbsp;period:</strong></td>
-                    <td name="{{"service_notification_period%s" % i}}" class="popover-dismiss" data-html="true" data-toggle="popover" data-trigger="hover" title="service notification period" data-placement="top" data-content="...">
-                    <i title="Is notification period currently active?" class="{{'glyphicon glyphicon-ok font-green' if nw.service_notification_period.is_time_valid(time.time()) else 'glyphicon glyphicon-remove font-red'}}"></i>
+                    <td name="{{"service_notification_period%s" % i}}" class="popover-dismiss" data-html="true" data-toggle="popover" data-trigger="hover" title="service notification period" data-placement="top" data-content="...">{{! app.helper.get_on_off(nw.service_notification_period.is_time_valid(time.time()), "Is notification period currently active?")}}
+
                     %if 'timeperiods' in app.menu_items:
                     <a href="/timeperiods">{{nw.service_notification_period.alias}}</a>
                     <script>
@@ -317,7 +316,7 @@
                     <td><strong>&nbsp;&ndash;&nbsp;options:</strong></td>
                     <td>
                     %for m in message:
-                      <span class="{{'glyphicon glyphicon-ok font-green' if m in options else 'glyphicon glyphicon-remove font-red'}}">{{message[m]}}&nbsp;</span>
+                      {{! app.helper.get_on_off(m in options, '', message[m]+'&nbsp;')}}
                     %end
                     </td>
                   </tr>
@@ -360,7 +359,7 @@
               </colgroup>
               <thead>
                 <tr>
-                  <th colspan="2">Links:</td>
+                  <th colspan="2">Relations:</td>
                 </tr>
               </thead>
               <tbody style="font-size:x-small;">
@@ -376,7 +375,7 @@
                     %break
                     %end
                   %end
-                  {{!'<span class="glyphicon glyphicon-remove font-red"></span> Do not monitor any host' if i==1 else ''}}
+                  {{!'<i class="glyphicon glyphicon-remove font-red"></i> Do not monitor any host' if i==1 else ''}}
                   </td>
                 </tr>
                 <tr>
@@ -391,7 +390,7 @@
                     %break
                     %end
                   %end
-                  {{!'<span class="glyphicon glyphicon-remove font-red"></span> Do not monitor any service' if i==1 else ''}}
+                  {{!'<i class="glyphicon glyphicon-remove font-red"></i> Do not monitor any service' if i==1 else ''}}
                   </td>
                 </tr>
                 <tr>
@@ -406,7 +405,7 @@
                     %break
                     %end
                   %end
-                  {{!'<span class="glyphicon glyphicon-remove font-red"></span> Do not belong to any group' if i==1 else ''}}
+                  {{!'<i class="glyphicon glyphicon-remove font-red"></i> Do not belong to any group' if i==1 else ''}}
                   </td>
                 </tr>
               </tbody>
