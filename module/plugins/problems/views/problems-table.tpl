@@ -283,13 +283,6 @@
 <div class="row">
    <!-- Left panel, toolbar and active filters -->
    <div id="toolbar" class="col-lg-3 col-md-4 col-sm-4">
-      <!-- Perfdata panel -->
-      <div class="panel panel-info" id="image_panel">
-         <div class="panel-heading">Perfdatas</div>
-         <div class="panel-body">
-            <div id="img_hover">toto</div>
-         </div>
-      </div>
 
 %if actions_allowed:
       <!-- Actions panel -->
@@ -432,31 +425,40 @@
    <!-- Right panel, with all problems -->
    <div id="problems" class="col-lg-9 col-md-8 col-sm-8">
 
-      %from itertools import groupby
-      %pbs = sorted(pbs, key=lambda x: x.business_impact, reverse=True)
-      %for business_impact, bi_pbs in groupby(pbs, key=lambda x: x.business_impact):
+     %from itertools import groupby
+     %pbs = sorted(pbs, key=lambda x: x.business_impact, reverse=True)
+     %for business_impact, bi_pbs in groupby(pbs, key=lambda x: x.business_impact):
+   <div class="panel panel-default">
+      <div class="panel-body">
         <h3> Business impact: {{!helper.get_business_impact_text(business_impact)}} </h3>
       <table class="table table-condensed">
         <thead><tr>
-            <th align="center" width="200px">Host</th>
-            <th align="center" width="200px">Service</th>
-            <th align="center" width="90px">State</th>
-            <th align="center" width="110px">Since</th>
-            <th align="center" width="110px">Last check</th>
-            <th align="center">Output</th>
+            <th width="16px"></th>
+            <th width="16px"></th>
+            <th width="200px">Host</th>
+            <th width="200px">Service</th>
+            <th width="90px">State</th>
+            <th width="110px">Since</th>
+            <th width="110px">Last check</th>
+            <th>Output</th>
         </tr></thead>
 
         <tbody>
-        %bi_pbs = sorted(bi_pbs, key=lambda x: x.host_name)
-        %for host_name, host_pbs in groupby(bi_pbs, key=lambda x: x.host_name):
+        %# Sort problems, hosts first, then orders by state_id and by host
+        %bi_pbs = sorted(sorted(sorted(bi_pbs, key=lambda x: x.host_name), key=lambda x: x.state_id, reverse=True), key=lambda x: x.__class__.my_type)
+        %hosts = groupby(bi_pbs, key=lambda x: x.host_name)
+        %for host_name, host_pbs in hosts:
         %for i, pb in enumerate(host_pbs):
             
          %# Host information ...
            <tr data-toggle="collapse" data-target="#details-{{helper.get_html_id(pb)}}" class="accordion-toggle">
             <td>
-              <div class="tick pull-left" style="cursor:pointer;" onclick="add_remove_elements('{{helper.get_html_id(pb)}}')">
-                <img class='img_tick' id='selector-{{helper.get_html_id(pb)}}' src='/static/images/tick.png' />
-              </div>
+              <input type="checkbox" id="selector-{{helper.get_html_id(pb)}}" onclick="add_remove_elements('{{helper.get_html_id(pb)}}')">
+            </td>
+            <td align=center>
+              {{!helper.get_fa_icon_state(pb)}}
+            </td>
+            <td>
               %if i == 0:
               <a href="/host/{{pb.host_name}}">{{pb.host_name}}</a>
               %end
@@ -484,7 +486,10 @@
                 %if len(graphs) > 0:
                 %onmouse_code = 'onmouseover="display_hover_img(\'%s\',\'\');" onmouseout="hide_hover_img();" ' % graphs[0]['img_src']
                 %end
-                  <span class="perfometer" {{ onmouse_code }}>{{!helper.get_perfometer(pb)}}</span>
+                %if len(graphs) > 0:
+                  <!--<span class="perfometer" {{ onmouse_code }}>{{!helper.get_perfometer(pb)}}</span>-->
+                  <a role="button" tabindex="0" class="perfometer" data-toggle="popover" title="{{ pb.get_full_name() }}" data-content="<img src={{ graphs[0]['img_src'] }} width='600px' height='200px'>" data-placement="left">{{!helper.get_perfometer(pb)}}</a>
+                %end
                 %#end
               </div>
               <div class="">
@@ -493,14 +498,15 @@
             </td>
           </tr>
            <tr class="detail" id="{{helper.get_html_id(pb)}}" data-raw-obj-name='{{pb.get_full_name()}}'>
-             <td colspan="7" class="hiddenRow">
+             <td colspan="8" class="hiddenRow">
                <div class="accordion-body collapse" id="details-{{helper.get_html_id(pb)}}">
                  <table class="table table-condensed" style="margin:0;">
                    <tr>
                      <td align="center">Realm {{pb.get_realm()}}</td>
                      <td align="center">Next check in {{!helper.print_duration(pb.next_chk, just_duration=True, x_elts=2)}}</td>
+                     <td>Attempt {{pb.attempt}}/{{pb.max_check_attempts}}</td>
                      %if actions_allowed:
-                     <td align="center">
+                     <td align="right">
                        <div class="btn-group" role="group" aria-label="...">
                          <button type="button" class="btn btn-default btn-xs" title="Try to fix (launch event handler if defined)" onClick="try_to_fix_one('{{ pb.get_full_name() }}');">
                            <i class="fa fa-magic"></i> Try to fix
@@ -533,6 +539,9 @@
                       %if i.state_id != 0:
                       <tr>
                         <td width="200px"></td>
+                        <td align=center>
+                          {{!helper.get_fa_icon_state(i)}}
+                        </td>
                         <td width="200px">{{!helper.get_link(i, short=True)}}</td>
                         <td width="90px" align="center" class="background-{{i.state.lower()}}">{{ i.state }}</td>
                         <td width="90px">{{!helper.print_duration(i.last_state_change, just_duration=True, x_elts=2)}}</td>
@@ -554,6 +563,8 @@
         %end
         </tbody>
       </table>
+   </div>
+   </div>
       %end
          
       %# Close problems div ...
@@ -568,3 +579,16 @@
     %include pagination_element navi=navi, app=app, page=page, div_class=""
   </div>
 </div>
+
+<!-- Perfdata panel -->
+<div id="img_hover"></div>
+
+<script>
+  $(function () {
+    $('[data-toggle="popover"]').popover({
+      html: true,
+      template: '<div class="popover img-popover"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
+      trigger: "hover",
+    })
+  })
+</script>
