@@ -508,21 +508,45 @@
                      %if actions_allowed:
                      <td align="right">
                        <div class="btn-group" role="group" aria-label="...">
+                         %if pb.event_handler:
                          <button type="button" class="btn btn-default btn-xs" title="Try to fix (launch event handler if defined)" onClick="try_to_fix_one('{{ pb.get_full_name() }}');">
                            <i class="fa fa-magic"></i> Try to fix
                          </button>
+                         %end
                          <button type="button" class="btn btn-default btn-xs" title="Launch the check command " onClick="recheck_now_one('{{ pb.get_full_name() }}');">
                            <i class="fa fa-refresh"></i> Refresh
                          </button>
                          <button type="button" class="btn btn-default btn-xs" title="Force service to be considered as Ok" onClick="submit_check_ok_one('{{ pb.get_full_name() }}', '{{ user.get_name() }}');">
                            <i class="fa fa-share"></i> OK
                          </button>
-                         <button type="button" class="btn btn-default btn-xs" title="Acknowledge the problem" onClick="acknowledge_one('{{ pb.get_full_name() }}', '{{ user.get_name() }}');">
+                         <button type="button" id="btn-acknowledge-{{helper.get_html_id(pb)}}" class="btn btn-default btn-xs" title="Acknowledge the problem">
                            <i class="fa fa-check"></i> ACK
                          </button>
-                         <button type="button" class="btn btn-default btn-xs" title="Schedule a one day downtime for the problem" onClick="downtime_one('{{ pb.get_full_name() }}', '{{ user.get_name() }}');">
+                         <script>
+                           $('button[id="btn-acknowledge-{{helper.get_html_id(pb)}}"]').click(function () {
+                             stop_refresh();
+                             $('#modal').modal({
+                               keyboard: true,
+                               show: true,
+                               backdrop: 'static',
+                               remote: "/forms/acknowledge/{{helper.get_uri_name(pb)}}"
+                             });
+                           });
+                         </script>
+                         <button type="button" id="btn-downtime-{{helper.get_html_id(pb)}}" class="btn btn-default btn-xs" title="Schedule a one day downtime for the problem">
                            <i class="fa fa-ambulance"></i> Downtime
                          </button>
+                         <script>
+                           $('button[id="btn-downtime-{{helper.get_html_id(pb)}}"]').click(function () {
+                             stop_refresh();
+                             $('#modal').modal({
+                               keyboard: true,
+                               show: true,
+                               backdrop: 'static',
+                               remote: "/forms/downtime/{{helper.get_uri_name(pb)}}"
+                             });
+                           });
+                         </script>
                          <button type="button" class="btn btn-default btn-xs" title="Ignore checks for the service (disable checks, notifications, event handlers and force Ok)" onClick="remove_one('{{ pb.get_full_name() }}', '{{ user.get_name() }}');">
                            <i class="fa fa-eraser"></i> Remove
                          </button>
