@@ -1131,13 +1131,17 @@ Invalid element name
                      <div class="col-lg-12">
                         <!-- Show our father dependencies if we got some -->
                         %if len(elt.parent_dependencies) > 0:
-%###
-%### To be replaced !
-!helper.get_button('Show dependency tree', img='/static/images/expand.png')
-%###
-%###
                         <h4>Root cause:</h4>
+                        <button name="togglelink-{{elt.get_dbg_name()}}" class="col-lg-2 btn" data-toggle="tooltip" data-placement="bottom" title="Show dependency tree">{{elt.state}} <i class='fa fa-plus'></i> Show dependency tree</button>
+                        <script>
+                           $('button[name="togglelink-{{elt.get_dbg_name()}}"]').click(function () {
+                              toggleBusinessElt('{{elt.get_dbg_name()}}');
+                           });
+                        </script>
+
+                        <!--
                         <a id="togglelink-{{elt.get_dbg_name()}}" href="javascript:toggleBusinessElt('{{elt.get_dbg_name()}}')"> {{!helper.get_button('Show dependency tree', img='/static/images/expand.png')}}</a>
+                        -->
                         <div class="clear"></div>
                         {{!helper.print_business_rules(datamgr.get_business_parents(elt), source_problems=elt.source_problems)}}
                         %end
@@ -1189,9 +1193,7 @@ Invalid element name
                                  <div>
                                     <img style="width:16px; height:16px" alt="icon state" src="{{helper.get_icon_state(i)}}">
                                     <span class='alert-small alert-{{i.state.lower()}}' style="font-size:110%">{{i.state}}</span> for <span style="font-size:110%">{{!helper.get_link(i, short=True)}}</span> since {{helper.print_duration(i.last_state_change, just_duration=True, x_elts=2)}}
-                                    %for i in range(0, i.business_impact-2):
-                                    <img alt="icon state" src="/static/images/star.png">
-                                    %end
+                                    {{!helper.get_business_impact_text(i.business_impact)}}
                                  </div>
                               </div>
                            %end
