@@ -259,37 +259,30 @@
 
     
 <!-- Buttons and page navigation -->
-<div class="row" style="padding: 0px;">
+<div class="row">
    <div class='col-lg-5 col-md-4 col-sm-2 pull-left'>
       <a id="hide_toolbar_btn" href="javascript:hide_toolbar()" class="btn btn-default"><i class="fa fa-minus"></i> Hide toolbar</a>
       <a id='show_toolbar_btn' href="javascript:show_toolbar()" class="btn btn-default"><i class="fa fa-plus"></i> Show toolbar</a>      
       <a id='select_all_btn' href="javascript:select_all_problems()" class="btn btn-default"><i class="fa fa-check"></i> Select all</a>
       <a id='unselect_all_btn' href="javascript:unselect_all_problems()" class="btn btn-default"><i class="fa fa-minus"></i> Unselect all</a>
-      <a id='expand_all' href="javascript:expand_all_block()" class="btn btn-default"><i class="fa fa-plus"></i> Expand all</a>
-      <a id='collapse_all' href="javascript:collapse_all_block()" class="btn btn-default"><i class="fa fa-minus"></i> Collapse all</a>
+      <!--<a id='expand_all' href="javascript:expand_all_block()" class="btn btn-default"><i class="fa fa-plus"></i> Expand all</a>-->
+      <!--<a id='collapse_all' href="javascript:collapse_all_block()" class="btn btn-default"><i class="fa fa-minus"></i> Collapse all</a>-->
    </div>
    <div class='col-lg-7 col-md-8 col-sm-10 pull-right'>
    %include pagination_element navi=navi, app=app, page=page, div_class="pull-right"
    </div>
 </div>
 
-<hr/>
+<hr>
 
 %if app.get_nb_problems() > 0 and page == 'problems' and app.play_sound:
    <EMBED src="/static/sound/alert.wav" autostart=true loop=false volume=100 hidden=true>
 %end
 
 <!-- Problems filtering and display -->
-<div class="row" style="padding: 0px;">
+<div class="row">
    <!-- Left panel, toolbar and active filters -->
    <div id="toolbar" class="col-lg-3 col-md-4 col-sm-4">
-      <!-- Perfdata panel -->
-      <div class="panel panel-info" id="image_panel">
-         <div class="panel-heading">Perfdatas</div>
-         <div class="panel-body">
-            <div id="img_hover"></div>
-         </div>
-      </div>
 
 %if actions_allowed:
       <!-- Actions panel -->
@@ -431,98 +424,171 @@
 
    <!-- Right panel, with all problems -->
    <div id="problems" class="col-lg-9 col-md-8 col-sm-8">
-      <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
 
-      %# We will print Business impact level of course
-      %impact_level = 10
+     %from itertools import groupby
+     %pbs = sorted(pbs, key=lambda x: x.business_impact, reverse=True)
+     %for business_impact, bi_pbs in groupby(pbs, key=lambda x: x.business_impact):
+   <div class="panel panel-default">
+      <div class="panel-body">
+        <h3> Business impact: {{!helper.get_business_impact_text(business_impact)}} </h3>
+      <table class="table table-condensed">
+        <thead><tr>
+            <th width="16px"></th>
+            <th width="16px"></th>
+            <th width="200px">Host</th>
+            <th width="200px">Service</th>
+            <th width="90px">State</th>
+            <th width="110px">Since</th>
+            <th width="110px">Last check</th>
+            <th>Output</th>
+        </tr></thead>
 
-      %# We remember the last hostname so see if we print or not the host for a 2nd service
-      %last_hname = ''
-
-      %# We try to make only important things shown on same output
-      %last_output = ''
-      %nb_same_output = 0
-
-      %for pb in pbs:
-         %# New business impact level ...
-         %if pb.business_impact != impact_level:
-            %if impact_level != 10:
-               %# Close last panel group  ...
-               {{'</div></div></div></div>'}}
-            %end
-            %# Business level title ...
-            <h3> Business impact: {{!helper.get_business_impact_text(pb.business_impact)}} </h3>
-            %# "We reset the last_hname so we won't overlap this feature across tables"
-            %last_hname = 'first'
-            %last_output = ''
-            %nb_same_output = 0
-         %end
-         
-         %impact_level = pb.business_impact
-
-         %# " We check for the same output and the same host. If we got more than 3 of same, make them opacity effect"
-         %if pb.output == last_output and pb.host_name == last_hname:
-            %nb_same_output += 1
-         %else:
-            %nb_same_output = 0
-         %end
-         %last_output = pb.output
-      
-         %if pb.host_name != last_hname:
-            %if last_hname != '' and last_hname != 'first':
-               %# Close last panel group  ...
-                        </div>
-                     </div>
-                  </div>
-               </div>
-            %end
+        <tbody>
+        %# Sort problems, hosts first, then orders by state_id and by host
+        %bi_pbs = sorted(sorted(sorted(bi_pbs, key=lambda x: x.host_name), key=lambda x: x.state_id, reverse=True), key=lambda x: x.__class__.my_type)
+        %hosts = groupby(bi_pbs, key=lambda x: x.host_name)
+        %for host_name, host_pbs in hosts:
+        %for i, pb in enumerate(host_pbs):
             
-         <div class="panel panel-default">
-            <div class="panel-heading">
-%if actions_allowed:
-               <div class='tick pull-left' style="cursor:pointer;" onclick="add_remove_elements('{{helper.get_html_id(pb)}}')">
-                  <img class='img_tick' id='selector-{{helper.get_html_id(pb)}}' src='/static/images/tick.png' />
-               </div>
-               <span class="pull-left">&nbsp;&nbsp;&nbsp;</span>
-%end
-               <span class='img_status'>
-                  <span class="medium-pulse aroundpulse pull-left">
-                  <span class="medium-pulse pulse"></span>
-                     <img src="{{helper.get_icon_state(pb)}}" />
-                  </span>
-               </span>
-               <h4 class="panel-title" data-toggle="collapse" data-parent="#accordion" href="#group_{{pb.host_name}}">
-                  {{pb.host_name}}
-                  %if not pb.__class__.my_type == 'service':
-                     %for s in pb.services:
-                        <a href="/service/{{pb.host_name}}/{{s.get_name()}}">
-                           <span title="{{pb.host_name}}/{{s.get_name()}} - {{s.state}} - {{helper.print_duration(s.last_chk)}} - {{s.output}}" class="service service{{s.state}} service{{s.state_type}}">&nbsp;&nbsp;&nbsp;</span>
-                        </a>
-                     %end
-                  %end
-                  <a class="pull-right"><i class="fa fa-chevron-down pull-right"></i></a>
-               </h4>
-            </div>
-            <div id="group_{{pb.host_name}}" class="panel-collapse collapse host-panel">
-               <div class="panel-body">
-                  <div class="panel-group" id="problems_{{pb.host_name}}" role="tablist" aria-multiselectable="true">
-            %last_hname = pb.host_name
-         %end
-      
          %# Host information ...
-         %include _problem pb=pb, app=app, graphs=True, actions_allowed=actions_allowed, user=user.get_name()
-
-      %# End for pb in pbs:
-      %end
-      %# Close last panel group  ...
-                  </div>
+           <tr data-toggle="collapse" data-target="#details-{{helper.get_html_id(pb)}}" class="accordion-toggle">
+            <td>
+              <input type="checkbox" id="selector-{{helper.get_html_id(pb)}}" onclick="add_remove_elements('{{helper.get_html_id(pb)}}')">
+            </td>
+            <td align=center>
+              {{!helper.get_fa_icon_state(pb)}}
+            </td>
+            <td>
+              %if i == 0:
+              <a href="/host/{{pb.host_name}}">{{pb.host_name}}</a>
+              %end
+            </td>
+            <td>
+              %if pb.__class__.my_type == 'service':
+              {{!helper.get_link(pb, short=True)}}
+              %end
+              %# Impacts
+              %if len(pb.impacts) > 0:
+              <button class="btn btn-danger btn-xs"><i class="fa fa-plus"></i> {{ len(pb.impacts) }} impacts</button>
+              %end
+            </td>
+            <td align="center" class="background-{{pb.state.lower()}}">{{ pb.state }}</td>
+            <td>{{!helper.print_duration(pb.last_state_change, just_duration=True, x_elts=2)}}</td>
+            <td>{{!helper.print_duration(pb.last_chk, just_duration=True, x_elts=2)}} ago</td>
+            <td class="row">
+              <div class="pull-right">
+                %# Graphs
+                %#if graphs:
+                %import time
+                %now = time.time()
+                %graphs = app.get_graph_uris(pb, now-4*3600, now, 'dashboard')
+                %onmouse_code = ''
+                %if len(graphs) > 0:
+                %onmouse_code = 'onmouseover="display_hover_img(\'%s\',\'\');" onmouseout="hide_hover_img();" ' % graphs[0]['img_src']
+                %end
+                %if len(graphs) > 0:
+                  <!--<span class="perfometer" {{ onmouse_code }}>{{!helper.get_perfometer(pb)}}</span>-->
+                  <a role="button" tabindex="0" class="perfometer" data-toggle="popover" title="{{ pb.get_full_name() }}" data-content="<img src={{ graphs[0]['img_src'] }} width='600px' height='200px'>" data-placement="left">{{!helper.get_perfometer(pb)}}</a>
+                %end
+                %#end
+              </div>
+              <div class="">
+                {{ pb.output }}
+              </div>
+            </td>
+          </tr>
+           <tr class="detail" id="{{helper.get_html_id(pb)}}" data-raw-obj-name='{{pb.get_full_name()}}'>
+             <td colspan="8" class="hiddenRow">
+               <div class="accordion-body collapse" id="details-{{helper.get_html_id(pb)}}">
+                 <table class="table table-condensed" style="margin:0;">
+                   <tr>
+                     <td align="center">Realm {{pb.get_realm()}}</td>
+                     <td align="center">Next check in {{!helper.print_duration(pb.next_chk, just_duration=True, x_elts=2)}}</td>
+                     <td>Attempt {{pb.attempt}}/{{pb.max_check_attempts}}</td>
+                     %if actions_allowed:
+                     <td align="right">
+                       <div class="btn-group" role="group" aria-label="...">
+                         <button type="button" class="btn btn-default btn-xs" title="Try to fix (launch event handler if defined)" onClick="try_to_fix_one('{{ pb.get_full_name() }}');">
+                           <i class="fa fa-magic"></i> Try to fix
+                         </button>
+                         <button type="button" class="btn btn-default btn-xs" title="Launch the check command " onClick="recheck_now_one('{{ pb.get_full_name() }}');">
+                           <i class="fa fa-refresh"></i> Refresh
+                         </button>
+                         <button type="button" class="btn btn-default btn-xs" title="Force service to be considered as Ok" onClick="submit_check_ok_one('{{ pb.get_full_name() }}', '{{ user.get_name() }}');">
+                           <i class="fa fa-share"></i> OK
+                         </button>
+                         <button type="button" class="btn btn-default btn-xs" title="Acknowledge the problem" onClick="acknowledge_one('{{ pb.get_full_name() }}', '{{ user.get_name() }}');">
+                           <i class="fa fa-check"></i> ACK
+                         </button>
+                         <button type="button" class="btn btn-default btn-xs" title="Schedule a one day downtime for the problem" onClick="downtime_one('{{ pb.get_full_name() }}', '{{ user.get_name() }}');">
+                           <i class="fa fa-ambulance"></i> Downtime
+                         </button>
+                         <button type="button" class="btn btn-default btn-xs" title="Ignore checks for the service (disable checks, notifications, event handlers and force Ok)" onClick="remove_one('{{ pb.get_full_name() }}', '{{ user.get_name() }}');">
+                           <i class="fa fa-eraser"></i> Remove
+                         </button>
+                       </div>
+                     </td>
+                     %end
+                   </tr>
+                 </table>
+                 %if len(pb.impacts) > 0:
+                 <h4 style="margin-left: 20px;">{{ len(pb.impacts) }} impacts</h4>
+                 <table class="table table-condensed" style="margin:0;">
+                   <tr>
+                      %for i in helper.get_impacts_sorted(pb):
+                      %if i.state_id != 0:
+                      <tr>
+                        <td width="200px"></td>
+                        <td align=center>
+                          {{!helper.get_fa_icon_state(i)}}
+                        </td>
+                        <td width="200px">{{!helper.get_link(i, short=True)}}</td>
+                        <td width="90px" align="center" class="background-{{i.state.lower()}}">{{ i.state }}</td>
+                        <td width="90px">{{!helper.print_duration(i.last_state_change, just_duration=True, x_elts=2)}}</td>
+                        <td width="100px">{{!helper.print_duration(i.last_chk, just_duration=True, x_elts=2)}} ago</td>
+                        <td>
+                          {{ i.output }}
+                        </td>
+                      </tr>
+                      %end
+                      %end
+                 </table>
+                 %end
                </div>
-            </div>
-         </div>
-         
-      %# Close accordion and problems div ...
-      </div>
+             </td>
+           </tr>
+
+        %# End for pb in pbs:
+        %end
+        %end
+        </tbody>
+      </table>
    </div>
-  
-  %include pagination_element navi=navi, app=app, page=page, div_class="pull-right"
+   </div>
+      %end
+         
+      %# Close problems div ...
+   </div>
+
 </div>
+
+<hr>
+
+<div class="row">
+  <div class='col-lg-7 col-md-8 col-sm-10 pull-right'>
+    %include pagination_element navi=navi, app=app, page=page, div_class=""
+  </div>
+</div>
+
+<!-- Perfdata panel -->
+<div id="img_hover"></div>
+
+<script>
+  $(function () {
+    $('[data-toggle="popover"]').popover({
+      html: true,
+      template: '<div class="popover img-popover"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
+      trigger: "hover",
+    })
+  })
+</script>
