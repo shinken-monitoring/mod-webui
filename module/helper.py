@@ -635,6 +635,32 @@ class Helper(object):
         else:
             return '/static/images/icons/state_%s.png' % ico
 
+    def get_fa_icon_state(self, obj):
+        ico = self.get_small_icon_state(obj)
+        icons = { 'ok': 'check', 'up': 'check',
+                  'critical': 'remove', 'down': 'remove',
+                  'warning': 'warning',
+                  'ack': 'ambulance', 'downtime': 'ambulance',
+                  'flapping': 'spinner fa-spin',
+                  'unknown': 'question-circle' }
+        if obj.__class__.my_type == 'host':
+            if obj.state == 'DOWN':
+                return '''
+                <span class="fa-stack">
+                  <i class="fa fa-server fa-stack-1x"></i>
+                  <i class="fa fa-ban fa-stack-2x text-danger"></i>
+                </span>
+                '''
+            if obj.state == 'UP':
+                return '<i class="fa fa-server text-success"></i>'
+        else:
+            return '<i class="fa fa-%s text-%s"></i>' % (icons.get(ico, 'unknown'), self.state_to_class(obj.state))
+            return '<i class="fa fa-server"></i>'
+        if getattr(obj, 'icon_set', '') != '':
+            return '/static/images/sets/%s/state_%s.png' % (obj.icon_set, ico)
+        else:
+            return '/static/images/icons/state_%s.png' % ico
+
     # Get
     def get_navi(self, total, pos, step=30):
         step = float(step)
@@ -686,17 +712,18 @@ class Helper(object):
             if r is None:
                 return '\n'
 
-            lnk = r['lnk']
+            #lnk = r['lnk']
             metrics = r['metrics']
             title = r['title']
-            s = '<a href="%s">' % lnk
+            #s = '<a href="%s">' % lnk
+            s = ''
             if metrics:
                 s += '''<div class="progress" style="min-width:100px;">
                           <div class="progress-bar progress-bar-%s" role="progressbar" aria-valuenow="60" aria-valuemix="0" aria-valuemax="100" style="width:%s%%"> 
                           %s
                           </div>
                         </div>''' % (metrics[0][0], metrics[0][1], title)
-            s +=  '''</a>\n'''
+            #s +=  '''</a>\n'''
             return s
         return '\n'
 

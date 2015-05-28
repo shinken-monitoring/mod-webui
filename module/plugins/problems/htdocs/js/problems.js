@@ -163,7 +163,7 @@ function add_element(name){
    selected_elements.push(name);
 
    // Show the 'tick' image of the selector
-   $('#selector-'+name).show();
+   $('#selector-'+name).prop("checked", true);
 
    show_toolbar();
    $('#actions').show();
@@ -182,7 +182,7 @@ function remove_element(name){
       show_select_all_button();
    }
    // And hide the tick image
-   $('#selector-'+name).hide();
+   $('#selector-'+name).prop("checked", false);
 }
 
 

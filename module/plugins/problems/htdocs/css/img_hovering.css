@@ -5,4 +5,9 @@
    max-width: 100%;                        
    height: auto;                           
    width: auto\9;                                    
-}    
+}
+
+.img-popover {
+   width: auto;
+   max-width: 1000px;
+}
