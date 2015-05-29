@@ -335,6 +335,14 @@
    %pctHUnknown      = round(100.0 * hUnknown / nHosts, 2)
    %pctHAck          = round(100.0 * hAck / nHosts, 2)
    %pctHDowntime     = round(100.0 * hDowntime / nHosts, 2)
+%else:
+   %pctHUp           = 0
+   %pctHDown         = 0
+   %pctHUnreachable  = 0
+   %pctHPending      = 0
+   %pctHUnknown      = 0
+   %pctHAck          = 0
+   %pctHDowntime     = 0
 %end
 %if nServices != 0:
    %pctSOk           = round(100.0 * sOk / nServices, 2)
@@ -342,8 +350,16 @@
    %pctSWarning      = round(100.0 * sWarning / nServices, 2)
    %pctSPending      = round(100.0 * sPending / nServices, 2)
    %pctSUnknown      = round(100.0 * sUnknown / nServices, 2)
-   %pctSAck          = round(100.0 * sAck / nHosts, 2)
-   %pctSDowntime     = round(100.0 * sDowntime / nHosts, 2)
+   %pctSAck          = round(100.0 * sAck / nServices, 2)
+   %pctSDowntime     = round(100.0 * sDowntime / nServices, 2)
+%else:
+   %pctSOk           = 0
+   %pctSCritical     = 0
+   %pctSWarning      = 0
+   %pctSPending      = 0
+   %pctSUnknown      = 0
+   %pctSAck          = 0
+   %pctSDowntime     = 0
 %end
 <div class="panel panel-default">
    <div class="panel-body">
