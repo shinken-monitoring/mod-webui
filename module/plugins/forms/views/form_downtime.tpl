@@ -23,7 +23,7 @@
             '1 month':       [moment(), moment().add('month', 1)],
          },
          format: 'YYYY-MM-DD HH:mm',
-         separator: ' to ',
+         separator: '   to   ',
          minDate: moment(),
          //dateLimit: moment(),
          startDate: moment(),
@@ -42,7 +42,7 @@
       );
     
       // Default date range is one hour from now ...
-      $('#dtr_downtime').val(downtime_start.format('YYYY-MM-DD HH:mm') + ' to ' +  downtime_stop.format('YYYY-MM-DD HH:mm'));
+      $('#dtr_downtime').val(downtime_start.format('YYYY-MM-DD HH:mm') + '   to   ' +  downtime_stop.format('YYYY-MM-DD HH:mm'));
     
       // Update dates on apply button ...
       $('#dtr_downtime').on('apply.daterangepicker', function(ev, picker) {
@@ -61,16 +61,15 @@
       <div class="modal-body">
          <form name="input_form" role="form">
             <div class="form-group">
-               <label for="dtr_downtime">Downtime date range</label>
-               <div class="input-group col-sm-offset-1 col-sm-10">
+               <!--<label for="dtr_downtime">Downtime date range</label>-->
+               <div class="input-group">
                   <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
                   <input type="text" name="dtr_downtime" id="dtr_downtime" class="form-control" />
                </div>
             </div>
 
             <div class="form-group">
-               <label>Downtime comment</label>
-               <textarea type="textarea" name='reason' id='reason' class="form-control-static input-group col-sm-offset-1 col-sm-10" rows=5 placeholder="Reason..."/>
+              <textarea name="reason" id="reason" class="form-control" rows="5" placeholder="Downtime comment…"></textarea>
             </div>
            
             <a href="javascript:submit_local_form();" class="btn btn-primary btn-lg btn-block"> <i class="fa fa-save"></i> Submit</a>
@@ -78,3 +77,5 @@
       </div>
    </div>
 </div>
+
+

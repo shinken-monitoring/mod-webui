@@ -48,4 +48,4 @@ nosetests.xml
 *.db
 
 # backup file
-*.py~
+*~

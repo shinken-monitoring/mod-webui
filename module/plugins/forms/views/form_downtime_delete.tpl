@@ -20,25 +20,21 @@
 	}
 </script>
 
-
 <div class="modal-dialog">
-	<div class="modal-content">
-		<div class="modal-header">
-			<a class="close" data-dismiss="modal">×</a>
-			<h3>Deletion confirm</h3>
-		</div>
+  <div class="modal-content">
+    <div class="modal-header">
+      <a class="close" data-dismiss="modal">×</a>
+      <h3>Confirm downtime(s) deletion</h3>
+    </div>
 
-		<div class="modal-body">
-			<form name="input_form" class="form-horizontal" role="form">
-				<div class="form-group">
-          <label>Comment</label>
-          <textarea type="textarea" name='comment' id='comment' class="input-group col-sm-offset-1 col-sm-10" rows="5" placeholder="Comment..."/>
-					<label class="col-sm-12 control-label text-center">Are you sure you want to delete all downtimes ?</label>
-          <br/>
-				</div>
+    <div class="modal-body">
+      <form name="input_form" role="form">
+        <div class="form-group">
+          <textarea name="reason" id="reason" class="form-control" rows="5" placeholder="Comment…">All dowtimes deleted from WebUI by {{user.get_name()}}.</textarea>
+        </div>
         
-        <div class="col-sm-12" style="margin-top: 10px;"><a href="javascript:submit_local_form();" class="btn btn-primary btn-lg btn-block"> <i class="fa fa-save"></i> Delete</a></div>
-			</form>
-		</div>
-	</div>
+        <a href="javascript:submit_local_form();" class="btn btn-danger btn-lg btn-block"> <i class="fa fa-save"></i> Submit</a>
+      </form>
+    </div>
+  </div>
 </div>
