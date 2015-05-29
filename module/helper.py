@@ -636,30 +636,82 @@ class Helper(object):
             return '/static/images/icons/state_%s.png' % ico
 
     def get_fa_icon_state(self, obj):
-        ico = self.get_small_icon_state(obj)
-        icons = { 'ok': 'check', 'up': 'check',
-                  'critical': 'remove', 'down': 'remove',
-                  'warning': 'warning',
-                  'ack': 'ambulance', 'downtime': 'ambulance',
-                  'flapping': 'spinner fa-spin',
-                  'unknown': 'question-circle' }
-        if obj.__class__.my_type == 'host':
-            if obj.state == 'DOWN':
-                return '''
-                <span class="fa-stack">
-                  <i class="fa fa-server fa-stack-1x"></i>
-                  <i class="fa fa-ban fa-stack-2x text-danger"></i>
-                </span>
-                '''
-            if obj.state == 'UP':
-                return '<i class="fa fa-server text-success"></i>'
+        # Icons depending upon element and real state ...
+        icons = { 'host': 
+                    {   'UP': 'server',
+                        'DOWN': 'server',
+                        'UNREACHABLE': 'server',
+                        'ACK': 'check', 
+                        'DOWNTIME': 'ambulance',
+                        'FLAPPING': 'spinner fa-spin',
+                        'PENDING': 'spinner fa-circle-o-notch',
+                        'UNKNOWN': 'question-circle' },
+                  'service': 
+                    {   'OK': 'thumbs-up',
+                        'CRITICAL': 'remove',
+                        'WARNING': 'warning',
+                        'ACK': 'ambulance', 
+                        'DOWNTIME': 'ambulance',
+                        'FLAPPING': 'spinner fa-spin',
+                        'PENDING': 'spinner fa-circle-o-notch',
+                        'UNKNOWN': 'question-circle' }
+                }
+        colors = { 'host': 
+                    {   'UP': 'success',
+                        'DOWN': 'danger',
+                        'UNREACHABLE': 'alert',
+                        'ACK': 'info', 
+                        'DOWNTIME': 'info',
+                        'FLAPPING': 'info',
+                        'PENDING': 'info',
+                        'UNKNOWN': 'info' }, 
+                  'service': 
+                    {   'OK': 'success',
+                        'CRITICAL': 'danger',
+                        'WARNING': 'alert',
+                        'ACK': 'info', 
+                        'DOWNTIME': 'info',
+                        'FLAPPING': 'info',
+                        'PENDING': 'info',
+                        'UNKNOWN': 'info' }
+                }
+        # Colors depending upon "simplified" state
+        # sstate = self.get_small_icon_state(obj)
+        # colors = { 'ok': 'success', 'up': 'success',
+                  # 'critical': 'danger', 'down': 'danger',
+                  # 'warning': 'warning',
+                  # 'ack': 'info', 'downtime': 'info',
+                  # 'flapping': 'warning',
+                  # 'unknown': 'info' }
+                  
+        cls = obj.__class__.my_type
+
+        if obj.problem_has_been_acknowledged:
+            icon_text = '''
+              <span class="fa-stack" title="%s is a problem (%s) and has been acknowledged">
+                <i class="fa fa-%s fa-stack-1x text-%s"></i>
+                <i class="fa fa-%s fa-stack-1x"></i>
+              </span>
+            ''' % (cls, obj.state, icons[cls].get(obj.state, 'unknown'), colors[cls].get(obj.state, 'unknown'), icons[cls]['ACK'])
         else:
-            return '<i class="fa fa-%s text-%s"></i>' % (icons.get(ico, 'unknown'), self.state_to_class(obj.state))
-            return '<i class="fa fa-server"></i>'
-        if getattr(obj, 'icon_set', '') != '':
-            return '/static/images/sets/%s/state_%s.png' % (obj.icon_set, ico)
-        else:
-            return '/static/images/icons/state_%s.png' % ico
+            icon_text = '''
+              <span title="%s is %s">
+                <i class="fa fa-%s text-%s"></i>
+              </span>
+            ''' % (cls, obj.state, icons[cls].get(obj.state, 'unknown'), colors[cls].get(obj.state, 'unknown'))
+
+        if obj.in_scheduled_downtime:
+            icon_text = '''
+            %s
+            <i title="%s is in scheduled downtime" class="fa fa-%s"></i>
+            ''' % (cls, icon_text, icons[cls]['DOWNTIME'])
+        if obj.is_flapping:
+            icon_text = '''
+            %s
+            <i title="%s is flapping" class="fa fa-%s"></i>
+            ''' % (cls, icon_text, icons[cls]['FLAPPING'])
+            
+        return icon_text
 
     # Get
     def get_navi(self, total, pos, step=30):
@@ -894,7 +946,7 @@ class Helper(object):
         return content
 
     def state_to_class(self, state):
-        '''Convert a shinken state to a bootstrap3 class'''
+        '''Convert a Shinken state to a bootstrap3 class'''
         classes = {"OK": 'success', "UP": 'success',
                   "DOWN": 'danger', "CRITICAL": 'danger',
                   "WARNING": 'warning',

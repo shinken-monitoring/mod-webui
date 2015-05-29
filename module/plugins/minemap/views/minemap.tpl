@@ -131,18 +131,10 @@ Invalid group name
                   %if h:
                   <tr>
                      <td>
-                        %if h.in_scheduled_downtime:
-                        <i class="fa fa-ambulance"></i> 
-                        %end
-                        %if h.is_problem:
-                        %if h.problem_has_been_acknowledged:
-                        <i class="fa fa-check"></i>
-                        %else:
-                        <i class="fa fa-check"></i>
-                        %end
-                        %end
+                        <span title="{{h.state}} - {{helper.print_duration(h.last_chk)}} - {{h.output}}">
+                        {{!helper.get_fa_icon_state(h)}}
+                        </span>
                         <a href="/host/{{h.get_name()}}">
-                           <div title="{{h.state}} - {{helper.print_duration(h.last_chk)}} - {{h.output}}" class="host state_{{h.state}} state_{{h.state_type}}">&nbsp;</div>
                            {{h.get_name()}}
                         </a>
                      </td>
@@ -156,13 +148,9 @@ Invalid group name
                            %if s.business_impact in params['minemap_servicesLevel']:
                            <td>
                               <a href="/service/{{h.get_name()}}/{{s.get_name()}}">
-                                 <div title="{{s.state}} - {{helper.print_duration(s.last_chk)}} - {{s.output}}" class="service state_{{s.state}} state_{{s.state_type}}">
-                                 %if s.problem_has_been_acknowledged:
-                                    <i class="fa fa-check" style="color: white"></i>
-                                 %else:
-                                    &nbsp;
-                                 %end
-                                 </div>
+                                 <span title="{{s.state}} - {{helper.print_duration(s.last_chk)}} - {{s.output}}">
+                                 {{!helper.get_fa_icon_state(h)}}
+                                 </span>
                               </a>
                            </td>
                            %else:

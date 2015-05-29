@@ -503,12 +503,24 @@
                  <table class="table table-condensed" style="margin:0;">
                    <tr>
                      <td align="center">Realm {{pb.get_realm()}}</td>
-                     <td align="center">Next check in {{!helper.print_duration(pb.next_chk, just_duration=True, x_elts=2)}}</td>
-                     <td>Attempt {{pb.attempt}}/{{pb.max_check_attempts}}</td>
+                     %if pb.passive_checks_enabled:
+                     <td>
+                        <i class="fa fa-arrow-left" title="Passive checks are enabled."></i>
+                        %if (pb.check_freshness):
+                           <i title="Freshness check is enabled">(Freshness threshold: {{pb.freshness_threshold}} seconds)</i>
+                        %end
+                     </td>
+                     %end
+                     %if pb.active_checks_enabled:
+                     <td align="center">
+                        <i class="fa fa-arrow-right" title="Active checks are enabled."></i>
+                        <i>Next check in {{!helper.print_duration(pb.next_chk, just_duration=True, x_elts=2)}}, attempt {{pb.attempt}}/{{pb.max_check_attempts}}</i>
+                     </td>
+                     %end
                      %if actions_allowed:
                      <td align="right">
                        <div class="btn-group" role="group" aria-label="...">
-                         %if pb.event_handler:
+                         %if pb.event_handler_enabled and pb.event_handler:
                          <button type="button" class="btn btn-default btn-xs" title="Try to fix (launch event handler if defined)" onClick="try_to_fix_one('{{ pb.get_full_name() }}');">
                            <i class="fa fa-magic"></i> Try to fix
                          </button>
