@@ -149,7 +149,7 @@ Invalid group name
                            <td>
                               <a href="/service/{{h.get_name()}}/{{s.get_name()}}">
                                  <span title="{{s.state}} - {{helper.print_duration(s.last_chk)}} - {{s.output}}">
-                                 {{!helper.get_fa_icon_state(h)}}
+                                 {{!helper.get_fa_icon_state(s)}}
                                  </span>
                               </a>
                            </td>
