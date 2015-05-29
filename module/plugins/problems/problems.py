@@ -59,8 +59,6 @@ def get_view(page):
     if not user:
         app.bottle.redirect("/user/login")
 
-    print 'DUMP COMMON GET', app.request.GET.__dict__
-
 
     # Look for the toolbar pref
     toolbar_pref = app.get_user_preference(user, 'toolbar')
@@ -69,7 +67,6 @@ def get_view(page):
         app.set_user_preference(user, 'toolbar', 'show')
         toolbar_pref = 'show'
     toolbar = app.request.GET.get('toolbar', '')
-    print "Toolbar", toolbar_pref, toolbar
     if toolbar != toolbar_pref and len(toolbar) > 0:
         print "Need to change user prefs for Toolbar",
         app.set_user_preference(user, 'toolbar', toolbar)
@@ -96,8 +93,6 @@ def get_view(page):
         search = [search]
 
     search_str = '&'.join(search)
-    print 'Search str=', search_str
-    print 'And search', search
 
     # Load the bookmarks
     bookmarks_r = app.get_user_preference(user, 'bookmarks')
@@ -120,9 +115,9 @@ def get_view(page):
     else:
         app.bottle.redirect("/problems")
 
-    logger.info("[%s] problems", app.name)
+    logger.debug("[%s] problems", app.name)
     for i in items:
-        logger.info("[%s] problems, item: %s", app.name, i.get_full_name())
+        logger.debug("[%s] problems, item: %s", app.name, i.get_full_name())
         
     # Filter with the user interests
     # my_items = only_related_to(items, user)
@@ -137,9 +132,9 @@ def get_view(page):
             continue
 
     items = my_items
-    logger.info("[%s] problems after user filtering", app.name)
+    logger.debug("[%s] problems after user filtering", app.name)
     for i in items:
-        logger.info("[%s] problems, item: %s", app.name, i.get_full_name())
+        logger.debug("[%s] problems, item: %s", app.name, i.get_full_name())
         
 
     # Ok, if needed, apply the search filter
@@ -148,8 +143,7 @@ def get_view(page):
         if not s:
             continue
 
-        print "SEARCHING FOR", s
-        print "Before filtering", len(items)
+        logger.debug("[%s] problems, searching for: %s in %d items", app.name, s, len(items))
 
         elts = s.split(':', 1)
         t = 'hst_srv'
@@ -157,7 +151,7 @@ def get_view(page):
             t = elts[0]
             s = elts[1]
 
-        print 'Search for type %s and pattern %s' % (t, s)
+        logger.debug("[%s] problems, searching for type %s, pattern: %s", app.name, t, s)
         if not t in filters:
             filters[t] = []
         filters[t].append(s)
@@ -184,24 +178,19 @@ def get_view(page):
 
         if t == 'hg':
             hg = app.datamgr.get_hostgroup(s)
-            print 'And a valid hg filtering for', s
             items = [i for i in items if hg in i.get_hostgroups()]
 
         if t == 'realm':
             r = app.datamgr.get_realm(s)
-            print 'Add a realm filter', r
             items = [i for i in items if i.get_realm() == r]
 
         if t == 'htag':
-            print 'Add a htag filter', s
             items = [i for i in items if s in i.get_host_tags()]
 
         if t == 'stag':
-            print 'Add a stag filter', s
             items = [i for i in items if i.__class__.my_type == 'service' and s in i.get_service_tags()]
 
         if t == 'ack':
-            print "Got an ack filter", s
             if s == 'false':
                 # First look for hosts, so ok for services, but remove problem_has_been_acknowledged elements
                 items = [i for i in items if i.__class__.my_type == 'service' or not i.problem_has_been_acknowledged]
@@ -214,7 +203,6 @@ def get_view(page):
                 items = [i for i in items if i.__class__.my_type == 'host' or (i.problem_has_been_acknowledged or i.host.problem_has_been_acknowledged)]
 
         if t == 'downtime':
-            print "Got an downtime filter", s
             if s == 'false':
                 # First look for hosts, so ok for services, but remove problem_has_been_acknowledged elements
                 items = [i for i in items if i.__class__.my_type == 'service' or not i.in_scheduled_downtime]
@@ -227,16 +215,14 @@ def get_view(page):
                 items = [i for i in items if i.__class__.my_type == 'host' or (i.in_scheduled_downtime or i.host.in_scheduled_downtime)]
 
         if t == 'crit':
-            print "Add a criticity filter", s
             items = [i for i in items if (i.__class__.my_type == 'service' and i.state_id == 2) or (i.__class__.my_type == 'host' and i.state_id == 1)]
 
 
 
-        print "After filtering for", t, s, 'we got', len(items)
+        logger.debug("[%s] problems, found %d elements for type %s, pattern: %s", app.name, len(items), t, s)
 
     # If we are in the /problems and we do not have an ack filter
     # we apply by default the ack:false one
-    print "Late problem filtering?", page == 'problems', len(filters['ack']) == 0
     if page == 'problems' and len(filters['ack']) == 0:
         # First look for hosts, so ok for services, but remove problem_has_been_acknowledged elements
         items = [i for i in items if i.__class__.my_type == 'service' or not i.problem_has_been_acknowledged]
@@ -245,23 +231,22 @@ def get_view(page):
 
     # If we are in the /problems and we do not have an downtime filter
     # we apply by default the downtime:false one
-    print "Late problem filtering?", page == 'problems', len(filters['downtime']) == 0
     if page == 'problems' and len(filters['downtime']) == 0:
         # First look for hosts, so ok for services, but remove problem_has_been_acknowledged elements
         items = [i for i in items if i.__class__.my_type == 'service' or not i.in_scheduled_downtime]
         # Now ok for hosts, but look for services, and service hosts
         items = [i for i in items if i.__class__.my_type == 'host' or (not i.in_scheduled_downtime and not i.host.in_scheduled_downtime)]
 
-    logger.info("[%s] problems after search filtering", app.name)
+    logger.debug("[%s] problems after search filtering", app.name)
     for i in items:
-        logger.info("[%s] problems, item: %s, %d, %d", app.name, i.get_full_name(), i.business_impact, i.state_id)
+        logger.debug("[%s] problems, item: %s, %d, %d", app.name, i.get_full_name(), i.business_impact, i.state_id)
 
     # Now sort it!
     items.sort(hst_srv_sort)
 
-    logger.info("[%s] problems after host/service sort", app.name)
+    logger.debug("[%s] problems after host/service sort", app.name)
     for i in items:
-        logger.info("[%s] problems, item: %s, %d, %d", app.name, i.get_full_name(), i.business_impact, i.state_id)
+        logger.debug("[%s] problems, item: %s, %d, %d", app.name, i.get_full_name(), i.business_impact, i.state_id)
 
     total = len(items)
     # If we overflow, came back as normal
