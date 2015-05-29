@@ -647,8 +647,8 @@ class Helper(object):
                         'PENDING': 'server',
                         'UNKNOWN': 'server' },
                   'service': 
-                    {   'OK': 'thumbs-up',
-                        'CRITICAL': 'remove',
+                    {   'OK': 'arrow-up',
+                        'CRITICAL': 'arrow-down',
                         'WARNING': 'warning',
                         'ACK': 'check', 
                         'DOWNTIME': 'ambulance',
