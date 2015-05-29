@@ -279,6 +279,161 @@
    <EMBED src="/static/sound/alert.wav" autostart=true loop=false volume=100 hidden=true>
 %end
 
+<!-- Problems synthesis -->
+%nHosts=0
+%hUp=hDown=hUnreachable=hPending=hUnknown=0
+%hAck=hDowntime=0
+%nServices=0
+%sOk=sCritical=sWarning=sPending=sUnknown=0
+%sAck=sDowntime=0
+%for pb in pbs:
+   %if pb.__class__.my_type == 'host':
+      %nHosts=nHosts+1
+      %if pb.state == 'UP':
+         %hUp=hUp+1
+      %elif pb.state == 'DOWN':
+         %hDown=hDown+1
+      %elif pb.state == 'UNREACHABLE':
+         %hUnreachable=hUnreachable+1
+      %elif pb.state == 'PENDING':
+         %hPending=hPending+1
+      %else:
+         %hUnknown=hUnknown+1
+      %end
+      %if pb.problem_has_been_acknowledged:
+         %hAck=hAck+1
+      %end
+      %if pb.in_scheduled_downtime:
+         %hDowntime=hDowntime+1
+      %end
+   %elif pb.__class__.my_type == 'service':
+      %nServices=nServices+1
+      %if pb.state == 'OK':
+         %sOk=sOk+1
+      %elif pb.state == 'CRITICAL':
+         %sCritical=sCritical+1
+      %elif pb.state == 'WARNING':
+         %sWarning=sWarning+1
+      %elif pb.state == 'PENDING':
+         %sPending=sPending+1
+      %else:
+         %sUnknown=sUnknown+1
+      %end
+      %if pb.problem_has_been_acknowledged:
+         %sAck=sAck+1
+      %end
+      %if pb.in_scheduled_downtime:
+         %sDowntime=sDowntime+1
+      %end
+   %end
+%end
+%if nHosts != 0:
+   %pctHUp           = round(100.0 * hUp / nHosts, 2)
+   %pctHDown         = round(100.0 * hDown / nHosts, 2)
+   %pctHUnreachable  = round(100.0 * hUnreachable / nHosts, 2)
+   %pctHPending      = round(100.0 * hPending / nHosts, 2)
+   %pctHUnknown      = round(100.0 * hUnknown / nHosts, 2)
+   %pctHAck          = round(100.0 * hAck / nHosts, 2)
+   %pctHDowntime     = round(100.0 * hDowntime / nHosts, 2)
+%end
+%if nServices != 0:
+   %pctSOk           = round(100.0 * sOk / nServices, 2)
+   %pctSCritical     = round(100.0 * sCritical / nServices, 2)
+   %pctSWarning      = round(100.0 * sWarning / nServices, 2)
+   %pctSPending      = round(100.0 * sPending / nServices, 2)
+   %pctSUnknown      = round(100.0 * sUnknown / nServices, 2)
+   %pctSAck          = round(100.0 * sAck / nHosts, 2)
+   %pctSDowntime     = round(100.0 * sDowntime / nHosts, 2)
+%end
+<div class="panel panel-default">
+   <div class="panel-body">
+      <div class="row col-sm-12" >
+         <div class="row col-sm-2">
+            <b>{{nHosts}} hosts:&nbsp;</b> 
+         </div>
+          
+         <span class="font-up">
+            <span class="fa-stack"><i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-server fa-stack-1x fa-inverse"></i></span> 
+            <span class="num">{{hUp}} <i>({{pctHUp}}%)</i></span>
+         </span> 
+          
+         <span class="font-unreachable">
+            <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-server fa-stack-1x fa-inverse"></i></span> 
+            <span class="num">{{hUnreachable}} <i>({{pctHUnreachable}}%)</i></span>
+         </span> 
+
+         <span class="font-down">
+            <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-server fa-stack-1x fa-inverse"></i></span> 
+            <span class="num">{{hDown}} <i>({{pctHDown}}%)</i></span>
+         </span> 
+
+         <span class="font-pending">
+            <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-server fa-stack-1x fa-inverse"></i></span> 
+            <span class="num">{{hPending}} <i>({{pctHPending}}%)</i></span>
+         </span> 
+
+         <span class="font-unknown">
+            <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-server fa-stack-1x fa-inverse"></i></span> 
+            <span class="num">{{hUnknown}} <i>({{pctHUnknown}}%)</i></span>
+         </span> 
+
+         <span>&nbsp;, including: &nbsp;</span> 
+         
+         <span class="font-ack">
+            <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-check fa-stack-1x fa-inverse"></i></span> 
+            <span class="num">{{hAck}} <i>({{pctHAck}}%)</i></span>
+         </span> 
+
+         <span class="font-unknown">
+            <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-ambulance fa-stack-1x fa-inverse"></i></span> 
+            <span class="num">{{hDowntime}} <i>({{pctHDowntime}}%)</i></span>
+         </span> 
+      </div>
+      <div class="row col-sm-12" >
+         <div class="row col-sm-2">
+            <b>{{nServices}} services:&nbsp;</b> 
+         </div>
+          
+         <span class="font-ok">
+            <span class="fa-stack"><i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-arrow-up fa-stack-1x fa-inverse"></i></span> 
+            <span class="num">{{sOk}} <i>({{pctSOk}}%)</i></span>
+         </span> 
+          
+         <span class="font-warning">
+            <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-warning fa-stack-1x fa-inverse"></i></span> 
+            <span class="num">{{sWarning}} <i>({{pctSWarning}}%)</i></span>
+         </span> 
+
+         <span class="font-critical">
+            <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-arrow-down fa-stack-1x fa-inverse"></i></span> 
+            <span class="num">{{sCritical}} <i>({{pctSCritical}}%)</i></span>
+         </span> 
+
+         <span class="font-pending">
+            <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-pause fa-stack-1x fa-inverse"></i></span> 
+            <span class="num">{{sPending}} <i>({{pctSPending}}%)</i></span>
+         </span> 
+
+         <span class="font-unknown">
+            <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-question fa-stack-1x fa-inverse"></i></span> 
+            <span class="num">{{sUnknown}} <i>({{pctSUnknown}}%)</i></span>
+         </span> 
+
+         <span>&nbsp;, including: &nbsp;</span> 
+         
+         <span class="font-ack">
+            <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-check fa-stack-1x fa-inverse"></i></span> 
+            <span class="num">{{sAck}} <i>({{pctSAck}}%)</i></span>
+         </span> 
+
+         <span class="font-unknown">
+            <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-ambulance fa-stack-1x fa-inverse"></i></span> 
+            <span class="num">{{sDowntime}} <i>({{pctSDowntime}}%)</i></span>
+         </span> 
+      </div>
+   </div>
+</div>
+
 <!-- Problems filtering and display -->
 <div class="row">
    <!-- Left panel, toolbar and active filters -->
