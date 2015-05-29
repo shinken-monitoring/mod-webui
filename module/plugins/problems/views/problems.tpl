@@ -363,90 +363,90 @@
 %end
 <div class="panel panel-default">
    <div class="panel-body">
-      <div class="row col-sm-12" >
-         <div class="row col-sm-2">
-            <b>{{nHosts}} hosts:&nbsp;</b> 
-         </div>
+      <table class="table">
+         <tbody>
+            <tr>
+               <td>
+               <b>{{nHosts}} hosts:&nbsp;</b> 
+               </td>
+             
+               <td><span class="{{'font-up' if hUp > 0 else 'font-greyed'}}">
+               <span class="fa-stack"><i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-server fa-stack-1x fa-inverse"></i></span> 
+               <span class="num">{{hUp}} <i>({{pctHUp}}%)</i></span>
+               </span></td>
+             
+               <td><span class="{{'font-unreachable' if hUnreachable > 0 else 'font-greyed'}}">
+               <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-server fa-stack-1x fa-inverse"></i></span> 
+               <span class="num">{{hUnreachable}} <i>({{pctHUnreachable}}%)</i></span>
+               </span></td>
+
+               <td><span class="{{'font-down' if hDown > 0 else 'font-greyed'}}">
+               <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-server fa-stack-1x fa-inverse"></i></span> 
+               <span class="num">{{hDown}} <i>({{pctHDown}}%)</i></span>
+               </span></td>
+
+               <td><span class="{{'font-pending' if hPending > 0 else 'font-greyed'}}">
+               <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-server fa-stack-1x fa-inverse"></i></span> 
+               <span class="num">{{hPending}} <i>({{pctHPending}}%)</i></span>
+               </span></td>
+
+               <td><span class="{{'font-unknown' if hUnknown > 0 else 'font-greyed'}}">
+               <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-server fa-stack-1x fa-inverse"></i></span> 
+               <span class="num">{{hUnknown}} <i>({{pctHUnknown}}%)</i></span>
+               </span></td>
+
+               <td><span class="{{'font-ack' if hAck > 0 else 'font-greyed'}}">
+               <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-check fa-stack-1x fa-inverse"></i></span> 
+               <span class="num">{{hAck}} <i>({{pctHAck}}%)</i></span>
+               </span></td>
+
+               <td><span class="{{'font-downtime' if hDowntime > 0 else 'font-greyed'}}">
+               <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-ambulance fa-stack-1x fa-inverse"></i></span> 
+               <span class="num">{{hDowntime}} <i>({{pctHDowntime}}%)</i></span>
+               </span></td>
+            </tr>
+            <tr>
+               <td>
+                  <b>{{nServices}} services:&nbsp;</b> 
+               </td>
           
-         <span class="font-up">
-            <span class="fa-stack"><i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-server fa-stack-1x fa-inverse"></i></span> 
-            <span class="num">{{hUp}} <i>({{pctHUp}}%)</i></span>
-         </span> 
+               <td><span class="{{'font-ok' if sOk > 0 else 'font-greyed'}}">
+               <span class="fa-stack"><i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-arrow-up fa-stack-1x fa-inverse"></i></span> 
+               <span class="num">{{sOk}} <i>({{pctSOk}}%)</i></span>
+               </span></td>
           
-         <span class="font-unreachable">
-            <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-server fa-stack-1x fa-inverse"></i></span> 
-            <span class="num">{{hUnreachable}} <i>({{pctHUnreachable}}%)</i></span>
-         </span> 
+               <td><span class="{{'font-warning' if sWarning > 0 else 'font-greyed'}}">
+               <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-warning fa-stack-1x fa-inverse"></i></span> 
+               <span class="num">{{sWarning}} <i>({{pctSWarning}}%)</i></span>
+               </span></td>
 
-         <span class="font-down">
-            <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-server fa-stack-1x fa-inverse"></i></span> 
-            <span class="num">{{hDown}} <i>({{pctHDown}}%)</i></span>
-         </span> 
+               <td><span class="{{'font-critical' if sCritical > 0 else 'font-greyed'}}">
+               <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-arrow-down fa-stack-1x fa-inverse"></i></span> 
+               <span class="num">{{sCritical}} <i>({{pctSCritical}}%)</i></span>
+               </span></td>
 
-         <span class="font-pending">
-            <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-server fa-stack-1x fa-inverse"></i></span> 
-            <span class="num">{{hPending}} <i>({{pctHPending}}%)</i></span>
-         </span> 
+               <td><span class="{{'font-pending' if sPending > 0 else 'font-greyed'}}">
+               <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-pause fa-stack-1x fa-inverse"></i></span> 
+               <span class="num">{{sPending}} <i>({{pctSPending}}%)</i></span>
+               </span></td>
 
-         <span class="font-unknown">
-            <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-server fa-stack-1x fa-inverse"></i></span> 
-            <span class="num">{{hUnknown}} <i>({{pctHUnknown}}%)</i></span>
-         </span> 
+               <td><span class="{{'font-unknown' if sUnknown > 0 else 'font-greyed'}}">
+               <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-question fa-stack-1x fa-inverse"></i></span> 
+               <span class="num">{{sUnknown}} <i>({{pctSUnknown}}%)</i></span>
+               </span></td>
 
-         <span>&nbsp;, including: &nbsp;</span> 
-         
-         <span class="font-ack">
-            <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-check fa-stack-1x fa-inverse"></i></span> 
-            <span class="num">{{hAck}} <i>({{pctHAck}}%)</i></span>
-         </span> 
+               <td><span class="{{'font-ack' if sAck > 0 else 'font-greyed'}}">
+               <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-check fa-stack-1x fa-inverse"></i></span> 
+               <span class="num">{{sAck}} <i>({{pctSAck}}%)</i></span>
+               </span></td>
 
-         <span class="font-unknown">
-            <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-ambulance fa-stack-1x fa-inverse"></i></span> 
-            <span class="num">{{hDowntime}} <i>({{pctHDowntime}}%)</i></span>
-         </span> 
-      </div>
-      <div class="row col-sm-12" >
-         <div class="row col-sm-2">
-            <b>{{nServices}} services:&nbsp;</b> 
-         </div>
-          
-         <span class="font-ok">
-            <span class="fa-stack"><i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-arrow-up fa-stack-1x fa-inverse"></i></span> 
-            <span class="num">{{sOk}} <i>({{pctSOk}}%)</i></span>
-         </span> 
-          
-         <span class="font-warning">
-            <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-warning fa-stack-1x fa-inverse"></i></span> 
-            <span class="num">{{sWarning}} <i>({{pctSWarning}}%)</i></span>
-         </span> 
-
-         <span class="font-critical">
-            <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-arrow-down fa-stack-1x fa-inverse"></i></span> 
-            <span class="num">{{sCritical}} <i>({{pctSCritical}}%)</i></span>
-         </span> 
-
-         <span class="font-pending">
-            <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-pause fa-stack-1x fa-inverse"></i></span> 
-            <span class="num">{{sPending}} <i>({{pctSPending}}%)</i></span>
-         </span> 
-
-         <span class="font-unknown">
-            <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-question fa-stack-1x fa-inverse"></i></span> 
-            <span class="num">{{sUnknown}} <i>({{pctSUnknown}}%)</i></span>
-         </span> 
-
-         <span>&nbsp;, including: &nbsp;</span> 
-         
-         <span class="font-ack">
-            <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-check fa-stack-1x fa-inverse"></i></span> 
-            <span class="num">{{sAck}} <i>({{pctSAck}}%)</i></span>
-         </span> 
-
-         <span class="font-unknown">
-            <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-ambulance fa-stack-1x fa-inverse"></i></span> 
-            <span class="num">{{sDowntime}} <i>({{pctSDowntime}}%)</i></span>
-         </span> 
-      </div>
+               <td><span class="{{'font-unknown' if sUnknown > 0 else 'font-greyed'}}">
+               <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-ambulance fa-stack-1x fa-inverse"></i></span> 
+               <span class="num">{{sDowntime}} <i>({{pctSDowntime}}%)</i></span>
+               </span></td>
+            </tr>
+         </tbody>
+      </table>
    </div>
 </div>
 
