@@ -712,12 +712,12 @@
                       %for i in helper.get_impacts_sorted(pb):
                       %if i.state_id != 0:
                       <tr>
-                        <td width="200px"></td>
                         <td align=center>
                           {{!helper.get_fa_icon_state(i)}}
                         </td>
+                        <td width="200px"></td>
                         <td width="200px">{{!helper.get_link(i, short=True)}}</td>
-                        <td width="90px" align="center" class="background-{{i.state.lower()}}">{{ i.state }}</td>
+                        <td width="90px" align="center" class="font-{{i.state.lower()}}"><strong>{{ i.state }}</strong></td>
                         <td width="90px">{{!helper.print_duration(i.last_state_change, just_duration=True, x_elts=2)}}</td>
                         <td width="100px">{{!helper.print_duration(i.last_chk, just_duration=True, x_elts=2)}} ago</td>
                         <td>
