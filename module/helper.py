@@ -706,7 +706,7 @@ class Helper(object):
 
         if current_page >= nb_max_items:
             # Name, start, end, is_current
-            res.append((u'« First', 0, step, False))
+            res.append((u'«', 0, step, False))
             res.append(('...', None, None, False))
 
         #print "Range,", current_page - 1, current_page + 1
@@ -721,14 +721,14 @@ class Helper(object):
                 continue
 
             end = int((i+1) * step)
-            res.append(('Page %d' % (i+1), start, end, is_current))
+            res.append(('%d' % (i+1), start, end, is_current))
 
         if current_page < nb_pages - nb_max_items:
             start = int((nb_pages - (nb_max_items - 1)) * step)
             end = int(total)
             # end = int(nb_pages * step)
             res.append(('...', None, None, False))
-            res.append((u'Last »', start, end, False))
+            res.append((u'»', start, end, False))
 
         return res
 
