@@ -1,4 +1,4 @@
-%rebase layout globals(), css=['logs/css/logs.css','logs/css/sliding_navigation.css','logs/css/bootstrap-multiselect.css'], js=['logs/js/bootstrap-multiselect.js'], title='System logs'
+%rebase("layout", css=['logs/css/logs.css','logs/css/sliding_navigation.css','logs/css/bootstrap-multiselect.css'], js=['logs/js/bootstrap-multiselect.js'], title='System logs')
 
 %from shinken.bin import VERSION
 %helper = app.helper

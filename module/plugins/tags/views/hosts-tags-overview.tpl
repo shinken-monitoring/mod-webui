@@ -1,4 +1,4 @@
-%rebase layout globals(), css=['tags/css/tags-overview.css'], js=['tags/js/tags-overview.js'], title='Hosts tags overview', refresh=True
+%rebase("layout", css=['tags/css/tags-overview.css'], js=['tags/js/tags-overview.js'], title='Hosts tags overview', refresh=True)
 
 %from shinken.misc.filter import only_related_to
 

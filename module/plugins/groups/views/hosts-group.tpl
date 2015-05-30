@@ -1,6 +1,6 @@
 %# If got no group, bailout
 %if not group:
-%rebase layout title='Invalid group name'
+%rebase("layout", title='Invalid group name')
 
 Invalid group name
 
@@ -22,7 +22,7 @@ Invalid group name
 %end
 
 %# Specific content for breadrumb
-%rebase layout globals(), title='Hosts group detail for ' + groupalias, css=['groups/css/groups-overview.css'], refresh=True, breadcrumb=[ ['All groups', '/hosts-groups'], [groupalias, '/minemap/'+groupname] ]
+%rebase("layout", title='Hosts group detail for ' + groupalias, css=['groups/css/groups-overview.css'], refresh=True, breadcrumb=[ ['All groups', '/hosts-groups'], [groupalias, '/minemap/'+groupname] ])
 
 <div id="content_container">
    <div class="panel panel-default">
@@ -204,7 +204,7 @@ Invalid group name
    <div class="panel panel-default">
       <div class="panel-body">
          <div class='col-lg-12'>
-            %include pagination_element navi=navi, app=app, page="hosts-group/"+groupname, div_class="center no-margin"
+            %include("pagination_element", navi=navi, app=app, page="hosts-group/"+groupname, div_class="center no-margin")
          </div>
 
          <table class="table table-hover">
@@ -251,7 +251,7 @@ Invalid group name
          </table>
 
          <div class='col-lg-12'>
-            %include pagination_element navi=navi, app=app, page="hosts-group/"+groupname, div_class="center no-margin"
+            %include("pagination_element", navi=navi, app=app, page="hosts-group/"+groupname, div_class="center no-margin")
          </div>
       </div>
    </div>

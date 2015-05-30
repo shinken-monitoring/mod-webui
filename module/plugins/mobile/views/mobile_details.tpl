@@ -1,4 +1,4 @@
-%rebase layout_mobile globals(), css=['mobile/css/details.css'], title='Details'
+%rebase("layout_mobile", css=['mobile/css/details.css'], title='Details')
 
 <div data-role="collapsible-set" data-iconpos="right" >
 

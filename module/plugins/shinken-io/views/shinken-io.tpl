@@ -1,4 +1,4 @@
-%rebase layout globals(), title='Shinken IO', refresh=False
+%rebase("layout", title='Shinken IO', refresh=False)
 
 %from shinken.bin import VERSION
 %helper = app.helper

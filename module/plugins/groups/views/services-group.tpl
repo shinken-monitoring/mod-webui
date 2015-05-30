@@ -1,6 +1,6 @@
 %# If got no group, bailout
 %if not group:
-%rebase layout title='Invalid group name'
+%rebase("layout", title='Invalid group name')
 
 Invalid group name
 
@@ -57,7 +57,7 @@ Invalid group name
 %end
 
 %# Specific content for breadrumb
-%rebase layout globals(), css=['groups/css/groups-overview.css'], title='Services group detail for ' + groupalias, refresh=True, breadcrumb=[ ['All groups', '/services-groups'], [groupalias, '/services-group/'+groupname] ]
+%rebase("layout", css=['groups/css/groups-overview.css'], title='Services group detail for ' + groupalias, refresh=True, breadcrumb=[ ['All groups', '/services-groups'], [groupalias, '/services-group/'+groupname] ])
 
 <style>
 .warning, .unreachable {
@@ -108,7 +108,7 @@ Invalid group name
 	</div>
 
 	<div class='col-lg-12'>
-		%include pagination_element navi=navi, app=app, page="services-group/"+groupname, div_class="center no-margin"
+		%include("pagination_element", navi=navi, app=app, page="services-group/"+groupname, div_class="center no-margin")
 	</div>
 
 	<div class="clearfix">
@@ -147,6 +147,6 @@ Invalid group name
 	</div>
 
 	<div class='col-lg-12'>
-		%include pagination_element navi=navi, app=app, page="services-group/"+groupname, div_class="center no-margin"
+		%include("pagination_element", navi=navi, app=app, page="services-group/"+groupname, div_class="center no-margin")
 	</div>
 </div>

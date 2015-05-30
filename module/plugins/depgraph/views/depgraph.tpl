@@ -5,7 +5,7 @@
 
 %# If got no Element, bailout
 %if not elt:
-%rebase layout title='Invalid element name'
+%rebase("layout", title='Invalid element name')
 
 Invalid element
 
@@ -15,7 +15,7 @@ Invalid element
 %datamgr = app.datamgr
 
 
-%rebase layout globals(), title='Dependencies graph of ' + elt.get_full_name(),  refresh=False
+%rebase("layout", title='Dependencies graph of ' + elt.get_full_name(),  refresh=False)
 
 
 <script src='/static/depgraph/js/eltdeps.js'></script>

@@ -1,6 +1,6 @@
 %timeperiods = app.get_timeperiods()
 %title='All timeperiods (%d time periods)' % len(timeperiods)
-%rebase layout globals(), css=['timeperiods/css/timeperiods.css'], js=['timeperiods/js/timeperiods-overview.js'], title=title, refresh=True
+%rebase("layout", css=['timeperiods/css/timeperiods.css'], js=['timeperiods/js/timeperiods-overview.js'], title=title, refresh=True)
 
 %import time
 

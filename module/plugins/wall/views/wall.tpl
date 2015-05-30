@@ -1,6 +1,6 @@
 %helper = app.helper
 
-%rebase layout globals(), css=['wall/css/snowstack.css', 'wall/css/wall.css'], title='Wall view', js=[ 'wall/js/wall.js'], refresh=True, user=user
+%rebase("layout", css=['wall/css/snowstack.css', 'wall/css/wall.css'], title='Wall view', js=[ 'wall/js/wall.js'], refresh=True, user=user)
 
 <div class="page view">
 	<img src="/static/images/next.png" class="next-icon" onclick="go_right();"/>

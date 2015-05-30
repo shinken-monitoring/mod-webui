@@ -1,6 +1,6 @@
 %# If got no group, bailout
 %if not group:
-%rebase layout title='Invalid group name'
+%rebase("layout", title='Invalid group name')
 
 Invalid group name
 
@@ -75,7 +75,7 @@ Invalid group name
 %end
 
 %# Specific content for breadrumb
-%rebase layout globals(), title='Minemap for ' + groupalias, refresh=True, css=['minemap/css/minemap.css'], breadcrumb=[ ['All hosts', '/minemaps'], [groupalias, '/hosts-group/'+groupname] ]
+%rebase("layout", title='Minemap for ' + groupalias, refresh=True, css=['minemap/css/minemap.css'], breadcrumb=[ ['All hosts', '/minemaps'], [groupalias, '/hosts-group/'+groupname] ])
 
 
 <div id="content_container">
@@ -108,7 +108,7 @@ Invalid group name
    <div>
       <div class='col-lg-12'>
          &nbsp;
-         %include pagination_element navi=navi, app=app, page="minemap/"+groupname, div_class="center no-margin"
+         %include("pagination_element", navi=navi, app=app, page="minemap/"+groupname, div_class="center no-margin")
       </div>
    </div>
 
@@ -171,7 +171,7 @@ Invalid group name
    <div>
       <div class='col-lg-12'>
          &nbsp;
-         %include pagination_element navi=navi, app=app, page="minemap/"+groupname, div_class="center no-margin"
+         %include("pagination_element", navi=navi, app=app, page="minemap/"+groupname, div_class="center no-margin")
       </div>
    </div>
 </div>

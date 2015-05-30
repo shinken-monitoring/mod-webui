@@ -1,4 +1,4 @@
-%rebase layout globals(), js=['dashboard/js/widgets.js', 'dashboard/js/jquery.easywidgets.js'], css=['dashboard/css/dashboard.css'], title='Dashboard', refresh=True
+%rebase("layout", js=['dashboard/js/widgets.js', 'dashboard/js/jquery.easywidgets.js'], css=['dashboard/css/dashboard.css'], title='Dashboard', refresh=True)
 
 %from shinken.bin import VERSION
 %helper = app.helper

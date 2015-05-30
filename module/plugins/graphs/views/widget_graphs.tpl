@@ -3,7 +3,7 @@
 %helper = app.helper
 %datamgr = app.datamgr
 
-%rebase widget globals(), css=['graphs/css/widget_graphs.css']
+%rebase("widget", css=['graphs/css/widget_graphs.css'])
 
 %if not elt:
     <span>No element selected!</span>

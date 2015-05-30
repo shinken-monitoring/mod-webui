@@ -6,7 +6,7 @@
 
 %# If got no Elt, bailout
 %if not elt:
-%rebase layout title='Invalid name'
+%rebase("layout", title='Invalid name')
 
 Invalid element name
 
@@ -26,7 +26,7 @@ Invalid element name
 %end
 
 
-%rebase layout_mobile title=elt_type.capitalize() + ' detail about ' + elt.get_full_name(), js=['eltdetail/js/jquery.color.js', 'eltdetail/js/jquery.Jcrop.js', 'eltdetail/js/iphone-style-checkboxes.js', 'eltdetail/js/hide.js', 'eltdetail/js/dollar.js', 'eltdetail/js/gesture.js', 'eltdetail/js/graphs.js'], css=['eltdetail/css/iphonebuttons.css', 'eltdetail/css/eltdetail.css', 'eltdetail/css/hide.css', 'eltdetail/css/gesture.css', 'eltdetail/css/jquery.Jcrop.css'], top_right_banner_state=top_right_banner_state , user=user, app=app
+%rebase("layout_mobile", title=elt_type.capitalize() + ' detail about ' + elt.get_full_name(), js=['eltdetail/js/jquery.color.js', 'eltdetail/js/jquery.Jcrop.js', 'eltdetail/js/iphone-style-checkboxes.js', 'eltdetail/js/hide.js', 'eltdetail/js/dollar.js', 'eltdetail/js/gesture.js', 'eltdetail/js/graphs.js'], css=['eltdetail/css/iphonebuttons.css', 'eltdetail/css/eltdetail.css', 'eltdetail/css/hide.css', 'eltdetail/css/gesture.css', 'eltdetail/css/jquery.Jcrop.css'], top_right_banner_state=top_right_banner_state , user=user, app=app)
 
 %# " We will save our element name so gesture functions will be able to call for the good elements."
 <script type="text/javascript">

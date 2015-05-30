@@ -1,5 +1,8 @@
-%if not 'app' in locals(): app = None
-%from shinken.bin import VERSION
+<%
+if not 'app' in locals():
+    app = None
+from shinken.bin import VERSION
+%>
 
 <!-- 
 	This file is part of Shinken.

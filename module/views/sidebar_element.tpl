@@ -1,7 +1,7 @@
-%if not 'app' in locals(): app = None
-%if not 'user' in locals(): user = None
+%setdefault('app', None)
+%setdefault('user', None)
 %username = 'anonymous'
-%if user is not None: 
+%if user is not None:
 %if hasattr(user, 'alias'):
 %	username = user.alias
 %else:

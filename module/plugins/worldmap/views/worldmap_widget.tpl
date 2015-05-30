@@ -1,4 +1,4 @@
-%rebase widget globals(), css=['worldmap/css/worldmap.css']
+%rebase("widget", css=['worldmap/css/worldmap.css'])
 
 <!-- HTML map container -->
 <div class="map_container_widget">

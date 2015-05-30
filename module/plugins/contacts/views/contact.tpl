@@ -3,7 +3,7 @@
 
 %# If got no element, bailout
 %if not contact:
-%rebase layout title='Invalid contact name'
+%rebase("layout", title='Invalid contact name')
 
 %else:
 
@@ -16,7 +16,7 @@
 %end
 %end
 
-%rebase layout title='Contact ' + username, user=user, app=app, refresh=True, css=['contacts/css/contacts.css'], breadcrumb=[ ['All contacts', '/contacts'], [username, '/contact/'+username] ]
+%rebase("layout", user=user, app=app, refresh=True, css=['contacts/css/contacts.css'], breadcrumb=[ ['All contacts', '/contacts'], [username, '/contact/'+username] ])
 
 %#Contact currently in downtime ?
 %in_scheduled_downtime=False
@@ -54,8 +54,8 @@
 %my_contactgroups = [i for i in items if i.my_type == 'contactgroup']
 
 
-%if not 'app' in locals(): app = None
-%if not 'user' in locals(): user = None
+%setdefault('app', None)
+%setdefault('user', None)
 
 <div class="row">
    <div class="col-sm-12">

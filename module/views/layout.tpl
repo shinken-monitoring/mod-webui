@@ -3,9 +3,12 @@
 %t0 = time.time()
 
 %#Set default values
-%if not 'js' in locals(): js = []
-%if not 'css' in locals(): css = []
-%if not 'title' in locals(): title = 'Untitled ...'
+%#if not 'js' in locals(): js = []
+%#if not 'css' in locals(): css = []
+%#if not 'title' in locals(): title = 'Untitled ...'
+%setdefault('js', [])
+%setdefault('css', [])
+%setdefault('title', 'Untitled…')
 
 %# Layout is built with:
 %# - page header: logo, top navigation bar, indicators, user menu
@@ -13,29 +16,31 @@
 %# - content: including current page layout with title
 %# - page footer: copyright
 %# Following variables allow to include or not different layout pieces: 
-%if not 'print_menu' in locals(): print_menu = True
-%if not 'print_header' in locals(): print_header = True
-%if not 'print_title' in locals(): print_title = True
-%if not 'print_footer' in locals(): print_footer = True
+%setdefault('print_menu'  , True)
+%setdefault('print_header', True)
+%setdefault('print_title' , True)
+%setdefault('print_footer', True)
 %# For breadcrumb, declare as is when rebasing layout: 
 %# - breadcrumb=[ ['Groups', '/servicegroups'], [groupalias, '/servicegroup/'+groupname] ]
-%if not 'breadcrumb' in locals(): breadcrumb = ''
+%setdefault('breadcrumb', '')
 
 %# Current page may be refreshed or not
-%if not 'refresh' in locals(): refresh = False
+%setdefault('refresh', False)
 
-%if not 'user' in locals(): user = None
-%if not 'app' in locals(): app = None
+%setdefault('user', None)
+%setdefault('app', None)
 
 %from shinken.bin import VERSION
-%if app is not None: helper = app.helper
+%if app is not None:
+%helper = app.helper
+%end
 
 <html lang="en">
   <head>
     <meta charset="utf-8">
     <title>{{title or 'No title'}}</title>
 
-    %include copyright_element globals()
+    %include("copyright_element")
 
     <!--[if lt IE 9]>
     <script src="/static/js/ie9/html5.js"></script>
@@ -118,15 +123,15 @@
 
   <body class="skin-blue">
     %if print_header:
-      %include header_element globals()
-    %end	
+      %include("header_element")
+    %end    
     
     <div class="wrapper row-offcanvas row-offcanvas-left">
       <aside class="left-side sidebar-offcanvas">
         <!-- Left side column. Contains the user panel (clock) and sidebar menu -->
         <section class="sidebar">
         %if print_menu:
-          %include sidebar_element globals()
+          %include("sidebar_element")
         %end
         </section>
       </aside>
@@ -251,7 +256,7 @@
     </div>
 
     %if print_footer:
-      %include footer_element globals()
+      %include("footer_element")
     %end
   </body>
 </html>

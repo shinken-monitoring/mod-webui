@@ -46,7 +46,7 @@
 	%pctUnknown		= 0
 %end
 
-%rebase layout globals(), title="Hosts tagged '" + tag + "'", css=['tags/css/tags-overview.css'], refresh=True, breadcrumb=[ ['All hosts tags', '/hosts-tags'], [tag, '/hosts-tag/'+tag] ]
+%rebase("layout", title="Hosts tagged '" + tag + "'", css=['tags/css/tags-overview.css'], refresh=True, breadcrumb=[ ['All hosts tags', '/hosts-tags'], [tag, '/hosts-tag/'+tag] ])
 
 <style>
 .warning, .unreachable {
@@ -97,7 +97,7 @@
 	</div>
 
 	<div class='col-lg-12'>
-		%include pagination_element navi=navi, app=app, page="tag/"+tag, div_class="center no-margin"
+		%include("pagination_element", navi=navi, app=app, page="tag/"+tag, div_class="center no-margin")
 	</div>
 
 	<div class="clearfix">
@@ -147,7 +147,7 @@
 	</div>
 
 	<div class='col-lg-12'>
-		%include pagination_element navi=navi, app=app, page="tag/"+tag, div_class="center no-margin"
+		%include("pagination_element", navi=navi, app=app, page="tag/"+tag, div_class="center no-margin")
 	</div>
 </div>
 

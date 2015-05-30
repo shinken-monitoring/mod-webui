@@ -1,5 +1,5 @@
 %title='All known contacts (%d contacts)' % len(contacts)
-%rebase layout globals(), css=['contacts/css/contacts.css'], js=['contacts/js/contacts-overview.js'], title=title, refresh=True
+%rebase("layout", css=['contacts/css/contacts.css'], js=['contacts/js/contacts-overview.js'], title=title, refresh=True)
 
 %helper = app.helper
 %datamgr = app.datamgr

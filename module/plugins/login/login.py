@@ -72,7 +72,7 @@ def user_auth():
     is_auth = app.check_auth(login, password)
 
     if is_auth:
-        app.response.set_cookie('user', login, secret=app.auth_secret, path='/', expires='Fri, 01 Jan 2100 00:00:00 GMT')
+        app.response.set_cookie('user', login, secret=app.auth_secret, path='/')
         logger.info("[%s] user '%s' logged in" % (app.name, login))
         if is_mobile == '1':
             app.bottle.redirect("/mobile/main")

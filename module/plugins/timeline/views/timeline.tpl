@@ -1,4 +1,4 @@
-%rebase layout globals(), js=['timeline/js/timeline.js'], css=['timeline/css/timeline.css'], title='Timeline'
+%rebase("layout", js=['timeline/js/timeline.js'], css=['timeline/css/timeline.css'], title='Timeline')
 
 <h3>Downtimes timeline for {{hostname}}</h3>
 <div id="mytimeline"> Test de fred ...</div>

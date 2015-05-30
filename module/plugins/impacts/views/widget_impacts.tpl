@@ -1,7 +1,7 @@
 %helper = app.helper
 %datamgr = app.datamgr
 
-%rebase widget globals()
+%rebase("widget")
 
 %impacts = impacts.values()
 %in_pb = [i for i in impacts if i.state_id in [1, 2, 3]]
