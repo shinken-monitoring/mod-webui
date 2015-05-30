@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 %#Set default values
-%if not 'title' in locals(): title = 'No title'
-%if not 'js' in locals(): js = []
-%if not 'css' in locals(): css = []
-%if not 'print_menu' in locals(): print_menu = True
-%if not 'print_header' in locals(): print_header = True
-%if not 'refresh' in locals(): refresh = False
-%if not 'user' in locals(): user = None
-%if not 'app' in locals(): app = None
-%if not 'menu_part' in locals(): menu_part = ''
-%if not 'back_hide' in locals(): back_hide = False
+%setdefault('title', 'No title')
+%setdefault('js', [])
+%setdefault('css', [])
+%setdefault('print_menu', True)
+%setdefault('print_header', True)
+%setdefault('refresh', False)
+%setdefault('user', None)
+%setdefault('app', None)
+%setdefault('menu_part', '')
+%setdefault('back_hide', False)
 
 %print "APP is", app
 <html lang="en">
@@ -24,12 +24,12 @@
   </head>
 
 <body>
- 	%include header_element_mobile globals()
+ 	%include("header_element_mobile")
   <div data-role="content">
     %include
   </div>
 
-  	%include footer_element_mobile globals()
+  	%include("footer_element_mobile")
 
   </body>
   	<script type="text/javascript" >

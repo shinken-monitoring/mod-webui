@@ -1,4 +1,4 @@
-%rebase layout_mobile globals(), css=['mobile/css/log.css'], title='System logs'
+%rebase("layout_mobile", css=['mobile/css/log.css'], title='System logs')
 
 %from shinken.bin import VERSION
 %helper = app.helper

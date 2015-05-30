@@ -1,7 +1,7 @@
 %helper = app.helper
 %datamgr = app.datamgr
 
-%rebase layout globals(), title='All problems', js=['problems/js/img_hovering.js', 'problems/js/problems.js', 'problems/js/filters.js', 'problems/js/bookmarks.js'], css=['problems/css/problems.css', 'problems/css/perfometer.css', 'problems/css/img_hovering.css', 'problems/css/filters.css'], refresh=True, user=user
+%rebase("layout", title='All problems', js=['problems/js/img_hovering.js', 'problems/js/problems.js', 'problems/js/filters.js', 'problems/js/bookmarks.js'], css=['problems/css/problems.css', 'problems/css/perfometer.css', 'problems/css/img_hovering.css', 'problems/css/filters.css'], refresh=True, user=user)
 
 %# Look for actions if we must show them or not
 %actions_allowed = True
@@ -269,7 +269,7 @@
       <a id='collapse_all' href="javascript:collapse_all_block()" class="btn btn-default"><i class="fa fa-minus"></i> Collapse all</a>
    </div>
    <div class='col-lg-7 col-md-8 col-sm-10 pull-right'>
-   %include pagination_element navi=navi, app=app, page=page, div_class="pull-right"
+   %include("pagination_element", navi=navi, app=app, page=page, div_class="pull-right")
    </div>
 </div>
 
@@ -510,7 +510,7 @@
          %end
       
          %# Host information ...
-         %include _problem pb=pb, app=app, graphs=True, actions_allowed=actions_allowed, user=user.get_name()
+         %include("_problem", pb=pb, app=app, graphs=True, actions_allowed=actions_allowed, user=user.get_name())
 
       %# End for pb in pbs:
       %end
@@ -524,5 +524,5 @@
       </div>
    </div>
   
-  %include pagination_element navi=navi, app=app, page=page, div_class="pull-right"
+  %include("pagination_element", navi=navi, app=app, page=page, div_class="pull-right")
 </div>

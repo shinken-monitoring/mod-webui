@@ -1,6 +1,6 @@
 %# Load all css stuff we need
-%if not 'css' in locals(): css = []
-%if not 'js' in locals(): js = []
+%setdefault('css', [])
+%setdefault('js', [])
 
 <script type="text/javascript">
 %for p in css:

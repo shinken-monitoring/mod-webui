@@ -1,6 +1,6 @@
 %helper = app.helper
 
-%rebase widget globals()
+%rebase("widget")
 
 %types = [ ('scheduler', schedulers), ('poller', pollers), ('broker', brokers), ('reactionner', reactionners), ('receiver', receivers)]
 

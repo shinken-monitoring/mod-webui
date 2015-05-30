@@ -1,7 +1,7 @@
 %helper = app.helper
 %datamgr = app.datamgr
 
-%rebase layout globals(), js=['impacts/js/impacts.js'], title='All critical impacts for your business', css=['impacts/css/impacts.css'], refresh=True, user=user
+%rebase("layout", js=['impacts/js/impacts.js'], title='All critical impacts for your business', css=['impacts/css/impacts.css'], refresh=True, user=user)
 
 
 %# Look for actions if we must show them or not

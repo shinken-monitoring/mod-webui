@@ -1,4 +1,4 @@
-%rebase layout_mobile globals(), title="Tactical view", js=['mobile/js/mobile_main.js'], css=['mobile/css/main.css'], back_hide=True
+%rebase("layout_mobile", title="Tactical view", js=['mobile/js/mobile_main.js'], css=['mobile/css/main.css'], back_hide=True)
 
 %overall_itproblem = app.datamgr.get_nb_all_problems(app.get_user_auth())
 

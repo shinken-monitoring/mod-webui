@@ -1,4 +1,4 @@
-%rebase layout title='Shinken UI login', print_header=False, js=['login/js/pass_shark.js']
+%rebase("layout", title='Shinken UI login', print_header=False, js=['login/js/pass_shark.js'])
 
 %from shinken.bin import VERSION
 

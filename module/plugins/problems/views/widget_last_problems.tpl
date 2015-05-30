@@ -4,7 +4,7 @@
 %helper = app.helper
 %datamgr = app.datamgr
 
-%rebase widget globals()
+%rebase("widget")
 
 %if len(pbs) == 0:
   <span>No IT problems! Congrats.</span>

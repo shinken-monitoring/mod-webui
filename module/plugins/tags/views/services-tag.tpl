@@ -35,7 +35,7 @@
 %end
 
 %# Specific content for breadrumb
-%rebase layout globals(), title="Services tagged '" + tag + "'", css=['tags/css/tags-overview.css'], refresh=True, breadcrumb=[ ['All services tags', '/services-tags'], [tag, '/services-tag/'+tag] ]
+%rebase("layout", title="Services tagged '" + tag + "'", css=['tags/css/tags-overview.css'], refresh=True, breadcrumb=[ ['All services tags', '/services-tags'], [tag, '/services-tag/'+tag] ])
 
 <div id="content_container">
 	<div class="panel panel-default">
@@ -71,7 +71,7 @@
 	</div>
 
 	<div class='col-lg-12'>
-		%include pagination_element navi=navi, app=app, page="tag/"+tag, div_class="center no-margin"
+		%include("pagination_element", navi=navi, app=app, page="tag/"+tag, div_class="center no-margin")
 	</div>
 
 	<div class="clearfix">
@@ -110,6 +110,6 @@
 	</div>
 
 	<div class='col-lg-12'>
-		%include pagination_element navi=navi, app=app, page="tag/"+tag, div_class="center no-margin"
+		%include("pagination_element", navi=navi, app=app, page="tag/"+tag, div_class="center no-margin")
 	</div>
 </div>

@@ -1,4 +1,4 @@
-%rebase layout globals(), css=['worldmap/css/worldmap.css'], title='Worldmap', refresh=False
+%rebase("layout", css=['worldmap/css/worldmap.css'], title='Worldmap', refresh=False)
 
 <!-- HTML map container -->
 <div class="map_container">

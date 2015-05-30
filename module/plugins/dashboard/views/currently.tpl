@@ -1,4 +1,4 @@
-%rebase layout globals(), js=['dashboard/js/screenfull.js'], css=['dashboard/css/shinken-currently.css'], title='Shinken currently', print_header=False, print_menu=False, print_title=False, print_footer=False, refresh=True
+%rebase("layout", js=['dashboard/js/screenfull.js'], css=['dashboard/css/shinken-currently.css'], title='Shinken currently', print_header=False, print_menu=False, print_title=False, print_footer=False, refresh=True)
 
 %from shinken.bin import VERSION
 %helper = app.helper
@@ -29,9 +29,9 @@
 	});
 </script>
 
-%if not 'user' in locals(): user = None
+%setdefault('user', None)
 %username = 'anonymous'
-%if user is not None: 
+%if user is not None:
 %if hasattr(user, 'alias'):
 %	username = user.alias
 %else:

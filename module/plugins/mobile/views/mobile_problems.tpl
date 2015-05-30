@@ -1,4 +1,4 @@
-%rebase layout_mobile globals(), title="IT problems", js=['mobile/js/mobile_main.js', 'mobile/js/mobile_problems.js'], css=['mobile/css/main.css', 'mobile/css/problems.css']
+%rebase("layout_mobile", title="IT problems", js=['mobile/js/mobile_main.js', 'mobile/js/mobile_problems.js'], css=['mobile/css/main.css', 'mobile/css/problems.css'])
 
 %helper = app.helper
 %datamgr = app.datamgr

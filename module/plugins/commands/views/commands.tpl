@@ -1,5 +1,5 @@
 %title='All commands (%d commands)' % len(commands)
-%rebase layout globals(), css=['commands/css/commands.css'], js=['commands/js/commands-overview.js'], title=title, refresh=True
+%rebase("layout", css=['commands/css/commands.css'], js=['commands/js/commands-overview.js'], title=title, refresh=True)
 
 <div class="row">
   <div class="pull-right col-sm-2">

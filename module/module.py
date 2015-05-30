@@ -43,7 +43,6 @@ import hashlib
 
 from shinken.basemodule import BaseModule
 from shinken.message import Message
-from shinken.webui.bottlewebui import Bottle, run, static_file, view, route, request, response, template, redirect
 from shinken.misc.regenerator import Regenerator
 from shinken.log import logger
 from shinken.modulesctx import modulesctx
@@ -57,9 +56,10 @@ from shinken.misc.sorter import hst_srv_sort, last_state_change_earlier
 from shinken.misc.datamanager import datamgr
 from helper import helper
 from config_parser import config_parser
+from lib.bottle import Bottle, run, static_file, view, route, request, response, template, redirect
 
 # Debug
-import shinken.webui.bottlewebui as bottle
+import lib.bottle as bottle
 bottle.debug(True)
 
 # Import bottle lib to make bottle happy

@@ -1,4 +1,4 @@
-%rebase layout title='Shinken Web UI Login', print_header=False, print_menu=False, print_title=False, js=['login/js/capslock.js'], css=['login/css/login.css']
+%rebase("layout", title='Shinken Web UI Login', print_header=False, print_menu=False, print_title=False, js=['login/js/capslock.js'], css=['login/css/login.css'])
 
 %from shinken.bin import VERSION
 
