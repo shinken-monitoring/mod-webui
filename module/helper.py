@@ -649,68 +649,39 @@ class Helper(object):
                   'service': 
                     {   'OK': 'arrow-up',
                         'CRITICAL': 'arrow-down',
-                        'WARNING': 'warning',
+                        'WARNING': 'exclamation',
                         'ACK': 'check', 
                         'DOWNTIME': 'ambulance',
                         'FLAPPING': 'spinner fa-spin',
                         'PENDING': 'spinner fa-circle-o-notch',
-                        'UNKNOWN': 'question-circle' }
+                        'UNKNOWN': 'question' }
                 }
-        colors = { 'host': 
-                    {   'UP': 'success',
-                        'DOWN': 'danger',
-                        'UNREACHABLE': 'alert',
-                        'ACK': 'info', 
-                        'DOWNTIME': 'info',
-                        'FLAPPING': 'info',
-                        'PENDING': 'info',
-                        'UNKNOWN': 'info' }, 
-                  'service': 
-                    {   'OK': 'success',
-                        'CRITICAL': 'danger',
-                        'WARNING': 'alert',
-                        'ACK': 'info', 
-                        'DOWNTIME': 'info',
-                        'FLAPPING': 'info',
-                        'PENDING': 'info',
-                        'UNKNOWN': 'info' }
-                }
-        # Colors depending upon "simplified" state
-        # sstate = self.get_small_icon_state(obj)
-        # colors = { 'ok': 'success', 'up': 'success',
-                  # 'critical': 'danger', 'down': 'danger',
-                  # 'warning': 'warning',
-                  # 'ack': 'info', 'downtime': 'info',
-                  # 'flapping': 'warning',
-                  # 'unknown': 'info' }
-                  
+
         cls = obj.__class__.my_type
 
-        if obj.problem_has_been_acknowledged:
-            icon_text = '''
-              <span class="fa-stack" title="%s is a problem (%s) and has been acknowledged">
-                <i class="fa fa-%s fa-stack-1x text-%s"></i>
-                <i class="fa fa-%s fa-stack-1x"></i>
-              </span>
-            ''' % (cls, obj.state, icons[cls].get(obj.state, 'unknown'), colors[cls].get(obj.state, 'unknown'), icons[cls]['ACK'])
-        else:
-            icon_text = '''
-              <span title="%s is %s">
-                <i class="fa fa-%s text-%s"></i>
-              </span>
-            ''' % (cls, obj.state, icons[cls].get(obj.state, 'unknown'), colors[cls].get(obj.state, 'unknown'))
-
-        if obj.in_scheduled_downtime:
-            icon_text = '''
-            %s
-            <i title="%s is in scheduled downtime" class="fa fa-%s"></i>
-            ''' % (cls, icon_text, icons[cls]['DOWNTIME'])
+        back = "<i class='fa fa-%s fa-stack-2x font-%s'></i>" % (icons[cls]['FLAPPING'] if obj.is_flapping else 'circle', obj.state.lower())
+        title = "%s is %s" % (cls, obj.state)
         if obj.is_flapping:
-            icon_text = '''
-            %s
-            <i title="%s is flapping" class="fa fa-%s"></i>
-            ''' % (cls, icon_text, icons[cls]['FLAPPING'])
-            
+            icon_color = 'font-' + obj.state.lower()
+            title += " and is flapping"
+        else:
+            icon_color = 'fa-inverse'
+        if obj.in_scheduled_downtime:
+            icon = icons[cls]['DOWNTIME']
+            title += " and is in scheduled downtime"
+        elif obj.problem_has_been_acknowledged:
+            icon = icons[cls]['ACK']
+            title += " and is acknowledged"
+        else:
+            icon = icons[cls].get(obj.state, 'UNKNOWN')
+        front = "<i class='fa fa-%s fa-stack-1x %s'></i>" % (icon, icon_color)
+        icon_text = '''
+          <span class="fa-stack" title="%s">
+             %s
+             %s
+          </span>
+          ''' % (title, back, front)
+
         return icon_text
 
     # Get

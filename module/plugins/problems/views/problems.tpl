@@ -344,37 +344,37 @@
                <b>{{nHosts}} hosts:&nbsp;</b> 
                </td>
              
-               <td><span class="{{'font-up' if hUp > 0 else 'font-greyed'}}">
+               <td><span title="Up" class="{{'font-up' if hUp > 0 else 'font-greyed'}}">
                <span class="fa-stack"><i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-server fa-stack-1x fa-inverse"></i></span> 
                <span class="num">{{hUp}} <i>({{pctHUp}}%)</i></span>
                </span></td>
              
-               <td><span class="{{'font-unreachable' if hUnreachable > 0 else 'font-greyed'}}">
+               <td><span title="Unreachable" class="{{'font-unreachable' if hUnreachable > 0 else 'font-greyed'}}">
                <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-server fa-stack-1x fa-inverse"></i></span> 
                <span class="num">{{hUnreachable}} <i>({{pctHUnreachable}}%)</i></span>
                </span></td>
 
-               <td><span class="{{'font-down' if hDown > 0 else 'font-greyed'}}">
+               <td><span title="Down" class="{{'font-down' if hDown > 0 else 'font-greyed'}}">
                <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-server fa-stack-1x fa-inverse"></i></span> 
                <span class="num">{{hDown}} <i>({{pctHDown}}%)</i></span>
                </span></td>
 
-               <td><span class="{{'font-pending' if hPending > 0 else 'font-greyed'}}">
+               <td><span title="Pending" class="{{'font-pending' if hPending > 0 else 'font-greyed'}}">
                <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-server fa-stack-1x fa-inverse"></i></span> 
                <span class="num">{{hPending}} <i>({{pctHPending}}%)</i></span>
                </span></td>
 
-               <td><span class="{{'font-unknown' if hUnknown > 0 else 'font-greyed'}}">
+               <td><span title="Unknown" class="{{'font-unknown' if hUnknown > 0 else 'font-greyed'}}">
                <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-server fa-stack-1x fa-inverse"></i></span> 
                <span class="num">{{hUnknown}} <i>({{pctHUnknown}}%)</i></span>
                </span></td>
 
-               <td><span class="{{'font-ack' if hAck > 0 else 'font-greyed'}}">
+               <td><span title="Acknowledged" class="{{'font-ack' if hAck > 0 else 'font-greyed'}}">
                <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-check fa-stack-1x fa-inverse"></i></span> 
                <span class="num">{{hAck}} <i>({{pctHAck}}%)</i></span>
                </span></td>
 
-               <td><span class="{{'font-downtime' if hDowntime > 0 else 'font-greyed'}}">
+               <td><span title="In scheduled downtime" class="{{'font-downtime' if hDowntime > 0 else 'font-greyed'}}">
                <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-ambulance fa-stack-1x fa-inverse"></i></span> 
                <span class="num">{{hDowntime}} <i>({{pctHDowntime}}%)</i></span>
                </span></td>
@@ -384,37 +384,37 @@
                   <b>{{nServices}} services:&nbsp;</b> 
                </td>
           
-               <td><span class="{{'font-ok' if sOk > 0 else 'font-greyed'}}">
+               <td><span title="Ok" class="{{'font-ok' if sOk > 0 else 'font-greyed'}}">
                <span class="fa-stack"><i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-arrow-up fa-stack-1x fa-inverse"></i></span> 
                <span class="num">{{sOk}} <i>({{pctSOk}}%)</i></span>
                </span></td>
           
-               <td><span class="{{'font-warning' if sWarning > 0 else 'font-greyed'}}">
-               <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-warning fa-stack-1x fa-inverse"></i></span> 
+               <td><span title="Warning" class="{{'font-warning' if sWarning > 0 else 'font-greyed'}}">
+               <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-exclamation fa-stack-1x fa-inverse"></i></span> 
                <span class="num">{{sWarning}} <i>({{pctSWarning}}%)</i></span>
                </span></td>
 
-               <td><span class="{{'font-critical' if sCritical > 0 else 'font-greyed'}}">
+               <td><span title="Critical" class="{{'font-critical' if sCritical > 0 else 'font-greyed'}}">
                <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-arrow-down fa-stack-1x fa-inverse"></i></span> 
                <span class="num">{{sCritical}} <i>({{pctSCritical}}%)</i></span>
                </span></td>
 
-               <td><span class="{{'font-pending' if sPending > 0 else 'font-greyed'}}">
+               <td><span title="Pending" class="{{'font-pending' if sPending > 0 else 'font-greyed'}}">
                <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-pause fa-stack-1x fa-inverse"></i></span> 
                <span class="num">{{sPending}} <i>({{pctSPending}}%)</i></span>
                </span></td>
 
-               <td><span class="{{'font-unknown' if sUnknown > 0 else 'font-greyed'}}">
+               <td><span title="Unknown" class="{{'font-unknown' if sUnknown > 0 else 'font-greyed'}}">
                <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-question fa-stack-1x fa-inverse"></i></span> 
                <span class="num">{{sUnknown}} <i>({{pctSUnknown}}%)</i></span>
                </span></td>
 
-               <td><span class="{{'font-ack' if sAck > 0 else 'font-greyed'}}">
+               <td><span title="Acknowledged" class="{{'font-ack' if sAck > 0 else 'font-greyed'}}">
                <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-check fa-stack-1x fa-inverse"></i></span> 
                <span class="num">{{sAck}} <i>({{pctSAck}}%)</i></span>
                </span></td>
 
-               <td><span class="{{'font-unknown' if sUnknown > 0 else 'font-greyed'}}">
+               <td><span title="In downtime" class="{{'font-downtime' if sDowntime > 0 else 'font-greyed'}}">
                <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-ambulance fa-stack-1x fa-inverse"></i></span> 
                <span class="num">{{sDowntime}} <i>({{pctSDowntime}}%)</i></span>
                </span></td>
@@ -596,7 +596,7 @@
         %for i, pb in enumerate(host_pbs):
             
          %# Host information ...
-           <tr data-toggle="collapse" data-target="#details-{{helper.get_html_id(pb)}}" class="accordion-toggle">
+         <tr data-toggle="collapse" data-target="#details-{{helper.get_html_id(pb)}}" class="accordion-toggle">
             <td>
               <input type="checkbox" id="selector-{{helper.get_html_id(pb)}}" onclick="add_remove_elements('{{helper.get_html_id(pb)}}')">
             </td>
@@ -617,25 +617,18 @@
               <button class="btn btn-danger btn-xs"><i class="fa fa-plus"></i> {{ len(pb.impacts) }} impacts</button>
               %end
             </td>
-            <td align="center" class="background-{{pb.state.lower()}}">{{ pb.state }}</td>
+            <td align="center" class="font-{{pb.state.lower()}}"><strong>{{ pb.state }}</strong></td>
             <td>{{!helper.print_duration(pb.last_state_change, just_duration=True, x_elts=2)}}</td>
             <td>{{!helper.print_duration(pb.last_chk, just_duration=True, x_elts=2)}} ago</td>
             <td class="row">
               <div class="pull-right">
                 %# Graphs
-                %#if graphs:
                 %import time
                 %now = time.time()
                 %graphs = app.get_graph_uris(pb, now-4*3600, now, 'dashboard')
-                %onmouse_code = ''
                 %if len(graphs) > 0:
-                %onmouse_code = 'onmouseover="display_hover_img(\'%s\',\'\');" onmouseout="hide_hover_img();" ' % graphs[0]['img_src']
-                %end
-                %if len(graphs) > 0:
-                  <!--<span class="perfometer" {{ onmouse_code }}>{{!helper.get_perfometer(pb)}}</span>-->
                   <a role="button" tabindex="0" class="perfometer" data-toggle="popover" title="{{ pb.get_full_name() }}" data-content="<img src={{ graphs[0]['img_src'] }} width='600px' height='200px'>" data-placement="left">{{!helper.get_perfometer(pb)}}</a>
                 %end
-                %#end
               </div>
               <div class="">
                 {{ pb.output }}
