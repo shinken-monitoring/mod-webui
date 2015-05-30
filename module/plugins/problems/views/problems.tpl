@@ -280,90 +280,64 @@
 %end
 
 <!-- Problems synthesis -->
-%nHosts=0
-%hUp=hDown=hUnreachable=hPending=hUnknown=0
-%hAck=hDowntime=0
-%nServices=0
-%sOk=sCritical=sWarning=sPending=sUnknown=0
-%sAck=sDowntime=0
-%for pb in pbs:
-   %if pb.__class__.my_type == 'host':
-      %nHosts=nHosts+1
-      %if pb.state == 'UP':
-         %hUp=hUp+1
-      %elif pb.state == 'DOWN':
-         %hDown=hDown+1
-      %elif pb.state == 'UNREACHABLE':
-         %hUnreachable=hUnreachable+1
-      %elif pb.state == 'PENDING':
-         %hPending=hPending+1
-      %else:
-         %hUnknown=hUnknown+1
-      %end
-      %if pb.problem_has_been_acknowledged:
-         %hAck=hAck+1
-      %end
-      %if pb.in_scheduled_downtime:
-         %hDowntime=hDowntime+1
-      %end
-   %elif pb.__class__.my_type == 'service':
-      %nServices=nServices+1
-      %if pb.state == 'OK':
-         %sOk=sOk+1
-      %elif pb.state == 'CRITICAL':
-         %sCritical=sCritical+1
-      %elif pb.state == 'WARNING':
-         %sWarning=sWarning+1
-      %elif pb.state == 'PENDING':
-         %sPending=sPending+1
-      %else:
-         %sUnknown=sUnknown+1
-      %end
-      %if pb.problem_has_been_acknowledged:
-         %sAck=sAck+1
-      %end
-      %if pb.in_scheduled_downtime:
-         %sDowntime=sDowntime+1
-      %end
-   %end
+
+%hosts = [i for i in pbs if i.__class__.my_type == 'host']
+%nHosts = len(hosts)
+%hUp = len([i for i in hosts if i.state == 'UP'])
+%hDown = len([i for i in hosts if i.state == 'DOWN'])
+%hUnreachable = len([i for i in hosts if i.state == 'UNREACHABLE'])
+%hPending = len([i for i in hosts if i.state == 'PENDING'])
+%hUnknown = nHosts - hUp - hDown - hUnreachable - hPending
+%hAck = len([i for i in hosts if i.problem_has_been_acknowledged])
+%hDowntime = len([i for i in hosts if i.in_scheduled_downtime])
+%pctHUp           = 0
+%pctHDown         = 0
+%pctHUnreachable  = 0
+%pctHPending      = 0
+%pctHUnknown      = 0
+%pctHAck          = 0
+%pctHDowntime     = 0
+
+%if hosts:
+  %pctHUp           = round(100.0 * hUp / nHosts, 2)
+  %pctHDown         = round(100.0 * hDown / nHosts, 2)
+  %pctHUnreachable  = round(100.0 * hUnreachable / nHosts, 2)
+  %pctHPending      = round(100.0 * hPending / nHosts, 2)
+  %pctHUnknown      = round(100.0 * hUnknown / nHosts, 2)
+  %pctHAck          = round(100.0 * hAck / nHosts, 2)
+  %pctHDowntime     = round(100.0 * hDowntime / nHosts, 2)
 %end
-%if nHosts != 0:
-   %pctHUp           = round(100.0 * hUp / nHosts, 2)
-   %pctHDown         = round(100.0 * hDown / nHosts, 2)
-   %pctHUnreachable  = round(100.0 * hUnreachable / nHosts, 2)
-   %pctHPending      = round(100.0 * hPending / nHosts, 2)
-   %pctHUnknown      = round(100.0 * hUnknown / nHosts, 2)
-   %pctHAck          = round(100.0 * hAck / nHosts, 2)
-   %pctHDowntime     = round(100.0 * hDowntime / nHosts, 2)
-%else:
-   %pctHUp           = 0
-   %pctHDown         = 0
-   %pctHUnreachable  = 0
-   %pctHPending      = 0
-   %pctHUnknown      = 0
-   %pctHAck          = 0
-   %pctHDowntime     = 0
+
+%services = [i for i in pbs if i.__class__.my_type == 'service']
+%nServices = len(services)
+%sOk = len([i for i in services if i.state == 'OK'])
+%sCritical = len([i for i in services if i.state == 'CRITICAL'])
+%sWarning = len([i for i in services if i.state == 'WARNING'])
+%sPending = len([i for i in services if i.state == 'PENDING'])
+%sUnknown = nServices - sOk - sCritical - sWarning - sPending
+%sAck = len([i for i in services if i.problem_has_been_acknowledged])
+%sDowntime = len([i for i in services if i.in_scheduled_downtime])
+%pctSOk           = 0
+%pctSCritical     = 0
+%pctSWarning      = 0
+%pctSPending      = 0
+%pctSUnknown      = 0
+%pctSAck          = 0
+%pctSDowntime     = 0
+
+%if services:
+  %pctSOk           = round(100.0 * sOk / nServices, 2)
+  %pctSCritical     = round(100.0 * sCritical / nServices, 2)
+  %pctSWarning      = round(100.0 * sWarning / nServices, 2)
+  %pctSPending      = round(100.0 * sPending / nServices, 2)
+  %pctSUnknown      = round(100.0 * sUnknown / nServices, 2)
+  %pctSAck          = round(100.0 * sAck / nServices, 2)
+  %pctSDowntime     = round(100.0 * sDowntime / nServices, 2)
 %end
-%if nServices != 0:
-   %pctSOk           = round(100.0 * sOk / nServices, 2)
-   %pctSCritical     = round(100.0 * sCritical / nServices, 2)
-   %pctSWarning      = round(100.0 * sWarning / nServices, 2)
-   %pctSPending      = round(100.0 * sPending / nServices, 2)
-   %pctSUnknown      = round(100.0 * sUnknown / nServices, 2)
-   %pctSAck          = round(100.0 * sAck / nServices, 2)
-   %pctSDowntime     = round(100.0 * sDowntime / nServices, 2)
-%else:
-   %pctSOk           = 0
-   %pctSCritical     = 0
-   %pctSWarning      = 0
-   %pctSPending      = 0
-   %pctSUnknown      = 0
-   %pctSAck          = 0
-   %pctSDowntime     = 0
-%end
+
 <div class="panel panel-default">
    <div class="panel-body">
-      <table class="table">
+      <table class="table table-invisible">
          <tbody>
             <tr>
                <td>
