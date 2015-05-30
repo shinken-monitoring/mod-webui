@@ -2813,4 +2813,14 @@ th.vertical {
 .serviceSOFT{
 	background-image:radial-gradient(rgba(255,255,255,.7), rgba(255,255,255,0) 100%);
 }
-
+.table-invisible > thead > tr > th,
+.table-invisible > tbody > tr > th,
+.table-invisible > tfoot > tr > th,
+.table-invisible > thead > tr > td,
+.table-invisible > tbody > tr > td,
+.table-invisible > tfoot > tr > th {
+    border-top: 0;
+}
+.table-invisible {
+    margin:0;
+}

@@ -22,32 +22,6 @@
 
 
 /*
-  Look for Shift key up and down
-*/
-var is_shift_pressed = false;
-function shift_pressed(){
-  is_shift_pressed = true;
-}
-
-function shift_released(){
-  is_shift_pressed = false;
-}
-
-$(document).bind('keydown', 'shift', shift_pressed);
-$(document).bind('keyup', 'shift', shift_released);
-
-/*
-  If we keep the shift pushed and hovering over selections, it
-  select the elements. Easier for massive selection :)
-*/
-function hovering_selection(name){
-  if (is_shift_pressed) {
-    add_element(name);
-  }
-}
-
-
-/*
   Tool bar related code
 */
 function hide_toolbar(){
@@ -282,21 +256,12 @@ function remove_all(user){
 
 // On page loaded ... 
 $(document).ready(function(){
-   // At start we hide the toolbar
-   hide_toolbar();
-
-   // ... we hide the unselect all and collapse all buttons
-   $('#unselect_all_btn').hide();
-   $('#collapse_all').hide()
-
-   // If actions are not allowed, disable the button 'select all'
+   // If actions are not allowed, disable the button 'select all' and the checkboxes
    if ("actions_enabled" in window && !actions_enabled) {
       $('#select_all_btn').addClass('disabled');
-      // And put in low opacity the 'selectors'
-      $('.tick').css({'opacity' : 0.4});
+      $('[id^=selector').attr('disabled', true);
    }
 
-   // ... we hide the selected images.
-   $('.img_tick').hide();
+   // ... we hide the actions panel
    $('#actions').hide();
 });
