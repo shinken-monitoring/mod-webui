@@ -32,8 +32,8 @@ Invalid group name
       
       <div class="panel-body">
 %nHosts=0
-%hUp=hDown=hUnreachable=hPending=hUnknown=0
-%pctUp=pctDown=pctUnreachable=pctPending=pctUnknown=0
+%hUp=hDown=hUnreachable=hUnknown=hAck=hDowntime=0
+%pctUp=pctDown=pctUnreachable=pctUnknown=0
 %for h in hosts:
    %nHosts=nHosts+1
    %if h.state == 'UP':
@@ -42,17 +42,20 @@ Invalid group name
       %hDown=hDown+1
    %elif h.state == 'UNREACHABLE':
       %hUnreachable=hUnreachable+1
-   %elif h.state == 'PENDING':
-      %hPending=hPending+1
    %else:
       %hUnknown=hUnknown+1
+   %end
+   %if h.problem_has_been_acknowledged:
+      %hAck=hAck+1
+   %end
+   %if h.in_scheduled_downtime:
+      %hDowntime=hDowntime+1
    %end
 %end
 %if nHosts != 0:
    %pctUp         = round(100.0 * hUp / nHosts, 2)
    %pctDown    = round(100.0 * hDown / nHosts, 2)
    %pctUnreachable   = round(100.0 * hUnreachable / nHosts, 2)
-   %pctPending    = round(100.0 * hPending / nHosts, 2)
    %pctUnknown    = round(100.0 * hUnknown / nHosts, 2)
 %end
          %if progress_bar:
@@ -72,10 +75,6 @@ Invalid group name
                   data-toggle="tooltip" data-placement="bottom" 
                   style="line-height: 45px; width: {{pctUnreachable}}%;">{{pctUnreachable}}% Unreachable</div>
                
-               <div title="{{hPending}} hosts Pending" class="progress-bar progress-bar-info quickinfo" 
-                  data-toggle="tooltip" data-placement="bottom" 
-                  style="line-height: 45px; width: {{pctPending}}%;">{{pctPending}}% Pending</div>
-               
                <div title="{{hPending}} hosts Pending/Unknown" class="progress-bar progress-bar-info quickinfo" 
                   data-toggle="tooltip" data-placement="bottom" 
                   style="line-height: 45px; width: {{pctUnknown}}%;">{{pctUnknown}}% Unknown</div>
@@ -87,37 +86,37 @@ Invalid group name
             <div class="col-sm-12 text-center center-block"><em>Currently displaying {{nHosts}} hosts ...</em></div>
             <div class="col-sm-1"></div>
             <div class="col-sm-10" >
-               <span class="{{'font-up' if hUp > 0 else 'font-greyed'}}">
-                  <span class="fa-stack"><i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-check fa-stack-1x fa-inverse"></i></span> 
-                  <span class="num">{{hUp}} ({{pctUp}}% Up)</span>
-               </span> 
-                
-               <span class="{{'font-unreachable' if hUnreachable > 0 else 'font-greyed'}}">
-                  <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-exclamation fa-stack-1x fa-inverse"></i></span> 
-                  <span class="num">{{hUnreachable}} ({{pctUnreachable}}% Unreachable)</span>
-               </span> 
-
-               <span class="{{'font-down' if hDown > 0 else 'font-greyed'}}">
-                  <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-arrow-down fa-stack-1x fa-inverse"></i></span> 
-                  <span class="num">{{hDown}} ({{pctDown}}% Down)</span>
-               </span> 
-
-               <span class="{{'font-pending' if hPending > 0 else 'font-greyed'}}">
-                  <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-pause fa-stack-1x fa-inverse"></i></span> 
-                  <span class="num">{{hPending}} ({{pctPending}}% Pending)</span>
-               </span> 
-
-               <span class="{{'font-unknown' if hUnknown > 0 else 'font-greyed'}}">
-                  <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-question fa-stack-1x fa-inverse"></i></span> 
-                  <span class="num">{{hUnknown}} ({{pctUnknown}}% Unknown)</span>
-               </span> 
+               <table class="table table-invisible">
+                  <tbody>
+                     <tr>
+                        <td>
+                           {{!helper.get_fa_icon_state(cls='host', state='up')}} <span class="num">{{hUp}} <i>({{pctUp}}% Up)</i></span>
+                        </td>
+                        <td>
+                           {{!helper.get_fa_icon_state(cls='host', state='unreachable')}} <span class="num">{{hUnreachable}} <i>({{pctUnreachable}}% Unreachable)</i></span>
+                        </td>
+                        <td>
+                           {{!helper.get_fa_icon_state(cls='host', state='down')}} <span class="num">{{hDown}} <i>({{pctDown}}% Down)</i></span>
+                        </td>
+                        <td>
+                           {{!helper.get_fa_icon_state(cls='host', state='unknown')}} <span class="num">{{hUnknown}} <i>({{pctUnknown}}% Unknown)</i></span>
+                        </td>
+                        <td>
+                           {{!helper.get_fa_icon_state(cls='host', state='ack')}} <span class="num">{{hAck}}</span>
+                        </td>
+                        <td>
+                           {{!helper.get_fa_icon_state(cls='host', state='downtime')}} <span class="num">{{hDowntime}}</span>
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
             </div>
             <div class="col-sm-1"></div>
          </div>
 
 %nHosts=0
-%hUp=hDown=hUnreachable=hPending=hUnknown=0
-%pctUp=pctDown=pctUnreachable=pctPending=pctUnknown=0
+%hUp=hDown=hUnreachable=hUnknown=hAck=hDowntime=0
+%pctUp=pctDown=pctUnreachable=pctUnknown=0
 %for h in all_hosts:
    %nHosts=nHosts+1
    %if h.state == 'UP':
@@ -126,17 +125,20 @@ Invalid group name
       %hDown=hDown+1
    %elif h.state == 'UNREACHABLE':
       %hUnreachable=hUnreachable+1
-   %elif h.state == 'PENDING':
-      %hPending=hPending+1
    %else:
       %hUnknown=hUnknown+1
+   %end
+   %if h.problem_has_been_acknowledged:
+      %hAck=hAck+1
+   %end
+   %if h.in_scheduled_downtime:
+      %hDowntime=hDowntime+1
    %end
 %end
 %if nHosts != 0:
    %pctUp         = round(100.0 * hUp / nHosts, 2)
    %pctDown    = round(100.0 * hDown / nHosts, 2)
    %pctUnreachable   = round(100.0 * hUnreachable / nHosts, 2)
-   %pctPending    = round(100.0 * hPending / nHosts, 2)
    %pctUnknown    = round(100.0 * hUnknown / nHosts, 2)
 %end
          %if progress_bar:
@@ -171,35 +173,41 @@ Invalid group name
             <div class="col-sm-12 text-center center-block"><em>... out of {{nHosts}} hosts</em></div>
             <div class="col-sm-1"></div>
             <div class="col-sm-10" >
-               <span class="{{'font-up' if hUp > 0 else 'font-greyed'}}">
-                  <span class="fa-stack"><i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-check fa-stack-1x fa-inverse"></i></span> 
-                  <span class="num">{{hUp}} ({{pctUp}}% Up)</span>
-               </span> 
-                
-               <span class="{{'font-unreachable' if hUnreachable > 0 else 'font-greyed'}}">
-                  <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-exclamation fa-stack-1x fa-inverse"></i></span> 
-                  <span class="num">{{hUnreachable}} ({{pctUnreachable}}% Unreachable)</span>
-               </span> 
-
-               <span class="{{'font-down' if hDown > 0 else 'font-greyed'}}">
-                  <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-arrow-down fa-stack-1x fa-inverse"></i></span> 
-                  <span class="num">{{hDown}} ({{pctDown}}% Down)</span>
-               </span> 
-
-               <span class="{{'font-pending' if hPending > 0 else 'font-greyed'}}">
-                  <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-pause fa-stack-1x fa-inverse"></i></span> 
-                  <span class="num">{{hPending}} ({{pctPending}}% Pending)</span>
-               </span> 
-
-               <span class="{{'font-unknown' if hUnknown > 0 else 'font-greyed'}}">
-                  <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-question fa-stack-1x fa-inverse"></i></span> 
-                  <span class="num">{{hUnknown}} ({{pctUnknown}}% Unknown)</span>
-               </span> 
+               <table class="table table-invisible">
+                  <tbody>
+                     <tr>
+                        <td>
+                           {{!helper.get_fa_icon_state(cls='host', state='up')}} <span class="num">{{hUp}} <i>({{pctUp}}% Up)</i></span>
+                        </td>
+                        <td>
+                           {{!helper.get_fa_icon_state(cls='host', state='unreachable')}} <span class="num">{{hUnreachable}} <i>({{pctUnreachable}}% Unreachable)</i></span>
+                        </td>
+                        <td>
+                           {{!helper.get_fa_icon_state(cls='host', state='down')}} <span class="num">{{hDown}} <i>({{pctDown}}% Down)</i></span>
+                        </td>
+                        <td>
+                           {{!helper.get_fa_icon_state(cls='host', state='unknown')}} <span class="num">{{hUnknown}} <i>({{pctUnknown}}% Unknown)</i></span>
+                        </td>
+                        <td>
+                           {{!helper.get_fa_icon_state(cls='host', state='ack')}} <span class="num">{{hAck}}</span>
+                        </td>
+                        <td>
+                           {{!helper.get_fa_icon_state(cls='host', state='downtime')}} <span class="num">{{hDowntime}}</span>
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
             </div>
             <div class="col-sm-1"></div>
          </div>
       </div>
    </div>
+   <div class="panel panel-default">
+      <div class="panel-heading">
+         <h3 class="panel-title">{{groupalias}} ({{groupname}})</h3>
+      </div>
+      
+      <div class="panel-body">
    
    <div class="panel panel-default">
       <div class="panel-body">

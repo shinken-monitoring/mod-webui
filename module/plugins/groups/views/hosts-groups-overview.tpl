@@ -71,7 +71,9 @@
     %hUp=0
     %hDown=0
     %hUnreachable=0
-    %hPending=0 # Pending / unknown
+    %hPending=0 # Pending / Unknown
+    %hAck=0
+    %hDowntime=0
     %for h in hosts:
       %nHosts=nHosts+1
       %if h.state == 'UP':
@@ -83,6 +85,12 @@
       %else:
         %hPending=hPending+1
       %end
+      %if h.problem_has_been_acknowledged:
+         %hAck=hAck+1
+      %end
+      %if h.in_scheduled_downtime:
+         %hDowntime=hDowntime+1
+      %end
     %end
     %nGroups=len(hostgroups)
     <li class="clearfix {{even}}">
@@ -90,22 +98,22 @@
         <h3>All hosts</h3>
         <span class="meta">
          <span class="{{'font-up' if hUp > 0 else 'font-greyed'}}">
-            <span class="fa-stack"><i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-check fa-stack-1x fa-inverse"></i></span> 
+            {{!helper.get_fa_icon_state(cls='host', state='up')}}
             <span class="num">{{hUp}}</span>
          </span> 
           
          <span class="{{'font-unreachable' if hUnreachable > 0 else 'font-greyed'}}">
-            <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-exclamation fa-stack-1x fa-inverse"></i></span> 
+            {{!helper.get_fa_icon_state(cls='host', state='unreachable')}} 
             <span class="num">{{hUnreachable}}</span>
          </span> 
 
          <span class="{{'font-down' if hDown > 0 else 'font-greyed'}}">
-            <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-arrow-down fa-stack-1x fa-inverse"></i></span> 
+            {{!helper.get_fa_icon_state(cls='host', state='down')}} 
             <span class="num">{{hDown}}</span>
          </span> 
 
          <span class="{{'font-pending' if hPending > 0 else 'font-greyed'}}">
-            <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-question fa-stack-1x fa-inverse"></i></span> 
+            {{!helper.get_fa_icon_state(cls='host', state='pending')}} 
             <span class="num">{{hPending}}</span>
          </span> 
         </span>
@@ -172,22 +180,22 @@
                </h3>
                <span class="meta">
                   <span class="{{'font-up' if hUp > 0 else 'font-greyed'}}">
-                     <span class="fa-stack"><i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-check fa-stack-1x fa-inverse"></i></span> 
+                     {{!helper.get_fa_icon_state(cls='host', state='up')}}
                      <span class="num">{{hUp}}</span>
                   </span> 
-                
+                   
                   <span class="{{'font-unreachable' if hUnreachable > 0 else 'font-greyed'}}">
-                     <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-exclamation fa-stack-1x fa-inverse"></i></span> 
+                     {{!helper.get_fa_icon_state(cls='host', state='unreachable')}} 
                      <span class="num">{{hUnreachable}}</span>
                   </span> 
 
                   <span class="{{'font-down' if hDown > 0 else 'font-greyed'}}">
-                     <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-arrow-down fa-stack-1x fa-inverse"></i></span> 
+                     {{!helper.get_fa_icon_state(cls='host', state='down')}} 
                      <span class="num">{{hDown}}</span>
                   </span> 
 
                   <span class="{{'font-pending' if hPending > 0 else 'font-greyed'}}">
-                     <span class="fa-stack"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-question fa-stack-1x fa-inverse"></i></span> 
+                     {{!helper.get_fa_icon_state(cls='host', state='pending')}} 
                      <span class="num">{{hPending}}</span>
                   </span> 
                </span>
