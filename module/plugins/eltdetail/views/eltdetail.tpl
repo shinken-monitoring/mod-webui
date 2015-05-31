@@ -46,10 +46,10 @@ Invalid element name
       %else:
          %sUNKNOWN=sUNKNOWN+1
       %end
-      %if s.is_problem and s.problem_has_been_acknowledged:
+      %if s.problem_has_been_acknowledged:
          %sACK=sACK+1
       %end
-      %if s.is_problem and s.in_scheduled_downtime:
+      %if s.in_scheduled_downtime:
          %sDOWNTIME=sDOWNTIME+1
       %end
    %end
