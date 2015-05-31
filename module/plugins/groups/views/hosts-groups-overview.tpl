@@ -51,9 +51,9 @@
          data-toggle="tooltip" data-placement="bottom" 
          style="line-height: 25px; width: {{pctPending}}%;">{{pctPending}}% Pending</div>
 
-      <div title="{{hPending}} hosts Pending/Unknown" class="progress-bar progress-bar-info quickinfo" 
+      <div title="{{hUnknown}} hosts Unknown" class="progress-bar progress-bar-info quickinfo" 
          data-toggle="tooltip" data-placement="bottom" 
-         style="line-height: 25px; width: {{pctPending}}%;">{{pctUnknown}}% Unknown</div>
+         style="line-height: 25px; width: {{pctUnknown}}%;">{{pctUnknown}}% Unknown</div>
    </div>
    <div class="pull-right col-sm-2">
       <span class="btn-group pull-right">
@@ -68,12 +68,7 @@
     %even='alt'
     %nGroups=0
     %nHosts=0
-    %hUp=0
-    %hDown=0
-    %hUnreachable=0
-    %hPending=0 # Pending / Unknown
-    %hAck=0
-    %hDowntime=0
+    %hUp=hDown=hUnreachable=hUnknown=hAck=hDowntime=0
     %for h in hosts:
       %nHosts=nHosts+1
       %if h.state == 'UP':
@@ -83,7 +78,7 @@
       %elif h.state == 'UNREACHABLE':
         %hUnreachable=hUnreachable+1
       %else:
-        %hPending=hPending+1
+        %hUnknown=hUnknown+1
       %end
       %if h.problem_has_been_acknowledged:
          %hAck=hAck+1
@@ -112,9 +107,9 @@
             <span class="num">{{hDown}}</span>
          </span> 
 
-         <span class="{{'font-pending' if hPending > 0 else 'font-greyed'}}">
-            {{!helper.get_fa_icon_state(cls='host', state='pending')}} 
-            <span class="num">{{hPending}}</span>
+         <span class="{{'font-unknown' if hUnknown > 0 else 'font-greyed'}}">
+            {{!helper.get_fa_icon_state(cls='host', state='unknown')}} 
+            <span class="num">{{hUnknown}}</span>
          </span> 
         </span>
       </section>
@@ -145,10 +140,7 @@
 
       %nHosts=0
       %hosts=only_related_to(group.get_hosts(),user)
-      %hUp=0
-      %hDown=0
-      %hUnreachable=0
-      %hPending=0
+      %hUp=hDown=hUnreachable=hUnknown=hAck=hDowntime=0
       %business_impact = 0
       %for h in hosts:
         %business_impact = max(business_impact, h.business_impact)
@@ -160,7 +152,7 @@
         %elif h.state == 'UNREACHABLE':
           %hUnreachable=hUnreachable+1
         %else:
-          %hPending=hPending+1
+          %hUnknown=hUnknown+1
         %end
       %end
       
@@ -194,9 +186,9 @@
                      <span class="num">{{hDown}}</span>
                   </span> 
 
-                  <span class="{{'font-pending' if hPending > 0 else 'font-greyed'}}">
-                     {{!helper.get_fa_icon_state(cls='host', state='pending')}} 
-                     <span class="num">{{hPending}}</span>
+                  <span class="{{'font-unknown' if hUnknown > 0 else 'font-greyed'}}">
+                     {{!helper.get_fa_icon_state(cls='host', state='unknown')}} 
+                     <span class="num">{{hUnknown}}</span>
                   </span> 
                </span>
             </section>

@@ -80,7 +80,6 @@ def show_hostgroup(name):
         
         items = []
         items.extend(all_hosts)
-        # items = all_hosts
 
     else:
         my_group = app.get_hostgroup(name)
@@ -96,9 +95,9 @@ def show_hostgroup(name):
     end = int(app.request.GET.get('end', elts_per_page))
         
     # Now sort hosts list ..
-    items.sort(hst_srv_sort)
+    # items.sort(hst_srv_sort)
         
-    # If we overflow, came back as normal
+    # If we overflow, back to first page ...
     total = len(items)
     if start > total:
         start = 0
@@ -107,7 +106,10 @@ def show_hostgroup(name):
     navi = app.helper.get_navi(total, start, step=elts_per_page)
     hosts = items[start:end]
         
-    return {'app': app, 'user': user, 'params': params, 'navi': navi, 'group': my_group, 'hosts': hosts, 'all_hosts': all_hosts, 'progress_bar': False}
+    return {
+        'app': app, 'user': user, 'params': params, 'navi': navi, 
+        'group': my_group, 'hosts': hosts, 'all_hosts': all_hosts, 'progress_bar': False
+        }
 
 def show_hostgroups():
     user = checkauth()    
@@ -121,12 +123,13 @@ def show_hostgroups():
 def show_servicegroup(name):
     user = checkauth()    
 
+    all_services = app.get_services(user)
+    
     if name == 'all':
         my_group = 'all'
         
-        services = []
-        services.extend(app.get_services(user))
-        items = services
+        items = []
+        items.extend(all_services)
 
     else:
         my_group = app.get_servicegroup(name)
@@ -134,7 +137,7 @@ def show_servicegroup(name):
         if not my_group:
             return "Unknown group %s" % name
             
-        items = my_group.get_services()
+        items = only_related_to(my_group.get_services(),user)
 
     elts_per_page = params['elts_per_page']
     # We want to limit the number of elements
@@ -142,18 +145,21 @@ def show_servicegroup(name):
     end = int(app.request.GET.get('end', elts_per_page))
         
     # Now sort services list ..
-    items.sort(hst_srv_sort)
+    # items.sort(hst_srv_sort)
         
-    # If we overflow, came back as normal
+    # If we overflow, back to first page ...
     total = len(items)
     if start > total:
         start = 0
         end = elts_per_page
 
     navi = app.helper.get_navi(total, start, step=elts_per_page)
-    items = items[start:end]
+    services = items[start:end]
         
-    return {'app': app, 'user': user, 'params': params, 'navi': navi, 'group': my_group, 'services': items, 'length': total}
+    return {
+        'app': app, 'user': user, 'params': params, 'navi': navi, 
+        'group': my_group, 'services': services, 'all_services': all_services, 'progress_bar': False
+        }
 
 def show_servicegroups():
     user = checkauth()    

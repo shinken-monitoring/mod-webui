@@ -220,7 +220,6 @@ Invalid group name
                <tr>
                   <th>Host</th>
                   <th>Service</th>
-                  <th>State</th>
                   <th>Last Check</th>
                   <th>Duration</th>
                   <th>Attempt</th>
@@ -234,24 +233,21 @@ Invalid group name
                      <td style="white-space: normal">
                         <span>{{h.get_check_command()}}</span>
                      </td>
-                     <td >{{h.state}}</td>
                      <td>{{helper.print_duration(h.last_chk)}}</td>
                      <td>{{h.get_duration()}}</td>
                      <td>{{h.attempt}}/{{h.max_check_attempts}}</td>
-                     <td><span class="{{h.state.lower()}}">{{h.state}}</span></td>  
+                     <td>{{!helper.get_fa_icon_state(h)}}</td>  
                   </tr>
                   %for s in h.services:
                      <tr class="service service_{{h.get_name()}} font-{{s.state.lower()}}" style="display: none;">
                         <td></td>
-                        <td></td>
-
                         <td style="white-space: normal" class="font-{{s.state.lower()}}">
                            <span><a href="/service/{{h.get_name()}}/{{s.get_name()}}">{{s.get_name()}}</a></span>
                         </td>
                         <td>{{helper.print_duration(s.last_chk)}}</td>
                         <td>{{s.get_duration()}}</td>
                         <td>{{s.attempt}}/{{s.max_check_attempts}}</td>
-                        <td><span class="font-{{s.state.lower()}}">{{s.state}}</span></td>   
+                        <td>{{!helper.get_fa_icon_state(s)}}</td>   
                      </tr>
                   %end
                %end
