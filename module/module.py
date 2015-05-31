@@ -126,7 +126,7 @@ class Webui_broker(BaseModule, Daemon):
         self.http_port = int(getattr(modconf, 'http_port', '7766'))
         self.host = getattr(modconf, 'host', '0.0.0.0')
         self.show_skonf = int(getattr(modconf, 'show_skonf', '1'))
-        self.auth_secret = getattr(modconf, 'auth_secret').encode('utf8', 'replace')
+        self.auth_secret = getattr(modconf, 'auth_secret', 'secret').encode('utf8', 'replace')
         self.play_sound = to_bool(getattr(modconf, 'play_sound', '0'))
         self.http_backend = getattr(modconf, 'http_backend', 'auto')
         self.login_text = getattr(modconf, 'login_text', None)
@@ -281,7 +281,7 @@ class Webui_broker(BaseModule, Daemon):
         self.set_exit_handler()
         print "Go run"
 
-        # We ill protect the operations on
+        # We will protect the operations on
         # the non read+write with a lock and
         # 2 int
         self.global_lock = threading.RLock()
@@ -339,14 +339,8 @@ class Webui_broker(BaseModule, Daemon):
     # and update data. Will lock the whole thing
     # while updating
     def manage_brok_thread(self):
-        # DBG: times={}
-        # DBG: time_waiting_no_readers = 0
-        # DBG: time_preparing = 0
+        logger.debug("[%s] manage_brok_thread start ...", self.name)
 
-        print "Data thread started"
-
-
-        
         while True:
             # DBG: t0 = time.time()
             # DBG: print "WEBUI :: GET START"
@@ -357,17 +351,10 @@ class Webui_broker(BaseModule, Daemon):
             # try to relaunch dead module (like mongo one when mongo is not available at startup for example)
             self.check_and_del_zombie_modules()
 
+            logger.debug("[%s] manage_brok_thread got %d broks", self.name, len(l))
             for b in l:
-                # DBG: t0 = time.time()
                 b.prepare()
-                # DBG: time_preparing += time.time() - t0
-                # DBG: if not b.type in times:
-                # DBG:     times[b.type] = 0
-                # For updating, we cannot do it while
-                # answer queries, so wait for no readers
-                # DBG: t0 = time.time()
                 self.wait_for_no_readers()
-                # DBG: time_waiting_no_readers += time.time() - t0
                 try:
                     # print "Got data lock, manage brok"
                     # DBG: t0 = time.time()
@@ -384,6 +371,7 @@ class Webui_broker(BaseModule, Daemon):
                             logger.debug("Back trace of this kill: %s" % (traceback.format_exc()))
                             self.modules_manager.set_to_restart(mod)
                 except Exception, exp:
+                    logger.error("[%s] manage_brok_thread exception", self.name)
                     msg = Message(id=0, type='ICrash', data={'name': self.get_name(), 'exception': exp, 'trace': traceback.format_exc()})
                     self.from_q.put(msg)
                     # wait 2 sec so we know that the broker got our message, and die
@@ -391,6 +379,7 @@ class Webui_broker(BaseModule, Daemon):
                     # No need to raise here, we are in a thread, exit!
                     os._exit(2)
                 finally:
+                    # logger.error("[%s] manage_brok_thread finally", self.name)
                     # We can remove us as a writer from now. It's NOT an atomic operation
                     # so we REALLY not need a lock here (yes, I try without and I got
                     # a not so accurate value there....)
@@ -398,14 +387,7 @@ class Webui_broker(BaseModule, Daemon):
                     self.nb_writers -= 1
                     self.global_lock.release()
 
-            # DBG: t2 = time.time()
-            # DBG: print "WEBUI :: MANAGE ALL IN ", t2 - t1
-            # DBG: print '"WEBUI: in Waiting no readers', time_waiting_no_readers
-            # DBG: print 'WEBUI in preparing broks', time_preparing
-            # DBG: print "WEBUI And in times:"
-            # DBG: for (k, v) in times.iteritems():
-            # DBG:     print "WEBUI\t %s: %s" % (k, v)
-            # DBG: print "WEBUI\nWEBUI\n"
+        logger.debug("[%s] manage_brok_thread end ...", self.name)
 
 
     def load_plugin(self, fdir, plugin_dir):
