@@ -42,7 +42,7 @@
   color: #49afcd !important;
 }
 
-.font-greyed {
+.font-greyed, .font-ack, .font-downtime {
   color: #ccc !important;
 }
 
