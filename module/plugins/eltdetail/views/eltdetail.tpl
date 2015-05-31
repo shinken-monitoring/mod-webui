@@ -32,6 +32,7 @@ Invalid element name
    %sPENDING=0
    %sUNKNOWN=0
    %sACK=0
+   %sDOWNTIME=0
 
    %for s in elt.services:
       %if s.state == 'OK':
@@ -47,6 +48,9 @@ Invalid element name
       %end
       %if s.is_problem and s.problem_has_been_acknowledged:
          %sACK=sACK+1
+      %end
+      %if s.is_problem and s.in_scheduled_downtime:
+         %sDOWNTIME=sDOWNTIME+1
       %end
    %end
 %else:
@@ -264,7 +268,6 @@ Invalid element name
             </div>
         
             <div id="collapseOverview" class="panel-collapse collapse in">
-               <div class="row">
                %if elt_type=='host':
                <dl class="col-sm-6 dl-horizontal">
                   <dt>Alias:</dt>
@@ -355,20 +358,39 @@ Invalid element name
                   %end
                </dl>
                %end
-               </div>
 
                %if elt_type=='host':
-               <div class="row" style="padding: 3px; border-top: 1px dotted #ccc;" >
-                  <ul class="list-inline list-unstyled">
-                     <li class="col-lg-1"></li>
-                     <li class="col-lg-2"> <span class="fa-stack font-ok"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-check fa-stack-1x fa-inverse"></i></span> <span class="num">{{sOK}}</span> Ok</li>
-                     <li class="col-lg-2"> <span class="fa-stack font-warning"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-exclamation fa-stack-1x fa-inverse"></i></span> <span class="num">{{sWARNING}}</span> Warning</li>
-                     <li class="col-lg-2"> <span class="fa-stack font-critical"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-arrow-down fa-stack-1x fa-inverse"></i></span> <span class="num">{{sCRITICAL}}</span> Critical</li>
-                     <li class="col-lg-2"> <span class="fa-stack font-pending"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-arrow-right fa-stack-1x fa-inverse"></i></span> <span class="num">{{sPENDING}}</span> Pending</li>
-                     <li class="col-lg-2"> <span class="fa-stack font-unknown"> <i class="fa fa-circle fa-stack-2x"></i> <i class="fa fa-question fa-stack-1x fa-inverse"></i></span> <span class="num">{{sUNKNOWN}}</span> Unknown</li>
-                     <li class="col-lg-1"></li>
-                  </ul>
-               </div>
+                  <table class="table table-invisible">
+                     <tbody>
+                        <tr>
+                           <td>
+                              <b>{{len(elt.services)}} services:</b> 
+                           </td>
+          
+                           <td>
+                              {{!helper.get_fa_icon_state(cls='service', state='OK')}} {{sOK}} Ok
+                           </td>
+                           <td>
+                              {{!helper.get_fa_icon_state(cls='service', state='warning')}} {{sWARNING}} Warning
+                           </td>
+                           <td>
+                              {{!helper.get_fa_icon_state(cls='service', state='critical')}} {{sCRITICAL}} Critical
+                           </td>
+                           <td>
+                              {{!helper.get_fa_icon_state(cls='service', state='pending')}} {{sPENDING}} Pending
+                           </td>
+                           <td>
+                              {{!helper.get_fa_icon_state(cls='service', state='unknown')}} {{sUNKNOWN}} Unknown
+                           </td>
+                           <td>
+                              {{!helper.get_fa_icon_state(cls='service', state='ack')}} {{sACK}} Ack
+                           </td>
+                           <td>
+                              {{!helper.get_fa_icon_state(cls='service', state='downtime')}} {{sDOWNTIME}} Downtime
+                           </td>
+                        </tr>
+                     </tbody>
+                  </table>
                %end
             </div>
          </div>
