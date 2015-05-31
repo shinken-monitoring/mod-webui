@@ -279,7 +279,6 @@ class Webui_broker(BaseModule, Daemon):
     def do_main(self):
         # I register my exit function
         self.set_exit_handler()
-        print "Go run"
 
         # We will protect the operations on
         # the non read+write with a lock and
@@ -324,7 +323,7 @@ class Webui_broker(BaseModule, Daemon):
         # just call for a select with q._reader, the underlying file
         # handle of the Queue()? That's just because under Windows, select
         # only manage winsock (so network) file descriptor! What a shame!
-        print "Starting WebUI application"
+        logger.info("[%s] starting Web UI server ...", self.name)
         srv = run(host=self.host, port=self.port, server=self.http_backend, **self.serveropts)
 
         # ^ IMPORTANT ^
