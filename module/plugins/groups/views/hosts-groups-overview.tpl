@@ -129,9 +129,10 @@
 
     %even='alt'
     %for group in hostgroups:
-      %if not hasattr(group, 'level') or (hasattr(group, 'level') and group.level > 2):
-      %continue
-      %end
+      %# To be improved ... hosts groups filtering by level
+      %#if not hasattr(group, 'level') or (hasattr(group, 'level') and group.level > 0):
+      %#continue
+      %#end
       %if even =='':
         %even='alt'
       %else:
@@ -164,11 +165,6 @@
             <section class="left">
                <h3>{{group.alias if group.alias != '' else group.get_name()}}
                   {{!helper.get_business_impact_text(business_impact)}}
-                  %if group.has('hostgroup_members'):
-                  %for g in sorted(group.get_hostgroup_members()):
-                     <span>{{g.get_name()}}</span>
-                  %end
-                  %end
                </h3>
                <span class="meta">
                   <span class="{{'font-up' if hUp > 0 else 'font-greyed'}}">
@@ -194,10 +190,13 @@
             </section>
           
             <section class="right">
+               <div class="pull-left">
+               <span class="groupLevel">{{'Level %d' % group.level if group.has('level') else 'Root'}}</span>
+               </div>
                <div class="pull-right">
                <span class="sumHosts">{{'%d host' % nHosts if nHosts == 1 else '%d hosts' % nHosts}}</span>
                <span class="sumGroups">{{'%d group' % nGroups if nGroups == 1 else '' if nGroups == 0 else '%d groups' % nGroups}}</span>
-            </div>
+               </div>
             <span class="darkview">
                <a href="/hosts-group/{{group.get_name()}}" class="firstbtn"><i class="fa fa-angle-double-down"></i> Details</a>
                <br/>

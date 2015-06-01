@@ -194,7 +194,7 @@ class Webui_broker(BaseModule, Daemon):
     def check_photo_dir(self):
         print "Checking photo path", self.photo_dir
         if not os.path.exists(self.photo_dir):
-            print "Truing to create photo dir", self.photo_dir
+            print "Trying to create photo dir", self.photo_dir
             try:
                 os.mkdir(self.photo_dir)
             except Exception, exp:
@@ -390,7 +390,7 @@ class Webui_broker(BaseModule, Daemon):
 
 
     def load_plugin(self, fdir, plugin_dir):
-        logger.info("[%s] loading plugin %s ..." % (self.name, fdir))
+        logger.debug("[%s] loading plugin %s ..." % (self.name, fdir))
         try:
             # Put the full qualified path of the module we want to load
             # for example we will give  webui/plugins/eltdetail/
@@ -400,7 +400,7 @@ class Webui_broker(BaseModule, Daemon):
             m_dir = os.path.abspath(os.path.dirname(m.__file__))
             sys.path.append(m_dir)
 
-            logger.info("[%s] loaded plugin %s" % (self.name, fdir))
+            logger.debug("[%s] loaded plugin %s" % (self.name, fdir))
             pages = m.pages
             for (f, entry) in pages.items():
                 routes = entry.get('routes', None)
@@ -470,8 +470,7 @@ class Webui_broker(BaseModule, Daemon):
                        if os.path.isdir(os.path.join(plugin_dir, fname))]
 
         sys.path.append(plugin_dir)
-        # We try to import them, but we keep only the one of
-        # our type
+        # We try to import plugins
         for fdir in plugin_dirs:
             self.load_plugin(fdir, plugin_dir)
     
@@ -575,6 +574,7 @@ class Webui_broker(BaseModule, Daemon):
         def give_favicon():
             return static_file('favicon.ico', root=os.path.join(htdocs_dir, 'images'))
 
+            
     def check_auth(self, user, password):
         logger.info("[%s] Checking authentication for user: %s" % (self.name, user))
         c = self.datamgr.get_contact(user)
@@ -604,6 +604,7 @@ class Webui_broker(BaseModule, Daemon):
         # Ok if we got a real contact, and if a module auth it
         return (is_ok and c is not None)
 
+        
     def get_user_auth(self, allow_anonymous=False):
         # First we look for the user sid
         # so we bail out if it's a false one
@@ -622,6 +623,7 @@ class Webui_broker(BaseModule, Daemon):
         c = self.datamgr.get_contact(user_name)
         return c
 
+        
     def get_gravatar(self, email, size=64, default='404'):
         """
         Given an email, returns a gravatar url for that email.
@@ -787,20 +789,6 @@ class Webui_broker(BaseModule, Daemon):
             pass#print "Exception?", exp
 
 
-    def get_webui_port(self):
-        port = self.port
-        return port
-
-
-    def get_skonf_port(self):
-        port = self.http_port
-        return port
-
-
-    def get_skonf_active_state(self):
-        state = self.show_skonf
-        return state
-
     def can_see_this_elt(self, elt):
         user = self.get_user_auth()
         if user.is_admin:
@@ -896,11 +884,30 @@ class Webui_broker(BaseModule, Daemon):
         name = name.decode('utf8', 'ignore')
         return self.datamgr.rg.contactgroups.find_by_name(name)
 
+    def set_hostgroups_level(self, user=None):
+        logger.info("[%s] set_hostgroups_level", self.name)
+        
+        # All known hostgroups are level 0 groups ...
+        for group in self.get_hostgroups(user=user):
+            self.set_hostgroup_level(group, 0, user)
+        
+    def set_hostgroup_level(self, group, level, user=None):
+        logger.info("[%s] set_hostgroup_level, group: %s, level: %d", self.name, group.hostgroup_name, level)
+        
+        setattr(group, 'level', level)
+                
+        # Search hostgroups referenced in another group
+        if group.has('hostgroup_members'):
+            for g in sorted(group.get_hostgroup_members()):
+                # logger.info("[%s] set_hostgroups_level, group: %s, level: %d", self.name, g, group.level + 1)
+                child_group = self.get_hostgroup(g)
+                self.set_hostgroup_level(child_group, level + 1, user)
+        
     def get_hostgroups(self, user=None):
         items=self.datamgr.rg.hostgroups
+        
         r = set()
         for g in items:
-            logger.debug("[%s] get_hostgroups, group: %s", self.name, g.hostgroup_name)
             filtered = False
             for filter in self.hosts_filter:
                 if g.hostgroup_name.startswith(filter):

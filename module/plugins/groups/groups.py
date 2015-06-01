@@ -73,6 +73,9 @@ def reload_cfg():
 def show_hostgroup(name):
     user = checkauth()
 
+    # Set hostgroups level ...
+    app.set_hostgroups_level(user)
+    
     all_hosts = app.get_hosts(user)
     
     if name == 'all':
@@ -114,6 +117,9 @@ def show_hostgroup(name):
 def show_hostgroups():
     user = checkauth()    
 
+    # Set hostgroups level ...
+    app.set_hostgroups_level(user)
+    
     return {
         'app': app, 'user': user, 'params': params, 
         'hostgroups': sorted(app.get_hostgroups(), key=lambda hostgroup: hostgroup.hostgroup_name)
