@@ -412,7 +412,7 @@ Invalid element name
          </div>
          <div class="col-lg-11 font-white">
             %disabled_ack = '' if elt.is_problem and not elt.problem_has_been_acknowledged else 'disabled'
-            %disabled_fix = '' if elt.is_problem and elt.event_handler else 'disabled'
+            %disabled_fix = '' if elt.is_problem and elt.event_handler_enabled and elt.event_handler else 'disabled'
             <p class="alert alert-critical">This element has an important impact on your business, you may <button name="bt-acknowledge" class="{{disabled_ack}} {{global_disabled}} btn btn-primary btn-xs" data-toggle="tooltip" data-placement="bottom" title="Acknowledge this {{elt_type}} problem">acknowledge it</button> or <button name="bt-event-handler" class="{{disabled_fix}} {{global_disabled}} btn btn-primary btn-xs" data-toggle="tooltip" data-placement="bottom" title="Launch the event handler for this {{elt_type}}">try to fix it</button>.</p>
          </div>
       </div>
@@ -784,9 +784,17 @@ Invalid element name
                         <td>{{! app.helper.get_on_off(elt.process_perf_data, 'Is perfdata process enabled?')}}</td>
                      </tr>
                      <tr>
-                        <td><strong>Event handler:</strong></td>
-                        <td>{{! app.helper.get_on_off(elt.event_handler, 'Is an event handler defined?')}}</td>
+                        <td><strong>Event handler enabled:</strong></td>
+                        <td>{{! app.helper.get_on_off(elt.event_handler_enabled, 'Is event handler enabled?')}}</td>
                      </tr>
+                     %if (elt.event_handler_enabled):
+                     <tr>
+                        <td><strong>Event handler:</strong></td>
+                        <td>
+                           {{ elt.event_handler.get_name() }}
+                        </td>
+                     </tr>
+                     %end
                   </tbody>
                </table>
           
@@ -845,7 +853,7 @@ Invalid element name
                      <tr>
                         <td></td>
                         <td>
-                           %disabled_s = '' if elt.is_problem and elt.event_handler else 'disabled'
+                           %disabled_s = '' if elt.is_problem and elt.event_handler_enabled and elt.event_handler else 'disabled'
                            <button name="bt-event-handler" class="col-lg-12 {{disabled_s}} {{global_disabled}} btn btn-primary btn-sm" data-toggle="tooltip" data-placement="bottom" title="Launch the event handler for this {{elt_type}}"><i class="fa fa-magic"></i> Try to fix problem</button>
                            <script>
                               $('button[name="bt-event-handler"]').click(function () {
@@ -1180,8 +1188,7 @@ Invalid element name
                         <h4>My services:</h4>
                         <div class="host-services">
                            <div class='pull-left'>
-                              %_html_id = helper.get_html_id(elt)
-                              {{!helper.print_aggregation_tree(helper.get_host_service_aggregation_tree(elt, app), _html_id)}}
+                              {{!helper.print_aggregation_tree(helper.get_host_service_aggregation_tree(elt, app), helper.get_html_id(elt))}}
                            </div>
                         </div>
                         %elif len(elt.parent_dependencies) == 0:
@@ -1235,7 +1242,7 @@ Invalid element name
             %if params['tab_comments']=='yes':
             <div class="tab-pane fade" id="comments">
                <div class='row-fluid well col-lg-12'>
-                  <div id="log_container" class="row-fluid">
+                  <div class="row-fluid">
                      %if len(elt.comments) > 0:
                      <table class="table table-condensed table-hover">
                         <thead>
@@ -1296,7 +1303,7 @@ Invalid element name
             %if params['tab_downtimes']=='yes':
             <div class="tab-pane fade" id="downtimes">
                <div class='row-fluid well col-lg-12'>
-                  <div id="log_container" class="row-fluid">
+                  <div class="row-fluid">
                      %if len(elt.downtimes) > 0:
                      <table class="table table-condensed table-bordered">
                        <thead>
