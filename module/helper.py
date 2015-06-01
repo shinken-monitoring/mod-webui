@@ -554,7 +554,7 @@ class Helper(object):
         txts = {0: 'None', 1: 'Low', 2: 'Normal',
                 3: 'High', 4: 'Very important', 5: 'Top for business'}
         nb_stars = max(0, business_impact - 2)
-        stars = '<i class="fa fa-star text-primary"></i>&nbsp;' * nb_stars
+        stars = '<i class="fa fa-star text-primary"></i>' * nb_stars
 
         if text:
             res = "%s %s" % (txts.get(business_impact, 'Unknown'), stars)
@@ -635,7 +635,12 @@ class Helper(object):
         else:
             return '/static/images/icons/state_%s.png' % ico
 
-    def get_fa_icon_state(self, obj):
+    def get_fa_icon_state(self, obj=None, cls='host', state='UP'):
+        state = obj.state.upper() if obj is not None else state.upper()
+        flapping = (obj and obj.is_flapping) or state=='FLAPPING'
+        ack = (obj and obj.problem_has_been_acknowledged) or state=='ACK'
+        downtime = (obj and obj.in_scheduled_downtime) or state=='DOWNTIME'
+        
         # Icons depending upon element and real state ...
         icons = { 'host': 
                     {   'UP': 'server',
@@ -657,23 +662,23 @@ class Helper(object):
                         'UNKNOWN': 'question' }
                 }
 
-        cls = obj.__class__.my_type
+        cls = obj.__class__.my_type if obj is not None else cls
 
-        back = "<i class='fa fa-%s fa-stack-2x font-%s'></i>" % (icons[cls]['FLAPPING'] if obj.is_flapping else 'circle', obj.state.lower())
-        title = "%s is %s" % (cls, obj.state)
-        if obj.is_flapping:
-            icon_color = 'font-' + obj.state.lower()
+        back = "<i class='fa fa-%s fa-stack-2x font-%s'></i>" % (icons[cls]['FLAPPING'] if flapping else 'circle', state.lower())
+        title = "%s is %s" % (cls, state)
+        if flapping:
+            icon_color = 'font-' + state.lower()
             title += " and is flapping"
         else:
             icon_color = 'fa-inverse'
-        if obj.in_scheduled_downtime:
+        if downtime:
             icon = icons[cls]['DOWNTIME']
             title += " and is in scheduled downtime"
-        elif obj.problem_has_been_acknowledged:
+        elif ack:
             icon = icons[cls]['ACK']
             title += " and is acknowledged"
         else:
-            icon = icons[cls].get(obj.state, 'UNKNOWN')
+            icon = icons[cls].get(state, 'UNKNOWN')
         front = "<i class='fa fa-%s fa-stack-1x %s'></i>" % (icon, icon_color)
         icon_text = '''
           <span class="fa-stack" title="%s">
@@ -862,7 +867,7 @@ class Helper(object):
             s += """<span class="alert-small alert-%s"> %s </span>""" % (state, path)
             s += """<a id="togglelink-aggregation-%s" href="javascript:toggleAggregationElt('%s')"><img id="aggregation-toggle-img-%s" src="/static/images/%s" alt="toggle"> </a> \n""" % (_id, _id, _id, img)
 
-        s += """<ul id="aggregation-node-%s" style="display: %s; ">""" % (_id, display)
+        s += """<ul id="aggregation-node-%s" style="display: %s">""" % (_id, display)
         # If we got no parents, no need to print the expand icon
         if len(sons) > 0:
             for son in sons:
@@ -877,14 +882,13 @@ class Helper(object):
         # Sort our services before print them
         services.sort(hst_srv_sort)
         for svc in services:
-            s += '<li class="%s">' % svc.state.lower()
-            s += """<span class='alert-small alert-%s'>%s</span>""" % (svc.state.lower(), svc.state)
-            if svc.problem_has_been_acknowledged :
-                s+="""<i class="fa fa-check"></i>"""
-            s += """ for <span style="">%s since %s</span>""" % (self.get_link(svc, short=True), self.print_duration(svc.last_state_change, just_duration=True, x_elts=2))
-            for i in range(0, svc.business_impact-2):
-                s += '<img alt="icon state" src="/static/images/star.png">'
-            s += '</li>'
+            s += "<li>"
+            s += helper.get_fa_icon_state(svc)
+            s += self.get_link(svc, short=True)
+            s += "(" + self.get_business_impact_text(svc.business_impact) + ")"
+            s += """ is <span class="font-%s"><strong>%s</strong></span>""" % (svc.state.lower(), svc.state)
+            s += " since %s" % self.print_duration(svc.last_state_change, just_duration=True, x_elts=2)
+            s += "</li>"
         s += "</ul></li>"
 
                 
