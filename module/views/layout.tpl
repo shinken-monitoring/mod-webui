@@ -30,6 +30,8 @@
 %setdefault('user', None)
 %setdefault('app', None)
 
+%setdefault('navi', None)
+
 %from shinken.bin import VERSION
 %if app is not None:
 %helper = app.helper
@@ -142,6 +144,12 @@
         <section class="content-header">
           <h1>{{!title or 'Untitled ...'}}</h1>
 
+          %if navi:
+          <div class="text-center">
+            %include("pagination_element", navi=navi, app=app, page=page, div_style="margin-bottom:0;margin-top:-40px;")
+          </div>
+          %end
+
           <ol class="breadcrumb">
             <li><a href="/">Home</a></li>
             %if breadcrumb == '':
@@ -165,6 +173,13 @@
         <section class="content">
           %include
         </section>
+
+        %if navi:
+        <hr>
+        <div class="text-center">
+          %include("pagination_element", navi=navi, app=app, page=page)
+        </div>
+        %end
       </aside>
       %if not print_menu:
         <script type="text/javascript">

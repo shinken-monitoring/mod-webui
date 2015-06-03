@@ -1,7 +1,7 @@
 %helper = app.helper
 %datamgr = app.datamgr
 
-%rebase("layout", title='All problems', js=['problems/js/problems.js', 'problems/js/filters.js', 'problems/js/bookmarks.js'], css=['problems/css/problems.css', 'problems/css/filters.css'], refresh=True, user=user)
+%rebase("layout", title='All problems', js=['problems/js/problems.js', 'problems/js/filters.js', 'problems/js/bookmarks.js'], css=['problems/css/problems.css', 'problems/css/filters.css'], refresh=True, user=user, navi=navi, app=app, page=page)
 
 %# Look for actions if we must show them or not
 %actions_allowed = True
@@ -97,14 +97,10 @@
 <!-- Buttons and page navigation -->
 <div class="row">
    <div class='col-lg-5 col-md-4 col-sm-2 pull-left'>
-      <a id='show_toolbar_btn' href="javascript:show_toolbar()" class="btn btn-default"><i class="fa fa-plus"></i> Show toolbar</a>      
-      <a id="hide_toolbar_btn" href="javascript:hide_toolbar()" class="btn btn-default" style="display:none;"><i class="fa fa-minus"></i> Hide toolbar</a>
-      <a id='select_all_btn' href="javascript:select_all_problems()" class="btn btn-default"><i class="fa fa-check"></i> Select all</a>
-      <a id='unselect_all_btn' href="javascript:unselect_all_problems()" class="btn btn-default" style="display:none;"><i class="fa fa-minus"></i> Unselect all</a>
-   </div>
-
-   <div class='col-lg-7 col-md-8 col-sm-10 pull-right'>
-     %include("pagination_element", navi=navi, app=app, page=page, div_class="pull-right")
+      <a id='show_toolbar_btn' href="javascript:show_toolbar()" class="btn btn-default btn-sm"><i class="fa fa-plus"></i> Show toolbar</a>      
+      <a id="hide_toolbar_btn" href="javascript:hide_toolbar()" class="btn btn-default btn-sm" style="display:none;"><i class="fa fa-minus"></i> Hide toolbar</a>
+      <a id='select_all_btn' href="javascript:select_all_problems()" class="btn btn-default btn-sm"><i class="fa fa-check"></i> Select all</a>
+      <a id='unselect_all_btn' href="javascript:unselect_all_problems()" class="btn btn-default btn-sm" style="display:none;"><i class="fa fa-minus"></i> Unselect all</a>
    </div>
 </div>
 
@@ -113,8 +109,6 @@
 %if app.get_nb_problems() > 0 and page == 'problems' and app.play_sound:
    <EMBED src="/static/sound/alert.wav" autostart=true loop=false volume=100 hidden=true>
 %end
-
-%include("_problems_synthesis.tpl", pbs=pbs)
 
 <!-- Problems filtering and display -->
 <div class="row">
@@ -139,6 +133,8 @@
 
    <!-- Right panel, with all problems -->
    <div id="problems" class="col-lg-12 col-md-12 col-sm-12">
+
+     %include("_problems_synthesis.tpl", pbs=pbs)
 
      %from itertools import groupby
      %pbs = sorted(pbs, key=lambda x: x.business_impact, reverse=True)
@@ -314,14 +310,6 @@
       %# Close problems div ...
    </div>
 
-</div>
-
-<hr>
-
-<div class="row">
-  <div class='col-lg-7 col-md-8 col-sm-10 pull-right'>
-    %include("pagination_element", navi=navi, app=app, page=page, div_class="")
-  </div>
 </div>
 
 <script>
