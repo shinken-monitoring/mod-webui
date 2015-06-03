@@ -5,9 +5,9 @@ Shinken main Web interface
 
 ###Installation
 
-####Branch BS3
+####BS3 branch
 
-If you want to test this branch (assuming you already have the webui installed):
+If you want to test this branch (assuming you already have the WebUI installed):
 
 ```
 $ git clone -b bs3 https://github.com/shinken-monitoring/mod-webui
@@ -16,7 +16,7 @@ $ sudo shinken install --local webui
 
 To update, just `git pull` the repository, and reinstall it with the same command.
 
-####Branch master
+####Master branch
 
 * Install the webui module from shinken.io
 ```
@@ -41,6 +41,14 @@ $ cat /etc/shinken/modules/webui.cfg
 modules             auth-cfg-password
 [...]
 ```
+
+* Configure WebUI parameters :
+```
+$ vi /etc/shinken/modules/webui.cfg
+```
+ This file is commented and self explanatory ...
+ 
+
 * Restart shinken and connect to the WebUI that will be available on the 7767 port.
 ```
 root@system# /etc/init.d/shinken restart
