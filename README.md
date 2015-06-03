@@ -5,6 +5,19 @@ Shinken main Web interface
 
 ###Installation
 
+####Branch BS3
+
+If you want to test this branch (assuming you already have the webui installed):
+
+```
+$ git clone -b bs3 https://github.com/shinken-monitoring/mod-webui
+$ sudo shinken install --local webui
+```
+
+To update, just `git pull` the repository, and reinstall it with the same command.
+
+####Branch master
+
 * Install the webui module from shinken.io
 ```
 $ shinken install webui
