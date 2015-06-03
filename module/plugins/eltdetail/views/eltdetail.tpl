@@ -592,7 +592,7 @@ Invalid element name
                         <td><strong>Notifications:</strong></td>
                         <td>{{! app.helper.get_on_off(elt.notifications_enabled, "Are notifications enabled for this element?")}}</td>
                      </tr>
-                     %if elt.notifications_enabled:
+                     %if elt.notifications_enabled and elt.notification_period:
                      <tr>
                         <td><strong>Notification period:</strong></td>
                         <td name="notification_period" class="popover-dismiss" data-html="true" data-toggle="popover" data-trigger="hover" title="Notification period" data-placement="bottom" data-content="...">
