@@ -144,8 +144,10 @@
      %pbs = sorted(pbs, key=lambda x: x.business_impact, reverse=True)
      %for business_impact, bi_pbs in groupby(pbs, key=lambda x: x.business_impact):
    <div class="panel panel-default">
+     <!--<div class="panel-heading">-->
+     <!--</div>-->
       <div class="panel-body">
-        <h3> Business impact: {{!helper.get_business_impact_text(business_impact, text=True)}} </h3>
+       <h3 class="text-center">Business impact: {{!helper.get_business_impact_text(business_impact, text=True)}}</strong></h3>
       <table class="table table-condensed">
         <thead><tr>
             <th width="16px"></th>
@@ -153,8 +155,7 @@
             <th width="200px">Host</th>
             <th width="200px">Service</th>
             <th width="90px">State</th>
-            <th width="110px">Since</th>
-            <th width="110px">Last check</th>
+            <th width="90px">Duration</th>
             <th>Output</th>
         </tr></thead>
 
@@ -188,8 +189,7 @@
               %end
             </td>
             <td align="center" class="font-{{pb.state.lower()}}"><strong>{{ pb.state }}</strong></td>
-            <td>{{!helper.print_duration(pb.last_state_change, just_duration=True, x_elts=2)}}</td>
-            <td>{{!helper.print_duration(pb.last_chk, just_duration=True, x_elts=2)}} ago</td>
+            <td align="center">{{!helper.print_duration(pb.last_state_change, just_duration=True, x_elts=2)}}</td>
             <td class="row">
               <div class="pull-right">
                 %# Graphs
@@ -222,8 +222,8 @@
                      %if pb.active_checks_enabled:
                      <td align="center">
                         <i class="fa fa-arrow-right" title="Active checks are enabled."></i>
-                        <i>Next check in {{!helper.print_duration(pb.next_chk, just_duration=True, x_elts=2)}}, attempt {{pb.attempt}}/{{pb.max_check_attempts}}</i>
-                     </td>
+                        <i>Last check <strong>{{!helper.print_duration(pb.last_chk, just_duration=True, x_elts=2)}} ago</strong>, next check in <strong>{{!helper.print_duration(pb.next_chk, just_duration=True, x_elts=2)}}</strong>, attempt <strong>{{pb.attempt}}/{{pb.max_check_attempts}}</strong></i>
+                      </td>
                      %end
                      %if actions_allowed:
                      <td align="right">
