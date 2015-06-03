@@ -145,7 +145,7 @@
      %for business_impact, bi_pbs in groupby(pbs, key=lambda x: x.business_impact):
    <div class="panel panel-default">
       <div class="panel-body">
-        <h3> Business impact: {{!helper.get_business_impact_text(business_impact)}} </h3>
+        <h3> Business impact: {{!helper.get_business_impact_text(business_impact, text=True)}} </h3>
       <table class="table table-condensed">
         <thead><tr>
             <th width="16px"></th>
