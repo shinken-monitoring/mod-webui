@@ -11,23 +11,6 @@
 
 <!-- Sidebar menu -->
 <div>
-   <script type="text/javascript">
-      $(document).ready(function(){
-         // @maethor: should be nice with smooth animation ?
-         $('.nav.sidebar-menu li a').click(function () {
-            window.setTimeout(function() { 
-               $('.left-side').toggleClass("collapse-left");
-               $(".right-side").toggleClass("strech");
-            }, 1000);
-         });
-
-         window.setTimeout(function() { 
-            $('.left-side').toggleClass("collapse-left");
-            $(".right-side").toggleClass("strech");
-         }, 3000);
-      });
-   </script>
-
    <ul class="nav sidebar-menu" id="sidebar-menu">
    %if app:
       %# Anyway, at least a Dashboard entry ...
@@ -68,3 +51,20 @@
    %end
    </ul>
 </div>
+<script type="text/javascript">
+   $(document).ready(function(){
+      // @maethor: should be nice with smooth animation ?
+      $('.nav.sidebar-menu li a').click(function () {
+         window.setTimeout(function() { 
+            $('.left-side').toggleClass("collapse-left");
+            $(".right-side").toggleClass("strech");
+         }, 1000);
+      });
+
+      window.setTimeout(function() { 
+         $('.left-side').toggleClass("collapse-left");
+         $(".right-side").toggleClass("strech");
+      }, 3000);
+   });
+</script>
+

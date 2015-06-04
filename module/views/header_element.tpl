@@ -31,6 +31,7 @@
          <span class="icon-bar"></span>
       </a>
 
+      <!-- Host search ... -->
       <div class="col-sm-2 col-md-2 pull-left">
          <form id="host-search" class="navbar-form navbar-left" role="search">
             <div class="input-group">
@@ -42,6 +43,7 @@
          </form>
       </div>
 
+      <!-- Clock ... -->
       <div class="navbar-left hidden-sm hidden-xs">
          <ul class="nav navbar-nav">
             <li class="pull-left"><a class="quickinfo" data-original-title='Currently' href="#">
@@ -59,79 +61,79 @@
          });
       </script>
 
-    <div class="navbar-right">
-      <ul class="nav navbar-nav">
+      <div class="navbar-right">
+         <ul class="nav navbar-nav">
 
-        <li class="pull-right dropdown user user-menu">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-              <i class="fa fa-user"></i>
-              <span><span class="username">{{username}}</span> <i class="caret"></i></span>
-          </a>
+           <li class="pull-right dropdown user user-menu">
+             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                 <i class="fa fa-user"></i>
+                 <span><span class="username">{{username}}</span> <i class="caret"></i></span>
+             </a>
 
-          <ul class="dropdown-menu">
-            <!-- User image / name -->
-            <li class="user-header bg-light-blue">
-              <p class="username">
-                  {{username}}
-              </p>
-              %if app.manage_acl and helper.can_action(user):
-               <p class="usercategory">
-                  <small>{{'Administrator' if user.is_admin else 'User'}}</small>
-               </p>
-              %end
-            </li>
-            <script>
-               %if app is not None and app.gravatar:
-               $('<img src="{{app.get_gravatar(user.email, 32)}}" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}" style="display:none">')
-                  .load(function() { $(this).show(); })
-                  .error(function() { 
-                     $(this).remove(); 
-                     $('<img src="/static/images/logo/default_user.png" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}" style="display:none">')
-                        .load(function() { $(this).show(); })
-                        .error(function() { $(this).remove(); })
-                        .appendTo('li.user-header');
-                  })
-                  .appendTo('li.user-header');
-               %else:
-               $('<img src="/static/images/logo/{{user.get_name()}}.png" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}" style="display:none">')
-                  .load(function() { $(this).show(); })
-                  .error(function() { 
-                     $(this).remove(); 
-                     $('<img src="/static/images/logo/default_user.png" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}" style="display:none">')
-                        .load(function() { $(this).show(); })
-                        .error(function() { $(this).remove(); })
-                        .appendTo('li.user-header');
-                  })
-                  .appendTo('li.user-header');
-               %end
-            </script>
-            
-            <!-- Menu Footer-->
-            <li class="user-footer">
-              <div class="pull-left">
-                <a href="https://shinken.readthedocs.org/en/latest/" target="_blank" class="btn btn-default btn-flat"><i class="fa fa-book"></i> </a>
-                <a href="/user/pref" data-toggle="modal" class="btn btn-default btn-flat"><span class="fa fa-gear"></span> </a>
-                <a href="#profile" data-toggle="modal" class="btn btn-default btn-flat disabled"><span class="fa fa-pencil"></span> </a>
-              </div>
-              <div class="pull-right">
-                  <a href="/user/logout" class="btn btn-default btn-flat" data-toggle="modal" data-target="/user/logout"><span class="fa fa-sign-out"></span> </a>
-              </div>
-            </li>
-          </ul>
-        </li>
+             <ul class="dropdown-menu">
+               <!-- User image / name -->
+               <li class="user-header bg-light-blue">
+                 <p class="username">
+                     {{username}}
+                 </p>
+                 %if app.manage_acl and helper.can_action(user):
+                  <p class="usercategory">
+                     <small>{{'Administrator' if user.is_admin else 'User'}}</small>
+                  </p>
+                 %end
+               </li>
+               <script>
+                  %if app is not None and app.gravatar:
+                  $('<img src="{{app.get_gravatar(user.email, 32)}}" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}" style="display:none">')
+                     .load(function() { $(this).show(); })
+                     .error(function() { 
+                        $(this).remove(); 
+                        $('<img src="/static/images/logo/default_user.png" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}" style="display:none">')
+                           .load(function() { $(this).show(); })
+                           .error(function() { $(this).remove(); })
+                           .appendTo('li.user-header');
+                     })
+                     .appendTo('li.user-header');
+                  %else:
+                  $('<img src="/static/images/logo/{{user.get_name()}}.png" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}" style="display:none">')
+                     .load(function() { $(this).show(); })
+                     .error(function() { 
+                        $(this).remove(); 
+                        $('<img src="/static/images/logo/default_user.png" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}" style="display:none">')
+                           .load(function() { $(this).show(); })
+                           .error(function() { $(this).remove(); })
+                           .appendTo('li.user-header');
+                     })
+                     .appendTo('li.user-header');
+                  %end
+               </script>
+               
+               <!-- Menu Footer-->
+               <li class="user-footer">
+                 <div class="pull-left">
+                   <a href="https://shinken.readthedocs.org/en/latest/" target="_blank" class="btn btn-default btn-flat"><i class="fa fa-book"></i> </a>
+                   <a href="/user/pref" data-toggle="modal" class="btn btn-default btn-flat"><span class="fa fa-gear"></span> </a>
+                   <a href="#profile" data-toggle="modal" class="btn btn-default btn-flat disabled"><span class="fa fa-pencil"></span> </a>
+                 </div>
+                 <div class="pull-right">
+                     <a href="/user/logout" class="btn btn-default btn-flat" data-toggle="modal" data-target="/user/logout"><span class="fa fa-sign-out"></span> </a>
+                 </div>
+               </li>
+             </ul>
+           </li>
 
-        <li class="pull-right"><a class="quickinfo" data-original-title='Currently' href="/dashboard/currently"><i class="fa fa-eye"></i></a></li>
+           <li class="pull-right"><a class="quickinfo" data-original-title='Currently' href="/dashboard/currently"><i class="fa fa-eye"></i></a></li>
 
-        %if app:
-        %overall_state = app.get_overall_state(app.get_user_auth())
-        <li class="pull-right"><a href="/impacts" class="quickinfo" data-original-title='Impacts'><i class="fa fa-bolt"></i><span class="pulsate badger badger-{{'ok' if overall_state == 0 else 'warning' if overall_state == 1 else 'critical'}}">{{app.get_overall_state_problems_count(app.get_user_auth())}}</span> </a></li>
-        
-        %overall_itproblem = app.get_overall_it_state(app.get_user_auth())
-        <li class="pull-right"><a href="/problems" class="quickinfo" data-original-title='IT Problems'><i class="fa fa-ambulance"></i><span class="pulsate badger badger-{{'ok' if overall_itproblem == 0 else 'warning' if overall_itproblem == 1 else 'critical'}}">{{app.get_overall_it_problems_count(user, False)}}</span> </a></li>
-        %end
-      </ul>
-    </div>
-  </nav>
+           %if app:
+           %overall_state = app.get_overall_state(app.get_user_auth())
+           <li class="pull-right"><a href="/impacts" class="quickinfo" data-original-title='Impacts'><i class="fa fa-bolt"></i><span class="pulsate badger badger-{{'ok' if overall_state == 0 else 'warning' if overall_state == 1 else 'critical'}}">{{app.get_overall_state_problems_count(app.get_user_auth())}}</span> </a></li>
+           
+           %overall_itproblem = app.get_overall_it_state(app.get_user_auth())
+           <li class="pull-right"><a href="/problems" class="quickinfo" data-original-title='IT Problems'><i class="fa fa-ambulance"></i><span class="pulsate badger badger-{{'ok' if overall_itproblem == 0 else 'warning' if overall_itproblem == 1 else 'critical'}}">{{app.get_overall_it_problems_count(user, False)}}</span> </a></li>
+           %end
+         </ul>
+      </div>
+   </nav>
 </header>
 <script type="text/javascript">
   // Typeahead: builds suggestion engine
