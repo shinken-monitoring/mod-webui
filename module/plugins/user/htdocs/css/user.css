@@ -1,0 +1,172 @@
+
+/*
+ * Contacts list page
+ */
+
+/*  List view 
+    ------------------------------------------------------- */
+
+ul.list { list-style: none; width: 100%; padding-left: 15px; }
+ul.list li { display: block; background: #F9F9F9; padding: 10px 15px; }
+
+ul.list li.alt { background: #FFF; }
+
+ul.list li section.left { display: block; float: left; position: relative; padding-left: 20px; }
+ul.list li section.right { display: block; float: right; margin-right: 10px; text-align: right; }
+
+ul.list li section.left img.thumb { float: left; margin-right: 10px; }
+ul.list li section.left img.featured-banner { position: absolute; left: -18px; top: 35px; }
+
+ul.list li section.left h3 { font-family: "Trebuchet MS", Arial, sans-serif; font-weight: bold; color: #707375; font-size: 1.4em; line-height: 1.6em; } 
+ul.list li section.left div.meta { color: #93989b; font-weight: normal; font-size: 1.1em; padding: 10px; }
+
+ul.list li section.left img {
+  z-index: 5;
+  height: 90px;
+  width: 90px;
+  border: 8px solid;
+  border-color: transparent;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/*
+ul.list li section.right a.firstbtn { margin-right: 7px; }
+*/
+
+/*  Grid view 
+    ------------------------------------------------------- */
+
+ul.grid { list-style: none; margin: 0 auto; padding-left: 25px; }
+ul.grid li { position: relative; display: block; float: left; width: auto; height: 130px; border-right: 1px solid #b6bdbe; border-bottom: 1px solid #b6bdbe; padding: 5px 22px; margin-bottom: 20px; margin-left: 10px; box-sizing: border-box; -moz-box-sizing: border-box; -webkit-box-sizing: border-box; }
+ul.grid li.third { border: 0; }
+
+ul.grid li section.left { position: relative; }
+ul.grid li section.right { /* nothing */ }
+
+ul.grid li section.left img.featured-banner { position: absolute; top: 0; }
+
+ul.grid li section.left h3 { font-family: "Trebuchet MS", Arial, sans-serif; font-weight: bold; text-transform: uppercase; color: #707375; font-size: 1.4em; line-height: 1.5em; } 
+ul.grid li section.left div.meta { display: block; color: #93989b; font-weight: normal; font-size: 1.1em; margin-bottom: 7px; }
+
+ul.grid li section.left img {
+  z-index: 5;
+  height: 90px;
+  width: 90px;
+  border: 8px solid;
+  border-color: transparent;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+
+ul.grid li section.right span.darkview { 
+  opacity: 0;
+  margin: 0; 
+  position: absolute;
+  top: 0; 
+  left: 0; 
+  width: 90%; 
+  height: 90%;
+  margin: 5%; 
+  border-radius: 6px;
+  background: rgba(40, 45, 55, 0.75); 
+  overflow: hidden;
+  text-align: center;
+  padding-top: 15px;
+          box-sizing: border-box; 
+     -moz-box-sizing: border-box; 
+  -webkit-box-sizing: border-box;
+          transition: opacity 0.2s linear 0s;
+       -o-transition: opacity 0.25s linear 0s;  
+     -moz-transition: opacity 0.25s linear 0s;
+  -webkit-transition: opacity 0.2s linear 0s;
+}
+
+ul.grid li:hover section.right span.darkview { opacity: 1;}
+ul.grid li:hover section.right span.darkview a { opacity: 1; color: #FFF; font-size: 25px; text-decoration:none; }
+
+ul.grid li section.right span.darkview a.firstbtn { display: block; margin-bottom: 10px; text-decoration:none !important;}
+ul.grid li section.right span.darkview a.firstbtn:hover { display: block; margin-bottom: 10px; text-decoration:none !important;}
+
+
+
+
+
+/*
+ * Contact page view
+ */
+div.user-header {
+  height: 120px;
+  padding: 10px;
+  background: #3c8dbc;
+  text-align: center;
+}
+div.user-header > img {
+  z-index: 5;
+  height: 90px;
+  width: 90px;
+  border: 8px solid;
+  border-color: transparent;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+div.user-header > img.company-logo {
+  float: left;
+  height: 80px;
+  width: 80px;
+}
+div.user-header > img.user-logo {
+  float: right;
+  height: 100px;
+  width: 100px;
+}
+div.user-header > p.username {
+  z-index: 5;
+  color: #f9f9f9;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 17px;
+  text-shadow: 2px 2px 3px #333333;
+  margin-top: 10px;
+}
+div.user-header > p.usercategory {
+  z-index: 5;
+  color: #f9f9f9;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+  text-shadow: 2px 2px 3px #333333;
+  margin-top: 0px;
+  font-style: italic;
+}
+div.user-header > p > small {
+  display: block;
+  font-size: 12px;
+}
+div.user-body {
+  padding: 15px;
+  border-bottom: 1px solid #f4f4f4;
+  border-top: 1px solid #dddddd;
+}
+div.user-body:before,
+div.user-body:after {
+  display: table;
+  content: " ";
+}
+div.user-body:after {
+  clear: both;
+}
+div.user-body > div > a {
+  color: #0073b7;
+}
+div.user-footer {
+  background-color: #f9f9f9;
+  padding: 10px;
+}
+div.user-footer:before,
+div.user-footer:after {
+  display: table;
+  content: " ";
+}
+div.user-footer:after {
+  clear: both;
+}
+div.user-footer .btn-default {
+  color: #666666;
+}

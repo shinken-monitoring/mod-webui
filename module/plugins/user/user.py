@@ -39,6 +39,23 @@ except ImportError:
 app = None
 
 
+# Test user preferences page ...
+def checkauth():
+    user = app.get_user_auth()
+
+    if not user:
+        app.bottle.redirect("/user/login")
+    else:
+        return user
+
+def show_pref():
+    user = checkauth()
+
+    return {
+        'app': app, 'user': user
+        }
+
+
 def save_pref():
     # First we look for the user sid
     # so we bail out if it's a false one
@@ -88,5 +105,10 @@ def save_common_pref():
     return
 
 
-pages = {save_pref: {'routes': ['/user/save_pref'], 'method': 'POST'}, save_common_pref: {'routes': ['/user/save_common_pref'], 'method': 'POST'}}
+pages = {
+        show_pref: {'routes': ['/user/pref'], 'view': 'user_pref', 'static': True},
+        
+        save_pref: {'routes': ['/user/save_pref'], 'method': 'POST'}, 
+        save_common_pref: {'routes': ['/user/save_common_pref'], 'method': 'POST'}
+        }
 

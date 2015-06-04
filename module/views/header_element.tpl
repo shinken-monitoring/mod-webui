@@ -110,7 +110,7 @@
             <li class="user-footer">
               <div class="pull-left">
                 <a href="https://shinken.readthedocs.org/en/latest/" target="_blank" class="btn btn-default btn-flat"><i class="fa fa-book"></i> </a>
-                <a href="#settings" data-toggle="modal" class="btn btn-default btn-flat disabled"><span class="fa fa-gear"></span> </a>
+                <a href="/user/pref" data-toggle="modal" class="btn btn-default btn-flat"><span class="fa fa-gear"></span> </a>
                 <a href="#profile" data-toggle="modal" class="btn btn-default btn-flat disabled"><span class="fa fa-pencil"></span> </a>
               </div>
               <div class="pull-right">
@@ -155,22 +155,6 @@
     }
     event.preventDefault();
   });
-
-	/* Catch the key ENTER and launch the form
-	 Will be link in the password field
-	function submitenter(myfield,e){
-	  var keycode;
-	  if (window.event) keycode = window.event.keyCode;
-	  else if (e) keycode = e.which;
-	  else return true;
-
-	  if (keycode == 13){
-	    submitform();
-	    return false;
-	  }else
-	   return true;
-	}
-	*/
 
   // On page loaded ...
   $(function() {
