@@ -850,10 +850,14 @@ class Webui_broker(BaseModule, Daemon):
         sdesc = sdesc.decode('utf8', 'ignore')
         return self.rg.services.find_srv_by_name_and_hostname(hname, sdesc)
 
-    def get_all_hosts_and_services(self, user=None):
+    def get_all_hosts_and_services(self, user=None, get_impacts=True):
         all = []
-        all.extend(self.get_hosts())
-        all.extend(self.get_services())
+        if get_impacts:
+            all.extend(self.get_hosts())
+            all.extend(self.get_services())
+        else:
+            all.extend([h for h in self.get_hosts() if not h.is_impact])
+            all.extend([s for s in self.get_services() if not s.is_impact])
         return all
 
     def get_timeperiods(self):
@@ -978,10 +982,6 @@ class Webui_broker(BaseModule, Daemon):
             res.sort(hst_srv_sort)
         return res
 
-    # Return the number of problems
-    def get_nb_problems(self, user=None, to_sort=True, get_acknowledged=False):
-        return len(self.get_all_problems(user, to_sort, get_acknowledged))
-        
     # For all business impacting elements, and give the worse state
     # if warning or critical
     def get_overall_state(self, user=None):
