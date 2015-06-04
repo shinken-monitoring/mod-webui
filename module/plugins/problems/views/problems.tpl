@@ -10,7 +10,7 @@
 %end
 <script type="text/javascript">
    var actions_enabled = {{'true' if actions_allowed else 'false'}};
-   console.log('Actions: '+actions_enabled);
+   // console.log('Actions: '+actions_enabled);
    function submitform() {
       document.forms["search_form"].submit();
    }
@@ -84,13 +84,13 @@
       });
     
       // Buttons tooltips
-      $('span').tooltip();
+      // $('span').tooltip();
 
       // Open the first host collapsable element
-      $('.host-panel:first').addClass('in');
+      // $('.host-panel:first').addClass('in');
       
       // Hide the toolbar
-      //hide_toolbar();
+      // hide_toolbar();
    });
 </script>
 

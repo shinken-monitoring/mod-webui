@@ -25,38 +25,38 @@
   Tool bar related code
 */
 function hide_toolbar(){
-  $('#toolbar').hide();
-  $('#hide_toolbar_btn').hide();
-  $('#show_toolbar_btn').show();
-  
-  $('#problems').addClass('col-lg-12 col-md-12 col-sm-12');
-  $('#problems').removeClass('col-lg-9 col-md-8 col-sm-8');
+   $('#toolbar').hide();
+   $('#hide_toolbar_btn').hide();
+   $('#show_toolbar_btn').show();
 
-  save_toolbar('hide');
+   $('#problems').addClass('col-lg-12 col-md-12 col-sm-12');
+   $('#problems').removeClass('col-lg-9 col-md-8 col-sm-8');
+
+   save_toolbar('hide');
 }
 
 function show_toolbar(){
-  $('#toolbar').show();
-  $('#hide_toolbar_btn').show();
-  $('#show_toolbar_btn').hide();
-  
-  $('#problems').addClass('col-lg-9 col-md-8 col-sm-8');
-  $('#problems').removeClass('col-lg-12 col-md-12 col-sm-12');
+   $('#toolbar').show();
+   $('#hide_toolbar_btn').show();
+   $('#show_toolbar_btn').hide();
 
-  save_toolbar('show');
+   $('#problems').addClass('col-lg-9 col-md-8 col-sm-8');
+   $('#problems').removeClass('col-lg-12 col-md-12 col-sm-12');
+
+   save_toolbar('show');
 }
 
 function save_toolbar(toolbar){
-  $.post("/user/save_pref", { 'key' : 'toolbar', 'value' : toolbar});
+   $.post("/user/save_pref", { 'key' : 'toolbar', 'value' : toolbar});
 }
 
 
 
 // The user asks to show the hidden problems 
 function show_hidden_problems(cls){
-  $('.hide_for_'+cls).show();
-  // And hide the vvv button
-  $('.show_for_'+cls).hide();
+   $('.hide_for_'+cls).show();
+   // And hide the vvv button
+   $('.show_for_'+cls).hide();
 }
 
 
@@ -134,12 +134,12 @@ function add_remove_elements(name){
 function add_element(name){
    // Force to display the checked checkbox of the selector
    $('#selector-'+name).prop("checked", true);
-
+   
    selected_elements.push(name);
 
    show_toolbar();
-   $('#actions').show();
-   show_unselect_all_button();
+   if (actions_enabled) $('#actions').show();
+   // show_unselect_all_button();
 }
 
 /* And of course when we remove it... */
@@ -150,7 +150,8 @@ function remove_element(name){
    selected_elements.splice($.inArray(name, selected_elements),1);
 
    if (selected_elements.length == 0){
-      $('#actions').hide();
+      hide_toolbar();
+      if (actions_enabled) $('#actions').hide();
       show_select_all_button();
 
       // Restart page refresh timer
@@ -273,5 +274,6 @@ $(document).ready(function(){
       stop_refresh();
       
       // console.debug("Click "+$(this).attr('id'), $(this).prop('checked'))
+      add_remove_elements($(this).attr('id'))
    });
 });
