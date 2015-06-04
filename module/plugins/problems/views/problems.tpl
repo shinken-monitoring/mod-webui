@@ -1,7 +1,7 @@
 %helper = app.helper
 %datamgr = app.datamgr
 
-%rebase("layout", title='All problems', js=['problems/js/problems.js', 'problems/js/filters.js', 'problems/js/bookmarks.js'], css=['problems/css/problems.css', 'problems/css/filters.css'], refresh=True, user=user)
+%rebase("layout", title='All problems', js=['problems/js/problems.js', 'problems/js/filters.js', 'problems/js/bookmarks.js'], css=['problems/css/problems.css', 'problems/css/filters.css'], refresh=True, user=user, navi=navi, app=app, page=page)
 
 %# Look for actions if we must show them or not
 %actions_allowed = True
@@ -97,14 +97,10 @@
 <!-- Buttons and page navigation -->
 <div class="row">
    <div class='col-lg-5 col-md-4 col-sm-2 pull-left'>
-      <a id='show_toolbar_btn' href="javascript:show_toolbar()" class="btn btn-default"><i class="fa fa-plus"></i> Show toolbar</a>      
-      <a id="hide_toolbar_btn" href="javascript:hide_toolbar()" class="btn btn-default" style="display:none;"><i class="fa fa-minus"></i> Hide toolbar</a>
-      <a id='select_all_btn' href="javascript:select_all_problems()" class="btn btn-default"><i class="fa fa-check"></i> Select all</a>
-      <a id='unselect_all_btn' href="javascript:unselect_all_problems()" class="btn btn-default" style="display:none;"><i class="fa fa-minus"></i> Unselect all</a>
-   </div>
-
-   <div class='col-lg-7 col-md-8 col-sm-10 pull-right'>
-     %include("pagination_element", navi=navi, app=app, page=page, div_class="pull-right")
+      <a id='show_toolbar_btn' href="javascript:show_toolbar()" class="btn btn-default btn-sm"><i class="fa fa-plus"></i> Show toolbar</a>      
+      <a id="hide_toolbar_btn" href="javascript:hide_toolbar()" class="btn btn-default btn-sm" style="display:none;"><i class="fa fa-minus"></i> Hide toolbar</a>
+      <a id='select_all_btn' href="javascript:select_all_problems()" class="btn btn-default btn-sm"><i class="fa fa-check"></i> Select all</a>
+      <a id='unselect_all_btn' href="javascript:unselect_all_problems()" class="btn btn-default btn-sm" style="display:none;"><i class="fa fa-minus"></i> Unselect all</a>
    </div>
 </div>
 
@@ -113,8 +109,6 @@
 %if app.get_nb_problems() > 0 and page == 'problems' and app.play_sound:
    <EMBED src="/static/sound/alert.wav" autostart=true loop=false volume=100 hidden=true>
 %end
-
-%include("_problems_synthesis.tpl", pbs=pbs)
 
 <!-- Problems filtering and display -->
 <div class="row">
@@ -140,12 +134,16 @@
    <!-- Right panel, with all problems -->
    <div id="problems" class="col-lg-12 col-md-12 col-sm-12">
 
+     %include("_problems_synthesis.tpl", pbs=pbs)
+
      %from itertools import groupby
      %pbs = sorted(pbs, key=lambda x: x.business_impact, reverse=True)
      %for business_impact, bi_pbs in groupby(pbs, key=lambda x: x.business_impact):
    <div class="panel panel-default">
+     <!--<div class="panel-heading">-->
+     <!--</div>-->
       <div class="panel-body">
-        <h3> Business impact: {{!helper.get_business_impact_text(business_impact)}} </h3>
+       <h3 class="text-center">Business impact: {{!helper.get_business_impact_text(business_impact, text=True)}}</strong></h3>
       <table class="table table-condensed">
         <thead><tr>
             <th width="16px"></th>
@@ -153,8 +151,7 @@
             <th width="200px">Host</th>
             <th width="200px">Service</th>
             <th width="90px">State</th>
-            <th width="110px">Since</th>
-            <th width="110px">Last check</th>
+            <th width="90px">Duration</th>
             <th>Output</th>
         </tr></thead>
 
@@ -188,8 +185,7 @@
               %end
             </td>
             <td align="center" class="font-{{pb.state.lower()}}"><strong>{{ pb.state }}</strong></td>
-            <td>{{!helper.print_duration(pb.last_state_change, just_duration=True, x_elts=2)}}</td>
-            <td>{{!helper.print_duration(pb.last_chk, just_duration=True, x_elts=2)}} ago</td>
+            <td align="center">{{!helper.print_duration(pb.last_state_change, just_duration=True, x_elts=2)}}</td>
             <td class="row">
               <div class="pull-right">
                 %# Graphs
@@ -222,8 +218,8 @@
                      %if pb.active_checks_enabled:
                      <td align="center">
                         <i class="fa fa-arrow-right" title="Active checks are enabled."></i>
-                        <i>Next check in {{!helper.print_duration(pb.next_chk, just_duration=True, x_elts=2)}}, attempt {{pb.attempt}}/{{pb.max_check_attempts}}</i>
-                     </td>
+                        <i>Last check <strong>{{!helper.print_duration(pb.last_chk, just_duration=True, x_elts=2)}} ago</strong>, next check in <strong>{{!helper.print_duration(pb.next_chk, just_duration=True, x_elts=2)}}</strong>, attempt <strong>{{pb.attempt}}/{{pb.max_check_attempts}}</strong></i>
+                      </td>
                      %end
                      %if actions_allowed:
                      <td align="right">
@@ -314,14 +310,6 @@
       %# Close problems div ...
    </div>
 
-</div>
-
-<hr>
-
-<div class="row">
-  <div class='col-lg-7 col-md-8 col-sm-10 pull-right'>
-    %include("pagination_element", navi=navi, app=app, page=page, div_class="")
-  </div>
 </div>
 
 <script>

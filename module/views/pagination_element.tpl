@@ -1,7 +1,10 @@
+%setdefault('div_class', "")
+%setdefault('div_style', "margin-top:0; margin-bottom:0;")
+
 %if navi is not None:
    %from urllib import urlencode
 
-   <ul class="pagination {{div_class}}" style="margin-top:0; margin-bottom:0;">
+   <ul class="pagination {{div_class}}" style={{div_style}}"">
          %for name, start, end, is_current in navi:
             %if is_current:
                <li class="active"><a href="#">{{name}}</a></li>

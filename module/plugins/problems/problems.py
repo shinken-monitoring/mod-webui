@@ -69,8 +69,9 @@ def get_view(page):
 
 
     # We want to limit the number of elements
+    step = int(app.request.GET.get('step', '30'))
     start = int(app.request.GET.get('start', '0'))
-    end = int(app.request.GET.get('end', '30'))
+    end = int(app.request.GET.get('end', start + step))
 
     # We will keep a trace of our filters
     filters = {}
@@ -247,9 +248,9 @@ def get_view(page):
     # If we overflow, came back as normal
     if start > total:
         start = 0
-        end = 30
+        end = start + step
 
-    navi = app.helper.get_navi(total, start, step=30)
+    navi = app.helper.get_navi(total, start, step=step)
     items = items[start:end]
 
     return {'app': app, 'pbs': items, 'user': user, 'navi': navi, 'search': search_str, 'page': page, 'filters': filters, 'bookmarks': bookmarks, 'bookmarksro': bookmarksro, 'toolbar': toolbar_pref }
