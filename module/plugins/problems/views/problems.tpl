@@ -96,12 +96,49 @@
 
 <!-- Buttons and page navigation -->
 <div class="row">
+
    <div class='col-lg-5 col-md-4 col-sm-2 pull-left'>
       <a id='show_toolbar_btn' href="javascript:show_toolbar()" class="btn btn-default btn-sm"><i class="fa fa-plus"></i> Show toolbar</a>      
       <a id="hide_toolbar_btn" href="javascript:hide_toolbar()" class="btn btn-default btn-sm" style="display:none;"><i class="fa fa-minus"></i> Hide toolbar</a>
       <a id='select_all_btn' href="javascript:select_all_problems()" class="btn btn-default btn-sm"><i class="fa fa-check"></i> Select all</a>
       <a id='unselect_all_btn' href="javascript:unselect_all_problems()" class="btn btn-default btn-sm" style="display:none;"><i class="fa fa-minus"></i> Unselect all</a>
    </div>
+
+  <div class="text-right col-lg-7 col-md-8 col-sm-10">
+    <form method="get" action="{{page}}" class="form-inline">
+      <div class="dropdown form-group text-left">
+        <button class="btn btn-default dropdown-toggle" type="button" id="bookmarks_menu" data-toggle="dropdown" aria-expanded="true">Filters <span class="caret"></span></button>
+        <ul class="dropdown-menu" role="menu" aria-labelledby="bookmarks_menu">
+          <li role="presentation"><a role="menuitem" tablindex="-1" href="?search=ack:true">Acknowledged</a></li>
+          <li role="presentation"><a role="menuitem" tablindex="-1" href="#"><strong><i class="fa fa-question-circle"></i> Search syntax</strong></a></li>
+        </ul>
+      </div>
+      <div class="form-group">
+        <label class="sr-only" for="search">Filter</label>
+        <div class="input-group">
+          <span class="input-group-addon"><i class="fa fa-search"></i></span>
+          <input class="form-control" type="search" id="search" name="search" value="{{ search_string }}">
+        </div>
+      </div>
+      <div class="dropdown form-group text-left">
+        <button class="btn btn-default dropdown-toggle" type="button" id="bookmarks_menu" data-toggle="dropdown" aria-expanded="true"><i class="fa fa-bookmark"></i> Bookmarks <span class="caret"></span></button>
+        <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="bookmarks_menu">
+          <li role="presentation" class="dropdown-header">User bookmarks</li>
+          %for b in bookmarks:
+          <li role="presentation"><a role="menuitem" tablindex="-1" href="{{!b['uri']}}">{{!b['name']}}</a></li>
+          %end
+          <li role="presentation" class="dropdown-header">Global bookmarks</li>
+          %for b in bookmarksro:
+          <li role="presentation"><a role="menuitem" tablindex="-1" href="{{!b['uri']}}">{{!b['name']}}</a></li>
+          %end
+          <!--<li role="presentation" class="divider"></li>-->
+          <!--<li role="presentation"><a role="menuitem" tablindex="-1" href="#filtering" data-toggle="modal" data-target="#filtering"><i class="fa fa-plus"></i> Create new bookmark</a></li>-->
+        </ul>
+      </div>
+      <!--<button type="submit" class="btn btn-default">Filter</button>-->
+    </form>
+  </div>
+
 </div>
 
 <hr>
