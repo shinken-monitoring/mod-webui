@@ -122,6 +122,11 @@ class Webui_broker(BaseModule, Daemon):
         self.manage_acl = to_bool(getattr(modconf, 'manage_acl', '1'))
         self.remote_user_enable = getattr(modconf, 'remote_user_enable', '0')
         self.remote_user_variable = getattr(modconf, 'remote_user_variable', 'X_REMOTE_USER')
+        self.timezone = getattr(modconf, 'timezone', '')
+        if self.timezone:
+            logger.info("[%s] Setting our timezone to %s", self.name, self.add_timezone)
+            os.environ['TZ'] = self.timezone
+            time.tzset()
 
         self.share_dir = getattr(modconf, 'share_dir', 'share')
         self.share_dir = os.path.abspath(self.share_dir)
