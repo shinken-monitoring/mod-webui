@@ -73,23 +73,6 @@ def get_view(page):
     start = int(app.request.GET.get('start', '0'))
     end = int(app.request.GET.get('end', start + step))
 
-    # We will keep a trace of our filters
-    filters = {}
-    ts = ['hst_srv', 'hg', 'realm', 'htag', 'stag', 'ack', 'downtime', 'crit']
-    for t in ts:
-        filters[t] = []
-
-    search = app.request.GET.getall('search')
-    if search == []:
-        search = app.request.GET.get('global_search', '')
-
-    # Most of the case, search will be a simple string, if so
-    # make it a list of this string
-    if isinstance(search, basestring):
-        search = [search]
-
-    search_str = '&'.join(search)
-
     # Load the bookmarks
     bookmarks_r = app.get_user_preference(user, 'bookmarks')
     if not bookmarks_r:
@@ -132,6 +115,24 @@ def get_view(page):
     for i in items:
         logger.debug("[%s] problems, item: %s", app.name, i.get_full_name())
         
+
+    # We will keep a trace of our filters
+    filters = {}
+    ts = ['hst_srv', 'hg', 'realm', 'htag', 'stag', 'ack', 'downtime', 'crit']
+    for t in ts:
+        filters[t] = []
+
+    search = app.request.GET.getall('search')
+    if search == []:
+        search = app.request.GET.get('global_search', '')
+
+    # Most of the case, search will be a simple string, if so
+    # make it a list of this string
+    if isinstance(search, basestring):
+        search = [search]
+
+    search = [s for _s in search for s in _s.split(' ')]
+
 
     # Ok, if needed, apply the search filter
     for s in search:
@@ -253,7 +254,7 @@ def get_view(page):
     navi = app.helper.get_navi(total, start, step=step)
     items = items[start:end]
 
-    return {'app': app, 'pbs': items, 'user': user, 'navi': navi, 'search': search_str, 'page': page, 'filters': filters, 'bookmarks': bookmarks, 'bookmarksro': bookmarksro, 'toolbar': toolbar_pref }
+    return {'app': app, 'pbs': items, 'user': user, 'navi': navi, 'page': page, 'search_string': ' '.join(search), 'filters': filters, 'bookmarks': bookmarks, 'bookmarksro': bookmarksro, 'toolbar': toolbar_pref }
 
 
 # Our page
