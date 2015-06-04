@@ -787,7 +787,7 @@ Invalid element name
                         <td><strong>Event handler enabled:</strong></td>
                         <td>{{! app.helper.get_on_off(elt.event_handler_enabled, 'Is event handler enabled?')}}</td>
                      </tr>
-                     %if (elt.event_handler_enabled):
+                     %if elt.event_handler_enabled and elt.event_handler:
                      <tr>
                         <td><strong>Event handler:</strong></td>
                         <td>
