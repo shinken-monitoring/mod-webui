@@ -165,7 +165,7 @@
          %# Host information ...
          <tr data-toggle="collapse" data-target="#details-{{helper.get_html_id(pb)}}" class="accordion-toggle">
             <td>
-              <input type="checkbox" id="selector-{{helper.get_html_id(pb)}}" onclick="add_remove_elements('{{helper.get_html_id(pb)}}')">
+              <input type="checkbox" id="selector-{{helper.get_html_id(pb)}}">
             </td>
             <td align=center>
               {{!helper.get_fa_icon_state(pb)}}

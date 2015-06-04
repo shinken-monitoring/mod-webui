@@ -119,7 +119,7 @@ function unselect_all_problems(){
 var selected_elements = [];
 
 function add_remove_elements(name){
-   // Maybe the actions are not allowed. If so, don't act
+   // Maybe the actions are not allowed. If so, don't do anything ...
    if (!actions_enabled) {return;}
 
    if (selected_elements.indexOf(name) != -1) {
@@ -127,36 +127,35 @@ function add_remove_elements(name){
    } else {
       add_element(name);
    }
-
-   //$('#details-'+name).collapse('hide'); // :DEBUG:maethor:150526: Doesn't work
 }
 
 
 /* function when we add an element*/
 function add_element(name){
-   selected_elements.push(name);
-
-   // Show the 'tick' image of the selector
+   // Force to display the checked checkbox of the selector
    $('#selector-'+name).prop("checked", true);
+
+   selected_elements.push(name);
 
    show_toolbar();
    $('#actions').show();
    show_unselect_all_button();
-
-   // Restart page refresh timer
-   reinit_refresh();
 }
 
 /* And of course when we remove it... */
 function remove_element(name){
+   // Force to display the unchecked checkbox of the selector
+   $('#selector-'+name).prop("checked", false);
+   
    selected_elements.splice($.inArray(name, selected_elements),1);
 
    if (selected_elements.length == 0){
       $('#actions').hide();
       show_select_all_button();
+
+      // Restart page refresh timer
+      reinit_refresh();
    }
-   // And hide the tick image
-   $('#selector-'+name).prop("checked", false);
 }
 
 
@@ -264,4 +263,15 @@ $(document).ready(function(){
 
    // ... we hide the actions panel
    $('#actions').hide();
+   
+   // Problems element check boxes
+   $('td input[type=checkbox]').click(function (e) {
+      // Do not expand collapsible container ...
+      e.stopPropagation();
+      
+      // Stop page refresh
+      stop_refresh();
+      
+      // console.debug("Click "+$(this).attr('id'), $(this).prop('checked'))
+   });
 });
