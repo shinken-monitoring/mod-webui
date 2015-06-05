@@ -56,7 +56,7 @@
 
 <div class="panel panel-default">
    <div class="panel-body">
-      <table class="table table-invisible">
+      <table class="table table-invisible table-condensed">
          <tbody>
             <tr>
                <td>

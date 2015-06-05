@@ -34,11 +34,12 @@
       <!-- Host search ... -->
       <div class="col-sm-2 col-md-2 pull-left">
          <form id="host-search" class="navbar-form navbar-left" role="search">
-            <div class="input-group">
-               <div class="input-group-btn">
-                  <button class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i></button>
-               </div>
-               <input type="text" class="form-control typeahead" placeholder="Search hosts ..." name="host-search">
+            <div class="form-group">
+              <label class="sr-only" for="hosts-search">Hosts search</label>
+              <div class="input-group">
+                <!--<span class="input-group-addon"><i class="fa fa-search"></i></span>-->
+                <input type="search" class="form-control typeahead" placeholder="Search host…" name="host-search">
+              </div>
             </div>
          </form>
       </div>
