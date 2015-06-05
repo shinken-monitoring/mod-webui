@@ -159,9 +159,9 @@
       
       %nGroups=len(group.get_hostgroup_members())
       <!-- <li>{{group.get_name()}} - {{nHosts}} - {{nGroups}} - {{group.get_hostgroup_members()}}</li> -->
-      %if nHosts > 0 or nGroups > 0:
+      %#if nHosts > 0 or nGroups > 0:
         
-         <li class="clearfix {{even}} {{'alert' if nHosts == hDown else ''}}">
+         <li class="clearfix {{even}} {{'alert' if nHosts == hDown and nHosts != 0 else ''}}">
             <section class="left">
                <h3>{{group.alias if group.alias != '' else group.get_name()}}
                   {{!helper.get_business_impact_text(business_impact)}}
@@ -204,7 +204,7 @@
             </span>
           </section>
         </li>
-      %end
+      %#end
     %end
   </ul>
 </div>

@@ -129,6 +129,9 @@ def show_hostgroups():
 def show_servicegroup(name):
     user = checkauth()    
 
+    # Set servicegroups level ...
+    app.set_servicegroups_level(user)
+    
     all_services = app.get_services(user)
     
     if name == 'all':
@@ -169,6 +172,9 @@ def show_servicegroup(name):
 
 def show_servicegroups():
     user = checkauth()    
+
+    # Set servicegroups level ...
+    app.set_servicegroups_level(user)
 
     return {
         'app': app, 'user': user, 'params': params, 

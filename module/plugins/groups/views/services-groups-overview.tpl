@@ -175,13 +175,11 @@
       
          %nGroups=len(group.get_servicegroup_members())
          <!-- <li>{{group.get_name()}} - {{nServices}} - {{nGroups}} - {{group.get_servicegroup_members()}}</li> -->
-         %if nServices > 0 or nGroups > 0:
-           <li class="clearfix {{even}}">
+         %#if nServices > 0 or nGroups > 0:
+           <li class="clearfix {{even}} {{'alert' if nServices == sCritical and nServices != 0 else ''}}">
              <section class="left">
                <h3>{{group.alias if group.alias != '' else group.get_name()}}
-                  %for i in range(0, business_impact-2):
-                  <img alt="icon state" src="/static/images/star.png">
-                  %end
+                  {{!helper.get_business_impact_text(business_impact)}}
                </h3>
                <span class="meta">
                   <span class="{{'font-ok' if sOk > 0 else 'font-greyed'}}">
@@ -212,6 +210,9 @@
              </section>
              
              <section class="right">
+               <div class="pull-left">
+               <span class="groupLevel">{{'Level %d' % group.level if group.has('level') else 'Root'}}</span>
+               </div>
                <div class="pull-right">
                  <span class="sumHosts">{{'%d service' % nServices if nServices == 1 else '%d services' % nServices}}</span>
                  <span class="sumGroups">{{'%d group' % nGroups if nGroups == 1 else '' if nGroups == 0 else '%d groups' % nGroups}}</span>
@@ -223,7 +224,7 @@
                </span>
              </section>
            </li>
-         %end
+         %#end
       %end
    </ul>
 </div>
