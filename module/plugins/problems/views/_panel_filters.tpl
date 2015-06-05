@@ -1,4 +1,5 @@
 <!-- Filters panel -->
+%page=all
 <div class="panel panel-info">
   <div class="panel-heading">Filtering</div>
   <div class="panel-body">

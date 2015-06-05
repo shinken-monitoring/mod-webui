@@ -38,17 +38,17 @@ import json
 
 # Our page
 def get_page():
-    return get_view('problems')
+    app.bottle.redirect("/all?search=isnot:UP isnot:OK isnot:PENDING ack:false downtime:false")
 
 
 # Our page
 def get_all():
-    return get_view('all')
+    return get_view()
 
 
 # Our View code. We will get different data from all and /problems
 # but it's mainly filtering changes
-def get_view(page):
+def get_view(default_search=""):
 
     user = app.get_user_auth()
     if not user:
@@ -73,23 +73,6 @@ def get_view(page):
     start = int(app.request.GET.get('start', '0'))
     end = int(app.request.GET.get('end', start + step))
 
-    # We will keep a trace of our filters
-    filters = {}
-    ts = ['hst_srv', 'hg', 'realm', 'htag', 'stag', 'ack', 'downtime', 'crit']
-    for t in ts:
-        filters[t] = []
-
-    search = app.request.GET.getall('search')
-    if search == []:
-        search = app.request.GET.get('global_search', '')
-
-    # Most of the case, search will be a simple string, if so
-    # make it a list of this string
-    if isinstance(search, basestring):
-        search = [search]
-
-    search_str = '&'.join(search)
-
     # Load the bookmarks
     bookmarks_r = app.get_user_preference(user, 'bookmarks')
     if not bookmarks_r:
@@ -103,13 +86,7 @@ def get_view(page):
     bookmarksro = json.loads(bookmarks_ro)
     bookmarks = json.loads(bookmarks_r)
 
-    items = []
-    if page == 'problems':
-        items = app.get_all_problems(user, to_sort=True, get_acknowledged=False)
-    elif page == 'all':
-        items = app.get_all_hosts_and_services(user)
-    else:
-        app.bottle.redirect("/problems")
+    items = app.get_all_hosts_and_services(user, get_impacts=False)
 
     logger.debug("[%s] problems", app.name)
     for i in items:
@@ -132,6 +109,20 @@ def get_view(page):
     for i in items:
         logger.debug("[%s] problems, item: %s", app.name, i.get_full_name())
         
+
+    # We will keep a trace of our filters
+    filters = {}
+    ts = ['hst_srv', 'hg', 'realm', 'htag', 'stag', 'ack', 'downtime', 'crit', 'is', 'isnot']
+    for t in ts:
+        filters[t] = []
+
+    search = app.request.GET.getall('search') or default_search
+
+    if isinstance(search, basestring):
+        search = [search]
+
+    search = [s for _s in search for s in _s.split(' ')]
+
 
     # Ok, if needed, apply the search filter
     for s in search:
@@ -187,24 +178,24 @@ def get_view(page):
             items = [i for i in items if i.__class__.my_type == 'service' and s in i.get_service_tags()]
 
         if t == 'ack':
-            if s == 'false':
+            if s == 'false' or s == 'no':
                 # First look for hosts, so ok for services, but remove problem_has_been_acknowledged elements
                 items = [i for i in items if i.__class__.my_type == 'service' or not i.problem_has_been_acknowledged]
                 # Now ok for hosts, but look for services, and service hosts
                 items = [i for i in items if i.__class__.my_type == 'host' or (not i.problem_has_been_acknowledged and not i.host.problem_has_been_acknowledged)]
-            if s == 'true':
+            if s == 'true' or s == 'yes':
                 # First look for hosts, so ok for services, but remove problem_has_been_acknowledged elements
                 items = [i for i in items if i.__class__.my_type == 'service' or i.problem_has_been_acknowledged]
                 # Now ok for hosts, but look for services, and service hosts
                 items = [i for i in items if i.__class__.my_type == 'host' or (i.problem_has_been_acknowledged or i.host.problem_has_been_acknowledged)]
 
         if t == 'downtime':
-            if s == 'false':
+            if s == 'false' or s == 'no':
                 # First look for hosts, so ok for services, but remove problem_has_been_acknowledged elements
                 items = [i for i in items if i.__class__.my_type == 'service' or not i.in_scheduled_downtime]
                 # Now ok for hosts, but look for services, and service hosts
                 items = [i for i in items if i.__class__.my_type == 'host' or (not i.in_scheduled_downtime and not i.host.in_scheduled_downtime)]
-            if s == 'true':
+            if s == 'true' or s == 'yes':
                 # First look for hosts, so ok for services, but remove problem_has_been_acknowledged elements
                 items = [i for i in items if i.__class__.my_type == 'service' or i.in_scheduled_downtime]
                 # Now ok for hosts, but look for services, and service hosts
@@ -213,25 +204,40 @@ def get_view(page):
         if t == 'crit':
             items = [i for i in items if (i.__class__.my_type == 'service' and i.state_id == 2) or (i.__class__.my_type == 'host' and i.state_id == 1)]
 
+        # :TODO:maethor:150604: Would be nice to have is:downtime and is:ack, but I don't want to duplicate code.
+        if t == 'is':
+            if len(s) == 1:
+                items = [i for i in items if i.state_id == int(s)]
+            else:
+                items = [i for i in items if i.state == s.upper()]
+
+        if t == 'isnot':
+            if len(s) == 1:
+                items = [i for i in items if i.state_id != int(s)]
+            else:
+                items = [i for i in items if i.state != s.upper()]
+
 
 
         logger.debug("[%s] problems, found %d elements for type %s, pattern: %s", app.name, len(items), t, s)
 
+
+    # :TODO:maethor:150604: Cleanup this
     # If we are in the /problems and we do not have an ack filter
     # we apply by default the ack:false one
-    if page == 'problems' and len(filters['ack']) == 0:
-        # First look for hosts, so ok for services, but remove problem_has_been_acknowledged elements
-        items = [i for i in items if i.__class__.my_type == 'service' or not i.problem_has_been_acknowledged]
-        # Now ok for hosts, but look for services, and service hosts
-        items = [i for i in items if i.__class__.my_type == 'host' or (not i.problem_has_been_acknowledged and not i.host.problem_has_been_acknowledged)]
+#    if page == 'problems' and len(filters['ack']) == 0:
+#        # First look for hosts, so ok for services, but remove problem_has_been_acknowledged elements
+#        items = [i for i in items if i.__class__.my_type == 'service' or not i.problem_has_been_acknowledged]
+#        # Now ok for hosts, but look for services, and service hosts
+#        items = [i for i in items if i.__class__.my_type == 'host' or (not i.problem_has_been_acknowledged and not i.host.problem_has_been_acknowledged)]
 
     # If we are in the /problems and we do not have an downtime filter
     # we apply by default the downtime:false one
-    if page == 'problems' and len(filters['downtime']) == 0:
-        # First look for hosts, so ok for services, but remove problem_has_been_acknowledged elements
-        items = [i for i in items if i.__class__.my_type == 'service' or not i.in_scheduled_downtime]
-        # Now ok for hosts, but look for services, and service hosts
-        items = [i for i in items if i.__class__.my_type == 'host' or (not i.in_scheduled_downtime and not i.host.in_scheduled_downtime)]
+#    if page == 'problems' and len(filters['downtime']) == 0:
+#        # First look for hosts, so ok for services, but remove problem_has_been_acknowledged elements
+#        items = [i for i in items if i.__class__.my_type == 'service' or not i.in_scheduled_downtime]
+#        # Now ok for hosts, but look for services, and service hosts
+#        items = [i for i in items if i.__class__.my_type == 'host' or (not i.in_scheduled_downtime and not i.host.in_scheduled_downtime)]
 
     logger.debug("[%s] problems after search filtering", app.name)
     for i in items:
@@ -253,7 +259,7 @@ def get_view(page):
     navi = app.helper.get_navi(total, start, step=step)
     items = items[start:end]
 
-    return {'app': app, 'pbs': items, 'user': user, 'navi': navi, 'search': search_str, 'page': page, 'filters': filters, 'bookmarks': bookmarks, 'bookmarksro': bookmarksro, 'toolbar': toolbar_pref }
+    return {'app': app, 'pbs': items, 'user': user, 'navi': navi, 'search_string': ' '.join(search), 'filters': filters, 'bookmarks': bookmarks, 'bookmarksro': bookmarksro, 'toolbar': toolbar_pref }
 
 
 # Our page
