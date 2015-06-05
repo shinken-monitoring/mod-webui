@@ -627,7 +627,7 @@ class Webui_broker(BaseModule, Daemon):
     def checkauth(self):
         user = self.get_user_auth()
         if not user:
-            app.bottle.redirect("/user/login")
+            self.bottle.redirect("/user/login")
         else:
             return user
             
