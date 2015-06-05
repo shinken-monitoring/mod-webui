@@ -16,7 +16,7 @@
                %query['start'] = start
                %query['end'] = end
                %query_string = urlencode(query)
-               <li class=""><a href='/{{page}}?{{query_string}}' >{{name}}</a></li>
+               <li><a href="{{page}}?{{query_string}}">{{name}}</a></li>
             %end
          %end
    </ul>
