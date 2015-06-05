@@ -220,7 +220,7 @@ Invalid element name
                            .load(function() {})
                            .error(function() {
                              $(this).remove();
-                             $("<span/>").attr({ 'class': 'btn btn-default btn-xs bg-host'}).append('{{t}}').appendTo(a{{i}});
+                             $("<span/>").attr({ 'class': 'btn btn-default btn-xs'}).append('{{t}}').appendTo(a{{i}});
                            })
                            .appendTo(a{{i}});
                      })
@@ -244,7 +244,7 @@ Invalid element name
                      })
                      .error(function() {
                        $(this).remove();
-                       $("<span/>").attr({ 'class': 'btn btn-default btn-xs bg-service'}).append('{{t}}').appendTo(b{{j}});
+                       $("<span/>").attr({ 'class': 'btn btn-default btn-xs'}).append('{{t}}').appendTo(b{{j}});
                      })
                      .appendTo(b{{j}});
                   var span = $("<span/>").append('&nbsp;').appendTo($('#service_tags'));
@@ -260,16 +260,13 @@ Invalid element name
 
    <!-- Second row : host/service overview ... -->
    <div class="row" style="padding: 5px;">
-      <div class="panel-group" id="Overview">
          <div class="panel panel-default">
-            <div class="panel-heading">
-               <div class="panel-heading fitted-header cursor" data-toggle="collapse" data-parent="#Overview" href="#collapseOverview">
-                  <h4 class="panel-title"><span class="caret"></span>&nbsp;Overview {{elt_name}} ({{elt.display_name if elt.display_name else elt.alias if elt.alias else 'none'}}) {{!helper.get_business_impact_text(elt.business_impact)}}
-                  </h4>
-               </div>
-            </div>
+           <div class="panel-heading fitted-header cursor" data-toggle="collapse" data-parent="#Overview" href="#collapseOverview">
+             <h4 class="panel-title"><span class="caret"></span>&nbsp;Overview {{elt_name}} ({{elt.display_name if elt.display_name else elt.alias if elt.alias else 'none'}}) {{!helper.get_business_impact_text(elt.business_impact)}}
+             </h4>
+           </div>
         
-            <div id="collapseOverview" class="panel-collapse collapse in">
+            <div id="collapseOverview" class="panel-body panel-collapse collapse in">
                %if elt_type=='host':
                <dl class="col-sm-6 dl-horizontal">
                   <dt>Alias:</dt>
@@ -396,7 +393,6 @@ Invalid element name
                %end
             </div>
          </div>
-      </div>
    </div>
 
    <!-- Third row : business impact alerting ... -->
@@ -468,7 +464,7 @@ Invalid element name
             <div class="tab-pane fade in active" id="information">
                <h4>{{elt_type.capitalize()}} information:</h4>
 
-               <table class="table-condensed col-sm-12" style="table-layout: fixed; word-wrap: break-word;">
+               <table class="table-condensed" style="table-layout: fixed; word-wrap: break-word;">
                   <colgroup>
                      <col style="width: 40%" />
                      <col style="width: 60%" />
@@ -498,7 +494,7 @@ Invalid element name
                   </tbody>
                </table>
                      
-               <table class="table-condensed col-sm-12" style="table-layout: fixed; word-wrap: break-word;">
+               <table class="table-condensed" style="table-layout: fixed; word-wrap: break-word;">
                   <tbody style="font-size:x-small;">
                      <tr>
                         <td colspan="2"><hr/></td>
@@ -506,7 +502,7 @@ Invalid element name
                   </tbody>
                </table>
                      
-               <table class="table-condensed col-sm-12" style="table-layout: fixed; word-wrap: break-word;">
+               <table class="table-condensed" style="table-layout: fixed; word-wrap: break-word;">
                   <colgroup>
                      <col style="width: 40%" />
                      <col style="width: 60%" />
@@ -577,7 +573,7 @@ Invalid element name
             <div class="tab-pane fade" id="notification">
                <h4>{{elt_type.capitalize()}} notification:</h4>
                
-               <table class="table table-condensed col-sm-12" style="table-layout: fixed; word-wrap: break-word;">
+               <table class="table table-condensed" style="table-layout: fixed; word-wrap: break-word;">
                   <colgroup>
                      <col style="width: 40%" />
                      <col style="width: 60%" />
@@ -686,7 +682,7 @@ Invalid element name
             <div class="tab-pane fade" id="additional">
                <h4>Additional information:</h4>
                
-               <table class="table table-condensed col-sm-12" style="table-layout: fixed; word-wrap: break-word;">
+               <table class="table table-condensed" style="table-layout: fixed; word-wrap: break-word;">
                   <colgroup>
                      <col style="width: 40%" />
                      <col style="width: 60%" />
@@ -798,7 +794,7 @@ Invalid element name
                   </tbody>
                </table>
           
-               <table class="table table-condensed col-sm-12" style="table-layout: fixed; word-wrap: break-word;">
+               <table class="table table-condensed" style="table-layout: fixed; word-wrap: break-word;">
                   <colgroup>
                      <col style="width: 40%" />
                      <col style="width: 60%" />
@@ -836,7 +832,7 @@ Invalid element name
             %if params['tab_commands']=='yes' and app.manage_acl and helper.can_action(user):
             <div class="tab-pane fade" id="commands">
                <h4>Commands:</h4>
-               <table class="table table-condensed col-sm-12" style="table-layout: fixed; word-wrap: break-word;">
+               <table class="table table-condensed" style="table-layout: fixed; word-wrap: break-word;">
                   <colgroup>
                      <col class="col-sm-1" />
                      <col class="col-sm-11" />
@@ -972,7 +968,7 @@ Invalid element name
                <br/>
                <br/>
                <h4>Currently:</h4>
-               <table class="table table-condensed col-sm-12" style="table-layout: fixed; word-wrap: break-word;">
+               <table class="table table-condensed" style="table-layout: fixed; word-wrap: break-word;">
                   <colgroup>
                      <col class="col-sm-6" />
                      <col class="col-sm-5" />
@@ -1077,7 +1073,7 @@ Invalid element name
                <h4>{{elt_type.capitalize()}} configuration:</h4>
 
                %if len(elt.customs) > 0:
-               <table class="table table-condensed col-sm-12 table-bordered" style="table-layout: fixed; word-wrap: break-word;">
+               <table class="table table-condensed table-bordered" style="table-layout: fixed; word-wrap: break-word;">
                   <colgroup>
                      <col style="width: 50%" />
                      <col style="width: 50%" />
@@ -1137,7 +1133,7 @@ Invalid element name
             %end
          </ul>
          
-         <div class="tab-content">
+         <div class="tab-content tab-content-bordered">
             <!-- Tab custom views -->
             %if params['tab_custom_views']=='yes':
             %_go_active = 'active'
@@ -1157,10 +1153,6 @@ Invalid element name
             <!-- Tab Summary Start-->
             %if params['tab_impacts']=='yes':
             <div class="tab-pane fade {{_go_active}} {{_go_fadein}}" id="impacts">
-               <div class='row-fluid well col-lg-12'>
-               
-                  <div class="row-fluid">
-                     <div class="col-lg-12">
                         <!-- Show our father dependencies if we got some -->
                         %if len(elt.parent_dependencies) > 0:
                         <h4>Root cause:</h4>
@@ -1187,9 +1179,7 @@ Invalid element name
                         %end
                         <h4>My services:</h4>
                         <div class="host-services">
-                           <div class='pull-left'>
-                              {{!helper.print_aggregation_tree(helper.get_host_service_aggregation_tree(elt, app), helper.get_html_id(elt))}}
-                           </div>
+                          {{!helper.print_aggregation_tree(helper.get_host_service_aggregation_tree(elt, app), helper.get_html_id(elt))}}
                         </div>
                         %elif len(elt.parent_dependencies) == 0:
                         <div class="alert alert-info">
@@ -1231,9 +1221,6 @@ Invalid element name
                         </div>
                         %# end of the 'is problem' if
                         %end
-                     </div>
-                  </div>
-               </div>
             </div>
             %end
             <!-- Tab Summary End-->
@@ -1241,7 +1228,6 @@ Invalid element name
             <!-- Tab Comments Start -->
             %if params['tab_comments']=='yes':
             <div class="tab-pane fade" id="comments">
-               <div class='row-fluid well col-lg-12'>
                   <div class="row-fluid">
                      %if len(elt.comments) > 0:
                      <table class="table table-condensed table-hover">
@@ -1294,7 +1280,6 @@ Invalid element name
                       });
                     });
                   </script>
-               </div>
             </div>
             %end
             <!-- Tab Comments End -->
@@ -1302,8 +1287,6 @@ Invalid element name
             <!-- Tab Downtimes Start -->
             %if params['tab_downtimes']=='yes':
             <div class="tab-pane fade" id="downtimes">
-               <div class='row-fluid well col-lg-12'>
-                  <div class="row-fluid">
                      %if len(elt.downtimes) > 0:
                      <table class="table table-condensed table-bordered">
                        <thead>
@@ -1330,7 +1313,6 @@ Invalid element name
                         <p class="font-blue">No downtimes available.</p>
                      </div>
                      %end
-                  </div>
                   
                   <button name="bt-schedule-downtime" data-toggle="modal" data-target="#modal" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> Add a downtime</button>
                   <button name="bt-delete-downtimes" data-toggle="modal" data-target="#modal" class="btn btn-primary btn-sm"><i class="fa fa-minus"></i> Delete all downtimes</button>
@@ -1354,7 +1336,6 @@ Invalid element name
                       });
                     });
                   </script>
-               </div>
             </div>
             %end
             <!-- Tab Downtimes End -->
@@ -1362,11 +1343,9 @@ Invalid element name
             <!-- Tab Timeline Start -->
             %if params['tab_timeline']=='yes':
             <div class="tab-pane fade" id="timeline">
-               <div class="row-fluid well col-lg-12">
                   <div id="inner_timeline" data-elt-name='{{elt.get_full_name()}}'>
                      <span class="alert alert-error">Sorry, I cannot load the timeline graph!</span>
                   </div>
-               </div>
             </div>
             %end
             <!-- Tab Graph End -->
@@ -1385,7 +1364,7 @@ Invalid element name
                </script>
                %else:
                <!-- <h4>Graphs</h4> -->
-               <div class='row-fluid well col-lg-12'>
+               <div class='well'>
                   <!-- Get the uris for the 5 standard time ranges in advance  -->
                   %now = int(time.time())
                   %fourhours = now - 3600*4
@@ -1403,11 +1382,13 @@ Invalid element name
                   %uris_1y = app.get_graph_uris(elt, lastyear, now, '')
 
                   <!-- Use of javascript to change the content of a div!-->
-                  <div class='col-lg-2 cursor'><a onclick="setHTML(html_4h,{{fourhours}});" > 4 hours</a></div>
-                  <div class='col-lg-2 cursor'><a onclick="setHTML(html_1d,{{lastday}});" > 1 day</a></div>
-                  <div class='col-lg-2 cursor'><a onclick="setHTML(html_1w,{{lastweek}});" > 1 week</a></div>
-                  <div class='col-lg-2 cursor'><a onclick="setHTML(html_1m,{{lastmonth}});" > 1 month</a></div>
-                  <div class='col-lg-2 cursor'><a onclick="setHTML(html_1y,{{lastyear}});" > 1 year</a></div>
+                  <div class="row">
+                    <div class='col-lg-2 cursor'><a onclick="setHTML(html_4h,{{fourhours}});" > 4 hours</a></div>
+                    <div class='col-lg-2 cursor'><a onclick="setHTML(html_1d,{{lastday}});" > 1 day</a></div>
+                    <div class='col-lg-2 cursor'><a onclick="setHTML(html_1w,{{lastweek}});" > 1 week</a></div>
+                    <div class='col-lg-2 cursor'><a onclick="setHTML(html_1m,{{lastmonth}});" > 1 month</a></div>
+                    <div class='col-lg-2 cursor'><a onclick="setHTML(html_1y,{{lastyear}});" > 1 year</a></div>
+                  </div>
                </div>
 
                <script language="javascript">
@@ -1482,7 +1463,7 @@ Invalid element name
                %end
                </script>
 
-               <div class='row-fluid well col-lg-12 jcrop'>
+               <div class='well jcrop'>
                   <div id='real_graphs'>
                   <!-- Let's keep this part visible. This is the custom and default range -->
                   %for g in uris:
@@ -1518,14 +1499,12 @@ Invalid element name
             });
             </script>
             <div class="tab-pane fade" id="depgraph" class="col-lg-12">
-               <div class='row-fluid well col-lg-12 jcrop'>
                   <div class="btn-group btn-group-sm pull-right">
                      <button id="fullscreen-request" class="btn btn-primary"><i class="fa fa-plus"></i> Fullscreen</button>
                   </div>
                   <div id="inner_depgraph" data-elt-name='{{elt.get_full_name()}}'>
                      <span class="alert alert-error">Sorry, I cannot load the dependency graph!</span>
                   </div>
-               </div>
             </div>
             %end
             <!-- Tab Dep graph End -->
@@ -1533,13 +1512,11 @@ Invalid element name
             <!-- Tab History Start -->
             %if params['tab_history']=='yes':
             <div class="tab-pane fade" id="history">
-               <div class="row-fluid well col-lg-12">
                   <div id="inner_history" data-elt-name='{{elt.get_full_name()}}'>
                      <div class="alert alert-danger">
                         <p class="font-red">Sorry, I cannot load the {{elt_type}} history!</p>
                      </div>
                   </div>
-               </div>
             </div>
             %end
             <!-- Tab History End -->

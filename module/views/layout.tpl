@@ -52,6 +52,7 @@
     <!-- Stylesheets 
     ================================================== -->
     <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/css/bootstrap-theme.min.css" rel="stylesheet">
     <link href="/static/css/font-awesome.min.css" rel="stylesheet">
     <link href="/static/css/Shinken-webUI.css" rel="stylesheet">
 

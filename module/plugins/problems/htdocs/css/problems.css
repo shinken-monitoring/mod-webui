@@ -20,3 +20,7 @@ td, th {
 .panel > .panel-body > table {
     margin-bottom:0;
 }
+
+td .progress {
+    margin-bottom:0px !important;
+}
