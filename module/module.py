@@ -903,14 +903,14 @@ class Webui_broker(BaseModule, Daemon):
             self.set_hostgroup_level(group, 0, user)
         
     def set_hostgroup_level(self, group, level, user=None):
-        logger.info("[%s] set_hostgroup_level, group: %s, level: %d", self.name, group.hostgroup_name, level)
+        logger.debug("[%s] set_hostgroup_level, group: %s, level: %d", self.name, group.hostgroup_name, level)
         
         setattr(group, 'level', level)
                 
         # Search hostgroups referenced in another group
         if group.has('hostgroup_members'):
             for g in sorted(group.get_hostgroup_members()):
-                # logger.info("[%s] set_hostgroups_level, group: %s, level: %d", self.name, g, group.level + 1)
+                logger.debug("[%s] set_hostgroups_level, group: %s, level: %d", self.name, g, group.level + 1)
                 child_group = self.get_hostgroup(g)
                 self.set_hostgroup_level(child_group, level + 1, user)
         
@@ -934,8 +934,41 @@ class Webui_broker(BaseModule, Daemon):
     def get_hostgroup(self, name):
         return self.datamgr.rg.hostgroups.find_by_name(name)
                   
-    def get_servicegroups(self):
-        return self.datamgr.rg.servicegroups
+    def set_servicegroups_level(self, user=None):
+        logger.info("[%s] set_servicegroups_level", self.name)
+        
+        # All known hostgroups are level 0 groups ...
+        for group in self.get_servicegroups(user=user):
+            self.set_servicegroup_level(group, 0, user)
+        
+    def set_servicegroup_level(self, group, level, user=None):
+        logger.debug("[%s] set_servicegroup_level, group: %s, level: %d", self.name, group.servicegroup_name, level)
+        
+        setattr(group, 'level', level)
+                
+        # Search hostgroups referenced in another group
+        if group.has('servicegroup_members'):
+            for g in sorted(group.get_servicegroup_members()):
+                logger.debug("[%s] set_servicegroups_level, group: %s, level: %d", self.name, g, group.level + 1)
+                child_group = self.get_servicegroup(g)
+                self.set_servicegroup_level(child_group, level + 1, user)
+        
+    def get_servicegroups(self, user=None):
+        items = self.datamgr.rg.servicegroups
+        
+        r = set()
+        for g in items:
+            filtered = False
+            for filter in self.services_filter:
+                if g.servicegroup_name.startswith(filter):
+                    filtered = True
+            if not filtered:
+                    r.add(g)
+                    
+        if user is not None:
+            r=only_related_to(r,user)
+
+        return r
 
     def get_servicegroup(self, name):
         return self.datamgr.rg.servicegroups.find_by_name(name)
