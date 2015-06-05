@@ -84,10 +84,10 @@
     });
   
     // Buttons tooltips
-    $('span').tooltip();
+    // $('span').tooltip();
 
     // Open the first host collapsable element
-    $('.host-panel:first').addClass('in');
+    // $('.host-panel:first').addClass('in');
     
       // Buttons tooltips
       // $('span').tooltip();
