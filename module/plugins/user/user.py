@@ -40,16 +40,9 @@ app = None
 
 
 # Test user preferences page ...
-def checkauth():
-    user = app.get_user_auth()
-
-    if not user:
-        app.bottle.redirect("/user/login")
-    else:
-        return user
 
 def show_pref():
-    user = checkauth()
+    user = app.checkauth()
 
     return {
         'app': app, 'user': user
@@ -57,13 +50,7 @@ def show_pref():
 
 
 def save_pref():
-    # First we look for the user sid
-    # so we bail out if it's a false one
-    user = app.get_user_auth()
-
-    if not user:
-        app.bottle.redirect("/user/login")
-        return
+    user = app.checkauth()
 
     key = app.request.forms.get('key', None)
     value = app.request.forms.get('value', None)
@@ -82,11 +69,7 @@ def save_pref():
 
 
 def save_common_pref():
-    user = app.get_user_auth()
-
-    if not user:
-        app.bottle.redirect("/user/login")
-        return
+    user = app.checkauth()
 
     key = app.request.forms.get('key', None)
     value = app.request.forms.get('value', None)

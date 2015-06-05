@@ -40,9 +40,7 @@ app = None
 
 # Our page
 def get_page():
-    user = app.get_user_auth()
-    if not user:
-        app.bottle.redirect("/user/login")
+    user = app.checkauth()
 
     has_user_pref_mod = app.has_user_preference_module()
 

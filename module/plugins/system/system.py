@@ -53,17 +53,8 @@ except Exception, exp:
     logger.warning("WebUI plugin '%s', configuration file (%s) not available: %s", plugin_name, configuration_file, str(exp))
 
 
-def checkauth():
-    user = app.get_user_auth()
-
-    if not user:
-        app.bottle.redirect("/user/login")
-    else:
-        return user
-
-
 def system_page():
-    user = checkauth()    
+    user = app.checkauth()
 
     schedulers = app.datamgr.get_schedulers()
     brokers = app.datamgr.get_brokers()
@@ -78,7 +69,7 @@ def system_page():
 
 
 def system_widget():
-    user = checkauth()    
+    user = app.checkauth()
 
     schedulers = app.datamgr.get_schedulers()
     brokers = app.datamgr.get_brokers()

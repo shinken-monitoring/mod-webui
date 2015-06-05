@@ -624,6 +624,13 @@ class Webui_broker(BaseModule, Daemon):
         return c
 
         
+    def checkauth(self):
+        user = self.get_user_auth()
+        if not user:
+            app.bottle.redirect("/user/login")
+        else:
+            return user
+            
     def get_gravatar(self, email, size=64, default='404'):
         """
         Given an email, returns a gravatar url for that email.

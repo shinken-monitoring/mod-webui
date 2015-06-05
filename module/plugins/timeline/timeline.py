@@ -94,13 +94,6 @@ def reload_cfg():
     app.bottle.redirect("/config")
 
 
-def checkauth():
-    user = app.get_user_auth()
-    if not user:
-        app.bottle.redirect("/user/login")
-    else:
-        return user
-
 def getdb(dbname):
     con = None
     db = None
@@ -130,13 +123,13 @@ def getdb(dbname):
 # Our page. If the user call /dummy/TOTO arg1 will be TOTO.
 # if it's /dummy/, it will be 'nothing'
 def get_page(hostname='nothing'):
-    user = checkauth()
+    user = app.checkauth()
 
     return {'app': app, 'user': user, 'hostname': hostname}
 
 
 def get_json(hostname):
-    user = checkauth()    
+    user = app.checkauth()
 
     app.response.content_type = 'application/json'
 

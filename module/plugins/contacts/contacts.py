@@ -53,14 +53,6 @@ def load_cfg():
         logger.warning("[webui-contacts] configuration file (%s) not available: %s", configuration_file, str(exp))
         return False
 
-def checkauth():
-    user = app.get_user_auth()
-
-    if not user:
-        app.bottle.redirect("/user/login")
-    else:
-        return user
-
 def reload_cfg():
     load_cfg()
     app.bottle.redirect("/config")
@@ -68,7 +60,7 @@ def reload_cfg():
 
 # Contact page
 def show_contact(name):
-    user = checkauth()
+    user = app.checkauth()
 
     if not user.is_admin and user.get_name != name:
       app.bottle.redirect('/contacts')
@@ -80,7 +72,7 @@ def show_contact(name):
 
 # All contacts
 def show_contacts():
-    user = checkauth()
+    user = app.checkauth()
 
     if user.is_admin:
         contacts = app.get_contacts()

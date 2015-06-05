@@ -43,13 +43,7 @@ except ImportError:
 def lookup(name=''):
     app.response.content_type = 'application/json'
 
-    user = app.get_user_auth()
-    if not user:
-        return []
-
-    # if len(name) < 3:
-        # print "Lookup %s too short, bail out" % name
-        # return []
+    user = app.checkauth()
 
     filtered_hosts = only_related_to(app.datamgr.get_hosts(), user)
     hnames = (h.host_name for h in filtered_hosts)
@@ -62,9 +56,7 @@ def lookup(name=''):
 def lookup_post():
     app.response.content_type = 'application/json'
 
-    user = app.get_user_auth()
-    if not user:
-        return []
+    user = app.checkauth()
 
     name = app.request.forms.get('value')
     if not name or len(name) < 3:

@@ -30,12 +30,7 @@ app = None
 
 
 def depgraph_host(name):
-    # First we look for the user sid
-    # so we bail out if it's a false one
-    user = app.get_user_auth()
-
-    if not user:
-        return {'app': app, 'elt': None, 'valid_user': False}
+    user = app.checkauth()
 
     # Ok we are in a detail page but the user ask for a specific search
     search = app.request.GET.get('global_search', None)
@@ -52,12 +47,7 @@ def depgraph_host(name):
 
 
 def depgraph_srv(hname, desc):
-    # First we look for the user sid
-    # so we bail out if it's a false one
-    user = app.get_user_auth()
-
-    if not user:
-        return {'app': app, 'elt': None, 'valid_user': False}
+    user = app.checkauth()
 
     loop = bool(int(app.request.GET.get('loop', '0')))
     loop_time = int(app.request.GET.get('loop_time', '10'))
@@ -74,12 +64,7 @@ def depgraph_srv(hname, desc):
 
 
 def get_depgraph_widget():
-    # First we look for the user sid
-    # so we bail out if it's a false one
-    user = app.get_user_auth()
-
-    if not user:
-        return {'app': app, 'elt': None, 'valid_user': False}
+    user = app.checkauth()
 
     search = app.request.GET.get('search', '').strip()
 
@@ -111,12 +96,7 @@ def get_depgraph_widget():
 
 
 def get_depgraph_inner(name):
-    # First we look for the user sid
-    # so we bail out if it's a false one
-    user = app.get_user_auth()
-
-    if not user:
-        return {'app': app, 'elt': None, 'user': None}
+    user = app.checkauth()
 
     elt = None
     if '/' in name:

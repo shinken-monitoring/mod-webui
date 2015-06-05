@@ -67,14 +67,6 @@ def load_cfg():
         logger.warning("WebUI plugin '%s', configuration file (%s) not available: %s" % (plugin_name, configuration_file, str(exp)))
         return False
 
-def checkauth():
-    user = app.get_user_auth()
-
-    if not user:
-        app.bottle.redirect("/user/login")
-    else:
-        return user
-
 def reload_cfg():
     load_cfg()
     app.bottle.redirect("/config")
@@ -82,7 +74,7 @@ def reload_cfg():
 
 # Main impacts view
 def show_host(name):
-    user = checkauth()
+    user = app.checkauth()
 
     # Ok we are in a detail page but the user ask for a specific search
     search = app.request.GET.get('global_search', None)
@@ -103,7 +95,7 @@ def show_host(name):
 
 
 def show_service(hname, desc):
-    user = checkauth()
+    user = app.checkauth()
 
     # Ok we are in a detail page but the user ask for a specific search
     search = app.request.GET.get('global_search', None)

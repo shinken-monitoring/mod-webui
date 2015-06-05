@@ -57,14 +57,6 @@ def load_cfg():
         logger.warning("[webui-commands] configuration file (%s) not available: %s", configuration_file, str(exp))
         return False
 
-def checkauth():
-    user = app.get_user_auth()
-
-    if not user:
-        app.bottle.redirect("/user/login")
-    else:
-        return user
-
 def reload_cfg():
     load_cfg()
     app.bottle.redirect("/config")
@@ -72,7 +64,7 @@ def reload_cfg():
 
 # All commands
 def show_commands():
-    user = checkauth()
+    user = app.checkauth()
 
     return {
         'app': app, 'user': user, 'params': params, 

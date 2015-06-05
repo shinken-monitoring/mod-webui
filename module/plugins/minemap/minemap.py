@@ -63,20 +63,12 @@ def load_cfg():
         logger.warning("[webui-minemap] configuration file (%s) not available: %s", configuration_file, str(exp))
         return False
 
-def checkauth():
-    user = app.get_user_auth()
-
-    if not user:
-        app.bottle.redirect("/user/login")
-    else:
-        return user
-
 def reload_cfg():
     load_cfg()
     app.bottle.redirect("/config")
 
 def show_minemap(name):
-    user = checkauth()
+    user = app.checkauth()
 
     if name == 'all':
         my_group = 'all'
@@ -122,7 +114,7 @@ def show_minemap(name):
     return {'app': app, 'user': user, 'navi': navi, 'params': params, 'group': my_group, 'hosts': items}
 
 def show_minemaps():
-    user = checkauth()
+    user = app.checkauth()
 
     app.bottle.redirect("/minemap/all")
 

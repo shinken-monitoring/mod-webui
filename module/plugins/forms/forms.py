@@ -28,19 +28,8 @@
 app = None
 
 
-def checkauth():
-    # First we look for the user sid
-    # so we bail out if it's a false one
-    user = app.get_user_auth()
-    if not user:
-        app.bottle.redirect("/user/login")
-    else:
-        return user
-
-
 def form_submit_check(name):
-    print "Want submit check for", name
-    user = checkauth()
+    user = app.checkauth()
 
     t = 'host'
     if '/' in name:
@@ -50,34 +39,34 @@ def form_submit_check(name):
 
 
 def form_var(name):
-    user = checkauth()
+    user = app.checkauth()
 
     h = app.datamgr.get_host(name)
             
     return {'app': app, 'elt': h, 'user': user, 'name': name}
 
 def form_ack(name):
-    user = checkauth()
+    user = app.checkauth()
 
     return {'app': app, 'user': user, 'name': name}
 
 def form_comment(name):
-    user = checkauth()
+    user = app.checkauth()
 
     return {'app': app, 'user': user, 'name': name}
 
 def form_comment_delete(name):
-    user = checkauth()
+    user = app.checkauth()
 
     return {'app': app, 'user': user, 'name': name}
     
 def form_downtime(name):
-    user = checkauth()
+    user = app.checkauth()
 
     return {'app': app, 'user': user, 'name': name}
 
 def form_downtime_delete(name):
-    user = checkauth()
+    user = app.checkauth()
 
     return {'app': app, 'user': user, 'name': name}
 

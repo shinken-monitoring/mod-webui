@@ -48,12 +48,7 @@ def hst_srv_sort(s1, s2):
 
 
 def show_impacts():
-    # First we look for the user sid
-    # so we bail out if it's a false one
-    user = app.get_user_auth()
-    if not user:
-        app.bottle.redirect("/user/login")
-        #return {'app': app, 'impacts': {}, 'valid_user': False, 'user': user}
+    user = app.checkauth()
 
     all_imp_impacts = only_related_to(app.datamgr.get_important_elements(),user)
     all_imp_impacts.sort(hst_srv_sort)

@@ -49,11 +49,7 @@ def get_all():
 # Our View code. We will get different data from all and /problems
 # but it's mainly filtering changes
 def get_view(default_search=""):
-
-    user = app.get_user_auth()
-    if not user:
-        app.bottle.redirect("/user/login")
-
+    user = app.checkauth()
 
     # Look for the toolbar pref
     toolbar_pref = app.get_user_preference(user, 'toolbar')
@@ -264,10 +260,7 @@ def get_view(default_search=""):
 
 # Our page
 def get_pbs_widget():
-
-    user = app.get_user_auth()
-    if not user:
-        app.bottle.redirect("/user/login")
+    user = app.checkauth()
 
     # We want to limit the number of elements, The user will be able to increase it
     nb_elements = max(0, int(app.request.GET.get('nb_elements', '10')))
@@ -325,10 +318,7 @@ def get_pbs_widget():
 
 # Our page
 def get_last_errors_widget():
-
-    user = app.get_user_auth()
-    if not user:
-        app.bottle.redirect("/user/login")
+    user = app.checkauth()
 
     # We want to limit the number of elements, The user will be able to increase it
     nb_elements = max(0, int(app.request.GET.get('nb_elements', '10')))

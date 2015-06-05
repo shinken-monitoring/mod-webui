@@ -59,20 +59,12 @@ def load_cfg():
         logger.warning("WebUI plugin '%s', configuration file (%s) not available: %s" % (plugin_name, configuration_file, str(exp)))
         return False
 
-def checkauth():
-    user = app.get_user_auth()
-
-    if not user:
-        app.bottle.redirect("/user/login")
-    else:
-        return user
-
 def reload_cfg():
     load_cfg()
     app.bottle.redirect("/config")
 
 def show_tag(name):
-    user = checkauth()
+    user = app.checkauth()
 
     if name == 'all':
         items = []
@@ -101,7 +93,7 @@ def show_tag(name):
     return {'app': app, 'user': user, 'params': params, 'navi': navi, 'tag': name, 'hosts': items, 'length': total}
 
 def show_stag(name):
-    user = checkauth()
+    user = app.checkauth()
 
     if name == 'all':
         items = []
@@ -130,7 +122,7 @@ def show_stag(name):
     return {'app': app, 'user': user, 'params': params, 'navi': navi, 'tag': name, 'services': items, 'length': total}
 
 def show_tags():
-    user = checkauth()
+    user = app.checkauth()
 
     fake_htags = []
     for tag in app.get_host_tags_sorted():
@@ -141,8 +133,8 @@ def show_tags():
     return {'app': app, 'user': user, 'params': params, 'htags': fake_htags}
 
 def show_stags():
-    user = checkauth()
-    
+    user = app.checkauth()
+
     fake_stags = []
     for tag in app.get_service_tags_sorted():
         services = only_related_to(app.get_services_tagged_with(tag[0]),user)
