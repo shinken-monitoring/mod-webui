@@ -37,7 +37,7 @@
       %end
       %end
       
-      %other_uis = app.get_external_ui_link()
+      %other_uis = app.get_ui_external_links()
       %if len(other_uis) > 0:
       <hr style="width: 90%"/>
       %end

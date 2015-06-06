@@ -770,7 +770,7 @@ class Webui_broker(BaseModule, Daemon):
 
 
     # Will get all label/uri for external UI like PNP or NagVis
-    def get_external_ui_link(self):
+    def get_ui_external_links(self):
         lst = []
         for mod in self.modules_manager.get_internal_instances():
             try:
@@ -779,7 +779,6 @@ class Webui_broker(BaseModule, Daemon):
                     r = f()
                     lst.append(r)
             except Exception, exp:
-                print exp.__dict__
                 logger.warning("[%s] Warning: The mod %s raise an exception: %s, I'm tagging it to restart later" % (self.name, mod.get_name(), str(exp)))
                 logger.debug("[%s] Exception type: %s" % (self.name, type(exp)))
                 logger.debug("Back trace of this kill: %s" % (traceback.format_exc()))
@@ -896,7 +895,7 @@ class Webui_broker(BaseModule, Daemon):
         return self.datamgr.rg.contactgroups.find_by_name(name)
 
     def set_hostgroups_level(self, user=None):
-        logger.info("[%s] set_hostgroups_level", self.name)
+        logger.debug("[%s] set_hostgroups_level", self.name)
         
         # All known hostgroups are level 0 groups ...
         for group in self.get_hostgroups(user=user):
@@ -935,7 +934,7 @@ class Webui_broker(BaseModule, Daemon):
         return self.datamgr.rg.hostgroups.find_by_name(name)
                   
     def set_servicegroups_level(self, user=None):
-        logger.info("[%s] set_servicegroups_level", self.name)
+        logger.debug("[%s] set_servicegroups_level", self.name)
         
         # All known hostgroups are level 0 groups ...
         for group in self.get_servicegroups(user=user):
