@@ -24,7 +24,7 @@
 /*
   Tool bar related code
 */
-function hide_toolbar(){
+function hide_toolbar(save){
    $('#toolbar').hide();
    $('#hide_toolbar_btn').hide();
    $('#show_toolbar_btn').show();
@@ -32,10 +32,11 @@ function hide_toolbar(){
    $('#problems').addClass('col-lg-12 col-md-12 col-sm-12');
    $('#problems').removeClass('col-lg-9 col-md-8 col-sm-8');
 
-   save_toolbar('hide');
+   if (save)
+      save_user_preference('toolbar', 'hide');
 }
 
-function show_toolbar(){
+function show_toolbar(save){
    $('#toolbar').show();
    $('#hide_toolbar_btn').show();
    $('#show_toolbar_btn').hide();
@@ -43,11 +44,8 @@ function show_toolbar(){
    $('#problems').addClass('col-lg-9 col-md-8 col-sm-8');
    $('#problems').removeClass('col-lg-12 col-md-12 col-sm-12');
 
-   save_toolbar('show');
-}
-
-function save_toolbar(toolbar){
-   $.post("/user/save_pref", { 'key' : 'toolbar', 'value' : toolbar});
+   if (save)
+      save_user_preference('toolbar', 'show');
 }
 
 

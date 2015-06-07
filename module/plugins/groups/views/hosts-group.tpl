@@ -211,10 +211,6 @@ Invalid group name
    
    <div class="panel panel-default">
       <div class="panel-body">
-         <div class='col-lg-12'>
-            %include("pagination_element", navi=navi, app=app, page="hosts-group/"+groupname, div_class="center no-margin")
-         </div>
-
          <table class="table table-hover">
             <tbody>
                <tr>
@@ -253,10 +249,6 @@ Invalid group name
                %end
             </tbody>
          </table>
-
-         <div class='col-lg-12'>
-            %include("pagination_element", navi=navi, app=app, page="hosts-group/"+groupname, div_class="center no-margin")
-         </div>
       </div>
    </div>
 </div>

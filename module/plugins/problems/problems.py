@@ -51,18 +51,13 @@ def get_all():
 def get_view(default_search=""):
     user = app.checkauth()
 
-    # Look for the toolbar pref
-    toolbar_pref = app.get_user_preference(user, 'toolbar')
-    # If void, create an empty one
-    if not toolbar_pref:
-        app.set_user_preference(user, 'toolbar', 'show')
-        toolbar_pref = 'show'
+    # Fetch toolbar preference for user, default is 'show'
+    toolbar_pref = app.get_user_preference(user, 'toolbar', 'show')
+
     toolbar = app.request.GET.get('toolbar', '')
-    if toolbar != toolbar_pref and len(toolbar) > 0:
-        print "Need to change user prefs for Toolbar",
+    if toolbar != toolbar_pref and toolbar in ['show', 'hide']:
         app.set_user_preference(user, 'toolbar', toolbar)
     toolbar_pref = app.get_user_preference(user, 'toolbar')
-
 
     # We want to limit the number of elements
     step = int(app.request.GET.get('step', '30'))

@@ -22,17 +22,15 @@ function add_new_bookmark(page){
 }
 
 function save_bookmarks(){
-   $.post("/user/save_pref", { 'key' : 'bookmarks', 'value' : JSON.stringify(bookmarks)});
-
-   // And refresh it
-   refresh_bookmarks();
+   save_user_preference('bookmarks', JSON.stringify(bookmarks), function () {
+      refresh_bookmarks();
+   });
 }
 
 function save_bookmarksro(){
-   $.post("/user/save_common_pref", { 'key' : 'bookmarks', 'value' : JSON.stringify(bookmarksro)});
-
-   // And refresh it
-   refresh_bookmarksro();
+   save_common_preference('bookmarks', JSON.stringify(bookmarksro), function () {
+      refresh_bookmarksro();
+   });
 }
 
 function push_to_common_bookmarks(name,uri) {

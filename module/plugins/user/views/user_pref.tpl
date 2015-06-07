@@ -66,37 +66,54 @@
                      <col style="width: 70%" />
                   </colgroup>
                   <thead>
-                <tr>
-                  <th colspan="2"></td>
-                </tr>
-              </thead>
-              <tbody style="font-size:x-small;">
-                <tr>
-                  <td><strong>Identification:</strong></td>
-                  <td>{{"%s (%s)" % (user.alias, user.contact_name) if user.alias != 'none' else user.contact_name}}</td>
-                </tr>
-                <tr>
-                  <td><strong>Commands authorized:</strong></td>
-                  <td>{{! app.helper.get_on_off(app.helper.can_action(user), "Is this contact allowed to launch commands from Web UI?")}}</td>
-                </tr>
-              </tbody>
-            </table>
+                     <tr><th colspan="2"></td></tr>
+                  </thead>
+                  <tbody style="font-size:x-small;">
+                     <tr>
+                        <td><strong>Identification:</strong></td>
+                        <td>{{"%s (%s)" % (user.alias, user.contact_name) if user.alias != 'none' else user.contact_name}}</td>
+                     </tr>
+                     <tr>
+                        <td><strong>Commands authorized:</strong></td>
+                        <td>{{! app.helper.get_on_off(app.helper.can_action(user), "Is this contact allowed to launch commands from Web UI?")}}</td>
+                     </tr>
+                  </tbody>
+               </table>
             
-            <table class="table table-condensed col-sm-12" style="table-layout: fixed; word-wrap: break-word;">
-              <colgroup>
-                <col style="width: 30%" />
-                <col style="width: 70%" />
-              </colgroup>
-              <thead>
-                <tr>
-                  <th colspan="2">Preferences:</td>
-                </tr>
-              </thead>
-              <tbody style="font-size:x-small;">
-              </tbody>
-            </table>
-            
-          </div>
+               <table class="table table-condensed col-sm-12" style="table-layout: fixed; word-wrap: break-word;">
+                  <colgroup>
+                     <col style="width: 30%" />
+                     <col style="width: 70%" />
+                  </colgroup>
+                  <thead>
+                     <tr>
+                        <th colspan="2">Preferences:</td>
+                     </tr>
+                  </thead>
+                  <tbody style="font-size:x-small;">
+                  %for preference in app.get_user_preference(user):
+                  %if preference in ['_id']:
+                  %continue
+                  %end
+                  <script>
+                     value = '{{json.dumps(app.get_user_preference(user, preference))}}';
+/*
+                     $.each(value, function( index, value ) {
+                        <tr>
+                           <td></td>
+                           <td></td>
+                        </tr>
+                     });
+*/
+                  </script>
+                     <tr>
+                        <td>{{preference}}</td>
+                        <td>{{json.dumps(app.get_user_preference(user, preference))}}</td>
+                     </tr>
+                  %end
+                  </tbody>
+               </table>
+            </div>
          </div>
       </div>
    </div>

@@ -10,7 +10,8 @@
 %end
 <script type="text/javascript">
    var actions_enabled = {{'true' if actions_allowed else 'false'}};
-   // console.log('Actions: '+actions_enabled);
+   var toolbar = {{'true' if toolbar else 'false'}};
+
    function submitform() {
       document.forms["search_form"].submit();
    }
@@ -32,7 +33,7 @@
     }
  }
 
-// Typeahead: builds suggestion engine
+ // Typeahead: builds suggestion engine
  var hosts = new Bloodhound({
     datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
     queryTokenizer: Bloodhound.tokenizers.whitespace,
@@ -96,7 +97,8 @@
       // $('.host-panel:first').addClass('in');
       
       // Hide the toolbar
-      // hide_toolbar();
+      if (toolbar) 
+         show_toolbar();
    });
 </script>
 
@@ -104,8 +106,8 @@
 <div class="row">
 
  <div class='col-lg-5 col-md-4 col-sm-2 pull-left'>
-    <a id='show_toolbar_btn' href="javascript:show_toolbar()" class="btn btn-default btn-sm"><i class="fa fa-plus"></i> Show toolbar</a>      
-    <a id="hide_toolbar_btn" href="javascript:hide_toolbar()" class="btn btn-default btn-sm" style="display:none;"><i class="fa fa-minus"></i> Hide toolbar</a>
+    <a id='show_toolbar_btn' href="javascript:show_toolbar(true)" class="btn btn-default btn-sm"><i class="fa fa-plus"></i> Show toolbar</a>      
+    <a id="hide_toolbar_btn" href="javascript:hide_toolbar(true)" class="btn btn-default btn-sm" style="display:none;"><i class="fa fa-minus"></i> Hide toolbar</a>
     <a id='select_all_btn' href="javascript:select_all_problems()" class="btn btn-default btn-sm"><i class="fa fa-check"></i> Select all</a>
     <a id='unselect_all_btn' href="javascript:unselect_all_problems()" class="btn btn-default btn-sm" style="display:none;"><i class="fa fa-minus"></i> Unselect all</a>
  </div>

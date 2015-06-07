@@ -60,9 +60,6 @@ def save_pref():
 
     s = json.dumps('{%s: %s}' % (key, value))
 
-    print "We will save for the user", user.get_name(), key, ':', value
-    print "As %s" % s
-
     app.set_user_preference(user, key, value)
 
     return

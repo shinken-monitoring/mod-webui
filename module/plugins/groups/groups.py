@@ -73,6 +73,9 @@ def reload_cfg():
 def show_hostgroup(name):
     user = checkauth()
 
+    # Fetch elements per page preference for user, default is 25
+    elts_per_page = app.get_user_preference(user, 'elts_per_page', 25)
+    
     # Set hostgroups level ...
     app.set_hostgroups_level(user)
     
@@ -92,7 +95,6 @@ def show_hostgroup(name):
             
         items = only_related_to(my_group.get_hosts(),user)
 
-    elts_per_page = params['elts_per_page']
     # We want to limit the number of elements
     start = int(app.request.GET.get('start', '0'))
     end = int(app.request.GET.get('end', elts_per_page))
@@ -110,7 +112,7 @@ def show_hostgroup(name):
     hosts = items[start:end]
         
     return {
-        'app': app, 'user': user, 'params': params, 'navi': navi, 
+        'app': app, 'user': user, 'params': params, 'navi': navi, 'elts_per_page': elts_per_page, 'page': "hosts-group/"+name, 
         'group': my_group, 'hosts': hosts, 'all_hosts': all_hosts, 'progress_bar': False
         }
 
@@ -129,6 +131,9 @@ def show_hostgroups():
 def show_servicegroup(name):
     user = checkauth()    
 
+    # Fetch elements per page preference for user, default is 25
+    elts_per_page = app.get_user_preference(user, 'elts_per_page', 25)
+    
     # Set servicegroups level ...
     app.set_servicegroups_level(user)
     
@@ -148,7 +153,6 @@ def show_servicegroup(name):
             
         items = only_related_to(my_group.get_services(),user)
 
-    elts_per_page = params['elts_per_page']
     # We want to limit the number of elements
     start = int(app.request.GET.get('start', '0'))
     end = int(app.request.GET.get('end', elts_per_page))
@@ -166,7 +170,7 @@ def show_servicegroup(name):
     services = items[start:end]
         
     return {
-        'app': app, 'user': user, 'params': params, 'navi': navi, 
+        'app': app, 'user': user, 'params': params, 'navi': navi, 'elts_per_page': elts_per_page, 'page': "services-group/"+name, 
         'group': my_group, 'services': services, 'all_services': all_services, 'progress_bar': False
         }
 

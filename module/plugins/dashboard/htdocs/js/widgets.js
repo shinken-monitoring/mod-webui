@@ -125,29 +125,30 @@ function find_widget(name){
 
 // We will look if we need to save the current state and options or not
 function saveWidgets(callback){
-    // First we reupdate the widget-position, to be sure the js objects got the good value
-    var pos = $.fn.GetEasyWidgetPositions();
-    update_widgets_positions(pos);
+   // First we reupdate the widget-position, to be sure the js objects got the good value
+   var pos = $.fn.GetEasyWidgetPositions();
+   update_widgets_positions(pos);
 
-    var widgets_ids = [];
-    var save_widgets_list = false;
-    $('.widget').each(function(idx, w){
-        // If the widget is closed, don't save it
-        if( $(this).data('deleted') === 1){ return; }
+   var widgets_ids = [];
+   var save_widgets_list = false;
+   $('.widget').each(function(idx, w){
+      // If the widget is closed, don't save it
+      if( $(this).data('deleted') === 1){ return; }
 
-        //id = w.id;
-        var widget = find_widget(w.id);
-        // Find the widget and check if it was not closed
-        // RMQ : widget_context came from a global value set by the page.
-        if(widget != -1){
-            var o = {'id' : widget.id, 'position' : widget.position, 'base_url' : widget.base_url, 'options' : widget.options, 'collapsed' : widget.collapsed, 'for' : widget_context};
-            console.log('Saving: '+JSON.stringify(widget));
-            widgets_ids.push(o);
-        }
-    });
+      //id = w.id;
+      var widget = find_widget(w.id);
+      // Find the widget and check if it was not closed
+      // RMQ : widget_context came from a global value set by the page.
+      if (widget != -1){
+         var o = {'id' : widget.id, 'position' : widget.position, 'base_url' : widget.base_url, 'options' : widget.options, 'collapsed' : widget.collapsed, 'for' : widget_context};
+         console.log('Saving: '+JSON.stringify(widget));
+         widgets_ids.push(o);
+      }
+   });
 
-    console.log('Need to save widgets list: '+JSON.stringify(widgets_ids));
-    $.post("/user/save_pref", { 'key' : 'widgets', 'value' : JSON.stringify(widgets_ids)}, callback);
+   console.log('Need to save widgets list: '+JSON.stringify(widgets_ids));
+   save_user_preference('widgets', JSON.stringify(widgets_ids), callback);
+   // $.post("/user/save_pref", { 'key' : 'widgets', 'value' : JSON.stringify(widgets_ids)}, callback);
 }
 
 // Function that will look at the current state of the positions,
