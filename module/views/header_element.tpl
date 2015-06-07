@@ -118,8 +118,8 @@
                   <li class="user-footer">
                      <div class="pull-left">
                         <a href="https://shinken.readthedocs.org/en/latest/" target="_blank" class="btn btn-default btn-flat"><i class="fa fa-book"></i> </a>
-                        <a href="/user/pref" data-toggle="modal" class="btn btn-default btn-flat"><span class="fa fa-gear"></span> </a>
-                        <a href="#profile" data-toggle="modal" class="btn btn-default btn-flat disabled"><span class="fa fa-pencil"></span> </a>
+                        <a href="#actions" data-toggle="modal" class="btn btn-default btn-flat disabled"><span class="fa fa-gear"></span> </a>
+                        <a href="/user/pref" data-toggle="modal" class="btn btn-default btn-flat"><span class="fa fa-pencil"></span> </a>
                      </div>
                      <div class="pull-right">
                         <a href="/user/logout" class="btn btn-default btn-flat" data-toggle="modal" data-target="/user/logout"><span class="fa fa-sign-out"></span> </a>
