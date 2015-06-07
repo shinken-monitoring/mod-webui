@@ -65,3 +65,11 @@
       </div><!--/.nav-collapse -->
    </div>
 </div>
+<script>
+   <!-- @todo@, change layout ... -->
+   <!-- Should work but does not ... because of whole page reloading on every link ... -->
+   $(".sidebar-nav a").on("click", function(){
+      $(".sidebar-nav").find(".active").removeClass("active");
+      $(this).parent().addClass("active");
+   });
+</script>
