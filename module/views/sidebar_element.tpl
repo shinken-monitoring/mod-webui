@@ -9,62 +9,59 @@
 %end
 %end
 
-<!-- Sidebar menu -->
-<div>
-   <ul class="nav sidebar-menu" id="sidebar-menu">
-   %if app:
-      %# Anyway, at least a Dashboard entry ...
-      %if app.sidebar_menu is None: 
-          <li class="active">
-            <a href="/dashboard">
-              <i class="fa fa-dashboard"></i> Dashboard 
-            </a>
-          </li>
-      %else:
-      %for (menu) in app.sidebar_menu: 
-      %menu = [item.strip() for item in menu.split(',')]
-      %if len(menu) >= 2:
-          <li>
-            <a href="/{{menu[0]}}">
-      %if len(menu) >= 3:
-              <i class="fa fa-{{menu[2]}}"></i> {{menu[1]}}
-      %else:
-              <i class="fa"></i> {{menu[1]}}
-      %end
-            </a>
-          </li>
-      %end
-      %end
-      %end
-      
-      %other_uis = app.get_ui_external_links()
-      %if len(other_uis) > 0:
-      <hr style="width: 90%"/>
-      %end
-      %for c in other_uis:
-      <li>
-        <a href="{{c['uri']}}" target="_blank">
-          <i class="fa fa-rocket"></i> {{c['label']}}
-        </a>
-      </li>
-      %end
-   %end
-   </ul>
+%# Fetch sidebar preference for user, default is 'show'
+%sidebar_pref = app.get_user_preference(user, 'sidebar', 'show')
+<div class="sidebar-nav">
+   <div class="navbar navbar-default" role="navigation">
+      <div class="navbar-header">
+         <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".sidebar-navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+         </button>
+         <span class="visible-xs navbar-brand">Sidebar menu</span>
+      </div>
+      <div class="navbar-collapse collapse sidebar-navbar-collapse">
+         <ul class="nav navbar-nav">
+         %if app:
+            %# Anyway, at least a Dashboard entry ...
+            %if app.sidebar_menu is None: 
+                <li class="active">
+                  <a href="/dashboard">
+                    <span class="fa fa-dashboard"></span> Dashboard 
+                  </a>
+                </li>
+            %else:
+            %for (menu) in app.sidebar_menu: 
+            %menu = [item.strip() for item in menu.split(',')]
+            %if len(menu) >= 2:
+                <li>
+                  <a href="/{{menu[0]}}">
+            %if len(menu) >= 3:
+                    <span class="fa fa-{{menu[2]}}"></span> {{menu[1]}}
+            %else:
+                    <span class="fa"></span> {{menu[1]}}
+            %end
+                  </a>
+                </li>
+            %end
+            %end
+            %end
+            
+            %other_uis = app.get_ui_external_links()
+            %if len(other_uis) > 0:
+            <hr style="width: 90%"/>
+            %end
+            %for c in other_uis:
+            <li>
+              <a href="{{c['uri']}}" target="_blank">
+                <i class="fa fa-rocket"></i> {{c['label']}}
+              </a>
+            </li>
+            %end
+         %end
+         </ul>
+      </div><!--/.nav-collapse -->
+   </div>
 </div>
-<script type="text/javascript">
-   $(document).ready(function(){
-      // @maethor: should be nice with smooth animation ?
-      $('.nav.sidebar-menu li a').click(function () {
-         window.setTimeout(function() { 
-            $('.left-side').toggleClass("collapse-left");
-            $(".right-side").toggleClass("strech");
-         }, 1000);
-      });
-
-      window.setTimeout(function() { 
-         $('.left-side').toggleClass("collapse-left");
-         $(".right-side").toggleClass("strech");
-      }, 3000);
-   });
-</script>
-

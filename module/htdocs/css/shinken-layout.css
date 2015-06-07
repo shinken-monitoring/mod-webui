@@ -23,9 +23,88 @@
 *
 **/
 
+/*
+ * ------------------------------------------------------------------------
+ * Page layout
+ * ------------------------------------------------------------------------
+ */
 
-/*  Shinken basics
-    ------------------------------------------------------- */
+/*
+ * Navigation bar
+ */
+.header .navbar-brand {
+  padding: 1px;
+}
+.header .navbar-brand img {
+  height: 48px;
+  padding: 1px;
+  margin: 0;
+}
+
+/*
+ * Footer
+ */
+.footer.navbar {
+  height: 25px;
+  min-height: 25px !important;
+  margin-bottom: 0;
+}
+.footer img {
+  float: left;
+  padding: 2px;
+  display: block;
+}
+
+/*
+ * Sidebar navigation
+ */
+.left-part, .right-part {
+   top: 60px;
+}
+
+@media(max-width:1000px)  {
+   .navbar-collapse.collapse {
+      display: none !important;
+   }
+
+   .navbar-collapse {
+      overflow-x: visible !important;
+   }
+
+   .navbar-collapse.in {
+      overflow-y: auto !important;
+   }
+
+   .collapse.in {
+      display: block !important;
+   }
+}
+/*
+ * Sidebar navigation
+@media screen and (max-width: 1024px) {
+   .sidebar-nav .navbar .navbar-collapse {
+      padding: 0;
+      max-height: none;
+   }
+   .sidebar-nav .navbar ul {
+      float: none;
+   }
+   .sidebar-nav .navbar ul:not {
+      display: block;
+   }
+   .sidebar-nav .navbar li {
+      float: none;
+      display: block;
+   }
+}
+ */
+
+/*
+ * ------------------------------------------------------------------------
+ * Shinken basics
+ * ------------------------------------------------------------------------
+ */
+ 
 .font-ok, .font-up {
   color: #5bb75b !important;
 }

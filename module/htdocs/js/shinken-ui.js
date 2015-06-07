@@ -36,3 +36,29 @@ if(!Array.indexOf){
         return -1;
     }
 }
+
+/**
+ * Save current user preference value: 
+ * - key / value
+ * - callback function called after data are posted
+**/
+function save_user_preference(key, value, callback) {
+   $.post("/user/save_pref", { 'key' : key, 'value' : value}, function() {
+      raise_message_ok("User parameter "+key+" set to "+value);
+      if (callback)
+         window[callback]();
+   });
+}
+
+/**
+ * Save common preference value
+ * - key / value
+ * - callback function called after data are posted
+**/
+function save_common_preference(key, value, callback) {
+   $.post("/user/save_common_pref", { 'key' : key, 'value' : value}, function() {
+      raise_message_ok("Common parameter "+key+" set to "+value);
+      if (callback)
+         window[callback]();
+   });
+}
