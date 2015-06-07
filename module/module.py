@@ -272,7 +272,10 @@ class Webui_broker(BaseModule, Daemon):
     # in the good queue
     def push_external_command(self, e):
         logger.info("[%s] Got an external command: %s", self.name, e.__dict__)
-        self.from_q.put(e)
+        try:
+            self.from_q.put(e)
+        except Exception, exp:
+            logger.error("[%s] External command push, exception: %s", self.name, str(exp))
 
 
     # Real main function
@@ -678,26 +681,6 @@ class Webui_broker(BaseModule, Daemon):
             lk=''
         return (url,lk)
         
-    def get_common_preference(self, key, default=None):
-        safe_print("Checking common preference for", key)
-
-        for mod in self.modules_manager.get_internal_instances():
-            try:
-                print 'Try to get pref %s from %s' % (key, mod.get_name())
-                f = getattr(mod, 'get_ui_common_preference', None)
-                if f and callable(f):
-                    r = f(key)
-                    return r
-            except Exception, exp:
-                print exp.__dict__
-                logger.warning("[%s] The mod %s raise an exception: %s, I'm tagging it to restart later" % (self.name, mod.get_name(), str(exp)))
-                logger.debug("[%s] Exception type: %s" % (self.name, type(exp)))
-                logger.debug("Back trace of this kill: %s" % (traceback.format_exc()))
-                self.modules_manager.set_to_restart(mod)
-        print 'get_common_preference :: Nothing return, I send none'
-        return default
-
-
     # Maybe a page want to warn if there is no module that is able to give user preference?
     def has_user_preference_module(self):
         for mod in self.modules_manager.get_internal_instances():
@@ -707,61 +690,83 @@ class Webui_broker(BaseModule, Daemon):
         return False
         
 
-    # Try to got for an element the graphs uris from modules
-    def get_user_preference(self, user, key, default=None):
-        safe_print("Checking user preference for", user.get_name(), key)
+    # Try to get user's preferences for Web UI plugins ...
+    def get_user_preference(self, user, key=None, default=None):
+        logger.debug("[%s] Fetching user preference for: %s / %s", self.name, user.get_name(), key)
 
         for mod in self.modules_manager.get_internal_instances():
             try:
-                print 'Try to get pref %s from %s' % (key, mod.get_name())
+                logger.debug("[%s] Trying to get preference %s from %s", self.name, key, mod.get_name())
                 f = getattr(mod, 'get_ui_user_preference', None)
                 if f and callable(f):
                     r = f(user, key)
-                    return r
+                    logger.debug("[%s] Found '%s', %s = %s", self.name, user.get_name(), key, r)
+                    if r is not None:
+                        return r
             except Exception, exp:
-                print exp.__dict__
                 logger.warning("[%s] The mod %s raise an exception: %s, I'm tagging it to restart later" % (self.name, mod.get_name(), str(exp)))
-                logger.debug("[%s] Exception type: %s" % (self.name, type(exp)))
-                logger.debug("Back trace of this kill: %s" % (traceback.format_exc()))
+                logger.warning("[%s] Exception type: %s" % (self.name, type(exp)))
+                logger.warning("Back trace of this kill: %s" % (traceback.format_exc()))
                 self.modules_manager.set_to_restart(mod)
-        print 'get_user_preference :: Nothing return, I send non'
+                
+        logger.debug("[%s] No user preferences found, returning default value: %s", self.name, default)
         return default
 
 
     # Try to got for an element the graphs uris from modules
     def set_user_preference(self, user, key, value):
-        safe_print("Saving user preference for", user.get_name(), key, value)
+        logger.debug("[%s] Saving user preference for: %s / %s", self.name, user.get_name(), key)
 
         for mod in self.modules_manager.get_internal_instances():
             try:
                 f = getattr(mod, 'set_ui_user_preference', None)
                 if f and callable(f):
-                    print "Call user pref to module", mod.get_name()
                     f(user, key, value)
+                    logger.debug("[%s] Updated '%s', %s = %s", self.name, user.get_name(), key, value)
             except Exception, exp:
-                print exp.__dict__
                 logger.warning("[%s] The mod %s raise an exception: %s, I'm tagging it to restart later" % (self.name, mod.get_name(), str(exp)))
-                logger.debug("[%s] Exception type: %s" % (self.name, type(exp)))
-                logger.debug("Back trace of this kill: %s" % (traceback.format_exc()))
+                logger.warning("[%s] Exception type: %s" % (self.name, type(exp)))
+                logger.warning("Back trace of this kill: %s" % (traceback.format_exc()))
                 self.modules_manager.set_to_restart(mod)
                 
+    # Get all user's common preferences ...
+    def get_common_preference(self, key, default=None):
+        logger.debug("[%s] Fetching common preference for: %s", self.name, key)
+
+        for mod in self.modules_manager.get_internal_instances():
+            try:
+                logger.debug("[%s] Trying to get common preference %s from %s", self.name, key, mod.get_name())
+                f = getattr(mod, 'get_ui_common_preference', None)
+                if f and callable(f):
+                    r = f(key)
+                    logger.debug("[%s] Found 'common', %s = %s", self.name, key, r)
+                    if r is not None:
+                        return r
+            except Exception, exp:
+                logger.warning("[%s] The mod %s raise an exception: %s, I'm tagging it to restart later" % (self.name, mod.get_name(), str(exp)))
+                logger.warning("[%s] Exception type: %s" % (self.name, type(exp)))
+                logger.warning("Back trace of this kill: %s" % (traceback.format_exc()))
+                self.modules_manager.set_to_restart(mod)
+                
+        logger.debug("[%s] No common preferences found, returning default value: %s", self.name, default)
+        return default
+
+
+    # Set all user's common preferences ...
     def set_common_preference(self, key, value):
-        safe_print("Saving common preference", key, value)
+        logger.debug("[%s] Saving common preference: %s = %s", self.name, key, value)
 
         for mod in self.modules_manager.get_internal_instances():
             try:
                 f = getattr(mod, 'set_ui_common_preference', None)
                 if f and callable(f):
-                    print "Call user pref to module", mod.get_name()
                     f(key, value)
+                    logger.debug("[%s] Updated 'common', %s = %s", self.name, key, value)
             except Exception, exp:
-                print exp.__dict__
                 logger.warning("[%s] The mod %s raise an exception: %s, I'm tagging it to restart later" % (self.name, mod.get_name(), str(exp)))
-                logger.debug("[%s] Exception type: %s" % (self.name, type(exp)))
-                logger.debug("Back trace of this kill: %s" % (traceback.format_exc()))
+                logger.warning("[%s] Exception type: %s" % (self.name, type(exp)))
+                logger.warning("Back trace of this kill: %s" % (traceback.format_exc()))
                 self.modules_manager.set_to_restart(mod)
-
-        # end of all modules
 
 
     # For a specific place like dashboard we return widget lists
@@ -1021,6 +1026,10 @@ class Webui_broker(BaseModule, Daemon):
             res.sort(hst_srv_sort)
         return res
 
+    # Return the number of problems
+    def get_nb_problems(self, user=None, to_sort=True, get_acknowledged=False):
+        return len(self.get_all_problems(user, to_sort, get_acknowledged))
+        
     # For all business impacting elements, and give the worse state
     # if warning or critical
     def get_overall_state(self, user=None):
