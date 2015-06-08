@@ -75,6 +75,7 @@
       <link href="/static/css/shinken-layout.css" rel="stylesheet">
 
       <link href="/static/css/timeline.css" rel="stylesheet">
+      <link href="/static/css/metisMenu.min.css" rel="stylesheet">
       <link href="/static/css/sb-admin-2.css" rel="stylesheet">
 
       <!-- css3 effect for pulse is not available on IE It's not real comment, if so it will not work. -->
@@ -123,6 +124,7 @@
       <script src="/static/js/shinken-deptree.js"></script>
       <script src="/static/js/shinken-canvas.js"></script>
 
+      <script src="/static/js/metisMenu.min.js"></script>
       <script src="/static/js/sb-admin-2.js"></script>
 
       %# End of classic js import. Now call for specific ones ...
@@ -132,77 +134,37 @@
    </head>
 
    <body>
-      <div class="wrapper">
+      <div id="wrapper">
         %if print_header:
         %include("header_element")
         %end
-        <div class="page-wrapper">
-            <!-- Left side column fixed width. Contains the sidebar menu -->
-            %#%if print_menu:
-            %#<div class="left-part col-sm-2">
-            %#   %#Fred: simple test to remove this element from the right side of the page ...
-            %#   %# Preparing the sidebar refactoring ...
-            %#   %if elts_per_page is not None:
-            %#   <div class="center-block" id="elts_per_page">
-            %#      <div class="input-group">
-            %#         <div class="input-group-btn">
-            %#            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">#<span class="caret"></span></button>
-            %#            <ul class="dropdown-menu" role="menu">
-            %#               <li><a href="#" data-elts="5">5 elements</a></li>
-            %#               <li><a href="#" data-elts="10">10 elements</a></li>
-            %#               <li><a href="#" data-elts="20">20 elements</a></li>
-            %#               <li><a href="#" data-elts="50">50 elements</a></li>
-            %#               <li><a href="#" data-elts="100">100 elements</a></li>
-            %#            </ul>
-            %#         </div>
-            %#         <input type="text" class="form-control" aria-label="Elements per page" placeholder="Elements per page ..." value="{{elts_per_page}}" style="max-width: 100px;">
-            %#      </div>
-            %#   </div>
-            %#   <script>
-            %#      $("#elts_per_page li a").click(function(e){
-            %#         // Update input field
-            %#         $('#elts_per_page input').val($(this).data('elts'));
-            %#         save_user_preference('elts_per_page', $(this).data('elts'));
-            %#         
-            %#         e.preventDefault();
-            %#      });
-            %#   </script>
-            %#   %end
-            %#   
-            %#   %include("sidebar_element")
-
-            %#</div>
-            %#%end
-              
-            <!-- Right side column. Contains the content of the page -->
-            <!--<div class="right-part {{'col-sm-10' if print_menu else 'col-sm-12'}}">-->
+        <div id="page-wrapper">
                <div class="row">
                %if print_title:
                <!-- Page header -->
                <section class="content-header">
-                  <h1>{{!title or 'Untitled ...'}}</h1>
-
                   %if navi:
-                  %#@mohierf to @maethor : Did not succeed in centering ...
-                  %include("pagination_element", navi=navi, app=app, page=page, elts_per_page=elts_per_page, div_class='center-block')
+                  %include("pagination_element", navi=navi, app=app, page=page, elts_per_page=elts_per_page, display_steps_form=True)
                   %end
+                  <h3 class="page-header" style="margin-top: 10px">
+                    <ol class="breadcrumb" style="margin:0px">
+                      <li><a href="/">Home</a></li>
+                      %if breadcrumb == '':
+                      <li class="active">{{title or 'No title'}}</li>
+                      %else:
+                      %_go_active = 'active'
+                      %for p in breadcrumb:
+                      %_go_active = ''
+                      %if p[0]:
+                      <li class="{{_go_active}}"><a href="{{p[1]}}">{{p[0]}}</a></li>
+                      %else:
+                      <li class="{{_go_active}}">{{p}}</li>
+                      %end
+                      %end
+                      %end
+                    </ol>
+                  </h3>
 
-                  <ol class="breadcrumb">
-                     <li><a href="/">Home</a></li>
-                     %if breadcrumb == '':
-                     <li class="active">{{title or 'No title'}}</li>
-                     %else:
-                     %_go_active = 'active'
-                     %for p in breadcrumb:
-                        %_go_active = ''
-                        %if p[0]:
-                        <li class="{{_go_active}}"><a href="{{p[1]}}">{{p[0]}}</a></li>
-                        %else:
-                        <li class="{{_go_active}}">{{p}}</li>
-                        %end
-                     %end
-                     %end
-                  </ol>
                </section>
                %end
                
@@ -228,7 +190,6 @@
                  });
                  </script>
                %end
-            <!--</div>-->
          </div>
       </div>
     </div>
