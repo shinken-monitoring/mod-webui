@@ -91,7 +91,8 @@
                      </tr>
                   </thead>
                   <tbody style="font-size:x-small;">
-                  %for preference in app.get_user_preference(user):
+                  %if app.get_user_preferences():
+                  %for preference in app.get_user_preferences():
                   %if preference in ['_id']:
                   %continue
                   %end
@@ -109,6 +110,20 @@
                      <tr>
                         <td>{{preference}}</td>
                         <td>{{json.dumps(app.get_user_preference(user, preference))}}</td>
+                     </tr>
+                  %end
+                  %else:
+                     <tr>
+                        <td>toolbar</td>
+                        <td>{{app.get_user_preference(user, 'toolbar')}}</td>
+                     </tr>
+                     <tr>
+                        <td>bookmarks</td>
+                        <td>{{app.get_user_preference(user, 'bookmarks')}}</td>
+                     </tr>
+                     <tr>
+                        <td>elts_per_page</td>
+                        <td>{{app.get_user_preference(user, 'elts_per_page')}}</td>
                      </tr>
                   %end
                   </tbody>

@@ -691,6 +691,11 @@ class Webui_broker(BaseModule, Daemon):
         
 
     # Try to get user's preferences for Web UI plugins ...
+    def get_user_preferences(self):
+        return self.get_user_preference(self.get_user_auth())
+        
+
+    # Try to get user's preferences for Web UI plugins ...
     def get_user_preference(self, user, key=None, default=None):
         logger.debug("[%s] Fetching user preference for: %s / %s", self.name, user.get_name(), key)
 
