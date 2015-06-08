@@ -57,7 +57,7 @@ def get_view(default_search=""):
     toolbar = app.request.GET.get('toolbar', '')
     if toolbar != toolbar_pref and toolbar in ['show', 'hide']:
         app.set_user_preference(user, 'toolbar', toolbar)
-    toolbar_pref = app.get_user_preference(user, 'toolbar')
+        toolbar_pref = toolbar
 
     # We want to limit the number of elements
     step = int(app.request.GET.get('step', '30'))

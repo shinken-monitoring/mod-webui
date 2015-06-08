@@ -10,7 +10,7 @@
 %end
 <script type="text/javascript">
    var actions_enabled = {{'true' if actions_allowed else 'false'}};
-   var toolbar = {{'true' if toolbar else 'false'}};
+   var toolbar = '{{toolbar}}';
 
    function submitform() {
       document.forms["search_form"].submit();
@@ -97,7 +97,7 @@
       // $('.host-panel:first').addClass('in');
       
       // Hide the toolbar
-      if (toolbar) 
+      if (toolbar=='show') 
          show_toolbar();
    });
 </script>

@@ -32,8 +32,9 @@ function hide_toolbar(save){
    $('#problems').addClass('col-lg-12 col-md-12 col-sm-12');
    $('#problems').removeClass('col-lg-9 col-md-8 col-sm-8');
 
-   if (save)
+   if (save) {
       save_user_preference('toolbar', 'hide');
+   }
 }
 
 function show_toolbar(save){
@@ -44,8 +45,9 @@ function show_toolbar(save){
    $('#problems').addClass('col-lg-9 col-md-8 col-sm-8');
    $('#problems').removeClass('col-lg-12 col-md-12 col-sm-12');
 
-   if (save)
+   if (save) {
       save_user_preference('toolbar', 'show');
+   }
 }
 
 
