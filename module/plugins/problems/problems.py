@@ -51,6 +51,9 @@ def get_all():
 def get_view(default_search=""):
     user = app.checkauth()
 
+    # Fetch elements per page preference for user, default is 25
+    elts_per_page = app.get_user_preference(user, 'elts_per_page', 25)
+
     # Fetch toolbar preference for user, default is 'show'
     toolbar_pref = app.get_user_preference(user, 'toolbar', 'show')
 
@@ -60,7 +63,7 @@ def get_view(default_search=""):
         toolbar_pref = toolbar
 
     # We want to limit the number of elements
-    step = int(app.request.GET.get('step', '30'))
+    step = int(app.request.GET.get('step', elts_per_page))
     start = int(app.request.GET.get('start', '0'))
     end = int(app.request.GET.get('end', start + step))
 
