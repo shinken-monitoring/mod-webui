@@ -62,9 +62,7 @@
       <link href="/static/css/bootstrap.min.css" rel="stylesheet">
       <link href="/static/css/bootstrap-theme.min.css" rel="stylesheet">
       <link href="/static/css/font-awesome.min.css" rel="stylesheet">
-      <!--
       <link href="/static/css/Shinken-webUI.css" rel="stylesheet">
-      -->
 
       <link href="/static/css/jquery.meow.css" rel="stylesheet">
       <link href="/static/css/typeahead.css" rel="stylesheet">
@@ -75,6 +73,9 @@
       -->
 
       <link href="/static/css/shinken-layout.css" rel="stylesheet">
+
+      <link href="/static/css/timeline.css" rel="stylesheet">
+      <link href="/static/css/sb-admin-2.css" rel="stylesheet">
 
       <!-- css3 effect for pulse is not available on IE It's not real comment, if so it will not work. -->
       <!--[IF !IE]> -->
@@ -122,6 +123,8 @@
       <script src="/static/js/shinken-deptree.js"></script>
       <script src="/static/js/shinken-canvas.js"></script>
 
+      <script src="/static/js/sb-admin-2.js"></script>
+
       %# End of classic js import. Now call for specific ones ...
       %for p in js:
       <script type="text/javascript" src="/static/{{p}}"></script>
@@ -129,51 +132,50 @@
    </head>
 
    <body>
-      <div class="container-fluid">
-         %if print_header:
-         %include("header_element")
-         %end
-      
-         <div class="row">
+      <div class="wrapper">
+        %if print_header:
+        %include("header_element")
+        %end
+        <div class="page-wrapper">
             <!-- Left side column fixed width. Contains the sidebar menu -->
-            %if print_menu:
-            <div class="left-part col-sm-2">
-               %#Fred: simple test to remove this element from the right side of the page ...
-               %# Preparing the sidebar refactoring ...
-               %if elts_per_page is not None:
-               <div class="center-block" id="elts_per_page">
-                  <div class="input-group">
-                     <div class="input-group-btn">
-                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">#<span class="caret"></span></button>
-                        <ul class="dropdown-menu" role="menu">
-                           <li><a href="#" data-elts="5">5 elements</a></li>
-                           <li><a href="#" data-elts="10">10 elements</a></li>
-                           <li><a href="#" data-elts="20">20 elements</a></li>
-                           <li><a href="#" data-elts="50">50 elements</a></li>
-                           <li><a href="#" data-elts="100">100 elements</a></li>
-                        </ul>
-                     </div>
-                     <input type="text" class="form-control" aria-label="Elements per page" placeholder="Elements per page ..." value="{{elts_per_page}}" style="max-width: 100px;">
-                  </div>
-               </div>
-               <script>
-                  $("#elts_per_page li a").click(function(e){
-                     // Update input field
-                     $('#elts_per_page input').val($(this).data('elts'));
-                     save_user_preference('elts_per_page', $(this).data('elts'));
-                     
-                     e.preventDefault();
-                  });
-               </script>
-               %end
-               
-               %include("sidebar_element")
+            %#%if print_menu:
+            %#<div class="left-part col-sm-2">
+            %#   %#Fred: simple test to remove this element from the right side of the page ...
+            %#   %# Preparing the sidebar refactoring ...
+            %#   %if elts_per_page is not None:
+            %#   <div class="center-block" id="elts_per_page">
+            %#      <div class="input-group">
+            %#         <div class="input-group-btn">
+            %#            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">#<span class="caret"></span></button>
+            %#            <ul class="dropdown-menu" role="menu">
+            %#               <li><a href="#" data-elts="5">5 elements</a></li>
+            %#               <li><a href="#" data-elts="10">10 elements</a></li>
+            %#               <li><a href="#" data-elts="20">20 elements</a></li>
+            %#               <li><a href="#" data-elts="50">50 elements</a></li>
+            %#               <li><a href="#" data-elts="100">100 elements</a></li>
+            %#            </ul>
+            %#         </div>
+            %#         <input type="text" class="form-control" aria-label="Elements per page" placeholder="Elements per page ..." value="{{elts_per_page}}" style="max-width: 100px;">
+            %#      </div>
+            %#   </div>
+            %#   <script>
+            %#      $("#elts_per_page li a").click(function(e){
+            %#         // Update input field
+            %#         $('#elts_per_page input').val($(this).data('elts'));
+            %#         save_user_preference('elts_per_page', $(this).data('elts'));
+            %#         
+            %#         e.preventDefault();
+            %#      });
+            %#   </script>
+            %#   %end
+            %#   
+            %#   %include("sidebar_element")
 
-            </div>
-            %end
+            %#</div>
+            %#%end
               
             <!-- Right side column. Contains the content of the page -->
-            <div class="right-part {{'col-sm-10' if print_menu else 'col-sm-12'}}">
+            <!--<div class="right-part {{'col-sm-10' if print_menu else 'col-sm-12'}}">-->
                <div class="row">
                %if print_title:
                <!-- Page header -->
@@ -226,9 +228,10 @@
                  });
                  </script>
                %end
-            </div>
+            <!--</div>-->
          </div>
       </div>
+    </div>
 
       %if print_footer:
       %include("footer_element")

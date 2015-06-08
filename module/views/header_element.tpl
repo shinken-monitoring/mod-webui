@@ -13,7 +13,6 @@
 
 <!-- Header Navbar -->
 <nav class="header navbar navbar-default navbar-fixed-top">
-   <div class="container-fluid">
       <div class="navbar-header">
          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
            <span class="sr-only">Toggle navigation</span>
@@ -135,7 +134,66 @@
             </li>
          </ul>
       </div>
-   </div>
+
+      <div class="navbar-default sidebar" role="navigation">
+        <div class="sidebar-nav navbar-collapse">
+          <ul class="nav" id="side-menu">
+            %if app:
+            %# Anyway, at least a Dashboard entry ...
+            %if app.sidebar_menu is None: 
+            <li class="active">
+              <a href="/dashboard">
+                <span class="fa fa-dashboard"></span> Dashboard 
+              </a>
+            </li>
+            %else:
+            %for (menu) in app.sidebar_menu: 
+            %menu = [item.strip() for item in menu.split(',')]
+            %if len(menu) >= 2:
+            <li>
+              <a href="/{{menu[0]}}">
+                %if len(menu) >= 3:
+                <span class="fa fa-{{menu[2]}}"></span> {{menu[1]}}
+                %else:
+                <span class="fa"></span> {{menu[1]}}
+                %end
+              </a>
+            </li>
+            %end
+            %end
+            %end
+
+            %other_uis = app.get_ui_external_links()
+            %if len(other_uis) > 0:
+            <hr style="width: 90%"/>
+            %end
+            %for c in other_uis:
+            <li>
+              <a href="{{c['uri']}}" target="_blank">
+                <i class="fa fa-rocket"></i> {{c['label']}}
+              </a>
+            </li>
+            %end
+            %end
+            <!--<li class="sidebar-search">-->
+              <!--<div class="input-group custom-search-form">-->
+                <!--<input type="text" class="form-control" placeholder="Search...">-->
+                <!--<span class="input-group-btn">-->
+                  <!--<button class="btn btn-default" type="button">-->
+                    <!--<i class="fa fa-search"></i>-->
+                    <!--</button>-->
+                  <!--</span>-->
+                <!--</div>-->
+              <!--[> /input-group <]-->
+              <!--</li>-->
+            <li>
+              <a href="index.html"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
+            </li>
+          </ul>
+        </div>
+        <!-- /.sidebar-collapse -->
+      </div>
+      <!-- /.navbar-static-side -->
 </nav>
 
 <script type="text/javascript">
