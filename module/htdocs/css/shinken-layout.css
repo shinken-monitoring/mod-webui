@@ -23,6 +23,27 @@
 *
 **/
 
+
+/*
+ * ---
+ * Backported from shinken-webui.css
+ *
+ */
+html, body {
+    background: #f9f9f9;
+}
+.table-invisible > thead > tr > th,
+.table-invisible > tbody > tr > th,
+.table-invisible > tfoot > tr > th,
+.table-invisible > thead > tr > td,
+.table-invisible > tbody > tr > td,
+.table-invisible > tfoot > tr > th {
+    border-top: 0;
+}
+.table-invisible {
+    margin:0;
+}
+
 /*
  * ------------------------------------------------------------------------
  * Page layout
