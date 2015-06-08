@@ -136,45 +136,74 @@
       
          <div class="row">
             <!-- Left side column fixed width. Contains the sidebar menu -->
+            %if print_menu:
             <div class="left-part col-sm-2">
-               %if print_menu:
-               %include("sidebar_element")
+               %#Fred: simple test to remove this element from the right side of the page ...
+               %# Preparing the sidebar refactoring ...
+               %if elts_per_page is not None:
+               <div class="center-block" id="elts_per_page">
+                  <div class="input-group">
+                     <div class="input-group-btn">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">#<span class="caret"></span></button>
+                        <ul class="dropdown-menu" role="menu">
+                           <li><a href="#" data-elts="5">5 elements</a></li>
+                           <li><a href="#" data-elts="10">10 elements</a></li>
+                           <li><a href="#" data-elts="20">20 elements</a></li>
+                           <li><a href="#" data-elts="50">50 elements</a></li>
+                           <li><a href="#" data-elts="100">100 elements</a></li>
+                        </ul>
+                     </div>
+                     <input type="text" class="form-control" aria-label="Elements per page" placeholder="Elements per page ..." value="{{elts_per_page}}" style="max-width: 100px;">
+                  </div>
+               </div>
+               <script>
+                  $("#elts_per_page li a").click(function(e){
+                     // Update input field
+                     $('#elts_per_page input').val($(this).data('elts'));
+                     save_user_preference('elts_per_page', $(this).data('elts'));
+                     
+                     e.preventDefault();
+                  });
+               </script>
                %end
+               
+               %include("sidebar_element")
+
             </div>
+            %end
               
             <!-- Right side column. Contains the content of the page -->
-            <div class="right-part col-sm-10">
+            <div class="right-part {{'col-sm-10' if print_menu else 'col-sm-12'}}">
                <div class="row">
                %if print_title:
                <!-- Page header -->
                <section class="content-header">
-                <h1>{{!title or 'Untitled ...'}}</h1>
+                  <h1>{{!title or 'Untitled ...'}}</h1>
 
-                <ol class="breadcrumb">
-                  <li><a href="/">Home</a></li>
-                  %if breadcrumb == '':
-                  <li class="active">{{title or 'No title'}}</li>
-                  %else:
-                  %_go_active = 'active'
-                  %for p in breadcrumb:
-                    %_go_active = ''
-                    %if p[0]:
-                    <li class="{{_go_active}}"><a href="{{p[1]}}">{{p[0]}}</a></li>
-                    %else:
-                    <li class="{{_go_active}}">{{p}}</li>
-                    %end
+                  %if navi:
+                  %#@mohierf to @maethor : Did not succeed in centering ...
+                  %include("pagination_element", navi=navi, app=app, page=page, elts_per_page=elts_per_page, div_class='center-block')
                   %end
-                  %end
-                </ol>
-              </section>
-               %end
 
-               %if navi:
-               <section class="pagination-header">
-                %include("pagination_element", navi=navi, app=app, page=page, elts_per_page=elts_per_page)
+                  <ol class="breadcrumb">
+                     <li><a href="/">Home</a></li>
+                     %if breadcrumb == '':
+                     <li class="active">{{title or 'No title'}}</li>
+                     %else:
+                     %_go_active = 'active'
+                     %for p in breadcrumb:
+                        %_go_active = ''
+                        %if p[0]:
+                        <li class="{{_go_active}}"><a href="{{p[1]}}">{{p[0]}}</a></li>
+                        %else:
+                        <li class="{{_go_active}}">{{p}}</li>
+                        %end
+                     %end
+                     %end
+                  </ol>
                </section>
                %end
-
+               
                <!-- Page content -->
                <section class="content">
                 %include
@@ -199,11 +228,11 @@
                %end
             </div>
          </div>
-
-         %if print_footer:
-         %include("footer_element")
-         %end
       </div>
+
+      %if print_footer:
+      %include("footer_element")
+      %end
 
       <!-- A modal div that will be filled and shown when we want forms ... -->
       <div class="modal fade" id="modal" role="dialog" aria-labelledby="Generic modal box" aria-hidden="true">

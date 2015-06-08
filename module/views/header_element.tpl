@@ -79,50 +79,56 @@
                </a>
 
                <ul class="dropdown-menu">
-                  <!-- User image / name -->
                   <li class="user-header">
-                     <p class="username">{{username}}</p>
-                     %if app.manage_acl and helper.can_action(user):
-                     <p class="usercategory">
-                        <small>{{'Administrator' if user.is_admin else 'User'}}</small>
-                     </p>
-                     %end
-                  </li>
-                  <script>
-                     %if app is not None and app.gravatar:
-                     $('<img src="{{app.get_gravatar(user.email, 32)}}" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}" style="display:none">')
-                        .load(function() { $(this).show(); })
-                        .error(function() { 
-                           $(this).remove(); 
-                           $('<img src="/static/images/logo/default_user.png" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}" style="display:none">')
-                              .load(function() { $(this).show(); })
-                              .error(function() { $(this).remove(); })
-                              .appendTo('li.user-header');
-                        })
-                        .appendTo('li.user-header');
-                     %else:
-                     $('<img src="/static/images/logo/{{user.get_name()}}.png" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}" style="display:none">')
-                        .load(function() { $(this).show(); })
-                        .error(function() { 
-                           $(this).remove(); 
-                           $('<img src="/static/images/logo/default_user.png" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}" style="display:none">')
-                              .load(function() { $(this).show(); })
-                              .error(function() { $(this).remove(); })
-                              .appendTo('li.user-header');
-                        })
-                        .appendTo('li.user-header');
-                     %end
-                  </script>
-               
-                  <!-- User footer-->
-                  <li class="user-footer">
-                     <div class="pull-left">
-                        <a href="https://shinken.readthedocs.org/en/latest/" target="_blank" class="btn btn-default btn-flat"><i class="fa fa-book"></i> </a>
-                        <a href="#actions" data-toggle="modal" class="btn btn-default btn-flat disabled"><span class="fa fa-gear"></span> </a>
-                        <a href="/user/pref" data-toggle="modal" class="btn btn-default btn-flat"><span class="fa fa-pencil"></span> </a>
-                     </div>
-                     <div class="pull-right">
-                        <a href="/user/logout" class="btn btn-default btn-flat" data-toggle="modal" data-target="/user/logout"><span class="fa fa-sign-out"></span> </a>
+                     <div class="panel panel-info" id="user_info">
+                        <div class="panel-heading">User information</div>
+                        <div class="panel-body panel-default">
+                           <!-- User image / name -->
+                           <p class="username">{{username}}</p>
+                           %if app.manage_acl and helper.can_action(user):
+                           <p class="usercategory">
+                              <small>{{'Administrator' if user.is_admin else 'User'}}</small>
+                           </p>
+                           %end
+                           <script>
+                              %if app is not None and app.gravatar:
+                              $('<img src="{{app.get_gravatar(user.email, 32)}}" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}" style="display:none">')
+                                 .load(function() { $(this).show(); })
+                                 .error(function() { 
+                                    $(this).remove(); 
+                                    $('<img src="/static/images/logo/default_user.png" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}" style="display:none">')
+                                       .load(function() { $(this).show(); })
+                                       .error(function() { $(this).remove(); })
+                                       .appendTo('li.user-header div.panel-body');
+                                 })
+                                 .appendTo('li.user-header div.panel-body');
+                              %else:
+                              $('<img src="/static/images/logo/{{user.get_name()}}.png" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}" style="display:none">')
+                                 .load(function() { $(this).show(); })
+                                 .error(function() { 
+                                    $(this).remove(); 
+                                    $('<img src="/static/images/logo/default_user.png" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}" style="display:none">')
+                                       .load(function() { $(this).show(); })
+                                       .error(function() { $(this).remove(); })
+                                       .appendTo('li.user-header div.panel-body');
+                                 })
+                                 .appendTo('li.user-header div.panel-body');
+                              %end
+                           </script>
+                        </div>
+                        <div class="panel-footer">
+                           <!-- User actions -->
+                           <div class="btn-group" role="group">
+                              <a href="https://shinken.readthedocs.org/en/latest/" target="_blank" class="btn btn-default btn-flat"><i class="fa fa-book"></i> </a>
+                           </div>
+                           <div class="btn-group" role="group">
+                              <a href="#actions" data-toggle="modal" class="btn btn-default btn-flat disabled"><span class="fa fa-gear"></span> </a>
+                              <a href="/user/pref" data-toggle="modal" class="btn btn-default btn-flat"><span class="fa fa-pencil"></span> </a>
+                           </div>
+                           <div class="btn-group" role="group">
+                              <a href="/user/logout" class="btn btn-default btn-flat" data-toggle="modal" data-target="/user/logout"><span class="fa fa-sign-out"></span> </a>
+                           </div>
+                        </div>
                      </div>
                   </li>
                </ul>

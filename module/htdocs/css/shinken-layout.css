@@ -122,21 +122,6 @@ html, body {
   display: block;
   font-size: 12px;
 }
-.user-menu > .dropdown-menu > li.user-footer {
-  background-color: #f9f9f9;
-  padding: 10px;
-}
-.user-menu > .dropdown-menu > li.user-footer:before,
-.user-menu > .dropdown-menu > li.user-footer:after {
-  display: table;
-  content: " ";
-}
-.user-menu > .dropdown-menu > li.user-footer:after {
-  clear: both;
-}
-.user-menu > .dropdown-menu > li.user-footer .btn-default {
-  color: #666666;
-}
 
 
 /*
@@ -160,20 +145,29 @@ html, body {
    top: 60px;
 }
 
+.sidebar-nav li {
+   clear: left;
+}
+
+.sidebar-nav li a {
+   padding-top: 5px;
+   padding-bottom: 5px;
+}
+
 @media(max-width:1000px)  {
-   .navbar-collapse.collapse {
+   .sidebar-nav .navbar-collapse.collapse {
       display: none !important;
    }
 
-   .navbar-collapse {
+   .sidebar-nav .navbar-collapse {
       overflow-x: visible !important;
    }
 
-   .navbar-collapse.in {
+   .sidebar-nav .navbar-collapse.in {
       overflow-y: auto !important;
    }
 
-   .collapse.in {
+   .sidebar-nav .collapse.in {
       display: block !important;
    }
 }
@@ -196,6 +190,20 @@ html, body {
    }
 }
  */
+
+/* 
+ * Content : breadcrumb
+ */
+.breadcrumb {
+  float: right;
+  height: 20px;
+  background: transparent;
+  font-size: 12px;
+  padding: 7px 5px;
+  position: absolute;
+  top: 0px;
+  right: 10px;
+}
 
 /*
  * ------------------------------------------------------------------------
