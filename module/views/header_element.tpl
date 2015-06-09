@@ -12,8 +12,7 @@
 
 
 <!-- Header Navbar -->
-<nav class="header navbar navbar-default navbar-fixed-top">
-   <div class="container-fluid">
+<nav class="header navbar navbar-default navbar-static-top" style="margin-bottom:0px;">
       <div class="navbar-header">
          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
            <span class="sr-only">Toggle navigation</span>
@@ -30,26 +29,21 @@
          </a>
       </div>
       <!-- Collect the nav links, forms, and other content for toggling -->
-      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
          <ul class="nav navbar-nav">
-            <!-- Sidebar toggle button-->
-            <a href="#" class="navbar-btn sidebar-toggle" data-toggle="sidebar" role="button">
-               <span class="sr-only">Toggle sidebar menu</span>
-               <span class="icon-bar"></span>
-               <span class="icon-bar"></span>
-               <span class="icon-bar"></span>
-            </a>
-
             <!-- Host search ... -->
-            <form id="frmSearch" class="navbar-form navbar-left hidden-xs" role="search">
+           
+            <!-- :TODO:maethor:150608: typeahead mess up with the display of the field-->
+            <!--<form id="frmSearch" class="navbar-form navbar-left hidden-xs" role="search">-->
+            <form class="navbar-form navbar-left hidden-xs" role="search">
                <div class="form-group">
-                  <label class="sr-only" for="hosts-search">Hosts search</label>
+                  <label class="sr-only" for="hosts-search">Host search</label>
                   <div class="input-group">
-                     <input type="search" placeholder="Search hosts..." class="form-control typeahead" id="hosts-search" name="hosts-search" />
+                     <input type="search" placeholder="Search host…" class="form-control typeahead" id="hosts-search" name="hosts-search" />
                   </div>
                   <input type="submit" value="Submit" class="sr-only">
                </div>
             </form>
+            
 
             <!-- Clock ... -->
             <p class="navbar-text hidden-sm hidden-xs">
@@ -60,15 +54,16 @@
          </ul>
          
          <!-- Right buttons ... -->
-         <ul class="nav navbar-nav navbar-right">
+         <ul class="nav navbar-top-links navbar-right">
             <li><a class="quickinfo" data-original-title='Currently' href="/dashboard/currently"><i class="fa fa-eye"></i></a></li>
 
+            <!-- :TODO:maethor:150608: badgers mess up with the display of the navbar -->
             %if app:
             %overall_state = app.get_overall_state(app.get_user_auth())
-            <li><a href="/impacts" class="quickinfo" data-original-title='Impacts'><i class="fa fa-bolt"></i><span class="pulsate badger badger-{{'ok' if overall_state == 0 else 'warning' if overall_state == 1 else 'critical'}}">{{app.get_overall_state_problems_count(app.get_user_auth())}}</span> </a></li>
+            <!--<li><a href="/impacts" class="quickinfo" data-original-title='Impacts'><i class="fa fa-bolt"></i><span class="pulsate badger badger-{{'ok' if overall_state == 0 else 'warning' if overall_state == 1 else 'critical'}}">{{app.get_overall_state_problems_count(app.get_user_auth())}}</span> </a></li>-->
            
             %overall_itproblem = app.get_overall_it_state(app.get_user_auth())
-            <li><a href="/problems" class="quickinfo" data-original-title='IT Problems'><i class="fa fa-ambulance"></i><span class="pulsate badger badger-{{'ok' if overall_itproblem == 0 else 'warning' if overall_itproblem == 1 else 'critical'}}">{{app.get_overall_it_problems_count(user, False)}}</span> </a></li>
+            <!--<li><a href="/problems" class="quickinfo" data-original-title='IT Problems'><i class="fa fa-ambulance"></i><span class="pulsate badger badger-{{'ok' if overall_itproblem == 0 else 'warning' if overall_itproblem == 1 else 'critical'}}">{{app.get_overall_it_problems_count(user, False)}}</span> </a></li>-->
             %end
            
             <!-- User info -->
@@ -100,6 +95,7 @@
                                        .load(function() { $(this).show(); })
                                        .error(function() { $(this).remove(); })
                                        .appendTo('li.user-header div.panel-body');
+            </li>
                                  })
                                  .appendTo('li.user-header div.panel-body');
                               %else:
@@ -134,8 +130,59 @@
                </ul>
             </li>
          </ul>
+
+
+      <!--SIDEBAR-->
+      <!-- :TODO:maethor:150608: Regroup some items in dropdowns -->
+      <div class="navbar-default sidebar" role="navigation">
+        <div class="sidebar-nav navbar-collapse">
+          <ul class="nav" id="side-menu">
+            %if app:
+            %# Anyway, at least a Dashboard entry ...
+            %if app.sidebar_menu is None: 
+            <li class="active">
+              <a href="/dashboard">
+                <span class="fa fa-dashboard"></span> Dashboard 
+              </a>
+            </li>
+            %else:
+            %for (menu) in app.sidebar_menu: 
+            %menu = [item.strip() for item in menu.split(',')]
+            %if len(menu) >= 2:
+            <li>
+              <a href="/{{menu[0]}}">
+                %if len(menu) >= 3:
+                <span class="fa fa-{{menu[2]}}"></span> {{menu[1]}}
+                %else:
+                <span class="fa"></span> {{menu[1]}}
+                %end
+              </a>
+            </li>
+            %end
+            %end
+            %end
+
+            %other_uis = app.get_ui_external_links()
+            %if len(other_uis) > 0:
+            <hr style="width: 90%"/>
+            %end
+            %for c in other_uis:
+            <li>
+              <a href="{{c['uri']}}" target="_blank">
+                <i class="fa fa-rocket"></i> {{c['label']}}
+              </a>
+            </li>
+            %end
+            %end
+
+            <li>
+              <a href="index.html"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
+            </li>
+          </ul>
+        </div>
+        <!-- /.sidebar-collapse -->
       </div>
-   </div>
+      <!-- /.navbar-static-side -->
 </nav>
 
 <script type="text/javascript">

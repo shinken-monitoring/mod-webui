@@ -195,14 +195,15 @@ html, body {
  * Content : breadcrumb
  */
 .breadcrumb {
-  float: right;
-  height: 20px;
-  background: transparent;
-  font-size: 12px;
-  padding: 7px 5px;
-  position: absolute;
-  top: 0px;
-  right: 10px;
+  /*float: right;*/
+  /*height: 20px;*/
+  background: none;
+  /*font-size: 12px;*/
+  /*padding: 5px 5px;*/
+  /*margin-bottom: 0px;*/
+  /*position: absolute;*/
+  /*top: 0px;*/
+  /*right: 10px;*/
 }
 
 /*
@@ -741,4 +742,7 @@ th[data-sort]{
 /* For list where we do not want a style */
 .no_list_style{
     list-style-type: none;
+}
+.content-header ul.pagination {
+    margin:0;
 }
