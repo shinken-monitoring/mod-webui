@@ -95,7 +95,6 @@
                                        .load(function() { $(this).show(); })
                                        .error(function() { $(this).remove(); })
                                        .appendTo('li.user-header div.panel-body');
-            </li>
                                  })
                                  .appendTo('li.user-header div.panel-body');
                               %else:
