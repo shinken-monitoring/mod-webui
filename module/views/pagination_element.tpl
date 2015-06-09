@@ -30,7 +30,7 @@
     });
   </script>
   %end
-  %if navi is not None:
+  %if navi and len(navi) > 1:
   <ul class="pagination {{ ul_class }}" style="display:inline-block;" >
     %from urllib import urlencode
 

@@ -172,7 +172,7 @@
                 %include
                </section>
 
-               %if navi:
+               %if navi and len(navi) > 1:
                <hr>
                <section class="pagination-footer">
                 %include("pagination_element", navi=navi, app=app, page=page, elts_per_page=None)
