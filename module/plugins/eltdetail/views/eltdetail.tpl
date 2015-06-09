@@ -260,139 +260,141 @@ Invalid element name
 
    <!-- Second row : host/service overview ... -->
    <div class="row" style="padding: 5px;">
-         <div class="panel panel-default">
-           <div class="panel-heading fitted-header cursor" data-toggle="collapse" data-parent="#Overview" href="#collapseOverview">
-             <h4 class="panel-title"><span class="caret"></span>&nbsp;Overview {{elt_name}} ({{elt.display_name if elt.display_name else elt.alias if elt.alias else 'none'}}) {{!helper.get_business_impact_text(elt.business_impact)}}
-             </h4>
-           </div>
-        
-            <div id="collapseOverview" class="panel-body panel-collapse collapse in">
-               %if elt_type=='host':
-               <dl class="col-sm-6 dl-horizontal">
-                  <dt>Alias:</dt>
-                  <dd>{{elt.alias}}</dd>
+      <div class="panel panel-default">
+        <div class="panel-heading fitted-header cursor" data-toggle="collapse" data-parent="#Overview" href="#collapseOverview">
+          <h4 class="panel-title"><span class="caret"></span>&nbsp;Overview {{elt_name}} ({{elt.display_name if elt.display_name else elt.alias if elt.alias else 'none'}}) {{!helper.get_business_impact_text(elt.business_impact)}}
+          </h4>
+        </div>
+     
+         <div id="collapseOverview" class="panel-body panel-collapse collapse">
+            %if elt_type=='host':
+            <dl class="col-sm-6 dl-horizontal">
+               <dt>Alias:</dt>
+               <dd>{{elt.alias}}</dd>
 
-                  <dt>Address:</dt>
-                  <dd>{{elt.address}}</dd>
+               <dt>Address:</dt>
+               <dd>{{elt.address}}</dd>
 
-                  <dt>Importance:</dt>
-                  <dd>{{!helper.get_business_impact_text(elt.business_impact, True)}}</dd>
-               </dl>
-              
-               <dl class="col-sm-6 dl-horizontal">
-                  <dt>Parents:</dt>
-                  %if len(elt.parents) > 0:
-                  <dd>
-                  %for parent in elt.parents:
-                  <a href="/host/{{parent.get_name()}}" class="link">{{parent.alias}} ({{parent.get_name()}})</a>
-                  %end
-                  </dd>
-                  %else:
-                  <dd>(none)</dd>
-                  %end
-
-
-                  <dt>Member of:</dt>
-                  %if len(elt.hostgroups) > 0:
-                  <dd>
-                  %for hg in elt.hostgroups:
-                  %if 'hosts-groups' in app.menu_items:
-                  <a href="/hosts-group/{{hg.get_name()}}" class="link">{{hg.alias}} ({{hg.get_name()}})</a>
-                  %else:
-                  {{hg.alias}} ({{hg.get_name()}})
-                  %end
-                  %end
-                  </dd>
-                  %else:
-                  <dd>(none)</dd>
-                  %end
-
-                  <dt>Notes:</dt>
-                  %if elt.notes != '' and elt.notes_url != '':
-                  <dd><a href="{{elt.notes_url}}" target=_blank>{{elt.notes}}</a></dd>
-                  %elif elt.notes == '' and elt.notes_url != '':
-                  <dd><a href="{{elt.notes_url}}" target=_blank>{{elt.notes_url}}</a></dd>
-                  %elif elt.notes != '' and elt.notes_url == '':
-                  <dd>{{elt.notes}}</dd>
-                  %else:
-                  <dd>(none)</dd>
-                  %end
-               </dl>
+               <dt>Importance:</dt>
+               <dd>{{!helper.get_business_impact_text(elt.business_impact, True)}}</dd>
+            </dl>
+           
+            <dl class="col-sm-6 dl-horizontal">
+               <dt>Parents:</dt>
+               %if len(elt.parents) > 0:
+               <dd>
+               %for parent in elt.parents:
+               <a href="/host/{{parent.get_name()}}" class="link">{{parent.alias}} ({{parent.get_name()}})</a>
+               %end
+               </dd>
                %else:
-               <dl class="col-sm-6 dl-horizontal">
-                  <dt>Host:</dt>
-                  <dd>
-                     <a href="/host/{{elt.host.host_name}}" class="link">{{elt.host.host_name}} ({{elt.host.display_name if elt.host.display_name else elt.host.alias if elt.host.alias else 'none'}})</a>
-                  </dd>
-
-                  <dt>Importance:</dt>
-                  <dd>{{!helper.get_business_impact_text(elt.business_impact, True)}}</dd>
-               </dl>
-              
-               <dl class="col-sm-6 dl-horizontal">
-                  <dt>Member of:</dt>
-                  %if len(elt.servicegroups) > 0:
-                  <dd>
-                  %for sg in elt.servicegroups:
-                  %if 'services-groups' in app.menu_items:
-                  <a href="/services-group/{{sg.get_name()}}" class="link">{{sg.alias}} ({{sg.get_name()}})</a>
-                  %else:
-                  {{sg.alias}} ({{sg.get_name()}})
-                  %end
-                  %end
-                  </dd>
-                  %else:
-                  <dd>(none)</dd>
-                  %end
-
-                  <dt>Notes: </dt>
-                  %if elt.notes != '' and elt.notes_url != '':
-                  <dd><a href="{{elt.notes_url}}" target=_blank>{{elt.notes}}</a></dd>
-                  %elif elt.notes == '' and elt.notes_url != '':
-                  <dd><a href="{{elt.notes_url}}" target=_blank>{{elt.notes_url}}</a></dd>
-                  %elif elt.notes != '' and elt.notes_url == '':
-                  <dd>{{elt.notes}}</dd>
-                  %else:
-                  <dd>(none)</dd>
-                  %end
-               </dl>
+               <dd>(none)</dd>
                %end
 
-               %if elt_type=='host':
-                  <table class="table table-invisible">
-                     <tbody>
-                        <tr>
-                           <td>
-                              <b>{{len(elt.services)}} services:</b> 
-                           </td>
-          
-                           <td>
-                              {{!helper.get_fa_icon_state(cls='service', state='OK')}} {{sOK}} Ok
-                           </td>
-                           <td>
-                              {{!helper.get_fa_icon_state(cls='service', state='warning')}} {{sWARNING}} Warning
-                           </td>
-                           <td>
-                              {{!helper.get_fa_icon_state(cls='service', state='critical')}} {{sCRITICAL}} Critical
-                           </td>
-                           <td>
-                              {{!helper.get_fa_icon_state(cls='service', state='pending')}} {{sPENDING}} Pending
-                           </td>
-                           <td>
-                              {{!helper.get_fa_icon_state(cls='service', state='unknown')}} {{sUNKNOWN}} Unknown
-                           </td>
-                           <td>
-                              {{!helper.get_fa_icon_state(cls='service', state='ack')}} {{sACK}} Ack
-                           </td>
-                           <td>
-                              {{!helper.get_fa_icon_state(cls='service', state='downtime')}} {{sDOWNTIME}} Downtime
-                           </td>
-                        </tr>
-                     </tbody>
-                  </table>
+
+               <dt>Member of:</dt>
+               %if len(elt.hostgroups) > 0:
+               <dd>
+               %for hg in elt.hostgroups:
+               %if 'hosts-groups' in app.menu_items:
+               <a href="/hosts-group/{{hg.get_name()}}" class="link">{{hg.alias}} ({{hg.get_name()}})</a>
+               %else:
+               {{hg.alias}} ({{hg.get_name()}})
                %end
-            </div>
+               %end
+               </dd>
+               %else:
+               <dd>(none)</dd>
+               %end
+
+               <dt>Notes:</dt>
+               %if elt.notes != '' and elt.notes_url != '':
+               <dd><a href="{{elt.notes_url}}" target=_blank>{{elt.notes}}</a></dd>
+               %elif elt.notes == '' and elt.notes_url != '':
+               <dd><a href="{{elt.notes_url}}" target=_blank>{{elt.notes_url}}</a></dd>
+               %elif elt.notes != '' and elt.notes_url == '':
+               <dd>{{elt.notes}}</dd>
+               %else:
+               <dd>(none)</dd>
+               %end
+            </dl>
+            %else:
+            <dl class="col-sm-6 dl-horizontal">
+               <dt>Host:</dt>
+               <dd>
+                  <a href="/host/{{elt.host.host_name}}" class="link">{{elt.host.host_name}} ({{elt.host.display_name if elt.host.display_name else elt.host.alias if elt.host.alias else 'none'}})</a>
+               </dd>
+
+               <dt>Importance:</dt>
+               <dd>{{!helper.get_business_impact_text(elt.business_impact, True)}}</dd>
+            </dl>
+           
+            <dl class="col-sm-6 dl-horizontal">
+               <dt>Member of:</dt>
+               %if len(elt.servicegroups) > 0:
+               <dd>
+               %for sg in elt.servicegroups:
+               %if 'services-groups' in app.menu_items:
+               <a href="/services-group/{{sg.get_name()}}" class="link">{{sg.alias}} ({{sg.get_name()}})</a>
+               %else:
+               {{sg.alias}} ({{sg.get_name()}})
+               %end
+               %end
+               </dd>
+               %else:
+               <dd>(none)</dd>
+               %end
+
+               <dt>Notes: </dt>
+               %if elt.notes != '' and elt.notes_url != '':
+               <dd><a href="{{elt.notes_url}}" target=_blank>{{elt.notes}}</a></dd>
+               %elif elt.notes == '' and elt.notes_url != '':
+               <dd><a href="{{elt.notes_url}}" target=_blank>{{elt.notes_url}}</a></dd>
+               %elif elt.notes != '' and elt.notes_url == '':
+               <dd>{{elt.notes}}</dd>
+               %else:
+               <dd>(none)</dd>
+               %end
+            </dl>
+            %end
          </div>
+      </div>
+   </div>
+
+   <div class="well well-sm">
+   %if elt_type=='host':
+      <table class="table table-invisible">
+         <tbody>
+            <tr>
+               <td>
+                  <b>{{len(elt.services)}} services:</b> 
+               </td>
+
+               <td>
+                  {{!helper.get_fa_icon_state(cls='service', state='OK')}} {{sOK}} Ok
+               </td>
+               <td>
+                  {{!helper.get_fa_icon_state(cls='service', state='warning')}} {{sWARNING}} Warning
+               </td>
+               <td>
+                  {{!helper.get_fa_icon_state(cls='service', state='critical')}} {{sCRITICAL}} Critical
+               </td>
+               <td>
+                  {{!helper.get_fa_icon_state(cls='service', state='pending')}} {{sPENDING}} Pending
+               </td>
+               <td>
+                  {{!helper.get_fa_icon_state(cls='service', state='unknown')}} {{sUNKNOWN}} Unknown
+               </td>
+               <td>
+                  {{!helper.get_fa_icon_state(cls='service', state='ack')}} {{sACK}} Ack
+               </td>
+               <td>
+                  {{!helper.get_fa_icon_state(cls='service', state='downtime')}} {{sDOWNTIME}} Downtime
+               </td>
+            </tr>
+         </tbody>
+      </table>
+   %end
    </div>
 
    <!-- Third row : business impact alerting ... -->
