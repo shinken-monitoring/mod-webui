@@ -689,6 +689,7 @@ class Helper(object):
 
         return icon_text
 
+    # :TODO:maethor:150609: Rewrite this function
     # Get
     def get_navi(self, total, pos, step=30):
         step = float(step)
@@ -701,9 +702,6 @@ class Helper(object):
 
         nb_max_items = 2
         
-        if nb_pages == 0 or nb_pages == 1:
-            return None
-
         if current_page >= nb_max_items:
             # Name, start, end, is_current
             res.append((u'«', 0, step, False))
