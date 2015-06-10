@@ -219,7 +219,6 @@
                   <tr>
                     <td><strong>&nbsp;&ndash;&nbsp;period:</strong></td>
                     <td name="{{"host_notification_period%s" % i}}" class="popover-dismiss" data-html="true" data-toggle="popover" data-trigger="hover" title="Host notification period" data-placement="top" data-content="...">{{! app.helper.get_on_off(nw.host_notification_period.is_time_valid(time.time()), "Is notification period currently active?")}}
-                     %if 'timeperiods' in app.menu_items:
                      <a href="/timeperiods">{{nw.host_notification_period.alias}}</a>
                      <script>
                         %tp=app.get_timeperiod(nw.host_notification_period.get_name())
@@ -228,9 +227,6 @@
                           .attr('data-content', '{{! app.helper.get_timeperiod_html(tp)}}')
                           .popover();
                      </script>
-                     %else:
-                     {{nw.host_notification_period.alias}}
-                     %end
                     </td>
                   </tr>
                   
@@ -260,7 +256,6 @@
                     <tr>
                       <td><strong>&nbsp;&ndash;&nbsp;command:</strong></td>
                       <td name="host_command{{i}}" class="popover-dismiss" data-html="true" data-toggle="popover" data-trigger="hover" title="Service notification command" data-placement="top" data-content="...">
-                      %if 'commands' in app.menu_items:
                       {{command.get_name()}}
                       <script>
                         $('td[name="host_command{{i}}"]')
@@ -268,9 +263,6 @@
                           .attr('data-content', {{json.dumps(command.command.command_line)}})
                           .popover();
                       </script>
-                      %else:
-                      {{command.get_name()}}
-                      %end
                       </td>
                     </tr>
                   %end
@@ -286,7 +278,6 @@
                     <td><strong>&nbsp;&ndash;&nbsp;period:</strong></td>
                     <td name="{{"service_notification_period%s" % i}}" class="popover-dismiss" data-html="true" data-toggle="popover" data-trigger="hover" title="service notification period" data-placement="top" data-content="...">{{! app.helper.get_on_off(nw.service_notification_period.is_time_valid(time.time()), "Is notification period currently active?")}}
 
-                    %if 'timeperiods' in app.menu_items:
                     <a href="/timeperiods">{{nw.service_notification_period.alias}}</a>
                     <script>
                       %tp=app.get_timeperiod(nw.service_notification_period.get_name())
@@ -295,9 +286,6 @@
                         .attr('data-content', '{{!app.helper.get_timeperiod_html(tp)}}')
                         .popover();
                     </script>
-                    %else:
-                    {{nw.service_notification_period.alias}}
-                    %end
                     </td>
                   </tr>
                   
@@ -328,7 +316,6 @@
                     <tr>
                       <td><strong>&nbsp;&ndash;command:</strong></td>
                       <td name="service_command{{i}}" class="popover-dismiss" data-html="true" data-toggle="popover" data-trigger="hover" title="Service notification command" data-placement="top" data-content="...">
-                      %if 'commands' in app.menu_items:
                       {{command.get_name()}}
                       <script>
                         $('td[name="service_command{{i}}"]')
@@ -336,9 +323,6 @@
                           .attr('data-content', {{json.dumps(command.command.command_line)}})
                           .popover();
                       </script>
-                      %else:
-                      {{command.get_name()}}
-                      %end
                       </td>
                     </tr>
                   %end

@@ -151,21 +151,13 @@ Invalid element name
             %if elt_type=='host':
                %for hg in elt.hostgroups:
                <li>
-               %if 'hosts-groups' in app.menu_items:
                <a href="/hosts-group/{{hg.get_name()}}">{{hg.get_name()}} ({{hg.alias}})</a>
-               %else:
-               {{hg.get_name()}} ({{hg.alias}})
-               %end
                </li>
                %end
             %else:
                %for sg in elt.servicegroups:
                <li>
-               %if 'services-groups' in app.menu_items:
                <a href="/services-group/{{sg.get_name()}}">{{sg.get_name()}} ({{sg.alias}})</a>
-               %else:
-               {{sg.get_name()}} ({{sg.alias}})
-               %end
                </li>
                %end
             %end
@@ -296,11 +288,7 @@ Invalid element name
                %if len(elt.hostgroups) > 0:
                <dd>
                %for hg in elt.hostgroups:
-               %if 'hosts-groups' in app.menu_items:
                <a href="/hosts-group/{{hg.get_name()}}" class="link">{{hg.alias}} ({{hg.get_name()}})</a>
-               %else:
-               {{hg.alias}} ({{hg.get_name()}})
-               %end
                %end
                </dd>
                %else:
@@ -334,11 +322,7 @@ Invalid element name
                %if len(elt.servicegroups) > 0:
                <dd>
                %for sg in elt.servicegroups:
-               %if 'services-groups' in app.menu_items:
                <a href="/services-group/{{sg.get_name()}}" class="link">{{sg.alias}} ({{sg.get_name()}})</a>
-               %else:
-               {{sg.alias}} ({{sg.get_name()}})
-               %end
                %end
                </dd>
                %else:
@@ -595,7 +579,6 @@ Invalid element name
                         <td><strong>Notification period:</strong></td>
                         <td name="notification_period" class="popover-dismiss" data-html="true" data-toggle="popover" data-trigger="hover" title="Notification period" data-placement="bottom" data-content="...">
                         {{! app.helper.get_on_off(elt.notification_period.is_time_valid(time.time()), "Is notification period currently active?")}}
-                        %if 'timeperiods' in app.menu_items:
                         <a href="/timeperiods">{{elt.notification_period.alias}}</a>
                         <script>
                            %tp=app.get_timeperiod(elt.notification_period.get_name())
@@ -604,9 +587,6 @@ Invalid element name
                              .attr('data-content', '{{!helper.get_timeperiod_html(tp)}}')
                              .popover();
                         </script>
-                        %else:
-                        {{elt.notification_period.alias}}
-                        %end
                         </td>
                      </tr>
                      <tr>
@@ -648,11 +628,7 @@ Invalid element name
                      <tr>
                         <td><strong>Contacts:</strong></td>
                         %contacts=[]
-                        %if 'contacts' in app.menu_items:
                         %[contacts.append('<a href="/contact/'+item.contact_name+'">'+item.alias+'</a>' if item.alias else item.get_name()) for item in elt.contacts if item not in contacts]
-                        %else:
-                        %[contacts.append(item.alias if item.alias else item.get_name()) for item in elt.contacts if item not in contacts]
-                        %end
                         <td>{{!', '.join(contacts)}}</td>
                      </tr>
                      <tr>
@@ -665,11 +641,7 @@ Invalid element name
                         %cg = app.get_contactgroup(group)
                         <td style="text-align: right; font-style: italic;"><strong>{{cg.alias if cg.alias else cg.get_name()}}</strong></td>
                         %contacts=[]
-                        %if 'contacts' in app.menu_items:
                         %[contacts.append('<a href="/contact/'+item.contact_name+'">'+item.alias+'</a>' if item.alias else item.get_name()) for item in cg.members if item not in contacts]
-                        %else:
-                        %[contacts.append(item.alias if item.alias else item.get_name()) for item in cg.members if item not in contacts]
-                        %end
                         <td>{{!', '.join(contacts)}}</td>
                         %i=i+1
                      </tr>
@@ -697,7 +669,6 @@ Invalid element name
                   <tbody style="font-size:x-small;">
                      <tr>
                         <td><strong>Check period:</strong></td>
-                        %if 'timeperiods' in app.menu_items:
                         <td name="check_period" class="popover-dismiss" data-html="true" data-toggle="popover" data-trigger="hover" title="Check period" data-placement="bottom" data-content="...">
                         <a href="/timeperiods">{{elt.check_period.alias}}</a>
                         </td>
@@ -708,14 +679,10 @@ Invalid element name
                              .attr('data-content', '{{!helper.get_timeperiod_html(tp)}}')
                              .popover();
                         </script>
-                        %else:
-                        <td name="check_period" class="popover-dismiss" data-html="true" data-toggle="popover" title="Check period" data-placement="bottom" data-content="...">{{elt.check_period.alias}}</td>
-                        %end
                      </tr>
                      %if elt.maintenance_period is not None:
                      <tr>
                         <td><strong>Maintenance period:</strong></td>
-                        %if 'timeperiods' in app.menu_items:
                         <td name="maintenance_period" class="popover-dismiss" data-html="true" data-toggle="popover" data-trigger="hover" title="Check period" data-placement="bottom" data-content="...">
                         <a href="/timeperiods">{{elt.maintenance_period.alias}}</a>
                         </td>
@@ -726,9 +693,6 @@ Invalid element name
                              .attr('data-content', '{{!helper.get_timeperiod_html(tp)}}')
                              .popover();
                         </script>
-                        %else:
-                        <td name="maintenance_period" class="popover-dismiss" data-html="true" data-toggle="popover" title="Check period" data-placement="bottom" data-content="...">{{elt.maintenance_period.alias}}</td>
-                        %end
                      </tr>
                      %end
                      <tr>

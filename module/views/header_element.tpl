@@ -121,54 +121,60 @@
 
 
   <!--SIDEBAR-->
-  <!-- :TODO:maethor:150608: Regroup some items in dropdowns -->
   <div class="navbar-default sidebar" role="navigation">
     <div class="sidebar-nav navbar-collapse">
       <ul class="nav" id="side-menu">
         %if app:
-        %# Anyway, at least a Dashboard entry ...
-        %if app.sidebar_menu is None: 
-        <li class="active">
-          <a href="/dashboard">
-            <span class="fa fa-dashboard"></span> Dashboard 
-          </a>
+        <li> <a href="/dashboard"> <span class="fa fa-dashboard"></span> Dashboard </a> </li>
+        <li> <a href="/all?search=isnot:UP isnot:OK isnot:PENDING ack:false downtime:false"> <span class="fa fa-ambulance"></span> Problems </a> </li>
+        <li> <a href="/hosts-groups"> <span class="fa fa-sitemap"></span> Hosts groups </a> </li>
+        <li> <a href="/services-groups"> <span class="fa fa-sitemap"></span> Services groups </a> </li>
+        <li> <a href="/hosts-tags"> <span class="fa fa-tags"></span> Hosts tags </a> </li>
+        <li> <a href="/services-tags"> <span class="fa fa-tags"></span> Services tags </a> </li>
+        <li> <a href="#"><i class="fa fa-bar-chart"></i> Tactical views <i class="fa arrow"></i></a>
+          <ul class="nav nav-second-level">
+            <li> <a href="/impacts"> <span class="fa fa-bolt"></span> Impacts </a> </li>
+            <li> <a href="/minemaps"> <span class="fa fa-table"></span> Minemap </a> </li>
+            <li> <a href="/worldmap"> <span class="fa fa-globe"></span> World map </a> </li>
+            <li> <a href="/wall"> <span class="fa fa-th-large"></span> Wall </a> </li>
+          </ul>
         </li>
-        %else:
-        %for (menu) in app.sidebar_menu: 
-        %menu = [item.strip() for item in menu.split(',')]
-        %if len(menu) >= 2:
-        <li>
-          <a href="/{{menu[0]}}">
-            %if len(menu) >= 3:
-            <span class="fa fa-{{menu[2]}}"></span> {{menu[1]}}
-            %else:
-            <span class="fa"></span> {{menu[1]}}
-            %end
-          </a>
+        <li> <a href="/logs"> <span class="fa fa-th-list"></span> Logs </a> </li>
+        <li> <a href="/system"> <span class="fa fa-gears"></span> System </a> </li>
+        <li> <a href="/shinken-io"> <span class="fa fa-gears"></span> Shinken IO </a> </li>
+        <li> <a href="#"><i class="fa fa-wrench"></i> Configuration <i class="fa arrow"></i></a>
+          <ul class="nav nav-second-level">
+            <li> <a href="/contacts"> <span class="fa fa-users"></span> Contacts </a> </li>
+            <li> <a href="/commands"> <span class="fa fa-terminal"></span> Commands </a> </li>
+            <li> <a href="/timeperiods"> <span class="fa fa-calendar"></span> Time periods </a> </li>
+          </ul>
         </li>
-        %end
-        %end
-        %end
-
         %other_uis = app.get_ui_external_links()
         %if len(other_uis) > 0:
-        <hr style="width: 90%"/>
-        %end
-        %for c in other_uis:
-        <li>
-          <a href="{{c['uri']}}" target="_blank">
-            <i class="fa fa-rocket"></i> {{c['label']}}
-          </a>
+        <li> <a href="#"><i class="fa fa-rocket"></i> External <i class="fa arrow"></i></a>
+          <ul class="nav nav-second-level">
+            %for c in other_uis:
+            <li>
+              <a href="{{c['uri']}}" target="_blank">{{c['label']}}</a>
+            </li>
+            %end
+          </ul>
         </li>
         %end
         %end
 
-        <li>
-          <a href="index.html"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
-        </li>
       </ul>
     </div>
     <!-- /.sidebar-collapse -->
   </div>
   <!-- /.navbar-static-side -->
 </nav>
+
+<script type="text/javascript">
+   // On page loaded ...
+   $(function() {
+      // Date / time
+      $('.headClock .time').jclock({ format: '%H:%M:%S' });
+      $('.headClock .date').jclock({ format: '%d/%m/%Y' });
+   });
+</script>

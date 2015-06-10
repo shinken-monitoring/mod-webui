@@ -138,59 +138,6 @@ html, body {
   display: block;
 }
 
-/*
- * Sidebar navigation
- */
-.left-part, .right-part {
-   top: 60px;
-}
-
-.sidebar-nav li {
-   clear: left;
-}
-
-.sidebar-nav li a {
-   padding-top: 5px;
-   padding-bottom: 5px;
-}
-
-@media(max-width:1000px)  {
-   .sidebar-nav .navbar-collapse.collapse {
-      display: none !important;
-   }
-
-   .sidebar-nav .navbar-collapse {
-      overflow-x: visible !important;
-   }
-
-   .sidebar-nav .navbar-collapse.in {
-      overflow-y: auto !important;
-   }
-
-   .sidebar-nav .collapse.in {
-      display: block !important;
-   }
-}
-/*
- * Sidebar navigation
-@media screen and (max-width: 1024px) {
-   .sidebar-nav .navbar .navbar-collapse {
-      padding: 0;
-      max-height: none;
-   }
-   .sidebar-nav .navbar ul {
-      float: none;
-   }
-   .sidebar-nav .navbar ul:not {
-      display: block;
-   }
-   .sidebar-nav .navbar li {
-      float: none;
-      display: block;
-   }
-}
- */
-
 /* 
  * Content : breadcrumb
  */
