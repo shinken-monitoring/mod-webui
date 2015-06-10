@@ -32,18 +32,7 @@
          <ul class="nav navbar-nav">
             <!-- Host search ... -->
            
-            <!-- :TODO:maethor:150608: typeahead mess up with the display of the field-->
-            <!--<form id="frmSearch" class="navbar-form navbar-left hidden-xs" role="search">-->
-            <form class="navbar-form navbar-left hidden-xs" role="search">
-               <div class="form-group">
-                  <label class="sr-only" for="hosts-search">Host search</label>
-                  <div class="input-group">
-                     <input type="search" placeholder="Search host…" class="form-control typeahead" id="hosts-search" name="hosts-search" />
-                  </div>
-                  <input type="submit" value="Submit" class="sr-only">
-               </div>
-            </form>
-            
+            %include("_filters.tpl")
 
             <!-- Clock ... -->
             <p class="navbar-text hidden-sm hidden-xs">

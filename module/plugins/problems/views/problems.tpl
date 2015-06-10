@@ -112,8 +112,6 @@
     <a id='unselect_all_btn' href="javascript:unselect_all_problems()" class="btn btn-default btn-sm" style="display:none;"><i class="fa fa-minus"></i> Unselect all</a>
  </div>
 
- %include("_filters.tpl", bookmarks=bookmarks, bookmarksro=bookmarksro, search_string=search_string)
-
 </div>
 
 <hr>

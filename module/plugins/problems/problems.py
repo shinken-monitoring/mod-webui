@@ -67,19 +67,6 @@ def get_view(default_search=""):
     start = int(app.request.GET.get('start', '0'))
     end = int(app.request.GET.get('end', start + step))
 
-    # Load the bookmarks
-    bookmarks_r = app.get_user_preference(user, 'bookmarks')
-    if not bookmarks_r:
-        app.set_user_preference(user, 'bookmarks', '[]')
-        bookmarks_r = '[]'
-    bookmarks = json.loads(bookmarks_r)
-    bookmarks_ro = app.get_common_preference('bookmarks')
-    if not bookmarks_ro:
-        bookmarks_ro = '[]'
-
-    bookmarksro = json.loads(bookmarks_ro)
-    bookmarks = json.loads(bookmarks_r)
-
     items = app.get_all_hosts_and_services(user, get_impacts=False)
 
     logger.debug("[%s] problems", app.name)
@@ -253,7 +240,7 @@ def get_view(default_search=""):
     navi = app.helper.get_navi(total, start, step=step)
     items = items[start:end]
 
-    return {'app': app, 'pbs': items, 'user': user, 'navi': navi, 'search_string': ' '.join(search), 'filters': filters, 'bookmarks': bookmarks, 'bookmarksro': bookmarksro, 'toolbar': toolbar_pref }
+    return {'app': app, 'pbs': items, 'user': user, 'navi': navi, 'search_string': ' '.join(search), 'filters': filters, 'bookmarks': app.get_user_bookmarks(user), 'bookmarksro': app.get_common_bookmarks(), 'toolbar': toolbar_pref }
 
 
 # Our page

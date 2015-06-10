@@ -40,6 +40,7 @@ import cPickle
 import imp
 import urllib
 import hashlib
+import json
 
 from shinken.basemodule import BaseModule
 from shinken.message import Message
@@ -772,6 +773,16 @@ class Webui_broker(BaseModule, Daemon):
                 logger.warning("[%s] Exception type: %s" % (self.name, type(exp)))
                 logger.warning("Back trace of this kill: %s" % (traceback.format_exc()))
                 self.modules_manager.set_to_restart(mod)
+
+
+    def get_user_bookmarks(self, user):
+        ''' Returns the user bookmarks. '''
+        return json.loads(self.get_user_preference(user, 'bookmarks') or '[]')
+
+
+    def get_common_bookmarks(self):
+        ''' Returns the common bookmarks. '''
+        return json.loads(self.get_common_preference('bookmarks') or '[]')
 
 
     # For a specific place like dashboard we return widget lists
