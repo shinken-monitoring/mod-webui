@@ -136,8 +136,10 @@
       <div id="wrapper">
         %if print_header:
         %include("header_element")
-        %end
         <div id="page-wrapper">
+        %else:
+        <div class="container">
+        %end
                <div class="row">
                %if print_title:
                <!-- Page header -->

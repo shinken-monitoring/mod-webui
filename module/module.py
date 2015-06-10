@@ -40,6 +40,7 @@ import cPickle
 import imp
 import urllib
 import hashlib
+import json
 
 from shinken.basemodule import BaseModule
 from shinken.message import Message
@@ -90,7 +91,6 @@ try:
     params = scp.parse_config(configuration_file)
 
     logger.debug("WebUI, configuration loaded.")
-    logger.info("WebUI configuration, sidebar menu: %s" % (params['sidebar_menu']))
     logger.info("WebUI configuration, hosts filtered: %s" % (params['hosts_filter']))
 except Exception, exp:
     logger.warning("WebUI, configuration file (%s) not available: %s" % (configuration_file, str(exp)))
@@ -162,15 +162,6 @@ class Webui_broker(BaseModule, Daemon):
             time.tzset()
         logger.info("[%s] parameter timezone: %s", self.name, self.timezone)
 
-        self.sidebar_menu = None
-        self.menu_items = []
-        if params['sidebar_menu'] and params['sidebar_menu'] is not None:
-            self.sidebar_menu = params['sidebar_menu']
-            for (menu) in self.sidebar_menu: 
-                menu = [item.strip() for item in menu.split(',')]
-                self.menu_items.append(menu[0])
-        logger.info("[%s] parameter sidebar_menu: %s", self.name, self.sidebar_menu)
-        
         self.hosts_filter = []
         if 'hosts_filter' in params and params['hosts_filter'] is not None:
             self.hosts_filter = params['hosts_filter']
@@ -772,6 +763,16 @@ class Webui_broker(BaseModule, Daemon):
                 logger.warning("[%s] Exception type: %s" % (self.name, type(exp)))
                 logger.warning("Back trace of this kill: %s" % (traceback.format_exc()))
                 self.modules_manager.set_to_restart(mod)
+
+
+    def get_user_bookmarks(self, user):
+        ''' Returns the user bookmarks. '''
+        return json.loads(self.get_user_preference(user, 'bookmarks') or '[]')
+
+
+    def get_common_bookmarks(self):
+        ''' Returns the common bookmarks. '''
+        return json.loads(self.get_common_preference('bookmarks') or '[]')
 
 
     # For a specific place like dashboard we return widget lists
