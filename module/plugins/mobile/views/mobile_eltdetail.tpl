@@ -44,20 +44,6 @@ Invalid element name
         $('#btn_show_gesture').hide();
     }
   });
-
-  // Now we hook teh global search thing
-  $('.typeahead').typeahead({
-    // note that "value" is the default setting for the property option
-    source: function (typeahead, query) {
-      $.ajax({url: "/lookup/"+query,
-        success: function (data){
-          typeahead.process(data)}
-        });
-      },
-    onselect: function(obj) {
-      $("ul.typeahead.dropdown-menu").find('li.active').data(obj);
-    }
-  });
 </script>
 
 
