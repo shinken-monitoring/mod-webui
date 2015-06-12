@@ -33,7 +33,6 @@ This file describes the main milestones currently defined for the BS3 branch of 
 ## Common / User preferences
 - improve preferences storage backend (Mongodb)
 - configuration parameters in storage backend instead of cfg files
-- 
    
 ## Tactical overview:
 
