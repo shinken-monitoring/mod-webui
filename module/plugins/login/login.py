@@ -59,7 +59,7 @@ def user_logout():
     else:
         app.response.set_cookie('user', '', secret=app.auth_secret, path='/')
         
-    logger.info("[%s] user '%s' logged out" % (app.name, user_name))
+    logger.info("[WebUI] user '%s' logged out", user_name)
     app.bottle.redirect("/user/login")
     return {}
 
@@ -68,12 +68,12 @@ def user_auth():
     login = app.request.forms.get('login', '')
     password = app.request.forms.get('password', '')
     is_mobile = app.request.forms.get('is_mobile', '0')
-    logger.info("[%s] user '%s' logging in ..." % (app.name, login))
+    logger.info("[WebUI]  user '%s' logging in ...", login)
     is_authenticated = app.check_authentication(login, password)
 
     if is_authenticated:
         app.response.set_cookie('user', login, secret=app.auth_secret, path='/')
-        logger.info("[%s] user '%s' logged in" % (app.name, login))
+        logger.info("[WebUI]  user '%s' logged in", login)
         if is_mobile == '1':
             app.bottle.redirect("/mobile/main")
         else:
