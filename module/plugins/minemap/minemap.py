@@ -111,7 +111,7 @@ def show_minemap(name):
     navi = app.helper.get_navi(total, start, step=elts_per_page)
     hosts = items[start:end]
 
-    return {'app': app, 'user': user, 'navi': navi, 'params': params, 'group': my_group, 'hosts': items}
+    return {'app': app, 'user': user, 'navi': navi, 'params': params, 'group': my_group, 'hosts': items, 'page': "minemap/"+name}
 
 def show_minemaps():
     user = app.check_user_authentication()
