@@ -88,39 +88,10 @@ html, body {
   margin-left: -10px;
 }
 .user-menu > .dropdown-menu > li.user-header {
-  height: 175px;
+  height: auto;
   padding: 10px;
-  background: #3c8dbc;
+  background: #eeeeee;
   text-align: center;
-}
-.user-menu > .dropdown-menu > li.user-header > img {
-  z-index: 5;
-  height: 90px;
-  width: 90px;
-  border: 8px solid;
-  border-color: transparent;
-  border-color: rgba(255, 255, 255, 0.2);
-}
-.user-menu > .dropdown-menu > li.user-header > p.username {
-  z-index: 5;
-  color: #f9f9f9;
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 17px;
-  text-shadow: 2px 2px 3px #333333;
-  margin-top: 10px;
-}
-.user-menu > .dropdown-menu > li.user-header > p.usercategory {
-  z-index: 5;
-  color: #f9f9f9;
-  color: rgba(255, 255, 255, 0.8);
-  font-size: 14px;
-  text-shadow: 2px 2px 3px #333333;
-  margin-top: 0px;
-  font-style: italic;
-}
-.user-menu > .dropdown-menu > li.user-header > p > small {
-  display: block;
-  font-size: 12px;
 }
 
 

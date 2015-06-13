@@ -45,19 +45,19 @@ import threading
 import base64
 import cPickle
 import imp
-import urllib
 import hashlib
 import json
+import requests
 
 from shinken.basemodule import BaseModule
 from shinken.message import Message
-from shinken.misc.regenerator import Regenerator
+# from shinken.misc.regenerator import Regenerator
+from webui_regenerator import WebUIRegenerator
 from shinken.log import logger
 from shinken.modulesctx import modulesctx
 from shinken.modulesmanager import ModulesManager
 from shinken.daemon import Daemon
 from shinken.util import safe_print, to_bool
-from shinken.misc.filter  import only_related_to
 from shinken.misc.sorter import hst_srv_sort, last_state_change_earlier
 
 # Local import
@@ -150,9 +150,11 @@ class Webui_broker(BaseModule, Daemon):
         logger.info("[WebUI] Share dir: %s", self.share_dir)
         
         # Load the photo dir and make it an absolute path
-        self.photo_dir = getattr(modconf, 'photo_dir', 'photos')
+        self.photo_dir = getattr(modconf, 'photos_dir', 'photos')
         self.photo_dir = os.path.abspath(self.photo_dir)
         logger.info("[WebUI] Photo dir: %s", self.photo_dir)
+        
+        self.user_picture = ''
 
         self.embeded_graph = to_bool(getattr(modconf, 'embeded_graph', '0'))
 
@@ -178,10 +180,12 @@ class Webui_broker(BaseModule, Daemon):
         
         # We will save all widgets
         self.widgets = {}
+        
         # We need our regenerator now (before main) so if we are in a scheduler,
         # rg will be able to skip some broks
-        self.rg = Regenerator()
-
+        self.rg = WebUIRegenerator()
+        
+        # Mu bottle object ...
         self.bottle = bottle
     
     
@@ -564,12 +568,11 @@ class Webui_broker(BaseModule, Daemon):
     def declare_common_static(self):
         @route('/static/photos/:path#.+#')
         def give_photo(path):
-            # TODO: check if ok, return default Shinken user photo
             # If the file really exist, give it. If not, give a dummy image.
             if os.path.exists(os.path.join(self.photo_dir, path+'.png')):
                 return static_file(path+'.png', root=self.photo_dir)
             else:
-                return static_file('images/user.png', root=htdocs_dir)
+                return static_file('images/default_user.png', root=htdocs_dir)
 
         # Route static files css files
         @route('/static/:path#.+#')
@@ -609,6 +612,8 @@ class Webui_broker(BaseModule, Daemon):
     ##
     def check_authentication(self, username, password):
         logger.info("[WebUI] Checking authentication for user: %s", username)
+        self.user_picture = None
+        
         c = self.datamgr.get_contact(username)
         if not c:
             logger.error("[WebUI] You need to have a contact having the same name as your user: %s", username)
@@ -625,6 +630,14 @@ class Webui_broker(BaseModule, Daemon):
                         is_ok = True
                         # No need for other modules
                         logger.info("[WebUI] User '%s' is authenticated by %s", username, mod.get_name())
+                        
+                        # Define user picture
+                        self.user_picture = '/static/photos/%s' % username
+                        if self.gravatar:
+                            gravatar = self.get_gravatar(c.email, 32)
+                            if gravatar is not None:
+                                self.user_picture = gravatar
+                        logger.info("[WebUI] User picture: %s", self.user_picture)
                         break
             except Exception, exp:
                 print exp.__dict__
@@ -643,21 +656,12 @@ class Webui_broker(BaseModule, Daemon):
     # returns the anonymous contact
     ##
     def get_user_auth(self, allow_anonymous=False):
-        """
-        Given an email, returns a gravatar url for that email.
-        
-        From : https://fr.gravatar.com/site/implement/images/
-
-        :param basestring email:
-        :rtype: basestring
-        :return: The gravatar url for the given email.
-        """
         # First we look for the user sid
         # so we bail out if it's a false one
-        user_name = self.request.get_cookie("user", secret=self.auth_secret)
+        username = self.request.get_cookie("user", secret=self.auth_secret)
 
         # If we cannot check the cookie, bailout ... 
-        if not allow_anonymous and not user_name:
+        if not allow_anonymous and not username:
             return None
             
         # Allow anonymous access if requested and anonymous contact exists ...
@@ -666,41 +670,47 @@ class Webui_broker(BaseModule, Daemon):
             if c:
                 return c
 
-        c = self.get_contact(user_name)
+        c = self.get_contact(username)
+
+        # Set user picture
+        if c is not None and self.user_picture == '':
+            self.user_picture = '/static/photos/%s' % username
+            if self.gravatar and c.email:
+                gravatar = self.get_gravatar(c.email, 32)
+                if gravatar is not None:
+                    self.user_picture = gravatar
+            
         return c
 
     ##
     # Check if a user is currently logged in
     ##
     def check_user_authentication(self):
-        """
-        Given an email, returns a gravatar url for that email.
-        
-        From : https://fr.gravatar.com/site/implement/images/
-
-        :param basestring email:
-        :rtype: basestring
-        :return: The gravatar url for the given email.
-        """
         user = self.get_user_auth()
         if not user:
             self.bottle.redirect("/user/login")
         else:
             return user
             
+    ##
+    # Get user Gravatar picture if defined
+    ##
     def get_gravatar(self, email, size=64, default='404'):
-        """
-        Given an email, returns a gravatar url for that email.
+        logger.warning("[WebUI], get Gravatar, email: %s, size: %d, default: %s", email, size, default)
         
-        From : https://fr.gravatar.com/site/implement/images/
-
-        :param basestring email:
-        :rtype: basestring
-        :return: The gravatar url for the given email.
-        """
-        parameters = { 's' : size, 'd' : default}
-        url = "https://secure.gravatar.com/avatar/%s?%s" % (hashlib.md5(email.lower()).hexdigest(), urllib.urlencode(parameters))
-        return url
+        try:
+            parameters = { 's' : size, 'd' : default}
+            url = "https://secure.gravatar.com/avatar/%s" % (hashlib.md5(email.lower()).hexdigest())
+            r = requests.get(url, params=parameters)
+            logger.warning("[WebUI], Gravatar picture: %s", r)
+            if r.status_code == 200:
+                return url
+            else:
+                return None
+        except:
+            return None
+            
+        return None
 
 
     # ------------------------------------------------------------------------------------------
@@ -968,54 +978,133 @@ class Webui_broker(BaseModule, Daemon):
     # Relocate those function in a dedicated datamanager ... 
     # WebUI has some kind of abstraction layer when accessing to Shinken data model!
     ##
+    ##
+    # Get only user relevant items for the user
+    ##
+    def only_related_to(self, lst, user):
+        # if the user is an admin, show all
+        if user is None or user.is_admin:
+            return lst
+
+        # Ok the user is a simple user, we should filter
+        r = set()
+        for item in lst:
+            # Maybe the user is a direct contact
+            if hasattr(item, 'contacts') and user in item.contacts:
+                r.add(item)
+                continue
+            # TODO: add a notified_contact pass
+
+            # Maybe it's a contact of a linked elements (source problems or impacts)
+            found = False
+            if hasattr(item, 'source_problems'): 
+                for s in item.source_problems:
+                    if user in s.contacts:
+                        r.add(item)
+                        found = True
+            # Ok skip this object now
+            if found:
+                continue
+                
+            # Now impacts related maybe?
+            if hasattr(item, 'impacts'): 
+                for imp in item.impacts:
+                    if user in imp.contacts:
+                        r.add(item)
+
+        return list(r)
+        
+        
+    ##
+    # Hosts
+    ##
+    def get_nb_hosts(self, user=None):
+        return len(self.get_hosts(user))
+        
     def get_hosts(self, user=None):
         items=self.datamgr.get_hosts()
-        r = set()
-        for h in items:
-            filtered = False
-            for filter in self.hosts_filter:
-                if h.host_name.startswith(filter):
-                    filtered = True
-            if not filtered:
-                    r.add(h)
-                    
         if user is not None:
-            r=only_related_to(r,user)
-
-        return r
-                  
-    def get_services(self, user=None):
-        items=self.datamgr.get_services()
-        if user is not None:
-            return only_related_to(items,user)
+            return self.only_related_to(items,user)
 
         return items
-
+                  
     def get_host(self, hname):
         hname = hname.decode('utf8', 'ignore')
         return self.rg.hosts.find_by_name(hname)
+
+    # Get percentage of all Hosts
+    def get_percentage_hosts_state(self, user=None, problem=False):
+        all_hosts = self.get_hosts(user)
+        if len(all_hosts) == 0:
+            return 0
+            
+        problem_hosts = []
+        problem_hosts.extend([h for h in all_hosts if h.state not in ['UP', 'PENDING'] and not h.is_impact])
+        
+        if problem:
+            return int((len(problem_hosts) * 100) / float(len(all_hosts)))
+        else:
+            return int(100 - (len(problem_hosts) * 100) / float(len(all_hosts)))
+
+
+    ##
+    # Services
+    ##
+    def get_nb_services(self, user=None):
+        return len(self.get_services(user))
+        
+    def get_services(self, user=None):
+        items=self.datamgr.get_services()
+        if user is not None:
+            return self.only_related_to(items,user)
+
+        return items
 
     def get_service(self, hname, sdesc):
         hname = hname.decode('utf8', 'ignore')
         sdesc = sdesc.decode('utf8', 'ignore')
         return self.rg.services.find_srv_by_name_and_hostname(hname, sdesc)
 
+    # Get percentage of all Services
+    def get_percentage_service_state(self, user=None, problem=False):
+        all_services = self.get_services(user)
+        if len(all_services) == 0:
+            return 0
+
+        problem_services = []
+        problem_services.extend([s for s in all_services if s.state not in ['OK', 'PENDING'] and not s.is_impact])
+        
+        if problem:
+            return int((len(problem_services) * 100) / float(len(all_services)))
+        else:
+            return int(100 - (len(problem_services) * 100) / float(len(all_services)))
+
+
+    ##
+    # Hosts and services
+    ##
     def get_all_hosts_and_services(self, user=None, get_impacts=True):
         all = []
         if get_impacts:
-            all.extend(self.get_hosts())
-            all.extend(self.get_services())
+            all.extend(self.get_hosts(user))
+            all.extend(self.get_services(user))
         else:
-            all.extend([h for h in self.get_hosts() if not h.is_impact])
-            all.extend([s for s in self.get_services() if not s.is_impact])
+            all.extend([h for h in self.get_hosts(user) if not h.is_impact])
+            all.extend([s for s in self.get_services(user) if not s.is_impact])
         return all
 
+    ##
+    # Timeperiods
+    ##
     def get_timeperiods(self):
         return self.datamgr.rg.timeperiods
                   
     def get_timeperiod(self, name):
         return self.datamgr.rg.timeperiods.find_by_name(name)
     
+    ##
+    # Commands
+    ##
     def get_commands(self):
         return self.datamgr.rg.commands
                   
@@ -1023,6 +1112,9 @@ class Webui_broker(BaseModule, Daemon):
         name = name.decode('utf8', 'ignore')
         return self.datamgr.rg.commands.find_by_name(name)
 
+    ##
+    # Contacts
+    ##
     def get_contacts(self):
         return self.datamgr.rg.contacts
                   
@@ -1030,6 +1122,9 @@ class Webui_broker(BaseModule, Daemon):
         name = name.decode('utf8', 'ignore')
         return self.datamgr.rg.contacts.find_by_name(name)
 
+    ##
+    # Contacts groups
+    ##
     def get_contactgroups(self):
         # return self.datamgr.get_contactgroups()
         return self.datamgr.rg.contactgroups
@@ -1038,6 +1133,9 @@ class Webui_broker(BaseModule, Daemon):
         name = name.decode('utf8', 'ignore')
         return self.datamgr.rg.contactgroups.find_by_name(name)
 
+    ##
+    # Hosts groups
+    ##
     def set_hostgroups_level(self, user=None):
         logger.debug("[WebUI] set_hostgroups_level")
         
@@ -1059,24 +1157,17 @@ class Webui_broker(BaseModule, Daemon):
         
     def get_hostgroups(self, user=None):
         items=self.datamgr.rg.hostgroups
-        
-        r = set()
-        for g in items:
-            filtered = False
-            for filter in self.hosts_filter:
-                if g.hostgroup_name.startswith(filter):
-                    filtered = True
-            if not filtered:
-                    r.add(g)
-                    
         if user is not None:
-            r=only_related_to(r,user)
+            return self.only_related_to(items,user)
 
-        return r
+        return items
 
     def get_hostgroup(self, name):
         return self.datamgr.rg.hostgroups.find_by_name(name)
                   
+    ##
+    # Services groups
+    ##
     def set_servicegroups_level(self, user=None):
         logger.debug("[WebUI] set_servicegroups_level")
         
@@ -1098,24 +1189,17 @@ class Webui_broker(BaseModule, Daemon):
         
     def get_servicegroups(self, user=None):
         items = self.datamgr.rg.servicegroups
-        
-        r = set()
-        for g in items:
-            filtered = False
-            for filter in self.services_filter:
-                if g.servicegroup_name.startswith(filter):
-                    filtered = True
-            if not filtered:
-                    r.add(g)
-                    
         if user is not None:
-            r=only_related_to(r,user)
+            return self.only_related_to(items,user)
 
-        return r
+        return items
 
     def get_servicegroup(self, name):
         return self.datamgr.rg.servicegroups.find_by_name(name)
                   
+    ##
+    # Hosts tags
+    ##
     # Get the hosts tags sorted by names, and zero size in the end
     def get_host_tags_sorted(self):
         r = []
@@ -1133,6 +1217,9 @@ class Webui_broker(BaseModule, Daemon):
                 r.append(h)
         return r
 
+    ##
+    # Services tags
+    ##
     # Get the services tags sorted by names, and zero size in the end
     def get_service_tags_sorted(self):
         r = []
@@ -1228,25 +1315,3 @@ class Webui_broker(BaseModule, Daemon):
         logger.debug("[WebUI] get_overall_it_problems_count, services: %d", len(s_states))
         
         return len(h_states) + len(s_states)
-
-    # Get percentage of all Services
-    def get_percentage_service_state(self, user=None):
-        all_services = self.get_services(user)
-        problem_services = []
-        problem_services.extend([s for s in all_services if s.state not in ['OK', 'PENDING'] and not s.is_impact])
-        if len(all_services) == 0:
-            res = 0
-        else:
-            res = int(100-(len(problem_services) *100)/float(len(all_services)))
-        return res
-              
-    # Get percentage of all Hosts
-    def get_percentage_hosts_state(self, user=None):
-        all_hosts = self.get_hosts(user)
-        problem_hosts = []
-        problem_hosts.extend([s for s in all_hosts if s.state not in ['UP', 'PENDING'] and not s.is_impact])
-        if len(all_hosts) == 0:
-            res = 0
-        else:
-            res = int(100-(len(problem_hosts) *100)/float(len(all_hosts)))
-        return res

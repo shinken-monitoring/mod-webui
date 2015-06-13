@@ -829,7 +829,6 @@ class Helper(object):
 
     def get_host_service_aggregation_tree(self, h, app=None):
         tree = {'path' : '/', 'sons' : [], 'services':[], 'state':'unknown', 'full_path':'/'}
-        # user = self.get_user_auth()
         for s in h.services:
             p = s.aggregation
             paths = self.get_aggregation_paths(p)

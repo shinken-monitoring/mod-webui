@@ -5,6 +5,7 @@
 *    Gregory Starck, g.starck@gmail.com
 *    Hartmut Goebel, h.goebel@goebel-consult.de
 *    Andreas Karfusehr, andreas@karfusehr.de
+*    Frederic Mohier, frederic.mohier@gmail.com
 *
 * This file is part of Shinken.
 *
@@ -24,42 +25,21 @@
 **/
 
 
-/*  Dashboard basics
-------------------------------------------------------- */
-
-.dash-big {
-    color: #505050;
-    line-height: 30px;
-    font-size: 28px;
-    font-weight: bold;
-}
-
-
-/*  Unsorted
-------------------------------------------------------- */
-#warn-pref {
-    padding: 10px 20px;
-}
-
-#warn-pref h2, #warn-pref p {
-    color: #FFFFFF;
-}
-
 /*  Widget styles
 ------------------------------------------------------- */
 .widget_desc {
-    background-color : white;
-    margin : 5px;
-    padding : 10px;
-    border-radius: 4px;
-    color : black;
-    min-height : 160px !important;
-    position: relative; /* To be sure absolute item will b where they should be*/
+   background-color : white;
+   margin : 5px;
+   padding : 10px;
+   border-radius: 4px;
+   color : black;
+   min-height : 160px !important;
+   position: relative; /* To be sure absolute item will b where they should be*/
 }
 
 .widget_desc .add_button{
-    bottom:0px;
-    position:absolute;
+   bottom:0px;
+   position:absolute;
 }
 
 /*  Widget styles informations
@@ -69,69 +49,67 @@
  use directly the default classes names, this names. */
 
 .widget-place {
-    margin: 0;
-    padding: 0;
-    float: left;
-    width: 33.3%;
-    height: auto;
-    list-style: none;
-    min-height: 400px;
+   margin: 0;
+   padding: 0;
+   float: left;
+   width: 33.3%;
+   height: auto;
+   list-style: none;
+   min-height: 400px;
 }
 
 .widget-menu {
-    float:right;
+   float:right;
 }
 
 .widget-menu a {
-    margin: 0 0 0 0.5em;
+   margin: 0 0 0 0.5em;
 }
 
 
 .widget-placeholder {
-    border: #000 dashed 1px;
-    color: #000;
-    margin: 1em;
-    background-color: #FAFAFA;
+   border: #000 dashed 1px;
+   color: #000;
+   margin: 1em;
+   background-color: #FAFAFA;
 }
 
 .widget {
-    margin: 1em;
-    border-left: #ebebeb solid 1px;
-    border-right: #ebebeb solid 1px;
-    border-bottom: #ebebeb solid 1px;
-    border-radius: 4px;
+   margin: 1em;
+   border-left: #ebebeb solid 1px;
+   border-right: #ebebeb solid 1px;
+   border-bottom: #ebebeb solid 1px;
+   border-radius: 4px;
 }
 
 .widget-header {
-    padding: 0.4em 0.6em;
+   padding: 0.4em 0.6em;
 
-    color: #505050;
-    background-color: #D9DCDF;
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#FAFAFA), to(#EAEAEA)); /* Saf4+, Chrome */
-    background-image: -webkit-linear-gradient(top, #FAFAFA, #EAEAEA); /* Chrome 10+, Saf5.1+, iOS 5+ */
-    background-image:    -moz-linear-gradient(top, #FAFAFA, #EAEAEA); /* FF3.6 */
-    background-image:     -ms-linear-gradient(top, #FAFAFA, #EAEAEA); /* IE10 */
-    background-image:      -o-linear-gradient(top, #FAFAFA, #EAEAEA); /* Opera 11.10+ */
-    background-image:         linear-gradient(top, #FAFAFA, #EAEAEA);
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorStr='#FAFAFA', EndColorStr='#EAEAEA'); /* IE6-IE9 */
+   color: #505050;
+   background-color: #D9DCDF;
+   background-image: -webkit-gradient(linear, left top, left bottom, from(#FAFAFA), to(#EAEAEA)); /* Saf4+, Chrome */
+   background-image: -webkit-linear-gradient(top, #FAFAFA, #EAEAEA); /* Chrome 10+, Saf5.1+, iOS 5+ */
+   background-image:    -moz-linear-gradient(top, #FAFAFA, #EAEAEA); /* FF3.6 */
+   background-image:     -ms-linear-gradient(top, #FAFAFA, #EAEAEA); /* IE10 */
+   background-image:      -o-linear-gradient(top, #FAFAFA, #EAEAEA); /* Opera 11.10+ */
+   background-image:         linear-gradient(top, #FAFAFA, #EAEAEA);
+   filter: progid:DXImageTransform.Microsoft.gradient(startColorStr='#FAFAFA', EndColorStr='#EAEAEA'); /* IE6-IE9 */
 
-    border-bottom: solid 1px #EAEAEA;
-/*    box-shadow: 0 1px 0 #FFFFFF inset;
-    text-shadow: 0 1px 1px #FFFFFF;*/
+   border-bottom: solid 1px #EAEAEA;
 }
 
 .widget-editbox {
-    color: #000;
-    margin: 0.2em;
-    padding: 0.2em;
+   color: #000;
+   margin: 0.2em;
+   padding: 0.2em;
 }
 
 .widget-content {
-    padding: 0.6em;
+   padding: 0.6em;
 }
 
 .table-result {
-    border-top: 4px double #ebebeb !important; 
+   border-top: 4px double #ebebeb !important; 
 }
 
 
@@ -139,42 +117,23 @@
     ------------------------------------------------------- */
 
 ul#Navigation {
-  margin-top: 4px;
-  padding: 0.8em;
-  text-align: center;
-  background: #F4F8FA;
-  border: #5BC0DE;
-  height: 90px;
+   margin-top: 4px;
+   padding: 0.8em;
+   text-align: center;
+   background: #F4F8FA;
+   border: #5BC0DE;
+   height: 90px;
 }
 
 ul#Navigation li {
-  list-style: none;
-  display: inline;
+   list-style: none;
+   display: inline;
 }
 
 .popover {
-    min-width: 640px ! important;
+   min-width: 640px ! important;
 }
 
-/*  Title styles
-    ------------------------------------------------------- */
-
-.itproblem {
-}
-
-.impacts {
-  letter-spacing: 3px;
-}
-
-.services {
-  letter-spacing: 1px;
-  right: 2.6em !important;
-}
-
-.hosts {
-  letter-spacing: 2px;
-  right: 2.6em !important;
-}
 
 /*  Badger styles
     ------------------------------------------------------- */
@@ -186,25 +145,32 @@ ul#Navigation li {
   font-weight: bold;
   padding: 1px 3px 2px;
   text-transform: uppercase;
-  position: relative;
   left: 1.2em;
-  z-index: 666;
   
   position: relative;
   bottom: 4.5em;
 }
+.badger-left {
+  left: -10px;
+}
+.badger-right {
+  left: +10px;
+}
+
+.badger-info {
+  background-color: #337ABF; opacity: 0.85;
+}
 
 .badger-critical {
-  background-color: rgb(255,0,0); opacity: 0.85;
+  background-color: #FF2727; opacity: 0.85;
 }
 
 .badger-warning {
-  background-color: rgb(255,153,0); opacity: 0.85;
+  background-color: #FFA827; opacity: 0.85;
 }
 
 .badger-ok {
   background-color: #7AB317;
-  background-image: -moz-linear-gradient(center top , #7AB317, #669900);
 }
 
 .badger-title {

@@ -65,7 +65,6 @@
       <ul class="dropdown-menu">
         <li class="user-header">
           <div class="panel panel-info" id="user_info">
-            <div class="panel-heading">User information</div>
             <div class="panel-body panel-default">
               <!-- User image / name -->
               <p class="username">{{username}}</p>
@@ -74,31 +73,7 @@
                 <small>{{'Administrator' if user.is_admin else 'User'}}</small>
               </p>
               %end
-              <script>
-                %if app is not None and app.gravatar:
-                $('<img src="{{app.get_gravatar(user.email, 32)}}" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}" style="display:none">')
-                .load(function() { $(this).show(); })
-                .error(function() { 
-                  $(this).remove(); 
-                  $('<img src="/static/images/logo/default_user.png" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}" style="display:none">')
-                    .load(function() { $(this).show(); })
-                    .error(function() { $(this).remove(); })
-                    .appendTo('li.user-header div.panel-body');
-                })
-                .appendTo('li.user-header div.panel-body');
-                %else:
-                $('<img src="/static/images/logo/{{user.get_name()}}.png" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}" style="display:none">')
-                .load(function() { $(this).show(); })
-                .error(function() { 
-                  $(this).remove(); 
-                  $('<img src="/static/images/logo/default_user.png" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}" style="display:none">')
-                    .load(function() { $(this).show(); })
-                    .error(function() { $(this).remove(); })
-                    .appendTo('li.user-header div.panel-body');
-                })
-                .appendTo('li.user-header div.panel-body');
-                %end
-              </script>
+              <img src="{{app.user_picture}}" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}">
             </div>
             <div class="panel-footer">
               <!-- User actions -->
