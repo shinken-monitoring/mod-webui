@@ -49,7 +49,7 @@ def get_all():
 # Our View code. We will get different data from all and /problems
 # but it's mainly filtering changes
 def get_view(default_search=""):
-    user = app.checkauth()
+    user = app.check_user_authentication()
 
     # Fetch elements per page preference for user, default is 25
     elts_per_page = app.get_user_preference(user, 'elts_per_page', 25)
@@ -251,7 +251,7 @@ def get_view(default_search=""):
 
 # Our page
 def get_pbs_widget():
-    user = app.checkauth()
+    user = app.check_user_authentication()
 
     # We want to limit the number of elements, The user will be able to increase it
     nb_elements = max(0, int(app.request.GET.get('nb_elements', '10')))
@@ -309,7 +309,7 @@ def get_pbs_widget():
 
 # Our page
 def get_last_errors_widget():
-    user = app.checkauth()
+    user = app.check_user_authentication()
 
     # We want to limit the number of elements, The user will be able to increase it
     nb_elements = max(0, int(app.request.GET.get('nb_elements', '10')))
