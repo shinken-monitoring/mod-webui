@@ -1,7 +1,7 @@
 %helper = app.helper
 %datamgr = app.datamgr
 
-%rebase("layout", title='All problems', js=['problems/js/problems.js', 'problems/js/filters.js', 'problems/js/bookmarks.js'], css=['problems/css/problems.css', 'problems/css/filters.css'], refresh=True, user=user, navi=navi, app=app, page="/all")
+%rebase("layout", title='All problems', js=['problems/js/problems.js', 'problems/js/filters.js', 'problems/js/bookmarks.js'], css=['problems/css/problems.css', 'problems/css/filters.css'], refresh=True, user=user, navi=navi, app=app, page="/all", elts_per_page=elts_per_page)
 
 %# Look for actions if we must show them or not
 %actions_allowed = True

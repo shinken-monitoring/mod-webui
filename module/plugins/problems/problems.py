@@ -56,11 +56,17 @@ def get_view(default_search=""):
 
     # Fetch toolbar preference for user, default is 'show'
     toolbar_pref = app.get_user_preference(user, 'toolbar', 'show')
-
     toolbar = app.request.GET.get('toolbar', '')
     if toolbar != toolbar_pref and toolbar in ['show', 'hide']:
         app.set_user_preference(user, 'toolbar', toolbar)
         toolbar_pref = toolbar
+
+    # Fetch sound preference for user, default is 'no'
+    sound_pref = app.get_user_preference(user, 'sound', 'yes' if app.play_sound else 'no')
+    sound = app.request.GET.get('sound', '')
+    if sound != sound_pref and sound in ['yes', 'no']:
+        app.set_user_preference(user, 'sound', sound)
+        sound_pref = sound
 
     # We want to limit the number of elements
     step = int(app.request.GET.get('step', elts_per_page))
@@ -240,7 +246,7 @@ def get_view(default_search=""):
     navi = app.helper.get_navi(total, start, step=step)
     items = items[start:end]
 
-    return {'app': app, 'pbs': items, 'user': user, 'navi': navi, 'search_string': ' '.join(search), 'filters': filters, 'bookmarks': app.get_user_bookmarks(user), 'bookmarksro': app.get_common_bookmarks(), 'toolbar': toolbar_pref }
+    return {'app': app, 'pbs': items, 'user': user, 'navi': navi, 'search_string': ' '.join(search), 'filters': filters, 'bookmarks': app.get_user_bookmarks(user), 'bookmarksro': app.get_common_bookmarks(), 'toolbar': toolbar_pref, 'sound': sound_pref, 'elts_per_page': elts_per_page }
 
 
 # Our page

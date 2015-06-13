@@ -8,23 +8,58 @@
   <div id="elts_per_page" style="display:inline-block;">
     <div class="input-group">
       <div class="input-group-btn">
-        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">#<span class="caret"></span></button>
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">#&nbsp;<span class="caret"></span></button>
         <ul class="dropdown-menu" role="menu">
           <li><a href="#" data-elts="5">5 elements</a></li>
           <li><a href="#" data-elts="10">10 elements</a></li>
-          <li><a href="#" data-elts="20">20 elements</a></li>
+          <li><a href="#" data-elts="25">25 elements</a></li>
           <li><a href="#" data-elts="50">50 elements</a></li>
           <li><a href="#" data-elts="100">100 elements</a></li>
         </ul>
       </div>
-      <input type="text" class="form-control" aria-label="Elements per page" placeholder="Elements per page ..." value="{{elts_per_page}}" style="max-width: 100px;">
+      <form id="elts">
+        <input type="number" class="form-control" aria-label="Elements per page" placeholder="Elements per page ..." value="{{elts_per_page}}" style="max-width: 100px;">
+      </form>
     </div>
   </div>
   <script>
+    var current_elts_per_page = {{elts_per_page}};
     $("#elts_per_page li a").click(function(e){
+      var value = $(this).data('elts');
+      
+      // Save user preference
+      save_user_preference('elts_per_page', value);
+      
       // Update input field
-      $('#elts_per_page input').val($(this).data('elts'));
-      save_user_preference('elts_per_page', $(this).data('elts'));
+      $('#elts_per_page input').val(value);
+      
+      current_elts_per_page = value;
+
+      e.preventDefault();
+    });
+    $('#elts_per_page form').submit(function(e){
+      var value = $('#elts_per_page input').val();
+
+      if (value == parseInt(value)) {
+         // Update input field
+         save_user_preference('elts_per_page', value);
+         current_elts_per_page = value;
+      } else {
+         $('#elts_per_page input').val(current_elts_per_page);
+      }
+
+      e.preventDefault();
+    });
+    $('#elts_per_page input').blur(function(e){
+      var value = $('#elts_per_page input').val();
+
+      if (value == parseInt(value)) {
+         // Update input field
+         save_user_preference('elts_per_page', value);
+         current_elts_per_page = value;
+      } else {
+         $('#elts_per_page input').val(current_elts_per_page);
+      }
 
       e.preventDefault();
     });
