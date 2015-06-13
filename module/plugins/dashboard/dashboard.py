@@ -64,19 +64,12 @@ def get_page():
             # Not a dashboard widget? I don't want it so
             continue
 
-        i = w['id']
         pos = w['position']
         options = w.get('options', {})
         collapsed = w.get('collapsed', '0')
 
-        ## Try to get the options for this widget
-        #option_s = app.get_user_preference(user, 'widget_widget_system_1333371012', default='{}')
-        #print "And load options_s", option_s
-        #if option_s:
-        #    json.loads(option_s)
-        #print "And dump options for this widget", options
         w['options'] = json.dumps(options)
-        args = {'wid': i, 'collapsed': collapsed}
+        args = {'wid': w['id'], 'collapsed': collapsed}
         args.update(options)
         w['options_uri'] = '&'.join('%s=%s' % (k, v) for (k, v) in args.iteritems())
         widgets.append(w)
@@ -91,6 +84,7 @@ def get_currently():
 
     return {'app': app, 'user': user}
 
-pages = {get_page: {'routes': ['/dashboard'], 'view': 'dashboard', 'static': True},
-         get_currently: { 'routes': ['/dashboard/currently'], 'view': 'currently', 'static': True},
-         }
+pages = {
+    get_page: {'routes': ['/dashboard'], 'view': 'dashboard', 'static': True},
+    get_currently: { 'routes': ['/dashboard/currently'], 'view': 'currently', 'static': True},
+    }

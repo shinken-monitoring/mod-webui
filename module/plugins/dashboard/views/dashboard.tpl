@@ -56,7 +56,6 @@
       </li>
 
       <li class="col-sm-2">
-         %# If we got no widget, we should put the button at the center fo the screen
          %if len(widgets) > 0:
          <a id="small_show_panel" data-toggle="popover" href="#widgets" class="btn btn-sm btn-success"><i class="fa fa-plus"></i> Add a new widget</a>
          %end
@@ -110,10 +109,8 @@
             return $('#widgets').html();
          }
       });
-   });
 
-   // Now load all widgets
-   $(function(){
+      // Now load all widgets
       %for w in widgets:
          %if 'base_url' in w and 'position' in w:
             %uri = w['base_url'] + "?" + w['options_uri']
