@@ -240,7 +240,7 @@ def compute_worst_state(d):
 def get_page(hname):
     # First we look for the user sid
     # so we bail out if it's a false one
-    user = app.get_user_auth()
+    user = app.check_user_authentication()
 
     if not user:
         app.bottle.redirect("/user/login")
