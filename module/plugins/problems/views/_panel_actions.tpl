@@ -1,5 +1,5 @@
 <!-- Actions panel -->
-<div class="panel panel-info" id="actions">
+<div class="panel panel-info" id="actions" style="display:none">
   <div class="panel-heading">Actions</div>
   <div class="list-group">
     <a href="javascript:try_to_fix_all();" class="list-group-item" title="Try to fix all selected problems (launch event handler if defined)">

@@ -3,6 +3,8 @@
      Gerhard Lausser, Gerhard.Lausser@consol.de
      Gregory Starck, g.starck@gmail.com
      Hartmut Goebel, h.goebel@goebel-consult.de
+     Frederic Mohier, frederic.mohier@gmail.com
+     Guillaume Subiron, maethor@subiron.org
 
  This file is part of Shinken.
 
@@ -52,71 +54,36 @@ function show_toolbar(save){
 
 
 
-// The user asks to show the hidden problems 
-function show_hidden_problems(cls){
-   $('.hide_for_'+cls).show();
-   // And hide the vvv button
-   $('.show_for_'+cls).hide();
-}
-
-
-
-function toggle_select_buttons(){
-   $('#select_all_btn').toggle();
-   $('#unselect_all_btn').toggle();
-}
-
-function show_unselect_all_button(){
-   $('#select_all_btn').hide();
-   $('#unselect_all_btn').show();
-}
-
-function show_select_all_button(){
-   $('#unselect_all_btn').hide();
-   $('#select_all_btn').show();
-}
-
-// Expand all collapsed block
-function expand_all_block(){
-   $('#accordion .collapse').collapse('show');
-   $('#expand_all').hide();
-   $('#collapse_all').show();
-}
- 
-// Collapse all block
-function collapse_all_block(){
-   $('#accordion .in').collapse('hide');
-   $('#collapse_all').hide();
-   $('#expand_all').show();
-}
-
+/* We keep an array of all selected elements */
+var selected_elements = [];
 
 // When we select all, add all in the selected list,
 // and hide the select all button, and swap it with
 // unselect all one
 function select_all_problems(){
-   // Maybe the actions are not allwoed. If so, don't act
-   if (!actions_enabled){return;}
+   // Maybe the actions are not allowed?
+   if (!actions_enabled){
+      return;
+   }
 
-   toggle_select_buttons();
-
-   // we will get all elements by looking at .details and get their ids
-   $('.detail').each(function(){
-      add_element($(this).attr('id'));
+   // Get all elements name ...
+   $('td input[type=checkbox]').each(function(){
+      // ... and add to the selected items list.
+      add_element($(this).data('item'));
    });
+
+   $('#select_all_btn').hide();
+   $('#unselect_all_btn').show();
 }
 
-// guess what? unselect is the total oposite...
+// Unselect all
 function unselect_all_problems(){
-   toggle_select_buttons();
-   /*$('#unselect_all_btn').hide();
-   $('#select_all_btn').show();*/
    flush_selected_elements();
+
+   $('#select_all_btn').show();
+   $('#unselect_all_btn').hide();
 }
 
-
-/* We keep an array of all selected elements */
-var selected_elements = [];
 
 function add_remove_elements(name){
    // Maybe the actions are not allowed. If so, don't do anything ...
@@ -132,20 +99,19 @@ function add_remove_elements(name){
 
 /* function when we add an element*/
 function add_element(name){
-   // Force to display the checked checkbox of the selector
-   $('#selector-'+name).prop("checked", true);
+   // Force to check the checkbox
+   $('td input[type=checkbox][data-item="'+name+'"]').prop("checked", true);
    
    selected_elements.push(name);
 
    show_toolbar();
    if (actions_enabled) $('#actions').show();
-   // show_unselect_all_button();
 }
 
 /* And of course when we remove it... */
 function remove_element(name){
-   // Force to display the unchecked checkbox of the selector
-   $('#selector-'+name).prop("checked", false);
+   // Force to uncheck the checkbox
+   $('td input[type=checkbox][data-item="'+name+'"]').prop("checked", false);
    
    selected_elements.splice($.inArray(name, selected_elements),1);
 
@@ -168,63 +134,62 @@ function flush_selected_elements(){
    var cpy = $.extend({}, selected_elements);
    $.each(cpy, function(idx, name) {
       remove_element(name)
-      //selected_elements.splice($.inArray(name, selected_elements),1);
    });
 }
 
 
-/* Jquery need simple id, so no / or space. So we get in the #id
-the data-raw-obj-name to get the unchanged name*/
-function unid_name(name){
-  return $('#'+name).attr('data-raw-obj-name');
-}
-
-/* Now actions buttons : */
+/* 
+ * Actions on the problems page
+ */
+// Recheck 
 function recheck_now_one(name){
    recheck_now(name);
 }
 function recheck_now_all(){
    $.each(selected_elements,function(idx, name){
-      recheck_now(unid_name(name));
+      recheck_now(name);
    });
    flush_selected_elements();
 }
 
 
+// Submit check result
 function submit_check_ok_one(name, user){
    submit_check(name, '0', 'Forced OK from WebUI by '+user);
 }
 function submit_check_ok_all(user){
    $.each(selected_elements, function(idx, name){
-      submit_check(unid_name(name), '0', 'Forced OK from WebUI by '+user);
+      submit_check(name, '0', 'Forced OK from WebUI by '+user);
    });
    flush_selected_elements();
 }
 
 
-/* Now actions buttons : */
+// Try to fix
 function try_to_fix_one(name){
    try_to_fix(name);
 }
 function try_to_fix_all(){
    $.each(selected_elements, function(idx, name){
-      try_to_fix(unid_name(name));
+      try_to_fix(name);
    });
    flush_selected_elements();
 }
 
 
+// Acknowledge
 function acknowledge_one(name, user){
    do_acknowledge(name, 'Acknowledged from WebUI by '+user, user);
 }
 function acknowledge_all(user){
    $.each(selected_elements, function(idx, name){
-      do_acknowledge(unid_name(name), 'Acknowledged from WebUI by '+user, user);
+      do_acknowledge(name, 'Acknowledged from WebUI by '+user, user);
    });
    flush_selected_elements();
 }
 
 
+// Schedule downtime
 function downtime_one(name, user){
    // Initial start/stop for downtime, do not consider seconds ...
    var downtime_start = moment().seconds(0);
@@ -238,21 +203,23 @@ function downtime_all(user){
    var downtime_stop = moment().seconds(0).add('day', 1);
 
    $.each(selected_elements, function(idx, name){
-      do_schedule_downtime(unid_name(name), downtime_start.format('X'), downtime_stop.format('X'), user, 'Downtime scheduled from WebUI by '+user);
+      do_schedule_downtime(name, downtime_start.format('X'), downtime_stop.format('X'), user, 'Downtime scheduled from WebUI by '+user);
    });
    flush_selected_elements();
 }
 
 
+// Remove from Web UI
 function remove_one(name, user){
    do_remove(name, 'Removed from WebUI by '+user, user);
 }
 function remove_all(user){
    $.each(selected_elements, function(idx, name){
-      do_remove(unid_name(name), 'Removed from WebUI by '+user, user);
+      do_remove(name, 'Removed from WebUI by '+user, user);
    });
    flush_selected_elements();
 }
+
 
 // On page loaded ... 
 $(document).ready(function(){
@@ -260,11 +227,14 @@ $(document).ready(function(){
    if ("actions_enabled" in window && !actions_enabled) {
       $('#select_all_btn').addClass('disabled');
       $('[id^=selector').attr('disabled', true);
+      
+      // Get all elements ...
+      $('td input[type=checkbox]').each(function(){
+         // ... and disable and hide checkbox
+         $(this).prop("disabled", true).hide();
+      });
    }
 
-   // ... we hide the actions panel
-   $('#actions').hide();
-   
    // Problems element check boxes
    $('td input[type=checkbox]').click(function (e) {
       // Do not expand collapsible container ...
@@ -273,7 +243,14 @@ $(document).ready(function(){
       // Stop page refresh
       stop_refresh();
       
-      // console.debug("Click "+$(this).attr('id'), $(this).prop('checked'))
-      add_remove_elements($(this).attr('id'))
+      // Add/remove element from selection
+      add_remove_elements($(this).data('item'));
    });
+   
+   // Graphs popover
+   $('[data-toggle="popover"]').popover({
+      html: true,
+      template: '<div class="popover img-popover"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
+      trigger: "hover",
+   })
 });

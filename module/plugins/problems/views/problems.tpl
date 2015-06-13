@@ -108,7 +108,7 @@
  <div class='col-lg-5 col-md-4 col-sm-2 pull-left'>
     <a id='show_toolbar_btn' href="javascript:show_toolbar(true)" class="btn btn-default btn-sm"><i class="fa fa-plus"></i> Show toolbar</a>      
     <a id="hide_toolbar_btn" href="javascript:hide_toolbar(true)" class="btn btn-default btn-sm" style="display:none;"><i class="fa fa-minus"></i> Hide toolbar</a>
-    <a id='select_all_btn' href="javascript:select_all_problems()" class="btn btn-default btn-sm"><i class="fa fa-check"></i> Select all</a>
+    <a id='select_all_btn' href="javascript:select_all_problems()" class="btn btn-default btn-sm"><i class="fa fa-plus"></i> Select all</a>
     <a id='unselect_all_btn' href="javascript:unselect_all_problems()" class="btn btn-default btn-sm" style="display:none;"><i class="fa fa-minus"></i> Unselect all</a>
  </div>
 
@@ -175,7 +175,7 @@
        %# Host information ...
        <tr data-toggle="collapse" data-target="#details-{{helper.get_html_id(pb)}}" class="accordion-toggle">
           <td>
-            <input type="checkbox" id="selector-{{helper.get_html_id(pb)}}">
+            <input type="checkbox" id="selector-{{helper.get_html_id(pb)}}" data-item="{{pb.get_full_name()}}">
           </td>
           <td align=center>
             {{!helper.get_fa_icon_state(pb)}}
@@ -211,7 +211,7 @@
             </div>
           </td>
         </tr>
-         <tr class="detail" id="{{helper.get_html_id(pb)}}" data-raw-obj-name='{{pb.get_full_name()}}'>
+         <tr>
            <td colspan="8" class="hiddenRow">
              <div class="accordion-body collapse" id="details-{{helper.get_html_id(pb)}}">
                <table class="table table-condensed" style="margin:0;">
@@ -273,18 +273,17 @@
                            });
                          });
                        </script>
-                         <button type="button" class="btn btn-default btn-xs" title="Ignore checks for the service (disable checks, notifications, event handlers and force Ok)" onClick="remove_one('{{ pb.get_full_name() }}', '{{ user.get_name() }}');">
+                       <button type="button" class="btn btn-default btn-xs" title="Ignore checks for the service (disable checks, notifications, event handlers and force Ok)" onClick="remove_one('{{ pb.get_full_name() }}', '{{ user.get_name() }}');">
                            <i class="fa fa-eraser"></i> Remove
-                         </button>
-                       </div>
-                     </td>
-                     %end
-                   </tr>
-                 </table>
-                 %if len(pb.impacts) > 0:
+                       </button>
+                     </div>
+                   </td>
+                   %end
+                 </tr>
+               </table>
+               %if len(pb.impacts) > 0:
                  <h4 style="margin-left: 20px;">{{ len(pb.impacts) }} impacts</h4>
                  <table class="table table-condensed" style="margin:0;">
-                   <tr>
                       %for i in helper.get_impacts_sorted(pb):
                       %if i.state_id != 0:
                       <tr>
@@ -303,10 +302,10 @@
                       %end
                       %end
                  </table>
-                 %end
-               </div>
-             </td>
-           </tr>
+               %end
+             </div>
+           </td>
+         </tr>
 
         %# End for pb in pbs:
         %end
@@ -321,13 +320,3 @@
    </div>
 
 </div>
-
-<script>
-  $(function () {
-    $('[data-toggle="popover"]').popover({
-      html: true,
-      template: '<div class="popover img-popover"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
-      trigger: "hover",
-    })
-  })
-</script>
