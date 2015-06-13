@@ -50,7 +50,7 @@ app = None
 def main():
     # First we look for the user sid
     # so we bail out if it's a false one
-    user = app.get_user_auth()
+    user = app.check_user_authentication()
 
     if not user:
         app.bottle.redirect("/mobile/")
@@ -66,7 +66,7 @@ def main():
 def impacts():
     # First we look for the user sid
     # so we bail out if it's a false one
-    user = app.get_user_auth()
+    user = app.check_user_authentication()
 
     if not user:
         app.bottle.redirect("/mobile/")
@@ -94,7 +94,7 @@ def impacts():
 def problems():
     # First we look for the user sid
     # so we bail out if it's a false one
-    user = app.get_user_auth()
+    user = app.check_user_authentication()
 
     if not user:
         app.bottle.redirect("/mobile/")
@@ -124,7 +124,7 @@ def problems():
 def dashboard():
     # First we look for the user sid
     # so we bail out if it's a false one
-    user = app.get_user_auth()
+    user = app.check_user_authentication()
 
     if not user:
         app.bottle.redirect("/mobile/")
@@ -152,7 +152,7 @@ def dashboard():
 
 
 def system_page():
-    user = app.get_user_auth()
+    user = app.check_user_authentication()
 
     if not user:
         app.bottle.redirect("/mobile/")
@@ -170,7 +170,7 @@ def system_page():
 
 
 def show_log():
-    user = app.get_user_auth()
+    user = app.check_user_authentication()
 
     if not user:
         app.bottle.redirect("/mobile/")
@@ -192,7 +192,7 @@ def show_log():
 def show_host(name):
     # First we look for the user sid
     # so we bail out if it's a false one
-    user = app.get_user_auth()
+    user = app.check_user_authentication()
 
     if not user:
         app.bottle.redirect("/mobile/")
@@ -219,7 +219,7 @@ def show_service(hname, desc):
 
     # First we look for the user sid
     # so we bail out if it's a false one
-    user = app.get_user_auth()
+    user = app.check_user_authentication()
 
     if not user:
         app.bottle.redirect("/mobile/")
@@ -291,7 +291,7 @@ def get_div(elt):
 def wall():
     # First we look for the user sid
     # so we bail out if it's a false one
-    user = app.get_user_auth()
+    user = app.check_user_authentication()
 
     if not user:
         app.bottle.redirect("/mobile/")
