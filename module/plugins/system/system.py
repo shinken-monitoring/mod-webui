@@ -54,7 +54,7 @@ except Exception, exp:
 
 
 def system_page():
-    user = app.checkauth()
+    user = app.check_user_authentication()
 
     schedulers = app.datamgr.get_schedulers()
     brokers = app.datamgr.get_brokers()
@@ -69,7 +69,7 @@ def system_page():
 
 
 def system_widget():
-    user = app.checkauth()
+    user = app.check_user_authentication()
 
     schedulers = app.datamgr.get_schedulers()
     brokers = app.datamgr.get_brokers()

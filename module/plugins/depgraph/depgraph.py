@@ -30,7 +30,7 @@ app = None
 
 
 def depgraph_host(name):
-    user = app.checkauth()
+    user = app.check_user_authentication()
 
     # Ok we are in a detail page but the user ask for a specific search
     search = app.request.GET.get('global_search', None)
@@ -47,7 +47,7 @@ def depgraph_host(name):
 
 
 def depgraph_srv(hname, desc):
-    user = app.checkauth()
+    user = app.check_user_authentication()
 
     loop = bool(int(app.request.GET.get('loop', '0')))
     loop_time = int(app.request.GET.get('loop_time', '10'))
@@ -64,7 +64,7 @@ def depgraph_srv(hname, desc):
 
 
 def get_depgraph_widget():
-    user = app.checkauth()
+    user = app.check_user_authentication()
 
     search = app.request.GET.get('search', '').strip()
 
@@ -96,7 +96,7 @@ def get_depgraph_widget():
 
 
 def get_depgraph_inner(name):
-    user = app.checkauth()
+    user = app.check_user_authentication()
 
     elt = None
     if '/' in name:

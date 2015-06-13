@@ -126,7 +126,7 @@ def getdb(dbname):
 
 
 def show_logs():
-    user = app.checkauth()
+    user = app.check_user_authentication()
 
     message,db = getdb(params['db_name'])
     if not db:
@@ -198,12 +198,12 @@ def show_logs():
 
 
 def form_hosts_list():
-    user = app.checkauth()
+    user = app.check_user_authentication()
 
     return {'app': app, 'user': user, 'params': params}
 
 def set_hosts_list():
-    user = app.checkauth()
+    user = app.check_user_authentication()
 
     # Form cancel
     if app.request.forms.get('cancel'): 
@@ -221,12 +221,12 @@ def set_hosts_list():
     return
 
 def form_services_list():
-    user = app.checkauth()
+    user = app.check_user_authentication()
 
     return {'app': app, 'user': user, 'params': params}
 
 def set_services_list():
-    user = app.checkauth()
+    user = app.check_user_authentication()
 
     # Form cancel
     if app.request.forms.get('cancel'): 
@@ -244,12 +244,12 @@ def set_services_list():
     return
 
 def form_logs_type_list():
-    user = app.checkauth()
+    user = app.check_user_authentication()
 
     return {'app': app, 'user': user, 'params': params}
 
 def set_logs_type_list():
-    user = app.checkauth()
+    user = app.check_user_authentication()
 
     # Form cancel
     if app.request.forms.get('cancel'): 
@@ -267,7 +267,7 @@ def set_logs_type_list():
     return
 
 def get_json(hostname, service=None):
-    user = app.checkauth()
+    user = app.check_user_authentication()
 
     message,db = getdb(params['db_name'])
     if not db:

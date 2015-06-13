@@ -74,7 +74,7 @@ def reload_cfg():
 
 # Main impacts view
 def show_host(name):
-    user = app.checkauth()
+    user = app.check_user_authentication()
 
     # Ok we are in a detail page but the user ask for a specific search
     search = app.request.GET.get('global_search', None)
@@ -95,7 +95,7 @@ def show_host(name):
 
 
 def show_service(hname, desc):
-    user = app.checkauth()
+    user = app.check_user_authentication()
 
     # Ok we are in a detail page but the user ask for a specific search
     search = app.request.GET.get('global_search', None)

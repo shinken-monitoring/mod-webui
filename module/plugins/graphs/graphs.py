@@ -31,7 +31,7 @@ app = None
 
 # Our page
 def get_graphs_widget():
-    user = app.checkauth()
+    user = app.check_user_authentication()
 
     search = app.request.GET.get('search', '')
     duration = app.request.GET.get('duration', '86400')

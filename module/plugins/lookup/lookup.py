@@ -43,7 +43,7 @@ except ImportError:
 def lookup(name=''):
     app.response.content_type = 'application/json'
 
-    user = app.checkauth()
+    user = app.check_user_authentication()
 
     filtered_hosts = only_related_to(app.datamgr.get_hosts(), user)
     hnames = (h.host_name for h in filtered_hosts)
@@ -56,7 +56,7 @@ def lookup(name=''):
 def lookup_post():
     app.response.content_type = 'application/json'
 
-    user = app.checkauth()
+    user = app.check_user_authentication()
 
     name = app.request.forms.get('value')
     if not name or len(name) < 3:

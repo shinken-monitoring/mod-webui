@@ -54,7 +54,7 @@ except Exception, exp:
 
 
 def shinken_io_page():
-    user = app.checkauth()
+    user = app.check_user_authentication()
 
     schedulers = app.datamgr.get_schedulers()
     brokers = app.datamgr.get_brokers()
@@ -69,7 +69,7 @@ def shinken_io_page():
 
 
 def shinken_io_widget():
-    user = app.checkauth()
+    user = app.check_user_authentication()
 
     schedulers = app.datamgr.get_schedulers()
     brokers = app.datamgr.get_brokers()

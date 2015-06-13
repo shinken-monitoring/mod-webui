@@ -64,7 +64,7 @@ def reload_cfg():
 
 # All timeperiods
 def show_timeperiods():
-    user = app.checkauth()
+    user = app.check_user_authentication()
 
     return {
         'app': app, 'user': user, 'params': params

@@ -69,9 +69,9 @@ def user_auth():
     password = app.request.forms.get('password', '')
     is_mobile = app.request.forms.get('is_mobile', '0')
     logger.info("[%s] user '%s' logging in ..." % (app.name, login))
-    is_auth = app.check_auth(login, password)
+    is_authenticated = app.check_authentication(login, password)
 
-    if is_auth:
+    if is_authenticated:
         app.response.set_cookie('user', login, secret=app.auth_secret, path='/')
         logger.info("[%s] user '%s' logged in" % (app.name, login))
         if is_mobile == '1':
@@ -81,7 +81,7 @@ def user_auth():
     else:
         app.bottle.redirect("/user/login?error=Invalid user or Password")
 
-    return {'app': app, 'is_auth': is_auth}
+    return {'app': app, 'is_auth': is_authenticated}
 
 
 # manage the /. If the user is known, go to home page.

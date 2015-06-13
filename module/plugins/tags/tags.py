@@ -64,7 +64,7 @@ def reload_cfg():
     app.bottle.redirect("/config")
 
 def show_tag(name):
-    user = app.checkauth()
+    user = app.check_user_authentication()
 
     if name == 'all':
         items = []
@@ -93,7 +93,7 @@ def show_tag(name):
     return {'app': app, 'user': user, 'params': params, 'navi': navi, 'tag': name, 'hosts': items, 'length': total}
 
 def show_stag(name):
-    user = app.checkauth()
+    user = app.check_user_authentication()
 
     if name == 'all':
         items = []
@@ -122,7 +122,7 @@ def show_stag(name):
     return {'app': app, 'user': user, 'params': params, 'navi': navi, 'tag': name, 'services': items, 'length': total}
 
 def show_tags():
-    user = app.checkauth()
+    user = app.check_user_authentication()
 
     fake_htags = []
     for tag in app.get_host_tags_sorted():
@@ -133,7 +133,7 @@ def show_tags():
     return {'app': app, 'user': user, 'params': params, 'htags': fake_htags}
 
 def show_stags():
-    user = app.checkauth()
+    user = app.check_user_authentication()
 
     fake_stags = []
     for tag in app.get_service_tags_sorted():

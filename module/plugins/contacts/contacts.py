@@ -60,7 +60,7 @@ def reload_cfg():
 
 # Contact page
 def show_contact(name):
-    user = app.checkauth()
+    user = app.check_user_authentication()
 
     if not user.is_admin and user.get_name != name:
       app.bottle.redirect('/contacts')
@@ -72,7 +72,7 @@ def show_contact(name):
 
 # All contacts
 def show_contacts():
-    user = app.checkauth()
+    user = app.check_user_authentication()
 
     if user.is_admin:
         contacts = app.get_contacts()

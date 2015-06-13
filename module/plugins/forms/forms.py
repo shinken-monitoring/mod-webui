@@ -29,7 +29,7 @@ app = None
 
 
 def form_submit_check(name):
-    user = app.checkauth()
+    user = app.check_user_authentication()
 
     t = 'host'
     if '/' in name:
@@ -39,34 +39,34 @@ def form_submit_check(name):
 
 
 def form_var(name):
-    user = app.checkauth()
+    user = app.check_user_authentication()
 
     h = app.datamgr.get_host(name)
             
     return {'app': app, 'elt': h, 'user': user, 'name': name}
 
 def form_ack(name):
-    user = app.checkauth()
+    user = app.check_user_authentication()
 
     return {'app': app, 'user': user, 'name': name}
 
 def form_comment(name):
-    user = app.checkauth()
+    user = app.check_user_authentication()
 
     return {'app': app, 'user': user, 'name': name}
 
 def form_comment_delete(name):
-    user = app.checkauth()
+    user = app.check_user_authentication()
 
     return {'app': app, 'user': user, 'name': name}
     
 def form_downtime(name):
-    user = app.checkauth()
+    user = app.check_user_authentication()
 
     return {'app': app, 'user': user, 'name': name}
 
 def form_downtime_delete(name):
-    user = app.checkauth()
+    user = app.check_user_authentication()
 
     return {'app': app, 'user': user, 'name': name}
 

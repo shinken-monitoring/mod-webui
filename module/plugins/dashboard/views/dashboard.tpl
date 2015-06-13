@@ -8,15 +8,6 @@
    widget_context = 'dashboard';
 </script>
 
-<!-- Maybe the admin didn't add a user preference module, or the module is dead, if so, warn about it -->
-%if not has_user_pref_mod:
-<div id="warn-pref" class="hero-unit alert-critical">
-   <h2>Warning:</h2>
-   <p>You didn't define a WebUI module for saving user preferences like the MongoDB one. You won't be able to use this page!</p>
-   <p><a href="https://github.com/shinken-monitoring/mod-webui/blob/master/doc/index.rst" class="btn btn-success">Learn more <i class="fa fa-hand-right"></i></a></p>
-</div>
-%end
-
 <div class="row">
    <ul id="Navigation" class="col-sm-12">
       <li class="col-sm-1"></li>

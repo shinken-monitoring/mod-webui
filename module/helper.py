@@ -831,12 +831,8 @@ class Helper(object):
         tree = {'path' : '/', 'sons' : [], 'services':[], 'state':'unknown', 'full_path':'/'}
         # user = self.get_user_auth()
         for s in h.services:
-            # if app.can_see_this_elt(s):
-            # if user.is_admin or user in s.contacts:
-
             p = s.aggregation
             paths = self.get_aggregation_paths(p)
-            #print "Service", s.get_name(), "with path", paths
             leaf = self.assume_and_get_path_in_tree(tree, paths)
             leaf['services'].append(s)
 

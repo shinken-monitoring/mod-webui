@@ -123,13 +123,13 @@ def getdb(dbname):
 # Our page. If the user call /dummy/TOTO arg1 will be TOTO.
 # if it's /dummy/, it will be 'nothing'
 def get_page(hostname='nothing'):
-    user = app.checkauth()
+    user = app.check_user_authentication()
 
     return {'app': app, 'user': user, 'hostname': hostname}
 
 
 def get_json(hostname):
-    user = app.checkauth()
+    user = app.check_user_authentication()
 
     app.response.content_type = 'application/json'
 

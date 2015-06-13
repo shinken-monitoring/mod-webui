@@ -48,7 +48,7 @@ def hst_srv_sort(s1, s2):
 
 
 def show_impacts():
-    user = app.checkauth()
+    user = app.check_user_authentication()
 
     all_imp_impacts = only_related_to(app.datamgr.get_important_elements(),user)
     all_imp_impacts.sort(hst_srv_sort)

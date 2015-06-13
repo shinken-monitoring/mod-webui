@@ -54,7 +54,7 @@ except Exception, exp:
 
 
 def config_page():
-    user = app.checkauth()    
+    user = app.check_user_authentication()    
 
     app.bottle.redirect("/")
     

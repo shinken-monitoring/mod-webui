@@ -70,7 +70,7 @@ def reload_cfg():
     app.bottle.redirect("/config")
 
 
-def checkauth():
+def check_user_authentication():
     user = app.get_user_auth()
 
     if not user:
@@ -81,7 +81,7 @@ def checkauth():
 
 # Our page. If the user call /worldmap
 def show_worldmap():
-    user = checkauth()
+    user = check_user_authentication()
 
     # We are looking for hosts with valid GPS coordinates,
     # and we just give them to the template to print them.
@@ -121,7 +121,7 @@ def show_worldmap():
 
 
 def show_worldmap_widget():
-    user = checkauth()
+    user = check_user_authentication()
 
     wid = app.request.GET.get('wid', 'widget_worldmap_' + str(int(time.time())))
     collapsed = (app.request.GET.get('collapsed', 'False') == 'True')

@@ -64,7 +64,7 @@ def reload_cfg():
 
 # All commands
 def show_commands():
-    user = app.checkauth()
+    user = app.check_user_authentication()
 
     return {
         'app': app, 'user': user, 'params': params, 

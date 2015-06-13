@@ -109,7 +109,7 @@
                   </script>
                      <tr>
                         <td>{{preference}}</td>
-                        <td>{{json.dumps(app.get_user_preference(user, preference))}}</td>
+                        <td>{{app.get_user_preference(user, preference)}}</td>
                      </tr>
                   %end
                   %else:

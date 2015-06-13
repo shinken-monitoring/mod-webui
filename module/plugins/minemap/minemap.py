@@ -68,7 +68,7 @@ def reload_cfg():
     app.bottle.redirect("/config")
 
 def show_minemap(name):
-    user = app.checkauth()
+    user = app.check_user_authentication()
 
     if name == 'all':
         my_group = 'all'
@@ -114,7 +114,7 @@ def show_minemap(name):
     return {'app': app, 'user': user, 'navi': navi, 'params': params, 'group': my_group, 'hosts': items}
 
 def show_minemaps():
-    user = app.checkauth()
+    user = app.check_user_authentication()
 
     app.bottle.redirect("/minemap/all")
 

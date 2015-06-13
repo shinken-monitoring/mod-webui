@@ -7,6 +7,7 @@
 #    Gerhard Lausser, Gerhard.Lausser@consol.de
 #    Gregory Starck, g.starck@gmail.com
 #    Hartmut Goebel, h.goebel@goebel-consult.de
+#    Frederic Mohier, frederic.mohier@gmail.com
 #
 # This file is part of Shinken.
 #
@@ -22,6 +23,8 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
+
+from shinken.log import logger
 
 try:
     import json
@@ -40,19 +43,15 @@ app = None
 
 # Our page
 def get_page():
-    user = app.checkauth()
-
-    has_user_pref_mod = app.has_user_preference_module()
+    user = app.check_user_authentication()
 
     # Look for the widgets as the json entry
     s = app.get_user_preference(user, 'widgets')
-    print "Loaded widgets", s, type(s)
     # If void, create an empty one
     if not s:
         app.set_user_preference(user, 'widgets', '[]')
         s = '[]'
     widget_names = json.loads(s)
-    print "And now objects", widget_names
     widgets = []
 
     for w in widget_names:
@@ -82,7 +81,7 @@ def get_page():
         w['options_uri'] = '&'.join('%s=%s' % (k, v) for (k, v) in args.iteritems())
         widgets.append(w)
 
-    return {'app': app, 'user': user, 'widgets': widgets, 'has_user_pref_mod' : has_user_pref_mod}
+    return {'app': app, 'user': user, 'widgets': widgets}
 
 def get_currently():
     # Allow anonymous access
