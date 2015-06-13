@@ -756,7 +756,7 @@ class Webui_broker(BaseModule, Daemon):
     # Get all user preferences 
     ##
     def get_user_preferences(self):
-        logger.info("[WebUI] Fetching all user preferences ...")
+        logger.debug("[WebUI] Fetching all user preferences ...")
 
         return self.get_user_preference(self.get_user_auth())
         
@@ -764,14 +764,14 @@ class Webui_broker(BaseModule, Daemon):
     # Get a user preference by name 
     ##
     def get_user_preference(self, user, key=None, default=None):
-        logger.info("[WebUI] Fetching user preference for: %s / %s", user.get_name(), key)
+        logger.debug("[WebUI] Fetching user preference for: %s / %s", user.get_name(), key)
 
         if not self.has_user_preference_module():
             result = {} if key is None else default
             # Preferences are stored in self.config_dir/user.get_name()/key
             for subdir, dirs, files in os.walk("%s/%s" % (self.config_dir, user.get_name())):
                 for file in files:
-                    logger.info("[WebUI] found %s file, key = %s", file, key)
+                    logger.debug("[WebUI] found %s file, key = %s", file, key)
                     try:
                         f=open("%s/%s/%s" % (self.config_dir, user.get_name(), file), 'r')
                         lines=f.read()
@@ -780,13 +780,13 @@ class Webui_broker(BaseModule, Daemon):
                         pass
 
                     if key is not None and file == "%s"%key:
-                        logger.info("[WebUI] found key = %s", lines)
+                        logger.debug("[WebUI] found key = %s", lines)
                         return lines
                     elif key is None:
                         # result.append( { file: lines } )
                         result[file] = lines
         
-            logger.info("[WebUI] User preference %s, returning: %s", key, result)
+            logger.debug("[WebUI] User preference %s, returning: %s", key, result)
             return result
         
         for mod in self.modules_manager.get_internal_instances():
@@ -811,14 +811,14 @@ class Webui_broker(BaseModule, Daemon):
     # Set a user preference by name / value 
     ##
     def set_user_preference(self, user, key, value):
-        logger.info("[WebUI] Saving user preference for: %s / %s", user.get_name(), key)
+        logger.debug("[WebUI] Saving user preference for: %s / %s", user.get_name(), key)
 
         if not self.has_user_preference_module():
             dir = "%s/%s" % (self.config_dir, user.get_name())
             if not os.path.exists(dir):
                 try:
                     os.mkdir(dir)
-                    logger.info("[WebUI] Created user preferences directory: %s", dir)
+                    logger.debug("[WebUI] Created user preferences directory: %s", dir)
                 except Exception, exp:
                     logger.error("[WebUI] User preference directory creation failed: %s", exp)
                     
@@ -826,7 +826,7 @@ class Webui_broker(BaseModule, Daemon):
             f=open("%s/%s" % (dir, key),'w')
             f.write(value)
             f.close()
-            logger.info("[WebUI] Updated '%s', %s = %s", user.get_name(), key, value)
+            logger.debug("[WebUI] Updated '%s', %s = %s", user.get_name(), key, value)
         
         else:
             for mod in self.modules_manager.get_internal_instances():
@@ -845,14 +845,14 @@ class Webui_broker(BaseModule, Daemon):
     # Get a common preference by name 
     ##
     def get_common_preference(self, key, default=None):
-        logger.info("[WebUI] Fetching common preference for: %s", key)
+        logger.debug("[WebUI] Fetching common preference for: %s", key)
 
         if not self.has_user_preference_module():
             result = [] if key is None else default
             # Preferences are stored in self.config_dir/user.get_name()/key
             for subdir, dirs, files in os.walk("%s/%s" % (self.config_dir, 'common')):
                 for file in files:
-                    logger.info("[WebUI] found %s file, key = %s", file, key)
+                    logger.debug("[WebUI] found %s file, key = %s", file, key)
                     try:
                         f=open("%s/%s/%s" % (self.config_dir, 'common', file), 'r')
                         lines=f.read()
@@ -861,12 +861,12 @@ class Webui_broker(BaseModule, Daemon):
                         pass
 
                     if key is not None and file == "%s"%key:
-                        logger.info("[WebUI] found key = %s", lines)
+                        logger.debug("[WebUI] found key = %s", lines)
                         return lines
                     elif key is None:
                         result.append(lines)
         
-            logger.info("[WebUI] No common preferences found for %s, returning default value: %s", key, default)
+            logger.debug("[WebUI] No common preferences found for %s, returning default value: %s", key, default)
             return result
         
         for mod in self.modules_manager.get_internal_instances():
@@ -898,7 +898,7 @@ class Webui_broker(BaseModule, Daemon):
             if not os.path.exists(dir):
                 try:
                     os.mkdir(dir)
-                    logger.info("[WebUI] Created common preferences directory: %s", dir)
+                    logger.debug("[WebUI] Created common preferences directory: %s", dir)
                 except Exception, exp:
                     logger.error("[WebUI] Common preference directory creation failed: %s", exp)
                     
@@ -906,7 +906,7 @@ class Webui_broker(BaseModule, Daemon):
             f=open("%s/%s" % (dir, key),'w')
             f.write(value)
             f.close()
-            logger.info("[WebUI] Updated '%s', %s = %s", 'common', key, value)
+            logger.debug("[WebUI] Updated '%s', %s = %s", 'common', key, value)
         
         else:
             for mod in self.modules_manager.get_internal_instances():
