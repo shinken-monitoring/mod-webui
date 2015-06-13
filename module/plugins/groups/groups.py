@@ -58,20 +58,12 @@ def load_cfg():
         logger.warning("[webui-groups] configuration file (%s) not available: %s", configuration_file, str(exp))
         return False
 
-def check_user_authentication():
-    user = app.get_user_auth()
-
-    if not user:
-        app.bottle.redirect("/user/login")
-    else:
-        return user
-
 def reload_cfg():
     load_cfg()
     app.bottle.redirect("/config")
 
 def show_hostgroup(name):
-    user = check_user_authentication()
+    user = app.check_user_authentication()
 
     # Fetch elements per page preference for user, default is 25
     elts_per_page = app.get_user_preference(user, 'elts_per_page', 25)
@@ -117,7 +109,7 @@ def show_hostgroup(name):
         }
 
 def show_hostgroups():
-    user = check_user_authentication()    
+    user = app.check_user_authentication()    
 
     # Set hostgroups level ...
     app.set_hostgroups_level(user)
@@ -129,7 +121,7 @@ def show_hostgroups():
 
 
 def show_servicegroup(name):
-    user = check_user_authentication()    
+    user = app.check_user_authentication()    
 
     # Fetch elements per page preference for user, default is 25
     elts_per_page = app.get_user_preference(user, 'elts_per_page', 25)
@@ -175,7 +167,7 @@ def show_servicegroup(name):
         }
 
 def show_servicegroups():
-    user = check_user_authentication()    
+    user = app.check_user_authentication()    
 
     # Set servicegroups level ...
     app.set_servicegroups_level(user)
