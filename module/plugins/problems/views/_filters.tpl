@@ -30,8 +30,11 @@
       %for b in common_bookmarks:
       <li role="presentation"><a role="menuitem" tablindex="-1" href="{{!b['uri']}}">{{!b['name']}}</a></li>
       %end
-      <!--<li role="presentation" class="divider"></li>-->
-      <!--<li role="presentation"><a role="menuitem" tablindex="-1" href="#filtering" data-toggle="modal" data-target="#filtering"><i class="fa fa-plus"></i> Create new bookmark</a></li>-->
+      %if search_string:
+      <li role="presentation" class="divider"></li>
+      <li role="presentation"><a role="menuitem" tablindex="-1" href="#" data-toggle="modal" data-target="#newBookmark"><i class="fa fa-plus"></i> Bookmark the current filter</a></li>
+      <li role="presentation"><a role="menuitem" tablindex="-1" href="#" data-toggle="modal" data-target="#manageBookmarks"><i class="fa fa-tags"></i> Manage bookmarks</a></li>
+      %end
     </ul>
   </div>
 </form>
@@ -39,7 +42,7 @@
 
 <!-- DOCUMENTATION MODAL -->
 <div class="modal fade" id="searchSyntax" tabindex="-1" role="dialog" aria-labelledby="Search syntax" aria-hidden=true>
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -80,3 +83,44 @@
     </div>
   </div>
 </div>
+
+<!-- NEW BOOKMARK MODAL -->
+<div class="modal fade" id="newBookmark" tabindex="-1" role="dialog" aria-labelledby="New Bookmark" aria-hidden=true>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h3 class="modal-title">New Bookmark</h3>
+      </div>
+
+      <div class="modal-body">
+        <form role="form" name='bookmark_save' id='bookmark_save'>
+          <div class="form-group">
+            <label for="bookmark_name" class="control-label">Bookmark name</label>
+            <input class="form-control input-sm" id="bookmark_name" name="bookmark_name" placeholder="..." aria-describedby="help_bookmark_name">
+            <span id="help_bookmark_name" class="help-block">Use an identifier to create a bookmark referencing the current applied filters.</span>
+          </div>
+          <a class='btn btn-success' href='javascript:add_new_bookmark();'> <i class="fa fa-save"></i> Save</a>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MANAGE BOOKMARKS MODAL -->
+<div class="modal fade" id="manageBookmarks" tabindex="-1" role="dialog" aria-labelledby="Manage Bookmarks" aria-hidden=true>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h3 class="modal-title">Manage Bookmarks</h3>
+      </div>
+
+      <div class="modal-body">
+        <div id='bookmarks'></div>
+        <div id='bookmarksro'></div>
+      </div>
+    </div>
+  </div>
+</div>
+

@@ -28,28 +28,14 @@
 */
 function hide_toolbar(save){
    $('#toolbar').hide();
-   $('#hide_toolbar_btn').hide();
-   $('#show_toolbar_btn').show();
-
    $('#problems').addClass('col-lg-12 col-md-12 col-sm-12');
    $('#problems').removeClass('col-lg-9 col-md-8 col-sm-8');
-
-   if (save) {
-      save_user_preference('toolbar', 'hide');
-   }
 }
 
 function show_toolbar(save){
    $('#toolbar').show();
-   $('#hide_toolbar_btn').show();
-   $('#show_toolbar_btn').hide();
-
    $('#problems').addClass('col-lg-9 col-md-8 col-sm-8');
    $('#problems').removeClass('col-lg-12 col-md-12 col-sm-12');
-
-   if (save) {
-      save_user_preference('toolbar', 'show');
-   }
 }
 
 
@@ -78,10 +64,9 @@ function select_all_problems(){
 
 // Unselect all
 function unselect_all_problems(){
-   flush_selected_elements();
-
    $('#select_all_btn').show();
    $('#unselect_all_btn').hide();
+   flush_selected_elements();
 }
 
 
