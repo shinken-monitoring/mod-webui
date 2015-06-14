@@ -143,6 +143,16 @@
 
  <!-- Right panel, with all problems -->
  <div id="problems" class="col-lg-12 col-md-12 col-sm-12">
+   %if not pbs:
+   <center>
+     %if search_string:
+     <h3>Bummer, we couldn't find anything.</h3>
+     Use the filters or the bookmarks to find what you are looking for, or try a new search query.
+     %else:
+     <h3>No host or service.</h3>
+     %end
+   </center>
+   %else:
 
    %include("_problems_synthesis.tpl", pbs=pbs)
 
@@ -317,6 +327,7 @@
       %end
          
       %# Close problems div ...
+      %end
    </div>
 
 </div>
