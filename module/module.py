@@ -503,7 +503,6 @@ class Webui_broker(BaseModule, Daemon):
             m_dir = os.path.abspath(os.path.dirname(m.__file__))
             sys.path.append(m_dir)
 
-            logger.debug("[WebUI] loaded plugin %s", fdir)
             pages = m.pages
             for (f, entry) in pages.items():
                 routes = entry.get('routes', None)
@@ -537,7 +536,6 @@ class Webui_broker(BaseModule, Daemon):
 
                 # It's a valid widget entry if it got all data, and at least one route
                 # ONLY the first route will be used for Add!
-                #print "Should I load a widget?",widget_name, widget_desc, widget_lst!=[], routes
                 if widget_name and widget_desc and widget_lst != [] and routes:
                     for place in widget_lst:
                         if place not in self.widgets:
@@ -549,11 +547,18 @@ class Webui_broker(BaseModule, Daemon):
             # And we add the views dir of this plugin in our TEMPLATE
             # PATH
             bottle.TEMPLATE_PATH.append(os.path.join(m_dir, 'views'))
-
+                
             # And finally register me so the pages can get data and other
             # useful stuff
             m.app = self
 
+            # Load plugin configuration
+            f = getattr(m, 'load_config', None)
+            if f and callable(f):
+                logger.debug("[WebUI] calling plugin %s, load configuration", fdir)
+                f(self)
+                
+            logger.debug("[WebUI] loaded plugin %s", fdir)
 
         except Exception, exp:
             logger.error("[WebUI] loading plugin %s, exception: %s", fdir, exp)
@@ -580,7 +585,6 @@ class Webui_broker(BaseModule, Daemon):
 
         @route('/static/logo/:path#.+#')
         def give_logo(path):
-            logger.warning("[WebUI] find logo: %s", path)
             # If the file really exist, give it. If not, give a dummy image.
             if os.path.exists(os.path.join(self.photo_dir, path+'.png')):
                 return static_file(path+'.png', root=self.photo_dir)
