@@ -1,20 +1,28 @@
 # Configuration
 
 
+## Login welcome message
+------------------------------------
+
+A welcome text on the login page may be defined in the *webui.cfg* file, parameter *login_text*.
+
+
 ## Company logo
 ------------------------------------
 
-If company logo is configured in the *webui.cfg* file, the company logo is displayed on the login page. If not found, a default logo is used.
+A company logo is used in the Web UI. The default company logo is a Shinken logo.
 
-![Default company logo](../../module/htdocs/images/default_logo.png "Default company logo")
+![Default company logo](../../module/htdocs/images/default_company.png "Default company logo")
+
+To use another logo, the file name must be set in the *webui.cfg* file (*company_logo*) and the file must be copied in the *photos_dir (default is */var/lib/shinken/share/photos/*).
 
 
 ## User picture
 ------------------------------------
 
-If gravatar is configured in the *webui.cfg* file, the Web UI tries to find a Gravatar image to use for the logged in user.
+If gravatar is configured in the *webui.cfg* file, the Web UI tries to find a Gravatar image to use for the logged in user. Gravatar searched image is based upon the user configured email.
 
-If gravatar is not configured in the *webui.cfg* file, the Web UI tries to find an image username.png to use for the logged in user.
+If gravatar is not configured in the *webui.cfg* file, the Web UI tries to find an image in a *username.png* file located in the *photos_dir* configured in the WebUI.
 
 If none found, a default image is used.
 

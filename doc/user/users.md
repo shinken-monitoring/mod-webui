@@ -70,5 +70,3 @@ A company logo is used in the Web UI. The default company logo is a Shinken logo
 ![Default company logo](../../module/htdocs/images/default_company.png "Default company logo")
 
 To use another logo, the file name must be set in the *webui.cfg* file (*company_logo*) and the file must be copied in the *photos_dir (default is */var/lib/shinken/share/photos/*).
-
-
