@@ -31,7 +31,7 @@
    var defaultZoom={{params['default_zoom']}};
 
    // Default map layer ...
-   var mapLayer='{{params['map_layer']}}';
+   var mapLayer='{{params['layer']}}';
 
    // Markers ...
    var allMarkers = [];
@@ -194,9 +194,9 @@
                      %if h.services:
                      '<ul class="map-servicesList">',
                      %for s in h.services:
-                        %if s.get_name() in params['map_servicesHide']:
-                        %continue
-                        %end
+                        %#if s.get_name() in params['map_servicesHide']:
+                        %#continue
+                        %#end
                         '<li>',
                         %if s.problem_has_been_acknowledged:
                         '<span class="map-service map-service-ACK map-service-{{s.state_type}}"></span>',
@@ -240,7 +240,7 @@
                         }
                      %end
                      %for s in h.services:
-                        %if s.business_impact in params['map_servicesLevel']:
+                        %if s.business_impact in params['services_level']:
                            var serviceAcknowledged = false;
                            %if s.problem_has_been_acknowledged:
                            serviceAcknowledged = true;
