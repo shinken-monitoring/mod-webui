@@ -1128,8 +1128,12 @@ class Webui_broker(BaseModule, Daemon):
     ##
     # Contacts
     ##
-    def get_contacts(self):
-        return self.datamgr.rg.contacts
+    def get_contacts(self, user=None):
+        items=self.datamgr.rg.contacts
+        if user is not None:
+            return self.only_related_to(items,user)
+
+        return items
                   
     def get_contact(self, name):
         name = name.decode('utf8', 'ignore')
@@ -1138,9 +1142,13 @@ class Webui_broker(BaseModule, Daemon):
     ##
     # Contacts groups
     ##
-    def get_contactgroups(self):
-        # return self.datamgr.get_contactgroups()
-        return self.datamgr.rg.contactgroups
+    def get_contactgroups(self, user=None):
+        items=self.datamgr.rg.contactgroups
+        if user is not None:
+            return self.only_related_to(items,user)
+
+        return items
+        # return self.datamgr.rg.contactgroups
                   
     def get_contactgroup(self, name):
         name = name.decode('utf8', 'ignore')
