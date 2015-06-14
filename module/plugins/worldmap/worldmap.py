@@ -129,19 +129,18 @@ def show_worldmap_widget():
     valid_hosts = []
     for h in app.get_hosts(user):
         # Filter hosts
-        if h.get_name() in params['map_hostsHide']:
-            continue
+        # if h.get_name() in params['map_hostsHide']:
+            # continue
             
-        if h.get_name() not in params['map_hostsShow'] and h.business_impact not in params['map_hostsLevel']:
+        # if h.get_name() not in params['map_hostsShow'] and h.business_impact not in params['map_hostsLevel']:
+            # continue
+        
+        if h.business_impact not in params['hosts_level']:
             continue
         
         _lat = h.customs.get('_LOC_LAT', params['default_Lat'])
         _lng = h.customs.get('_LOC_LNG', params['default_Lng'])
 
-        try:
-            print "Host", h.get_name(), _lat, _lng
-        except:
-            pass
         if _lat and _lng:
             try:
                 # Maybe the customs are set, but with invalid float?
