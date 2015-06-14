@@ -23,7 +23,7 @@
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 
 import json
-import jsonpickle
+# import jsonpickle
 import requests
 
 import types

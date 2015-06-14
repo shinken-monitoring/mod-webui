@@ -51,8 +51,8 @@ import requests
 
 from shinken.basemodule import BaseModule
 from shinken.message import Message
-# from shinken.misc.regenerator import Regenerator
-from webui_regenerator import WebUIRegenerator
+from shinken.misc.regenerator import Regenerator
+# from webui_regenerator import WebUIRegenerator
 from shinken.log import logger
 from shinken.modulesctx import modulesctx
 from shinken.modulesmanager import ModulesManager
@@ -183,7 +183,8 @@ class Webui_broker(BaseModule, Daemon):
         
         # We need our regenerator now (before main) so if we are in a scheduler,
         # rg will be able to skip some broks
-        self.rg = WebUIRegenerator()
+        # self.rg = WebUIRegenerator()
+        self.rg = Regenerator()
         
         # Mu bottle object ...
         self.bottle = bottle
