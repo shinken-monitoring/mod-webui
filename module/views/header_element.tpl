@@ -21,11 +21,7 @@
       <span class="icon-bar"></span>
     </button>
     <a href="#about" data-toggle="modal" data-target="#about" class="logo navbar-brand">
-      %if app.company_logo:
-      <img src="/static/images/logo/{{app.company_logo}}" alt="Logo" />
-      %else:
-      <img src="/static/images/logo/default_logo.png" alt="Logo" />
-      %end
+      <img src="/static/logo/{{app.company_logo}}" alt="Company logo" />
     </a>
   </div>
   <!-- Collect the nav links, forms, and other content for toggling -->

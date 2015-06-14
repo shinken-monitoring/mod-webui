@@ -20,9 +20,7 @@
 
 <div class="row page-header">
    <h1 class="col-sm-12 col-md-6">Shinken <small>version {{VERSION}}</small></h1>
-   %if company_logo:
-   <div class="col-sm-12 col-md-6"> <img src="/static/images/logo/{{company_logo}}" /></div>
-   %end
+   <div class="col-sm-12 col-md-6"> <img src="/static/logo/{{company_logo}}" alt="Company logo" /> </div>
 </div>
 
 <div class="row">
@@ -38,7 +36,7 @@
       <p class="lead">{{login_text}}</p>
       %end
 
-      <img src="/static/images/logo/logo.png" />
+      <img src="/static/images/shinken.png" />
    </div>
 
    <div class="col-sm-12 col-md-6">

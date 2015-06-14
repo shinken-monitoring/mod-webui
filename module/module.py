@@ -114,7 +114,10 @@ class Webui_broker(BaseModule, Daemon):
         # TODO : common preferences
         self.login_text = getattr(modconf, 'login_text', None)
         # TODO : common preferences
-        self.company_logo = getattr(modconf, 'company_logo', 'logo.png')
+        self.company_logo = getattr(modconf, 'company_logo', 'default_company')
+        if self.company_logo=='':
+            # Set a dummy value if webui.cfg value is empty to force using the default logo ...
+            self.company_logo = 'abcdef'
         # TODO : common preferences
         self.gravatar = to_bool(getattr(modconf, 'gravatar', '0'))
         # TODO : common preferences
@@ -574,6 +577,15 @@ class Webui_broker(BaseModule, Daemon):
                 return static_file(path+'.png', root=self.photo_dir)
             else:
                 return static_file('images/default_user.png', root=htdocs_dir)
+
+        @route('/static/logo/:path#.+#')
+        def give_logo(path):
+            logger.warning("[WebUI] find logo: %s", path)
+            # If the file really exist, give it. If not, give a dummy image.
+            if os.path.exists(os.path.join(self.photo_dir, path+'.png')):
+                return static_file(path+'.png', root=self.photo_dir)
+            else:
+                return static_file('images/default_company.png', root=htdocs_dir)
 
         # Route static files css files
         @route('/static/:path#.+#')
