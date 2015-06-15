@@ -31,12 +31,6 @@ body, section.content {
    color: #ededef;
 }
 
-p {
-   color: #535456;
-   text-align: center;
-   font-family: Century Gothic, sans-serif;
-}
-
 hr { /* Yes this is a workaround*/
    display: none;
 }
@@ -48,14 +42,20 @@ hr { /* Yes this is a workaround*/
 /*  Elements
     ------------------------------------------------------- */
 #clock {
+   text-align: center;
+   font-family: Century Gothic, sans-serif;
+   
    color: #FFFFFF;
    line-height: 100%;
    font-size: 10em;
 }
 
 #date {
+   text-align: center;
+   font-family: Century Gothic, sans-serif;
+   
    color: #535456;
-   font-size: 1.5em;
+   font-size: 2em;
 }
 
 ul#Navigation {
@@ -73,26 +73,23 @@ ul#Navigation li {
 /*  Title styles
     ------------------------------------------------------- */
 
+.icon_title {
+   bottom: 3.3em;
+   letter-spacing: 2px;
+   right: 2.6em !important;
+   color: white;
+}
+
 .itproblem {
-  bottom: 3.2em;
-  letter-spacing: 3px;
 }
 
 .impacts {
-  bottom: 3.2em;
-  letter-spacing: 3px;
 }
 
 .services {
-  bottom: 3.1em;
-  letter-spacing: 1px;
-  right: 2.6em !important;
 }
 
 .hosts {
-  bottom: 3.3em;
-  letter-spacing: 2px;
-  right: 2.6em !important;
 }
 
 /*  Badger styles
@@ -100,52 +97,71 @@ ul#Navigation li {
 
 .badger-big {
   background-color: #999999;
-  border-radius: 3px 3px 3px 3px;
+  border-radius: 3px;
   color: #FFFFFF;
-  font-size: 3.5em;
+  font-size: 2em;
   font-weight: bold;
   padding: 1px 3px 2px;
   text-transform: uppercase;
+  
   position: relative;
-  bottom: 4em;
-  left: 0.8em;
-  z-index: 666;
+  bottom: 5em;
+}
+.badger-left {
+  left: -10px;
+}
+.badger-right {
+  left: +10px;
 }
 
+
 .badger-critical {
-  background-color: rgb(255,0,0); opacity: 0.85;
-  border-radius: 3px 3px 3px 3px;
-  color: #FFFFFF;
+   background-color: rgb(255,0,0); opacity: 0.85;
+   border-radius: 3px 3px 3px 3px;
+   color: #FFFFFF;
 }
 
 .badger-warning {
-  background-color: rgb(255,153,0); opacity: 0.85;
-  border-radius: 3px 3px 3px 3px;
-  color: #FFFFFF;
+   background-color: rgb(255,153,0); opacity: 0.85;
+   border-radius: 3px 3px 3px 3px;
+   color: #FFFFFF;
 }
 
 .badger-ok {
-  background-color: #7AB317;
-  background-image: -moz-linear-gradient(center top , #7AB317, #669900);
-  border-radius: 3px 3px 3px 3px;
-  color: #FFFFFF;
+   background-color: #7AB317;
+   background-image: -moz-linear-gradient(center top , #7AB317, #669900);
+   border-radius: 3px 3px 3px 3px;
+   color: #FFFFFF;
 }
 
 .badger-title {
-  -webkit-transform: rotate(-90deg); 
-  -moz-transform: rotate(-90deg); 
-  display: block;
-  position: relative;
-  right: 3.4em;
+   display: block;
+   position: relative;
+   right: 3.4em;
 
-  color: #FFFFFF;
-  text-align: center;
-  font-family: Century Gothic, sans-serif;
-  font-size: 1.5em;
-  
-  z-index: 666;
+   color: #FFFFFF;
+   text-align: center;
+   font-family: Century Gothic, sans-serif;
+   font-size: 1.5em;
+
+   z-index: 666;
 }
 
+/*
+.badger-title {
+   -webkit-transform: rotate(-90deg); 
+   -moz-transform: rotate(-90deg); 
+   display: block;
+   position: relative;
+   right: 3.4em;
+
+   color: #FFFFFF;
+   text-align: center;
+   font-family: Century Gothic, sans-serif;
+   font-size: 1.5em;
+
+   z-index: 666;
+}
 .rotate {
   -moz-transform: scale(1) rotate(270deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
     -webkit-transform: scale(1) rotate(270deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
@@ -155,12 +171,13 @@ ul#Navigation li {
 }
 
 .box_rotate {
-  -webkit-transform: rotate(75deg);  /* Saf3.1+, Chrome */
-     -moz-transform: rotate(75deg);  /* Firefox 3.5-15 */
-      -ms-transform: rotate(75deg);  /* IE9 */
-       -o-transform: rotate(75deg);  /* Opera 10.5 */
-          transform: rotate(75deg);  /* Firefox 16+ */
-             filter: progid:DXImageTransform.Microsoft.Matrix(/* IE6–IE9 */
+  -webkit-transform: rotate(75deg);
+     -moz-transform: rotate(75deg);
+      -ms-transform: rotate(75deg);
+       -o-transform: rotate(75deg);
+          transform: rotate(75deg);
+             filter: progid:DXImageTransform.Microsoft.Matrix(
                      M11=0.9914448613738104, M12=-0.13052619222005157,M21=0.13052619222005157, M22=0.9914448613738104, sizingMethod='auto expand');
                zoom: 1;
 }
+*/
