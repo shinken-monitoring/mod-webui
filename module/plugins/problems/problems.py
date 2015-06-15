@@ -145,18 +145,22 @@ def get_view(default_search=""):
 
             items = new_items
 
-        if t == 'hg':
-            hg = app.datamgr.get_hostgroup(s)
-            items = [i for i in items if hg in i.get_hostgroups()]
+        if (t == 'hg' or t == 'hgroup') and s != 'all':
+            group = app.datamgr.get_hostgroup(s)
+            items = [i for i in items if group in i.get_hostgroups()]
+
+        if (t == 'sg' or t == 'sgroup') and s != 'all':
+            group = app.datamgr.get_servicegroup(s)
+            items = [i for i in items if group in i.get_servicegroups()]
 
         if t == 'realm':
             r = app.datamgr.get_realm(s)
             items = [i for i in items if i.get_realm() == r]
 
-        if t == 'htag':
+        if t == 'htag' and s != 'all':
             items = [i for i in items if s in i.get_host_tags()]
 
-        if t == 'stag':
+        if t == 'stag' and s != 'all':
             items = [i for i in items if i.__class__.my_type == 'service' and s in i.get_service_tags()]
 
         if t == 'type':
