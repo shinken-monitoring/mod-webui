@@ -37,9 +37,7 @@ Invalid group name
       %nServices=0
       %for s in h.services:
          %nServices=nServices+1
-         %if not s.get_name() in columns:
-            %columns.append(s.get_name())
-         %end
+         %columns.append(s.get_name())
       %end
 
       %nHosts=nHosts+1
@@ -71,8 +69,12 @@ Invalid group name
 %end
 
 %rows.sort()
-%columns.sort()
+
+%import collections
+%columns = collections.Counter(columns)
+%columns = [c for c, i in columns.most_common()]
 %end
+
 
 %# Specific content for breadrumb
 %rebase("layout", title='Minemap for ' + groupalias, refresh=True, css=['minemap/css/minemap.css'], breadcrumb=[ ['All hosts', '/minemaps'], [groupalias, '/hosts-group/'+groupname] ])
