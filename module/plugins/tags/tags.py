@@ -30,10 +30,6 @@ app = None
 from shinken.misc.filter import only_related_to
 
 
-def reload_cfg():
-    app.bottle.redirect("/config")
-
-
 def show_tag(name):
     app.bottle.redirect("/all?search=type:host htag:" + name)
 
