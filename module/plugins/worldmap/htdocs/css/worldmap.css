@@ -1,80 +1,48 @@
 .map_container {
-	margin: auto;
-	margin-top: 20px;
-	background: #cccccc;
-	width: 98%;
-	height: 720px;
+   margin: auto;
+   margin-top: 20px;
+   background: #cccccc;
+   width: 98%;
+   height: 720px;
 }
 .map_container_widget {
-	margin: 0;
-	width: 100%;
-	height: 320px;
+   margin: 0;
+   width: 100%;
+   height: 320px;
 }
 
 .map_container #map {
-	width: 100%;
-	height: 100%;
+   width: 100%;
+   height: 100%;
 }
 .map_container_widget #map {
-	width: 100%;
-	height: 320px;
+   width: 100%;
+   height: 320px;
 }
 
 /* Thanks to http://stackoverflow.com/questions/9663375/google-map-infowindow-not-showing-properly 
-	This Css avoids corrupted map control and infowindow */
-	
+   This Css avoids corrupted map control and infowindow */
+   
 .map_container img{max-width:none}
 
 .map-iconHostState {
-	width: 32px;
+   width: 32px;
 }
 
 .map-hostname {
 }
 
 .labels {
-	color: red;
-	background-color: white;
-	font-size: 10px;
-	font-weight: bold;
-	text-align: center;
-	width: 100px;
-	white-space: nowrap;
+   color: red;
+   background-color: white;
+   font-size: 10px;
+   font-weight: bold;
+   text-align: center;
+   width: 100px;
+   white-space: nowrap;
 }
 
-.map-servicesList {
-	list-style-type: none;
-}
-
-.map-service {
-	width: 15px;
-	height: 15px;
-	border-radius: 50%;
-	padding-right: 15px;
-	margin-right: 5px;
-	margin-left: -30px;
-}
-.map-service-OK {
-	background-color: #99ff99;
-}
-.map-service-WARNING {
-	background-color: #ffff99;
-}
-.map-service-CRITICAL {
-	background-color: #ff9999;
-}
-.map-service-UNKNOWN, .map-service-ACK {
-	background-color: #cccccc;
-}
-.map-service-PENDING {
-	background-color: rgb(18,158,255);
-}
-
-.map-service-SOFT{
-	/* Background en dégradé blanc transparent */
-	background-image: -webkit-linear-gradient(right top, rgba(255,255,255,.6) 0%, rgba(255,255,255,0) 100%);
-	background-image:    -moz-linear-gradient(right top, rgba(255,255,255,.6) 0%, rgba(255,255,255,0) 100%);
-	background-image:     -ms-linear-gradient(right top, rgba(255,255,255,.6) 0%, rgba(255,255,255,0) 100%);
-	background-image:      -o-linear-gradient(right top, rgba(255,255,255,.6) 0%, rgba(255,255,255,0) 100%);
-	background-image:         linear-gradient(right top, rgba(255,255,255,.6) 0%, rgba(255,255,255,0) 100%);
+.map-services {
+   list-style-type: none;
+   margin-left: -40px;
 }

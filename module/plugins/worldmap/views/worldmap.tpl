@@ -178,8 +178,8 @@
 
                   var markerInfoWindowContent = [
                      '<div class="map-infoView" id="iw-{{h.get_name()}}">',
-                     '<img class="map-iconHostState map-host-{{h.state}} map-host-{{h.state_type}}" src="{{app.helper.get_icon_state(h)}}" />',
-                     '<span class="map-hostname"><a href="/host/{{h.get_name()}}">{{h.get_name()}}</a> is {{h.state}}.</span>',
+                     '{{!app.helper.get_fa_icon_state(h)}}',
+                     '<span class="map-hostname"><a href="/host/{{h.get_name()}}">{{h.get_name()}}</a> {{!app.helper.get_business_impact_text(h.business_impact)}} is {{h.state}}.</span>',
                      %if h.in_scheduled_downtime:
                      '<div><i class="fa fa-ambulance"></i> Currently in scheduled downtime.</div>',
                      %end
@@ -192,22 +192,15 @@
                      %end
                      '<hr/>',
                      %if h.services:
-                     '<ul class="map-servicesList">',
+                     '<ul class="map-services">',
                      %for s in h.services:
                         %#if s.get_name() in params['map_servicesHide']:
                         %#continue
                         %#end
                         '<li>',
-                        %if s.problem_has_been_acknowledged:
-                        '<span class="map-service map-service-ACK map-service-{{s.state_type}}"></span>',
-                        '<i class="fa fa-check"></i>',
-                        %else:
-                        '<span class="map-service map-service-{{s.state}} map-service-{{s.state_type}}"></span>',
-                        %end
-                        %for i in range(0, s.business_impact-2):
-                        '<img src="/static/images/star.png">',
-                        %end
-                        '<a href="/service/{{h.get_name()}}/{{s.get_name()}}">{{s.get_name()}}</a> is {{s.state}}.</li>',
+                        '{{!app.helper.get_fa_icon_state(s)}}',
+                        '<a href="/service/{{h.get_name()}}/{{s.get_name()}}">{{s.get_name()}} {{s.get_name()}}</a> {{!app.helper.get_business_impact_text(s.business_impact)}} is {{s.state}}.',
+                        '</li>',
                      %end
                      '</ul>',
                      %end
