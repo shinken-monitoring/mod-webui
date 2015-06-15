@@ -664,7 +664,7 @@ class Helper(object):
 
         cls = obj.__class__.my_type if obj is not None else cls
 
-        back = "<i class='fa fa-%s fa-stack-2x font-%s'></i>" % (icons[cls]['FLAPPING'] if flapping else 'circle', state.lower())
+        back = '''<i class="fa fa-%s fa-stack-2x font-%s"></i>''' % (icons[cls]['FLAPPING'] if flapping else 'circle', state.lower())
         title = "%s is %s" % (cls, state)
         if flapping:
             icon_color = 'font-' + state.lower()
@@ -679,13 +679,8 @@ class Helper(object):
             title += " and is acknowledged"
         else:
             icon = icons[cls].get(state, 'UNKNOWN')
-        front = "<i class='fa fa-%s fa-stack-1x %s'></i>" % (icon, icon_color)
-        icon_text = '''
-          <span class="fa-stack" title="%s">
-             %s
-             %s
-          </span>
-          ''' % (title, back, front)
+        front = '''<i class="fa fa-%s fa-stack-1x %s"></i>''' % (icon, icon_color)
+        icon_text = '''<span class="fa-stack" title="%s">%s%s</span>''' % (title, back, front)
 
         return icon_text
 
