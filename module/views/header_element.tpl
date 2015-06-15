@@ -40,22 +40,25 @@
 
   <!-- Right buttons ... -->
   <ul class="nav navbar-top-links navbar-right">
-    <li><a class="quickinfo" data-original-title='Currently' href="/dashboard/currently"><i class="fa fa-eye"></i></a></li>
-
-    <li class="hosts-overall-state hidden-sm hidden-xs">
-       <a href="/all?search=type:host isnot:OK" class="quickinfo" data-original-title='Hosts'><i class="fa fa-server"></i>
+    <li class="hosts-overall-state hidden-xs">
+       <a href="/all?search=type:host isnot:OK" class="quickinfo" data-original-title='Hosts'>
+         <div class="badgers">
+         <i class="fa fa-2x fa-server"></i>
          %host_state = app.get_percentage_hosts_state(app.get_user_auth(), False)
-         <span class="badger badger-left badger-info">{{app.get_nb_hosts(app.get_user_auth())}}</span>
-         <span class="badger badger-right badger-{{'critical' if host_state <= 33 else 'warning' if host_state <= 66 else 'ok'}}">{{host_state}}%</span>
+         <span class="badger badger-top alert-inverse">{{app.get_nb_hosts(app.get_user_auth())}}</span>
+         <span class="badger badger-bottom alert-{{'critical' if host_state <= 33 else 'warning' if host_state <= 66 else 'ok'}}">{{host_state}}%</span>
+         </div>
        </a>
     </li>
    
-    <li class="services-overall-state hidden-sm hidden-xs">
+    <li class="services-overall-state hidden-xs">
        <a href="/all?search=type:service isnot:OK" class="quickinfo">
-         <i class="fa fa-bars"></i>
+         <div class="badgers">
+         <i class="fa fa-2x fa-bars"></i>
          %service_state = app.get_percentage_service_state(app.get_user_auth(), False)
-         <span class="badger badger-left badger-info">{{app.get_nb_services(app.get_user_auth())}}</span>
-         <span class="badger badger-right badger-{{'critical' if service_state <= 33 else 'warning' if service_state <= 66 else 'ok'}}">{{service_state}}%</span>
+         <span class="badger badger-top alert-inverse">{{app.get_nb_services(app.get_user_auth())}}</span>
+         <span class="badger badger-bottom alert-{{'critical' if service_state <= 33 else 'warning' if service_state <= 66 else 'ok'}}">{{service_state}}%</span>
+         </div>
        </a>
     </li>
     
@@ -72,6 +75,8 @@
     </li>
     %end
     -->
+
+    <li><a class="quickinfo" data-original-title='Currently' href="/dashboard/currently"><i class="fa fa-eye"></i></a></li>
 
     <!-- User info -->
     <li class="dropdown user user-menu">

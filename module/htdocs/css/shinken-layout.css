@@ -67,6 +67,27 @@ nav .badger-left {
 nav .badger-right {
   left: -50%;
 }
+nav .badgers {
+   text-align: center;
+   margin-left: 8px;
+   margin-right: 8px;
+}
+nav .badgers i {
+   position: absolute;
+   display: inline-block
+}
+nav .badger-top {
+   /* Bootstrap standard badger
+   top: -15px;
+   right: 8px;
+   */
+   top: -15px;
+   display: inline-block
+}
+nav .badger-bottom {
+   top: +15px;
+   display: inline-block
+}
 
 .hosts-overall-state, .services-overall-state {
    margin-right: -40px;
@@ -74,12 +95,12 @@ nav .badger-right {
 
 @media (min-width: 768px) {
     input#search {
-        width: 300px;
+        width: 230px;
     }
 }
 @media (min-width: 900px) {
     input#search {
-        width: 350px;
+        width: 300px;
     }
 }
 @media (min-width: 1300px) {
