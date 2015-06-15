@@ -28,10 +28,6 @@
 app = None
 
 
-def reload_cfg():
-    app.bottle.redirect("/config")
-
-
 def show_hostgroup(name):
     app.bottle.redirect("/all?search=type:host hg:" + name)
 

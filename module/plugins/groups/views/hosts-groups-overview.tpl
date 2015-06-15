@@ -120,13 +120,13 @@
           <span class="sumGroups">{{'%d group' % nGroups if nGroups == 1 else '' if nGroups == 0 else '%d groups' % nGroups}}</span>
         </div>
         <span class="darkview">
-          <a href="/hosts-group/all" class="firstbtn"><i class="fa fa-angle-double-down"></i> Details</a>
+          <a href="/all?search=type:host" class="firstbtn"><i class="fa fa-angle-double-down"></i> Details</a>
           <br/>
           <a href="/minemap/all" class="firstbtn"><i class="fa fa-table"></i> Minemap</a>
         </span>
       </section>
     </li>
-
+    
     %even='alt'
     %for group in hostgroups:
       %# To be improved ... hosts groups filtering by level
@@ -198,7 +198,7 @@
                <span class="sumGroups">{{'%d group' % nGroups if nGroups == 1 else '' if nGroups == 0 else '%d groups' % nGroups}}</span>
                </div>
             <span class="darkview">
-               <a href="/hosts-group/{{group.get_name()}}" class="firstbtn"><i class="fa fa-angle-double-down"></i> Details</a>
+               <a href="/all?search=type:host hg:{{group.get_name()}}" class="firstbtn"><i class="fa fa-angle-double-down"></i> Details</a>
                <br/>
                <a href="/minemap/{{group.get_name()}}" class="firstbtn"><i class="fa fa-table"></i> Minemap</a>
             </span>
