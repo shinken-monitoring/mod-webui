@@ -81,7 +81,7 @@
           <th width="200px">Service</th>
           <th width="90px">State</th>
           <th width="90px">Duration</th>
-          <th>Output</th>
+          <th class="hidden-sm hidden-xs">Output</th>
       </tr></thead>
 
       <tbody>
@@ -115,7 +115,7 @@
           </td>
           <td align="center" class="font-{{pb.state.lower()}}"><strong>{{ pb.state }}</strong></td>
           <td align="center">{{!helper.print_duration(pb.last_state_change, just_duration=True, x_elts=2)}}</td>
-          <td class="row">
+          <td class="row hidden-sm hidden-xs">
             <div class="pull-right">
               %# Graphs
               %import time
@@ -135,7 +135,7 @@
              <div class="accordion-body collapse" id="details-{{helper.get_html_id(pb)}}">
                <table class="table table-condensed" style="margin:0;">
                  <tr>
-                   <td align="center">Realm {{pb.get_realm()}}</td>
+                   <td align="center" class="visible-lg">Realm {{pb.get_realm()}}</td>
                    %if pb.passive_checks_enabled:
                    <td>
                       <i class="fa fa-arrow-left" title="Passive checks are enabled."></i>
@@ -155,17 +155,17 @@
                      <div class="btn-group" role="group" aria-label="...">
                        %if pb.event_handler_enabled and pb.event_handler:
                        <button type="button" class="btn btn-default btn-xs" title="Try to fix (launch event handler if defined)" onClick="try_to_fix_one('{{ pb.get_full_name() }}');">
-                         <i class="fa fa-magic"></i> Try to fix
+                         <i class="fa fa-magic"></i><span class="hidden-sm hidden-xs"> Try to fix</span>
                        </button>
                        %end
                        <button type="button" class="btn btn-default btn-xs" title="Launch the check command " onClick="recheck_now_one('{{ pb.get_full_name() }}');">
-                         <i class="fa fa-refresh"></i> Refresh
+                         <i class="fa fa-refresh"></i><span class="hidden-sm hidden-xs"> Refresh<span>
                        </button>
                        <button type="button" class="btn btn-default btn-xs" title="Force service to be considered as Ok" onClick="submit_check_ok_one('{{ pb.get_full_name() }}', '{{ user.get_name() }}');">
-                         <i class="fa fa-share"></i> OK
+                         <i class="fa fa-share"></i><span class="hidden-sm hidden-xs"> OK</span>
                        </button>
                        <button type="button" id="btn-acknowledge-{{helper.get_html_id(pb)}}" class="btn btn-default btn-xs" title="Acknowledge the problem">
-                         <i class="fa fa-check"></i> ACK
+                         <i class="fa fa-check"></i><span class="hidden-sm hidden-xs"> ACK</span>
                        </button>
                        <script>
                          $('button[id="btn-acknowledge-{{helper.get_html_id(pb)}}"]').click(function () {
@@ -179,7 +179,7 @@
                          });
                        </script>
                        <button type="button" id="btn-downtime-{{helper.get_html_id(pb)}}" class="btn btn-default btn-xs" title="Schedule a one day downtime for the problem">
-                         <i class="fa fa-ambulance"></i> Downtime
+                         <i class="fa fa-ambulance"></i><span class="hidden-sm hidden-xs"> Downtime</span>
                        </button>
                        <script>
                          $('button[id="btn-downtime-{{helper.get_html_id(pb)}}"]').click(function () {
@@ -193,7 +193,7 @@
                          });
                        </script>
                        <button type="button" class="btn btn-default btn-xs" title="Ignore checks for the service (disable checks, notifications, event handlers and force Ok)" onClick="remove_one('{{ pb.get_full_name() }}', '{{ user.get_name() }}');">
-                           <i class="fa fa-eraser"></i> Remove
+                         <i class="fa fa-eraser"></i><span class="hidden-sm hidden-xs"> Remove</span>
                        </button>
                      </div>
                    </td>
@@ -212,9 +212,8 @@
                         <td width="200px"></td>
                         <td width="200px">{{!helper.get_link(i, short=True)}}</td>
                         <td width="90px" align="center" class="font-{{i.state.lower()}}"><strong>{{ i.state }}</strong></td>
-                        <td width="90px">{{!helper.print_duration(i.last_state_change, just_duration=True, x_elts=2)}}</td>
-                        <td width="100px">{{!helper.print_duration(i.last_chk, just_duration=True, x_elts=2)}} ago</td>
-                        <td>
+                        <td width="90px" align="center">{{!helper.print_duration(i.last_state_change, just_duration=True, x_elts=2)}}</td>
+                        <td class="row hidden-sm hidden-xs">
                           {{ i.output }}
                         </td>
                       </tr>

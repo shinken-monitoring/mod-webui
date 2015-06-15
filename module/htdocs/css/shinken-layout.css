@@ -61,6 +61,26 @@ html, body {
   padding: 1px;
   margin: 0;
 }
+@media (min-width: 768px) {
+    input#search {
+        width: 350px;
+    }
+}
+@media (min-width: 1300px) {
+    input#search {
+        width: 400px;
+    }
+}
+@media (min-width: 1400px) {
+    input#search {
+        width: 500px;
+    }
+}
+@media (min-width: 1500px) {
+    input#search {
+        width: 600px;
+    }
+}
 
 /*
  * Navigation bar, user menu

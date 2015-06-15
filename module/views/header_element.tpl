@@ -31,11 +31,11 @@
     %include("_filters.tpl")
 
     <!-- Clock ... -->
-    <p class="navbar-text hidden-sm hidden-xs hidden-md">
-      <span class="headClock">
-        <span class="date">&nbsp;</span> - <span class="time">&nbsp;</span>
-      </span>
-    </p>
+    <!--<p class="navbar-text hidden-sm hidden-xs hidden-md">-->
+      <!--<span class="headClock">-->
+        <!--<span class="date">&nbsp;</span> - <span class="time">&nbsp;</span>-->
+      <!--</span>-->
+    <!--</p>-->
   </ul>
 
   <!-- Right buttons ... -->
