@@ -63,7 +63,6 @@ def show_stags():
 
 
 pages = {
-    reload_cfg: {'routes': ['/reload/tags']},
     show_tag: {'routes': ['/hosts-tag/:name'], 'view': 'hosts-tag', 'static': True},
     show_stag: {'routes': ['/services-tag/:name'], 'view': 'services-tag', 'static': True},
     show_tags: {'routes': ['/hosts-tags'], 'view': 'hosts-tags-overview', 'static': True},

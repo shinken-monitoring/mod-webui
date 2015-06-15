@@ -60,7 +60,6 @@ def show_servicegroups():
         }
 
 pages = {
-    reload_cfg: {'routes': ['/reload/groups']},
     show_hostgroup: {'routes': ['/hosts-group/:name'], 'view': 'hosts-group', 'static': True},
     show_hostgroups: {'routes': ['/hosts-groups'], 'view': 'hosts-groups-overview', 'static': True},
     show_servicegroup: {'routes': ['/services-group/:name'], 'view': 'services-group', 'static': True},
