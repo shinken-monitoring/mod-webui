@@ -74,6 +74,11 @@ nav .badger-right {
 
 @media (min-width: 768px) {
     input#search {
+        width: 300px;
+    }
+}
+@media (min-width: 900px) {
+    input#search {
         width: 350px;
     }
 }
