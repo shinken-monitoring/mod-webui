@@ -51,7 +51,7 @@
     </li>
    
     <li>
-    <a href="/all?search=type:service isnot:OK" class="btn btn-sm">
+    <a href="/all?search=type:service isnot:OK" class="quickinfo">
       <i class="fa fa-bars"></i>
       %service_state = app.get_percentage_service_state(app.get_user_auth(), False)
       <span class="badger badger-info">{{app.get_nb_services(app.get_user_auth())}}</span>

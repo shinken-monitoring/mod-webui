@@ -16,7 +16,7 @@
     <div class="input-group">
       <span class="input-group-addon"><i class="fa fa-search"></i></span>
       <!--:TODO:maethor:150609: Make the responsive-->
-      <input class="form-control" style="width:500px;" type="search" id="search" name="search" value="{{ search_string }}">
+      <input class="form-control" type="search" id="search" name="search" value="{{ search_string }}">
     </div>
   </div>
   <div class="dropdown form-group text-left">
