@@ -98,6 +98,7 @@ def get_view(default_search=""):
         
 
     # We will keep a trace of our filters
+    # :TODO:maethor:150614: probably useless
     filters = {}
     ts = ['hst_srv', 'hg', 'realm', 'htag', 'stag', 'ack', 'downtime', 'crit', 'is', 'isnot']
     for t in ts:
@@ -137,16 +138,10 @@ def get_view(default_search=""):
             for i in items:
                 if pat.search(i.get_full_name()):
                     new_items.append(i)
-                    continue
-                to_add = False
-                for imp in i.impacts:
-                    if pat.search(imp.get_full_name()):
-                        to_add = True
-                for src in i.source_problems:
-                    if pat.search(src.get_full_name()):
-                        to_add = True
-                if to_add:
-                    new_items.append(i)
+                else:
+                    for j in (i.impacts + i.source_problems):
+                        if pat.search(j.get_full_name()):
+                            new_items.append(i)
 
             items = new_items
 
@@ -163,6 +158,23 @@ def get_view(default_search=""):
 
         if t == 'stag':
             items = [i for i in items if i.__class__.my_type == 'service' and s in i.get_service_tags()]
+
+        if t == 'type':
+            items = [i for i in items if i.__class__.my_type == s]
+
+        if t == 'bp' or t == 'bi':
+            if s.startswith('>='):
+                items = [i for i in items if i.business_impact >= int(s[2:])]
+            elif s.startswith('<='):
+                items = [i for i in items if i.business_impact <= int(s[2:])]
+            elif s.startswith('>'):
+                items = [i for i in items if i.business_impact > int(s[1:])]
+            elif s.startswith('<'):
+                items = [i for i in items if i.business_impact < int(s[1:])]
+            else:
+                if s.startswith('='):
+                    s = s[1:]
+                items = [i for i in items if i.business_impact == int(s)]
 
         if t == 'ack':
             if s == 'false' or s == 'no':

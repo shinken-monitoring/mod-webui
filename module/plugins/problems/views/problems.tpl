@@ -1,7 +1,7 @@
 %helper = app.helper
 %datamgr = app.datamgr
 
-%rebase("layout", title='All problems', js=['problems/js/problems.js', 'problems/js/filters.js', 'problems/js/bookmarks.js'], css=['problems/css/problems.css', 'problems/css/filters.css'], refresh=True, user=user, navi=navi, app=app, page="/all", elts_per_page=elts_per_page)
+%rebase("layout", title='All problems', js=['problems/js/problems.js', 'problems/js/bookmarks.js'], css=['problems/css/problems.css'], refresh=True, user=user, navi=navi, app=app, page="/all", elts_per_page=elts_per_page)
 
 %# Look for actions if we must show them or not
 %actions_allowed = True
@@ -10,44 +10,6 @@
 %end
 <script type="text/javascript">
    var actions_enabled = {{'true' if actions_allowed else 'false'}};
-   var toolbar = '{{toolbar}}';
-
-   function submitform() {
-      document.forms["search_form"].submit();
-   }
-
- /* Catch the key ENTER and launch the form
-  Will be link in the password field
- */
- function submitenter(myfield,e){
-    var keycode;
-    if (window.event) keycode = window.event.keyCode;
-    else if (e) keycode = e.which;
-    else return true;
-
-    if (keycode == 13){
-       submitform();
-       return false;
-    } else {
-       return true;
-    }
- }
-
- // Typeahead: builds suggestion engine
- var hosts = new Bloodhound({
-    datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
-    queryTokenizer: Bloodhound.tokenizers.whitespace,
-    remote: {
-       url: '/lookup/%QUERY',
-       filter: function (hosts) {
-          return $.map(hosts, function (host) { return { value: host }; });
-       }
-    }
- });
- hosts.initialize();
-
-
- var active_filters = [];
 
  // List of the bookmarks
  var bookmarks = [];
@@ -60,61 +22,14 @@
     declare_bookmarksro("{{!b['name']}}","{{!b['uri']}}");
  %end
 
- // We will create here our new filter options
- // This should be outside the "pageslide" div. I don't know why
- new_filters = [];
- current_filters = [];
-
  // On page loaded ...
  $(function(){
     // We prevent the dropdown to close when we go on a form into it.
     $('.form_in_dropdown').on('click', function (e) {
        e.stopPropagation()
     });
-
-    // Typeahead: activation
-    $('#filtering .typeahead').typeahead({
-       hint: true,
-       highlight: true,
-       minLength: 1
-    },
-    {
-       name: 'hosts',
-       displayKey: 'value',
-       source: hosts.ttAdapter(),
-    });
-  
-    // Buttons tooltips
-    // $('span').tooltip();
-
-    // Open the first host collapsable element
-    // $('.host-panel:first').addClass('in');
-    
-      // Buttons tooltips
-      // $('span').tooltip();
-
-      // Open the first host collapsable element
-      // $('.host-panel:first').addClass('in');
-      
-      // Hide the toolbar
-      if (toolbar=='show') 
-         show_toolbar();
-   });
+ });
 </script>
-
-<!-- Buttons and page navigation -->
-<div class="row">
-
- <div class='col-lg-5 col-md-4 col-sm-2 pull-left'>
-    <a id='show_toolbar_btn' href="javascript:show_toolbar(true)" class="btn btn-default btn-sm"><i class="fa fa-plus"></i> Show toolbar</a>      
-    <a id="hide_toolbar_btn" href="javascript:hide_toolbar(true)" class="btn btn-default btn-sm" style="display:none;"><i class="fa fa-minus"></i> Hide toolbar</a>
-    <a id='select_all_btn' href="javascript:select_all_problems()" class="btn btn-default btn-sm"><i class="fa fa-plus"></i> Select all</a>
-    <a id='unselect_all_btn' href="javascript:unselect_all_problems()" class="btn btn-default btn-sm" style="display:none;"><i class="fa fa-minus"></i> Unselect all</a>
- </div>
-
-</div>
-
-<hr>
 
 %if len(app.get_all_problems()) and app.play_sound:
  <EMBED src="/static/sound/alert.wav" autostart=true loop=false volume=100 hidden=true>
@@ -128,23 +43,27 @@
    %if actions_allowed:
    %include("_panel_actions.tpl")
    %end
-
-   %include("_panel_filters.tpl", filters=filters)
-
-    <!-- Bookmarks panel -->
-    <div class="panel panel-info">
-       <div class="panel-heading">Bookmarks</div>
-       <div class="panel-body">
-          <div id='bookmarks'></div>
-          <div id='bookmarksro'></div>
-       </div>
-    </div>
  </div>
 
  <!-- Right panel, with all problems -->
  <div id="problems" class="col-lg-12 col-md-12 col-sm-12">
+   %if not pbs:
+   <center>
+     %if search_string:
+     <h3>Bummer, we couldn't find anything.</h3>
+     Use the filters or the bookmarks to find what you are looking for, or try a new search query.
+     %else:
+     <h3>No host or service.</h3>
+     %end
+   </center>
+   %else:
 
    %include("_problems_synthesis.tpl", pbs=pbs)
+
+   <div class="text-right">
+     <a id='select_all_btn' href="javascript:select_all_problems()" class="btn btn-default btn-sm"><i class="fa fa-plus"></i> Select all</a>
+     <a id='unselect_all_btn' href="javascript:unselect_all_problems()" class="btn btn-default btn-sm" style="display:none;"><i class="fa fa-minus"></i> Unselect all</a>
+   </div>
 
    %from itertools import groupby
    %pbs = sorted(pbs, key=lambda x: x.business_impact, reverse=True)
@@ -317,6 +236,7 @@
       %end
          
       %# Close problems div ...
+      %end
    </div>
 
 </div>

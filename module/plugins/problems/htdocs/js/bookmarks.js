@@ -1,9 +1,9 @@
-function add_new_bookmark(page){
+function add_new_bookmark(){
    var f = document.forms['bookmark_save'];
    var name = f.bookmark_name.value;
    if (name=='') return;
 
-   var uri = get_current_search(page);
+   var uri = window.location.pathname + window.location.search;
 
    var b = {'name' : name, 'uri' : uri};
    
@@ -16,6 +16,7 @@ function add_new_bookmark(page){
       // Ok we can save bookmarks in our preferences
       bookmarks.push(b);
       save_bookmarks();
+      location.reload();
    } else { 
       alert('This bookmark already exists !');
    }
@@ -43,6 +44,7 @@ function push_to_common_bookmarks(name,uri) {
    if (names.indexOf(name)==-1) {
       // Ok we can save bookmarks in our preferences
       bookmarksro.push(b);
+      delete_bookmark(name);
       save_bookmarksro();
    } else { 
       alert('This Common bookmark name already exists !');
