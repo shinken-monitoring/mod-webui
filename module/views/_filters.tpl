@@ -2,7 +2,7 @@
 %setdefault("common_bookmarks", app.get_common_bookmarks())
 %setdefault("user_bookmarks", app.get_user_bookmarks(user))
 
-<form class="navbar-form navbar-left" method="get" action="all">
+<form class="navbar-form navbar-left hidden-xs" method="get" action="all">
   <div class="dropdown form-group text-left">
     <button class="btn btn-default dropdown-toggle" type="button" id="filters_menu" data-toggle="dropdown" aria-expanded="true"><i class="fa fa-filter"></i><span class="sr-only"> Filters </span><span class="caret"></span></button>
     <ul class="dropdown-menu" role="menu" aria-labelledby="filters_menu">
