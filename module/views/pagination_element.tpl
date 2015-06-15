@@ -4,29 +4,11 @@
 %setdefault('div_style', "margin-top:5; margin-bottom:5;")
 
 <div class="{{ div_class }}" style="{{ div_style }}">
-  %if navi and len(navi) > 1:
-  <ul class="pagination {{ ul_class }}" style="display:inline-block;" >
-    %from urllib import urlencode
-
-    %for name, start, end, is_current in navi:
-    %if is_current:
-    <li class="active"><a href="#">{{name}}</a></li>
-    %elif start == None or end == None:
-    <li class="disabled"> <a href="#">...</a> </li>
-    %else:
-    %# Include other query parameters like search and global_search
-    %query = app.request.query
-    %query['start'] = start
-    %query['end'] = end
-    %query_string = urlencode(query)
-    <li><a href="{{page}}?{{query_string}}">{{name}}</a></li>
-    %end
-    %end
-    %if display_steps_form and elts_per_page is not None:
-    <li class="pull-left">&nbsp;</li>
+  %if display_steps_form and elts_per_page is not None:
+  <ul class="pagination {{ ul_class }}" >
     <li>
-      <form id="elts_per_page">
-       <div class="input-group">
+      <form id="elts_per_page" class="pull-left">
+       <div class="input-group" style="width:120px">
          <div class="input-group-btn">
            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">#&nbsp;<span class="caret"></span></button>
            <ul class="dropdown-menu" role="menu">
@@ -83,6 +65,27 @@
       e.preventDefault();
     });
     </script>
+  </ul>
+  %end
+  
+  %if navi and len(navi) > 1:
+  <ul class="pagination {{ ul_class }}" >
+    
+    %from urllib import urlencode
+
+    %for name, start, end, is_current in navi:
+    %if is_current:
+    <li class="active"><a href="#">{{name}}</a></li>
+    %elif start == None or end == None:
+    <li class="disabled"> <a href="#">...</a> </li>
+    %else:
+    %# Include other query parameters like search and global_search
+    %query = app.request.query
+    %query['start'] = start
+    %query['end'] = end
+    %query_string = urlencode(query)
+    <li><a href="{{page}}?{{query_string}}">{{name}}</a></li>
+    %end
     %end
   </ul>
   %end
