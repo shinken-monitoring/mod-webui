@@ -61,6 +61,17 @@ html, body {
   padding: 1px;
   margin: 0;
 }
+nav .badger-left {
+  left: -50%;
+}
+nav .badger-right {
+  left: -50%;
+}
+
+.hosts-overall-state, .services-overall-state {
+   margin-right: -40px;
+}
+
 @media (min-width: 768px) {
     input#search {
         width: 350px;
