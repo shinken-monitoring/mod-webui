@@ -12,7 +12,7 @@
    <tbody>
       <tr>
          <td>
-            <a href="/hosts-group/all" class="btn btn-sm">
+            <a href="/all?search=type:host isnot:OK" class="btn btn-sm">
                <i class="fa fa-4x fa-server font-darkgrey"></i>
                <span class="badger-title hosts"><i class="fa fa-plus" style="color: #ccc"></i>&nbsp;Hosts DOWN</span>
                %host_state = app.get_percentage_hosts_state(app.get_user_auth(), False)
@@ -22,7 +22,7 @@
          </td>
 
          <td>
-            <a href="/minemap/all" class="btn btn-sm">
+            <a href="/all?search=type:service isnot:OK" class="btn btn-sm">
                <i class="fa fa-4x fa-bars font-darkgrey"></i>
                <span class="badger-title services"><i class="fa fa-plus" style="color: #ccc"></i>&nbsp;Services KO</span>
                %service_state = app.get_percentage_service_state(app.get_user_auth(), False)

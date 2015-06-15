@@ -26,72 +26,48 @@
 /*  Currently basics
     ------------------------------------------------------- */
 body, section.content {
-	background: #232426 !important;
-	padding-top: 0px !important;
-	color: #ededef;
-
+   background: #232426 !important;
+   padding-top: 0px !important;
+   color: #ededef;
 }
 
 p {
-	color: #535456;
-	text-align: center;
-	font-family: Century Gothic, sans-serif;
+   color: #535456;
+   text-align: center;
+   font-family: Century Gothic, sans-serif;
 }
 
 hr { /* Yes this is a workaround*/
-	display: none;
+   display: none;
 }
 
 #content {
-  background: #232426 !important;
-}
-
-/*  
-    ------------------------------------------------------- */
-.hell {
-	background-color: #343434;
-	border-bottom-color: #2C2C2C solid 2px;
-	-webkit-box-shadow: 1px 0px 1px 0.5px #2C2C2C;
-	box-shadow: 1px 0px 1px 0.5px #2C2C2C;
-	min-height: 450px;
-}
-
-.hell h3 {
-	margin:10px;
-}
-
-.jclock span {
-	vertical-align: middle;
+   background: #232426 !important;
 }
 
 /*  Elements
     ------------------------------------------------------- */
-#footer p {
-	text-align: right;
-	font-size: 1.5em;
-}
-
 #clock {
-	color: #FFFFFF;
-	line-height: 100%;
-	font-size: 10em;
+   color: #FFFFFF;
+   line-height: 100%;
+   font-size: 10em;
 }
 
 #date {
-	color: #535456;
-	font-size: 1.5em;
+   color: #535456;
+   font-size: 1.5em;
 }
 
 ul#Navigation {
-  margin: auto;
-  margin-top: 17.5em; 
-  padding: 0.8em;
-  text-align: center;
+   margin: auto;
+   margin-top: 17.5em; 
+   padding: 0.8em;
+   text-align: center;
 }
 
 ul#Navigation li {
-  list-style: none;
-  display: inline;
+   list-style: none;
+   display: inline;
 }
 
 /*  Title styles
@@ -99,6 +75,7 @@ ul#Navigation li {
 
 .itproblem {
   bottom: 3.2em;
+  letter-spacing: 3px;
 }
 
 .impacts {
@@ -130,7 +107,7 @@ ul#Navigation li {
   padding: 1px 3px 2px;
   text-transform: uppercase;
   position: relative;
-  bottom: 2.15em;
+  bottom: 4em;
   left: 0.8em;
   z-index: 666;
 }
