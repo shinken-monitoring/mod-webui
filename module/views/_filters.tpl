@@ -4,7 +4,7 @@
 
 <form class="navbar-form navbar-left" method="get" action="all">
   <div class="dropdown form-group text-left">
-    <button class="btn btn-default dropdown-toggle" type="button" id="filters_menu" data-toggle="dropdown" aria-expanded="true"><i class="fa fa-filter"></i><span class="hidden-xs hidden-sm"> Filters <span class="caret"></span></span></button>
+    <button class="btn btn-default dropdown-toggle" type="button" id="filters_menu" data-toggle="dropdown" aria-expanded="true"><i class="fa fa-filter"></i><span class="sr-only"> Filters </span><span class="caret"></span></button>
     <ul class="dropdown-menu" role="menu" aria-labelledby="filters_menu">
       <li role="presentation"><a role="menuitem" tablindex="-1" href="?search=ack:true">Acknowledged</a></li>
       <li role="presentation"><a role="menuitem" tablindex="-1" href="?search=isnot:UP isnot:OK isnot:PENDING ack:false downtime:false">Problems</a></li>
@@ -20,7 +20,7 @@
     </div>
   </div>
   <div class="dropdown form-group text-left">
-    <button class="btn btn-default dropdown-toggle" type="button" id="bookmarks_menu" data-toggle="dropdown" aria-expanded="true"><i class="fa fa-bookmark"></i><span class="hidden-xs hidden-sm"> Bookmarks <span class="caret"></span></span></button>
+    <button class="btn btn-default dropdown-toggle" type="button" id="bookmarks_menu" data-toggle="dropdown" aria-expanded="true"><i class="fa fa-bookmark"></i><span class="sr-only"> Bookmarks </span><span class="caret"></span></button>
     <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="bookmarks_menu">
       <li role="presentation" class="dropdown-header">User bookmarks</li>
       %for b in user_bookmarks:

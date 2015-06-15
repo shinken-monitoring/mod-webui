@@ -42,7 +42,7 @@
   <ul class="nav navbar-top-links navbar-right">
     <li><a class="quickinfo" data-original-title='Currently' href="/dashboard/currently"><i class="fa fa-eye"></i></a></li>
 
-    <li class="hidden-sm hidden-xs hidden-md">
+    <li class="hidden-sm hidden-xs">
     <a href="/all?search=type:host isnot:OK" class="quickinfo" data-original-title='Hosts'><i class="fa fa-server"></i>
       %host_state = app.get_percentage_hosts_state(app.get_user_auth(), False)
       <span class="badger badger-info">{{app.get_nb_hosts(app.get_user_auth())}}</span>
@@ -50,7 +50,7 @@
     </a>
     </li>
    
-    <li class="hidden-sm hidden-xs hidden-md">
+    <li class="hidden-sm hidden-xs">
     <a href="/all?search=type:service isnot:OK" class="quickinfo">
       <i class="fa fa-bars"></i>
       %service_state = app.get_percentage_service_state(app.get_user_auth(), False)
@@ -59,7 +59,7 @@
     </a>
     </li>
     
-    <!-- :TODO:maethor:150608: badgers mess up with the display of the navbar -->
+    <!-- :TODO:maethor:150608: badgers mess up with the display of the navbar 
     %if app:
     %overall_state = app.get_overall_state(app.get_user_auth())
     <li class="hidden-sm hidden-xs hidden-md">
@@ -71,12 +71,13 @@
       <a href="/problems" class="quickinfo" data-original-title='IT Problems'><i class="fa fa-ambulance"></i><span class="pulsate badger badger-{{'ok' if overall_itproblem == 0 else 'warning' if overall_itproblem == 1 else 'critical'}}">{{app.get_overall_it_problems_count(user, False)}}</span> </a>
     </li>
     %end
+    -->
 
     <!-- User info -->
     <li class="dropdown user user-menu">
       <a href="#" class="dropdown-toggle" data-toggle="dropdown">
         <i class="fa fa-user"></i>
-        <span><span class="username hidden-md">{{username}}</span> <i class="caret"></i></span>
+        <span><span class="username hidden-sm hidden-xs hidden-md">{{username}}</span> <i class="caret"></i></span>
       </a>
 
       <ul class="dropdown-menu">
