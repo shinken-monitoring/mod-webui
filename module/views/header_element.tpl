@@ -120,10 +120,14 @@
         %if app:
         <li> <a href="/dashboard"> <span class="fa fa-dashboard"></span> Dashboard </a> </li>
         <li> <a href="/all?search=isnot:UP isnot:OK isnot:PENDING ack:false downtime:false"> <span class="fa fa-ambulance"></span> Problems </a> </li>
-        <li> <a href="/hosts-groups"> <span class="fa fa-sitemap"></span> Hosts groups </a> </li>
-        <li> <a href="/services-groups"> <span class="fa fa-sitemap"></span> Services groups </a> </li>
-        <li> <a href="/hosts-tags"> <span class="fa fa-tags"></span> Hosts tags </a> </li>
-        <li> <a href="/services-tags"> <span class="fa fa-tags"></span> Services tags </a> </li>
+        <li> <a href="#"><i class="fa fa-sitemap"></i> Groups and tags <i class="fa arrow"></i></a>
+          <ul class="nav nav-second-level">
+            <li> <a href="/hosts-groups"> <span class="fa fa-sitemap"></span> Hosts groups </a> </li>
+            <li> <a href="/services-groups"> <span class="fa fa-sitemap"></span> Services groups </a> </li>
+            <li> <a href="/hosts-tags"> <span class="fa fa-tags"></span> Hosts tags </a> </li>
+            <li> <a href="/services-tags"> <span class="fa fa-tags"></span> Services tags </a> </li>
+          </ul>
+        </li>
         <li> <a href="#"><i class="fa fa-bar-chart"></i> Tactical views <i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
             <li> <a href="/impacts"> <span class="fa fa-bolt"></span> Impacts </a> </li>

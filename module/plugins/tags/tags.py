@@ -27,8 +27,6 @@
 ### Will be populated by the UI with it's own value
 app = None
 
-from shinken.util import safe_print
-from shinken.misc.sorter import hst_srv_sort
 from shinken.misc.filter import only_related_to
 
 # Get plugin's parameters from configuration file
@@ -38,7 +36,7 @@ params['elts_per_page'] = 10
 def load_cfg():
     global params
 
-    import os,sys
+    import os
     from shinken.log import logger
     from webui.config_parser import config_parser
     plugin_name = os.path.splitext(os.path.basename(__file__))[0]
@@ -64,62 +62,10 @@ def reload_cfg():
     app.bottle.redirect("/config")
 
 def show_tag(name):
-    user = app.check_user_authentication()
-
-    if name == 'all':
-        items = []
-        items.extend(app.get_hosts())
-
-    else:
-        items = app.get_hosts_tagged_with(name)
-
-    elts_per_page = params['elts_per_page']
-    # We want to limit the number of elements
-    start = int(app.request.GET.get('start', '0'))
-    end = int(app.request.GET.get('end', elts_per_page))
-
-    # Now sort hosts list ..
-    # items.sort(hst_srv_sort)
-
-    # If we overflow, came back as normal
-    total = len(items)
-    if start > total:
-        start = 0
-        end = elts_per_page
-
-    navi = app.helper.get_navi(total, start, step=elts_per_page)
-    items = items[start:end]
-
-    return {'app': app, 'user': user, 'params': params, 'navi': navi, 'tag': name, 'hosts': items, 'length': total}
+    app.bottle.redirect("/all?search=type:host htag:" + name)
 
 def show_stag(name):
-    user = app.check_user_authentication()
-
-    if name == 'all':
-        items = []
-        items.extend(app.get_hosts())
-
-    else:
-        items = app.get_services_tagged_with(name)
-
-    elts_per_page = params['elts_per_page']
-    # We want to limit the number of elements
-    start = int(app.request.GET.get('start', '0'))
-    end = int(app.request.GET.get('end', elts_per_page))
-
-    # Now sort hosts list ..
-    # items.sort(hst_srv_sort)
-
-    # If we overflow, came back as normal
-    total = len(items)
-    if start > total:
-        start = 0
-        end = elts_per_page
-
-    navi = app.helper.get_navi(total, start, step=elts_per_page)
-    items = items[start:end]
-
-    return {'app': app, 'user': user, 'params': params, 'navi': navi, 'tag': name, 'services': items, 'length': total}
+    app.bottle.redirect("/all?search=type:service stag:" + name)
 
 def show_tags():
     user = app.check_user_authentication()
