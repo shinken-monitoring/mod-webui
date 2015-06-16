@@ -47,7 +47,6 @@ import cPickle
 import imp
 import hashlib
 import json
-import requests
 
 from shinken.basemodule import BaseModule
 from shinken.message import Message
@@ -713,14 +712,14 @@ class Webui_broker(BaseModule, Daemon):
     # Get user Gravatar picture if defined
     ##
     def get_gravatar(self, email, size=64, default='404'):
-        logger.warning("[WebUI], get Gravatar, email: %s, size: %d, default: %s", email, size, default)
+        logger.debug("[WebUI], get Gravatar, email: %s, size: %d, default: %s", email, size, default)
         
         try:
+            import urllib2
             parameters = { 's' : size, 'd' : default}
-            url = "https://secure.gravatar.com/avatar/%s" % (hashlib.md5(email.lower()).hexdigest())
-            r = requests.get(url, params=parameters)
-            logger.warning("[WebUI], Gravatar picture: %s", r)
-            if r.status_code == 200:
+            url = "https://secure.gravatar.com/avatar/%s?%s" % (hashlib.md5(email.lower()).hexdigest(), urllib.urlencode(parameters))
+            ret = urllib2.urlopen(url)
+            if ret.code == 200:
                 return url
             else:
                 return None
