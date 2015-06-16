@@ -47,6 +47,7 @@ import cPickle
 import imp
 import hashlib
 import json
+import re
 
 from shinken.basemodule import BaseModule
 from shinken.message import Message
@@ -1176,6 +1177,136 @@ class Webui_broker(BaseModule, Daemon):
             all.extend([h for h in self.get_hosts(user) if not h.is_impact])
             all.extend([s for s in self.get_services(user) if not s.is_impact])
         return all
+
+
+    def search_hosts_and_services(self, search, user=None, get_impacts=True):
+        """@todo: Docstring for search_hosts_and_services.
+
+        :search: @todo
+        :user: @todo
+        :get_impacts: @todo
+        :returns: @todo
+
+        """
+        items = self.get_all_hosts_and_services(user, get_impacts=False)
+
+        logger.debug("[%s] problems", self.name)
+        for i in items:
+            logger.debug("[%s] problems, item: %s", self.name, i.get_full_name())
+
+        search = [s for s in search.split(' ')]
+
+        for s in search:
+            s = s.strip()
+            if not s:
+                continue
+
+            logger.debug("[%s] problems, searching for: %s in %d items", self.name, s, len(items))
+
+            elts = s.split(':', 1)
+            t = 'hst_srv'
+            if len(elts) > 1:
+                t = elts[0]
+                s = elts[1]
+
+            logger.debug("[%s] problems, searching for type %s, pattern: %s", self.name, t, s)
+
+            if t == 'hst_srv':
+                pat = re.compile(s, re.IGNORECASE)
+                new_items = []
+                for i in items:
+                    if pat.search(i.get_full_name()):
+                        new_items.append(i)
+                    else:
+                        for j in (i.impacts + i.source_problems):
+                            if pat.search(j.get_full_name()):
+                                new_items.append(i)
+
+                items = new_items
+
+            if (t == 'hg' or t == 'hgroup') and s != 'all':
+                group = self.datamgr.get_hostgroup(s)
+                items = [i for i in items if group in i.get_hostgroups()]
+
+            if (t == 'sg' or t == 'sgroup') and s != 'all':
+                group = self.datamgr.get_servicegroup(s)
+                items = [i for i in items if group in i.get_servicegroups()]
+
+            if t == 'realm':
+                r = self.datamgr.get_realm(s)
+                items = [i for i in items if i.get_realm() == r]
+
+            if t == 'htag' and s != 'all':
+                items = [i for i in items if s in i.get_host_tags()]
+
+            if t == 'stag' and s != 'all':
+                items = [i for i in items if i.__class__.my_type == 'service' and s in i.get_service_tags()]
+
+            if t == 'type':
+                items = [i for i in items if i.__class__.my_type == s]
+
+            if t == 'bp' or t == 'bi':
+                if s.startswith('>='):
+                    items = [i for i in items if i.business_impact >= int(s[2:])]
+                elif s.startswith('<='):
+                    items = [i for i in items if i.business_impact <= int(s[2:])]
+                elif s.startswith('>'):
+                    items = [i for i in items if i.business_impact > int(s[1:])]
+                elif s.startswith('<'):
+                    items = [i for i in items if i.business_impact < int(s[1:])]
+                else:
+                    if s.startswith('='):
+                        s = s[1:]
+                    items = [i for i in items if i.business_impact == int(s)]
+
+            if t == 'is':
+                if s.lower() == 'ack':
+                    items = [i for i in items if i.__class__.my_type == 'service' or i.problem_has_been_acknowledged]
+                    items = [i for i in items if i.__class__.my_type == 'host' or (i.problem_has_been_acknowledged or i.host.problem_has_been_acknowledged)]
+                elif s.lower() == 'downtime':
+                    items = [i for i in items if i.__class__.my_type == 'service' or i.in_scheduled_downtime]
+                    items = [i for i in items if i.__class__.my_type == 'host' or (i.in_scheduled_downtime or i.host.in_scheduled_downtime)]
+                else:
+                    if len(s) == 1:
+                        items = [i for i in items if i.state_id == int(s)]
+                    else:
+                        items = [i for i in items if i.state == s.upper()]
+
+            if t == 'isnot':
+                if s.lower() == 'ack':
+                    items = [i for i in items if i.__class__.my_type == 'service' or not i.problem_has_been_acknowledged]
+                    items = [i for i in items if i.__class__.my_type == 'host' or (not i.problem_has_been_acknowledged and not i.host.problem_has_been_acknowledged)]
+                elif s.lower() == 'downtime':
+                    items = [i for i in items if i.__class__.my_type == 'service' or not i.in_scheduled_downtime]
+                    items = [i for i in items if i.__class__.my_type == 'host' or (not i.in_scheduled_downtime and not i.host.in_scheduled_downtime)]
+                else:
+                    if len(s) == 1:
+                        items = [i for i in items if i.state_id != int(s)]
+                    else:
+                        items = [i for i in items if i.state != s.upper()]
+
+            # :COMMENT:maethor:150616: Legacy filters, kept for bookmarks compatibility
+            if t == 'ack':
+                if s == 'false' or s == 'no':
+                    search.append("isnot:ack")
+                if s == 'true' or s == 'yes':
+                    search.append("is:ack")
+            if t == 'downtime':
+                if s == 'false' or s == 'no':
+                    search.append("isnot:downtime")
+                if s == 'true' or s == 'yes':
+                    search.append("is:downtime")
+            if t == 'crit':
+                search.append("is:critical")
+
+            logger.debug("[%s] problems, found %d elements for type %s, pattern: %s", self.name, len(items), t, s)
+
+        logger.debug("[%s] problems after search filtering", self.name)
+        for i in items:
+            logger.debug("[%s] problems, item: %s, %d, %d", self.name, i.get_full_name(), i.business_impact, i.state_id)
+
+        return items
+
 
     ##
     # Timeperiods
