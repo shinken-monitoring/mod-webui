@@ -58,6 +58,7 @@
    <div class="panel-body">
       <table class="table table-invisible table-condensed">
          <tbody>
+           %if 'type:service' not in search_string:
             <tr>
                <td>
                <b>{{nHosts}} hosts:&nbsp;</b> 
@@ -98,6 +99,8 @@
                <span class="num">{{hDowntime}} <i>({{pctHDowntime}}%)</i></span>
                </span></td>
             </tr>
+            %end
+            %if 'type:host' not in search_string:
             <tr>
                <td>
                   <b>{{nServices}} services:&nbsp;</b> 
@@ -138,6 +141,7 @@
                <span class="num">{{sDowntime}} <i>({{pctSDowntime}}%)</i></span>
                </span></td>
             </tr>
+            %end
          </tbody>
       </table>
    </div>

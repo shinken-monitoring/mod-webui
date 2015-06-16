@@ -40,7 +40,7 @@
 
   <!-- Right buttons ... -->
   <ul class="nav navbar-top-links navbar-right">
-    <li class="hosts-overall-state hidden-xs">
+    <li class="hosts-overall-state hidden-xs" id="hosts-overall-state">
        <a href="/all?search=type:host isnot:OK" class="quickinfo" data-original-title='Hosts'>
          <div class="badgers">
          <i class="fa fa-2x fa-server"></i>
@@ -51,7 +51,7 @@
        </a>
     </li>
    
-    <li class="services-overall-state hidden-xs">
+    <li class="services-overall-state hidden-xs" id="services-overall-state">
        <a href="/all?search=type:service isnot:OK" class="quickinfo">
          <div class="badgers">
          <i class="fa fa-2x fa-bars"></i>

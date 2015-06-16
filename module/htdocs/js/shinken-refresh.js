@@ -41,6 +41,14 @@ function postpone_refresh(){
 	reinit_refresh();
 }
 
+function do_refresh(){
+    $.get(document.URL, {}, function(data) {
+        var $response = $('<div />').html(data);
+        $('#page-content').html($response.find('#page-content').html());
+        $('#hosts-overall-state').html($response.find('#hosts-overall-state').html());
+        $('#services-overall-state').html($response.find('#services-overall-state').html());
+    }, 'html');
+}
 
 /* React to an action return of the /action page. Look at status
  to see if it's ok or not */
@@ -48,7 +56,7 @@ function check_gotfirstdata_result(response){
 	if (response.status == 200 && response.text == '1') {
     if (! refresh_stopped) {
       // Go Refresh
-      location.reload();
+      do_refresh();
     }
 
 		reinit_refresh();

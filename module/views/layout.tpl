@@ -140,6 +140,7 @@
         %else:
         <div class="container">
         %end
+        <div id="page-content">
                <div class="row">
                %if print_title:
                <!-- Page header -->
@@ -181,16 +182,6 @@
                </section>
                %end
                </div>
-               %if not print_menu:
-                 <script type="text/javascript">
-                 $(document).ready(function(){
-                   window.setTimeout(function() { 
-                     $('.left-side').toggleClass("collapse-left");
-                     $(".right-side").toggleClass("strech");
-                   }, 0);
-                 });
-                 </script>
-               %end
          </div>
       </div>
     </div>
