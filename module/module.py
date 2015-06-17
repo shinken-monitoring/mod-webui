@@ -1048,7 +1048,36 @@ class Webui_broker(BaseModule, Daemon):
         hname = hname.decode('utf8', 'ignore')
         return self.rg.hosts.find_by_name(hname)
 
+    # Get number of all Hosts
+    # problem=False, returns number of hosts not in problems
+    # problem=True, returns number of hosts in problems
+    def get_number_hosts_state(self, user=None, problem=False):
+        """
+        Get number of hosts
+
+        :param user: the current logged in user
+        :type user: shinken.objects.Contact
+        :param problem: True to get number of problem hosts, else False 
+        :type problem: Boolean
+        :return:
+          * number of problem hosts if problem=True
+          * number of non problem hosts if problem=False
+        """
+        all_hosts = self.get_hosts(user)
+        if len(all_hosts) == 0:
+            return 0
+            
+        problem_hosts = []
+        problem_hosts.extend([h for h in all_hosts if h.state not in ['UP', 'PENDING'] and not h.is_impact])
+        
+        if problem:
+            return len(problem_hosts)
+        else:
+            return len(all_hosts) - len(problem_hosts)
+
     # Get percentage of all Hosts
+    # problem=False, returns % of hosts not in problems
+    # problem=True, returns % of hosts in problems
     def get_percentage_hosts_state(self, user=None, problem=False):
         all_hosts = self.get_hosts(user)
         if len(all_hosts) == 0:
@@ -1081,7 +1110,25 @@ class Webui_broker(BaseModule, Daemon):
         sdesc = sdesc.decode('utf8', 'ignore')
         return self.rg.services.find_srv_by_name_and_hostname(hname, sdesc)
 
+    # Get number of all Services
+    # problem=False, returns number of services not in problems
+    # problem=True, returns number of services in problems
+    def get_number_service_state(self, user=None, problem=False):
+        all_services = self.get_services(user)
+        if len(all_services) == 0:
+            return 0
+
+        problem_services = []
+        problem_services.extend([s for s in all_services if s.state not in ['OK', 'PENDING'] and not s.is_impact])
+        
+        if problem:
+            return len(problem_services)
+        else:
+            return len(all_services) - len(problem_services)
+
     # Get percentage of all Services
+    # problem=False, returns % of services not in problems
+    # problem=True, returns % of services in problems
     def get_percentage_service_state(self, user=None, problem=False):
         all_services = self.get_services(user)
         if len(all_services) == 0:
