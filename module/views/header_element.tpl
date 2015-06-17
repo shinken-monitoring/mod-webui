@@ -41,11 +41,11 @@
   <!-- Right buttons ... -->
   <ul class="nav navbar-top-links navbar-right">
     <li class="hidden-xs hosts-overall-state">
-       <a href="/all?search=type:host isnot:OK" class="quickinfo" data-original-title='Hosts'>
+       <a href="/all?search=type:host" class="quickinfo" data-original-title='Hosts'>
          <i class="fa fa-2x fa-server"></i>
          <span class="label-top">
-            <span class="label label-as-badge label-success label-left">{{app.get_number_hosts_state(app.get_user_auth(), True)}}</span>
-            <span class="label label-as-badge label-danger label-right">{{app.get_number_hosts_state(app.get_user_auth(), False)}}</span>
+            <span class="label label-as-badge label-success label-left">{{app.get_number_hosts_state(app.get_user_auth(), False)}}</span>
+            <span class="label label-as-badge label-danger label-right">{{app.get_number_hosts_state(app.get_user_auth(), True)}}</span>
          </span>
          <span class="label-bottom">
             %host_state = app.get_percentage_hosts_state(app.get_user_auth(), False)
@@ -55,11 +55,11 @@
     </li>
    
     <li class="hidden-xs services-overall-state">
-       <a href="/all?search=type:service isnot:OK" class="quickinfo" data-original-title='Services'>
+       <a href="/all?search=type:service" class="quickinfo" data-original-title='Services'>
          <i class="fa fa-2x fa-bars"></i>
          <span class="label-top">
-            <span class="label label-as-badge label-success label-left">{{app.get_number_service_state(app.get_user_auth(), True)}}</span>
-            <span class="label label-as-badge label-danger label-right">{{app.get_number_service_state(app.get_user_auth(), False)}}</span>
+            <span class="label label-as-badge label-success label-left">{{app.get_number_service_state(app.get_user_auth(), False)}}</span>
+            <span class="label label-as-badge label-danger label-right">{{app.get_number_service_state(app.get_user_auth(), True)}}</span>
          </span>
          <span class="label-bottom">
             %service_state = app.get_percentage_service_state(app.get_user_auth(), False)
