@@ -5,6 +5,7 @@
 *    Gregory Starck, g.starck@gmail.com
 *    Hartmut Goebel, h.goebel@goebel-consult.de
 *    Andreas Karfusehr, andreas@karfusehr.de
+*    Frederic Mohier, frederic.mohier@gmail.com
 *
 * This file is part of Shinken.
 *
@@ -27,27 +28,17 @@
     ------------------------------------------------------- */
 body, section.content {
    background: #232426 !important;
-   padding-top: 0px !important;
-   color: #ededef;
 }
 
-hr { /* Yes this is a workaround*/
-   display: none;
-}
-
-#content {
-   background: #232426 !important;
-}
-
-/*  Elements
-    ------------------------------------------------------- */
+/*
+ * Date and time
+ */
 #clock {
    text-align: center;
    font-family: Century Gothic, sans-serif;
    
    color: #FFFFFF;
    line-height: 100%;
-   font-size: 10em;
 }
 
 #date {
@@ -55,19 +46,43 @@ hr { /* Yes this is a workaround*/
    font-family: Century Gothic, sans-serif;
    
    color: #535456;
-   font-size: 2em;
+   line-height: 100%;
 }
 
-ul#Navigation {
-   margin: auto;
-   margin-top: 17.5em; 
-   padding: 0.8em;
+@media (max-width: 768px) {
+   #clock {
+      font-size: 4em;
+   }
+   #date {
+      font-size: 1em;
+   }
+}
+@media (min-width: 768px) {
+   #clock {
+      font-size: 6em;
+   }
+   #date {
+      font-size: 2em;
+   }
+}
+@media (min-width: 900px) {
+   #clock {
+      font-size: 8em;
+   }
+   #date {
+      font-size: 3em;
+   }
+}
+
+/*
+ * Icons bar
+ */
+#state-icons {
    text-align: center;
+   margin-top: 100px;
 }
 
-ul#Navigation li {
-   list-style: none;
-   display: inline;
+#state-icons div {
 }
 
 /*  Title styles
@@ -92,9 +107,9 @@ ul#Navigation li {
 .hosts {
 }
 
-/*  Badger styles
-    ------------------------------------------------------- */
-
+/* 
+ * Badger styles
+ */
 .badger-big {
   background-color: #999999;
   border-radius: 3px;
@@ -103,16 +118,15 @@ ul#Navigation li {
   font-weight: bold;
   padding: 1px 3px 2px;
   text-transform: uppercase;
-  
-  position: relative;
-  bottom: 5em;
 }
+/*
 .badger-left {
   left: -10px;
 }
 .badger-right {
   left: +10px;
 }
+*/
 
 
 .badger-critical {

@@ -67,9 +67,6 @@
       <link href="/static/css/typeahead.css" rel="stylesheet">
 
       <link href="/static/css/daterangepicker.css" rel="stylesheet">
-      <!--
-      <link href="/static/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
-      -->
 
       <link href="/static/css/shinken-layout.css" rel="stylesheet">
 
@@ -93,16 +90,13 @@
       <script src="/static/js/jquery-ui-1.10.3.min.js"></script>
       <script src="/static/js/bootstrap.min.js"></script>
 
+      <script src="/static/js/metisMenu.min.js"></script>
+      <script src="/static/js/sb-admin-2.js"></script>
+
       <script src="/static/js/moment.min.js"></script>
 
       <!-- See: https://github.com/dangrossman/bootstrap-daterangepicker -->
       <script src="/static/js/daterangepicker.js"></script>
-
-      <!-- See: http://www.malot.fr/bootstrap-datetimepicker/demo.php 
-      <script src="/static/js/bootstrap-datetimepicker.min.js"></script>
-      -->
-
-      <script src="/static/js/shinken-layout.js"></script>
 
       <script src="/static/js/jquery.jclock.js"></script>
       <script src="/static/js/jquery.jTruncate.js"></script>
@@ -116,15 +110,13 @@
       </script>
       <script src="/static/js/shinken-refresh.js"></script>
       %end
-      <!--Shinken ones : dashboard widgets -->
+      <!--Shinken ones : dashboard widgets, ... -->
       <script src="/static/js/shinken-ui.js"></script>
       <script src="/static/js/shinken-actions.js"></script>
       <script src="/static/js/shinken-aggregation.js"></script>
       <script src="/static/js/shinken-deptree.js"></script>
       <script src="/static/js/shinken-canvas.js"></script>
-
-      <script src="/static/js/metisMenu.min.js"></script>
-      <script src="/static/js/sb-admin-2.js"></script>
+      <script src="/static/js/shinken-layout.js"></script>
 
       %# End of classic js import. Now call for specific ones ...
       %for p in js:
