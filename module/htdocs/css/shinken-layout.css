@@ -53,7 +53,7 @@ html, body {
  */
 
 /*
- * Navigation bar
+ * Navigation bar, company logo
  */
 .header .navbar-brand {
   padding: 1px;
@@ -65,14 +65,22 @@ html, body {
 }
 
 
-
-/* Hosts / services states
-------------------------- */
+/* 
+ * Navigation bar, Hosts / services states
+ */
 .hosts-overall-state, .services-overall-state {
    height: 50px;
 }
 
 ul.navbar-right{
+   height: 50px;
+}
+
+ul.navbar-right li{
+   height: 50px;
+}
+
+ul.navbar-right a.quickinfo{
    height: 50px;
 }
 
@@ -114,7 +122,7 @@ ul.navbar-right{
 
 .label-top {
    position: absolute;
-   top: 0px;
+   top: 5px;
    left: 0;
 }
 
@@ -127,7 +135,7 @@ ul.navbar-right{
 
 
 /*
- * Responsive input field in the navigation bar
+ * Navigation bar, responsive input field
  */
 @media (min-width: 768px) {
     input#search {
