@@ -133,9 +133,9 @@
             <li> <a href="/wall"> <span class="fa fa-th-large"></span> Wall </a> </li>
           </ul>
         </li>
-        <li> <a href="/logs"> <span class="fa fa-th-list"></span> Logs </a> </li>
+        <!--<li> <a href="/logs"> <span class="fa fa-th-list"></span> Logs </a> </li>-->
         <li> <a href="/system"> <span class="fa fa-gears"></span> System </a> </li>
-        <li> <a href="/shinken-io"> <span class="fa fa-gears"></span> Shinken IO </a> </li>
+        <!--<li> <a href="/shinken-io"> <span class="fa fa-gears"></span> Shinken IO </a> </li>-->
         <li> <a href="#"><i class="fa fa-wrench"></i> Configuration <i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
             <li> <a href="/contacts"> <span class="fa fa-users"></span> Contacts </a> </li>
