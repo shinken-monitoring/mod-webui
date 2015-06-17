@@ -597,16 +597,15 @@ class Webui_broker(BaseModule, Daemon):
             # tag_path = "/images/tags/%s" % path
             # BUT: implies modifications in all Shinken packages ...
             
-            logger.warning("[WebUI] request tag image %s for: %s", self.share_dir, path)
             # If a tag image (tag.png) exists in the share dir, give it ...
             tag_path = "%s/images/sets/%s" % (self.share_dir, path)
-            logger.warning("[WebUI] search: %s", os.path.join(tag_path, 'tag.png'))
+            logger.debug("[WebUI] searching tag: %s", os.path.join(tag_path, 'tag.png'))
             if os.path.exists(os.path.join(tag_path, 'tag.png')):
                 return static_file('tag.png', root=tag_path)
             else:
                 # Default tags icons are located in images/tags directory ...
                 tag_path = "%s/images/tags/%s" % (htdocs_dir, path)
-                logger.warning("[WebUI] search: %s", os.path.join(tag_path, 'tag.png'))
+                logger.debug("[WebUI] searching for: %s", os.path.join(tag_path, 'tag.png'))
                 if os.path.exists(os.path.join(tag_path, 'tag.png')):
                     return static_file('tag.png', root=tag_path)
                 else:
