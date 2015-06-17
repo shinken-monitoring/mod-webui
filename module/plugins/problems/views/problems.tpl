@@ -178,7 +178,7 @@
                            });
                          });
                        </script>
-                       <button type="button" id="btn-downtime-{{helper.get_html_id(pb)}}" class="btn btn-default btn-xs" title="Schedule a one day downtime for the problem">
+                       <button type="button" id="btn-downtime-{{helper.get_html_id(pb)}}" class="btn btn-default btn-xs" title="Schedule a downtime for the problem">
                          <i class="fa fa-ambulance"></i><span class="hidden-sm hidden-xs"> Downtime</span>
                        </button>
                        <script>
