@@ -4,62 +4,33 @@
 
 %from shinken.misc.filter import only_related_to
 
-%nServices=0
-%services=app.get_services(user)
-%sOk=sCritical=sWarning=sPending=sUnknown=sAck=sDowntime=0
-%pctOk=pctWarning=pctCritical=pctPending=pctUnknown=0
-%for s in services:
-   %nServices=nServices+1
-   %if s.state == 'OK':
-      %sOk=sOk+1
-   %elif s.state == 'CRITICAL':
-      %sCritical=sCritical+1
-   %elif s.state == 'WARNING':
-      %sWarning=sWarning+1
-   %elif s.state == 'PENDING':
-      %sPending=sPending+1
-   %else:
-      %sUnknown=sUnknown+1
-   %end
-   %if s.problem_has_been_acknowledged:
-      %sAck=sAck+1
-   %end
-   %if s.in_scheduled_downtime:
-      %sDowntime=sDowntime+1
-   %end
-%end
-%if nServices != 0:
-   %pctOk            = round(100.0 * sOk / nServices, 2)
-   %pctCritical      = round(100.0 * sCritical / nServices, 2)
-   %pctWarning       = round(100.0 * sWarning / nServices, 2)
-   %pctPending       = round(100.0 * sPending / nServices, 2)
-   %pctUnknown       = round(100.0 * sUnknown / nServices, 2)
-%end
+%services = app.get_services(user)
+%s = helper.get_synthesis(services)['services']
 
 <div class="row">
    <div class="pull-left col-sm-2">
-      <span class="pull-right">Total services: {{len(services)}}</span>
+      <span class="pull-right">Total services: {{s['nb_elts']}}</span>
    </div>
    <div class="pull-left progress col-sm-8 no-leftpadding no-rightpadding" style="height: 25px;">
-      <div title="{{sOk}} services Ok" class="progress-bar progress-bar-success quickinfo" role="progressbar" 
+      <div title="{{s['nb_ok']}} services Ok" class="progress-bar progress-bar-success quickinfo" role="progressbar" 
          data-toggle="tooltip" data-placement="bottom" 
-         style="line-height: 25px; width: {{pctOk}}%;">{{pctOk}}% Ok</div>
+         style="line-height: 25px; width: {{s['pct_ok']}}%;">{{s['pct_ok']}}% Ok</div>
 
-      <div title="{{sCritical}} services Critical" class="progress-bar progress-bar-danger quickinfo" 
+      <div title="{{s['nb_critical']}} services Critical" class="progress-bar progress-bar-danger quickinfo" 
          data-toggle="tooltip" data-placement="bottom" 
-         style="line-height: 25px; width: {{pctCritical}}%;">{{pctCritical}}% Critical</div>
+         style="line-height: 25px; width: {{s['pct_critical']}}%;">{{s['pct_critical']}}% Critical</div>
 
-      <div title="{{sWarning}} services Warning" class="progress-bar progress-bar-warning quickinfo" 
+      <div title="{{s['nb_warning']}} services Warning" class="progress-bar progress-bar-warning quickinfo" 
          data-toggle="tooltip" data-placement="bottom" 
-         style="line-height: 25px; width: {{pctWarning}}%;">{{pctWarning}}% Warning</div>
+         style="line-height: 25px; width: {{s['pct_warning']}}%;">{{s['pct_warning']}}% Warning</div>
 
-      <div title="{{sPending}} services Pending" class="progress-bar progress-bar-info quickinfo" 
+      <div title="{{s['nb_pending']}} services Pending" class="progress-bar progress-bar-info quickinfo" 
          data-toggle="tooltip" data-placement="bottom" 
-         style="line-height: 25px; width: {{pctPending}}%;">{{pctPending}}% Pending</div>
+         style="line-height: 25px; width: {{s['pct_pending']}}%;">{{s['pct_pending']}}% Pending</div>
 
-      <div title="{{sUnknown}} services Unknown" class="progress-bar progress-bar-info quickinfo" 
+      <div title="{{s['nb_unknown']}} services Unknown" class="progress-bar progress-bar-info quickinfo" 
          data-toggle="tooltip" data-placement="bottom" 
-         style="line-height: 25px; width: {{pctUnknown}}%;">{{pctUnknown}}% Unknown</div>
+         style="line-height: 25px; width: {{s['pct_unknown']}}%;">{{s['pct_unknown']}}% Unknown</div>
    </div>
    <div class="pull-right col-sm-2">
       <span class="btn-group pull-right">

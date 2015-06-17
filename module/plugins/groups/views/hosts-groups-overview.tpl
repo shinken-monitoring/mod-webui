@@ -4,56 +4,33 @@
 
 %from shinken.misc.filter import only_related_to
 
-%nHosts=0
-%hosts=app.get_hosts(user)
-%hUp=hDown=hUnreachable=hPending=hUnknown=0
-%pctUp=pctDown=pctUnreachable=pctPending=pctUnknown=0
-%for h in hosts:
-   %nHosts=nHosts+1
-   %if h.state == 'UP':
-      %hUp=hUp+1
-   %elif h.state == 'DOWN':
-      %hDown=hDown+1
-   %elif h.state == 'UNREACHABLE':
-      %hUnreachable=hUnreachable+1
-   %elif h.state == 'PENDING':
-      %hPending=hPending+1
-   %else:
-      %hUnknown=hUnknown+1
-   %end
-%end
-%if nHosts != 0:
-   %pctUp            = round(100.0 * hUp / nHosts, 2)
-   %pctDown          = round(100.0 * hDown / nHosts, 2)
-   %pctUnreachable   = round(100.0 * hUnreachable / nHosts, 2)
-   %pctPending       = round(100.0 * hPending / nHosts, 2)
-   %pctUnknown       = round(100.0 * hUnknown / nHosts, 2)
-%end
+%hosts = app.get_hosts(user)
+%h = helper.get_synthesis(hosts)['hosts']
 
 <div class="row">
    <div class="pull-left col-sm-2">
-      <span class="pull-right">Total hosts: {{len(hosts)}}</span>
+      <span class="pull-right">Total hosts: {{h['nb_elts']}}</span>
    </div>
    <div class="pull-left progress col-sm-8 no-leftpadding no-rightpadding" style="height: 25px;">
-      <div title="{{hUp}} hosts Up" class="progress-bar progress-bar-success quickinfo" role="progressbar" 
+      <div title="{{h['nb_up']}} hosts Up" class="progress-bar progress-bar-success quickinfo" role="progressbar" 
          data-toggle="tooltip" data-placement="bottom" 
-         style="line-height: 25px; width: {{pctUp}}%;">{{pctUp}}% Up</div>
+         style="line-height: 25px; width: {{h['pct_up']}}%;">{{h['pct_up']}}% Up</div>
 
-      <div title="{{hDown}} hosts Down" class="progress-bar progress-bar-danger quickinfo" 
+      <div title="{{h['nb_down']}} hosts Down" class="progress-bar progress-bar-danger quickinfo" 
          data-toggle="tooltip" data-placement="bottom" 
-         style="line-height: 25px; width: {{pctDown}}%;">{{pctDown}}% Down</div>
+         style="line-height: 25px; width: {{h['pct_down']}}%;">{{h['pct_down']}}% Down</div>
 
-      <div title="{{hUnreachable}} hosts Unreachable" class="progress-bar progress-bar-warning quickinfo" 
+      <div title="{{h['nb_unreachable']}} hosts Unreachable" class="progress-bar progress-bar-warning quickinfo" 
          data-toggle="tooltip" data-placement="bottom" 
-         style="line-height: 25px; width: {{pctUnreachable}}%;">{{pctUnreachable}}% Unreachable</div>
+         style="line-height: 25px; width: {{h['pct_unreachable']}}%;">{{h['pct_unreachable']}}% Unreachable</div>
 
-      <div title="{{hPending}} hosts Pending" class="progress-bar progress-bar-info quickinfo" 
+      <div title="{{h['nb_pending']}} hosts Pending" class="progress-bar progress-bar-info quickinfo" 
          data-toggle="tooltip" data-placement="bottom" 
-         style="line-height: 25px; width: {{pctPending}}%;">{{pctPending}}% Pending</div>
+         style="line-height: 25px; width: {{h['pct_pending']}}%;">{{h['pct_pending']}}% Pending</div>
 
-      <div title="{{hUnknown}} hosts Unknown" class="progress-bar progress-bar-info quickinfo" 
+      <div title="{{h['nb_unknown']}} hosts Unknown" class="progress-bar progress-bar-info quickinfo" 
          data-toggle="tooltip" data-placement="bottom" 
-         style="line-height: 25px; width: {{pctUnknown}}%;">{{pctUnknown}}% Unknown</div>
+         style="line-height: 25px; width: {{h['pct_unknown']}}%;">{{h['pct_unknown']}}% Unknown</div>
    </div>
    <div class="pull-right col-sm-2">
       <span class="btn-group pull-right">
@@ -93,22 +70,22 @@
         <h3>All hosts</h3>
         <span class="meta">
          <span class="{{'font-up' if hUp > 0 else 'font-greyed'}}">
-            {{!helper.get_fa_icon_state(cls='host', state='up')}}
+            {{!helper.get_fa_icon_state(cls='host', state='up', disabled=(not hUp))}}
             <span class="num">{{hUp}}</span>
          </span> 
           
          <span class="{{'font-unreachable' if hUnreachable > 0 else 'font-greyed'}}">
-            {{!helper.get_fa_icon_state(cls='host', state='unreachable')}} 
+            {{!helper.get_fa_icon_state(cls='host', state='unreachable', disabled=(not hUnreachable))}} 
             <span class="num">{{hUnreachable}}</span>
          </span> 
 
          <span class="{{'font-down' if hDown > 0 else 'font-greyed'}}">
-            {{!helper.get_fa_icon_state(cls='host', state='down')}} 
+            {{!helper.get_fa_icon_state(cls='host', state='down', disabled=(not hDown))}} 
             <span class="num">{{hDown}}</span>
          </span> 
 
          <span class="{{'font-unknown' if hUnknown > 0 else 'font-greyed'}}">
-            {{!helper.get_fa_icon_state(cls='host', state='unknown')}} 
+            {{!helper.get_fa_icon_state(cls='host', state='unknown', disabled=(not hUnknown))}} 
             <span class="num">{{hUnknown}}</span>
          </span> 
         </span>
@@ -168,22 +145,22 @@
                </h3>
                <span class="meta">
                   <span class="{{'font-up' if hUp > 0 else 'font-greyed'}}">
-                     {{!helper.get_fa_icon_state(cls='host', state='up')}}
+                     {{!helper.get_fa_icon_state(cls='host', state='up', disabled=(not hUp))}}
                      <span class="num">{{hUp}}</span>
                   </span> 
                    
                   <span class="{{'font-unreachable' if hUnreachable > 0 else 'font-greyed'}}">
-                     {{!helper.get_fa_icon_state(cls='host', state='unreachable')}} 
+                     {{!helper.get_fa_icon_state(cls='host', state='unreachable', disabled=(not hUnreachable))}} 
                      <span class="num">{{hUnreachable}}</span>
                   </span> 
 
                   <span class="{{'font-down' if hDown > 0 else 'font-greyed'}}">
-                     {{!helper.get_fa_icon_state(cls='host', state='down')}} 
+                     {{!helper.get_fa_icon_state(cls='host', state='down', disabled=(not hDown))}} 
                      <span class="num">{{hDown}}</span>
                   </span> 
 
                   <span class="{{'font-unknown' if hUnknown > 0 else 'font-greyed'}}">
-                     {{!helper.get_fa_icon_state(cls='host', state='unknown')}} 
+                     {{!helper.get_fa_icon_state(cls='host', state='unknown', disabled=(not hUnknown))}} 
                      <span class="num">{{hUnknown}}</span>
                   </span> 
                </span>

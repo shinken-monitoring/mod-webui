@@ -73,9 +73,9 @@ def get_all():
         end = start + step
 
     navi = app.helper.get_navi(total, start, step=step)
-    items = items[start:end]
+    pbs = items[start:end]
 
-    return {'app': app, 'pbs': items, 'user': user, 'navi': navi, 'search_string': search, 'bookmarks': app.get_user_bookmarks(user), 'bookmarksro': app.get_common_bookmarks(), 'sound': sound_pref, 'elts_per_page': elts_per_page}
+    return {'app': app, 'pbs': pbs, 'all_pbs': items, 'user': user, 'navi': navi, 'search_string': search, 'bookmarks': app.get_user_bookmarks(user), 'bookmarksro': app.get_common_bookmarks(), 'sound': sound_pref, 'elts_per_page': elts_per_page}
 
 
 def get_pbs_widget():
