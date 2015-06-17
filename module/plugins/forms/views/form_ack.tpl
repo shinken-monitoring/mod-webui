@@ -1,10 +1,10 @@
 <script type="text/javascript">
-  function submit_local_form() {
-    // Launch acknowledge request and bailout this modal view
-    do_acknowledge("{{name}}", $('#reason').val(), '{{user.get_name()}}');
-    start_refresh();
-    $('#modal').modal('hide');
-  }
+   function submit_local_form() {
+      // Launch acknowledge request and bailout this modal view
+      do_acknowledge("{{name}}", $('#reason').val(), '{{user.get_name()}}');
+      start_refresh();
+      $('#modal').modal('hide');
+   }
 </script>
 
 <div class="modal-dialog">

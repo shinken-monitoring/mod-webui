@@ -1,30 +1,21 @@
-%username = 'anonymous'
-%if user is not None: 
-%if hasattr(user, 'alias'):
-%	username = user.alias
-%else:
-%	username = user.get_name()
-%end
-%end
-
 <script type="text/javascript">
-	function submit_local_form() {
-    $( "select option:selected" ).each(function() {
-      change_custom_var("{{name}}", $(this).text(), $('#output').val());
-    });
-		$('#modal').modal('hide')
-	}
+   function submit_local_form() {
+      $( "select option:selected" ).each(function() {
+         change_custom_var("{{name}}", $(this).text(), $('#output').val());
+      });
+      $('#modal').modal('hide')
+   }
 </script>
 
 
 <div class="modal-dialog">
-	<div class="modal-content">
-		<div class="modal-header">
-			<a class="close" data-dismiss="modal">×</a>
-			<h3>Change custom variable for {{name}}</h3>
-		</div>
-		
-		<div class="modal-body">
+   <div class="modal-content">
+      <div class="modal-header">
+         <a class="close" data-dismiss="modal">×</a>
+         <h3>Change custom variable for {{name}}</h3>
+      </div>
+      
+      <div class="modal-body">
       <div class="row">
         <form name="input_form" role="form">
           <div class="form-group">
@@ -54,6 +45,6 @@
           <div class="col-sm-12" style="margin-top: 10px;"><a href="javascript:submit_local_form();" class="btn btn-primary btn-lg btn-block"> <i class="fa fa-save"></i> Submit</a></div>
         </form>
       </div>
-		</div>
-	</div>
+      </div>
+   </div>
 </div>

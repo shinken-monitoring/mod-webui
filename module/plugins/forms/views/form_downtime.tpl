@@ -11,8 +11,7 @@
    }
 
 
-   $(function() {
-  
+   $('#modal').on('shown.bs.modal', function () {
       $("#dtr_downtime").daterangepicker({
          ranges: {
             '2 hours':       [moment(), moment().add('hours', 2)],
@@ -61,7 +60,7 @@
       <div class="modal-body">
          <form name="input_form" role="form">
             <div class="form-group">
-               <!--<label for="dtr_downtime">Downtime date range</label>-->
+               <label for="dtr_downtime">Downtime date range</label>
                <div class="input-group">
                   <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
                   <input type="text" name="dtr_downtime" id="dtr_downtime" class="form-control" />

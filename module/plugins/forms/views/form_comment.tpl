@@ -1,10 +1,11 @@
 <script type="text/javascript">
-  function submit_local_form() {
-    // Launch acknowledge request and bailout this modal view
-    add_comment("{{name}}", '{{user.get_name()}}', $('#comment').val());
-    start_refresh();
-    $('#modal').modal('hide');
-  }
+   function submit_local_form() {
+      // Launch add a comment request and bailout this modal view
+      // add_comment("{{name}}", '{{user.get_name()}}', $('#comment').val());
+      add_comment("{{name}}", '{{user.get_name()}}', encodeURI( $('#comment').val() ));
+      start_refresh();
+      $('#modal').modal('hide');
+   }
 </script>
 
 <div class="modal-dialog">

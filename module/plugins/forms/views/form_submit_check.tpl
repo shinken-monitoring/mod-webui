@@ -1,8 +1,8 @@
 <script type="text/javascript">
-  function submit_local_form() {
-    submit_check("{{name}}", $('#return_code').val(), $('#output').val());
-    $('#modal').modal('hide')
-  }
+   function submit_local_form() {
+      submit_check("{{name}}", $('#return_code').val(), $('#output').val());
+      $('#modal').modal('hide')
+   }
 </script>
 
 
