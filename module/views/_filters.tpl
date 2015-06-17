@@ -6,9 +6,16 @@
   <div class="dropdown form-group text-left">
     <button class="btn btn-default dropdown-toggle" type="button" id="filters_menu" data-toggle="dropdown" aria-expanded="true"><i class="fa fa-filter"></i><span class="hidden-sm hidden-xs hidden-md"> Filters</span> <span class="caret"></span></button>
     <ul class="dropdown-menu" role="menu" aria-labelledby="filters_menu">
-      <li role="presentation"><a role="menuitem" tablindex="-1" href="?search=ack:true">Acknowledged</a></li>
-      <li role="presentation"><a role="menuitem" tablindex="-1" href="?search=isnot:UP isnot:OK isnot:PENDING ack:false downtime:false">Problems</a></li>
-      <li role="presentation"><a role="menuitem" tablindex="-1" href="#" data-toggle="modal" data-target="#searchSyntax"><strong><i class="fa fa-question-circle"></i> Search syntax</strong></a></li>
+      <li role="presentation"><a role="menuitem" href="?search=">All resources</a></li>
+      <li role="presentation"><a role="menuitem" href="?search=ack:true">Acknowledged problems</a></li>
+      <li role="presentation"><a role="menuitem" href="?search=downtime:true">Scheduled downtimes</a></li>
+      <li role="presentation"><a role="menuitem" href="?search=bi:4">BI : Top business</a></li>
+      <li role="presentation"><a role="menuitem" href="?search=bi:3">BI : High</a></li>
+      <li role="presentation"><a role="menuitem" href="?search=bi:2">BI : Normal</a></li>
+      <li role="presentation"><a role="menuitem" href="?search=bi:1">BI : Low</a></li>
+      <li role="presentation"><a role="menuitem" href="?search=bi:0">BI : Null</a></li>
+      <li role="presentation" class="divider"></li>
+      <li role="presentation"><a role="menuitem" href="#" data-toggle="modal" data-target="#searchSyntax"><strong><i class="fa fa-question-circle"></i> Search syntax</strong></a></li>
     </ul>
   </div>
   <div class="form-group">
