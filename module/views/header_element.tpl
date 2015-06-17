@@ -40,42 +40,34 @@
 
   <!-- Right buttons ... -->
   <ul class="nav navbar-top-links navbar-right">
-    <li class="hosts-overall-state hidden-xs" id="hosts-overall-state">
+    <li class="hidden-xs hosts-overall-state">
        <a href="/all?search=type:host isnot:OK" class="quickinfo" data-original-title='Hosts'>
-         <div class="badgers">
          <i class="fa fa-2x fa-server"></i>
-         %host_state = app.get_percentage_hosts_state(app.get_user_auth(), False)
-         <span class="badger badger-top alert-inverse">{{app.get_nb_hosts(app.get_user_auth())}}</span>
-         <span class="badger badger-bottom alert-{{'critical' if host_state <= 33 else 'warning' if host_state <= 66 else 'ok'}}">{{host_state}}%</span>
-         </div>
+         <span class="label-top">
+            <span class="label label-as-badge label-success label-left">{{app.get_number_hosts_state(app.get_user_auth(), True)}}</span>
+            <span class="label label-as-badge label-danger label-right">{{app.get_number_hosts_state(app.get_user_auth(), False)}}</span>
+         </span>
+         <span class="label-bottom">
+            %host_state = app.get_percentage_hosts_state(app.get_user_auth(), False)
+            <span class="label label-as-badge label-{{'danger' if host_state <= 33 else 'warning' if host_state <= 66 else 'success'}}">{{host_state}}%</span>
+         </span>
        </a>
     </li>
    
-    <li class="services-overall-state hidden-xs" id="services-overall-state">
-       <a href="/all?search=type:service isnot:OK" class="quickinfo">
-         <div class="badgers">
+    <li class="hidden-xs services-overall-state">
+       <a href="/all?search=type:service isnot:OK" class="quickinfo" data-original-title='Services'>
          <i class="fa fa-2x fa-bars"></i>
-         %service_state = app.get_percentage_service_state(app.get_user_auth(), False)
-         <span class="badger badger-top alert-inverse">{{app.get_nb_services(app.get_user_auth())}}</span>
-         <span class="badger badger-bottom alert-{{'critical' if service_state <= 33 else 'warning' if service_state <= 66 else 'ok'}}">{{service_state}}%</span>
-         </div>
+         <span class="label-top">
+            <span class="label label-as-badge label-success label-left">{{app.get_number_service_state(app.get_user_auth(), True)}}</span>
+            <span class="label label-as-badge label-danger label-right">{{app.get_number_service_state(app.get_user_auth(), False)}}</span>
+         </span>
+         <span class="label-bottom">
+            %service_state = app.get_percentage_service_state(app.get_user_auth(), False)
+            <span class="label label-as-badge label-{{'danger' if host_state <= 33 else 'warning' if host_state <= 66 else 'success'}}">{{service_state}}%</span>
+         </span>
        </a>
     </li>
     
-    <!-- :TODO:maethor:150608: badgers mess up with the display of the navbar 
-    %if app:
-    %overall_state = app.get_overall_state(app.get_user_auth())
-    <li class="hidden-sm hidden-xs hidden-md">
-      <a href="/impacts" class="quickinfo" data-original-title='Impacts'><i class="fa fa-bolt"></i><span class="pulsate badger badger-{{'ok' if overall_state == 0 else 'warning' if overall_state == 1 else 'critical'}}">{{app.get_overall_state_problems_count(app.get_user_auth())}}</span> </a>
-    </li>
-
-    %overall_itproblem = app.get_overall_it_state(app.get_user_auth())
-    <li class="hidden-sm hidden-xs hidden-md">
-      <a href="/problems" class="quickinfo" data-original-title='IT Problems'><i class="fa fa-ambulance"></i><span class="pulsate badger badger-{{'ok' if overall_itproblem == 0 else 'warning' if overall_itproblem == 1 else 'critical'}}">{{app.get_overall_it_problems_count(user, False)}}</span> </a>
-    </li>
-    %end
-    -->
-
     <li><a class="quickinfo" data-original-title='Currently' href="/dashboard/currently"><i class="fa fa-eye"></i></a></li>
 
     <!-- User info -->

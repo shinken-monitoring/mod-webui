@@ -5,6 +5,8 @@
 *    Gregory Starck, g.starck@gmail.com
 *    Hartmut Goebel, h.goebel@goebel-consult.de
 *    Andreas Karfusehr, andreas@karfusehr.de
+*    Frederic Mohier, frederic.mohier@gmail.com
+*    Guillaume Subiron, maethor@subiron.org
 *
 * This file is part of Shinken.
 *
@@ -61,38 +63,72 @@ html, body {
   padding: 1px;
   margin: 0;
 }
-nav .badger-left {
-  left: -50%;
-}
-nav .badger-right {
-  left: -50%;
-}
-nav .badgers {
-   text-align: center;
-   margin-left: 8px;
-   margin-right: 8px;
-}
-nav .badgers i {
-   position: absolute;
-   display: inline-block
-}
-nav .badger-top {
-   /* Bootstrap standard badger
-   top: -15px;
-   right: 8px;
-   */
-   top: -15px;
-   display: inline-block
-}
-nav .badger-bottom {
-   top: +15px;
-   display: inline-block
-}
 
+
+
+/* Hosts / services states
+------------------------- */
 .hosts-overall-state, .services-overall-state {
-   margin-right: -40px;
+   height: 50px;
 }
 
+ul.navbar-right{
+   height: 50px;
+}
+
+.label {
+   font-size: 0.6em;
+}
+
+.label-right {
+  -webkit-border-top-left-radius: 0px;
+  -moz-border-top-left-radius: 0px;
+  border-top-left-radius: 0px;
+  -webkit-border-bottom-left-radius: 0px;
+  -moz-border-bottom-left-radius: 0px;
+  border-bottom-left-radius: 0px;
+  margin-left:-5px;
+  padding-left:5px;
+}
+
+.label-left {
+  -webkit-border-top-right-radius: 0px;
+  -moz-border-top-right-radius: 0px;
+  border-top-right-radius: 0px;
+  -webkit-border-bottom-right-radius: 0px;
+  -moz-border-bottom-right-radius: 0px;
+  border-bottom-right-radius: 0px;
+  margin-right:0px;
+  padding-right:5px;
+}
+
+.label-middle {
+  -webkit-border-radius: 0px;
+  -moz-border-radius: 0px;
+  border-radius: 0px;
+  margin-right:0px;
+  margin-left:0px;
+  padding-right:5px;
+  padding-left:5px;
+}
+
+.label-top {
+   position: absolute;
+   top: 0px;
+   left: 0;
+}
+
+.label-bottom {
+   position: absolute;
+   top: 25px;
+   left: 0;
+}
+
+
+
+/*
+ * Responsive input field in the navigation bar
+ */
 @media (min-width: 768px) {
     input#search {
         width: 230px;
