@@ -239,3 +239,7 @@
    </div>
 
 </div>
+
+<script type="text/javascript">
+   set_expand_outputs();
+</script>
