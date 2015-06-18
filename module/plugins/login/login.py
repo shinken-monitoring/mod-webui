@@ -59,7 +59,7 @@ def user_logout():
     else:
         app.response.set_cookie('user', '', secret=app.auth_secret, path='/')
         
-    logger.info("[WebUI] user '%s' logged out", user_name)
+    logger.info("[WebUI]  user '%s' signed out", user_name)
     app.bottle.redirect("/user/login")
     return {}
 
@@ -67,18 +67,16 @@ def user_logout():
 def user_auth():
     login = app.request.forms.get('login', '')
     password = app.request.forms.get('password', '')
-    is_mobile = app.request.forms.get('is_mobile', '0')
-    logger.info("[WebUI]  user '%s' logging in ...", login)
+    logger.info("[WebUI]  user '%s' is signing in ...", login)
+    
+    # Tries to authenticate user
     is_authenticated = app.check_authentication(login, password)
-
     if is_authenticated:
         app.response.set_cookie('user', login, secret=app.auth_secret, path='/')
-        logger.info("[WebUI]  user '%s' logged in", login)
-        if is_mobile == '1':
-            app.bottle.redirect("/mobile/main")
-        else:
-            app.bottle.redirect("/dashboard")
+        logger.info("[WebUI]  user '%s' signed in", login)
+        app.bottle.redirect("/dashboard")
     else:
+        logger.warning("[WebUI]  user '%s' access denied", login)
         app.bottle.redirect("/user/login?error=Invalid user or Password")
 
     return {'app': app, 'is_auth': is_authenticated}
@@ -111,25 +109,10 @@ def get_root():
         app.bottle.redirect("/user/login")
 
 
-def login_mobile():
-    user = app.get_user_auth()
-    if user:
-        app.bottle.redirect("/mobile/main")
-
-    err = app.request.GET.get('error', None)
-    login_text = app.login_text
-    company_logo = app.company_logo
-
-    return {'error': err, 'login_text': login_text, 'company_logo': company_logo}
-
-pages = { user_login: {'routes': ['/user/login', '/user/login/'],
-                         'view': 'login', 'static': True},
-          user_login_redirect: {'routes': ['/login'], 'static': True},
-          user_auth: {'routes': ['/user/auth'],
-                        'view': 'auth',
-                        'method': 'POST', 'static': True},
-          user_logout: {'routes': ['/user/logout', '/logout'], 'static': True},
-          get_root: {'routes': ['/'], 'static': True},
-          login_mobile: {'routes': ['/mobile', '/mobile/'],
-                    'view': 'login_mobile', 'static': True}
-          }
+pages = { 
+    user_login: {'routes': ['/user/login', '/user/login/'], 'view': 'login', 'static': True},
+    user_login_redirect: {'routes': ['/login'], 'static': True},
+    user_auth: {'routes': ['/user/auth'], 'method': 'POST', 'static': True},
+    user_logout: {'routes': ['/user/logout', '/logout'], 'static': True},
+    get_root: {'routes': ['/'], 'static': True},
+}
