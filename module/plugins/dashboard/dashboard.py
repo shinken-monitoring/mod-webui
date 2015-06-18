@@ -77,10 +77,7 @@ def get_page():
     return {'app': app, 'user': user, 'widgets': widgets}
 
 def get_currently():
-    # Allow anonymous access
-    user = app.get_user_auth(True)
-    if not user:
-        app.bottle.redirect("/user/login?error=No anonymous login allowed.")
+    user = app.check_user_authentication()
 
     return {'app': app, 'user': user}
 
