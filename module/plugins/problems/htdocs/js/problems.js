@@ -236,6 +236,13 @@ $(document).ready(function(){
    $('[data-toggle="popover"]').popover({
       html: true,
       template: '<div class="popover img-popover"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
-      trigger: "hover",
-   })
+   });
+
+   $('[id^=details-]').on('show.bs.collapse', function () {
+       $(this).closest('tr').prev().find('.output').removeClass("ellipsis", {duration:200});
+   });
+
+   $('[id^=details-]').on('hide.bs.collapse', function () {
+       $(this).closest('tr').prev().find('.output').addClass("ellipsis", {duration:200});
+   });
 });

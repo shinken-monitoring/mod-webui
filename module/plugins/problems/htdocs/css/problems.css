@@ -24,3 +24,7 @@ td, th {
 td .progress {
     margin-bottom:0px !important;
 }
+
+td .ellipsis {
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}

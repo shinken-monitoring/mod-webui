@@ -73,15 +73,15 @@
    <!--</div>-->
     <div class="panel-body">
      <h3 class="text-center">Business impact: {{!helper.get_business_impact_text(business_impact, text=True)}}</strong></h3>
-    <table class="table table-condensed">
+    <table class="table table-condensed" style="table-layout:fixed;width:100%;">
       <thead><tr>
-          <th width="16px"></th>
-          <th width="16px"></th>
+          <th width="20px"></th>
+          <th width="40px"></th>
           <th width="200px">Host</th>
           <th width="200px">Service</th>
           <th width="90px">State</th>
           <th width="90px">Duration</th>
-          <th class="hidden-sm hidden-xs">Output</th>
+          <th class="hidden-sm hidden-xs" width="100%">Output</th>
       </tr></thead>
 
       <tbody>
@@ -122,10 +122,10 @@
               %now = time.time()
               %graphs = app.get_graph_uris(pb, now-4*3600, now, 'dashboard')
               %if len(graphs) > 0:
-                <a role="button" tabindex="0" data-toggle="popover" title="{{ pb.get_full_name() }}" data-content="<img src={{ graphs[0]['img_src'] }} width='600px' height='200px'>" data-placement="left">{{!helper.get_perfometer(pb)}}</a>
+                <a role="button" tabindex="0" data-toggle="popover" title="{{ pb.get_full_name() }}" data-content="<img src={{ graphs[0]['img_src'] }} width='600px' height='200px'>" data-trigger="hover" data-placement="left">{{!helper.get_perfometer(pb)}}</a>
               %end
             </div>
-            <div class="">
+            <div class="ellipsis output" id="output-{{pb.get_full_name()}}">
               {{ pb.output }}
             </div>
           </td>
