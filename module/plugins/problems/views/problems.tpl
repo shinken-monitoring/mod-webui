@@ -68,11 +68,14 @@
    %from itertools import groupby
    %pbs = sorted(pbs, key=lambda x: x.business_impact, reverse=True)
    %for business_impact, bi_pbs in groupby(pbs, key=lambda x: x.business_impact):
+      %# Sort problems, hosts first, then orders by state_id and by host
+      %bi_pbs = sorted(sorted(sorted(bi_pbs, key=lambda x: x.host_name), key=lambda x: x.state_id, reverse=True), key=lambda x: x.__class__.my_type)
+      %hosts = groupby(bi_pbs, key=lambda x: x.host_name)
  <div class="panel panel-default">
    <!--<div class="panel-heading">-->
    <!--</div>-->
     <div class="panel-body">
-     <h3 class="text-center">Business impact: {{!helper.get_business_impact_text(business_impact, text=True)}}</strong></h3>
+      <h3 class="text-center">Business impact: {{!helper.get_business_impact_text(business_impact, text=True)}} <i class="pull-right small">{{len(list(bi_pbs))}} elements</i></h3>
     <table class="table table-condensed" style="table-layout:fixed;width:100%;">
       <thead><tr>
           <th width="20px"></th>
@@ -85,9 +88,6 @@
       </tr></thead>
 
       <tbody>
-      %# Sort problems, hosts first, then orders by state_id and by host
-      %bi_pbs = sorted(sorted(sorted(bi_pbs, key=lambda x: x.host_name), key=lambda x: x.state_id, reverse=True), key=lambda x: x.__class__.my_type)
-      %hosts = groupby(bi_pbs, key=lambda x: x.host_name)
       %for host_name, host_pbs in hosts:
       %for i, pb in enumerate(host_pbs):
           
@@ -239,3 +239,7 @@
    </div>
 
 </div>
+
+<script type="text/javascript">
+   set_expand_outputs();
+</script>
