@@ -194,19 +194,18 @@ Invalid element name
          <div class="pull-right">&nbsp;&nbsp;</div>
          %end
          %if hasattr(elt, 'get_host_tags') and len(elt.get_host_tags()) != 0:
-         <div id="host_tags" class="btn-group pull-right">
-            <script>
-               %i=0
-               %for t in sorted(elt.get_host_tags()):
-                  var a{{i}} = $('<a href="/all?search=htag:{{t}}"/>').appendTo($('#host_tags'));
-                  $('<img />')
-                     .attr({ 'src': '/tag/{{t.lower()}}', 'alt': '{{t.lower()}}', 'title': 'Tag: {{t.lower()}}' })
-                     .css({height: "24px"})
-                     .appendTo(a{{i}});
-                  var span = $("<span/>").append('&nbsp;').appendTo($('#host_tags'));
-                  %i=i+1
-               %end
-            </script>
+         <div class="btn-group pull-right">
+            %i=0
+            %for t in sorted(elt.get_host_tags()):
+               <a href="/all?search=htag:{{t}}"/>
+                  %if app.tag_as_image:
+                  <img src="/tag/{{t.lower()}}" alt="{{t.lower()}}" =title="Tag: {{t.lower()}}" style="height: 24px"></img>
+                  %else:
+                  <button class="btn btn-default btn-xs"><i class="fa fa-tag"></i> {{t.lower()}}</button>
+                  %end
+               </a>
+               %i=i+1
+            %end
          </div>
          %end
          %if hasattr(elt, 'get_service_tags') and len(elt.get_service_tags()) != 0:

@@ -126,6 +126,8 @@ class Webui_broker(BaseModule, Daemon):
         self.max_output_length = int(getattr(modconf, 'max_output_length', '100'))
         # TODO : common preferences
         self.refresh_period = int(getattr(modconf, 'refresh_period', '60'))
+        # Use element tag as image or use text
+        self.tag_as_image = bool(getattr(modconf, 'tag_as_image', False))
         
         # Manage user's ACL
         self.manage_acl = to_bool(getattr(modconf, 'manage_acl', '1'))
