@@ -355,6 +355,41 @@ class Helper(object):
         return my
 
 
+    def get_synthesis(self, elts):
+        h = dict()
+        hosts = [i for i in elts if i.__class__.my_type == 'host']
+        h['elts'] = hosts
+        h['nb_elts'] = len(hosts)
+        for state in 'up', 'down', 'unreachable', 'pending':
+            h[state] = [i for i in hosts if i.state == state.upper()]
+        h['unknown'] = list(set(h['elts']) - set(h['up']) - set(h['down']) - set(h['unreachable']) - set(h['pending']))
+        h['ack'] = [i for i in hosts if i.problem_has_been_acknowledged]
+        h['downtime'] = [i for i in hosts if i.in_scheduled_downtime]
+        for state in 'up', 'down', 'unreachable', 'pending', 'unknown', 'ack', 'downtime':
+            h['nb_' + state] = len(h[state])
+            if hosts:
+                h['pct_' + state] = round(100.0 * h['nb_' + state] / h['nb_elts'], 2)
+            else:
+                h['pct_' + state] = 0
+
+        s = dict()
+        services = [i for i in elts if i.__class__.my_type == 'service']
+        s['elts'] = services
+        s['nb_elts'] = len(services)
+        for state in 'ok', 'critical', 'warning', 'pending', 'unknown':
+            s[state] = [i for i in services if i.state == state.upper()]
+        s['ack'] = [i for i in services if i.problem_has_been_acknowledged]
+        s['downtime'] = [i for i in services if i.in_scheduled_downtime]
+        for state in 'ok', 'critical', 'warning', 'unknown', 'pending', 'ack', 'downtime':
+            s['nb_' + state] = len(s[state])
+            if services:
+                s['pct_' + state] = round(100.0 * s['nb_' + state] / s['nb_elts'], 2)
+            else:
+                s['pct_' + state] = 0
+
+        return {'hosts': h, 'services': s}
+
+
     # Return a button with text, image, id and class (if need)
 ###
 ###
@@ -635,7 +670,7 @@ class Helper(object):
         else:
             return '/static/images/icons/state_%s.png' % ico
 
-    def get_fa_icon_state(self, obj=None, cls='host', state='UP'):
+    def get_fa_icon_state(self, obj=None, cls='host', state='UP', disabled=False):
         state = obj.state.upper() if obj is not None else state.upper()
         flapping = (obj and obj.is_flapping) or state=='FLAPPING'
         ack = (obj and obj.problem_has_been_acknowledged) or state=='ACK'
@@ -664,10 +699,10 @@ class Helper(object):
 
         cls = obj.__class__.my_type if obj is not None else cls
 
-        back = '''<i class="fa fa-%s fa-stack-2x font-%s"></i>''' % (icons[cls]['FLAPPING'] if flapping else 'circle', state.lower())
+        back = '''<i class="fa fa-%s fa-stack-2x font-%s"></i>''' % (icons[cls]['FLAPPING'] if flapping else 'circle', state.lower() if not disabled else 'greyed')
         title = "%s is %s" % (cls, state)
         if flapping:
-            icon_color = 'font-' + state.lower()
+            icon_color = 'font-' + state.lower() if not disabled else 'font-greyed'
             title += " and is flapping"
         else:
             icon_color = 'fa-inverse'
@@ -683,6 +718,18 @@ class Helper(object):
         icon_text = '''<span class="fa-stack" title="%s">%s%s</span>''' % (title, back, front)
 
         return icon_text
+
+    def get_fa_icon_state_and_label(self, obj=None, cls='host', state='UP', label="", disabled=False):
+        color = state.lower() if not disabled else 'greyed'
+        return '''
+          <span class="font-%s">
+             %s
+             <span class="num">%s</span>
+          </span> 
+          ''' % (color,
+                 self.get_fa_icon_state(obj=obj, cls=cls, state=state, disabled=disabled),
+                 label)
+
 
     # :TODO:maethor:150609: Rewrite this function
     # Get

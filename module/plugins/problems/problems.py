@@ -23,43 +23,26 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 
-from shinken.misc.filter  import only_related_to
+from shinken.misc.filter import only_related_to
 from shinken.misc.sorter import hst_srv_sort
-from shinken.objects.service import Service
 from shinken.log import logger
 
-### Will be populated by the UI with it's own value
+# Will be populated by the UI with it's own value
 app = None
 
 import time
 import re
-import json
 
 
-# Our page
 def get_page():
     app.bottle.redirect("/all?search=isnot:UP isnot:OK isnot:PENDING ack:false downtime:false")
 
 
-# Our page
 def get_all():
-    return get_view()
-
-
-# Our View code. We will get different data from all and /problems
-# but it's mainly filtering changes
-def get_view(default_search=""):
     user = app.check_user_authentication()
 
     # Fetch elements per page preference for user, default is 25
     elts_per_page = app.get_user_preference(user, 'elts_per_page', 25)
-
-    # Fetch toolbar preference for user, default is 'show'
-    toolbar_pref = app.get_user_preference(user, 'toolbar', 'show')
-    toolbar = app.request.GET.get('toolbar', '')
-    if toolbar != toolbar_pref and toolbar in ['show', 'hide']:
-        app.set_user_preference(user, 'toolbar', toolbar)
-        toolbar_pref = toolbar
 
     # Fetch sound preference for user, default is 'no'
     sound_pref = app.get_user_preference(user, 'sound', 'yes' if app.play_sound else 'no')
@@ -73,178 +56,8 @@ def get_view(default_search=""):
     start = int(app.request.GET.get('start', '0'))
     end = int(app.request.GET.get('end', start + step))
 
-    items = app.get_all_hosts_and_services(user, get_impacts=False)
-
-    logger.debug("[%s] problems", app.name)
-    for i in items:
-        logger.debug("[%s] problems, item: %s", app.name, i.get_full_name())
-        
-    # Filter with the user interests
-    # my_items = only_related_to(items, user)
-    my_items = items
-
-    # Check for related host contacts
-    if not user.is_admin:
-      for i in items:
-        if isinstance(i,Service):
-          if user in i.host.contacts:
-            my_items.append(i)
-            continue
-
-    items = my_items
-    logger.debug("[%s] problems after user filtering", app.name)
-    for i in items:
-        logger.debug("[%s] problems, item: %s", app.name, i.get_full_name())
-        
-
-    # We will keep a trace of our filters
-    # :TODO:maethor:150614: probably useless
-    filters = {}
-    ts = ['hst_srv', 'hg', 'realm', 'htag', 'stag', 'ack', 'downtime', 'crit', 'is', 'isnot']
-    for t in ts:
-        filters[t] = []
-
-    search = app.request.GET.getall('search') or default_search
-
-    if isinstance(search, basestring):
-        search = [search]
-
-    search = [s for _s in search for s in _s.split(' ')]
-
-
-    # Ok, if needed, apply the search filter
-    for s in search:
-        s = s.strip()
-        if not s:
-            continue
-
-        logger.debug("[%s] problems, searching for: %s in %d items", app.name, s, len(items))
-
-        elts = s.split(':', 1)
-        t = 'hst_srv'
-        if len(elts) > 1:
-            t = elts[0]
-            s = elts[1]
-
-        logger.debug("[%s] problems, searching for type %s, pattern: %s", app.name, t, s)
-        if not t in filters:
-            filters[t] = []
-        filters[t].append(s)
-
-        if t == 'hst_srv':
-            # We compile the pattern
-            pat = re.compile(s, re.IGNORECASE)
-            new_items = []
-            for i in items:
-                if pat.search(i.get_full_name()):
-                    new_items.append(i)
-                else:
-                    for j in (i.impacts + i.source_problems):
-                        if pat.search(j.get_full_name()):
-                            new_items.append(i)
-
-            items = new_items
-
-        if (t == 'hg' or t == 'hgroup') and s != 'all':
-            group = app.datamgr.get_hostgroup(s)
-            items = [i for i in items if group in i.get_hostgroups()]
-
-        if (t == 'sg' or t == 'sgroup') and s != 'all':
-            group = app.datamgr.get_servicegroup(s)
-            items = [i for i in items if group in i.get_servicegroups()]
-
-        if t == 'realm':
-            r = app.datamgr.get_realm(s)
-            items = [i for i in items if i.get_realm() == r]
-
-        if t == 'htag' and s != 'all':
-            items = [i for i in items if s in i.get_host_tags()]
-
-        if t == 'stag' and s != 'all':
-            items = [i for i in items if i.__class__.my_type == 'service' and s in i.get_service_tags()]
-
-        if t == 'type':
-            items = [i for i in items if i.__class__.my_type == s]
-
-        if t == 'bp' or t == 'bi':
-            if s.startswith('>='):
-                items = [i for i in items if i.business_impact >= int(s[2:])]
-            elif s.startswith('<='):
-                items = [i for i in items if i.business_impact <= int(s[2:])]
-            elif s.startswith('>'):
-                items = [i for i in items if i.business_impact > int(s[1:])]
-            elif s.startswith('<'):
-                items = [i for i in items if i.business_impact < int(s[1:])]
-            else:
-                if s.startswith('='):
-                    s = s[1:]
-                items = [i for i in items if i.business_impact == int(s)]
-
-        if t == 'ack':
-            if s == 'false' or s == 'no':
-                # First look for hosts, so ok for services, but remove problem_has_been_acknowledged elements
-                items = [i for i in items if i.__class__.my_type == 'service' or not i.problem_has_been_acknowledged]
-                # Now ok for hosts, but look for services, and service hosts
-                items = [i for i in items if i.__class__.my_type == 'host' or (not i.problem_has_been_acknowledged and not i.host.problem_has_been_acknowledged)]
-            if s == 'true' or s == 'yes':
-                # First look for hosts, so ok for services, but remove problem_has_been_acknowledged elements
-                items = [i for i in items if i.__class__.my_type == 'service' or i.problem_has_been_acknowledged]
-                # Now ok for hosts, but look for services, and service hosts
-                items = [i for i in items if i.__class__.my_type == 'host' or (i.problem_has_been_acknowledged or i.host.problem_has_been_acknowledged)]
-
-        if t == 'downtime':
-            if s == 'false' or s == 'no':
-                # First look for hosts, so ok for services, but remove problem_has_been_acknowledged elements
-                items = [i for i in items if i.__class__.my_type == 'service' or not i.in_scheduled_downtime]
-                # Now ok for hosts, but look for services, and service hosts
-                items = [i for i in items if i.__class__.my_type == 'host' or (not i.in_scheduled_downtime and not i.host.in_scheduled_downtime)]
-            if s == 'true' or s == 'yes':
-                # First look for hosts, so ok for services, but remove problem_has_been_acknowledged elements
-                items = [i for i in items if i.__class__.my_type == 'service' or i.in_scheduled_downtime]
-                # Now ok for hosts, but look for services, and service hosts
-                items = [i for i in items if i.__class__.my_type == 'host' or (i.in_scheduled_downtime or i.host.in_scheduled_downtime)]
-
-        if t == 'crit':
-            items = [i for i in items if (i.__class__.my_type == 'service' and i.state_id == 2) or (i.__class__.my_type == 'host' and i.state_id == 1)]
-
-        # :TODO:maethor:150604: Would be nice to have is:downtime and is:ack, but I don't want to duplicate code.
-        if t == 'is':
-            if len(s) == 1:
-                items = [i for i in items if i.state_id == int(s)]
-            else:
-                items = [i for i in items if i.state == s.upper()]
-
-        if t == 'isnot':
-            if len(s) == 1:
-                items = [i for i in items if i.state_id != int(s)]
-            else:
-                items = [i for i in items if i.state != s.upper()]
-
-
-
-        logger.debug("[%s] problems, found %d elements for type %s, pattern: %s", app.name, len(items), t, s)
-
-
-    # :TODO:maethor:150604: Cleanup this
-    # If we are in the /problems and we do not have an ack filter
-    # we apply by default the ack:false one
-#    if page == 'problems' and len(filters['ack']) == 0:
-#        # First look for hosts, so ok for services, but remove problem_has_been_acknowledged elements
-#        items = [i for i in items if i.__class__.my_type == 'service' or not i.problem_has_been_acknowledged]
-#        # Now ok for hosts, but look for services, and service hosts
-#        items = [i for i in items if i.__class__.my_type == 'host' or (not i.problem_has_been_acknowledged and not i.host.problem_has_been_acknowledged)]
-
-    # If we are in the /problems and we do not have an downtime filter
-    # we apply by default the downtime:false one
-#    if page == 'problems' and len(filters['downtime']) == 0:
-#        # First look for hosts, so ok for services, but remove problem_has_been_acknowledged elements
-#        items = [i for i in items if i.__class__.my_type == 'service' or not i.in_scheduled_downtime]
-#        # Now ok for hosts, but look for services, and service hosts
-#        items = [i for i in items if i.__class__.my_type == 'host' or (not i.in_scheduled_downtime and not i.host.in_scheduled_downtime)]
-
-    logger.debug("[%s] problems after search filtering", app.name)
-    for i in items:
-        logger.debug("[%s] problems, item: %s, %d, %d", app.name, i.get_full_name(), i.business_impact, i.state_id)
+    search = ' '.join(app.request.GET.getall('search')) or ""
+    items = app.search_hosts_and_services(search, user, get_impacts=False)
 
     # Now sort it!
     items.sort(hst_srv_sort)
@@ -260,12 +73,11 @@ def get_view(default_search=""):
         end = start + step
 
     navi = app.helper.get_navi(total, start, step=step)
-    items = items[start:end]
+    pbs = items[start:end]
 
-    return {'app': app, 'pbs': items, 'user': user, 'navi': navi, 'search_string': ' '.join(search), 'filters': filters, 'bookmarks': app.get_user_bookmarks(user), 'bookmarksro': app.get_common_bookmarks(), 'toolbar': toolbar_pref, 'sound': sound_pref, 'elts_per_page': elts_per_page }
+    return {'app': app, 'pbs': pbs, 'all_pbs': items, 'user': user, 'navi': navi, 'search_string': search, 'bookmarks': app.get_user_bookmarks(user), 'bookmarksro': app.get_common_bookmarks(), 'sound': sound_pref, 'elts_per_page': elts_per_page}
 
 
-# Our page
 def get_pbs_widget():
     user = app.check_user_authentication()
 
@@ -323,7 +135,6 @@ def get_pbs_widget():
             }
 
 
-# Our page
 def get_last_errors_widget():
     user = app.check_user_authentication()
 

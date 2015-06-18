@@ -247,7 +247,11 @@ ul.navbar-right a.quickinfo{
   color: #49afcd !important;
 }
 
-.font-greyed, .font-ack, .font-downtime {
+.font-ack, .font-downtime {
+  color: #777 !important;
+}
+
+.font-greyed {
   color: #ccc !important;
 }
 
