@@ -1343,7 +1343,7 @@ Invalid element name
                <script language="javascript">
                function setHTML(html,start) {
                   <!-- change the content of the div --!>
-                  $("real_graphs").innerHTML=html;
+                  $("#real_graphs").html(html);
 
                   <!-- and call the jcrop javascript --!>
                   $('.jcropelt').Jcrop({
