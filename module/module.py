@@ -787,12 +787,12 @@ class Webui_broker(BaseModule, Daemon):
 
     def can_see_this_elt(self, elt):
         user = self.get_user_auth()
-        elt_cg = map(str.strip, getattr(elt, 'contact_groups').split(','))
+        elt_cg = getattr(elt, 'contact_groups').split(',')
         cg_users = []
 
         # Compile a users list with all contacts in these contactgroups
         for cg in elt_cg:
-            cg_users = cg_users + self.datamgr.get_contactgroup(cg).get_contacts()
+            cg_users = cg_users + self.datamgr.get_contactgroup(cg.strip()).get_contacts()
 
         if (self.manage_acl and user in cg_users) or user.is_admin:
             return True
