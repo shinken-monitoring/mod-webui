@@ -787,7 +787,7 @@ class Webui_broker(BaseModule, Daemon):
 
     def can_see_this_elt(self, elt):
         user = self.get_user_auth()
-        elt_cg = getattr(elt, 'contact_groups')
+        elt_cg = map(str.strip, getattr(elt, 'contact_groups').split(','))
         cg_users = []
 
         # Compile a users list with all contacts in these contactgroups
