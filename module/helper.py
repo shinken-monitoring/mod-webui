@@ -583,7 +583,7 @@ class Helper(object):
         t.sort(hst_srv_sort)
         return t
 
-    def get_link(self, obj, short=False, mobile=False):
+    def get_link(self, obj, short=False):
         if obj.__class__.my_type == 'service':
             if short:
                 name = obj.get_name()
@@ -594,6 +594,7 @@ class Helper(object):
 
         # if not service, host
         return '<a href="/host/%s"> %s </a>' % (obj.get_full_name(), obj.get_full_name())
+
 
     # Give only the /service/blabla or /host blabla string, like for buttons inclusion
     def get_link_dest(self, obj):
