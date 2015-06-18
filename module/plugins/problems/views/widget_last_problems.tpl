@@ -13,7 +13,6 @@
     <tbody style="border: none;">
       %for pb in pbs:
       <tr>
-        <td>
         <td align=center>
           {{!helper.get_fa_icon_state(pb)}}
         </td>
