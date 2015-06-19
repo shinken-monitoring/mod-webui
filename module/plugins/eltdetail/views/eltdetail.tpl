@@ -172,22 +172,8 @@ Invalid element name
             <button class="btn btn-info btn-xs dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>
             <!-- Do not know why but MacroResolver sometimes throws an exception !!! -->
             <ul class="dropdown-menu pull-right">
-               %action_urls = elt.action_url.split('|')
-               %if len(action_urls) > 0:
-                  %for triplet in action_urls:
-                  %try:
-                  %if len(triplet.split(',')) == 3:
-                     %( action_url, icon, alt) = triplet.split(',')
-                     <li><a href="{{ MacroResolver().resolve_simple_macros_in_string(action_url, elt.get_data_for_checks()) }}" target=_blank><img src={{icon}} alt="{{alt}}"></a></li>
-                  %else:
-                  %if len(triplet.split(',')) == 1:
-                    <li><a id="action-link" href="{{ MacroResolver().resolve_simple_macros_in_string(triplet, elt.get_data_for_checks()) }}" target=_blank>{{ MacroResolver().resolve_simple_macros_in_string(triplet, elt.get_data_for_checks()) }}</a></li>
-                  %end
-                  %end
-                  %except:
-                     <li><a id="action-link" href="{{ triplet }}" target=_blank>{{ triplet }}</a></li>
-                  %end
-                  %end
+               %for action_url in helper.get_element_actions_url(elt, default_title="Url", default_icon="globe", popover=True):
+               <li>{{!action_url}}</li>
                %end
             </ul>
          </div>
@@ -282,19 +268,8 @@ Invalid element name
 
                <dt>Notes:</dt>
                <dd>
-               %elt_notes = elt.notes.split('::')
-               %if len(elt_notes) > 1:
-                  %if elt.notes_url != '':
-                  <a href="{{ elt.notes_url }}" role="button" data-toggle="popover" data-html="true" title="{{ elt_notes[0] }}" data-content="{{ elt_notes[1] }}" data-trigger="hover" data-placement="bottom">{{ elt_notes[0] }}</a>
-                  %else:
-                  <span data-toggle="popover" data-html="true" title="{{ elt_notes[0] }}" data-content="{{ elt_notes[1] }}" data-trigger="hover" data-placement="bottom">{{ elt_notes[0] }}</span>
-                  %end
-               %else:
-                  %if elt.notes_url != '':
-                  <a href="{{ elt.notes_url }}" role="button">{{ elt.notes }}</a>
-                  %else:
-                  <span>{{ elt.notes }}</span>
-                  %end
+               %for note_url in helper.get_element_notes_url(elt, default_title="Note", default_icon="tag", popover=True):
+                  <button class="btn btn-default btn-xs">{{! note_url}}</button>
                %end
                </dd>
             </dl>

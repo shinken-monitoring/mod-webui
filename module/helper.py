@@ -22,6 +22,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 
+
 import time
 import copy
 import math
@@ -40,7 +41,9 @@ except ImportError:
 from shinken.util import safe_print
 from shinken.misc.perfdata import PerfDatas
 from shinken.misc.sorter import hst_srv_sort
+from shinken.log import logger
 from perfdata_guess import get_perfometer_table_values
+from shinken.macroresolver import MacroResolver
 
 
 class Helper(object):
@@ -613,6 +616,98 @@ class Helper(object):
             return '/static/images/sets/%s/state_%s.png' % (obj.icon_set, ico)
         else:
             return '/static/images/icons/state_%s.png' % ico
+
+    def get_urls(self, obj, url, default_title="Url", default_icon="globe", popover=False):
+        '''
+        Returns formatted HTML for an element URL
+        
+        url string may contain a list of urls separated by |
+        
+        Each url may be formatted as:
+            - url,,description
+            - title::description,,url
+            - title,,icon::description,,url
+            
+        description is optional
+            
+        If title is not specified, default_title is used as title
+        If icon is not specified, default_icon is used as icon
+        
+        If popover is true, a bootstrap popover is built, else a standard link ...
+        '''
+        logger.debug("[WebUI] %s / %s / %s / %d" % (url, default_title, default_icon, popover))
+        
+        result = []
+        for item in url.split('|'):
+            try:
+                (title, url) = item.split('::')
+            except:
+                title = "%s,,%s" %(default_title, default_icon)
+                url = item
+            
+            try:
+                (title, icon) = title.split(',,')
+            except:
+                icon = default_icon
+            
+            
+            try:
+                (description, real_url) = url.split(',,')
+            except:
+                description = 'No description provided'
+                real_url = url
+            
+            logger.warning("[WebUI] %s / %s / %s / %s" % (title, icon, real_url, description))
+                
+            url = MacroResolver().resolve_simple_macros_in_string(real_url, obj.get_data_for_checks())
+            
+            logger.debug("[WebUI] get_urls: %s / %s / %s / %s" % (title, icon, url, description))
+            
+            if popover:
+                if url != '':
+                    result.append('''<a href="%s" target="_blank" role="button" data-toggle="popover" data-html="true" data-content="%s" data-trigger="hover" data-placement="bottom"><i class="fa fa-%s"></i>&nbsp;%s</a>''' % (url, description, icon, title))
+                else:
+                    result.append('''<span data-toggle="popover" data-html="true" data-content="%s" data-trigger="hover" data-placement="bottom"><i class="fa fa-%s"></i>&nbsp;%s</a>''' % (description, icon, title))
+            else:
+                if url != '':
+                    result.append('''<a href="%s" target="_blank" title="%s"><i class="fa fa-%s"></i>&nbsp;%s</a>''' % (url, description, icon, title))
+                else:
+                    result.append('''<span title="%s"><i class="fa fa-%s"></i>&nbsp;%s</a>''' % (description, icon, title))
+
+        return result
+                    
+    def get_element_actions_url(self, obj, default_title="Url", default_icon="globe", popover=False):
+        '''
+        Return list of element action urls
+        '''
+        
+        if obj is not None:
+            return self.get_urls(obj, obj.action_url, default_title=default_title, default_icon=default_icon, popover=popover)
+
+        return None
+
+    def get_element_notes_url(self, obj, default_title="Url", default_icon="globe", popover=False):
+        '''
+        Return list of element notes urls
+        '''
+        
+        if obj is not None:
+            notes = []
+            i=0
+            for item in obj.notes.split('|'):
+                if obj.notes_url == '':
+                    notes.append(item)
+                else:
+                    notes_url = obj.notes_url.split('|')
+                    if len(notes_url) > i:
+                        notes.append("%s,,%s" % (item, notes_url[i]))
+                    else:
+                        notes.append("%s,," % (item))
+                i=i+1
+                
+            return self.get_urls(obj, '|'.join(notes), default_title=default_title, default_icon=default_icon, popover=popover)
+
+        return None
 
     def get_fa_icon_state(self, obj=None, cls='host', state='UP', disabled=False):
         state = obj.state.upper() if obj is not None else state.upper()
