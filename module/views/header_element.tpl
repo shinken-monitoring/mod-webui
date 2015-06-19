@@ -40,8 +40,8 @@
 
   <!-- Right buttons ... -->
   <ul class="nav navbar-top-links navbar-right">
-    <li class="hidden-xs hosts-overall-state">
-       <a href="/all?search=type:host" class="quickinfo" data-original-title='Hosts'>
+    <li>
+       <a class="quickinfo states" href="/all?search=type:host" data-original-title='Hosts states' class="quickinfo">
          <i class="fa fa-2x fa-server"></i>
          <span class="label-top">
             <span class="label label-as-badge label-success label-left">{{app.get_number_hosts_state(app.get_user_auth(), False)}}</span>
@@ -54,8 +54,8 @@
        </a>
     </li>
    
-    <li class="hidden-xs services-overall-state">
-       <a href="/all?search=type:service" class="quickinfo" data-original-title='Services'>
+    <li>
+       <a class="quickinfo states" href="/all?search=type:service" data-original-title='Services states' class="quickinfo">
          <i class="fa fa-2x fa-bars"></i>
          <span class="label-top">
             <span class="label label-as-badge label-success label-left">{{app.get_number_service_state(app.get_user_auth(), False)}}</span>
@@ -68,11 +68,21 @@
        </a>
     </li>
     
-    <li><a class="quickinfo" data-original-title='Currently' href="/dashboard/currently"><i class="fa fa-eye"></i></a></li>
+    <li>
+      <a class="quickinfo" data-original-title='Currently' href="/dashboard/currently">
+         <i class="fa fa-eye"></i>
+      </a>
+    </li>
 
+    <li>
+       <a class="quickinfo" data-original-title='Refreshing'>
+         <i id="header_loading" class="fa fa-spinner fa-spin"></i>
+       </a>
+    </li>
+   
     <!-- User info -->
     <li class="dropdown user user-menu">
-      <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+      <a href="#" class="dropdown-toggle" data-original-title='User menu' data-toggle="dropdown">
         <i class="fa fa-user"></i>
         <span><span class="username hidden-sm hidden-xs hidden-md">{{username}}</span> <i class="caret"></i></span>
       </a>
@@ -170,5 +180,20 @@
       // Date / time
       $('.headClock .time').jclock({ format: '%H:%M:%S' });
       $('.headClock .date').jclock({ format: '%d/%m/%Y' });
+      
+      // Manage refresh start/stop
+      $('#header_loading').click(function (e) {
+         e.stopPropagation();
+         
+         // Manage refresh state ...
+         $(this).each(function(){
+            if ($(this).hasClass('fa-spin')) {
+               stop_refresh();
+            } else {
+               start_refresh();
+            }
+            $(this).toggleClass('fa-spin');
+         });
+      });
    });
 </script>

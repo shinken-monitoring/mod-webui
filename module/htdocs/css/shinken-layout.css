@@ -83,6 +83,16 @@ ul.navbar-right li{
 ul.navbar-right a.quickinfo{
    height: 50px;
 }
+ */
+.navbar-top-links li a {
+  margin-top: -10px;
+  max-height: 50px;
+}
+
+.navbar-top-links li a.states:hover {
+  margin-bottom: -10px;
+  min-height: 60px;
+}
 
 .label {
    font-size: 0.6em;
@@ -122,13 +132,13 @@ ul.navbar-right a.quickinfo{
 
 .label-top {
    position: absolute;
-   top: 5px;
+   top: 10px;
    left: 0;
 }
 
 .label-bottom {
    position: absolute;
-   top: 25px;
+   top: 30px;
    left: 0;
 }
 
@@ -139,12 +149,12 @@ ul.navbar-right a.quickinfo{
  */
 @media (min-width: 768px) {
     input#search {
-        width: 230px;
+        width: 180px;
     }
 }
 @media (min-width: 900px) {
     input#search {
-        width: 300px;
+        width: 260px;
     }
 }
 @media (min-width: 1300px) {
