@@ -1305,14 +1305,11 @@ Invalid element name
             %if params['tab_graphs']=='yes':
             <div class="tab-pane fade" id="graphs">
                %# Set source as '' or module ui-graphite will try to fetch templates from default 'detail'
-               %uris = app.get_graph_uris(elt, graphstart, graphend, '')
+               %uris = app.get_graph_uris(elt, graphstart, graphend)
                %if len(uris) == 0:
                <div class="alert alert-info">
                    <div class="font-blue"><strong>Oh snap!</strong> No graphs available!</div>
                </div>
-               <script language="javascript">
-                  $('#tab_to_graphs').hide();
-               </script>
                %else:
                <!-- <h4>Graphs</h4> -->
                <div class='well'>
@@ -1326,11 +1323,11 @@ Invalid element name
 
                   %# Let's get all the uris at once.
                   %# Set source as '' or module ui-graphite will trye to fetch from default 'detail'
-                  %uris_4h = app.get_graph_uris(elt, fourhours, now, '')
-                  %uris_1d = app.get_graph_uris(elt, lastday, now, '')
-                  %uris_1w = app.get_graph_uris(elt, lastweek, now, '')
-                  %uris_1m = app.get_graph_uris(elt, lastmonth, now, '')
-                  %uris_1y = app.get_graph_uris(elt, lastyear, now, '')
+                  %uris_4h = app.get_graph_uris(elt, fourhours, now)
+                  %uris_1d = app.get_graph_uris(elt, lastday, now)
+                  %uris_1w = app.get_graph_uris(elt, lastweek, now)
+                  %uris_1m = app.get_graph_uris(elt, lastmonth, now)
+                  %uris_1y = app.get_graph_uris(elt, lastyear, now)
 
                   <!-- Use of javascript to change the content of a div!-->
                   <div class="row">
@@ -1345,7 +1342,7 @@ Invalid element name
                <script language="javascript">
                function setHTML(html,start) {
                   <!-- change the content of the div --!>
-                  $("real_graphs").innerHTML=html;
+                  $("#real_graphs").html(html);
 
                   <!-- and call the jcrop javascript --!>
                   $('.jcropelt').Jcrop({
