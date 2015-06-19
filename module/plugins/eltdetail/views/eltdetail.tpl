@@ -281,15 +281,22 @@ Invalid element name
                %end
 
                <dt>Notes:</dt>
-               %if elt.notes != '' and elt.notes_url != '':
-               <dd><a href="{{elt.notes_url}}" target=_blank>{{elt.notes}}</a></dd>
-               %elif elt.notes == '' and elt.notes_url != '':
-               <dd><a href="{{elt.notes_url}}" target=_blank>{{elt.notes_url}}</a></dd>
-               %elif elt.notes != '' and elt.notes_url == '':
-               <dd>{{elt.notes}}</dd>
+               <dd>
+               %elt_notes = elt.notes.split('::')
+               %if len(elt_notes) > 1:
+                  %if elt.notes_url != '':
+                  <a href="{{ elt.notes_url }}" role="button" data-toggle="popover" data-html="true" title="{{ elt_notes[0] }}" data-content="{{ elt_notes[1] }}" data-trigger="hover" data-placement="bottom">{{ elt_notes[0] }}</a>
+                  %else:
+                  <span data-toggle="popover" data-html="true" title="{{ elt_notes[0] }}" data-content="{{ elt_notes[1] }}" data-trigger="hover" data-placement="bottom">{{ elt_notes[0] }}</span>
+                  %end
                %else:
-               <dd>(none)</dd>
+                  %if elt.notes_url != '':
+                  <a href="{{ elt.notes_url }}" role="button">{{ elt.notes }}</a>
+                  %else:
+                  <span>{{ elt.notes }}</span>
+                  %end
                %end
+               </dd>
             </dl>
             %else:
             <dl class="col-sm-6 dl-horizontal">
