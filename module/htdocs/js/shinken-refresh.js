@@ -29,39 +29,39 @@ var refresh_stopped = false;
 
 
 function postpone_refresh(){
-	// If we are not in our first try, warn the user
-	if (nb_refresh_try > 0){
-		$.meow({
-			message: 'The UI backend is not available.',
-			icon: '/static/images/ui_notifications/ko.png'
-		});
-	}
-	nb_refresh_try += 1;
-	/* Ok, we are now for a new loop before retrying... */
-	reinit_refresh();
+   // If we are not in our first try, warn the user
+   if (nb_refresh_try > 0){
+      $.meow({
+         message: 'The UI backend is not available.',
+         icon: '/static/images/ui_notifications/ko.png'
+      });
+   }
+   nb_refresh_try += 1;
+   /* Ok, we are now for a new loop before retrying... */
+   reinit_refresh();
 }
 
 function do_refresh(){
-    $.get(document.URL, {}, function(data) {
-        var $response = $('<div />').html(data);
-        $('#page-content').html($response.find('#page-content').html());
-        $('#hosts-overall-state').html($response.find('#hosts-overall-state').html());
-        $('#services-overall-state').html($response.find('#services-overall-state').html());
-    }, 'html');
+   $.get(document.URL, {}, function(data) {
+      var $response = $('<div />').html(data);
+      $('#page-content').html($response.find('#page-content').html());
+      $('#hosts-overall-state').html($response.find('#hosts-overall-state').html());
+      $('#services-overall-state').html($response.find('#services-overall-state').html());
+   }, 'html');
 }
 
 /* React to an action return of the /action page. Look at status
  to see if it's ok or not */
 function check_gotfirstdata_result(response){
-	if (response.status == 200 && response.text == '1') {
-    if (! refresh_stopped) {
-      // Go Refresh
-      do_refresh();
-    }
+   if (response.status == 200 && response.text == '1') {
+      if (! refresh_stopped) {
+         // Go Refresh
+         do_refresh();
+      }
 
-		reinit_refresh();
-	} else {
-		postpone_refresh();
+      reinit_refresh();
+   } else {
+      postpone_refresh();
   }
 }
 
@@ -69,48 +69,47 @@ function check_gotfirstdata_result(response){
 /* We will try to see if the UI is not in restating mode, and so
    don't have enough data to refresh the page as it should. (force login) */
 function check_for_data(){
-	$.ajax({
-		"url": '/gotfirstdata?callback=?',
+   $.ajax({
+      "url": '/gotfirstdata?callback=?',
     "dataType": "jsonp",
-		"success": check_gotfirstdata_result,
-		"error": postpone_refresh
-	});
+      "success": check_gotfirstdata_result,
+      "error": postpone_refresh
+   });
 }
 
 
 /* Each second, we check for timeout and restart page */
 function check_refresh(){
-	if (refresh_timeout < 0){
-		// We will first check if the backend is available or not. It's useless to refresh
-		// if the backend is reloading, because it will prompt for login, when wait a little bit
-		// will make the data available.
-		check_for_data();
-	}
-	refresh_timeout = refresh_timeout - 1;
+   if (refresh_timeout < 0){
+      // We will first check if the backend is available or not. It's useless to refresh
+      // if the backend is reloading, because it will prompt for login, when wait a little bit
+      // will make the data available.
+      check_for_data();
+   }
+   refresh_timeout = refresh_timeout - 1;
 }
 
 
 /* Someone ask us to start the refresh so the page will reload */
 function start_refresh(){
-  refresh_stopped = false;
+   refresh_stopped = false;
 }
 
 
 /* Someone ask us to stop the refresh so the user will have time to
    do some things like ask actions or something like that */
 function stop_refresh(){
-  refresh_stopped = true;
+   refresh_stopped = true;
 }
 
 
 /* Someone ask us to reinit the refresh so the user will have time to
    do some things like ask actions or something like that */
 function reinit_refresh(){
-	refresh_timeout = app_refresh_period;
+   refresh_timeout = app_refresh_period;
 }
 
 /* We will check timeout each 1s */
 $(document).ready(function(){
-	setInterval("check_refresh();", 1000);
+   setInterval("check_refresh();", 1000);
 });
-
