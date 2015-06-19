@@ -14,7 +14,7 @@
          <td>
             <a href="/all?search=type:host isnot:OK" class="btn btn-sm">
                <i class="fa fa-4x fa-server font-darkgrey"></i>
-               <span class="badger-title hosts"><i class="fa fa-plus" style="color: #ccc"></i>&nbsp;Hosts DOWN</span>
+               <span class="badger-title hosts"><i class="fa fa-plus" style="color: #ccc"></i>&nbsp;Hosts</span>
                %host_state = app.get_percentage_hosts_state(app.get_user_auth(), False)
                <span class="badger-big badger-left alert-inverse">{{app.get_nb_hosts(app.get_user_auth())}}</span>
                <span class="badger-big badger-right alert-{{'critical' if host_state <= 33 else 'warning' if host_state <= 66 else 'ok'}}">{{host_state}}%</span>
@@ -24,7 +24,7 @@
          <td>
             <a href="/all?search=type:service isnot:OK" class="btn btn-sm">
                <i class="fa fa-4x fa-bars font-darkgrey"></i>
-               <span class="badger-title services"><i class="fa fa-plus" style="color: #ccc"></i>&nbsp;Services KO</span>
+               <span class="badger-title services"><i class="fa fa-plus" style="color: #ccc"></i>&nbsp;Services</span>
                %service_state = app.get_percentage_service_state(app.get_user_auth(), False)
                <span class="badger-big badger-left alert-inverse">{{app.get_nb_services(app.get_user_auth())}}</span>
                <span class="badger-big badger-right alert-{{'critical' if service_state <= 33 else 'warning' if service_state <= 66 else 'ok'}}">{{service_state}}%</span>

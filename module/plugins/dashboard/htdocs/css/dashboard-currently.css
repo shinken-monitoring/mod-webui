@@ -38,7 +38,6 @@ body, section.content {
    font-family: Century Gothic, sans-serif;
    
    color: #FFFFFF;
-   line-height: 100%;
 }
 
 #date {
@@ -46,7 +45,7 @@ body, section.content {
    font-family: Century Gothic, sans-serif;
    
    color: #535456;
-   line-height: 100%;
+   padding-bottom: 20px;
 }
 
 @media (max-width: 768px) {
@@ -54,7 +53,7 @@ body, section.content {
       font-size: 4em;
    }
    #date {
-      font-size: 1em;
+      font-size: 1.5em;
    }
 }
 @media (min-width: 768px) {
@@ -75,8 +74,22 @@ body, section.content {
 }
 
 /*
+ * Overall state
+ */
+#overall-state div.panel-darkgrey {
+   background-color: #535456;
+   border: 0;
+}
+
+
+/*
  * Icons bar
  */
+#state-icons div.panel-darkgrey {
+   background-color: #535456;
+   border: 0;
+}
+
 #state-icons {
    text-align: center;
    margin-top: 100px;
@@ -85,26 +98,11 @@ body, section.content {
 #state-icons div {
 }
 
-/*  Title styles
-    ------------------------------------------------------- */
-
 .icon_title {
    bottom: 3.3em;
    letter-spacing: 2px;
    right: 2.6em !important;
    color: white;
-}
-
-.itproblem {
-}
-
-.impacts {
-}
-
-.services {
-}
-
-.hosts {
 }
 
 /* 
@@ -119,15 +117,6 @@ body, section.content {
   padding: 1px 3px 2px;
   text-transform: uppercase;
 }
-/*
-.badger-left {
-  left: -10px;
-}
-.badger-right {
-  left: +10px;
-}
-*/
-
 
 .badger-critical {
    background-color: rgb(255,0,0); opacity: 0.85;
@@ -160,38 +149,3 @@ body, section.content {
 
    z-index: 666;
 }
-
-/*
-.badger-title {
-   -webkit-transform: rotate(-90deg); 
-   -moz-transform: rotate(-90deg); 
-   display: block;
-   position: relative;
-   right: 3.4em;
-
-   color: #FFFFFF;
-   text-align: center;
-   font-family: Century Gothic, sans-serif;
-   font-size: 1.5em;
-
-   z-index: 666;
-}
-.rotate {
-  -moz-transform: scale(1) rotate(270deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
-    -webkit-transform: scale(1) rotate(270deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
-        -o-transform: scale(1) rotate(270deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
-        -ms-transform: scale(1) rotate(270deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
-        transform: scale(1) rotate(270deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
-}
-
-.box_rotate {
-  -webkit-transform: rotate(75deg);
-     -moz-transform: rotate(75deg);
-      -ms-transform: rotate(75deg);
-       -o-transform: rotate(75deg);
-          transform: rotate(75deg);
-             filter: progid:DXImageTransform.Microsoft.Matrix(
-                     M11=0.9914448613738104, M12=-0.13052619222005157,M21=0.13052619222005157, M22=0.9914448613738104, sizingMethod='auto expand');
-               zoom: 1;
-}
-*/
