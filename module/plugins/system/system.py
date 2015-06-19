@@ -34,24 +34,6 @@ app = None
 params = {}
 params['fake'] = "localhost"
 
-import os,sys
-from webui.config_parser import config_parser
-plugin_name = os.path.splitext(os.path.basename(__file__))[0]
-try:
-    currentdir = os.path.dirname(os.path.realpath(__file__))
-    configuration_file = "%s/%s" % (currentdir, 'plugin.cfg')
-    logger.debug("Plugin configuration file: %s", configuration_file)
-    scp = config_parser('#', '=')
-    params = scp.parse_config(configuration_file)
-
-    # mongo_host = params['mongo_host']
-    params['fake'] = params['fake']
-    
-    logger.debug("WebUI plugin '%s', configuration loaded." % (plugin_name))
-    # logger.debug("Plugin %s configuration, database: %s (%s)", plugin_name, params['mongo_host'], params['mongo_port'])
-except Exception, exp:
-    logger.warning("WebUI plugin '%s', configuration file (%s) not available: %s", plugin_name, configuration_file, str(exp))
-
 
 def system_page():
     user = app.check_user_authentication()
@@ -96,7 +78,8 @@ def system_widget():
 
 
 
-widget_desc = '''<h4>System state</h4>
+widget_desc = '''
+<h4>System state</h4>
 Show an aggregated view of all Shinken daemons.
 '''
 
