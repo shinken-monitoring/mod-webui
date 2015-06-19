@@ -46,7 +46,7 @@ define host{
 
 WebUI displays all the host properties in the element view: 
 
-![image](element-notes.jpg)
+![image](element-host.jpg)
 
 More information in the [host view documentation page](./host_view.md) and [service view documentation page](./service_view.md).
 
