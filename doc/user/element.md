@@ -1,8 +1,106 @@
 # Element properties for WebUI
 
 
-## Notes
+## Nagios host/service definition
 ------------------------------------
+
+The following host/service definition properties are not used in the WebUI : 
+
+- icon_image
+- icon_image_alt
+- vrml_image
+- statusmap_image
+- 2d_coords
+- 3d_coords
+
+
+## Main properties
+------------------------------------
+
+Given this host definition:
+```
+define host{
+   use                  generic-host, shinken2, linux-ssh, important
+   host_name            wheezy
+   address              127.0.0.1
+   alias                Shinken on Debian Wheezy
+   display_name         Fred's testing server
+
+   business_impact      3
+
+   hostgroups           servers
+
+   contact_groups       admins
+
+# Graphite prefix
+   #_GRAPHITE_PRE        test
+
+# GPS
+   _LOC_LAT             45.054700
+   _LOC_LNG             5.080856
+
+   
+   ...
+}
+```
+
+WebUI displays all the host properties in the element view: 
+
+![image](element-notes.jpg)
+
+More information in the [host view documentation page](./host_view.md) and [service view documentation page](./service_view.md).
+
+
+
+## GPS coordinates
+------------------------------------
+
+GPS coordinates are used by the WebUI Worldmap plugin to display hosts location on a Google map. Latitude and logitude are provided in, respectively, _LOC_LAT and _LOC_LNG host custom variables.
+
+Host definition:
+```
+define host{
+
+   ... 
+   
+# GPS
+   _LOC_LAT             45.054700
+   _LOC_LNG             5.080856
+
+   ...
+}
+```
+
+
+
+## Custom views
+------------------------------------
+
+Custom views may be provided by the Shinken packs to enrich the WebUI element view. Each additional custom view creates a tab in the element view.
+
+TODO: to be completed ...
+
+
+Host definition:
+```
+define host{
+
+   ... 
+
+   # Defined in host template
+   #custom_views                 +linux_ssh,linux_ssh_memory,linux_ssh_processes
+   custom_views                 +linux_ssh
+
+   ...
+}
+```
+
+
+
+## Notes / notes urls
+------------------------------------
+
+Notes and notes urls properties are allowed in the host and service definitions. They are used to provide an optional string of notes pertaining to the host/service.
 
 Shinken core does not allow to define the *notes* property more than once ... and the *note* is defined as a simple text.
 
@@ -15,9 +113,9 @@ A list of notes may be declared in the *notes* property. Notes are separated wit
 
 A list of notes url may be declared in the *notes_url* property. Notes url are separated with a | character.
 
-Service/host definition :
+Host/service definition:
 ```
-define service{
+define host{
    ...
    # Element notes definition:
    
@@ -47,10 +145,12 @@ The element notes are located in the overview panel of the element view. Each no
 
 
 
-## Actions
+## Actions urls
 ------------------------------------
 
-Shinken core does not allow to define the *note* property more than once ... and the *note* is defined as a simple text.
+Actions urls property is allowed in the host and service definitions. It is used to to define an optional URL that can be used to provide more actions to be performed on the host/service.
+
+Shinken core does not allow to define the *action_url* property more than once ... 
 
 WebUI allows to use a simple syntax to enrich the element notes : 
 
@@ -58,9 +158,9 @@ WebUI allows to use a simple syntax to enrich the element notes :
 - a double comma (,,) allows to define an **icon** and a **title** inside the title : title;;icon
 - a double comma (,,) allows to define a **description** for the url : description::url
 
-Service/host definition :
+Host/service definition:
 ```
-define service{
+define host{
    ...
    # Element actions definition:
    
