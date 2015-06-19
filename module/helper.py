@@ -748,12 +748,15 @@ class Helper(object):
         if downtime:
             icon = icons[cls]['DOWNTIME']
             title += " and is in scheduled downtime"
+            icon_style = 'style="opacity: 0.5"'
         elif ack:
             icon = icons[cls]['ACK']
             title += " and is acknowledged"
+            icon_style = 'style="opacity: 0.5"'
         else:
             icon = icons[cls].get(state, 'UNKNOWN')
-        front = '''<i class="fa fa-%s fa-stack-1x %s"></i>''' % (icon, icon_color)
+            icon_style = ""
+        front = '''<i class="fa fa-%s fa-stack-1x %s" %s></i>''' % (icon, icon_color, icon_style)
         icon_text = '''<span class="fa-stack" title="%s">%s%s</span>''' % (title, back, front)
 
         return icon_text
