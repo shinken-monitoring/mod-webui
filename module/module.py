@@ -759,7 +759,7 @@ class Webui_broker(BaseModule, Daemon):
     # The source variable describes the source of the calling. Are we displaying 
     # graphs for the element detail page (detail), or a widget in the dashboard (dashboard) ?
     def get_graph_uris(self, elt, graphstart, graphend, source = 'detail'):
-        logger.debug("[WebUI] Fetching graph URIs ...")
+        logger.debug("[WebUI] Fetching graph URIs for %s", source)
 
         uris = []
         for mod in self.modules_manager.get_internal_instances():

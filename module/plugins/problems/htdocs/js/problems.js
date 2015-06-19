@@ -213,6 +213,12 @@ function set_expand_outputs(){
    $('.collapse').on('hide.bs.collapse', function () {
        $(this).closest('tr').prev().find('.output').addClass("ellipsis", {duration:200});
    });
+   
+   // Graphs popover
+   $('[data-toggle="popover"]').popover({
+      html: true,
+      template: '<div class="popover img-popover"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
+   });
 }
 
 // On page loaded ... 
@@ -239,11 +245,5 @@ $(document).ready(function(){
       
       // Add/remove element from selection
       add_remove_elements($(this).data('item'));
-   });
-   
-   // Graphs popover
-   $('[data-toggle="popover"]').popover({
-      html: true,
-      template: '<div class="popover img-popover"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
    });
 });
