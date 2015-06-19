@@ -229,14 +229,42 @@ $(document).ready(function(){
       $('[id^=selector').attr('disabled', true);
       
       // Get all elements ...
-      $('td input[type=checkbox]').each(function(){
+      $('input[type=checkbox]').each(function(){
          // ... and disable and hide checkbox
          $(this).prop("disabled", true).hide();
       });
    }
 
    // Problems element check boxes
-   $('td input[type=checkbox]').click(function (e) {
+   $('input[type=checkbox][data-type="business-impact"]').click(function (e) {
+      var all=$(this).prop("checked");
+      console.log("BI: '"+$(this).data('item')+"'", all);
+      
+      // Do not expand collapsible container ...
+      e.stopPropagation();
+      
+      // Stop/restart page refresh
+      if (all) {
+         stop_refresh();
+      } else {
+         start_refresh();
+      }
+      
+      // Add/remove element from selection
+      // add_remove_elements($(this).data('item'));
+      $('input[type=checkbox][data-type="problem"][data-business-impact="'+$(this).data('item')+'"]').each(function(){
+         // Add/remove element from selection
+         if (all) {
+            add_element($(this).data('item'));
+         } else {
+            remove_element($(this).data('item'));
+         }
+      });
+   });
+
+   // Problems element check boxes
+   $('input[type=checkbox][data-type="problem"]').click(function (e) {
+      console.log("Element: ", $(this).data('item'))
       // Do not expand collapsible container ...
       e.stopPropagation();
       

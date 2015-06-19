@@ -60,11 +60,6 @@
 
    %include("_problems_synthesis.tpl", pbs=pbs)
 
-   <div class="text-right">
-     <a id='select_all_btn' href="javascript:select_all_problems()" class="btn btn-default btn-sm"><i class="fa fa-plus"></i> Select all</a>
-     <a id='unselect_all_btn' href="javascript:unselect_all_problems()" class="btn btn-default btn-sm" style="display:none;"><i class="fa fa-minus"></i> Unselect all</a>
-   </div>
-
    %from itertools import groupby
    %pbs = sorted(pbs, key=lambda x: x.business_impact, reverse=True)
    %for business_impact, bi_pbs in groupby(pbs, key=lambda x: x.business_impact):
@@ -74,8 +69,19 @@
  <div class="panel panel-default">
    <!--<div class="panel-heading">-->
    <!--</div>-->
-    <div class="panel-body">
-      <h3 class="text-center">Business impact: {{!helper.get_business_impact_text(business_impact, text=True)}} <i class="pull-right small">{{len(list(bi_pbs))}} elements</i></h3>
+   <div class="panel-body">
+    <form class="form-inline pull-left well well-sm">
+         <div class="checkbox form-group">
+            <label>
+               <input type="checkbox" value="" id="selector-bi-{{business_impact}}" data-type="business-impact" data-business-impact="{{business_impact}}" data-item="{{business_impact}}">
+               Select all elements
+            </label>
+         </div>
+    </form>
+
+    <i class="pull-right small">{{len(list(bi_pbs))}} elements</i>
+    <h3 class="text-center">Business impact: {{!helper.get_business_impact_text(business_impact, text=True)}}</h3>
+    
     <table class="table table-condensed" style="table-layout:fixed;width:100%;">
       <thead><tr>
           <th width="20px"></th>
@@ -94,9 +100,9 @@
        %# Host information ...
        <tr data-toggle="collapse" data-target="#details-{{helper.get_html_id(pb)}}" class="accordion-toggle">
           <td>
-            <input type="checkbox" id="selector-{{helper.get_html_id(pb)}}" data-item="{{pb.get_full_name()}}">
+            <input type="checkbox" value="" id="selector-{{helper.get_html_id(pb)}}" data-type="problem" data-business-impact="{{business_impact}}" data-item="{{pb.get_full_name()}}">
           </td>
-          <td align=center>
+          <td align="center">
             {{!helper.get_fa_icon_state(pb)}}
           </td>
           <td>
