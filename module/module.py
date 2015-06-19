@@ -1567,7 +1567,7 @@ class Webui_broker(BaseModule, Daemon):
         else:
             s_state = state['service'].get(max(s_states), 'UNKNOWN') if not id else max(s_states)
             
-        logger.info("[WebUI] get_overall_it_state, h_state: %s, s_state: %s", h_state, s_state)
+        logger.debug("[WebUI] get_overall_it_state, h_state: %s, s_state: %s", h_state, s_state)
         return h_state, s_state
 
     # Get the number of all problems, even the ack ones
