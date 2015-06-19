@@ -4,7 +4,7 @@
 ## Nagios host/service definition
 ------------------------------------
 
-The following host/service definition properties are not used in the WebUI : 
+The following host/service definition properties are **not** used in the WebUI : 
 
 - icon_image
 - icon_image_alt
