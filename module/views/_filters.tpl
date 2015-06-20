@@ -9,11 +9,13 @@
       <li role="presentation"><a role="menuitem" href="?search=">All resources</a></li>
       <li role="presentation"><a role="menuitem" href="?search=ack:true">Acknowledged problems</a></li>
       <li role="presentation"><a role="menuitem" href="?search=downtime:true">Scheduled downtimes</a></li>
-      <li role="presentation"><a role="menuitem" href="?search=bi:4">BI : Top business</a></li>
-      <li role="presentation"><a role="menuitem" href="?search=bi:3">BI : High</a></li>
-      <li role="presentation"><a role="menuitem" href="?search=bi:2">BI : Normal</a></li>
-      <li role="presentation"><a role="menuitem" href="?search=bi:1">BI : Low</a></li>
-      <li role="presentation"><a role="menuitem" href="?search=bi:0">BI : Null</a></li>
+      <li role="presentation" class="divider"></li>
+      <li role="presentation"><a role="menuitem" href="?search=bp:5">Impact : {{!helper.get_business_impact_text(5, text=True)}}</a></li>
+      <li role="presentation"><a role="menuitem" href="?search=bp:4">Impact : {{!helper.get_business_impact_text(4, text=True)}}</a></li>
+      <li role="presentation"><a role="menuitem" href="?search=bp:3">Impact : {{!helper.get_business_impact_text(3, text=True)}}</a></li>
+      <li role="presentation"><a role="menuitem" href="?search=bp:2">Impact : {{!helper.get_business_impact_text(2, text=True)}}</a></li>
+      <li role="presentation"><a role="menuitem" href="?search=bp:1">Impact : {{!helper.get_business_impact_text(1, text=True)}}</a></li>
+      <li role="presentation"><a role="menuitem" href="?search=bp:0">Impact : {{!helper.get_business_impact_text(0, text=True)}}</a></li>
       <li role="presentation" class="divider"></li>
       <li role="presentation"><a role="menuitem" href="#" data-toggle="modal" data-target="#searchSyntax"><strong><i class="fa fa-question-circle"></i> Search syntax</strong></a></li>
     </ul>

@@ -548,7 +548,7 @@ class Helper(object):
     # If text=True, returns text+stars, else returns stars only ...
     def get_business_impact_text(self, business_impact, text=False):
         txts = {0: 'None', 1: 'Low', 2: 'Normal',
-                3: 'High', 4: 'Very important', 5: 'Top for business'}
+                3: 'Important', 4: 'Very important', 5: 'Business critical'}
         nb_stars = max(0, business_impact - 2)
         stars = '<i class="fa fa-star text-primary"></i>' * nb_stars
 
