@@ -21,17 +21,6 @@
  along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* We can't apply Jcrop on ready. Why? Because the images are not load, and so
-   they wil have a 0 size. Yes, ti's stupid I know. So hjow to do it?
-   The key is to hook the graph tab. onshow will raise when we active it (and was shown).
-   So we apply only then. Cool isn't it?
-   PS : I lost 2 hours in this, and yes, I'm quite angry about this stupid thing....
-*/
-$(window).ready(function(){
-	// This change allow the range to change after the page is loaded.
-	get_range();
-});
-
 function get_range() {
     g_s = graphstart;  // Time start and ends
     g_e = graphend;
@@ -74,41 +63,69 @@ function update_coords(c)
 
 // We will compute the relative position of the selection
 // by removing the borders. This will give us g_rp and g_rq.
-// Then we comput ethe ratio of this selection, and so we apply
+// Then we compute the ratio of this selection, and so we apply
 // it in the time selection. And we are done.
 function graph_zoom(uri){
+   //console.log(uri);
 
-    //alert('Relatives'+g_p+' '+g_q);
+   //alert('Relatives'+g_p+' '+g_q);
 
-    // We compute the ratio of the relative position from the inner
-    // draw (without the borders)
-    var g_rp = g_p / g_D;
-    var g_rq = g_q / g_D;
+   // We compute the ratio of the relative position from the inner
+   // draw (without the borders)
+   var g_rp = g_p / g_D;
+   var g_rq = g_q / g_D;
 
-    //alert('Relative ratio: '+g_D+' '+g_rp+' '+g_rq);
+   //alert('Relative ratio: '+g_D+' '+g_rp+' '+g_rq);
 
-    // Now compute the new start and new end we want to border
-    var g_ns = parseInt(g_s + g_O*g_rp);
-    var g_ne = parseInt(g_s + g_O*g_rq);
+   // Now compute the new start and new end we want to border
+   var g_ns = parseInt(g_s + g_O*g_rp);
+   var g_ne = parseInt(g_s + g_O*g_rq);
 
-    //alert('New time '+g_ns+' '+g_ne);
+   //alert('New time '+g_ns+' '+g_ne);
 
-    // Maybe we just fuck up, if so, bailout
-    if(g_ne <= g_ns){
-	return;
-    }
+   // Maybe we just fuck up, if so, bailout
+   if(g_ne <= g_ns){
+      return;
+   }
 
-    // Make the uri and GO!
-    var new_uri = uri+'graphstart='+g_ns+'&graphend='+g_ne+'#graphs';
-    window.location=new_uri;
+   // Make the uri and GO!
+   var new_uri = uri+'graphstart='+g_ns+'&graphend='+g_ne+'#graphs';
+   console.log(new_uri);
+   window.location=new_uri;
 }
 
 // when we show the graph tab, we apply the crop effect.
 $(window).ready(function(){
-    $('#tab_to_graphs').on('shown.bs.tab', function (e) {
-		$('.jcropelt').Jcrop({
-			onSelect: update_coords,
-			onChange: update_coords
-		});
-    })
+   // This change allow the range to change after the page is loaded.
+   get_range();
+   
+   /* We can't apply Jcrop on ready. Why? Because the images are not yet loaded, and so
+      they will have a null size. So how to do it?
+      The key is to hook the graph tab. onshow will raise when we active it (and was shown).
+   */
+   $('#tab_to_graphs').on('shown.bs.tab', function (e) {
+      // console.log("Display graph: ", current_graph)
+      $('a[data-type="graph"][data-period="'+current_graph+'"]').trigger('click');
+   })
+   
+   // Change graph
+   $('a[data-type="graph"]').click(function (e) {
+      current_graph=$(this).data('period');
+      graphstart=$(this).data('graphstart');
+      graphend=$(this).data('graphend');
+
+      // Update graphs
+      $("#real_graphs").html( html_graphes[current_graph] );
+
+      // Update active period selected
+      $("#graph_periods li.active").removeClass('active');
+      $(this).parent('li').addClass('active');
+      
+      // and call the jcrop javascript
+      $('.jcropelt').Jcrop({
+         onSelect: update_coords,
+         onChange: update_coords
+      });
+      get_range();
+   });
 });

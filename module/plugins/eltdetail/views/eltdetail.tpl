@@ -72,6 +72,9 @@ Invalid element name
 <script type="text/javascript">
    var elt_name = '{{elt.get_full_name()}}';
 
+   // For graph tab ...
+   var html_graphes = [];
+   var current_graph = '';
    var graphstart={{graphstart}};
    var graphend={{graphend}};
 
@@ -1303,109 +1306,55 @@ Invalid element name
                   %lastmonth = now - 86400*31
                   %lastyear =  now - 86400*365
 
-                  %# Let's get all the uris at once.
-                  %# Set source as '' or module ui-graphite will trye to fetch from default 'detail'
-                  %uris_4h = app.get_graph_uris(elt, fourhours, now)
-                  %uris_1d = app.get_graph_uris(elt, lastday, now)
-                  %uris_1w = app.get_graph_uris(elt, lastweek, now)
-                  %uris_1m = app.get_graph_uris(elt, lastmonth, now)
-                  %uris_1y = app.get_graph_uris(elt, lastyear, now)
-
-                  <!-- Use of javascript to change the content of a div!-->
-                  <div class="row">
-                    <div class='col-lg-2 cursor'><a onclick="setHTML(html_4h,{{fourhours}});" > 4 hours</a></div>
-                    <div class='col-lg-2 cursor'><a onclick="setHTML(html_1d,{{lastday}});" > 1 day</a></div>
-                    <div class='col-lg-2 cursor'><a onclick="setHTML(html_1w,{{lastweek}});" > 1 week</a></div>
-                    <div class='col-lg-2 cursor'><a onclick="setHTML(html_1m,{{lastmonth}});" > 1 month</a></div>
-                    <div class='col-lg-2 cursor'><a onclick="setHTML(html_1y,{{lastyear}});" > 1 year</a></div>
-                  </div>
+                  <ul id="graph_periods" class="nav nav-pills nav-justified">
+                    <li class="active"><a href="#" data-type="graph" data-period="4h" data-graphend="{{now}}" data-graphstart="{{fourhours}}"  > 4 hours</a></li>
+                    <li><a href="#" data-type="graph" data-period="1d" data-graphend="{{now}}" data-graphstart="{{lastday}}"    > 1 day</a></li>
+                    <li><a href="#" data-type="graph" data-period="1w" data-graphend="{{now}}" data-graphstart="{{lastweek}}"   > 1 week</a></li>
+                    <li><a href="#" data-type="graph" data-period="1m" data-graphend="{{now}}" data-graphstart="{{lastmonth}}"  > 1 month</a></li>
+                    <li><a href="#" data-type="graph" data-period="1y" data-graphend="{{now}}" data-graphstart="{{lastyear}}"   > 1 year</a></li>
+                  </ul>
                </div>
 
-               <script language="javascript">
-               function setHTML(html,start) {
-                  <!-- change the content of the div --!>
-                  $("#real_graphs").html(html);
-
-                  <!-- and call the jcrop javascript --!>
-                  $('.jcropelt').Jcrop({
-                     onSelect: update_coords,
-                     onChange: update_coords
-                  });
-                  graphstart=start;
-                  get_range();
-               }
-
-               <!-- let's create the html content for each time range --!>
-               <!-- This is quite ugly here. I do the same thing 4 times --!->
-               <!-- someone said "function" ? You're right.--!>
-               <!-- but the mix between python and javascript is not a easy thing for me --!>
-               html_4h='<p>';
-               html_1d='<p>';
-               html_1w='<p>';
-               html_1m='<p>';
-               html_1y='<p>';
-
-               %for g in uris_4h:
-               %(img_src, link) = app.get_graph_img_src( g['img_src'], g['link'])
-               var img_src="{{img_src}}";
-               html_4h = html_4h + '<img src="'+ img_src.replace("'","\'") +'" class="jcropelt"/>';
-               html_4h = html_4h + '<a href="{{link}}" class="btn"><i class="fa fa-plus"></i> Show more</a>';
-               html_4h = html_4h + '<a href="javascript:graph_zoom(\'/{{elt_type}}/{{elt.get_full_name()}}?\')" class="btn"><i class="icon-zoom-in"></i> Zoom</a>';
-               html_4h = html_4h + '<br>';
-               %end
-               html_4h=html_4h+'</p>';
-
-               %for g in uris_1d:
-               %(img_src, link) = app.get_graph_img_src( g['img_src'], g['link'])
-               var img_src="{{img_src}}";
-               html_1d = html_1d +'<img src="'+ img_src.replace("'","\'") +'" class="jcropelt"/>';
-               html_1d = html_1d + '<a href={{link}}" class="btn"><i class="fa fa-plus"></i> Show more</a>';
-               html_1d = html_1d + '<a href="javascript:graph_zoom(\'/{{elt_type}}/{{elt.get_full_name()}}?\')" class="btn"><i class="icon-zoom-in"></i> Zoom</a>';
-               html_1d = html_1d + '<br>';
-               %end
-               html_1d=html_1d+'</p>';
-
-               %for g in uris_1w:
-               %(img_src, link) = app.get_graph_img_src( g['img_src'], g['link'])
-               var img_src="{{img_src}}";
-               html_1w = html_1w + '<img src="'+ img_src.replace("'","\'") +'" class="jcropelt"/>';
-               html_1w = html_1w + '<a href="{{link}}" class="btn"><i class="fa fa-plus"></i> Show more</a>';
-               html_1w = html_1w + '<a href="javascript:graph_zoom(\'/{{elt_type}}/{{elt.get_full_name()}}?\')" class="btn"><i class="icon-zoom-in"></i> Zoom</a>';
-               html_1w = html_1w + '<br>';
-               %end
-
-               %for g in uris_1m:
-               %(img_src, link) = app.get_graph_img_src( g['img_src'], g['link'])
-               var img_src="{{img_src}}";
-               html_1m = html_1m + '<img src="'+ img_src.replace("'","\'") +'" class="jcropelt"/>';
-               html_1m = html_1m + '<a href="{{link}}" class="btn"><i class="fa fa-plus"></i> Show more</a>';
-               html_1m = html_1m + '<a href="javascript:graph_zoom(\'/{{elt_type}}/{{elt.get_full_name()}}?\')" class="btn"><i class="icon-zoom-in"></i> Zoom</a>';
-               html_1m = html_1m + '<br>';
-               %end
-
-               %for g in uris_1y:
-               %(img_src, link) = app.get_graph_img_src( g['img_src'], g['link'])
-               var img_src="{{img_src}}";
-               html_1y = html_1y + '<img src="'+ img_src.replace("'","\'") +'" class="jcropelt"/>';
-               html_1y = html_1y + '<a href="{{link}}" class="btn"><i class="fa fa-plus"></i> Show more</a>';
-               html_1y = html_1y + '<a href="javascript:graph_zoom(\'/{{elt_type}}/{{elt.get_full_name()}}?\')" class="btn"><i class="icon-zoom-in"></i> Zoom</a>';
-               html_1y = html_1y + '<br>';
-               %end
-               </script>
-
-               <div class='well jcrop'>
+               <div class='well'>
                   <div id='real_graphs'>
-                  <!-- Let's keep this part visible. This is the custom and default range -->
-                  %for g in uris:
-                     %(img_src, link) = app.get_graph_img_src( g['img_src'], g['link'])
-                     <p>
-                        <img src="{{img_src}}" class="jcropelt"/>
-                        <a href="{{link}}" class="btn"><i class="fa fa-plus"></i> Show more</a>
-                        <a href="javascript:graph_zoom('/{{elt_type}}/{{elt.get_full_name()}}?')" class="btn"><i class="icon-zoom-in"></i> Zoom</a>
-                     </p>
-                  %end      
                   </div>
                </div>
+               
+               <script>
+               $('#tab_to_graphs').on('shown.bs.tab', function (e) {
+                  %uris = dict()
+                  %uris['4h'] = app.get_graph_uris(elt, fourhours, now, source='')
+                  %uris['1d'] = app.get_graph_uris(elt, lastday,   now, source='')
+                  %uris['1w'] = app.get_graph_uris(elt, lastweek,  now, source='')
+                  %uris['1m'] = app.get_graph_uris(elt, lastmonth, now, source='')
+                  %uris['1y'] = app.get_graph_uris(elt, lastyear,  now, source='')
+
+                  // let's create the html content for each time range
+                  var element='/{{elt_type}}/{{elt.get_full_name()}}';
+                  %for period in ['4h', '1d', '1w', '1m', '1y']:
+                  
+                  html_graphes['{{period}}'] = '<p>';
+                  %for g in uris[period]:
+                  %(img_src, link) = app.get_graph_img_src( g['img_src'], g['link'])
+                  
+                  // Adjust image width / height parameter ... width is sized to container, and height is 1/3
+                  var img_src = "{{img_src}}".replace("'","\'")
+                  img_src = img_src.replace(/(width=).*?(&)/,'$1' + $('#real_graphs').width() + '$2');
+                  img_src = img_src.replace(/(height=).*?(&)/,'$1' + ($('#real_graphs').width() / 3) + '$2');
+                  
+                  html_graphes['{{period}}'] +=  '<img src="'+ img_src +'" class="jcropelt"/> \
+                                                 <a href="{{link}}" target="_blank" class="btn"><i class="fa fa-plus"></i> Show more</a>\
+                                                 <a href="javascript:graph_zoom(\''+ element +'\')" class="btn"><i class="icon-zoom-in"></i> Zoom</a>\
+                                                 <br>';
+                  %end
+                  html_graphes['{{period}}'] += '</p>';
+
+                  %end
+                  
+                  // Set first graph
+                  current_graph = '4h';
+               });
+               </script>
                %end
             </div>
             %end

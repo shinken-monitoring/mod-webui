@@ -1,9 +1,6 @@
-.widget_graph{
-   padding-left : 5px;
-   padding-right : 5px;
+.widget-graph{
+   padding: 1px;
 }
-.widget_graph img {
-   max-width: 100%;
-   height: auto;
-   width: auto\9;
+.widget-graph img {
+   padding: 1px;
 }
