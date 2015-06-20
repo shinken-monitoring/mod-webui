@@ -818,24 +818,27 @@ class Helper(object):
     def get_perfometer(self, elt):
         if elt.perf_data != '':
             r = get_perfometer_table_values(elt)
-            # If the perfmeter are not good, bail out
             if r is None:
-                return '\n'
+                return ''
 
             #lnk = r['lnk']
             metrics = r['metrics']
             title = r['title']
-            #s = '<a href="%s">' % lnk
             s = ''
+            if r['lnk'] != '#':
+                s += '<a href="%s">' % lnk
             if metrics:
                 s += '''<div class="progress" style="min-width:100px;">
-                          <div class="progress-bar progress-bar-%s" role="progressbar" aria-valuenow="60" aria-valuemix="0" aria-valuemax="100" style="width:%s%%"> 
-                          %s
-                          </div>
-                        </div>''' % (metrics[0][0], metrics[0][1], title)
-            #s +=  '''</a>\n'''
+                            <div title="%s" class="ellipsis progress-bar progress-bar-%s" role="progressbar" aria-valuenow="%ss" aria-valuemin="0" aria-valuemax="100" style="width:%s%%"> 
+                            %s
+                            </div>
+                        </div>''' % (title, metrics[0][0], metrics[0][1], metrics[0][1], title)
+            if r['lnk'] != '#':
+                s += '</a>'
+                
             return s
-        return '\n'
+            
+        return ''
 
     # TODO: Will look at the string s, and return a clean output without
     # danger for the browser

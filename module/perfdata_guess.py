@@ -7,6 +7,7 @@
 #    Gerhard Lausser, Gerhard.Lausser@consol.de
 #    Gregory Starck, g.starck@gmail.com
 #    Hartmut Goebel, h.goebel@goebel-consult.de
+#    Frederic Mohier, frederic.mohier@gmail.com
 #
 # This file is part of Shinken.
 #
@@ -27,6 +28,7 @@ import math
 
 from shinken.util import safe_print
 from shinken.misc.perfdata import PerfDatas
+from shinken.log import logger
 
 
 # Will try to return a dict with:
@@ -36,7 +38,7 @@ from shinken.misc.perfdata import PerfDatas
 def get_perfometer_table_values(elt):
     # first try to get the command name called
     cmd = elt.check_command.call.split('!')[0]
-    safe_print("Looking for perfometer value for command", cmd)
+    logger.debug("[WebUI] Looking for perfometer value for element: %s, command: %s", elt.get_full_name(), cmd)
 
     tab = {'check_http': manage_check_http_command,
            'check_ping': manage_check_ping_command,
@@ -70,12 +72,23 @@ def manage_check_http_command(elt):
 
     # Percent of ok should be time/1s
     pct = get_logarithmic(v, 1)
-    base_color = {0: 'success', 1: 'warning', 2: 'danger'}
-    state_id = get_stateid(elt)
-    color = base_color.get(state_id, 'info')
+    
+    # Title
+    try:
+        uom = '' or m.uom
+        title = '%s=%s%s' % (name, value, uom)
+    except:
+        title = '%s=%s' % (name, value)
+
+    # Link
     lnk = '#'
-    metrics = [(color, pct)]
-    title = '%ss' % v
+
+    # Get the color
+    base = {0: 'success', 1: 'warning', 2: 'danger', 3: 'info'}
+    color = base.get(elt.state_id, 'info')
+    
+    logger.debug("[WebUI] perfometer, manage command, metric: %s=%d -> %d", name, value, pct)
+
     return {'lnk': lnk, 'metrics': metrics, 'title': title}
 
 
@@ -95,14 +108,23 @@ def manage_check_ping_command(elt):
 
     # Percent of ok should be the log of time versus max/2
     pct = get_logarithmic(v, crit / 2)
-    base_color = {0: 'success', 1: 'warning', 2: 'danger'}
-    state_id = get_stateid(elt)
-    color = base_color.get(state_id, 'info')
 
+    # Title
+    try:
+        uom = '' or m.uom
+        title = '%s=%s%s' % (name, value, uom)
+    except:
+        title = '%s=%s' % (name, value)
+
+    # Link
     lnk = '#'
-    metrics = [(color, pct)]
-    title = '%sms' % v
-    #print "HTTP: return", {'lnk': lnk, 'metrics': metrics, 'title': title}
+
+    # Get the color
+    base = {0: 'success', 1: 'warning', 2: 'danger', 3: 'info'}
+    color = base.get(elt.state_id, 'info')
+    
+    logger.debug("[WebUI] perfometer, manage command, metric: %s=%d -> %d", name, value, pct)
+
     return {'lnk': lnk, 'metrics': metrics, 'title': title}
 
 
@@ -123,109 +145,79 @@ def manage_check_tcp_command(elt):
     # Percent of ok should be the log of time versus m.max / 2
     pct = get_logarithmic(v, m.max / 2)
 
-    # Now get the color
-    # OK: #6f2 (102,255,34) green
-    # Warning: #f60 (255,102,0) orange
-    # Crit: #ff0033 (255,0,51)
-    base_color = {0: 'success', 1: 'warning', 2: 'danger'}
-    state_id = get_stateid(elt)
-    color = base_color.get(state_id, 'info')
+    # Title
+    try:
+        uom = '' or m.uom
+        title = '%s=%s%s' % (name, value, uom)
+    except:
+        title = '%s=%s' % (name, value)
 
-    #pct = 100 * (v / m.max)
-    # Convert to int
-    #pct = int(pct)
-    # Minimum 1%, maximum 100%
-    #pct = min(max(1, pct), 100)
+    # Link
     lnk = '#'
-    metrics = [(color, pct)]
-    title = '%ss' % v
-    #print "HTTP: return", {'lnk': lnk, 'metrics': metrics, 'title': title}
-    return {'lnk': lnk, 'metrics': metrics, 'title': title}
+
+    # Get the color
+    base = {0: 'success', 1: 'warning', 2: 'danger', 3: 'info'}
+    color = base.get(elt.state_id, 'info')
+    
+    logger.debug("[WebUI] perfometer, manage command, metric: %s=%d -> %d", name, value, pct)
+
+    return {'lnk': lnk, 'metrics': [(color, pct)], 'title': title}
 
 
 def manage_unknown_command(elt):
-    safe_print('Get an unmanaged command perfdata of', elt.get_full_name())
+    logger.debug("[WebUI] perfometer, manage command for: %s", elt.get_full_name())
     p = PerfDatas(elt.perf_data)
     if len(p) == 0:
         return None
 
-    m = None
+    metric = None
     # Got some override name we know to be ok for printing
-    if 'time' in p:
-        m = p['time']
+    if 'time' in p and p['time'].value is not None:
+        metric = p['time']
     else:
         for v in p:
-            #print "Look for", v
             if v.name is not None and v.value is not None:
-                m = v
+                metric = v
                 break
-
-    prop = m.name
-    safe_print("Got a property", prop, "and a value", m)
-    v = m.value
-    if not v:
-        print "No value, I bailout"
+    if not metric:
+        return metric
+    
+    name = metric.name
+    value = metric.value
+    logger.debug("[WebUI] perfometer, manage command, metric: %s=%d", name, value)
+    if not value:
         return None
 
-    # Now look if min/max are available or not
+    
     pct = 0
-    if m.min and m.max and (m.max - m.min != 0):
-        pct = 100 * (v / (m.max - m.min))
-    else:  # ok, we will really guess this time...
-        # Percent of ok should be time/10s
-        pct = 100 * (v / 10)
+    # Look if min/max are defined
+    if metric.min and metric.max and (metric.max - metric.min != 0):
+        pct = 100 * (value / (metric.max - metric.min))
+    else:
+        # Assume value is 100%
+        pct = 100
 
-    # go to int
-    pct = int(pct)
-    # But at least 1%
+    # Percentage is at least 1% and max 100%
     pct = max(1, pct)
-    # And max to 100%
     pct = min(pct, 100)
+    
+    # Title
+    try:
+        uom = '' or m.uom
+        title = '%s=%s%s' % (name, value, uom)
+    except:
+        title = '%s=%s' % (name, value)
+
+    # Link
     lnk = '#'
 
-    color = get_linear_color(elt, prop)
-#    s_color = 'RGB(%d,%d,%d)' % color
-    metrics = [(color, pct)]
-    uom = '' or m.uom
-    title = '%s%s' % (v, uom)
-    #print "HTTP: return", {'lnk': lnk, 'metrics': metrics, 'title': title}
-    return {'lnk': lnk, 'metrics': metrics, 'title': title}
+    # Get the color
+    base = {0: 'success', 1: 'warning', 2: 'danger', 3: 'info'}
+    color = base.get(elt.state_id, 'info')
+    
+    logger.debug("[WebUI] perfometer, manage command, metric: %s=%d -> %d", name, value, pct)
 
-
-# Get a linear color by looking at the command name
-# and the elt status to get a unique value
-def get_linear_color(elt, name):
-    # base colors are
-    #  #6688ff (102,136,255) light blue for OK
-    #  #ffdd65 (255,221,101) ligth wellow for warning
-    #  #ff6587 (191,75,101) light red for critical
-    #  #b3c4ff (179,196,255) very light blue for unknown
-    base = {0: 'success', 1: 'warning', 2: 'danger'}
-    state_id = get_stateid(elt)
-
-    c = base.get(state_id, 'info')
-    return c
-
-    ## Get a "hash" of the metric name
-    #h = hash(name) % 25
-    ##print "H", h
-    ## Most value are high in red, so to do not overlap, go down
-    #red = (c[0] - h) % 256
-    #green = (c[1] - h) % 256
-    #blue = (c[2] - h) % 256
-    #color = (red, green, blue)
-    #print "Get color", color
-    #return color
-
-
-def get_stateid(elt):
-    state_id = elt.state_id
-
-    # For host, make DOWN as critical
-    if state_id == 1 and elt.__class__.my_type == 'host':
-        state_id = 2
-
-    return state_id
+    return {'lnk': lnk, 'metrics': [(color, pct)], 'title': title}
 
 
 def get_logarithmic(value, half):

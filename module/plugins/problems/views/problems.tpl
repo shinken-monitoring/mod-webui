@@ -128,7 +128,7 @@
               %now = time.time()
               %graphs = app.get_graph_uris(pb, now-4*3600, now, source='')
               %if len(graphs) > 0:
-                <a role="button" tabindex="0" data-toggle="popover" title="{{ pb.get_full_name() }}" data-content="<img src={{ graphs[0]['img_src'] }} width='600px' height='200px'>" data-trigger="hover" data-placement="left">{{!helper.get_perfometer(pb)}}</a>
+                <a role="button" tabindex="0" data-toggle="popover" title="{{ pb.get_full_name() }}" data-html="true" data-content="<img src='{{ graphs[0]['img_src'] }}' width='600px' height='200px'>" data-trigger="hover" data-placement="left">{{!helper.get_perfometer(pb)}}</a>
               %end
             </div>
             <div class="ellipsis output" id="output-{{pb.get_full_name()}}">
