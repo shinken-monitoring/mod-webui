@@ -47,6 +47,12 @@ function do_refresh(){
       $('#page-content').html($response.find('#page-content').html());
       $('#hosts-overall-state').html($response.find('#hosts-overall-state').html());
       $('#services-overall-state').html($response.find('#services-overall-state').html());
+   
+      // Display active tab ...
+      // var hash = location.hash
+        // , hashPieces = hash.split('?')
+        // , activeTab = $('[href=' + hashPieces[0] + ']');
+      // activeTab && activeTab.tab('show');
    }, 'html');
 }
 
@@ -71,7 +77,7 @@ function check_gotfirstdata_result(response){
 function check_for_data(){
    $.ajax({
       "url": '/gotfirstdata?callback=?',
-    "dataType": "jsonp",
+      "dataType": "jsonp",
       "success": check_gotfirstdata_result,
       "error": postpone_refresh
    });
@@ -112,4 +118,14 @@ function reinit_refresh(){
 /* We will check timeout each 1s */
 $(document).ready(function(){
    setInterval("check_refresh();", 1000);
+   
+   // Every link that changes hash ...
+   $("a[href^=#]").on("click",function(e){
+      // console.log('New hash: ', e.target.hash, ', url before was: ', document.URL)
+   });
 });
+
+var hash = location.hash
+  , hashPieces = hash.split('?')
+  , activeTab = $('[href=' + hashPieces[0] + ']');
+activeTab && activeTab.tab('show');
