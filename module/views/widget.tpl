@@ -98,6 +98,19 @@
               //link_elt_typeahead('input-{{wid}}-{{k}}');
               // On page loaded ...
               $(function() {
+                 // Typeahead: builds suggestion engine
+                  var hosts = new Bloodhound({
+                     datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
+                     queryTokenizer: Bloodhound.tokenizers.whitespace,
+                     remote: {
+                        url: '/lookup/%QUERY',
+                        filter: function (hosts) {
+                           return $.map(hosts, function (host) { return { value: host }; });
+                        }
+                     }
+                  });
+                  hosts.initialize();
+                  
                 // Typeahead: activation
                 var typeahead = $('#input-{{wid}}-{{k}}').typeahead({
                   hint: true,
