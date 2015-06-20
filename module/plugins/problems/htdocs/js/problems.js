@@ -238,9 +238,6 @@ $(document).ready(function(){
    // Problems element check boxes
    $('input[type=checkbox][data-type="business-impact"]').click(function (e) {
       var all=$(this).prop("checked");
-      console.log("BI: '"+$(this).data('item')+"'", all);
-      
-      // Do not expand collapsible container ...
       e.stopPropagation();
       
       // Stop/restart page refresh
@@ -264,8 +261,6 @@ $(document).ready(function(){
 
    // Problems element check boxes
    $('input[type=checkbox][data-type="problem"]').click(function (e) {
-      console.log("Element: ", $(this).data('item'))
-      // Do not expand collapsible container ...
       e.stopPropagation();
       
       // Stop page refresh
