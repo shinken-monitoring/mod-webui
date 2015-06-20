@@ -125,7 +125,11 @@ $(document).ready(function(){
    });
 });
 
-var hash = location.hash
-  , hashPieces = hash.split('?')
-  , activeTab = $('[href=' + hashPieces[0] + ']');
-activeTab && activeTab.tab('show');
+try {
+   var hash = location.hash
+     , hashPieces = hash.split('?')
+     , activeTab = $('[href=' + hashPieces[0] + ']');
+   activeTab && activeTab.tab('show');
+} catch(e) {
+   
+}
