@@ -759,16 +759,16 @@ class Webui_broker(BaseModule, Daemon):
     # The source variable describes the source of the calling. Are we displaying 
     # graphs for the element detail page (detail), or a widget in the dashboard (dashboard) ?
     def get_graph_uris(self, elt, graphstart, graphend, source = 'detail'):
-        logger.debug("[WebUI] Fetching graph URIs for %s", source)
+        logger.debug("[WebUI] Fetching graph URIs for %s (%s)", elt.host_name, source)
 
         uris = []
         for mod in self.modules_manager.get_internal_instances():
             try:
                 logger.debug("[WebUI] module %s, get_graph_uris", mod)
                 f = getattr(mod, 'get_graph_uris', None)
-                #safe_print("Get graph uris ", f, "from", mod.get_name())
                 if f and callable(f):
                     r = f(elt, graphstart, graphend, source)
+                    logger.debug("[WebUI] Fetched: %s", r)
                     uris.extend(r)
             except Exception, exp:
                 logger.warning("[WebUI] The mod %s raise an exception: %s, I'm tagging it to restart later", mod.get_name(), str(exp))
