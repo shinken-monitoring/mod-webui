@@ -1383,19 +1383,24 @@ class Webui_broker(BaseModule, Daemon):
         
         # All known hostgroups are level 0 groups ...
         for group in self.get_hostgroups(user=user):
-            self.set_hostgroup_level(group, 0, user)
+            if not hasattr(group, 'level'):
+                self.set_hostgroup_level(group, 0, user)
         
     def set_hostgroup_level(self, group, level, user=None):
         logger.debug("[WebUI] set_hostgroup_level, group: %s, level: %d", group.hostgroup_name, level)
+        logger.debug("[WebUI] set_hostgroup_level, group: %s", group)
         
         setattr(group, 'level', level)
                 
         # Search hostgroups referenced in another group
         if group.has('hostgroup_members'):
             for g in sorted(group.get_hostgroup_members()):
-                logger.debug("[WebUI] set_hostgroups_level, group: %s, level: %d", g, group.level + 1)
-                child_group = self.get_hostgroup(g)
-                self.set_hostgroup_level(child_group, level + 1, user)
+                try:
+                    child_group = self.get_hostgroup(g)
+                    logger.debug("[WebUI] set_hostgroup_level, , group: %s, level: %d", child_group.hostgroup_name, group.level + 1)
+                    self.set_hostgroup_level(child_group, level + 1, user)
+                except AttributeError:
+                    pass
         
     def get_hostgroups(self, user=None):
         items=self.datamgr.rg.hostgroups
