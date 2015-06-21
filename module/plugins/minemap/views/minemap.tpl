@@ -108,13 +108,6 @@ Invalid group name
    </div>
 
    <div>
-      <div class='col-lg-12'>
-         &nbsp;
-         %include("pagination_element", navi=navi, app=app, page="minemap/"+groupname, div_class="center no-margin")
-      </div>
-   </div>
-
-   <div>
       <div class="clearfix">
          <table class="table table-hover minemap">
             <thead>
@@ -167,13 +160,6 @@ Invalid group name
                %end
             </tbody>
          </table>
-      </div>
-   </div>
-
-   <div>
-      <div class='col-lg-12'>
-         &nbsp;
-         %include("pagination_element", navi=navi, app=app, page="minemap/"+groupname, div_class="center no-margin")
       </div>
    </div>
 </div>
