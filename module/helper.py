@@ -635,7 +635,7 @@ class Helper(object):
         
         If popover is true, a bootstrap popover is built, else a standard link ...
         '''
-        logger.debug("[WebUI] %s / %s / %s / %d" % (url, default_title, default_icon, popover))
+        logger.debug("[WebUI] get_urls: %s / %s / %s / %d" % (url, default_title, default_icon, popover))
         
         result = []
         for item in url.split('|'):
@@ -657,11 +657,9 @@ class Helper(object):
                 description = 'No description provided'
                 real_url = url
             
-            logger.warning("[WebUI] %s / %s / %s / %s" % (title, icon, real_url, description))
-                
             url = MacroResolver().resolve_simple_macros_in_string(real_url, obj.get_data_for_checks())
             
-            logger.debug("[WebUI] get_urls: %s / %s / %s / %s" % (title, icon, url, description))
+            logger.debug("[WebUI] get_urls, found: %s / %s / %s / %s" % (title, icon, url, description))
             
             if popover:
                 if url != '':
