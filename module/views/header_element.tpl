@@ -39,32 +39,57 @@
   </ul>
 
   <!-- Right buttons ... -->
+%synthesis = helper.get_synthesis(app.get_all_hosts_and_services(user))
+%s = synthesis['services']
+%h = synthesis['hosts']
   <ul class="nav navbar-top-links navbar-right">
     <li>
-       <a class="quickinfo states" href="/all?search=type:host" data-original-title='Hosts states' class="quickinfo">
-         <i class="fa fa-2x fa-server"></i>
-         <span class="label-top">
-            <span class="label label-as-badge label-success label-left">{{app.get_number_hosts_state(app.get_user_auth(), False)}}</span>
-            <span class="label label-as-badge label-danger label-right">{{app.get_number_hosts_state(app.get_user_auth(), True)}}</span>
-         </span>
-         <span class="label-bottom">
-            %host_state = app.get_percentage_hosts_state(app.get_user_auth(), False)
-            <span class="label label-as-badge label-{{'danger' if host_state <= 33 else 'warning' if host_state <= 66 else 'success'}}">{{host_state}}%</span>
-         </span>
+      %host_state = app.get_percentage_hosts_state(app.get_user_auth(), False)
+       <a class="quickinfo states" href="/all?search=type:host" data-original-title="Hosts states" data-toggle="popover" title="Overall hosts states, {{h['nb_elts']}} hosts" data-html="true" data-trigger="hover" data-placement="bottom" data-content='
+            <table class="table table-invisible table-condensed">
+               <tbody>
+                  <tr>
+                     %for state in "up", "unreachable", "down", "pending", "unknown", "ack", "downtime":
+                     <td>
+                       %label = "%s <i>(%s%%)</i>" % (h['nb_' + state], h['pct_' + state])
+                       {{!helper.get_fa_icon_state_and_label(cls="host", state=state, label=label, disabled=(not h["nb_" + state]))}}
+                     </td>
+                     %end
+                  </tr>
+               </tbody>
+            </table>
+         '>
+         <i class="fa fa-server"></i>
+         %state = 100.0-h['pct_up']
+         %threshold_warning=5.0
+         %threshold_critical=10.0
+         %label='success' if state < threshold_warning else 'warning' if state < threshold_critical else 'danger'
+         <span class="label label-as-badge label-{{label}}">{{host_state}}%</span>
        </a>
     </li>
    
     <li>
-       <a class="quickinfo states" href="/all?search=type:service" data-original-title='Services states' class="quickinfo">
-         <i class="fa fa-2x fa-bars"></i>
-         <span class="label-top">
-            <span class="label label-as-badge label-success label-left">{{app.get_number_service_state(app.get_user_auth(), False)}}</span>
-            <span class="label label-as-badge label-danger label-right">{{app.get_number_service_state(app.get_user_auth(), True)}}</span>
-         </span>
-         <span class="label-bottom">
-            %service_state = app.get_percentage_service_state(app.get_user_auth(), False)
-            <span class="label label-as-badge label-{{'danger' if host_state <= 33 else 'warning' if host_state <= 66 else 'success'}}">{{service_state}}%</span>
-         </span>
+      %service_state = app.get_percentage_service_state(app.get_user_auth(), False)
+       <a class="quickinfo states" href="/all?search=type:service" data-original-title="Services states" data-toggle="popover" title="Overall services states, {{s['nb_elts']}} services" data-html="true" data-trigger="hover" data-placement="bottom" data-content='
+            <table class="table table-invisible table-condensed">
+               <tbody>
+                  <tr>
+                     %for state in "ok", "warning", "critical", "pending", "unknown", "ack", "downtime":
+                     <td>
+                       %label = "%s <i>(%s%%)</i>" % (s["nb_" + state], s["pct_" + state])
+                       {{!helper.get_fa_icon_state_and_label(cls="service", state=state, label=label, disabled=(not s["nb_" + state]))}}
+                     </td>
+                     %end
+                  </tr>
+               </tbody>
+            </table>
+         '>
+         <i class="fa fa-bars"></i>
+         %state = 100-s['pct_ok']
+         %threshold_warning=5.0
+         %threshold_critical=10.0
+         %label='success' if state < threshold_warning else 'warning' if state < threshold_critical else 'danger'
+         <span class="label label-as-badge label-{{label}}">{{service_state}}%</span>
        </a>
     </li>
     
