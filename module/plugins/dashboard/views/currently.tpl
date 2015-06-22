@@ -214,7 +214,7 @@
             %threshold_warning=5.0
             %threshold_critical=10.0
             %font='ok' if state < threshold_warning else 'warning' if state < threshold_critical else 'critical'
-            <span class="badger-big badger-left">{{s['pct_warning']}} / {{s['nb_elts']}}</span>
+            <span class="badger-big badger-left">{{s['nb_warning']}} / {{s['nb_elts']}}</span>
             <span class="badger-big badger-right alert-{{font}}">{{s['pct_warning']}}%</span>
          </div>
          
