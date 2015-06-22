@@ -212,6 +212,16 @@ def manage_unknown_command(elt):
     return {'lnk': lnk, 'metrics': [(color, pct)], 'title': title}
 
 
+def get_stateid(elt):
+    state_id = elt.state_id
+
+    # For host, make DOWN as critical
+    if state_id == 1 and elt.__class__.my_type == 'host':
+        state_id = 2
+
+    return state_id
+
+
 def get_logarithmic(value, half):
     l_half = math.log(half, 10)
     print 'Half is', l_half
