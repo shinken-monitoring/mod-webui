@@ -103,7 +103,7 @@ function remove_element(name){
    if (selected_elements.length == 0){
       hide_toolbar();
       if (actions_enabled) $('#actions').hide();
-      show_select_all_button();
+      // show_select_all_button();
 
       // Restart page refresh timer
       reinit_refresh();
