@@ -38,7 +38,7 @@ from shinken.log import logger
 def get_perfometer_table_values(elt):
     # first try to get the command name called
     cmd = elt.check_command.call.split('!')[0]
-    logger.debug("[WebUI] Looking for perfometer value for element: %s, command: %s", elt.get_full_name(), cmd)
+    logger.info("[WebUI] Looking for perfometer value for element: %s, command: %s", elt.get_full_name(), cmd)
 
     tab = {'check_http': manage_check_http_command,
            'check_ping': manage_check_ping_command,
@@ -72,25 +72,19 @@ def manage_check_http_command(elt):
 
     # Percent of ok should be time/1s
     pct = get_logarithmic(v, 1)
-    
-    # Title
-    try:
-        uom = '' or m.uom
-        title = '%s=%s%s' % (name, value, uom)
-    except:
-        title = '%s=%s' % (name, value)
-
-    # Link
+    # Now get the color
+    # OK: #6f2 (102,255,34) green
+    # Warning: #f60 (255,102,0) orange
+    # Crit: #ff0033 (255,0,51)
+    base_color = {0: (102, 255, 34), 1: (255, 102, 0), 2: (255, 0, 51)}
+    state_id = get_stateid(elt)
+    color = base_color.get(state_id, (179, 196, 255))
+    s_color = 'RGB(%d,%d,%d)' % color
     lnk = '#'
-
-    # Get the color
-    base = {0: 'success', 1: 'warning', 2: 'danger', 3: 'info'}
-    color = base.get(elt.state_id, 'info')
-    
-    logger.debug("[WebUI] perfometer, manage command, metric: %s=%d -> %d", name, value, pct)
-
+    metrics = [(s_color, pct), ('white', 100-pct)]
+    title = '%ss' % v
+    #print "HTTP: return", {'lnk': lnk, 'metrics': metrics, 'title': title}
     return {'lnk': lnk, 'metrics': metrics, 'title': title}
-
 
 def manage_check_ping_command(elt):
     safe_print('Get check_ping perfdata of', elt.get_full_name())
@@ -108,23 +102,19 @@ def manage_check_ping_command(elt):
 
     # Percent of ok should be the log of time versus max/2
     pct = get_logarithmic(v, crit / 2)
+    # Now get the color
+    # OK: #6f2 (102,255,34) green
+    # Warning: #f60 (255,102,0) orange
+    # Crit: #ff0033 (255,0,51)
+    base_color = {0: (102, 255, 34), 1: (255, 102, 0), 2: (255, 0, 51)}
+    state_id = get_stateid(elt)
+    color = base_color.get(state_id, (179, 196, 255))
+    s_color = 'RGB(%d,%d,%d)' % color
 
-    # Title
-    try:
-        uom = '' or m.uom
-        title = '%s=%s%s' % (name, value, uom)
-    except:
-        title = '%s=%s' % (name, value)
-
-    # Link
     lnk = '#'
-
-    # Get the color
-    base = {0: 'success', 1: 'warning', 2: 'danger', 3: 'info'}
-    color = base.get(elt.state_id, 'info')
-    
-    logger.debug("[WebUI] perfometer, manage command, metric: %s=%d -> %d", name, value, pct)
-
+    metrics = [(s_color, pct), ('white', 100-pct)]
+    title = '%sms' % v
+    #print "HTTP: return", {'lnk': lnk, 'metrics': metrics, 'title': title}
     return {'lnk': lnk, 'metrics': metrics, 'title': title}
 
 
@@ -145,23 +135,25 @@ def manage_check_tcp_command(elt):
     # Percent of ok should be the log of time versus m.max / 2
     pct = get_logarithmic(v, m.max / 2)
 
-    # Title
-    try:
-        uom = '' or m.uom
-        title = '%s=%s%s' % (name, value, uom)
-    except:
-        title = '%s=%s' % (name, value)
+    # Now get the color
+    # OK: #6f2 (102,255,34) green
+    # Warning: #f60 (255,102,0) orange
+    # Crit: #ff0033 (255,0,51)
+    base_color = {0: (102, 255, 34), 1: (255, 102, 0), 2: (255, 0, 51)}
+    state_id = get_stateid(elt)
+    color = base_color.get(state_id, (179, 196, 255))
+    s_color = 'RGB(%d,%d,%d)' % color
 
-    # Link
+    #pct = 100 * (v / m.max)
+    # Convert to int
+    #pct = int(pct)
+    # Minimum 1%, maximum 100%
+    #pct = min(max(1, pct), 100)
     lnk = '#'
-
-    # Get the color
-    base = {0: 'success', 1: 'warning', 2: 'danger', 3: 'info'}
-    color = base.get(elt.state_id, 'info')
-    
-    logger.debug("[WebUI] perfometer, manage command, metric: %s=%d -> %d", name, value, pct)
-
-    return {'lnk': lnk, 'metrics': [(color, pct)], 'title': title}
+    metrics = [(s_color, pct), ('white', 100-pct)]
+    title = '%ss' % v
+    #print "HTTP: return", {'lnk': lnk, 'metrics': metrics, 'title': title}
+    return {'lnk': lnk, 'metrics': metrics, 'title': title}
 
 
 def manage_unknown_command(elt):
