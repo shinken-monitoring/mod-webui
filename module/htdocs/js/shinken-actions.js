@@ -4,6 +4,7 @@
      Gregory Starck, g.starck@gmail.com
      Hartmut Goebel, h.goebel@goebel-consult.de
      Andreas Karfusehr, andreas@karfusehr.de
+     Frederic Mohier, frederic.mohier@gmail.com
 
  This file is part of Shinken.
 

@@ -44,7 +44,7 @@ if(!Array.indexOf){
 **/
 function save_user_preference(key, value, callback) {
    $.post("/user/save_pref", { 'key' : key, 'value' : value}, function() {
-      raise_message_ok("User parameter "+key+" set to "+value);
+      raise_message_ok("User parameter "+key+" saved");
       if (callback)
          window[callback]();
    });
