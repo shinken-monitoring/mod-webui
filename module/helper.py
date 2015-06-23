@@ -26,6 +26,7 @@
 import time
 import copy
 import math
+import operator
 from pprint import pprint
 try:
     import json
@@ -707,7 +708,22 @@ class Helper(object):
 
         return None
 
-    def get_fa_icon_state(self, obj=None, cls='host', state='UP', disabled=False):
+    def get_fa_icon_state(self, obj=None, cls='host', state='UP', disabled=False, label=''):
+        '''
+            Get an Html formatted string to display host/service state
+            
+            If obj is specified, obj class and state are used.
+            If obj is None, cls and state parameters are used.
+            
+            If disabled is True, the font used is greyed
+            
+            If label is empty, only an icon is returne
+            If label is set as 'state', the icon title is used as text
+            Else, the content of label is used as text near the icon.
+            
+            Returns a span element containing a Font Awesome icon that depicts 
+           consistently the host/service current state (see issue #147)
+        '''
         state = obj.state.upper() if obj is not None else state.upper()
         flapping = (obj and obj.is_flapping) or state=='FLAPPING'
         ack = (obj and obj.problem_has_been_acknowledged) or state=='ACK'
@@ -745,19 +761,33 @@ class Helper(object):
             icon_color = 'fa-inverse'
         if downtime:
             icon = icons[cls]['DOWNTIME']
-            title += " and is in scheduled downtime"
+            title += " and in scheduled downtime"
             icon_style = 'style="opacity: 0.5"'
         elif ack:
             icon = icons[cls]['ACK']
-            title += " and is acknowledged"
+            title += " and acknowledged"
             icon_style = 'style="opacity: 0.5"'
         else:
             icon = icons[cls].get(state, 'UNKNOWN')
             icon_style = ""
-        front = '''<i class="fa fa-%s fa-stack-1x %s" %s></i>''' % (icon, icon_color, icon_style)
-        icon_text = '''<span class="fa-stack" title="%s">%s%s</span>''' % (title, back, front)
+        front = '''<i class="fa fa-%s fa-stack-1x %s"></i>''' % (icon, icon_color)
+        icon_text = '''<span class="fa-stack" %s title="%s">%s%s</span>''' % (icon_style, title, back, front)
 
-        return icon_text
+        if label=='':
+            return icon_text
+        else:
+            color = state.lower() if not disabled else 'greyed'
+            if label=='title':
+                label=title
+            return '''
+              <span class="font-%s">
+                 %s
+                 <span class="num">%s</span>
+              </span> 
+              ''' % (color,
+                     icon_text,
+                     label)
+        
 
     def get_fa_icon_state_and_label(self, obj=None, cls='host', state='UP', label="", disabled=False):
         color = state.lower() if not disabled else 'greyed'
@@ -978,23 +1008,32 @@ class Helper(object):
         if len(tp.dateranges) == 0:
             return ''
             
-        content = '''<table class="table table-condensed pull-left" style="table-layout: fixed; word-wrap: break-word;"><tbody style="font-size:x-small;">'''
-        for dr in tp.dateranges:
+        # Build an Html table ...
+        # content = '''<table class="table table-condensed"><tbody style="font-size:x-small;">'''
+        content = '''<dl>'''
+        for dr in sorted(tp.dateranges, key=operator.methodcaller("get_start_and_end_time")):
+            # content += '''<tr><td colspan="2">%s</td></tr>''' % (dr)
             (dr_start, dr_end) = dr.get_start_and_end_time()
             dr_start = time.strftime("%d %b %Y", time.localtime(dr_start))
             dr_end = time.strftime("%d %b %Y", time.localtime(dr_end))
-            content += '''<tr><td>From: <strong>%s</strong> to: <strong>%s</strong>''' % (dr_start, dr_end)
+            if dr_start==dr_end:
+                # content += '''<tr><td colspan="2"><strong>%s</strong>:</td></tr>''' % (dr_start)
+                content += '''<dd>%s:</dd>''' % (dr_start)
+            else:
+                # content += '''<tr><td>From: <strong>%s</strong></td> <td>To: <strong>%s</strong></td></tr>''' % (dr_start, dr_end)
+                content += '''<dd>From: %s, to: %s</dd>''' % (dr_start, dr_end)
+                
             if len(dr.timeranges) > 0:
-                content += ''' ('''
+                content += '''<dt>'''
                 idx=1
                 for timerange in dr.timeranges:
-                    if idx != 1 and idx != len(dr.timeranges):
-                        content += ''', '''
-                    content += '''<strong>%s-%s</strong>''' % ("%02d:%02d" % (timerange.hstart, timerange.mstart), "%02d:%02d" % (timerange.hend, timerange.mend))
+                    # if idx != 1 and idx != len(dr.timeranges):
+                        # content += ''', '''
+                    content += '''&nbsp;%s-%s''' % ("%02d:%02d" % (timerange.hstart, timerange.mstart), "%02d:%02d" % (timerange.hend, timerange.mend))
                     idx += 1
-                content += ''')'''
-            content += '''</td></tr>'''
-        content += '''</tbody></table>'''
+                content += '''</dt>'''
+        # content += '''</tbody></table>'''
+        content += '''</dl>'''
     
         return content
 
