@@ -89,8 +89,13 @@ function add_element(name){
    
    selected_elements.push(name);
 
-   show_toolbar();
-   if (actions_enabled) $('#actions').show();
+   if (selected_elements.length > 0) {
+      show_toolbar();
+      if (actions_enabled) $('#actions').show();
+      
+      // Stop page refresh
+      stop_refresh();
+   }
 }
 
 /* And of course when we remove it... */
@@ -103,7 +108,6 @@ function remove_element(name){
    if (selected_elements.length == 0){
       hide_toolbar();
       if (actions_enabled) $('#actions').hide();
-      // show_select_all_button();
 
       // Restart page refresh timer
       reinit_refresh();
@@ -236,35 +240,20 @@ $(document).ready(function(){
    }
 
    // Problems element check boxes
-   $('input[type=checkbox][data-type="business-impact"]').click(function (e) {
-      var all=$(this).prop("checked");
-      e.stopPropagation();
-      
-      // Stop/restart page refresh
-      if (all) {
-         stop_refresh();
+   $('button[data-type="business-impact"]').click(function (e) {
+      if (selected_elements.length == 0){
+         $(this).html("Unselect all elements");
       } else {
-         start_refresh();
+         $(this).html("Select all elements");
       }
       
       // Add/remove element from selection
-      // add_remove_elements($(this).data('item'));
-      $('input[type=checkbox][data-type="problem"][data-business-impact="'+$(this).data('item')+'"]').each(function(){
-         // Add/remove element from selection
-         if (all) {
-            add_element($(this).data('item'));
-         } else {
-            remove_element($(this).data('item'));
-         }
-      });
+      $('input[type=checkbox][data-type="problem"][data-business-impact="'+$(this).data('item')+'"]').trigger('click');
    });
 
    // Problems element check boxes
    $('input[type=checkbox][data-type="problem"]').click(function (e) {
       e.stopPropagation();
-      
-      // Stop page refresh
-      stop_refresh();
       
       // Add/remove element from selection
       add_remove_elements($(this).data('item'));

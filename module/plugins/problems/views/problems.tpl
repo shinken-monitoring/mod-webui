@@ -37,13 +37,13 @@
 
 <!-- Problems filtering and display -->
 <div class="row">
- <!-- Left panel, toolbar and active filters -->
- <div id="toolbar" class="col-lg-3 col-md-4 col-sm-4" style="display:none;">
-
    %if actions_allowed:
+   <!-- Left panel, toolbar and active filters -->
+   <div id="toolbar" class="col-lg-3 col-md-4 col-sm-4" style="display:none;">
+
    %include("_panel_actions.tpl")
+   </div>
    %end
- </div>
 
  <!-- Right panel, with all problems -->
  <div id="problems" class="col-lg-12 col-md-12 col-sm-12">
@@ -70,14 +70,7 @@
    <!--<div class="panel-heading">-->
    <!--</div>-->
    <div class="panel-body">
-    <form class="form-inline pull-left well well-sm">
-         <div class="checkbox form-group">
-            <label>
-               <input type="checkbox" value="" id="selector-bi-{{business_impact}}" data-type="business-impact" data-business-impact="{{business_impact}}" data-item="{{business_impact}}">
-               Select all elements
-            </label>
-         </div>
-    </form>
+    <button type="button" class="btn btn-default btn-xs pull-left" data-type="business-impact" data-business-impact="{{business_impact}}" data-item="{{business_impact}}">Select all elements</button>
 
     <i class="pull-right small">{{len(list(bi_pbs))}} elements</i>
     <h3 class="text-center">Business impact: {{!helper.get_business_impact_text(business_impact, text=True)}}</h3>
@@ -100,7 +93,7 @@
        %# Host information ...
        <tr data-toggle="collapse" data-target="#details-{{helper.get_html_id(pb)}}" class="accordion-toggle">
           <td>
-            <input type="checkbox" value="" id="selector-{{helper.get_html_id(pb)}}" data-type="problem" data-business-impact="{{business_impact}}" data-item="{{pb.get_full_name()}}">
+            <input type="checkbox" class="input-sm" value="" id="selector-{{helper.get_html_id(pb)}}" data-type="problem" data-business-impact="{{business_impact}}" data-item="{{pb.get_full_name()}}">
           </td>
           <td align="center">
             {{!helper.get_fa_icon_state(pb)}}
@@ -244,6 +237,7 @@
       %end
    </div>
 
+ </div>
 </div>
 
 <script type="text/javascript">
