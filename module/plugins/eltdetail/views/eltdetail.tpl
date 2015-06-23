@@ -1323,11 +1323,11 @@ Invalid element name
                <script>
                $('#tab_to_graphs').on('shown.bs.tab', function (e) {
                   %uris = dict()
-                  %uris['4h'] = app.get_graph_uris(elt, fourhours, now, source='')
-                  %uris['1d'] = app.get_graph_uris(elt, lastday,   now, source='')
-                  %uris['1w'] = app.get_graph_uris(elt, lastweek,  now, source='')
-                  %uris['1m'] = app.get_graph_uris(elt, lastmonth, now, source='')
-                  %uris['1y'] = app.get_graph_uris(elt, lastyear,  now, source='')
+                  %uris['4h'] = app.get_graph_uris(elt, fourhours, now)
+                  %uris['1d'] = app.get_graph_uris(elt, lastday,   now)
+                  %uris['1w'] = app.get_graph_uris(elt, lastweek,  now)
+                  %uris['1m'] = app.get_graph_uris(elt, lastmonth, now)
+                  %uris['1y'] = app.get_graph_uris(elt, lastyear,  now)
 
                   // let's create the html content for each time range
                   var element='/{{elt_type}}/{{elt.get_full_name()}}';
