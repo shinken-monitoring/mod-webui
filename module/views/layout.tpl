@@ -63,6 +63,9 @@
       <link href="/static/css/bootstrap-theme.min.css" rel="stylesheet">
       <link href="/static/css/font-awesome.min.css" rel="stylesheet">
 
+      <link href="/static/css/metisMenu.min.css" rel="stylesheet">
+      <link href="/static/css/sb-admin-2.css" rel="stylesheet">
+      
       <link href="/static/css/jquery.meow.css" rel="stylesheet">
       <link href="/static/css/typeahead.css" rel="stylesheet">
 
@@ -71,8 +74,6 @@
       <link href="/static/css/shinken-layout.css" rel="stylesheet">
 
       <link href="/static/css/timeline.css" rel="stylesheet">
-      <link href="/static/css/metisMenu.min.css" rel="stylesheet">
-      <link href="/static/css/sb-admin-2.css" rel="stylesheet">
 
       <!-- css3 effect for pulse is not available on IE It's not real comment, if so it will not work. -->
       <!--[IF !IE]> -->

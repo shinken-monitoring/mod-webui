@@ -53,6 +53,21 @@ html, body {
  */
 
 /*
+ * Side bar menu - width 200px
+ */
+@media(min-width:768px) {
+    #page-wrapper {
+        margin: 0 0 0 200px;
+    }
+}
+@media(min-width:768px) {
+    .sidebar {
+        width: 200px;
+    }
+}
+
+
+/*
  * Navigation bar, company logo
  */
 .header .navbar-brand {
@@ -63,9 +78,6 @@ html, body {
   padding: 1px;
   margin: 0;
 }
-
-
-
 
 
 /*
