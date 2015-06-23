@@ -53,6 +53,33 @@ html, body {
  */
 
 /*
+ * Popover
+ */
+.popover {
+   max-width: none;
+   white-space: nowrap; word-wrap: break-word;
+}
+
+/*
+ * Table with ellipsis for text too large in columns
+ */
+.table-nowrap {
+   table-layout:fixed;
+}
+
+.table-nowrap td {
+   white-space: nowrap;
+   overflow: hidden;
+   text-overflow: ellipsis;
+}
+
+/*
+ * ------------------------------------------------------------------------
+ * Page layout
+ * ------------------------------------------------------------------------
+ */
+
+/*
  * Side bar menu - width 200px
  */
 @media(min-width:768px) {
