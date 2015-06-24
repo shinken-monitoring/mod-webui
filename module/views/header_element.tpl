@@ -94,16 +94,18 @@
     </li>
     
     <li>
-      <a class="quickinfo" data-original-title='Currently' href="/dashboard/currently">
+      <a class="quickinfo" data-original-title='Currently' href="/dashboard/currently" title="Currently">
          <i class="fa fa-eye"></i>
       </a>
     </li>
 
+    %if refresh:
     <li>
-       <a class="quickinfo" data-original-title='Refreshing'>
-         <i id="header_loading" class="fa fa-spinner fa-spin"></i>
+       <a class="quickinfo" data-original-title='Refreshing' title="Automatic refresh" href="javascript:toggle_refresh()">
+         <i id="header_loading" class="fa fa-refresh"></i>
        </a>
     </li>
+    %end
    
     <!-- User info -->
     <li class="dropdown user user-menu">
@@ -209,21 +211,6 @@
       $('[data-toggle="popover"]').popover({
         html: true,
         template: '<div class="popover img-popover"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
-      });
-      
-      // Manage refresh start/stop
-      $('#header_loading').click(function (e) {
-         e.stopPropagation();
-         
-         // Manage refresh state ...
-         $(this).each(function(){
-            if ($(this).hasClass('fa-spin')) {
-               stop_refresh();
-            } else {
-               start_refresh();
-            }
-            $(this).toggleClass('fa-spin');
-         });
       });
    });
 </script>
