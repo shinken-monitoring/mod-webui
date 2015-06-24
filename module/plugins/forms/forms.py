@@ -38,24 +38,45 @@ def form_submit_check(name):
     return {'app': app, 'user': user, 'name': name, 'obj_type': t}
 
 
+def form_change_var(name):
+    user = app.check_user_authentication()
+
+    variable = app.request.GET.get('variable', '')
+    value = app.request.GET.get('value', '')
+    
+    if '/' in name:
+        elt = app.get_service(name.split('/')[0], name.split('/')[1])
+    else:
+        elt = app.get_host(name)
+
+    return {'app': app, 'user': user, 'elt': elt, 'name': name, 'variable': variable, 'value': value}
+
 def form_var(name):
     user = app.check_user_authentication()
 
-    h = app.datamgr.get_host(name)
-            
-    return {'app': app, 'elt': h, 'user': user, 'name': name}
+    if '/' in name:
+        elt = app.get_service(name)
+    else:
+        elt = app.get_host(name)
+
+    return {'app': app, 'user': user, 'elt': elt, 'name': name}
 
 def form_ack(name):
     user = app.check_user_authentication()
 
     return {'app': app, 'user': user, 'name': name}
 
-def form_comment(name):
+def form_comment_add(name):
     user = app.check_user_authentication()
 
     return {'app': app, 'user': user, 'name': name}
 
 def form_comment_delete(name):
+    user = app.check_user_authentication()
+
+    return {'app': app, 'user': user, 'name': name}
+
+def form_comment_delete_all(name):
     user = app.check_user_authentication()
 
     return {'app': app, 'user': user, 'name': name}
@@ -72,11 +93,15 @@ def form_downtime_delete(name):
 
 
 pages = {
+        form_change_var:            {'routes': ['/forms/change_var/:name#.+#'], 'view': 'form_change_var'},
+        form_var:                   {'routes': ['/forms/custom_var/:name#.+#'], 'view': 'form_custom_var'},
+        
+        form_comment_add:           {'routes': ['/forms/comment/:name#.+#'], 'view': 'form_comment'},
+        form_comment_delete:        {'routes': ['/forms/comment_delete/:name#.+#'], 'view': 'form_comment_delete'},
+        form_comment_delete_all:    {'routes': ['/forms/comment_delete_all/:name#.+#'], 'view': 'form_comment_delete_all'},
+        
         form_submit_check: {'routes': ['/forms/submit_check/:name#.+#'], 'view': 'form_submit_check'},
-        form_var: {'routes': ['/forms/custom_var/:name#.+#'], 'view': 'form_custom_var'},
         form_ack: {'routes': ['/forms/acknowledge/:name#.+#'], 'view': 'form_ack'},
-        form_comment: {'routes': ['/forms/comment/:name#.+#'], 'view': 'form_comment'},
         form_downtime: {'routes': ['/forms/downtime/:name#.+#'], 'view': 'form_downtime'},
-        form_comment_delete: {'routes': ['/forms/comment_delete/:name#.+#'], 'view': 'form_comment_delete'},
         form_downtime_delete: {'routes': ['/forms/downtime_delete/:name#.+#'], 'view': 'form_downtime_delete'},
         }
