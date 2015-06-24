@@ -32,6 +32,7 @@
 
 <!-- Problems filtering and display -->
  <div id="problems">
+
    %if not pbs:
    <center>
      %if search_string:
@@ -45,6 +46,8 @@
 
    %include("_problems_synthesis.tpl", pbs=pbs)
 
+   %include("_panel_actions.tpl")
+   
    %from itertools import groupby
    %pbs = sorted(pbs, key=lambda x: x.business_impact, reverse=True)
    %for business_impact, bi_pbs in groupby(pbs, key=lambda x: x.business_impact):
@@ -220,10 +223,6 @@
    </div>
    </div>
       %end
-
-   %include("_panel_actions.tpl")
-
-
          
     %# Close problems div ...
     %end
