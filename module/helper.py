@@ -364,6 +364,7 @@ class Helper(object):
         hosts = [i for i in elts if i.__class__.my_type == 'host']
         h['elts'] = hosts
         h['nb_elts'] = len(hosts)
+        h['bi'] = max(h.business_impact for h in hosts)
         for state in 'up', 'down', 'unreachable', 'pending':
             h[state] = [i for i in hosts if i.state == state.upper()]
         h['unknown'] = list(set(h['elts']) - set(h['up']) - set(h['down']) - set(h['unreachable']) - set(h['pending']))
@@ -380,6 +381,10 @@ class Helper(object):
         services = [i for i in elts if i.__class__.my_type == 'service']
         s['elts'] = services
         s['nb_elts'] = len(services)
+        if len(services) != 0:
+            s['bi'] = max(s.business_impact for s in services)
+        else:
+            s['bi'] = 0
         for state in 'ok', 'critical', 'warning', 'pending', 'unknown':
             s[state] = [i for i in services if i.state == state.upper()]
         s['ack'] = [i for i in services if i.problem_has_been_acknowledged]
