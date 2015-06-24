@@ -4,6 +4,7 @@
      Gregory Starck, g.starck@gmail.com
      Hartmut Goebel, h.goebel@goebel-consult.de
      Andreas Karfusehr, andreas@karfusehr.de
+     Frederic Mohier, frederic.mohier@gmail.com
 
  This file is part of Shinken.
 
@@ -42,6 +43,7 @@ function postpone_refresh(){
 }
 
 function do_refresh(){
+   console.debug("Refreshing ...");
    $.get(document.URL, {}, function(data) {
       var $response = $('<div />').html(data);
       $('#page-content').html($response.find('#page-content').html());
@@ -58,18 +60,6 @@ function do_refresh(){
 
 /* React to an action return of the /action page. Look at status
  to see if it's ok or not */
-function check_gotfirstdata_result(response){
-   if (response.status == 200 && response.text == '1') {
-      if (! refresh_stopped) {
-         // Go Refresh
-         do_refresh();
-      }
-
-      reinit_refresh();
-   } else {
-      postpone_refresh();
-  }
-}
 
 
 /* We will try to see if the UI is not in restating mode, and so
@@ -78,7 +68,19 @@ function check_for_data(){
    $.ajax({
       "url": '/gotfirstdata?callback=?',
       "dataType": "jsonp",
-      "success": check_gotfirstdata_result,
+      "success": function (response) {
+         if (response.status == 200 && response.text == '1') {
+            if (! refresh_stopped) {
+               // Go Refresh
+               do_refresh();
+            }
+
+            reinit_refresh();
+         } else {
+            postpone_refresh();
+        }
+      }
+      ,
       "error": postpone_refresh
    });
 }
@@ -112,6 +114,7 @@ function stop_refresh(){
 /* Someone ask us to reinit the refresh so the user will have time to
    do some things like ask actions or something like that */
 function reinit_refresh(){
+   console.debug("Refresh restart: ", app_refresh_period);
    refresh_timeout = app_refresh_period;
 }
 
@@ -119,17 +122,28 @@ function reinit_refresh(){
 $(document).ready(function(){
    setInterval("check_refresh();", 1000);
    
-   // Every link that changes hash ...
-   $("a[href^=#]").on("click",function(e){
-      // console.log('New hash: ', e.target.hash, ', url before was: ', document.URL)
-   });
-});
-
-try {
-   var hash = location.hash
-     , hashPieces = hash.split('?')
-     , activeTab = $('[href=' + hashPieces[0] + ']');
-   activeTab && activeTab.tab('show');
-} catch(e) {
+   // Look at the hash part of the URI. If it match a nav name, go for it
+   if (location.hash.length > 0) {
+      console.debug('Displaying tab: ', location.hash)
+      $('.nav-tabs li a[href="' + location.hash + '"]').trigger('click');
+   } else {
+      console.debug('Displaying first tab')
+      $('.nav-tabs li a:first').trigger('click');
+   }
    
-}
+   // Avoid scrolling the window when a nav tab is selected ...
+   $('.nav-tabs li a').click(function(e){
+      console.debug('Clicked ', $(this).attr('href'))
+      // Tried to stop bootstrap scoll t oanchor effect ...
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      // Display tab
+      $(this).tab('show');
+   });
+
+   // When a nav item is selected update the page hash
+   $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+      console.debug('Shown ', $(this).attr('href'))
+      location.hash = $(this).attr('href');
+   })
+});

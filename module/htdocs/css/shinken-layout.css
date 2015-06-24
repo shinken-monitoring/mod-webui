@@ -56,8 +56,14 @@ html, body {
  * Popover
  */
 .popover {
-   max-width: none;
+   max-width: 640px;
+/*
    white-space: nowrap; word-wrap: break-word;
+*/
+}
+
+.popover-medium {
+   max-width: 480px;
 }
 
 /*

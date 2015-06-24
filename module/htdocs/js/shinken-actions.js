@@ -31,6 +31,7 @@ function capitalize (text) {
 
 /* ************************************* Launch the request ******************* */
 function launch(url, response_message){
+   console.debug('Launch external command: ', url);
    $.ajax({
       "url": url+'?response_text='+response_message+'&callback=?',
       "dataType": "jsonp",
@@ -110,7 +111,7 @@ function get_elements(name){
       elt.nameslash = elts[0]+'/'+elts[1];
     
       // And now for all elements, change the / into a $SLASH$ macro
-      for(var i=2; i<elts.length; i++){
+      for (var i=2; i<elts.length; i++){
          elt.namevalue = elt.namevalue+ '$SLASH$'+ elts[i];
          elt.nameslash = elt.nameslash+ '$SLASH$'+ elts[i];
       }
@@ -185,7 +186,12 @@ Changes the value of a custom host variable.
 */
 function change_custom_var(name, custom_var, value){
    var elts = get_elements(name);
-   var url = '/action/CHANGE_CUSTOM_'+elts.type_long+'_VAR/'+elts.nameslash+'/'+custom_var+'/'+value;
+   var url = '/action/CHANGE_CUSTOM_';
+   if (elts.type == 'HOST'){
+      url += 'HOST_VAR/'+elts.nameslash+'/'+custom_var+'/'+value;
+   } else {
+      url += 'SVC_VAR/'+elts.nameslash+'/'+custom_var+'/'+value;
+   }
    // We can launch it :)
    launch(url, capitalize(elts.type)+': '+name+', custom variable changed');
 }
@@ -314,13 +320,14 @@ function disable_event_handlers(elts){
    launch(url, capitalize(elts.type)+', event handler disabled');
 }
 
+
 function toggle_flap_detection(name, b){
    var elts = get_elements(name);
-   // Inverse the active check or not for the element
-   if(b){ //go disable
+   // Inverse the flap detection for the element
+   if (b) { //go disable
       var url = '/action/DISABLE_'+elts.type+'_FLAP_DETECTION/'+elts.nameslash;
       launch(url, capitalize(elts.type)+', flap detection disabled');
-   }else{ // Go enable
+   } else {
       var url = '/action/ENABLE_'+elts.type+'_FLAP_DETECTION/'+elts.nameslash;
       launch(url, capitalize(elts.type)+', flap detection enabled');
    }

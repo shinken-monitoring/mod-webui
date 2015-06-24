@@ -4,6 +4,7 @@
      Gregory Starck, g.starck@gmail.com
      Hartmut Goebel, h.goebel@goebel-consult.de
      Andreas Karfusehr, andreas@karfusehr.de
+     Frederic Mohier, frederic.mohier@gmail.com
 
  This file is part of Shinken.
 
@@ -22,20 +23,6 @@
 */
 
 /***************************************************************************/
-
-/**
- * Some browser do NOT have indexOf for arrays... so we add it!
-**/
-if(!Array.indexOf){
-    Array.prototype.indexOf = function(obj){
-        for(var i=0; i<this.length; i++){
-            if(this[i]==obj){
-                return i;
-            }
-        }
-        return -1;
-    }
-}
 
 /**
  * Save current user preference value: 
