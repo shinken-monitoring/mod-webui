@@ -23,7 +23,7 @@
   <div class="form-group">
     <label class="sr-only" for="search">Filter</label>
     <div class="input-group">
-      <span class="input-group-addon"><i class="fa fa-search"></i></span>
+      <span class="input-group-addon hidden-xs hidden-sm"><i class="fa fa-search"></i></span>
       <!--:TODO:maethor:150609: Make the responsive-->
       <input class="form-control" type="search" id="search" name="search" value="{{ search_string }}">
     </div>
