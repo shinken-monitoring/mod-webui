@@ -1,4 +1,4 @@
-%rebase("fullscreen", js=['dashboard/js/screenfull.js'], css=['dashboard/css/dashboard-currently.css'], title='Shinken currently', print_header=False, print_menu=False, print_title=False, print_footer=False, refresh=True)
+%rebase("fullscreen", css=['dashboard/css/currently.css'], title='Shinken currently')
 
 %helper = app.helper
 
@@ -8,22 +8,23 @@
       $('#clock').jclock({ format: '%H:%M:%S' });
       $('#date').jclock({ format: '%A, %B %d' });
 
+      // Fullscreen management
+      if (screenfull.enabled) {
+         $('a[action="fullscreen-request"]').click(function() {
+            screenfull.request($('#inner_depgraph')[0]);
+         });
+
+         // Trigger the onchange() to set the initial values
+         screenfull.onchange();
+      }
+
       // On resize ...
       $(window).bind("load resize", function() {
-         topOffset = 0;
          width = (this.window.innerWidth > 0) ? this.window.innerWidth : this.screen.width;
-
          height = ((this.window.innerHeight > 0) ? this.window.innerHeight : this.screen.height) - 1;
-         height = height - topOffset;
+
          if (height < 1) height = 1;
-         if (height > topOffset) {
-            $("#page-wrapper").css("min-height", (height) + "px");
-            $("section.content").css("min-height", (height-25) + "px");
-         }
-         
-         $('#state-icons').each(function() {
-            $(this).css('margin-top', (height - $('#back-home').height() - $('#date-time').height() - $('#overall-state').height() - $(this).height() - 26) + "px");
-         });
+         $("#page-wrapper").css("min-height", (height-19) + "px");
       });
    });
 </script>
@@ -43,12 +44,13 @@
 <div id="back-home">
    <ul class="nav nav-pills">
       <li> <a href="/dashboard" class="font-darkgrey"><i class="fa fa-home"></i></a> </li>
+      <li> <a href="#" action="fullscreen-request" class="font-darkgrey"><i class="fa fa-desktop"></i></a> </li>
    </ul>
 </div>
 %end
 <div id="date-time">
-   <div id="clock"></div>
-   <div id="date"></div>
+   <h1 id="clock"></h1>
+   <h3 id="date"></h3>
 </div>
 
 %synthesis = helper.get_synthesis(app.get_all_hosts_and_services(user))
@@ -112,7 +114,7 @@
             <span class="badger-big badger-right alert-{{font}}">{{h['pct_up']}}%</span>
          </div>
          
-         <i class="fa fa-5x fa-server font-white"></i>
+         <i class="fa fa-5x fa-server"></i>
          <p class="icon_title font-{{font}}">&nbsp;Hosts up</p>
          
       %if username != 'anonymous':
@@ -133,7 +135,7 @@
             <span class="badger-big badger-right alert-{{font}}">{{h['pct_unreachable']}}%</span>
          </div>
          
-         <i class="fa fa-5x fa-server font-white"></i>
+         <i class="fa fa-5x fa-server"></i>
          <p class="icon_title font-{{font}}">&nbsp;Hosts unreachable</p>
          
       %if username != 'anonymous':
@@ -154,7 +156,7 @@
             <span class="badger-big badger-right alert-{{font}}">{{h['pct_down']}}%</span>
          </div>
          
-         <i class="fa fa-5x fa-server font-white"></i>
+         <i class="fa fa-5x fa-server"></i>
          <p class="icon_title font-{{font}}">&nbsp;Hosts down</p>
          
       %if username != 'anonymous':
@@ -175,7 +177,7 @@
             <span class="badger-big badger-right alert-{{font}}">{{h['pct_unknown']}}%</span>
          </div>
          
-         <i class="fa fa-5x fa-server font-white"></i>
+         <i class="fa fa-5x fa-server"></i>
          <p class="icon_title font-{{font}}">&nbsp;Hosts unknown</p>
          
       %if username != 'anonymous':
@@ -197,7 +199,7 @@
             <span class="badger-big badger-right alert-{{font}}">{{s['pct_ok']}}%</span>
          </div>
          
-         <i class="fa fa-5x fa-bars font-white"></i>
+         <i class="fa fa-5x fa-bars"></i>
          <p class="icon_title font-{{font}}">&nbsp;Services ok</p>
          
       %if username != 'anonymous':
@@ -218,7 +220,7 @@
             <span class="badger-big badger-right alert-{{font}}">{{s['pct_warning']}}%</span>
          </div>
          
-         <i class="fa fa-5x fa-bars font-white"></i>
+         <i class="fa fa-5x fa-bars"></i>
          <p class="icon_title font-{{font}}">&nbsp;Services warning</p>
          
       %if username != 'anonymous':
@@ -239,7 +241,7 @@
             <span class="badger-big badger-right alert-{{font}}">{{s['pct_critical']}}%</span>
          </div>
          
-         <i class="fa fa-5x fa-bars font-white"></i>
+         <i class="fa fa-5x fa-bars"></i>
          <p class="icon_title font-{{font}}">&nbsp;Services critical</p>
          
       %if username != 'anonymous':
@@ -260,7 +262,7 @@
             <span class="badger-big badger-right alert-{{font}}">{{s['pct_unknown']}}%</span>
          </div>
          
-         <i class="fa fa-5x fa-bars font-white"></i>
+         <i class="fa fa-5x fa-bars"></i>
          <p class="icon_title font-{{font}}">&nbsp;Services unknown</p>
          
       %if username != 'anonymous':
@@ -287,7 +289,7 @@
             <span class="badger-big badger-left alert-{{'critical' if s_state == 2 else 'warning' if s_state == 1 else 'ok'}}">{{s_problems}}</span>
          </div>
 
-         <i class="fa fa-5x fa-exclamation-triangle font-white"></i>
+         <i class="fa fa-5x fa-exclamation-triangle"></i>
          <p class="icon_title itproblem">&nbsp;IT Problems</p>
          
       %if username != 'anonymous':
@@ -304,7 +306,7 @@
             <span title="Number of not acknownledged IT problems." class="badger-big alert-{{'ok' if overall_state == 0 else 'warning' if overall_state == 1 else 'critical'}}">{{app.get_overall_state_problems_count(app.get_user_auth())}}</span>
          </div>
          
-         <i class="fa fa-5x fa-flash font-white"></i>
+         <i class="fa fa-5x fa-flash"></i>
          <p class="icon_title impacts">&nbsp;Impacts</p>
          
       %if username != 'anonymous':

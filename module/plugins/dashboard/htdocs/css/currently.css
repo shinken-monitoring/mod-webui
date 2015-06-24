@@ -92,7 +92,9 @@ body, section.content {
 
 #state-icons {
    text-align: center;
+/*
    margin-top: 100px;
+*/
 }
 
 #state-icons div {

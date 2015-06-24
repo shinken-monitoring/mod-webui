@@ -5,7 +5,7 @@
 %#if not 'title' in locals(): title = 'Untitled ...'
 %setdefault('js', [])
 %setdefault('css', [])
-%setdefault('title', 'Untitled…')
+%setdefault('title', 'Untitled ...')
 
 %# Layout is built with:
 %# - page header: logo, top navigation bar, indicators, user menu
@@ -73,8 +73,6 @@
 
       <link href="/static/css/shinken-layout.css" rel="stylesheet">
 
-      <link href="/static/css/timeline.css" rel="stylesheet">
-
       <!-- css3 effect for pulse is not available on IE It's not real comment, if so it will not work. -->
       <!--[IF !IE]> -->
       <link href="/static/css/pulse.css" rel="stylesheet">
@@ -88,7 +86,7 @@
       <!-- Scripts
       ================================================== -->
       <script src="/static/js/jquery-1.11.1.min.js"></script>
-      <script src="/static/js/jquery-ui-1.10.3.min.js"></script>
+      <!--<script src="/static/js/jquery-ui-1.10.3.min.js"></script>-->
       <script src="/static/js/bootstrap.min.js"></script>
 
       <script src="/static/js/metisMenu.min.js"></script>
@@ -104,6 +102,8 @@
       <script src="/static/js/jquery.meow.js"></script>
       <script src="/static/js/typeahead.bundle.min.js"></script>
 
+      <script src="/static/js/screenfull.js"></script>
+      
       <!--Shinken ones : refresh pages -->
       %if refresh:
       <script>
