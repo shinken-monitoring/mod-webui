@@ -5,7 +5,7 @@
 %#if not 'title' in locals(): title = 'Untitled ...'
 %setdefault('js', [])
 %setdefault('css', [])
-%setdefault('title', 'Untitled…')
+%setdefault('title', 'Untitled ...')
 
 %# Layout is built with:
 %# - page header: logo, top navigation bar, indicators, user menu

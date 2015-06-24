@@ -89,9 +89,12 @@ html, body {
  * Side bar menu - width 200px
  */
 @media(min-width:768px) {
-    #page-wrapper {
-        margin: 0 0 0 200px;
-    }
+   #page-wrapper {
+      margin: 0 0 0 200px;
+   }
+   #page-wrapper.fullscreen {
+      margin: 0 0 0 0;
+   }
 }
 @media(min-width:768px) {
     .sidebar {

@@ -5,10 +5,10 @@
 %#if not 'title' in locals(): title = 'Untitled ...'
 %setdefault('js', [])
 %setdefault('css', [])
-%setdefault('title', 'Untitled…')
+%setdefault('title', 'Untitled ...')
 
 %# Current page may be refreshed or not
-%setdefault('refresh', False)
+%setdefault('refresh', True)
 
 %setdefault('user', None)
 %setdefault('app', None)
@@ -47,9 +47,6 @@
       <link href="/static/css/bootstrap-theme.min.css" rel="stylesheet">
       <link href="/static/css/font-awesome.min.css" rel="stylesheet">
 
-      <link href="/static/css/jquery.meow.css" rel="stylesheet">
-      <link href="/static/css/typeahead.css" rel="stylesheet">
-
       <link href="/static/css/shinken-layout.css" rel="stylesheet">
 
       %# And now for css files
@@ -83,7 +80,7 @@
 
    <body>
       <div class="container-fluid">
-         <div id="page-wrapper">
+         <div id="page-wrapper" class="fullscreen">
             <!-- Page content -->
             <section class="content">
             %include
