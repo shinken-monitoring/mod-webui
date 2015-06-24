@@ -364,7 +364,7 @@ class Helper(object):
         hosts = [i for i in elts if i.__class__.my_type == 'host']
         h['elts'] = hosts
         h['nb_elts'] = len(hosts)
-        if len(hosts) != 0:
+        if hosts:
             h['bi'] = max(h.business_impact for h in hosts)
         else:
             h['bi'] = 0
@@ -384,7 +384,7 @@ class Helper(object):
         services = [i for i in elts if i.__class__.my_type == 'service']
         s['elts'] = services
         s['nb_elts'] = len(services)
-        if len(services) != 0:
+        if services:
             s['bi'] = max(s.business_impact for s in services)
         else:
             s['bi'] = 0
