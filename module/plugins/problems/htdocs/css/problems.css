@@ -34,7 +34,7 @@ td .ellipsis > .long-output {
 }
 
 /*
- * Navigation bar, responsive input field
+ * Problems table, responsive table columns
  */
 @media (max-width: 991px) {
     .service-column, .host-column {

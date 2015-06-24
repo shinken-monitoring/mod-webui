@@ -75,7 +75,7 @@
                      </tr>
                      <tr>
                         <td><strong>Commands authorized:</strong></td>
-                        <td>{{! app.helper.get_on_off(app.helper.can_action(user), "Is this contact allowed to launch commands from Web UI?")}}</td>
+                        <td>{{! app.helper.get_on_off(app.can_action(), "Is this contact allowed to launch commands from Web UI?")}}</td>
                      </tr>
                   </tbody>
                </table>

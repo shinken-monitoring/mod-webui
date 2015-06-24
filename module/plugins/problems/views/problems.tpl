@@ -3,24 +3,19 @@
 
 %rebase("layout", title='All problems', js=['problems/js/problems.js', 'problems/js/bookmarks.js'], css=['problems/css/problems.css'], refresh=True, user=user, navi=navi, app=app, page="/all", elts_per_page=elts_per_page)
 
-%# Look for actions if we must show them or not
-%actions_allowed = True
-%if app.manage_acl and not helper.can_action(user):
-%actions_allowed = False
-%end
 <script type="text/javascript">
-   var actions_enabled = {{'true' if actions_allowed else 'false'}};
+   var actions_enabled = {{'true' if app.can_action() else 'false'}};
 
- // List of the bookmarks
- var bookmarks = [];
- var bookmarksro = [];
+   // List of the bookmarks
+   var bookmarks = [];
+   var bookmarksro = [];
 
- %for b in bookmarks:
+   %for b in bookmarks:
     declare_bookmark("{{!b['name']}}","{{!b['uri']}}");
- %end
- %for b in bookmarksro:
+   %end
+   %for b in bookmarksro:
     declare_bookmarksro("{{!b['name']}}","{{!b['uri']}}");
- %end
+   %end
 
  // On page loaded ...
  $(function(){
@@ -37,7 +32,7 @@
 
 <!-- Problems filtering and display -->
 <div class="row">
-   %if actions_allowed:
+   %if app.can_action():
    <!-- Left panel, toolbar and active filters -->
    <div id="toolbar" class="col-lg-3 col-md-4 col-sm-4" style="display:none;">
 
@@ -139,7 +134,7 @@
                  <tr>
                    <td align="center" class="visible-lg">Realm {{pb.get_realm()}}</td>
                    %if pb.passive_checks_enabled:
-                   <td>
+                   <td align="left">
                       <i class="fa fa-arrow-left" title="Passive checks are enabled."></i>
                       %if (pb.check_freshness):
                          <i title="Freshness check is enabled">(Freshness threshold: {{pb.freshness_threshold}} seconds)</i>
@@ -147,12 +142,12 @@
                    </td>
                    %end
                    %if pb.active_checks_enabled:
-                   <td align="center">
+                   <td align="left">
                       <i class="fa fa-arrow-right" title="Active checks are enabled."></i>
                       <i>Last check <strong>{{!helper.print_duration(pb.last_chk, just_duration=True, x_elts=2)}} ago</strong>, next check in <strong>{{!helper.print_duration(pb.next_chk, just_duration=True, x_elts=2)}}</strong>, attempt <strong>{{pb.attempt}}/{{pb.max_check_attempts}}</strong></i>
                     </td>
                    %end
-                   %if actions_allowed:
+                   %if app.can_action():
                    <td align="right">
                      <div class="btn-group" role="group" aria-label="...">
                        %if pb.event_handler_enabled and pb.event_handler:

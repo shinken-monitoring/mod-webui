@@ -732,6 +732,26 @@ class Webui_broker(BaseModule, Daemon):
             return user
             
     ##
+    # Current user can launch commands ?
+    # If username is provided, check for the specified user ...
+    ##
+    def can_action(self, username=None):
+        if not self.manage_acl:
+            return true
+            
+        if username is None:
+            user = self.get_user_auth()
+            if not user:
+                self.bottle.redirect("/user/login")
+            else:
+                return user.is_admin or user.can_submit_commands
+        
+        c = self.get_contact(username)
+        return c.is_admin or c.can_submit_commands
+        
+
+
+    ##
     # Get user Gravatar picture if defined
     ##
     def get_gravatar(self, email, size=64, default='404'):

@@ -4,12 +4,6 @@
 %rebase("layout", js=['impacts/js/impacts.js'], title='All critical impacts for your business', css=['impacts/css/impacts.css'], refresh=True, user=user)
 
 
-%# Look for actions if we must show them or not
-%global_disabled = ''
-%if not helper.can_action(user):
-%global_disabled = 'disabled-link'
-%end
-
 <div id="impact-container">
    <div class="impacts-panel col-md-4">
       %# " We look for separate bad and good elements, so we remember last state"
@@ -135,11 +129,11 @@
                   %if not pb.event_handler:
                   %disabled_s = 'disabled'
                   %end
-                  <div class="action-fixit"><a class='{{disabled_s}} {{global_disabled}}' href="#" onclick="try_to_fix('{{pb.get_full_name()}}')"> <i class="fa fa-pencil"></i>Try to fix it</a></div>
+                  <div class="action-fixit"><a class="{{disabled_s}} {{'disabled' if not app.can_action() else ''}}" href="#" onclick="try_to_fix('{{pb.get_full_name()}}')"> <i class="fa fa-pencil"></i>Try to fix it</a></div>
 
                   %if not pb.problem_has_been_acknowledged:
                   <div class="action-ack">
-                     <a class='{{global_disabled}}' href="/forms/acknowledge/{{helper.get_uri_name(pb)}}" data-toggle="modal" data-target="#modal"><i class="fa fa-check"></i> Acknowledge it!</a>
+                     <a class="{{disabled_s}} {{'disabled' if not app.can_action() else ''}}" href="/forms/acknowledge/{{helper.get_uri_name(pb)}}" data-toggle="modal" data-target="#modal"><i class="fa fa-check"></i> Acknowledge it!</a>
                   </div>
                   %end
                </div>

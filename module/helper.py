@@ -636,7 +636,7 @@ class Helper(object):
         
         If popover is true, a bootstrap popover is built, else a standard link ...
         '''
-        logger.debug("[WebUI] get_urls: %s / %s / %s / %d" % (url, default_title, default_icon, popover))
+        logger.debug("[WebUI] get_urls: %s / %s / %s / %d", url, default_title, default_icon, popover)
         
         result = []
         for item in url.split('|'):
@@ -660,7 +660,7 @@ class Helper(object):
             
             url = MacroResolver().resolve_simple_macros_in_string(real_url, obj.get_data_for_checks())
             
-            logger.debug("[WebUI] get_urls, found: %s / %s / %s / %s" % (title, icon, url, description))
+            logger.debug("[WebUI] get_urls, found: %s / %s / %s / %s", title, icon, url, description)
             
             if popover:
                 if url != '':
@@ -885,11 +885,6 @@ class Helper(object):
     def get_uri_name(self, elt):
         return elt.get_full_name().replace(' ', '%20')
 
-    # say if this user can launch an action or not
-    def can_action(self, user):
-        return user.is_admin or user.can_submit_commands
-
-
     def get_aggregation_paths(self, p):
         p = p.strip()
         if p and not p.startswith('/'):
@@ -897,7 +892,6 @@ class Helper(object):
         if p.endswith('/'):
             p = p[-1]
         return [s.strip() for s in p.split('/')]
-
 
     def compute_aggregation_tree_worse_state(self, tree):
         # First ask to our sons to compute their states
@@ -909,16 +903,17 @@ class Helper(object):
         states = [s['state'] for s in tree['sons']]
         for s in tree['services']:
             states.append(s.state.lower())
+            
         # ok now look at what is worse here
         order = ['critical', 'warning', 'unknown', 'ok', 'pending']
         for o in order:
             if o in states:
                 tree['state'] = o
                 return
+                
         # Should be never call or we got a major problem...
         tree['state'] = 'unknown'
         
-
     def assume_and_get_path_in_tree(self, tree, paths):
         #print "Tree on start of", paths, tree
         current_full_path = ''
@@ -927,20 +922,19 @@ class Helper(object):
             if not p:
                 continue
             current_full_path += '/'+p
-            founded = False
+            found = False
             for s in tree['sons']:
                 # Maybe we find the good son, if so go on this level
                 if p == s['path']:
                     tree = s
-                    founded = True
+                    found = True
                     break
             # Did we find our son? If no, create it and jump into it
-            if not founded:
+            if not found:
                 s = {'path' : p, 'sons' : [], 'services':[], 'state':'unknown', 'full_path':current_full_path}
                 tree['sons'].append(s)
                 tree = s
         return tree
-
 
     def get_host_service_aggregation_tree(self, h, app=None):
         tree = {'path' : '/', 'sons' : [], 'services':[], 'state':'unknown', 'full_path':'/'}

@@ -19,7 +19,7 @@ Invalid element name
 
 %# Look for actions if we must show them or not
 %global_disabled = ''
-%if app.manage_acl and not helper.can_action(user):
+%if app.can_action():
   %global_disabled = 'disabled-link'
 %end
 
@@ -404,7 +404,7 @@ Invalid element name
             %if params['tab_additional']=='yes':
             <li><a href="#additional" data-toggle="tab">Additional</a></li>
             %end
-            %if params['tab_commands']=='yes' and app.manage_acl and helper.can_action(user):
+            %if params['tab_commands']=='yes' and app.can_action():
             <li><a href="#commands" data-toggle="tab">Commands</a></li>
             %end
             %if params['tab_gesture']=='yes':
@@ -765,7 +765,7 @@ Invalid element name
             </div>
             %end
 
-            %if params['tab_commands']=='yes' and app.manage_acl and helper.can_action(user):
+            %if params['tab_commands']=='yes' and app.can_action():
             <div class="tab-pane fade" id="commands">
                <h4>Commands:</h4>
                <table class="table table-condensed" style="table-layout: fixed; word-wrap: break-word;">

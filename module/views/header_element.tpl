@@ -118,7 +118,7 @@
             <div class="panel-body panel-default">
               <!-- User image / name -->
               <p class="username">{{username}}</p>
-              %if app.manage_acl and helper.can_action(user):
+              %if app.can_action():
               <p class="usercategory">
                 <small>{{'Administrator' if user.is_admin else 'User'}}</small>
               </p>
