@@ -79,8 +79,8 @@
       <thead><tr>
           <th width="20px"></th>
           <th width="40px"></th>
-          <th width="200px">Host</th>
-          <th width="200px">Service</th>
+          <th class="host-column">Host</th>
+          <th class="service-column">Service</th>
           <th width="90px">State</th>
           <th width="90px">Duration</th>
           <th class="hidden-sm hidden-xs" width="100%">Output</th>

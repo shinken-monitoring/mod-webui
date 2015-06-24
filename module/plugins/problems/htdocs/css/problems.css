@@ -32,3 +32,27 @@ td .ellipsis {
 td .ellipsis > .long-output {
     display:none;
 }
+
+/*
+ * Navigation bar, responsive input field
+ */
+@media (max-width: 991px) {
+    .service-column, .host-column {
+        width: 100%;
+    }
+}
+@media (min-width: 992px) {
+    .service-column, .host-column {
+        width: 60%;
+    }
+}
+@media (min-width: 1200px) {
+    .service-column, .host-column {
+        width: 40%;
+    }
+}
+@media (min-width: 1400px) {
+    .service-column, .host-column {
+        width: 30%;
+    }
+}

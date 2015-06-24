@@ -112,7 +112,7 @@ html, body {
  */
 @media (min-width: 768px) {
     input#search {
-        width: 180px;
+        width: 160px;
     }
 }
 @media (min-width: 900px) {
