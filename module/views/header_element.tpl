@@ -205,6 +205,11 @@
       // Date / time
       $('.headClock .time').jclock({ format: '%H:%M:%S' });
       $('.headClock .date').jclock({ format: '%d/%m/%Y' });
+
+      $('[data-toggle="popover"]').popover({
+        html: true,
+        template: '<div class="popover img-popover"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
+      });
       
       // Manage refresh start/stop
       $('#header_loading').click(function (e) {
