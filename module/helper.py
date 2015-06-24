@@ -368,7 +368,6 @@ class Helper(object):
             h['bi'] = max(h.business_impact for h in hosts)
         else:
             h['bi'] = 0
-        h['bi'] = max(h.business_impact for h in hosts)
         for state in 'up', 'down', 'unreachable', 'pending':
             h[state] = [i for i in hosts if i.state == state.upper()]
         h['unknown'] = list(set(h['elts']) - set(h['up']) - set(h['down']) - set(h['unreachable']) - set(h['pending']))
