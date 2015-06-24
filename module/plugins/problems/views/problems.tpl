@@ -31,17 +31,7 @@
 %end
 
 <!-- Problems filtering and display -->
-<div class="row">
-   %if app.can_action():
-   <!-- Left panel, toolbar and active filters -->
-   <div id="toolbar" class="col-lg-3 col-md-4 col-sm-4" style="display:none;">
-
-   %include("_panel_actions.tpl")
-   </div>
-   %end
-
- <!-- Right panel, with all problems -->
- <div id="problems" class="col-lg-12 col-md-12 col-sm-12">
+ <div id="problems">
    %if not pbs:
    <center>
      %if search_string:
@@ -230,13 +220,15 @@
    </div>
    </div>
       %end
-         
-      %# Close problems div ...
-      %end
-   </div>
 
+   %include("_panel_actions.tpl")
+
+
+         
+    %# Close problems div ...
+    %end
  </div>
-</div>
+
 
 <script type="text/javascript">
    set_expand_outputs();
