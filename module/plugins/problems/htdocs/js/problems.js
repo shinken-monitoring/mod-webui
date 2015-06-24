@@ -26,16 +26,12 @@
 /*
   Tool bar related code
 */
-function hide_toolbar(save){
-   $('#toolbar').hide();
-   $('#problems').addClass('col-lg-12 col-md-12 col-sm-12');
-   $('#problems').removeClass('col-lg-9 col-md-8 col-sm-8');
+function hide_actions(save){
+   $('#actions').hide();
 }
 
-function show_toolbar(save){
-   $('#toolbar').show();
-   $('#problems').addClass('col-lg-9 col-md-8 col-sm-8');
-   $('#problems').removeClass('col-lg-12 col-md-12 col-sm-12');
+function show_actions(save){
+   $('#actions').show();
 }
 
 
@@ -90,7 +86,7 @@ function add_element(name){
    selected_elements.push(name);
 
    if (selected_elements.length > 0) {
-      show_toolbar();
+      show_actions();
       if (actions_enabled) $('#actions').show();
       
       // Stop page refresh
@@ -106,7 +102,7 @@ function remove_element(name){
    selected_elements.splice($.inArray(name, selected_elements),1);
 
    if (selected_elements.length == 0){
-      hide_toolbar();
+      hide_actions();
       if (actions_enabled) $('#actions').hide();
 
       // Restart page refresh timer
