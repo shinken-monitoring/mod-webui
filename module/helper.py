@@ -364,6 +364,10 @@ class Helper(object):
         hosts = [i for i in elts if i.__class__.my_type == 'host']
         h['elts'] = hosts
         h['nb_elts'] = len(hosts)
+        if len(hosts) != 0:
+            h['bi'] = max(h.business_impact for h in hosts)
+        else:
+            h['bi'] = 0
         h['bi'] = max(h.business_impact for h in hosts)
         for state in 'up', 'down', 'unreachable', 'pending':
             h[state] = [i for i in hosts if i.state == state.upper()]
