@@ -1,25 +1,27 @@
-/*Copyright (C) 2009-2011 :
-     Gabes Jean, naparuba@gmail.com
-     Gerhard Lausser, Gerhard.Lausser@consol.de
-     Gregory Starck, g.starck@gmail.com
-     Hartmut Goebel, h.goebel@goebel-consult.de
-     Andreas Karfusehr, andreas@karfusehr.de
+/* Copyright (C) 2009-2015:
+   Gabes Jean, naparuba@gmail.com
+   Gerhard Lausser, Gerhard.Lausser@consol.de
+   Gregory Starck, g.starck@gmail.com
+   Hartmut Goebel, h.goebel@goebel-consult.de
+   Andreas Karfusehr, andreas@karfusehr.de
+   Frederic Mohier, frederic.mohier@gmail.com
 
- This file is part of Shinken.
+   This file is part of Shinken.
 
- Shinken is free software: you can redistribute it and/or modify
- it under the terms of the GNU Affero General Public License as published by
- the Free Software Foundation, either version 3 of the License, or
- (at your option) any later version.
+   Shinken is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Affero General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
 
- Shinken is distributed in the hope that it will be useful,
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU Affero General Public License for more details.
+   Shinken is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU Affero General Public License for more details.
 
- You should have received a copy of the GNU Affero General Public License
- along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
+   You should have received a copy of the GNU Affero General Public License
+   along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 */
+
 
 function get_range() {
     g_s = graphstart;  // Time start and ends
@@ -96,36 +98,4 @@ function graph_zoom(uri){
 
 // when we show the graph tab, we apply the crop effect.
 $(window).ready(function(){
-   // This change allow the range to change after the page is loaded.
-   get_range();
-   
-   /* We can't apply Jcrop on ready. Why? Because the images are not yet loaded, and so
-      they will have a null size. So how to do it?
-      The key is to hook the graph tab. onshow will raise when we active it (and was shown).
-   */
-   $('#tab_to_graphs').on('shown.bs.tab', function (e) {
-      // console.log("Display graph: ", current_graph)
-      $('a[data-type="graph"][data-period="'+current_graph+'"]').trigger('click');
-   })
-   
-   // Change graph
-   $('a[data-type="graph"]').click(function (e) {
-      current_graph=$(this).data('period');
-      graphstart=$(this).data('graphstart');
-      graphend=$(this).data('graphend');
-
-      // Update graphs
-      $("#real_graphs").html( html_graphes[current_graph] );
-
-      // Update active period selected
-      $("#graph_periods li.active").removeClass('active');
-      $(this).parent('li').addClass('active');
-      
-      // and call the jcrop javascript
-      $('.jcropelt').Jcrop({
-         onSelect: update_coords,
-         onChange: update_coords
-      });
-      get_range();
-   });
 });

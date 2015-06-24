@@ -427,52 +427,6 @@ class Helper(object):
         return t
 
 
-    def print_business_rules(self, tree, level=0, source_problems=[]):
-        #safe_print("Should print tree", tree)
-        #safe_print('with source_problems', source_problems)
-        node = tree['node']
-        name = node.get_full_name()
-        fathers = tree['fathers']
-        fathers = sorted(fathers, key=lambda dict: dict['node'].get_full_name())
-        s = ''
-
-        # Maybe we are the root problem of this, and so we are printing it
-        root_str = ''
-        if node in source_problems:
-            #print "I am a root problem"
-            root_str = ' <span class="alert-small alert-critical"> Root problem</span>'
-        # Do not print the node if it's the root one, we already know its state!
-        if level != 0:
-            s += "%s is %s since %s %s\n" % (self.get_link(node), node.state, self.print_duration(node.last_state_change, just_duration=True), root_str)
-
-        # If we got no parents, no need to print the expand icon
-        if len(fathers) > 0:
-            # We look if the below tree is goodor not
-            tree_is_good = (node.state_id == 0)
-
-            # If the tree is good, we will use an expand image
-            # and hide the tree
-            if tree_is_good:
-                display = 'none'
-                img = 'expand.png'
-            else:  # we will already show the tree, and use a reduce image
-                display = 'block'
-                img = 'reduce.png'
-
-            # If we are the root, we already got this
-            if level != 0:
-                s += """<a id="togglelink-%s" href="javascript:toggleBusinessElt('%s')"><img id="business-parents-img-%s" src="/static/images/%s" alt="toggle"> </a> \n""" % (name, name, name, img)
-
-            s += """<ul id="business-parents-%s" style="display: %s; ">""" % (name, display)
-
-            for n in fathers:
-                sub_node = n['node']
-                sub_s = self.print_business_rules(n, level=level+1, source_problems=source_problems)
-                s += '<li class="%s">%s</li>' % (self.get_small_icon_state(sub_node), sub_s)
-            s += "</ul>"
-        #safe_print("Returning s:", s)
-        return s
-
     # Mockup helper
     # User: Frescha
     # Date: 08.01.2012
@@ -664,9 +618,9 @@ class Helper(object):
             
             if popover:
                 if url != '':
-                    result.append('''<a href="%s" target="_blank" role="button" data-toggle="popover" data-html="true" data-content="%s" data-trigger="hover" data-placement="bottom"><i class="fa fa-%s"></i>&nbsp;%s</a>''' % (url, description, icon, title))
+                    result.append('''<a href="%s" target="_blank" role="button" data-toggle="popover medium" data-html="true" data-content="%s" data-trigger="hover focus" data-placement="bottom"><i class="fa fa-%s"></i>&nbsp;%s</a>''' % (url, description, icon, title))
                 else:
-                    result.append('''<span data-toggle="popover" data-html="true" data-content="%s" data-trigger="hover" data-placement="bottom"><i class="fa fa-%s"></i>&nbsp;%s</a>''' % (description, icon, title))
+                    result.append('''<span data-toggle="popover medium" data-html="true" data-content="%s" data-trigger="hover focus" data-placement="bottom"><i class="fa fa-%s"></i>&nbsp;%s</a>''' % (description, icon, title))
             else:
                 if url != '':
                     result.append('''<a href="%s" target="_blank" title="%s"><i class="fa fa-%s"></i>&nbsp;%s</a>''' % (url, description, icon, title))
@@ -997,7 +951,58 @@ class Helper(object):
         s += "</ul>"
         #safe_print("Returning s:", s)
         return s
-    
+ 
+    def print_business_rules(self, tree, level=0, source_problems=[]):
+        #safe_print("Should print tree", tree)
+        #safe_print('with source_problems', source_problems)
+        node = tree['node']
+        name = node.get_full_name()
+        fathers = tree['fathers']
+        fathers = sorted(fathers, key=lambda dict: dict['node'].get_full_name())
+        s = ''
+
+        # Maybe we are the root problem of this, and so we are printing it
+        root_str = ''
+        if node in source_problems:
+            #print "I am a root problem"
+            root_str = ' <span class="alert-small alert-critical"> Root problem</span>'
+        # Do not print the node if it's the root one, we already know its state!
+        if level != 0:
+            # s += "%s is %s since %s %s\n" % (self.get_link(node), node.state, self.print_duration(node.last_state_change, just_duration=True), root_str)
+            s += helper.get_fa_icon_state(node)
+            s += self.get_link(node, short=True)
+            s += "(" + self.get_business_impact_text(node.business_impact) + ")"
+            s += """ is <span class="font-%s"><strong>%s</strong></span>""" % (node.state.lower(), node.state)
+            s += " since %s" % self.print_duration(node.last_state_change, just_duration=True, x_elts=2)
+
+        # If we got no parents, no need to print the expand icon
+        if len(fathers) > 0:
+            # We look if the below tree is good or not
+            tree_is_good = (node.state_id == 0)
+
+            # If the tree is good, we will use an expand image
+            # and hide the tree
+            if tree_is_good:
+                display = 'none'
+                img = 'expand.png'
+            else:  # we will already show the tree, and use a reduce image
+                display = 'block'
+                img = 'reduce.png'
+
+            # If we are the root, we already got this
+            if level != 0:
+                s += """<a id="togglelink-%s" href="javascript:toggleBusinessElt('%s')"><img id="business-parents-img-%s" src="/static/images/%s" alt="toggle"> </a> \n""" % (name, name, name, img)
+
+            s += """<ul id="business-parents-%s" style="display: %s; ">""" % (name, display)
+
+            for n in fathers:
+                sub_node = n['node']
+                sub_s = self.print_business_rules(n, level=level+1, source_problems=source_problems)
+                s += '<li class="%s">%s</li>' % (self.get_small_icon_state(sub_node), sub_s)
+            s += "</ul>"
+        #safe_print("Returning s:", s)
+        return s
+   
     def get_timeperiod_html(self, tp):
         if len(tp.dateranges) == 0:
             return ''
