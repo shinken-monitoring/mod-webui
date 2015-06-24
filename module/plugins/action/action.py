@@ -7,6 +7,7 @@
 #    Gerhard Lausser, Gerhard.Lausser@consol.de
 #    Gregory Starck, g.starck@gmail.com
 #    Hartmut Goebel, h.goebel@goebel-consult.de
+#    Frederic Mohier, frederic.mohier@gmail.com
 #
 # This file is part of Shinken.
 #
@@ -86,26 +87,31 @@ def get_page(cmd=None):
     if app.manage_acl and not user.can_submit_commands:
         return forge_response(callback, 403, 'You are not authorized to launch commands')
 
-    now = int(time.time())
+    now = subsNOW()
     elts = cmd.split('/')
     cmd_name = elts[0]
     cmd_args = elts[1:]
-    logger.info("[webui-actions] got command: %s with args: %s.", cmd_name, cmd_args)
+    logger.info("[WebUI-actions] got command: %s with args: %s.", cmd_name, cmd_args)
 
-    # Check if the command exist in the external command list
+    # Check if the command exist in the Shinken external command list
     if cmd_name not in ExternalCommandManager.commands:
+        logger.error("[WebUI-actions] unknown command: %s", cmd_name)
         return forge_response(callback, 404, 'Unknown command %s' % cmd_name)
 
-    extcmd = '[%d] %s' % (now, ';'.join(elts))
-
+    try:
+        extcmd = u"[%s] %s" % (now, ';'.join(elts))
+    except UnicodeDecodeError as e:
+        extcmd = "[%s] %s" % (now, ';'.join(elts))
+    
     # Expand macros
     extcmd = expand_macros(extcmd)
 
     # Ok, if good, we can launch the command
     # extcmd = extcmd.decode('utf8', 'replace')
     # Fix #69
-    extcmd = extcmd.decode('utf8', 'ignore')
-    logger.info("[webui-actions] external command: %s." % (extcmd))
+    logger.info("[WebUI-actions] external command: %s.", extcmd)
+    # extcmd = extcmd.decode('utf8', 'ignore')
+    # logger.info("[WebUI-actions] external command decoded: %s.", extcmd)
     e = ExternalCommand(extcmd)
     app.push_external_command(e)
 
