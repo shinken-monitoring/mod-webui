@@ -28,9 +28,9 @@
          data-toggle="tooltip" data-placement="bottom" 
          style="line-height: 25px; width: {{s['pct_pending']}}%;">{{s['pct_pending']}}% Pending</div>
 
-      <div title="{{s['nb_unknown']}} services Unknown" class="progress-bar progress-bar-info quickinfo" 
+      <div title="{{s['nb_unknown']+s['nb_pending']}} services Unknown + Pending" class="progress-bar progress-bar-info quickinfo" 
          data-toggle="tooltip" data-placement="bottom" 
-         style="line-height: 25px; width: {{s['pct_unknown']}}%;">{{s['pct_unknown']}}% Unknown</div>
+         style="line-height: 25px; width: {{s['pct_unknown']}}%;">{{s['pct_unknown']+s['nb_pending']}}% Unknown and pending</div>
    </div>
    <div class="pull-right col-sm-2">
       <span class="btn-group pull-right">
@@ -43,32 +43,20 @@
 <div class="row">
    <ul id="groups" class="grid row">
       %even='alt'
-      %nServices=0
-      %sOk=sCritical=sWarning=sPending=sUnknown=sAck=sDowntime=0
-      %for s in app.get_services(user):
-         %nServices=nServices+1
-         %if s.state == 'OK':
-            %sOk=sOk+1
-         %elif s.state == 'CRITICAL':
-            %sCritical=sCritical+1
-         %elif s.state == 'WARNING':
-            %sWarning=sWarning+1
-         %elif s.state == 'PENDING':
-            %sPending=sPending+1
-         %else:
-            %sUnknown=sUnknown+1
-         %end
-         %if s.problem_has_been_acknowledged:
-            %sAck=sAck+1
-         %end
-         %if s.in_scheduled_downtime:
-            %sDowntime=sDowntime+1
-         %end
-      %end
+      %nServices=s['nb_elts']
+      %sOk=s['nb_ok']
+      %sCritical=s['nb_critical']
+      %sWarning=s['nb_warning']
+      %sPending=s['nb_pending']
+      %sUnknown=s['nb_unknown']
+      %sAck=s['nb_ack']
+      %sDowntime=s['nb_downtime']
       %nGroups=len(servicegroups)
       <li class="clearfix {{even}}">
          <section class="left">
-            <h3>All services</h3>
+            <h3>All services
+               {{!helper.get_business_impact_text(s['bi'])}}
+            </h3>
             <span class="meta">
                <span class="{{'font-ok' if sOk > 0 else 'font-greyed'}}">
                   {{!helper.get_fa_icon_state(cls='service', state='ok')}}
@@ -98,84 +86,67 @@
          </section>
          
          <section class="right">
-            %if nServices == 1:
-            <span class="sum">{{nServices}} service</span>
-            %else:
-            <span class="sum">{{nServices}} services</span>
-            %end
+            <span class="sum">{{nServices}} {{'service' if nServices==1 else 'services'}}</span>
             <span class="darkview">
-          <a href="/all?search=type:service" class="firstbtn"><i class="fa fa-angle-double-down"></i> Details</a>
-          <br/>
-          <a href="/minemap/all" class="firstbtn"><i class="fa fa-table"></i> Minemap</a>
+               <a href="/all?search=type:service" class="firstbtn"><i class="fa fa-angle-double-down"></i> Details</a>
+               <br/>
+               <a href="/minemap" class="firstbtn"><i class="fa fa-table"></i> Minemap</a>
             </span>
          </section>
       </li>
 
       %even='alt'
       %for group in servicegroups:
+         %# To be improved ... hosts groups filtering by level
+         %#if not hasattr(group, 'level') or (hasattr(group, 'level') and group.level > 0):
+         %#continue
+         %#end
+         %#
+         %# Should use filter as bi>3 ...
+         %#
+         %#
+         %hosts = app.search_hosts_and_services('type:host hg:'+group.get_name(), user, hosts_only=True)
+         %hosts = app.get_hosts(user)
+         %h = helper.get_synthesis(hosts)['hosts']
          %if even =='':
-            %even='alt'
+           %even='alt'
          %else:
-            %even=''
+           %even=''
          %end
 
-         %nServices=0
-         %sOk=sCritical=sWarning=sPending=sUnknown=sAck=sDowntime=0
-         %business_impact = 0
-         %for s in group.get_services():
-            %business_impact = max(business_impact, h.business_impact)
-            %nServices=nServices+1
-            %if s.state == 'OK':
-               %sOk=sOk+1
-            %elif s.state == 'CRITICAL':
-               %sCritical=sCritical+1
-            %elif s.state == 'WARNING':
-               %sWarning=sWarning+1
-            %elif s.state == 'PENDING':
-               %sPending=sPending+1
-            %else:
-               %sUnknown=sUnknown+1
-            %end
-            %if s.problem_has_been_acknowledged:
-               %sAck=sAck+1
-            %end
-            %if s.in_scheduled_downtime:
-               %sDowntime=sDowntime+1
-            %end
-         %end
-      
+         %nServices=s['nb_ok']
          %nGroups=len(group.get_servicegroup_members())
          <!-- <li>{{group.get_name()}} - {{nServices}} - {{nGroups}} - {{group.get_servicegroup_members()}}</li> -->
          %#if nServices > 0 or nGroups > 0:
            <li class="clearfix {{even}} {{'alert' if nServices == sCritical and nServices != 0 else ''}}">
              <section class="left">
                <h3>{{group.alias if group.alias != '' else group.get_name()}}
-                  {{!helper.get_business_impact_text(business_impact)}}
+                  {{!helper.get_business_impact_text(s['bi'])}}
                </h3>
                <span class="meta">
-                  <span class="{{'font-ok' if sOk > 0 else 'font-greyed'}}">
+                  <span class="{{'font-ok' if s['nb_ok'] > 0 else 'font-greyed'}}">
                      {{!helper.get_fa_icon_state(cls='service', state='ok')}}
-                     <span class="num">{{sOk}}</span>
+                     <span class="num">{{s['nb_ok']}}</span>
                   </span> 
                    
-                  <span class="{{'font-warning' if sWarning > 0 else 'font-greyed'}}">
+                  <span class="{{'font-warning' if s['nb_warning'] > 0 else 'font-greyed'}}">
                      {{!helper.get_fa_icon_state(cls='service', state='warning')}} 
-                     <span class="num">{{sWarning}}</span>
+                     <span class="num">{{s['nb_warning']}}</span>
                   </span> 
 
-                  <span class="{{'font-critical' if sCritical > 0 else 'font-greyed'}}">
+                  <span class="{{'font-critical' if s['nb_critical'] > 0 else 'font-greyed'}}">
                      {{!helper.get_fa_icon_state(cls='service', state='critical')}} 
-                     <span class="num">{{sCritical}}</span>
+                     <span class="num">{{s['nb_critical']}}</span>
                   </span> 
 
-                  <span class="{{'font-pending' if sPending > 0 else 'font-greyed'}}">
+                  <span class="{{'font-pending' if s['nb_pending'] > 0 else 'font-greyed'}}">
                      {{!helper.get_fa_icon_state(cls='service', state='pending')}} 
-                     <span class="num">{{sPending}}</span>
+                     <span class="num">{{s['nb_pending']}}</span>
                   </span> 
 
-                  <span class="{{'font-unknown' if sUnknown > 0 else 'font-greyed'}}">
+                  <span class="{{'font-unknown' if s['nb_unknown'] > 0 else 'font-greyed'}}">
                      {{!helper.get_fa_icon_state(cls='service', state='unknown')}} 
-                     <span class="num">{{sUnknown}}</span>
+                     <span class="num">{{s['nb_unknown']}}</span>
                   </span> 
                </span>
              </section>
@@ -189,9 +160,9 @@
                  <span class="sumGroups">{{'%d group' % nGroups if nGroups == 1 else '' if nGroups == 0 else '%d groups' % nGroups}}</span>
                </div>
                <span class="darkview">
-                 <a href="/all?search=type:host sg:{{group.get_name()}}" class="firstbtn"><i class="fa fa-angle-double-down"></i> Details</a>
+                 <a href="/all?search=type:service sg:{{group.get_name()}}" class="firstbtn"><i class="fa fa-angle-double-down"></i> Details</a>
                  <br/>
-                 <a href="/minemap/{{group.get_name()}}" class="firstbtn"><i class="fa fa-table"></i> Minemap</a>
+                 <a href="/minemap?search=type:service sg:{{group.get_name()}}" class="firstbtn"><i class="fa fa-table"></i> Minemap</a>
                </span>
              </section>
            </li>

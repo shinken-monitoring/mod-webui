@@ -165,7 +165,7 @@
         <li> <a href="#"><i class="fa fa-bar-chart"></i> Tactical views <i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
             <li> <a href="/impacts"> <span class="fa fa-bolt"></span> Impacts </a> </li>
-            <li> <a href="/minemaps"> <span class="fa fa-table"></span> Minemap </a> </li>
+            <li> <a href="/minemap"> <span class="fa fa-table"></span> Minemap </a> </li>
             <li> <a href="/worldmap"> <span class="fa fa-globe"></span> World map </a> </li>
             <li> <a href="/wall"> <span class="fa fa-th-large"></span> Wall </a> </li>
           </ul>

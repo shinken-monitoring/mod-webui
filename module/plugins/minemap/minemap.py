@@ -27,91 +27,70 @@ from shinken.misc.sorter import hst_srv_sort
 from shinken.misc.filter import only_related_to
 
 # Get plugin's parameters from configuration file
-params = {}
-params['elts_per_page'] = 10
+# params = {}
+# params['elts_per_page'] = 10
 
-def load_cfg():
-    global params
+# def load_cfg():
+    # global params
     
-    import os,sys
-    from webui.config_parser import config_parser
-    plugin_name = os.path.splitext(os.path.basename(__file__))[0]
-    try:
-        currentdir = os.path.dirname(os.path.realpath(__file__))
-        configuration_file = "%s/%s" % (currentdir, 'plugin.cfg')
-        logger.debug("Plugin configuration file: %s" % (configuration_file))
-        scp = config_parser('#', '=')
-        params = scp.parse_config(configuration_file)
+    # import os,sys
+    # from webui.config_parser import config_parser
+    # plugin_name = os.path.splitext(os.path.basename(__file__))[0]
+    # try:
+        # currentdir = os.path.dirname(os.path.realpath(__file__))
+        # configuration_file = "%s/%s" % (currentdir, 'plugin.cfg')
+        # logger.debug("Plugin configuration file: %s" % (configuration_file))
+        # scp = config_parser('#', '=')
+        # params = scp.parse_config(configuration_file)
 
-        params['elts_per_page'] = int(params['elts_per_page'])
+        # params['elts_per_page'] = int(params['elts_per_page'])
         
-        params['minemap_hostsLevel'] = [int(item) for item in params['minemap_hostsLevel'].split(',')]
-        params['minemap_hostsShow'] = [item for item in params['minemap_hostsShow'].split(',')]
-        params['minemap_hostsHide'] = [item for item in params['minemap_hostsHide'].split(',')]
-        params['minemap_servicesLevel'] = [int(item) for item in params['minemap_servicesLevel'].split(',')]
-        params['minemap_servicesHide'] = [item for item in params['minemap_servicesHide'].split(',')]
+        # params['minemap_hostsLevel'] = [int(item) for item in params['minemap_hostsLevel'].split(',')]
+        # params['minemap_hostsShow'] = [item for item in params['minemap_hostsShow'].split(',')]
+        # params['minemap_hostsHide'] = [item for item in params['minemap_hostsHide'].split(',')]
+        # params['minemap_servicesLevel'] = [int(item) for item in params['minemap_servicesLevel'].split(',')]
+        # params['minemap_servicesHide'] = [item for item in params['minemap_servicesHide'].split(',')]
         
-        logger.info("[webui-minemap] configuration loaded.")
-        logger.debug("[webui-minemap] configuration, elts_per_page: %d", params['elts_per_page'])
-        logger.debug("[webui-minemap] configuration, minemap hosts level: %s", params['minemap_hostsLevel'])
-        logger.debug("[webui-minemap] configuration, minemap hosts always shown: %s", params['minemap_hostsShow'])
-        logger.debug("[webui-minemap] configuration, minemap hosts always hidden: %s", params['minemap_hostsHide'])
-        logger.debug("[webui-minemap] configuration, minemap services level: %s", params['minemap_servicesLevel'])
-        logger.debug("[webui-minemap] configuration, minemap services hide: %s", params['minemap_servicesHide'])
-        return True
-    except Exception, exp:
-        logger.warning("[webui-minemap] configuration file (%s) not available: %s", configuration_file, str(exp))
-        return False
+        # logger.info("[webui-minemap] configuration loaded.")
+        # logger.debug("[webui-minemap] configuration, elts_per_page: %d", params['elts_per_page'])
+        # logger.debug("[webui-minemap] configuration, minemap hosts level: %s", params['minemap_hostsLevel'])
+        # logger.debug("[webui-minemap] configuration, minemap hosts always shown: %s", params['minemap_hostsShow'])
+        # logger.debug("[webui-minemap] configuration, minemap hosts always hidden: %s", params['minemap_hostsHide'])
+        # logger.debug("[webui-minemap] configuration, minemap services level: %s", params['minemap_servicesLevel'])
+        # logger.debug("[webui-minemap] configuration, minemap services hide: %s", params['minemap_servicesHide'])
+        # return True
+    # except Exception, exp:
+        # logger.warning("[webui-minemap] configuration file (%s) not available: %s", configuration_file, str(exp))
+        # return False
 
-def reload_cfg():
-    load_cfg()
-    app.bottle.redirect("/config")
+# def reload_cfg():
+    # load_cfg()
+    # app.bottle.redirect("/config")
 
-def show_minemap(name):
+def show_minemap():
     user = app.check_user_authentication()
 
-    if name == 'all':
-        my_group = 'all'
-        
-        hosts = app.get_hosts(user)
+    # Apply search filter for minemap hosts ...
+    search = ' '.join(app.request.GET.getall('search')) or ""
+    hosts = app.search_hosts_and_services(search, user, get_impacts=False, hosts_only=True)
+    
+    # Fetch elements per page preference for user, default is 25
+    elts_per_page = app.get_user_preference(user, 'elts_per_page', 25)
 
-    else:
-        my_group = app.get_hostgroup(name)
-        if not my_group:
-            return "Unknown group %s" % name
-            
-        hosts = only_related_to(my_group.get_hosts(),user)
-
-    items = []
-    for h in hosts:
-        # Filter hosts
-        if h.get_name() in params['minemap_hostsHide']:
-            continue
-            
-        if h.get_name() not in params['minemap_hostsShow'] and h.business_impact not in params['minemap_hostsLevel']:
-            continue
-            
-        logger.debug("[webui-minemap] found host '%s': %d", h.get_name(), h.business_impact)
-        items.append(h)
-        
-    elts_per_page = params['elts_per_page']
     # We want to limit the number of elements
+    step = int(app.request.GET.get('step', elts_per_page))
     start = int(app.request.GET.get('start', '0'))
-    end = int(app.request.GET.get('end', elts_per_page))
-        
-    # Now sort hosts list ..
-    items.sort(hst_srv_sort)
+    end = int(app.request.GET.get('end', start + step))
         
     # If we overflow, came back as normal
-    total = len(items)
+    total = len(hosts)
     if start > total:
         start = 0
-        end = elts_per_page
+        end = step
 
-    navi = app.helper.get_navi(total, start, step=elts_per_page)
-    hosts = items[start:end]
+    navi = app.helper.get_navi(total, start, step=step)
 
-    return {'app': app, 'user': user, 'navi': navi, 'params': params, 'group': my_group, 'hosts': items, 'page': "minemap/"+name}
+    return {'app': app, 'user': user, 'navi': navi, 'search_string': search, 'hosts': hosts[start:end], 'page': "minemap"}
 
 def show_minemaps():
     user = app.check_user_authentication()
@@ -120,11 +99,11 @@ def show_minemaps():
 
 
 # Load plugin configuration parameters
-load_cfg()
+# load_cfg()
 
 pages = {
-    reload_cfg: {'routes': ['/reload/minemap']},
+    # reload_cfg: {'routes': ['/reload/minemap']},
 
-    show_minemap: {'routes': ['/minemap/:name'], 'view': 'minemap', 'static': True},
+    show_minemap: {'routes': ['/minemap'], 'view': 'minemap', 'static': True},
     show_minemaps: {'routes': ['/minemaps'], 'view': 'minemap', 'static': True}
 }

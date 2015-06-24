@@ -1217,8 +1217,25 @@ class Webui_broker(BaseModule, Daemon):
             all.extend([s for s in self.get_services(user) if not s.is_impact])
         return all
 
+    def get_all_hosts(self, user=None, get_impacts=True):
+        """
+        Get a list of all hosts
 
-    def search_hosts_and_services(self, search, user=None, get_impacts=True):
+        :user: concerned user
+        :get_impacts: should impact hosts be included in the list ?
+        :returns: list of all hosts
+
+        """
+        all = []
+        if get_impacts:
+            all.extend(self.get_hosts(user))
+        else:
+            all.extend([h for h in self.get_hosts(user) if not h.is_impact])
+        return all
+
+
+
+    def search_hosts_and_services(self, search, user=None, get_impacts=True, hosts_only=False):
         """@todo: Docstring for search_hosts_and_services.
 
         :search: @todo
@@ -1227,7 +1244,10 @@ class Webui_broker(BaseModule, Daemon):
         :returns: @todo
 
         """
-        items = self.get_all_hosts_and_services(user, get_impacts=False)
+        if hosts_only:
+            items = self.get_all_hosts(user, get_impacts=False)
+        else:
+            items = self.get_all_hosts_and_services(user, get_impacts=False)
 
         logger.debug("[%s] problems", self.name)
         for i in items:
