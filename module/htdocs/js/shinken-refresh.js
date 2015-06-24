@@ -44,11 +44,13 @@ function postpone_refresh(){
 
 function do_refresh(){
    console.debug("Refreshing ...");
+   $('#header_loading').addClass('fa-spin');
    $.get(document.URL, {}, function(data) {
       var $response = $('<div />').html(data);
       $('#page-content').html($response.find('#page-content').html());
       $('#hosts-overall-state').html($response.find('#hosts-overall-state').html());
       $('#services-overall-state').html($response.find('#services-overall-state').html());
+      $('#header_loading').removeClass('fa-spin');
    
       // Display active tab ...
       // var hash = location.hash
@@ -98,8 +100,17 @@ function check_refresh(){
 }
 
 
+function toggle_refresh() {
+    if (refresh_stopped) {
+        start_refresh();
+    } else {
+        stop_refresh();
+    }
+}
+
 /* Someone ask us to start the refresh so the page will reload */
 function start_refresh(){
+   $('#header_loading').removeClass('font-greyed');
    refresh_stopped = false;
 }
 
@@ -107,6 +118,7 @@ function start_refresh(){
 /* Someone ask us to stop the refresh so the user will have time to
    do some things like ask actions or something like that */
 function stop_refresh(){
+   $('#header_loading').addClass('font-greyed');
    refresh_stopped = true;
 }
 
