@@ -122,7 +122,7 @@
             <div class="ellipsis output">
              {{pb.output}}
              <div class="long-output">
-               {{pb.long_output if pb.long_output else ''}}
+               {{pb.long_output.replace('\n', '<br/>') if pb.long_output else ''}}
              </div>
             </div>
           </td>
