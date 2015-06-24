@@ -25,12 +25,6 @@
 
          if (height < 1) height = 1;
          $("#page-wrapper").css("min-height", (height-19) + "px");
-         //$("section.content").css("min-height", (height) + "px");
-         
-         $('#state-icons').each(function() {
-            //$(this).css('margin-top', (height - $('#back-home').height() - $('#date-time').height() - $('#overall-state').height() - $(this).height() - 26) + "px");
-            // $(this).css("position", "absolute").css('bottom', "10px");
-         });
       });
    });
 </script>
