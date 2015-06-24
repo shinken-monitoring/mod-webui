@@ -75,7 +75,7 @@
     <i class="pull-right small">{{len(list(bi_pbs))}} elements</i>
     <h3 class="text-center">Business impact: {{!helper.get_business_impact_text(business_impact, text=True)}}</h3>
     
-    <table class="table table-condensed table-nowrap" style="table-layout:fixed;width:100%;">
+    <table class="table table-condensed" style="table-layout:fixed;width:100%;">
       <thead><tr>
           <th width="20px"></th>
           <th width="40px"></th>
@@ -124,12 +124,11 @@
                 <a role="button" tabindex="0" data-toggle="popover" title="{{ pb.get_full_name() }}" data-html="true" data-content="<img src='{{ graphs[0]['img_src'] }}' width='600px' height='200px'>" data-trigger="hover" data-placement="left">{{!helper.get_perfometer(pb)}}</a>
               %end
             </div>
-            <div class="ellipsis popover-dismiss" 
-                  data-html="true" data-toggle="popover" data-trigger="hover" data-placement="left" 
-                  data-title="{{pb.get_full_name()}} check output" 
-                  data-content=" {{pb.output}}{{'<br/>'+pb.long_output if pb.long_output else ''}}"
-                  >
-             {{!helper.strip_html_output(pb.output[:app.max_output_length]) if app.allow_html_output else pb.output[:app.max_output_length]}}
+            <div class="ellipsis output">
+             {{pb.output}}
+             <div class="long-output">
+               {{pb.long_output if pb.long_output else ''}}
+             </div>
             </div>
           </td>
         </tr>
