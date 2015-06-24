@@ -314,7 +314,7 @@ Invalid element name
       <!-- Detail info box start -->
          <ul class="nav nav-tabs">
             %_go_active = 'active'
-            %if params['tab_custom_views']=='yes':
+            %if 'custom_views' in params['tabs']:
             %for cvname in elt.custom_views:
             <li class="{{_go_active}} cv_pane" data-name="{{cvname}}" data-element='{{elt.get_full_name()}}' id='tab-cv-{{cvname}}'><a href="#cv{{cvname}}" data-toggle="tab">{{cvname.capitalize()}}</a></li>
                %_go_active = ''
@@ -322,46 +322,46 @@ Invalid element name
             %end
             %end
 
-            %if params['tab_information']=='yes':
+            %if 'information' in params['tabs']:
             <li><a href="#information" data-toggle="tab">Information</a></li>
             %end
-            %if params['tab_impacts']=='yes':
+            %if 'impacts' in params['tabs']:
             <li><a href="#impacts" data-toggle="tab">Impacts</a></li>
             %end
-            %if params['tab_configuration']=='yes':
+            %if 'configuration' in params['tabs']:
             <li><a href="#configuration" data-toggle="tab">Configuration</a></li>
             %end
-            %if params['tab_commands']=='yes' and app.can_action():
+            %if 'commands' in params['tabs'] and app.can_action():
             <li><a href="#commands" data-toggle="tab">Commands</a></li>
             %end
             
-            %if params['tab_comments']=='yes':
+            %if 'comments' in params['tabs']:
             <li><a class='link_to_tab' href="#comments" data-toggle="tab">Comments</a></li>
             %end
-            %if params['tab_downtimes']=='yes':
+            %if 'downtimes' in params['tabs']:
             <li><a class='link_to_tab' href="#downtimes" data-toggle="tab">Downtimes</a></li>
             %end
             
-            %if params['tab_timeline']=='yes':
+            %if 'timeline' in params['tabs']:
             <li class="timeline_pane"><a class="link_to_tab" href="#timeline" data-toggle="tab" id="tab_to_timeline">Timeline</a></li>
             %end
-            %if params['tab_graphs']=='yes':
+            %if 'graphs' in params['tabs']:
             <li><a class="link_to_tab" href="#graphs" data-toggle="tab" id="tab_to_graphs">Graphs</a></li>
             %end
-            %if params['tab_depgraph']=='yes':
+            %if 'depgraph' in params['tabs']:
             <li><a class="link_to_tab" href="#depgraph" data-toggle="tab" id="tab_to_depgraph">Impact graph</a></li>
             %end
-            %if params['tab_history']=='yes':
+            %if 'history' in params['tabs']:
             <li class="history_pane"><a class="link_to_tab" href="#history" data-toggle="tab" id="tab_to_history">History</a></li>
             %end
-            %if params['tab_counters']=='yes':
+            %if 'counters' in params['tabs']:
             <li class="counters_pane"><a class="link_to_tab" href="#counters" data-toggle="tab" id="tab_to_counters">Counters</a></li>
             %end
          </ul>
          
          <div class="tab-content">
             <!-- Tab custom views -->
-            %if params['tab_custom_views']=='yes':
+            %if 'custom_views' in params['tabs']:
             %_go_active = 'active'
             %_go_fadein = 'in'
             %cvs = []
@@ -385,7 +385,7 @@ Invalid element name
             <!-- Tab custom views end -->
 
             <!-- Tab Information start-->
-            %if params['tab_information']=='yes':
+            %if 'information' in params['tabs']:
             <div class="tab-pane fade" id="information">
                <div class="panel panel-default">
                   <div class="panel-heading">
@@ -705,7 +705,7 @@ Invalid element name
             <!-- Tab Information end -->
 
              <!-- Tab Impacts start -->
-            %if params['tab_impacts']=='yes':
+            %if 'impacts' in params['tabs']:
             <div class="tab-pane fade {{_go_active}} {{_go_fadein}}" id="impacts">
                <div class="panel panel-default">
                   <div class="panel-heading">
@@ -769,7 +769,7 @@ Invalid element name
             <!-- Tab Impacts end -->
 
            <!-- Tab Configuration start -->
-            %if params['tab_configuration']=='yes':
+            %if 'configuration' in params['tabs']:
             <div class="tab-pane fade" id="configuration">
                <div class="panel panel-default">
                   <div class="panel-heading">
@@ -822,7 +822,7 @@ Invalid element name
             <!-- Tab Configuration end -->
             
             <!-- Tab Commands start -->
-            %if params['tab_commands']=='yes' and app.can_action():
+            %if 'commands' in params['tabs'] and app.can_action():
             <div class="tab-pane fade" id="commands">
                <div class="panel panel-default">
                   <div class="panel-heading">
@@ -1017,7 +1017,7 @@ Invalid element name
             <!-- Tab Commands end -->
 
             <!-- Tab Comments start -->
-            %if params['tab_comments']=='yes':
+            %if 'comments' in params['tabs']:
             <div class="tab-pane fade" id="comments">
                <div class="panel panel-default">
                   <div class="panel-heading">
@@ -1083,7 +1083,7 @@ Invalid element name
             <!-- Tab Comments end -->
 
             <!-- Tab Downtimes start -->
-            %if params['tab_downtimes']=='yes':
+            %if 'downtimes' in params['tabs']:
             <div class="tab-pane fade" id="downtimes">
                <div class="panel panel-default">
                   <div class="panel-heading">
@@ -1128,7 +1128,7 @@ Invalid element name
             <!-- Tab Downtimes end -->
 
             <!-- Tab Timeline start -->
-            %if params['tab_timeline']=='yes':
+            %if 'timeline' in params['tabs']:
             <div class="tab-pane fade" id="timeline">
                <div class="panel panel-default">
                   <div class="panel-heading">
@@ -1146,7 +1146,7 @@ Invalid element name
             <!-- Tab Graph end -->
 
             <!-- Tab Graph start -->
-            %if params['tab_graphs']=='yes':
+            %if 'graphs' in params['tabs']:
             <div class="tab-pane fade" id="graphs">
                <div class="panel panel-default">
                   <div class="panel-heading">
@@ -1227,7 +1227,7 @@ Invalid element name
             <!-- Tab Graph end -->
 
             <!-- Tab Dependency graph Start -->
-            %if params['tab_depgraph']=='yes':
+            %if 'depgraph' in params['tabs']:
             <div class="tab-pane fade" id="depgraph" class="col-lg-12">
                <div class="panel panel-default">
                   <div class="panel-heading">
@@ -1236,7 +1236,7 @@ Invalid element name
      
                   <div class="panel-body">
                      <div class="btn-group btn-group-sm pull-right">
-                        <button id="fullscreen-request" class="btn btn-primary"><i class="fa fa-plus"></i> Fullscreen</button>
+                        <button action="fullscreen-request" class="btn btn-primary"><i class="fa fa-desktop"></i> Fullscreen</button>
                      </div>
                      <div id="inner_depgraph" data-elt-name='{{elt.get_full_name()}}'>
                         <span class="alert alert-error">Sorry, I cannot load the dependency graph!</span>
@@ -1248,7 +1248,7 @@ Invalid element name
             <!-- Tab Dependency graph End -->
         
             <!-- Tab History start -->
-            %if params['tab_history']=='yes':
+            %if 'history' in params['tabs']:
             <div class="tab-pane fade" id="history">
                <div class="panel panel-default">
                   <div class="panel-heading">
@@ -1268,7 +1268,7 @@ Invalid element name
             <!-- Tab History end -->
         
             <!-- Tab Counters start -->
-            %if params['tab_counters']=='yes':
+            %if 'counters' in params['tabs']:
             <div class="tab-pane fade" id="counters">
                <div class="panel panel-default">
                   <div class="panel-heading">

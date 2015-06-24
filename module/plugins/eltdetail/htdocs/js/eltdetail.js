@@ -76,12 +76,14 @@ function on_page_refresh() {
    });
    
    // Fullscreen management
+   /*
    $('#supported').text('Supported/allowed: ' + !!screenfull.enabled);
    if (!screenfull.enabled) {
       return false;
    }
+   */
 
-   $('#fullscreen-request').click(function() {
+   $('button[action="fullscreen-request"]').click(function() {
       screenfull.request($('#inner_depgraph')[0]);
    });
 
