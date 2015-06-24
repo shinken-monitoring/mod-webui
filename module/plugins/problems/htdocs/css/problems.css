@@ -28,3 +28,7 @@ td .progress {
 td .ellipsis {
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
+
+td .ellipsis > .long-output {
+    display:none;
+}
