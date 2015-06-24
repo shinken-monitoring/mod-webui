@@ -71,6 +71,7 @@
       </script>
       <script src="/static/js/shinken-refresh.js"></script>
       %end
+      <script src="/static/js/screenfull.js"></script>
 
       %# End of classic js import. Now call for specific ones ...
       %for p in js:
@@ -85,7 +86,7 @@
             <section class="content">
             %include
             </section>
-            %include("footer_element")
+            %#include("footer_element")
          </div>
       </div>
    </body>
