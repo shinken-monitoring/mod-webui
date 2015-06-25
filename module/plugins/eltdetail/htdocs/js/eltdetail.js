@@ -22,12 +22,21 @@
    along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+var eltdetail_logs=true;
+
+// @mohierf@: really need this global ?
+var elt_name = '{{elt.get_full_name()}}';
+
+
 /*
  * Function called when the page is loaded and on each page refresh ...
  */
 function on_page_refresh() {
    // Buttons tooltips
    $('button').tooltip();
+
+   // Buttons as switches
+   $('input.switch').bootstrapSwitch();
 
    // Elements popover
    $('[data-toggle="popover"]').popover();
@@ -44,9 +53,6 @@ function on_page_refresh() {
       template: '<div class="popover popover-medium"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
    });
 
-   // Buttons as switches
-   $('input.switch').bootstrapSwitch();
-
    /*
     * Custom views 
     */
@@ -60,7 +66,7 @@ function on_page_refresh() {
       if (! _already_loaded[cvname]) {
          show_custom_view($(elt));
       } else {
-         console.debug('Custom view '+cvname+' already exists !');
+         if (eltdetail_logs) console.debug('Custom view '+cvname+' already exists !');
       }
    });
    
@@ -76,13 +82,6 @@ function on_page_refresh() {
    });
    
    // Fullscreen management
-   /*
-   $('#supported').text('Supported/allowed: ' + !!screenfull.enabled);
-   if (!screenfull.enabled) {
-      return false;
-   }
-   */
-
    $('button[action="fullscreen-request"]').click(function() {
       screenfull.request($('#inner_depgraph')[0]);
    });
@@ -94,107 +93,146 @@ function on_page_refresh() {
    /*
     * Commands buttons
     */
-   // Add a comment
-   $('button[action="add-comment"]').click(function () {
-      display_form("/forms/comment/"+$(this).data('element'));
-   });
-   
-   // Delete a comment
-   $('button[action="delete-comment"]').click(function () {
-      display_form("/forms/comment_delete/"+$(this).data('element')+"/"+$(this).data('comment'));
-   });
-   
-   // Delete all comments
-   $('button[action="delete-comments"]').click(function () {
-      display_form("/forms/comment_delete_all/"+$(this).data('element'));
-   });
-  
    // Change a custom variable
    $('button[action="change-variable"]').click(function () {
       var elt = $(this).data('element');
       var variable = $(this).data('variable');
       var value = $(this).data('value');
-      console.debug("Button - set custom variable '"+variable+"'="+value+", for: ", elt)
+      if (eltdetail_logs) console.debug("Button - set custom variable '"+variable+"'="+value+" for: ", elt)
       
-      stop_refresh();
-      $('#modal').modal({
-         keyboard: true,
-         show: true,
-         backdrop: 'static',
-         remote: "/forms/change_var/"+elt+"?variable="+variable+"&value="+value
-      });
+      display_form("/forms/change_var/"+elt+"?variable="+variable+"&value="+value);
    });
 
+   // Add a comment
+   $('button[action="add-comment"]').click(function () {
+      var elt = $(this).data('element');
+      if (eltdetail_logs) console.debug("Button - add a comment for: ", elt)
+      
+      display_form("/forms/comment/add/"+elt);
+   });
    
+   // Delete a comment
+   $('button[action="delete-comment"]').click(function () {
+      var elt = $(this).data('element');
+      var comment = $(this).data('comment');
+      if (eltdetail_logs) console.debug("Button - delete comment '"+comment+"' for: ", elt)
+      
+      display_form("/forms/comment/delete/"+elt+"?comment="+comment);
+   });
    
-   
-   
-   
-   
+   // Delete all comments
+   $('button[action="delete-comments"]').click(function () {
+      var elt = $(this).data('element');
+      if (eltdetail_logs) console.debug("Button - delete all comments for: ", elt)
+      
+      display_form("/forms/comment/delete_all/"+elt);
+   });
+  
    // Schedule a downtime ...
-   $('button[name="bt-schedule-downtime"]').click(function () {
+   $('button[action="schedule-downtime"]').click(function () {
       var elt = $(this).data('element');
-      console.debug("Button - schedule a downtime, for: ", elt)
+      if (eltdetail_logs) console.debug("Button - schedule a downtime for: ", elt)
       
-      // Stop page refresh ...
-      stop_refresh();
-      // Display modal window ...
-      $('#modal').modal({
-         keyboard: true,
-         show: true,
-         backdrop: 'static',
-         remote: "/forms/downtime/"+elt
-      });
+      display_form("/forms/downtime/add/"+$(this).data('element'));
    });
    
-   // Delete a downtime ...
-   $('button[name="bt-delete-downtimes"]').click(function () {
+   // Delete a downtime
+   $('button[action="delete-downtime"]').click(function () {
       var elt = $(this).data('element');
-      console.debug("Button - delete a downtime, for: ", elt)
+      var downtime = $(this).data('downtime');
+      if (eltdetail_logs) console.debug("Button - delete downtime '"+downtime+"' for: ", elt)
       
-      // Stop page refresh ...
-      stop_refresh();
-      // Display modal window ...
-      $('#modal').modal({
-         keyboard: true,
-         show: true,
-         backdrop: 'static',
-         remote: "/forms/downtime_delete/"+elt
-      });
+      display_form("/forms/downtime/delete/"+elt+"?downtime="+downtime);
+   });
+   
+   // Delete all downtimes
+   $('button[action="delete-downtimes"]').click(function () {
+      var elt = $(this).data('element');
+      if (eltdetail_logs) console.debug("Button - delete all downtimes for: ", elt)
+      
+      display_form("/forms/downtime/delete_all/"+$(this).data('element'));
    });
 
+   // Add an acknowledge
+   $('button[action="add-acknowledge"]').click(function () {
+      var elt = $(this).data('element');
+      if (eltdetail_logs) console.debug("Button - add an acknowledge for: ", elt)
+      
+      display_form("/forms/acknowledge/add/"+elt);
+   });
 
+   // Delete an acknowledge
+   $('button[action="remove-acknowledge"]').click(function () {
+      var elt = $(this).data('element');
+      if (eltdetail_logs) console.debug("Button - add an acknowledge for: ", elt)
+      
+      display_form("/forms/acknowledge/remove/"+elt);
+   });
 
+   // Recheck
+   $('button[action="recheck"]').click(function () {
+      var elt = $(this).data('element');
+      if (eltdetail_logs) console.debug("Button - recheck for: ", elt)
+      
+      recheck_now(elt);
+   });
+
+   // Check result
+   $('button[action="check-result"]').click(function () {
+      var elt = $(this).data('element');
+      if (eltdetail_logs) console.debug("Button - add an acknowledge for: ", elt)
+      
+      display_form("/forms/submit_check/"+elt);
+   });
 
 
    
    // Toggles ...
-   $('#ck-active-checks').on('switch-change', function (e, data) {
-      toggle_active_checks(elt_name, !data.value);
+   $('input[action="toggle-active-checks"]').on('switch-change', function (e, data) {
+      var elt = $(this).data('element');
+      var value = $(this).data('value')=='False' ? false : true;
+      if (eltdetail_logs) console.debug("Toggle active checks for: ", elt, ", currently: ", value)
+      toggle_active_checks(elt, value);
    });
-   $('#ck-passive-checks').on('switch-change', function (e, data) {
-      toggle_passive_checks(elt_name, !data.value);
+   $('input[action="toggle-passive-checks"]').on('switch-change', function (e, data) {
+      var elt = $(this).data('element');  
+      var value = $(this).data('value')=='False' ? false : true;
+      if (eltdetail_logs) console.debug("Toggle passive checks for: ", elt, ", currently: ", value)
+      toggle_passive_checks(elt, value);
    });
-   $('#ck-check-freshness').on('switch-change', function (e, data) {
-      toggle_freshness_check(elt_name, !data.value);
+   $('input[action="toggle-check-freshness"]').on('switch-change', function (e, data) {
+      var elt = $(this).data('element');  
+      var value = $(this).data('value')=='False' ? false : true;
+      if (eltdetail_logs) console.debug("Toggle freshness checks for: ", elt, ", currently: ", value)
+      toggle_freshness_check(elt, value);
    });
-   $('#ck-notifications').on('switch-change', function (e, data) {
-      toggle_notifications(elt_name, !data.value);
+   $('input[action="toggle-notifications"]').on('switch-change', function (e, data) {
+      var elt = $(this).data('element');  
+      var value = $(this).data('value')=='False' ? false : true;
+      if (eltdetail_logs) console.debug("Toggle notifications for: ", elt, ", currently: ", value)
+      toggle_notifications(elt, value);
    });
-   $('#ck-event-handler').on('switch-change', function (e, data) {
-      toggle_event_handlers(elt_name, !data.value);
+   $('input[action="toggle-event-handler"]').on('switch-change', function (e, data) {
+      var elt = $(this).data('element');  
+      var value = $(this).data('value')=='False' ? false : true;
+      if (eltdetail_logs) console.debug("Toggle event handler for: ", elt, ", currently: ", value)
+      toggle_event_handlers(elt, value);
    });
-   $('#ck-process-perfdata').on('switch-change', function (e, data) {
-      toggle_process_perfdata(elt_name, !data.value);
+   $('input[action="toggle-process-perfdata"]').on('switch-change', function (e, data) {
+      var elt = $(this).data('element');  
+      var value = $(this).data('value')=='False' ? false : true;
+      if (eltdetail_logs) console.debug("Toggle perfdata processing for: ", elt, ", currently: ", value)
+      toggle_process_perfdata(elt, value);
    });
-   $('#ck-flap-detection').on('switch-change', function (e, data) {
-      toggle_flap_detection(elt_name, !data.value);
-   });
-   $('#ck-flap-detection').on('switch-change', function (e, data) {
-      toggle_flap_detection(elt_name, !data.value);
+   $('input[action="toggle-flap-detection"]').on('switch-change', function (e, data) {
+      var elt = $(this).data('element');  
+      var value = $(this).data('value')=='False' ? false : true;
+      if (eltdetail_logs) console.debug("Toggle flap detection for: ", elt, ", currently: ", value)
+      toggle_flap_detection(elt, value);
    });
 
-   
+
+
    /*
     * Graphs
     */

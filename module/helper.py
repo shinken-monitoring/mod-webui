@@ -77,10 +77,14 @@ class Helper(object):
 
     # For a unix time return something like
     # Tue Aug 16 13:56:08 2011
-    def print_date(self, t):
+    def print_date(self, t, format='%Y-%m-%d %H:%M:%S'):
         if t == 0 or t == None:
             return 'N/A'
-        return time.asctime(time.localtime(t))
+            
+        if format:
+            return time.strftime(format, time.localtime(t))
+        else:
+            return time.asctime(time.localtime(t))
 
     # For a time, print something like
     # 10m 37s  (just duration = True)
@@ -92,7 +96,7 @@ class Helper(object):
     def print_duration(self, t, just_duration=False, x_elts=0):
         if t == 0 or t == None:
             return 'N/A'
-        #print "T", t
+
         # Get the difference between now and the time of the user
         seconds = int(time.time()) - int(t)
 
@@ -108,11 +112,8 @@ class Helper(object):
 
         # Now manage all case like in the past
         seconds = abs(seconds)
-        #print "In future?", in_future
 
-        #print "sec", seconds
         seconds = long(round(seconds))
-        #print "Sec2", seconds
         minutes, seconds = divmod(seconds, 60)
         hours, minutes = divmod(minutes, 60)
         days, hours = divmod(hours, 24)
@@ -144,7 +145,6 @@ class Helper(object):
             if seconds > 0:
                 duration.append('%ds' % seconds)
 
-        #print "Duration", duration
         # Now filter the number of printed elements if ask
         if x_elts >= 1:
             duration = duration[:x_elts]
@@ -156,7 +156,7 @@ class Helper(object):
         # Now manage the future or not print
         if in_future:
             return 'in ' + ' '.join(duration)
-        else:  # past :)
+        else:
             return ' '.join(duration) + ' ago'
 
 

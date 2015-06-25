@@ -1,7 +1,8 @@
 <script type="text/javascript">
    // Initial start/stop for downtime, do not consider seconds ...
    var downtime_start = moment().seconds(0);
-   var downtime_stop = moment().seconds(0).add('hours', 1);
+   // Set default downtime period as two days
+   var downtime_stop = moment().seconds(0).add('days', 2);
   
    function submit_local_form(){
       // Launch downtime request and bailout this modal view
@@ -26,18 +27,18 @@
          minDate: moment(),
          //dateLimit: moment(),
          startDate: moment(),
-         endDate: moment().add('hours', 1),
+         endDate: moment().add('days', 2),
          timePicker: true,
          timePickerIncrement: 1,
          timePicker12Hour: false,
          showDropdowns: false,
          showWeekNumbers: false,
          opens: 'right',
-      },
-      
-      function(start, end, label) {
-         downtime_start = start; downtime_stop = stop;
-      }
+         },
+         
+         function(start, end, label) {
+            downtime_start = start; downtime_stop = stop;
+         }
       );
     
       // Default date range is one hour from now ...

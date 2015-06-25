@@ -28,7 +28,7 @@ var _already_loaded = {};
 function show_custom_view(p){
    var hname = p.data('element');
    var cvname = p.data('name');
-   console.debug('Request for loading custom view: ', hname, cvname);
+   console.debug('Request for loading custom view: ', cvname, ' for ', hname);
 
    if (cvname in _already_loaded){
       return;

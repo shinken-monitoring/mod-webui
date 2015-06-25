@@ -1,6 +1,7 @@
 <script type="text/javascript">
    function submit_local_form() {
       submit_check("{{name}}", $('#return_code').val(), $('#output').val());
+      add_comment("{{name}}", '{{user.get_name()}}', "Submitted a check result: "+$('#return_code').val()+" - "+$('#output').val());
       $('#modal').modal('hide')
    }
 </script>

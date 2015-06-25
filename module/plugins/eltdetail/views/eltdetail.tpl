@@ -28,53 +28,7 @@ Invalid element name
 %title = 'Service detail: ' + elt.service_description+' on '+elt.host.host_name
 %end
 
-%rebase("layout", js=['eltdetail/js/eltdetail.js', 'eltdetail/js/jquery.color.js', 'eltdetail/js/bootstrap-switch.js', 'eltdetail/js/jquery.Jcrop.js', 'eltdetail/js/actions.js', 'eltdetail/js/graphs.js', 'eltdetail/js/custom_views.js', 'eltdetail/js/screenfull.js', 'eltdetail/js/shinken-gauge.js', 'eltdetail/js/timeline.js', 'timeline/js/timeline.js', 'eltdetail/js/history.js'], css=['eltdetail/css/bootstrap-switch.css', 'eltdetail/css/eltdetail.css', 'eltdetail/css/hide.css', 'eltdetail/css/jquery.Jcrop.css', 'eltdetail/css/shinken-gauge.css', 'timeline/css/timeline.css'], user=user, app=app, refresh=True, breadcrumb=breadcrumb, title=title)
-
-<script type="text/javascript">
-   // @mohierf@: really need this global ?
-   var elt_name = '{{elt.get_full_name()}}';
-
-   // For graph tab ...
-   var html_graphes = [];
-   var current_graph = '';
-   var graphstart={{graphstart}};
-   var graphend={{graphend}};
-
-   $(document).ready(function(){
-      // Long text truncation
-      // @mohierf@: todo ... more recent bootstrap ellipsis ...
-      $('.truncate_command').jTruncate({
-         length: 200,
-         minTrail: 0,
-         moreText: "[see all]",
-         lessText: "[hide extra]",
-         ellipsisText: " <strong>(...)</strong>",
-         moreAni: "fast",
-         lessAni: 2000
-      });
-
-      $('.truncate_output').jTruncate({
-         length: 200,
-         minTrail: 0,
-         moreText: "[see all]",
-         lessText: "[hide extra]",
-         ellipsisText: " <strong>(...)</strong>",
-         moreAni: "fast",
-         lessAni: 2000
-      });
-
-      $('.truncate_perf').jTruncate({
-         length: 100,
-         minTrail: 0,
-         moreText: "[see all]",
-         lessText: "[hide extra]",
-         ellipsisText: " <strong>(...)</strong>",
-         moreAni: "fast",
-         lessAni: 2000
-      });
-  });
-</script>
-
+%rebase("layout", js=['eltdetail/js/eltdetail.js', 'eltdetail/js/jquery.color.js', 'eltdetail/js/bootstrap-switch.js', 'eltdetail/js/jquery.Jcrop.js', 'eltdetail/js/actions.js', 'eltdetail/js/graphs.js', 'eltdetail/js/custom_views.js', 'eltdetail/js/shinken-gauge.js', 'eltdetail/js/timeline.js', 'timeline/js/timeline.js', 'eltdetail/js/history.js'], css=['eltdetail/css/bootstrap-switch.css', 'eltdetail/css/eltdetail.css', 'eltdetail/css/jquery.Jcrop.css', 'eltdetail/css/shinken-gauge.css', 'timeline/css/timeline.css'], user=user, app=app, refresh=True, breadcrumb=breadcrumb, title=title)
 
 %# Main variables
 %elt_name = elt.host_name if elt_type=='host' else elt.service_description+' on '+elt.host.host_name
@@ -714,6 +668,7 @@ Invalid element name
      
                   <div class="panel-body">
                      <div class="{{'col-lg-6'}} if elt_type =='host' else 'col-lg-12'">
+                        %displayed_services=False
                         <!-- Show our father dependencies if we got some -->
                         %if len(elt.parent_dependencies) > 0:
                         <h4>Root cause:</h4>
@@ -723,6 +678,7 @@ Invalid element name
                         <!-- If we are an host and not a problem, show our services -->
                         %if elt_type=='host' and not elt.is_problem:
                         %if len(elt.services) > 0:
+                        %displayed_services=True
                         <h4>My services:</h4>
                         <div class="host-services">
                           {{!helper.print_aggregation_tree(helper.get_host_service_aggregation_tree(elt, app), helper.get_html_id(elt))}}
@@ -755,11 +711,13 @@ Invalid element name
                      </div>
                      %if elt_type=='host':
                      <div class="col-lg-6">
+                        %if not displayed_services:
                         <!-- Show our own services  -->
                         <h4>My services:</h4>
                         <div>
                           {{!helper.print_aggregation_tree(helper.get_host_service_aggregation_tree(elt, app), helper.get_html_id(elt))}}
                         </div>
+                        %end
                      </div>
                      %end
                   </div>
@@ -830,181 +788,126 @@ Invalid element name
                   </div>
      
                   <div class="panel-body">
-                     <div class="col-sm-6">
-                     <table class="table table-condensed">
-                        <colgroup>
-                           <col style="width: 40%" />
-                           <col style="width: 60%" />
-                        </colgroup>
-                        <tbody style="font-size:x-small;">
-                           <tr> <!-- Add a comment -->
-                              <td></td>
-                              <td>
-                                 %disabled_s = ''
-                                 <button name="bt-add-comment" class="col-lg-12 {{disabled_s}} btn btn-primary btn-sm" data-toggle="tooltip" data-placement="bottom" title="Add a comment for this {{elt_type}}"><i class="fa fa-check"></i> Add a comment</button>
-                              </td>
-                           </tr>
-                           
-                           <tr> <!-- Try to fix -->
-                              <td></td>
-                              <td>
-                                 %disabled_s = '' if elt.is_problem and elt.event_handler_enabled and elt.event_handler else 'disabled'
-                                 <button name="bt-event-handler" class="col-lg-12 {{disabled_s}} btn btn-primary btn-sm" data-toggle="tooltip" data-placement="bottom" title="Launch the event handler for this {{elt_type}}"><i class="fa fa-magic"></i> Try to fix problem</button>
-                                 <script>
-                                    $('button[name="bt-event-handler"]').click(function () {
-                                       try_to_fix('{{elt.get_full_name()}}');
-                                    });
-                                 </script>
-                              </td>
-                           </tr>
-                           
-                           <tr> <!-- Acknowledge / unacknowledge -->
-                           %if elt.state != elt.ok_up and not elt.problem_has_been_acknowledged:
-                              <td></td>
-                              <td>
-                                 %disabled_s = '' if elt.state != elt.ok_up and not elt.problem_has_been_acknowledged else 'disabled'
-                                 <button id="bt-acknowledge" name="bt-acknowledge" class="col-lg-12 {{disabled_s}} btn btn-primary btn-sm" data-toggle="tooltip" data-placement="bottom" title="Acknowledge this {{elt_type}} problem"><i class="fa fa-check"></i> Add an acknowledgement</button>
-                                 <script>
-                                    $('button[name="bt-acknowledge"]').click(function () {
-                                       stop_refresh();
-                                       $('#modal').modal({
-                                          keyboard: true,
-                                          show: true,
-                                          backdrop: 'static',
-                                          remote: "/forms/acknowledge/{{helper.get_uri_name(elt)}}"
-                                       });
-                                    });
-                                 </script>
-                              </td>
-                           %else:
-                              <td></td>
-                              <td>
-                                 %disabled_s = '' if elt.problem_has_been_acknowledged else 'disabled'
-                                 <button id="bt-acknowledge" name="bt-acknowledge" class="col-lg-12 {{disabled_s}} btn btn-primary btn-sm" data-toggle="tooltip" data-placement="bottom" title="Acknowledge this {{elt_type}} problem"><i class="fa fa-check"></i> Remove acknowledgement</button>
-                                 <script>
-                                    $('button[name="bt-acknowledge"]').click(function () {
-                                       delete_acknowledge('{{elt.get_full_name()}}');
-                                    });
-                                 </script>
-                              </td>
-                           %end
-                           </tr>
-                           
-                           <tr> <!-- Launch check -->
-                              <td></td>
-                              <td>
-                                 %disabled_s = '' if elt.active_checks_enabled else 'disabled'
-                                 <button id="bt-recheck" class="col-lg-12 {{disabled_s}} btn btn-primary btn-sm" data-toggle="tooltip" data-placement="bottom" title="Launch a check for this {{elt_type}} now"><i class="fa fa-refresh"></i> Recheck now</button>
-                                 <script>
-                                    $('#bt-recheck').click(function () {
-                                       recheck_now('{{elt.get_full_name()}}');
-                                    });
-                                 </script>
-                              </td>
-                           </tr>
-                           
-                           <tr> <!-- Submit check result -->
-                              <td></td>
-                              <td>
-                                 %disabled_s = '' if elt.passive_checks_enabled else 'disabled'
-                                 <button name="bt-check-result" class="col-lg-12 {{disabled_s}} btn btn-primary btn-sm" data-toggle="tooltip" data-placement="bottom" title="Submit a check result for this {{elt_type}}"><i class="fa fa-share"></i> Submit a check result</button>
-                                 <script>
-                                    $('button[name="bt-check-result"]').click(function () {
-                                       stop_refresh();
-                                       $('#modal').modal({
-                                          keyboard: true,
-                                          show: true,
-                                          backdrop: 'static',
-                                          remote: "/forms/submit_check/{{helper.get_uri_name(elt)}}"
-                                       });
-                                    });
-                                 </script>
-                              </td>
-                           </tr>
-                           
-                           <tr> <!-- Send a custom notification -->
-                              <td></td>
-                              <td>
-                                 %disabled_s = 'disabled'
-                                 <button id="bt-custom-notification" class="col-lg-12 {{disabled_s}} btn btn-primary btn-sm" data-toggle="tooltip" data-placement="bottom" title="Send a custom notification for this {{elt_type}}">Send a custom notification</button>
-                                 <script>
-                                    $('#bt-custom-notification').click(function () {
-                                    });
-                                 </script>
-                              </td>
-                           </tr>
 
-                           <tr> <!-- Change custom variable -->
-                              <td></td>
-                              <td>
-                                 %disabled_s = ''
-                                 <button id="bt-custom-var" class="col-lg-12 {{disabled_s}} btn btn-primary btn-sm" data-toggle="tooltip" data-placement="bottom" title="Change a custom variable for this {{elt_type}}"><i class="fa fa-gears"></i> Change a custom variable</button>
-                                 <script>
-                                    $('#bt-custom-var').click(function () {
-                                       stop_refresh();
-                                       $('#modal').modal({
-                                          keyboard: true,
-                                          show: true,
-                                          backdrop: 'static',
-                                          remote: "/forms/custom_var/{{helper.get_uri_name(elt)}}"
-                                       });
-                                    });
-                                 </script>
-                              </td>
-                           </tr>
-                           
-                           <tr> <!-- Schedule a downtime -->
-                              <td></td>
-                              <td>
-                                 %disabled_s = ''
-                                 <button id="bt-schedule-downtime" name="bt-schedule-downtime" class="col-lg-12 {{disabled_s}} btn btn-primary btn-sm" data-toggle="tooltip" data-placement="bottom" title="Schedule a downtime for this {{elt_type}}"><i class="fa fa-ambulance"></i> Schedule a downtime</button>
-                              </td>
-                           </tr>
-                        </tbody>
-                     </table>
+                     <div class="panel panel-default">
+                        <div class="panel-body text-center">
+                           <div class="btn-group">
+                              %disabled_s = ''
+                              <button class="btn btn-default {{disabled_s}}" 
+                                    action="add-comment"
+                                    data-toggle="tooltip" data-placement="bottom" title="Add a comment for this {{elt_type}}"
+                                    data-element="{{helper.get_uri_name(elt)}}" 
+                                    >
+                                 <i class="fa fa-plus"></i> Add a comment
+                              </button>
+                              %disabled_s = '' if elt.is_problem and elt.event_handler_enabled and elt.event_handler else 'disabled'
+                              <button class="btn btn-default {{disabled_s}}" 
+                                    action="event-handler"
+                                    data-toggle="tooltip" data-placement="bottom" title="Try to fix the current problem for this {{elt_type}}"
+                                    data-element="{{helper.get_uri_name(elt)}}" 
+                                    >
+                                 <i class="fa fa-magic"></i> Try to fix
+                              </button>
+                              %disabled_s = ''
+                              <button class="btn btn-default {{disabled_s}}" 
+                                    action="recheck"
+                                    data-toggle="tooltip" data-placement="bottom" title="Launch the defined check command for this {{elt_type}}"
+                                    data-element="{{helper.get_uri_name(elt)}}" 
+                                    >
+                                 <i class="fa fa-refresh"></i> Recheck
+                              </button>
+                              <button class="btn btn-default {{disabled_s}}" 
+                                    action="check-result"
+                                    data-toggle="tooltip" data-placement="bottom" title="Set this {{elt_type}} as ok"
+                                    data-element="{{helper.get_uri_name(elt)}}" 
+                                    >
+                                 <i class="fa fa-share"></i> Set Ok
+                              </button>
+                              %if elt.state != elt.ok_up and not elt.problem_has_been_acknowledged:
+                              %disabled_s = ''
+                              <button class="btn btn-default {{disabled_s}}" 
+                                    action="add-acknowledge"
+                                    data-toggle="tooltip" data-placement="bottom" title="Acknowledge this {{elt_type}} problem"
+                                    data-element="{{helper.get_uri_name(elt)}}" 
+                                    >
+                                 <i class="fa fa-check"></i> Acknowledge
+                              </button>
+                              %else:
+                              %disabled_s = ''
+                              <button class="btn btn-default {{disabled_s}}" 
+                                    action="remove-acknowledge"
+                                    data-toggle="tooltip" data-placement="bottom" title="Remove the acknowledge for this {{elt_type}} problem"
+                                    data-element="{{helper.get_uri_name(elt)}}" 
+                                    >
+                                 <i class="fa fa-check"></i> Unacknowledge
+                              </button>
+                              %end
+                              <button class="btn btn-default {{disabled_s}}" 
+                                    action="schedule-downtime"
+                                    data-toggle="tooltip" data-placement="bottom" title="Set this {{elt_type}} as ok"
+                                    data-element="{{helper.get_uri_name(elt)}}" 
+                                    >
+                                 <i class="fa fa-ambulance"></i> Schedule a downtime
+                              </button>
+                           </div>
+                        </div>
                      </div>
+
                      <div class="col-sm-6">
                         <table class="table table-condensed">
                            <colgroup>
-                              <col style="width: 40%" />
                               <col style="width: 60%" />
+                              <col style="width: 40%" />
                            </colgroup>
-                           <tbody style="font-size:x-small;">
+                           <thead>
+                              <tr>
+                                 <th colspan="2">Toggle current:</td>
+                              </tr>
+                           </thead>
+                           <tbody>
                               <tr>
                                  <td><strong>Active checks enabled:</strong></td>
                                  <td>
-                                    <input type="checkbox" class="switch" id="ck-active-checks" {{'checked' if elt.active_checks_enabled else ''}} >
+                                    <input type="checkbox" class="switch" {{'checked' if elt.active_checks_enabled else ''}} 
+                                          action="toggle-active-checks" 
+                                          data-element="{{helper.get_uri_name(elt)}}" data-value="{{elt.active_checks_enabled}}"
+                                          >
                                  </td>
                               </tr>
                               <tr>
                                  <td><strong>Passive checks enabled:</strong></td>
                                  <td>
-                                    <input type="checkbox" class="switch" id="ck-passive-checks" {{'checked' if elt.passive_checks_enabled else ''}} >
+                                    <input type="checkbox" class="switch" {{'checked' if elt.passive_checks_enabled else ''}} 
+                                          action="toggle-passive-checks"
+                                          data-element="{{helper.get_uri_name(elt)}}" data-value="{{elt.passive_checks_enabled}}"
+                                          >
                                  </td>
                               </tr>
-                              <tr>
-                                 <td><strong>Check freshness enabled:</strong></td>
-                                 <td>
-                                    <input type="checkbox" class="switch" id="ck-check-freshness" {{'checked' if elt.check_freshness else ''}} >
-                                 </td>
-                              </tr>
-                              
                               <tr>
                                  <td><strong>Notifications enabled:</strong></td>
                                  <td>
-                                    <input type="checkbox" class="switch" id="ck-notifications" {{'checked' if elt.notifications_enabled else ''}} >
+                                    <input type="checkbox" class="switch" {{'checked' if elt.notifications_enabled else ''}} 
+                                          action="toggle-notifications"
+                                          data-element="{{helper.get_uri_name(elt)}}" data-value="{{elt.notifications_enabled}}"
+                                          >
                                  </td>
                               </tr>
                               <tr>
                                  <td><strong>Event handler enabled:</strong></td>
                                  <td>
-                                    <input type="checkbox" class="switch" id="ck-event-handler" {{'checked' if elt.event_handler_enabled else ''}} >
+                                    <input type="checkbox" class="switch" {{'checked' if elt.event_handler_enabled else ''}}
+                                          action="toggle-event-handler"
+                                          data-element="{{helper.get_uri_name(elt)}}" data-value="{{elt.event_handler_enabled}}"
+                                          >
                                  </td>
                               </tr>
                               <tr>
-                                 <td><strong>Flap detection enabled:</strong></td>
+                                 <td><strong>Flapping detection enabled:</strong></td>
                                  <td>
-                                    <input type="checkbox" class="switch" id="ck-flap-detection" {{'checked' if elt.flap_detection_enabled else ''}} >
+                                    <input type="checkbox" class="switch" {{'checked' if elt.flap_detection_enabled else ''}} 
+                                          action="toggle-flap-detection"
+                                          data-element="{{helper.get_uri_name(elt)}}" data-value="{{elt.flap_detection_enabled}}"
+                                          >
                                  </td>
                               </tr>
                            </tbody>
@@ -1029,10 +932,10 @@ Invalid element name
                      <table class="table table-condensed table-hover">
                         <thead>
                            <tr>
-                              <th class="col-lg-2">Author</th>
-                              <th class="col-lg-6">Comment</th>
-                              <th class="col-lg-3">Date</th>
-                              <th class="col-lg-1"></th>
+                              <th>Author</th>
+                              <th>Comment</th>
+                              <th>Date</th>
+                              <th></th>
                            </tr>
                         </thead>
                         <tbody>
@@ -1040,7 +943,7 @@ Invalid element name
                            <tr>
                               <td>{{c.author}}</td>
                               <td>{{c.comment}}</td>
-                              <td>{{helper.print_date(c.entry_time)}} - {{helper.print_date(c.expire_time)}}</td>
+                              <td>{{helper.print_date(c.entry_time)}}</td>
                               <td>
                                  <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm" 
                                        action="delete-comment"
@@ -1068,6 +971,7 @@ Invalid element name
                            >
                         <i class="fa fa-plus"></i> Add a comment
                      </button>
+                     %if len(elt.comments) > 0:
                      <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm" 
                            action="delete-comments"
                            data-toggle="tooltip" data-placement="bottom" title="Delete all the comments of this {{elt_type}}"
@@ -1075,6 +979,7 @@ Invalid element name
                            >
                         <i class="fa fa-minus"></i> Delete all comments
                      </button>
+                     %end
                   </div>
                   
                </div>
@@ -1092,25 +997,33 @@ Invalid element name
      
                   <div class="panel-body">
                      %if len(elt.downtimes) > 0:
-                     <table class="table table-condensed table-bordered">
-                       <thead>
-                        <tr>
-                          <th class="col-lg-2">Author</th>
-                          <th class="col-lg-5">Reason</th>
-                          <th class="col-lg-5">Period</th>
-                          <th class="col-lg-1"></th>
-                        </tr>
-                       </thead>
-                       <tbody>
+                     <table class="table table-condensed table-hover">
+                        <thead>
+                           <tr>
+                              <th>Author</th>
+                              <th>Reason</th>
+                              <th>Period</th>
+                              <th></th>
+                           </tr>
+                        </thead>
+                        <tbody>
                         %for dt in elt.downtimes:
-                        <tr>
-                          <td>{{dt.author}}</td>
-                          <td>{{dt.comment}}</td>
-                          <td>{{helper.print_date(dt.start_time)}} - {{helper.print_date(dt.end_time)}}</td>
-                          <td><a class="fa fa-trash-o {{'disabled' if not app.can_action() else ''}} font-red" href="javascript:delete_downtime('{{elt.get_full_name()}}', {{dt.id}})"></a></td>
-                        </tr>
+                           <tr>
+                              <td>{{dt.author}}</td>
+                              <td>{{dt.comment}}</td>
+                              <td>{{helper.print_date(dt.start_time)}} - {{helper.print_date(dt.end_time)}}</td>
+                              <td>
+                                 <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm" 
+                                       action="delete-downtime"
+                                       data-toggle="tooltip" data-placement="bottom" title="Delete the downtime '{{dt.id}}' for this {{elt_type}}"
+                                       data-element="{{helper.get_uri_name(elt)}}" data-downtime="{{dt.id}}"
+                                       >
+                                    <i class="fa fa-trash-o"></i> 
+                                 </button>
+                              </td>
+                           </tr>
                         %end
-                       </tbody>
+                        </tbody>
                      </table>
                      %else:
                      <div class="alert alert-info">
@@ -1118,8 +1031,22 @@ Invalid element name
                      </div>
                      %end
                   
-                     <button name="bt-schedule-downtime" data-element="{{helper.get_uri_name(elt)}}" data-toggle="modal" data-target="#modal" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> Add a downtime</button>
-                     <button name="bt-delete-downtimes" data-element="{{helper.get_uri_name(elt)}}" data-toggle="modal" data-target="#modal" class="btn btn-primary btn-sm"><i class="fa fa-minus"></i> Delete all downtimes</button>
+                     <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm" 
+                           action="schedule-downtime"
+                           data-toggle="tooltip" data-placement="bottom" title="Schedule a downtime for this {{elt_type}}"
+                           data-element="{{helper.get_uri_name(elt)}}" 
+                           >
+                        <i class="fa fa-plus"></i> Schedule a downtime
+                     </button>
+                     %if len(elt.downtimes) > 0:
+                     <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm" 
+                           action="delete-downtimes"
+                           data-toggle="tooltip" data-placement="bottom" title="Delete all the downtimes of this {{elt_type}}"
+                           data-element="{{helper.get_uri_name(elt)}}" 
+                           >
+                        <i class="fa fa-minus"></i> Delete all downtimes
+                     </button>
+                     %end
 
                      </div>
                   </div>
@@ -1147,6 +1074,12 @@ Invalid element name
 
             <!-- Tab Graph start -->
             %if 'graphs' in params['tabs']:
+            <script>
+            var html_graphes = [];
+            var current_graph = '';
+            var graphstart={{graphstart}};
+            var graphend={{graphend}};
+            </script>
             <div class="tab-pane fade" id="graphs">
                <div class="panel panel-default">
                   <div class="panel-heading">
@@ -1228,7 +1161,7 @@ Invalid element name
 
             <!-- Tab Dependency graph Start -->
             %if 'depgraph' in params['tabs']:
-            <div class="tab-pane fade" id="depgraph" class="col-lg-12">
+            <div class="tab-pane fade" id="depgraph">
                <div class="panel panel-default">
                   <div class="panel-heading">
                      <h4>{{elt_type.capitalize()}} dependency graph:</h4>

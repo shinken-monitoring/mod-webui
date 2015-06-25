@@ -22,6 +22,7 @@
  along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+var actions_logs=true;
 
 // Utility function
 function capitalize (text) {
@@ -29,25 +30,32 @@ function capitalize (text) {
 }
 
 
-/* ************************************* Launch the request ******************* */
+/*
+ * Launch the request
+ */
 function launch(url, response_message){
-   console.debug('Launch external command: ', url);
+   if (actions_logs) console.debug('Launch external command: ', url);
+   
    $.ajax({
-      "url": url+'?response_text='+response_message+'&callback=?',
-      "dataType": "jsonp",
-      "success": function (response){
-         if (response.status == 200){
-            raise_message_ok(response.text);
-         } else {
-            raise_message_ko(response.text);
-         }
-      },
-      "error": manage_error
+      url: url,
+      dataType: "jsonp",
+      method: "GET",
+      data: { response_text: response_message }
+   })
+   .done(function( data, textStatus, jqXHR ) {
+      if (actions_logs) console.debug('Done: ', url, data, textStatus, jqXHR);
+      raise_message_ok(data.text)
+   })
+   .fail(function( jqXHR, textStatus, errorThrown ) {
+      if (actions_logs) console.error('Done: ', url, jqXHR, textStatus, errorThrown);
+      raise_message_ko(textStatus);
    });
 }
 
 
-/* ************************************* Message raise part ******************* */
+/* 
+ * Message raise part 
+ */
 function raise_message_ok(text){
    $.meow({
       message: text,
@@ -59,7 +67,6 @@ function raise_message_ok(text){
       }
    });
 }
-
 
 function raise_message_ko(text){
    $.meow({
@@ -74,23 +81,9 @@ function raise_message_ko(text){
 }
 
 
-/* React to an action return of the /action page. Look at status
- to see if it's ok or not */
-function react(response){
-   if (response.status == 200){
-      raise_message_ok(response.text);
-   } else {
-      raise_message_ko(response.text);
-   }
-}
-
-function manage_error(response){
-   raise_message_ko(response.responseText);
-}
-
-
-/* ************************************* Commands ******************* */
-
+/* 
+ * Get element information
+ */
 function get_elements(name){
    var elts = name.split('/');
    var elt = {
@@ -119,8 +112,6 @@ function get_elements(name){
    return elt
 }
 
-
-
 /*
  * Event handlers
  */
@@ -134,6 +125,9 @@ function try_to_fix(name) {
 
 
 
+/*
+ * Remove an element from WebUI
+ */
 function do_remove(name, text, user){
   var elts = get_elements(name);
   
@@ -163,7 +157,7 @@ function do_remove(name, text, user){
 /*
 This is used to submit a passive check result for a particular host. 
 The "status_code" indicates the state of the host check and should 
-be one of the following: 0=UP, 1=DOWN, 2=UNREACHABLE. 
+be one of the following: 0=UP, 1=UNREACHABLE, 2=DOWN.
 The "plugin_output" argument contains the text returned from the 
 host check, along with optional performance data.
 
@@ -182,8 +176,8 @@ function submit_check(name, return_code, output){
 
 
 /*
-Changes the value of a custom host variable.
-*/
+ * Changes the value of a custom host variable.
+ */
 function change_custom_var(name, custom_var, value){
    var elts = get_elements(name);
    var url = '/action/CHANGE_CUSTOM_';
@@ -197,9 +191,9 @@ function change_custom_var(name, custom_var, value){
 }
 
 
-
-
-/* The command that will launch an event handler */
+/* 
+ * Launch the check_command
+ */
 function recheck_now(name) {
    var elts = get_elements(name);
    var now = '$NOW$';
@@ -209,44 +203,32 @@ function recheck_now(name) {
 }
 
 
-/* For some commands, it's a toggle/un-toggle way */
-
-/* We may do the active AND passive in the same way, 
-and the services in the same time */
-function toggle_checks(name, b){
-   //alert('toggle_active_checks::'+hname+b);
-   var elts = get_elements(name);
-   // Inverse the active check or not for the element
-   if (b){ // go disable
-      disable_checks(elts, true);
-   } else { // Go enable, passive too
-      enable_checks(elts, true);
-   }
-}
-
-
+/*
+ * Enable/disable host/service checks
+ * See #226
+ */
 function toggle_active_checks(name, b){
+   if (actions_logs) console.debug("Toggle active checks for: ", name, ", currently: ", b)
+
    var elts = get_elements(name);
    // Inverse the active check or not for the element
-   if (b){ // go disable
+   if (b) { // go disable
       disable_checks(elts, false);
    } else { // Go enable, passive too
       enable_checks(elts, false);
    }
 }
-
-
 function toggle_passive_checks(name, b){
+   if (actions_logs) console.debug("Toggle passive checks for: ", name, ", currently: ", b)
+
    var elts = get_elements(name);
-   // Inverse the active check or not for the element
+   // Inverse the passive check or not for the element
    if (b) {
       disable_checks(elts, true);
    } else {
       enable_checks(elts, true);
    }
 }
-
-
 function enable_checks(elts, passive_too){
    var url = '/action/ENABLE_'+elts.type+'_CHECK/'+elts.nameslash;
    launch(url, 'Active checks enabled');
@@ -260,8 +242,6 @@ function enable_checks(elts, passive_too){
       launch(url, 'Host services checks enabled');
    }
 }
-
-
 function disable_checks(elts, passive_too){
    var url = '/action/DISABLE_'+elts.type+'_CHECK/'+elts.nameslash;
    launch(url, 'Active checks disabled');
@@ -277,62 +257,56 @@ function disable_checks(elts, passive_too){
 }
 
 
-
+/*
+ * Enable/disable host/service notifications
+ */
 function toggle_notifications(name, b){
+   if (actions_logs) console.debug("Toggle notifications for: ", name, ", currently: ", b)
+
    var elts = get_elements(name);
    // Inverse the active check or not for the element
-   if(b){ // go disable
-      disable_notifications(elts);
-   }else{ // Go enable
-      enable_notifications(elts);
+   if (b) { // go disable
+      var url = '/action/DISABLE_'+elts.type+'_NOTIFICATIONS/'+elts.nameslash;
+      launch(url, capitalize(elts.type)+', notifications disabled');
+   } else { // Go enable
+      var url = '/action/ENABLE_'+elts.type+'_NOTIFICATIONS/'+elts.nameslash;
+      launch(url, capitalize(elts.type)+', notifications enabled');
    }
 }
 
-function disable_notifications(elts){
-    var url = '/action/DISABLE_'+elts.type+'_NOTIFICATIONS/'+elts.nameslash;
-    launch(url, capitalize(elts.type)+', notifications disabled');
-}
 
-function enable_notifications(elts){
-    var url = '/action/ENABLE_'+elts.type+'_NOTIFICATIONS/'+elts.nameslash;
-    launch(url, capitalize(elts.type)+', notifications enabled');
-}
-
-
-
+/*
+ * Enable/disable host/service event handler
+ */
 function toggle_event_handlers(name, b){
    var elts = get_elements(name);
    // Inverse the event handler or not for the element
-   if(b){ // go disable
-      disable_event_handlers(elts);
-   }else{ // Go enable
-      enable_event_handlers(elts);
+   if (b) { // go disable
+      var url = '/action/DISABLE_'+elts.type+'_EVENT_HANDLER/'+elts.nameslash;
+      launch(url, capitalize(elts.type)+', event handler disabled');
+   } else { // Go enable
+      var url = '/action/ENABLE_'+elts.type+'_EVENT_HANDLER/'+elts.nameslash;
+      launch(url, capitalize(elts.type)+', event handler enabled');
    }
 }
 
-function enable_event_handlers(elts){
-   var url = '/action/ENABLE_'+elts.type+'_EVENT_HANDLER/'+elts.nameslash;
-   launch(url, capitalize(elts.type)+', event handler enabled');
-}
 
-function disable_event_handlers(elts){
-   var url = '/action/DISABLE_'+elts.type+'_EVENT_HANDLER/'+elts.nameslash;
-   launch(url, capitalize(elts.type)+', event handler disabled');
-}
-
-
+/*
+ * Enable/disable host/service flapping detection
+ */
 function toggle_flap_detection(name, b){
+   if (actions_logs) console.debug("Toggle flapping detection for: ", name, ", currently: ", b)
+
    var elts = get_elements(name);
    // Inverse the flap detection for the element
    if (b) { //go disable
       var url = '/action/DISABLE_'+elts.type+'_FLAP_DETECTION/'+elts.nameslash;
-      launch(url, capitalize(elts.type)+', flap detection disabled');
+      launch(url, capitalize(elts.type)+', flapping detection disabled');
    } else {
       var url = '/action/ENABLE_'+elts.type+'_FLAP_DETECTION/'+elts.nameslash;
-      launch(url, capitalize(elts.type)+', flap detection enabled');
+      launch(url, capitalize(elts.type)+', flapping detection enabled');
    }
 }
-
 
 
 /*

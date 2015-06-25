@@ -28,6 +28,7 @@ var refresh_timeout = app_refresh_period;
 var nb_refresh_try = 0;
 var refresh_stopped = false;
 
+var refresh_logs=true;
 
 function postpone_refresh(){
    // If we are not in our first try, warn the user
@@ -43,7 +44,7 @@ function postpone_refresh(){
 }
 
 function do_refresh(){
-   console.debug("Refreshing ...");
+   if (refresh_logs) console.debug("Refreshing ...");
    $('#header_loading').addClass('fa-spin');
    $.get(document.URL, {}, function(data) {
       var $response = $('<div />').html(data);
@@ -52,17 +53,16 @@ function do_refresh(){
       $('#services-overall-state').html($response.find('#services-overall-state').html());
       $('#header_loading').removeClass('fa-spin');
    
-      // Display active tab ...
-      // var hash = location.hash
-        // , hashPieces = hash.split('?')
-        // , activeTab = $('[href=' + hashPieces[0] + ']');
-      // activeTab && activeTab.tab('show');
+      // Look at the hash part of the URI. If it match a nav name, go for it
+      if (location.hash.length > 0) {
+         if (refresh_logs) console.debug('Displaying tab: ', location.hash)
+         $('.nav-tabs li a[href="' + location.hash + '"]').trigger('click');
+      } else {
+         if (refresh_logs) console.debug('Displaying first tab')
+         $('.nav-tabs li a:first').trigger('click');
+      }
    }, 'html');
 }
-
-/* React to an action return of the /action page. Look at status
- to see if it's ok or not */
-
 
 /* We will try to see if the UI is not in restating mode, and so
    don't have enough data to refresh the page as it should. (force login) */
@@ -126,7 +126,7 @@ function stop_refresh(){
 /* Someone ask us to reinit the refresh so the user will have time to
    do some things like ask actions or something like that */
 function reinit_refresh(){
-   console.debug("Refresh restart: ", app_refresh_period);
+   if (refresh_logs) console.debug("Refresh restart: ", app_refresh_period);
    refresh_timeout = app_refresh_period;
 }
 
@@ -136,16 +136,16 @@ $(document).ready(function(){
    
    // Look at the hash part of the URI. If it match a nav name, go for it
    if (location.hash.length > 0) {
-      console.debug('Displaying tab: ', location.hash)
+      if (refresh_logs) console.debug('Displaying tab: ', location.hash)
       $('.nav-tabs li a[href="' + location.hash + '"]').trigger('click');
    } else {
-      console.debug('Displaying first tab')
+      if (refresh_logs) console.debug('Displaying first tab')
       $('.nav-tabs li a:first').trigger('click');
    }
    
    // Avoid scrolling the window when a nav tab is selected ...
    $('.nav-tabs li a').click(function(e){
-      console.debug('Clicked ', $(this).attr('href'))
+      if (refresh_logs) console.debug('Clicked ', $(this).attr('href'))
       // Tried to stop bootstrap scoll t oanchor effect ...
       e.preventDefault();
       e.stopImmediatePropagation();
@@ -155,7 +155,7 @@ $(document).ready(function(){
 
    // When a nav item is selected update the page hash
    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-      console.debug('Shown ', $(this).attr('href'))
+      if (refresh_logs) console.debug('Shown ', $(this).attr('href'))
       location.hash = $(this).attr('href');
    })
 });
