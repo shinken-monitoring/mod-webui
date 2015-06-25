@@ -1,3 +1,7 @@
+#!/usr/bin/python
+
+# -*- coding: utf-8 -*-
+
 from pymongo.connection import Connection
 import time, datetime
 
