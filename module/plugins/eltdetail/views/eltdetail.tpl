@@ -1236,6 +1236,7 @@ Invalid element name
 
 <script type="text/javascript">
    on_page_refresh();
+   bootstrap_tab_bookmark();
 </script>
 %#End of the element exist or not case
 %end
