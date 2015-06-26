@@ -38,9 +38,12 @@ def show_hostgroups():
     # Set hostgroups level ...
     app.set_hostgroups_level(user)
 
+    level = int(app.request.GET.get('level', 0))
+    parent = app.request.GET.get('parent', None)
+    
     return {
-        'app': app, 'user': user,
-        'hostgroups': sorted(app.get_hostgroups(), key=lambda hostgroup: hostgroup.hostgroup_name)
+        'app': app, 'user': user, 'level': level, 
+        'hostgroups': sorted(app.get_hostgroups(parent=parent), key=lambda hostgroup: hostgroup.hostgroup_name)
         }
 
 

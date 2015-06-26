@@ -1442,8 +1442,16 @@ class Webui_broker(BaseModule, Daemon):
                 except AttributeError:
                     pass
         
-    def get_hostgroups(self, user=None):
-        items=self.datamgr.rg.hostgroups
+    def get_hostgroups(self, user=None, parent=None):
+        if parent:
+            group = self.datamgr.rg.hostgroups.find_by_name(parent)
+            if group.has('hostgroup_members'):
+                items = [self.get_hostgroup(g) for g in group.get_hostgroup_members()]
+            else:
+                return None
+        else:
+            items=self.datamgr.rg.hostgroups
+            
         if user is not None:
             return self.only_related_to(items,user)
 
@@ -1451,7 +1459,7 @@ class Webui_broker(BaseModule, Daemon):
 
     def get_hostgroup(self, name):
         return self.datamgr.rg.hostgroups.find_by_name(name)
-                  
+    
     ##
     # Services groups
     ##
