@@ -118,7 +118,11 @@ def getdb(dbname):
             "Error : Unable to connect to mongo database %s" % dbname,
             None
         )
-
+    
+    # Store connection and db handle ...
+    # self.con = con
+    # self.db = db
+    
     return (  
         "Connected to mongo database '%s'" % dbname,
         db
@@ -141,7 +145,7 @@ def show_logs():
     records=[]
 
     try:
-        logger.warning("[WebUI-logs] fetching records from database: %s / %s / %s (max %d)", params['logs_type'], params['logs_hosts'], params['logs_services'], params['logs_limit'])
+        logger.debug("[WebUI-logs] fetching records from database: %s / %s / %s (max %d)", params['logs_type'], params['logs_hosts'], params['logs_services'], params['logs_limit'])
 
         logs_limit = params['logs_limit']
         logs_type = params['logs_type']
@@ -212,9 +216,9 @@ def set_hosts_list():
     params['logs_hosts'] = []
     
     hostsList = app.request.forms.getall('hostsList[]')
-    logger.warning("[WebUI-logs] Selected hosts : ")
+    logger.debug("[WebUI-logs] Selected hosts : ")
     for host in hostsList:
-        logger.warning("[WebUI-logs] - host : %s" % (host))
+        logger.debug("[WebUI-logs] - host : %s" % (host))
         params['logs_hosts'].append(host)
 
     app.bottle.redirect("/logs")
@@ -235,9 +239,9 @@ def set_services_list():
     params['logs_services'] = []
     
     servicesList = app.request.forms.getall('servicesList[]')
-    logger.warning("[WebUI-logs] Selected services : ")
+    logger.debug("[WebUI-logs] Selected services : ")
     for service in servicesList:
-        logger.warning("[WebUI-logs] - service : %s" % (service))
+        logger.debug("[WebUI-logs] - service : %s" % (service))
         params['logs_services'].append(service)
 
     app.bottle.redirect("/logs")
@@ -258,9 +262,9 @@ def set_logs_type_list():
     params['logs_type'] = []
     
     logs_typeList = app.request.forms.getall('logs_typeList[]')
-    logger.warning("[WebUI-logs] Selected logs types : ")
+    logger.debug("[WebUI-logs] Selected logs types : ")
     for log_type in logs_typeList:
-        logger.warning("[WebUI-logs] - log type : %s" % (log_type))
+        logger.debug("[WebUI-logs] - log type : %s" % (log_type))
         params['logs_type'].append(log_type)
 
     app.bottle.redirect("/logs")
@@ -269,13 +273,15 @@ def set_logs_type_list():
 def get_json(name):
     user = app.check_user_authentication()
 
-    logger.warning("[WebUI-logs] get_json, name: %s", name)
-    hostname=''
-    service =''
+    logger.debug("[WebUI-logs] get_json, name: %s", name)
+    hostname = None
+    service = None
     if '/' in name:
         service = name.split('/')[1]
         hostname = name.split('/')[0]
-    logger.warning("[WebUI-logs] get_json, host/service: %s/%s", hostname, service)
+    else:
+        hostname = name
+    logger.debug("[WebUI-logs] get_json, host/service: %s/%s", hostname, service)
 
     message,db = getdb(params['db_name'])
     if not db:
@@ -290,15 +296,15 @@ def get_json(name):
     records=[]
 
     try:
-        logs_limit = 100
+        logs_limit = params['logs_limit']
         logs_type = []
         logs_hosts = [ hostname ]
-        logs_services = []
+        logs_services = [ ]
         if service is not None:
-            logger.warning("[Logs] Fetching records from database for host/service: %s/%s", hostname, service)
+            logger.debug("[WebUI-logs] Fetching records from database for host/service: %s/%s", hostname, service)
             logs_services = [ service ]
         else:
-            logger.warning("[WebUI-logs] Fetching records from database for host: %s", hostname)
+            logger.debug("[WebUI-logs] Fetching records from database for host: %s", hostname)
 
         query = []
         if len(logs_type) > 0 and logs_type[0] != '':
@@ -336,11 +342,11 @@ def get_json(name):
                     "message":      message
                 })
         message = "%d records fetched from database." % len(records)
-        logger.warning("[WebUI-logs] %d records fetched from database.", len(records))
+        logger.debug("[WebUI-logs] %d records fetched from database.", len(records))
     except Exception, exp:
         logger.error("[WebUI-logs] Exception when querying database: %s", str(exp))
     
-    logger.warning("[WebUI-logs] Finished compiling fetched records")
+    logger.debug("[WebUI-logs] Finished compiling fetched records")
     return json.dumps(records)
 
 # Load plugin configuration parameters
