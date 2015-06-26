@@ -44,7 +44,8 @@ function postpone_refresh(){
 }
 
 function do_refresh(){
-   if (refresh_logs) console.debug("Refreshing ...");
+   if (refresh_logs) console.debug("Refreshing: ", document.URL);
+   
    $('#header_loading').addClass('fa-spin');
    $.get(document.URL, {}, function(data) {
       var $response = $('<div />').html(data);
@@ -133,29 +134,4 @@ function reinit_refresh(){
 /* We will check timeout each 1s */
 $(document).ready(function(){
    setInterval("check_refresh();", 1000);
-   
-   // Look at the hash part of the URI. If it match a nav name, go for it
-   if (location.hash.length > 0) {
-      if (refresh_logs) console.debug('Displaying tab: ', location.hash)
-      $('.nav-tabs li a[href="' + location.hash + '"]').trigger('click');
-   } else {
-      if (refresh_logs) console.debug('Displaying first tab')
-      $('.nav-tabs li a:first').trigger('click');
-   }
-   
-   // Avoid scrolling the window when a nav tab is selected ...
-   $('.nav-tabs li a').click(function(e){
-      if (refresh_logs) console.debug('Clicked ', $(this).attr('href'))
-      // Tried to stop bootstrap scoll t oanchor effect ...
-      e.preventDefault();
-      e.stopImmediatePropagation();
-      // Display tab
-      $(this).tab('show');
-   });
-
-   // When a nav item is selected update the page hash
-   $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-      if (refresh_logs) console.debug('Shown ', $(this).attr('href'))
-      location.hash = $(this).attr('href');
-   })
 });

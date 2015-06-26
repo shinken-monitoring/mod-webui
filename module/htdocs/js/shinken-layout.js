@@ -41,3 +41,52 @@ function loadjscssfile(filename, filetype){
       .attr('href', filename);
   }
 }
+
+
+/**
+ * Save current user preference value: 
+ * - key / value
+ * - callback function called after data are posted
+**/
+function save_user_preference(key, value, callback) {
+   $.post("/user/save_pref", { 'key' : key, 'value' : value}, function() {
+      raise_message_ok("User parameter "+key+" saved");
+      if (callback)
+         window[callback]();
+   });
+}
+
+/**
+ * Save common preference value
+ * - key / value
+ * - callback function called after data are posted
+**/
+function save_common_preference(key, value, callback) {
+   $.post("/user/save_common_pref", { 'key' : key, 'value' : value}, function() {
+      raise_message_ok("Common parameter "+key+" set to "+value);
+      if (callback)
+         window[callback]();
+   });
+}
+
+
+/**
+ * Display the layout modal form
+ */
+function display_form(form) {
+   stop_refresh();
+   $('#modal').modal({
+      keyboard: true,
+      show: true,
+      backdrop: 'static',
+      remote: form
+   });
+}
+
+/* We will check timeout each 1s */
+$(document).ready(function(){
+   // Clean modal box content when hidden ...
+   $('#modal').on('hidden.bs.modal', function () {
+      $(this).removeData('bs.modal');
+   });
+});

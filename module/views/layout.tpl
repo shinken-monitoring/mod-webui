@@ -111,12 +111,8 @@
       </script>
       <script src="/static/js/shinken-refresh.js"></script>
       %end
-      <!--Shinken ones : dashboard widgets, ... -->
-      <script src="/static/js/shinken-ui.js"></script>
+      <!--Shinken ones : actions, user's prefs, ... -->
       <script src="/static/js/shinken-actions.js"></script>
-      <script src="/static/js/shinken-aggregation.js"></script>
-      <script src="/static/js/shinken-deptree.js"></script>
-      <script src="/static/js/shinken-canvas.js"></script>
       <script src="/static/js/shinken-layout.js"></script>
 
       %# End of classic js import. Now call for specific ones ...
@@ -134,7 +130,7 @@
         <div class="container">
         %end
         <div id="page-content">
-               <div class="row">
+            <div class="row">
                %if print_title:
                <!-- Page header -->
                <section class="content-header">
@@ -174,7 +170,7 @@
                 %include("pagination_element", navi=navi, app=app, page=page, elts_per_page=None)
                </section>
                %end
-               </div>
+            </div>
          </div>
       </div>
     </div>
@@ -200,15 +196,6 @@
             </div>
          </div>
       </div>
-
-      <script type="text/javascript">
-      $(function() {
-         $('#modal').on('hidden.bs.modal', function () {
-            // Clean modal content when hidden ...
-            $(this).removeData('bs.modal');
-         });
-      });
-      </script>
 
       <!-- About modal window -->
       <div class="modal fade" role="dialog" aria-labelledby="About box" aria-hidden="true" id="about">
