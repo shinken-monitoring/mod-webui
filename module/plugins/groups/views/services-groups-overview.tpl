@@ -1,4 +1,4 @@
-%rebase("layout", css=['groups/css/groups-overview.css'], js=['groups/js/groups-overview.js'], title='Services groups overview', refresh=True)
+%rebase("layout", css=['groups/css/groups-overview.css'], title='Services groups overview', refresh=True)
 
 %helper = app.helper
 %services = app.get_services(user)
@@ -139,7 +139,7 @@
                <ul class="list-group">
                   <li class="list-group-item">
                   %if nGroups > 0:
-                  <a class="text-left" role="menuitem" href="services-groups?level={{int(level+1)}}&parent={{group.get_name()}}"><i class="fa fa-angle-double-down"></i>
+                  <a class="text-left" role="menuitem" href="services-groups?level={{int(level+1)}}&parent={{group.get_name()}}"><i class="fa fa-level-down"></i>
                   Down
                   </a>
                   %else:
@@ -147,7 +147,7 @@
                   %end
                   
                   %if group.has('level') and group.level > 0:
-                  <a class="text-right" role="menuitem" href="services-groups?level={{int(level-1)}}"><i class="fa fa-angle-double-up"></i>
+                  <a class="text-right" role="menuitem" href="services-groups?level={{int(level-1)}}"><i class="fa fa-level-up"></i>
                   Up
                   </a>
                   %else:

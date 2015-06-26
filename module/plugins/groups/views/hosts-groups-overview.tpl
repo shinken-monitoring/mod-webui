@@ -1,4 +1,4 @@
-%rebase("layout", css=['groups/css/groups-overview.css'], js=['groups/js/groups-overview.js'], title='Hosts groups overview', refresh=True)
+%rebase("layout", css=['groups/css/groups-overview.css'], title='Hosts groups overview', refresh=True)
 
 %helper = app.helper
 %hosts = app.get_hosts(user)
@@ -42,7 +42,7 @@
       %if level==0:
          %nHosts=h['nb_elts']
          %nGroups=len(hostgroups)
-         <li class="all_groups list-group-item clearfix {{even}} {{'empty' if h['nb_elts'] == h['nb_down'] and h['nb_elts'] != 0 else ''}}">
+         <li class="all_groups list-group-item clearfix {{even}} {{'alert-danger' if h['nb_elts'] == h['nb_down'] and h['nb_elts'] != 0 else ''}}">
             <section class="left">
                <h3>
                   <a role="menuitem" href="/all?search=type:host"><i class="fa fa-angle-double-down"></i>
@@ -99,7 +99,7 @@
          %nGroups=len(group.get_hostgroup_members())
          %# Filter empty groups ?
          %#if nHosts > 0 or nGroups > 0:
-         <li class="group list-group-item clearfix {{'empty' if h['nb_elts'] == h['nb_down'] and h['nb_elts'] != 0 else ''}} {{even}}">
+         <li class="group list-group-item clearfix {{'alert-danger' if h['nb_elts'] == h['nb_down'] and h['nb_elts'] != 0 else ''}} {{even}}">
             <section class="left">
                <h3>
                   %if nGroups > 0:
@@ -139,7 +139,7 @@
                <ul class="list-group">
                   <li class="list-group-item">
                   %if nGroups > 0:
-                  <a class="text-left" role="menuitem" href="hosts-groups?level={{int(level+1)}}&parent={{group.get_name()}}"><i class="fa fa-angle-double-down"></i>
+                  <a class="text-left" role="menuitem" href="hosts-groups?level={{int(level+1)}}&parent={{group.get_name()}}"><i class="fa fa-level-down"></i>
                   Down
                   </a>
                   %else:
@@ -147,7 +147,7 @@
                   %end
                   
                   %if group.has('level') and group.level > 0:
-                  <a class="text-right" role="menuitem" href="hosts-groups?level={{int(level-1)}}"><i class="fa fa-angle-double-up"></i>
+                  <a class="text-right" role="menuitem" href="hosts-groups?level={{int(level-1)}}"><i class="fa fa-level-up"></i>
                   Up
                   </a>
                   %else:

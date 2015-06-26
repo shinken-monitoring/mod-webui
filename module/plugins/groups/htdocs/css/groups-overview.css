@@ -24,11 +24,10 @@
 *
 **/
 
-
-ul.list { list-style: none; width: 100%; }
-ul.list li { background: #f9f9f9; }
-ul.list li.alt { background: #ffffff; }
-ul.list li.empty { background: #eeeeee; }
+/**
+ * List view 
+ */
+ul.list-group li.empty { background: #eeeeee; }
 
 section.right .list-group {
    margin-bottom: 0px;
@@ -37,8 +36,15 @@ section.right .list-group-item {
    padding: 5px 10px;
 }
 
-
 li section.left { float: left; width: 70%;  }
 li section.right { float: right; width: 20%; min-width: 150px; }
+
+li section.left h3 { text-transform: uppercase; color: #707375; font-size: 1.4em; line-height: 1.6em; text-align: left; } 
+
+
+/**
+ * Dashboard view 
+ */
+ul.list-group li.empty { background: #eeeeee; }
 
 li section.left h3 { text-transform: uppercase; color: #707375; font-size: 1.4em; line-height: 1.6em; text-align: left; } 
