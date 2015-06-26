@@ -28,7 +28,7 @@ Invalid element name
 %title = 'Service detail: ' + elt.service_description+' on '+elt.host.host_name
 %end
 
-%rebase("layout", js=['eltdetail/js/eltdetail.js', 'eltdetail/js/jquery.color.js', 'eltdetail/js/bootstrap-switch.js', 'eltdetail/js/jquery.Jcrop.js', 'eltdetail/js/actions.js', 'eltdetail/js/graphs.js', 'eltdetail/js/custom_views.js', 'eltdetail/js/shinken-gauge.js', 'eltdetail/js/timeline.js', 'timeline/js/timeline.js', 'eltdetail/js/history.js'], css=['eltdetail/css/bootstrap-switch.css', 'eltdetail/css/eltdetail.css', 'eltdetail/css/jquery.Jcrop.css', 'eltdetail/css/shinken-gauge.css', 'timeline/css/timeline.css'], user=user, app=app, refresh=True, breadcrumb=breadcrumb, title=title)
+%rebase("layout", js=['eltdetail/js/eltdetail.js', 'eltdetail/js/jquery.color.js', 'eltdetail/js/bootstrap-switch.js', 'eltdetail/js/jquery.Jcrop.js', 'eltdetail/js/graphs.js', 'eltdetail/js/custom_views.js', 'eltdetail/js/canvas.js', 'eltdetail/js/timeline.js'], css=['eltdetail/css/bootstrap-switch.css', 'eltdetail/css/eltdetail.css', 'eltdetail/css/jquery.Jcrop.css', 'eltdetail/css/canvas.css', 'timeline/css/timeline.css'], user=user, app=app, refresh=True, breadcrumb=breadcrumb, title=title)
 
 %# Main variables
 %elt_name = elt.host_name if elt_type=='host' else elt.service_description+' on '+elt.host.host_name
@@ -299,7 +299,7 @@ Invalid element name
             %end
             
             %if 'timeline' in params['tabs']:
-            <li class="timeline_pane"><a class="link_to_tab" href="#timeline" data-toggle="tab" id="tab_to_timeline">Timeline</a></li>
+            <li class="timeline_pane"><a href="#timeline" data-toggle="tab" id="tab_to_timeline">Timeline</a></li>
             %end
             %if 'graphs' in params['tabs']:
             <li><a class="link_to_tab" href="#graphs" data-toggle="tab" id="tab_to_graphs">Graphs</a></li>
@@ -308,10 +308,10 @@ Invalid element name
             <li><a class="link_to_tab" href="#depgraph" data-toggle="tab" id="tab_to_depgraph">Impact graph</a></li>
             %end
             %if 'history' in params['tabs']:
-            <li class="history_pane"><a class="link_to_tab" href="#history" data-toggle="tab" id="tab_to_history">History</a></li>
+            <li class="history_pane"><a href="#history" data-toggle="tab" id="tab_to_history">History</a></li>
             %end
             %if 'counters' in params['tabs']:
-            <li class="counters_pane"><a class="link_to_tab" href="#counters" data-toggle="tab" id="tab_to_counters">Counters</a></li>
+            <li class="counters_pane"><a href="#counters" data-toggle="tab" id="tab_to_counters">Counters</a></li>
             %end
          </ul>
          
@@ -1145,7 +1145,7 @@ Invalid element name
             <div class="tab-pane fade" id="history">
                <div class="panel panel-default">
                   <div class="panel-body">
-                     <div id="inner_history" data-elt-name='{{elt.get_full_name()}}'>
+                     <div id="inner_history" data-element='{{elt.get_full_name()}}'>
                         <div class="alert alert-danger">
                            <p class="font-red">Sorry, I cannot load the {{elt_type}} history!</p>
                         </div>

@@ -53,6 +53,39 @@ function on_page_refresh() {
       template: '<div class="popover popover-medium"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
    });
 
+   /**
+    * Page refresh and tabs management 
+    * ---------
+    * Commented: use a Js instead in layout.tpl !
+    * ---------
+   // Look at the hash part of the URI. If it match a nav name, go for it
+   if (location.hash.length > 0) {
+      if (eltdetail_logs) console.debug('Displaying tab: ', location.hash)
+      $('.nav-tabs li a[href="' + location.hash + '"]').trigger('click');
+   } else {
+      if (eltdetail_logs) console.debug('Displaying first tab')
+      $('.nav-tabs li a:first').trigger('click');
+   }
+   
+   // Avoid scrolling the window when a nav tab is selected ...
+   // Not functionnal !
+   $('.nav-tabs li a').click(function(e){
+      if (eltdetail_logs) console.debug('Clicked ', $(this).attr('href'))
+      // Try to stop bootstrap scroll to anchor effect ...
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      // Display tab
+      $(this).tab('show');
+   });
+
+   // When a nav item is selected update the page hash
+   $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+      if (eltdetail_logs) console.debug('Shown ', $(this).attr('href'))
+      location.hash = $(this).attr('href');
+   })
+    */
+   
+   
    /*
     * Custom views 
     */
@@ -232,7 +265,51 @@ function on_page_refresh() {
    });
 
 
+   /*
+    * History / logs
+    */
+   $('a[data-toggle="tab"][href="#history"]').on('shown.bs.tab', function (e) {
+      // First we get the full name of the object from div data
+      var element = $('#inner_history').data('element');
+      
+      $.ajax({
+         "url": '/logs/inner/'+element,
+         "dataType": "json",
+         "success": function (response){
+            $("#inner_history").empty();
+            var table = $('<table />').addClass('table-condensed').addClass('table-bordered').appendTo("#inner_history");
+            var tr = $('<thead />').appendTo(table);
+            $('<th />').html('Time').appendTo(tr);
+            $('<th />').html('Service').appendTo(tr);
+            $('<th />').html('Message').appendTo(tr);
+            
+            $('<tbody />').css({fontSize: "x-small"}).appendTo(table);
 
+            var tr;
+            $.each(response, function (index, log) {
+               tr = $('<tr />').appendTo("#inner_history table tbody");
+               $('<td />').html(moment.unix(log.timestamp).format('YYYY-MM-DD HH:mm:ss')).appendTo(tr);
+               $('<td />').html(log.service).appendTo(tr);
+               $('<td />').html(log.message).appendTo(tr);
+            });
+         },
+         "error": function (response){
+           console.error(response);
+         }
+      });
+   })
+
+/*
+   // When a nav item is selected update the page hash
+   $('a[data-toggle="tab"][href="#history"]').on('shown.bs.tab', function (e) {
+      if (eltdetail_logs) console.debug("Selected history tab ...")
+      // Get the full name of the object from div data
+      var element = $('#inner_history').data('element');
+      // Get history tab content ...
+      $('#inner_history').load('/logs/inner/'+element);
+   })
+*/
+   
    /*
     * Graphs
     */
@@ -269,3 +346,51 @@ function on_page_refresh() {
       get_range();
    });
 }
+
+
+
+
+/* 
+ * Host/service aggregation toggle image button action 
+ */
+function toggleAggregationElt(e) {
+    var toc = document.getElementById('aggregation-node-'+e);
+    var imgLink = document.getElementById('aggregation-toggle-img-'+e);
+
+    img_src = '/static/images/';
+
+    if (toc && toc.style.display == 'none') {
+        toc.style.display = 'block';
+        if (imgLink != null){
+            imgLink.src = img_src+'reduce.png';
+        }
+    } else {
+        toc.style.display = 'none';
+        if (imgLink != null){
+            imgLink.src = img_src+'expand.png';
+        }
+    }
+}
+
+
+/* The business rules toggle buttons*/
+function toggleBusinessElt(e) {
+    //alert('Toggle'+e);
+    var toc = document.getElementById('business-parents-'+e);
+    var imgLink = document.getElementById('business-parents-img-'+e);
+
+    img_src = '/static/images/';
+
+    if (toc && toc.style.display == 'none') {
+   toc.style.display = 'block';
+   if (imgLink != null){
+       imgLink.src = img_src+'reduce.png';
+   }
+    } else {
+   toc.style.display = 'none';
+   if (imgLink != null){
+       imgLink.src = img_src+'expand.png';
+   }
+    }
+}
+

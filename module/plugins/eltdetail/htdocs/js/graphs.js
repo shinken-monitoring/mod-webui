@@ -95,7 +95,3 @@ function graph_zoom(uri){
    console.log(new_uri);
    window.location=new_uri;
 }
-
-// when we show the graph tab, we apply the crop effect.
-$(window).ready(function(){
-});
