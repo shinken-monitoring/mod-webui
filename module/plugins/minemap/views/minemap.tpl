@@ -10,7 +10,7 @@
 
 
 <div id="minemap">
-   %if not hosts:
+   %if not items:
       <center>
          %if search_string:
          <h3>Bummer, we couldn't find anything.</h3>
@@ -24,13 +24,20 @@
       %rows = []
       %columns = []
 
-      %for h in hosts:
-         %if not h.get_name() in rows:
-            %# Include host name even if it has no services ...
-            %rows.append(h.get_name())
-            
-            %for s in h.services:
-               %columns.append(s.get_name())
+      %for h in items:
+         %if h.my_type=='service':
+            %if not h.host_name in rows:
+               %rows.append(h.host_name)
+            %end
+            %if not h.get_name() in columns:
+               %columns.append(h.get_name())
+            %end
+         %elif h.my_type=='host':
+            %if not h.get_name() in rows:
+               %rows.append(h.get_name())
+               %for s in h.services:
+                  %columns.append(s.get_name())
+               %end
             %end
          %end
       %end
@@ -39,30 +46,52 @@
       %columns = collections.Counter(columns)
       %columns = [c for c, i in columns.most_common()]
 
-      %synthesis = helper.get_synthesis(hosts)
+      %synthesis = helper.get_synthesis(items)
       %s = synthesis['services']
       %h = synthesis['hosts']
-      <!--
-      <div class="well well-sm">
-         <table class="table table-invisible">
-            <tbody>
-               <tr>
-                  <td>
-                     <b>{{s['nb_elts']}} services:&nbsp;</b> 
-                  </td>
-             
-                  %for state in 'ok', 'warning', 'critical', 'pending', 'unknown', 'ack', 'downtime':
-                  <td>
-                    %label = "%s <i>(%s%%)</i>" % (s['nb_' + state], s['pct_' + state])
-                    {{!helper.get_fa_icon_state_and_label(cls='service', state=state, label=label, disabled=(not s['nb_' + state]))}}
-                  </td>
-                  %end
-               </tr>
-            </tbody>
-         </table>
-      </div>
-      -->
       
+      <!-- Problems synthesis -->
+      <div class="panel panel-default">
+         <div class="panel-heading">
+            <h3 class="panel-title">Current filtered hosts/services:</h3>
+         </div>
+         <div class="panel-body">
+            <table class="table table-invisible table-condensed">
+               <tbody>
+                 %if 'type:service' not in search_string:
+                  <tr>
+                     <td>
+                     <b>{{h['nb_elts']}} hosts:&nbsp;</b> 
+                     </td>
+                   
+                     %for state in 'up', 'unreachable', 'down', 'pending', 'unknown', 'ack', 'downtime':
+                     <td>
+                       %label = "%s <i>(%s%%)</i>" % (h['nb_' + state], h['pct_' + state])
+                       {{!helper.get_fa_icon_state_and_label(cls='host', state=state, label=label, disabled=(not h['nb_' + state]))}}
+                     </td>
+                     %end
+                  </tr>
+                  %end
+                  %if 'type:host' not in search_string:
+                  <tr>
+                     <td>
+                        <b>{{s['nb_elts']}} services:&nbsp;</b> 
+                     </td>
+                
+                     %for state in 'ok', 'warning', 'critical', 'pending', 'unknown', 'ack', 'downtime':
+                     <td>
+                       %label = "%s <i>(%s%%)</i>" % (s['nb_' + state], s['pct_' + state])
+                       {{!helper.get_fa_icon_state_and_label(cls='service', state=state, label=label, disabled=(not s['nb_' + state]))}}
+                     </td>
+                     %end
+                  </tr>
+                  %end
+               </tbody>
+            </table>
+         </div>
+      </div>
+
+<!--
       <div class="panel panel-default">
          <div class="panel-heading">
             <h3 class="panel-title">Current filtered hosts</h3>
@@ -88,6 +117,7 @@
             </div>
          </div>
       </div>
+-->
 
       <table class="table table-hover minemap">
          <thead>

@@ -72,7 +72,7 @@ def show_minemap():
 
     # Apply search filter for minemap hosts ...
     search = ' '.join(app.request.GET.getall('search')) or ""
-    hosts = app.search_hosts_and_services(search, user, get_impacts=False, hosts_only=True)
+    items = app.search_hosts_and_services(search, user, get_impacts=False)
     
     # Fetch elements per page preference for user, default is 25
     elts_per_page = app.get_user_preference(user, 'elts_per_page', 25)
@@ -83,14 +83,14 @@ def show_minemap():
     end = int(app.request.GET.get('end', start + step))
         
     # If we overflow, came back as normal
-    total = len(hosts)
+    total = len(items)
     if start > total:
         start = 0
         end = step
 
     navi = app.helper.get_navi(total, start, step=step)
 
-    return {'app': app, 'user': user, 'navi': navi, 'search_string': search, 'hosts': hosts[start:end], 'page': "minemap"}
+    return {'app': app, 'user': user, 'navi': navi, 'search_string': search, 'items': items[start:end], 'page': "minemap"}
 
 def show_minemaps():
     user = app.check_user_authentication()
