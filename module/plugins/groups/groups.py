@@ -47,6 +47,21 @@ def show_hostgroups():
         }
 
 
+def show_hostgroups_dashboard():
+    user = app.check_user_authentication()
+
+    # Set hostgroups level ...
+    app.set_hostgroups_level(user)
+
+    level = int(app.request.GET.get('level', 0))
+    parent = app.request.GET.get('parent', None)
+    
+    return {
+        'app': app, 'user': user, 'level': level, 
+        'hostgroups': sorted(app.get_hostgroups(parent=parent), key=lambda hostgroup: hostgroup.hostgroup_name)
+        }
+
+
 def show_servicegroup(name):
     app.bottle.redirect("/all?search=type:service hg:" + name)
 
@@ -57,14 +72,18 @@ def show_servicegroups():
     # Set servicegroups level ...
     app.set_servicegroups_level(user)
 
+    level = int(app.request.GET.get('level', 0))
+    parent = app.request.GET.get('parent', None)
+    
     return {
-        'app': app, 'user': user,
+        'app': app, 'user': user, 'level': level, 
         'servicegroups': sorted(app.get_servicegroups(), key=lambda servicegroup: servicegroup.servicegroup_name)
         }
 
 pages = {
     show_hostgroup: {'routes': ['/hosts-group/:name'], 'view': 'hosts-group', 'static': True},
     show_hostgroups: {'routes': ['/hosts-groups'], 'view': 'hosts-groups-overview', 'static': True},
+    show_hostgroups_dashboard: {'routes': ['/hosts-groups-dashboard'], 'view': 'hosts-groups-dashboard', 'static': True},
     show_servicegroup: {'routes': ['/services-group/:name'], 'view': 'services-group', 'static': True},
     show_servicegroups: {'routes': ['/services-groups'], 'view': 'services-groups-overview', 'static': True},
 }

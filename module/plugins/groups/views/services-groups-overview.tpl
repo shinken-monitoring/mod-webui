@@ -1,170 +1,175 @@
 %rebase("layout", css=['groups/css/groups-overview.css'], js=['groups/js/groups-overview.js'], title='Services groups overview', refresh=True)
 
 %helper = app.helper
-
-%from shinken.misc.filter import only_related_to
-
 %services = app.get_services(user)
 %s = helper.get_synthesis(services)['services']
 
-<div class="row">
-   <div class="pull-left col-sm-2">
-      <span class="pull-right">Total services: {{s['nb_elts']}}</span>
+
+<div id="servicesgroups">
+   <!-- Progress bar -->
+   <div class="panel panel-default">
+      <div class="panel-body">
+         <div class="pull-left col-sm-2">
+            <span class="pull-right">Total services: {{s['nb_elts']}}</span>
+         </div>
+         <div class="pull-left progress col-sm-10 no-leftpadding no-rightpadding" >
+            <div title="{{s['nb_ok']}} services Ok" class="progress-bar progress-bar-success quickinfo" role="progressbar" 
+               data-toggle="tooltip" data-placement="bottom" 
+               style="width: {{s['pct_ok']}}%;">{{s['pct_ok']}}% Ok</div>
+
+            <div title="{{s['nb_critical']}} services Critical" class="progress-bar progress-bar-danger quickinfo" 
+               data-toggle="tooltip" data-placement="bottom" 
+               style="width: {{s['pct_critical']}}%;">{{s['pct_critical']}}% Critical</div>
+
+            <div title="{{s['nb_warning']}} services  Warning" class="progress-bar progress-bar-warning quickinfo" 
+               data-toggle="tooltip" data-placement="bottom" 
+               style="width: {{s['pct_warning']}}%;">{{s['pct_warning']}}% Warning</div>
+
+            <div title="{{s['nb_pending']}} services Pending" class="progress-bar progress-bar-info quickinfo" 
+               data-toggle="tooltip" data-placement="bottom" 
+               style="width: {{s['pct_pending']}}%;">{{s['pct_pending']}}% Pending</div>
+
+            <div title="{{s['nb_unknown']}} services Unknown" class="progress-bar progress-bar-info quickinfo" 
+               data-toggle="tooltip" data-placement="bottom" 
+               style="width: {{s['pct_unknown']}}%;">{{s['pct_unknown']}}% Unknown</div>
+         </div>
+      </div>
    </div>
-   <div class="pull-left progress col-sm-8 no-leftpadding no-rightpadding" style="height: 25px;">
-      <div title="{{s['nb_ok']}} services Ok" class="progress-bar progress-bar-success quickinfo" role="progressbar" 
-         data-toggle="tooltip" data-placement="bottom" 
-         style="line-height: 25px; width: {{s['pct_ok']}}%;">{{s['pct_ok']}}% Ok</div>
 
-      <div title="{{s['nb_critical']}} services Critical" class="progress-bar progress-bar-danger quickinfo" 
-         data-toggle="tooltip" data-placement="bottom" 
-         style="line-height: 25px; width: {{s['pct_critical']}}%;">{{s['pct_critical']}}% Critical</div>
-
-      <div title="{{s['nb_warning']}} services Warning" class="progress-bar progress-bar-warning quickinfo" 
-         data-toggle="tooltip" data-placement="bottom" 
-         style="line-height: 25px; width: {{s['pct_warning']}}%;">{{s['pct_warning']}}% Warning</div>
-
-      <div title="{{s['nb_pending']}} services Pending" class="progress-bar progress-bar-info quickinfo" 
-         data-toggle="tooltip" data-placement="bottom" 
-         style="line-height: 25px; width: {{s['pct_pending']}}%;">{{s['pct_pending']}}% Pending</div>
-
-      <div title="{{s['nb_unknown']+s['nb_pending']}} services Unknown + Pending" class="progress-bar progress-bar-info quickinfo" 
-         data-toggle="tooltip" data-placement="bottom" 
-         style="line-height: 25px; width: {{s['pct_unknown']}}%;">{{s['pct_unknown']+s['nb_pending']}}% Unknown and pending</div>
-   </div>
-   <div class="pull-right col-sm-2">
-      <span class="btn-group pull-right">
-         <a href="#" id="listview" class="btn btn-small switcher pull-right" data-original-title='List'> <i class="fa fa-align-justify"></i> </a>
-         <a href="#" id="gridview" class="btn btn-small switcher active pull-right" data-original-title='Grid'> <i class="fa fa-th"></i> </a>
-      </span>
-   </div>
-</div>
-
-<div class="row">
-   <ul id="groups" class="grid row">
+   <!-- Groups list -->
+   <ul id="groups" class="list-group">
       %even='alt'
-      %nServices=s['nb_elts']
-      %sOk=s['nb_ok']
-      %sCritical=s['nb_critical']
-      %sWarning=s['nb_warning']
-      %sPending=s['nb_pending']
-      %sUnknown=s['nb_unknown']
-      %sAck=s['nb_ack']
-      %sDowntime=s['nb_downtime']
-      %nGroups=len(servicegroups)
-      <li class="clearfix {{even}}">
-         <section class="left">
-            <h3>All services
-               {{!helper.get_business_impact_text(s['bi'])}}
-            </h3>
-            <span class="meta">
-               <span class="{{'font-ok' if sOk > 0 else 'font-greyed'}}">
-                  {{!helper.get_fa_icon_state(cls='service', state='ok')}}
-                  <span class="num">{{sOk}}</span>
-               </span> 
-                
-               <span class="{{'font-warning' if sWarning > 0 else 'font-greyed'}}">
-                  {{!helper.get_fa_icon_state(cls='service', state='warning')}} 
-                  <span class="num">{{sWarning}}</span>
-               </span> 
-
-               <span class="{{'font-critical' if sCritical > 0 else 'font-greyed'}}">
-                  {{!helper.get_fa_icon_state(cls='service', state='critical')}} 
-                  <span class="num">{{sCritical}}</span>
-               </span> 
-
-               <span class="{{'font-pending' if sPending > 0 else 'font-greyed'}}">
-                  {{!helper.get_fa_icon_state(cls='service', state='pending')}} 
-                  <span class="num">{{sPending}}</span>
-               </span> 
-
-               <span class="{{'font-unknown' if sUnknown > 0 else 'font-greyed'}}">
-                  {{!helper.get_fa_icon_state(cls='service', state='unknown')}} 
-                  <span class="num">{{sUnknown}}</span>
-               </span> 
-            </span>
-         </section>
-         
-         <section class="right">
-            <span class="sum">{{nServices}} {{'service' if nServices==1 else 'services'}}</span>
-            <span class="darkview">
-               <a href="/all?search=type:service" class="firstbtn"><i class="fa fa-angle-double-down"></i> Details</a>
-               <br/>
-               <a href="/minemap" class="firstbtn"><i class="fa fa-table"></i> Minemap</a>
-            </span>
-         </section>
-      </li>
-
+      %if level==0:
+         %nServices=s['nb_elts']
+         %nGroups=len(servicegroups)
+         <li class="all_groups list-group-item clearfix {{even}} {{'empty' if s['nb_elts'] == s['nb_critical'] and s['nb_elts'] != 0 else ''}}">
+            <section class="left">
+               <h3>
+                  <a role="menuitem" href="/all?search=type:service"><i class="fa fa-angle-double-down"></i>
+                     All services {{!helper.get_business_impact_text(s['bi'])}}
+                  </a>
+               </h3>
+               <div>
+                  %for state in 'ok', 'warning', 'critical':
+                  <span class="{{'font-' + state if s['nb_' + state] > 0 else 'font-greyed'}}">
+                    %label = "%s <i>(%s%%)</i>" % (s['nb_' + state], s['pct_' + state])
+                    {{!helper.get_fa_icon_state_and_label(cls='service', state=state, label=label)}}
+                  </span>
+                  %end
+               </div>
+               <div>
+                  %for state in 'pending', 'unknown', 'ack', 'downtime':
+                  <span class="{{'font-' + state if s['nb_' + state] > 0 else 'font-greyed'}}">
+                    %label = "%s <i>(%s%%)</i>" % (s['nb_' + state], s['pct_' + state])
+                    {{!helper.get_fa_icon_state_and_label(cls='service', state=state, label=label)}}
+                  </span>
+                  %end
+               </div>
+            </section>
+            
+            <section class="right">
+               <div class="btn-group btn-group-justified" role="group" aria-label="Minemap">
+                  <a class="btn btn-default" href="/minemap?search=type:service"><i class="fa fa-table"></i> Minemap</a>
+               </div>
+               
+               <ul class="list-group">
+                  <li class="list-group-item">&nbsp;</li>
+                  <li class="list-group-item"><span class="badge">{{s['nb_elts']}}</span>Services</li>
+                  <li class="list-group-item"><span class="badge">{{nGroups}}</span>Groups</li>
+               </ul>
+            </section>
+         </li>
+      %end
+    
       %even='alt'
       %for group in servicegroups:
-         %# To be improved ... hosts groups filtering by level
-         %#if not hasattr(group, 'level') or (hasattr(group, 'level') and group.level > 0):
-         %#continue
-         %#end
-         %#
-         %# Should use filter as bi>3 ...
-         %#
-         %#
-         %hosts = app.search_hosts_and_services('type:host hg:'+group.get_name(), user, hosts_only=True)
-         %h = helper.get_synthesis(hosts)['hosts']
+         %if group.has('level')and group.level != level:
+         %continue
+         %end
+
+         %services = app.search_hosts_and_services('type:service sg:'+group.get_name(), user)
+         %s = helper.get_synthesis(services)['services']
          %if even =='':
            %even='alt'
          %else:
            %even=''
          %end
 
-         %nServices=s['nb_ok']
+         %nServices=s['nb_elts']
          %nGroups=len(group.get_servicegroup_members())
-         <!-- <li>{{group.get_name()}} - {{nServices}} - {{nGroups}} - {{group.get_servicegroup_members()}}</li> -->
+         %# Filter empty groups ?
          %#if nServices > 0 or nGroups > 0:
-           <li class="clearfix {{even}} {{'alert' if nServices == sCritical and nServices != 0 else ''}}">
-             <section class="left">
-               <h3>{{group.alias if group.alias != '' else group.get_name()}}
-                  {{!helper.get_business_impact_text(s['bi'])}}
-               </h3>
-               <span class="meta">
-                  <span class="{{'font-ok' if s['nb_ok'] > 0 else 'font-greyed'}}">
-                     {{!helper.get_fa_icon_state(cls='service', state='ok')}}
-                     <span class="num">{{s['nb_ok']}}</span>
-                  </span> 
-                   
-                  <span class="{{'font-warning' if s['nb_warning'] > 0 else 'font-greyed'}}">
-                     {{!helper.get_fa_icon_state(cls='service', state='warning')}} 
-                     <span class="num">{{s['nb_warning']}}</span>
-                  </span> 
-
-                  <span class="{{'font-critical' if s['nb_critical'] > 0 else 'font-greyed'}}">
-                     {{!helper.get_fa_icon_state(cls='service', state='critical')}} 
-                     <span class="num">{{s['nb_critical']}}</span>
-                  </span> 
-
-                  <span class="{{'font-pending' if s['nb_pending'] > 0 else 'font-greyed'}}">
-                     {{!helper.get_fa_icon_state(cls='service', state='pending')}} 
-                     <span class="num">{{s['nb_pending']}}</span>
-                  </span> 
-
-                  <span class="{{'font-unknown' if s['nb_unknown'] > 0 else 'font-greyed'}}">
-                     {{!helper.get_fa_icon_state(cls='service', state='unknown')}} 
-                     <span class="num">{{s['nb_unknown']}}</span>
-                  </span> 
-               </span>
-             </section>
-             
-             <section class="right">
-               <div class="pull-left">
-               <span class="groupLevel">{{'Level %d' % group.level if group.has('level') else 'Root'}}</span>
+         <li class="group list-group-item clearfix {{'empty' if s['nb_elts'] == s['nb_critical'] and s['nb_elts'] != 0 else ''}} {{even}}">
+            <section class="left">
+               <h3>
+                  %if nGroups > 0:
+                  <a role="menuitem" href="services-groups?level={{int(level+1)}}&parent={{group.get_name()}}"><i class="fa fa-angle-double-down"></i>
+                  %else:
+                  <a role="menuitem" href="/all?search=type:service sg:{{group.get_name()}}"><i class="fa fa-angle-double-down"></i>
+                  %end
+                     {{group.alias if group.alias != '' else group.get_name()}} {{!helper.get_business_impact_text(s['bi'])}}</h3>
+                  %if nGroups > 0:
+                  </a>
+                  %else:
+                  </a>
+                  %end
+               <div>
+                  %for state in 'ok', 'warning', 'critical':
+                  <span class="{{'font-' + state if s['nb_' + state] > 0 else 'font-greyed'}}">
+                    %label = "%s <i>(%s%%)</i>" % (s['nb_' + state], s['pct_' + state])
+                    {{!helper.get_fa_icon_state_and_label(cls='service', state=state, label=label)}}
+                  </span>
+                  %end
                </div>
-               <div class="pull-right">
-                 <span class="sumHosts">{{'%d service' % nServices if nServices == 1 else '%d services' % nServices}}</span>
-                 <span class="sumGroups">{{'%d group' % nGroups if nGroups == 1 else '' if nGroups == 0 else '%d groups' % nGroups}}</span>
+               <div>
+                  %for state in 'pending', 'unknown', 'ack', 'downtime':
+                  <span class="{{'font-' + state if s['nb_' + state] > 0 else 'font-greyed'}}">
+                    %label = "%s <i>(%s%%)</i>" % (s['nb_' + state], s['pct_' + state])
+                    {{!helper.get_fa_icon_state_and_label(cls='service', state=state, label=label)}}
+                  </span>
+                  %end
                </div>
-               <span class="darkview">
-                 <a href="/all?search=type:service sg:{{group.get_name()}}" class="firstbtn"><i class="fa fa-angle-double-down"></i> Details</a>
-                 <br/>
-                 <a href="/minemap?search=type:service sg:{{group.get_name()}}" class="firstbtn"><i class="fa fa-table"></i> Minemap</a>
-               </span>
-             </section>
-           </li>
+            </section>
+          
+            <section class="right">
+               <div class="btn-group btn-group-justified" role="group" aria-label="Minemap">
+                  <a class="btn btn-default" href="/minemap?search=type:service sg:{{group.get_name()}}"><i class="fa fa-table"></i> Minemap</a>
+               </div>
+               
+               <ul class="list-group">
+                  <li class="list-group-item">
+                  %if nGroups > 0:
+                  <a class="text-left" role="menuitem" href="services-groups?level={{int(level+1)}}&parent={{group.get_name()}}"><i class="fa fa-angle-double-down"></i>
+                  Down
+                  </a>
+                  %else:
+                  &nbsp;
+                  %end
+                  
+                  %if group.has('level') and group.level > 0:
+                  <a class="text-right" role="menuitem" href="services-groups?level={{int(level-1)}}"><i class="fa fa-angle-double-up"></i>
+                  Up
+                  </a>
+                  %else:
+                  &nbsp;
+                  %end
+                  </li>
+                  <li class="list-group-item"><span class="badge">{{s['nb_elts']}}</span>Services</li>
+                  <li class="list-group-item"><span class="badge">{{nGroups}}</span>Groups</li>
+               </ul>
+<!--
+               <div class="dropdown form-group text-right">
+                  <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                     Views <span class="caret"></span>
+                  </button>
+                  <ul class="dropdown-menu" role="menu" aria-labelledby="group_actions">
+                     <li role="presentation"><a role="menuitem" href="/all?search=type:service sg:{{group.get_name()}}"><i class="fa fa-angle-double-down"></i> Details</a></li>
+                     <li role="presentation"><a role="menuitem" href="/minemap?search=type:service sg:{{group.get_name()}}"><i class="fa fa-table"></i> Minemap</a></li>
+                  </ul>
+               </div>
+-->
+            </section>
+         </li>
          %#end
       %end
    </ul>

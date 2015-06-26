@@ -653,7 +653,7 @@ class Webui_broker(BaseModule, Daemon):
         logger.info("[WebUI] Checking authentication for user: %s", username)
         self.user_picture = None
         
-        c = self.datamgr.get_contact(username)
+        c = self.get_contact(username)
         if not c:
             logger.error("[WebUI] You need to have a contact having the same name as your user: %s", username)
             return False
@@ -1284,15 +1284,15 @@ class Webui_broker(BaseModule, Daemon):
                 items = new_items
 
             if (t == 'hg' or t == 'hgroup') and s != 'all':
-                group = self.datamgr.get_hostgroup(s)
+                group = self.get_hostgroup(s)
                 items = [i for i in items if group in i.get_hostgroups()]
 
             if (t == 'sg' or t == 'sgroup') and s != 'all':
-                group = self.datamgr.get_servicegroup(s)
+                group = self.get_servicegroup(s)
                 items = [i for i in items if group in i.get_servicegroups()]
 
             if t == 'realm':
-                r = self.datamgr.get_realm(s)
+                r = self.get_realm(s)
                 items = [i for i in items if i.get_realm() == r]
 
             if t == 'htag' and s != 'all':
@@ -1482,8 +1482,16 @@ class Webui_broker(BaseModule, Daemon):
                 child_group = self.get_servicegroup(g)
                 self.set_servicegroup_level(child_group, level + 1, user)
         
-    def get_servicegroups(self, user=None):
-        items = self.datamgr.rg.servicegroups
+    def get_servicegroups(self, user=None, parent=None):
+        if parent:
+            group = self.datamgr.rg.servicegroups.find_by_name(parent)
+            if group.has('servicegroup_members'):
+                items = [self.get_servicegroup(g) for g in group.get_servicegroup_members()]
+            else:
+                return None
+        else:
+            items = self.datamgr.rg.servicegroups
+            
         if user is not None:
             return self.only_related_to(items,user)
 
@@ -1531,6 +1539,17 @@ class Webui_broker(BaseModule, Daemon):
             if tag in s.get_service_tags():
                 r.append(s)
         return r
+    
+    ##
+    # Realms
+    ##
+    def get_realms(self):
+        return self.datamgr.rg.realms
+
+    def get_realm(self, r):
+        if r in self.datamgr.rg.realms:
+            return r
+        return None
 
     ##
     # Problems management
