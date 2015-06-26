@@ -206,23 +206,25 @@ Invalid element name
    %synthesis = helper.get_synthesis(elt.services)
    %s = synthesis['services']
    %h = synthesis['hosts']
-   <div class="well well-sm">
-      <table class="table table-invisible">
+   <div class="panel panel-default">
+     <div class="panel-body">
+       <table class="table table-invisible table-condensed">
          <tbody>
-            <tr>
-               <td>
-                  <b>{{s['nb_elts']}} services:&nbsp;</b> 
-               </td>
-          
-               %for state in 'ok', 'warning', 'critical', 'pending', 'unknown', 'ack', 'downtime':
-               <td>
-                 %label = "%s <i>(%s%%)</i>" % (s['nb_' + state], s['pct_' + state])
-                 {{!helper.get_fa_icon_state_and_label(cls='service', state=state, label=label, disabled=(not s['nb_' + state]))}}
-               </td>
-               %end
-            </tr>
+           <tr>
+             <td>
+               <b>{{s['nb_elts']}} services:&nbsp;</b> 
+             </td>
+
+             %for state in 'ok', 'warning', 'critical', 'pending', 'unknown', 'ack', 'downtime':
+             <td>
+               %label = "%s <i>(%s%%)</i>" % (s['nb_' + state], s['pct_' + state])
+               {{!helper.get_fa_icon_state_and_label(cls='service', state=state, label=label, disabled=(not s['nb_' + state]))}}
+             </td>
+             %end
+           </tr>
          </tbody>
-      </table>
+       </table>
+     </div>
    </div>
    %end
 
@@ -264,7 +266,7 @@ Invalid element name
    %end
   
    <!-- Fourth row : host/service information -->
-   <div class="well well-sm">
+   <div>
       <!-- Detail info box start -->
          <ul class="nav nav-tabs">
             %_go_active = 'active'
@@ -277,12 +279,12 @@ Invalid element name
             %end
 
             %if 'information' in params['tabs']:
-            <li><a href="#information" data-toggle="tab">Information</a></li>
+            <li class="{{_go_active}}"><a href="#information" data-toggle="tab">Information</a></li>
             %end
             %if 'impacts' in params['tabs']:
             <li><a href="#impacts" data-toggle="tab">Impacts</a></li>
             %end
-            %if 'configuration' in params['tabs']:
+            %if 'configuration' in params['tabs'] and elt.customs:
             <li><a href="#configuration" data-toggle="tab">Configuration</a></li>
             %end
             %if 'commands' in params['tabs'] and app.can_action():
@@ -323,10 +325,6 @@ Invalid element name
             %for cvname in cvs:
             <div class="tab-pane fade {{_go_active}} {{_go_fadein}}" data-name="{{cvname}}" data-element="{{elt.get_full_name()}}" id="cv{{cvname}}">
                <div class="panel panel-default">
-                  <div class="panel-heading">
-                     <h4>Custom view {{cvname}}:</h4>
-                  </div>
-     
                   <div class="panel-body">
                      Cannot load the pane {{cvname}}.
                   </div>
@@ -340,12 +338,8 @@ Invalid element name
 
             <!-- Tab Information start-->
             %if 'information' in params['tabs']:
-            <div class="tab-pane fade" id="information">
+            <div class="tab-pane fade {{_go_active}} {{_go_fadein}}" id="information">
                <div class="panel panel-default">
-                  <div class="panel-heading">
-                     <h4>{{elt_type.capitalize()}} information:</h4>
-                  </div>
-     
                   <div class="panel-body">
                      <div class="col-lg-6">
                         <table class="table table-condensed">
@@ -660,12 +654,8 @@ Invalid element name
 
              <!-- Tab Impacts start -->
             %if 'impacts' in params['tabs']:
-            <div class="tab-pane fade {{_go_active}} {{_go_fadein}}" id="impacts">
+            <div class="tab-pane fade" id="impacts">
                <div class="panel panel-default">
-                  <div class="panel-heading">
-                     <h4>{{elt_type.capitalize()+' impacts'}}{{' and services' if elt_type=='host' else ''}}:</h4>
-                  </div>
-     
                   <div class="panel-body">
                      <div class="{{'col-lg-6'}} if elt_type =='host' else 'col-lg-12'">
                         %displayed_services=False
@@ -727,15 +717,10 @@ Invalid element name
             <!-- Tab Impacts end -->
 
            <!-- Tab Configuration start -->
-            %if 'configuration' in params['tabs']:
+            %if 'configuration' in params['tabs'] and elt.customs:
             <div class="tab-pane fade" id="configuration">
                <div class="panel panel-default">
-                  <div class="panel-heading">
-                     <h4>{{elt_type.capitalize()}} configuration:</h4>
-                  </div>
-     
                   <div class="panel-body">
-                     %if len(elt.customs) > 0:
                      <table class="table table-condensed table-bordered">
                         <colgroup>
                            %if app.can_action():
@@ -772,7 +757,6 @@ Invalid element name
                         %end
                         </tbody>
                      </table>
-                     %end
                   </div>
                </div>
             </div>
@@ -783,10 +767,6 @@ Invalid element name
             %if 'commands' in params['tabs'] and app.can_action():
             <div class="tab-pane fade" id="commands">
                <div class="panel panel-default">
-                  <div class="panel-heading">
-                     <h4>{{elt_type.capitalize()}} commands:</h4>
-                  </div>
-     
                   <div class="panel-body">
 
                      <div class="panel panel-default">
@@ -923,10 +903,6 @@ Invalid element name
             %if 'comments' in params['tabs']:
             <div class="tab-pane fade" id="comments">
                <div class="panel panel-default">
-                  <div class="panel-heading">
-                     <h4>{{elt_type.capitalize()}} comments:</h4>
-                  </div>
-     
                   <div class="panel-body">
                      %if len(elt.comments) > 0:
                      <table class="table table-condensed table-hover">
@@ -991,10 +967,6 @@ Invalid element name
             %if 'downtimes' in params['tabs']:
             <div class="tab-pane fade" id="downtimes">
                <div class="panel panel-default">
-                  <div class="panel-heading">
-                     <h4>{{elt_type.capitalize()}} downtimes:</h4>
-                  </div>
-     
                   <div class="panel-body">
                      %if len(elt.downtimes) > 0:
                      <table class="table table-condensed table-hover">
@@ -1058,10 +1030,6 @@ Invalid element name
             %if 'timeline' in params['tabs']:
             <div class="tab-pane fade" id="timeline">
                <div class="panel panel-default">
-                  <div class="panel-heading">
-                     <h4>{{elt_type.capitalize()}} timeline:</h4>
-                  </div>
-     
                   <div class="panel-body">
                      <div id="inner_timeline" data-elt-name='{{elt.get_full_name()}}'>
                         <span class="alert alert-error">Sorry, I cannot load the timeline graph!</span>
@@ -1082,10 +1050,6 @@ Invalid element name
             </script>
             <div class="tab-pane fade" id="graphs">
                <div class="panel panel-default">
-                  <div class="panel-heading">
-                     <h4>{{elt_type.capitalize()}} graphs:</h4>
-                  </div>
-     
                   <div class="panel-body">
                      %# Set source as '' or module ui-graphite will try to fetch templates from default 'detail'
                      %uris = app.get_graph_uris(elt, graphstart, graphend)
@@ -1163,10 +1127,6 @@ Invalid element name
             %if 'depgraph' in params['tabs']:
             <div class="tab-pane fade" id="depgraph">
                <div class="panel panel-default">
-                  <div class="panel-heading">
-                     <h4>{{elt_type.capitalize()}} dependency graph:</h4>
-                  </div>
-     
                   <div class="panel-body">
                      <div class="btn-group btn-group-sm pull-right">
                         <button action="fullscreen-request" class="btn btn-primary"><i class="fa fa-desktop"></i> Fullscreen</button>
@@ -1184,10 +1144,6 @@ Invalid element name
             %if 'history' in params['tabs']:
             <div class="tab-pane fade" id="history">
                <div class="panel panel-default">
-                  <div class="panel-heading">
-                     <h4>{{elt_type.capitalize()}} logs:</h4>
-                  </div>
-     
                   <div class="panel-body">
                      <div id="inner_history" data-elt-name='{{elt.get_full_name()}}'>
                         <div class="alert alert-danger">
@@ -1204,10 +1160,6 @@ Invalid element name
             %if 'counters' in params['tabs']:
             <div class="tab-pane fade" id="counters">
                <div class="panel panel-default">
-                  <div class="panel-heading">
-                     <h4>{{elt_type.capitalize()}} dependency graph:</h4>
-                  </div>
-     
                   <div class="panel-body">
                      <div class="row-fluid well col-lg-12">
                         %entity = '-1'
