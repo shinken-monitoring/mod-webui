@@ -28,7 +28,7 @@ Invalid element name
 %title = 'Service detail: ' + elt.service_description+' on '+elt.host.host_name
 %end
 
-%rebase("layout", js=['eltdetail/js/eltdetail.js', 'eltdetail/js/jquery.color.js', 'eltdetail/js/bootstrap-switch.js', 'eltdetail/js/jquery.Jcrop.js', 'eltdetail/js/graphs.js', 'eltdetail/js/custom_views.js', 'eltdetail/js/canvas.js', 'eltdetail/js/timeline.js'], css=['eltdetail/css/bootstrap-switch.css', 'eltdetail/css/eltdetail.css', 'eltdetail/css/jquery.Jcrop.css', 'eltdetail/css/canvas.css', 'timeline/css/timeline.css'], user=user, app=app, refresh=True, breadcrumb=breadcrumb, title=title)
+%rebase("layout", js=['eltdetail/js/eltdetail.js', 'eltdetail/js/jquery.color.js', 'eltdetail/js/bootstrap-switch.js', 'eltdetail/js/jquery.Jcrop.js', 'eltdetail/js/graphs.js', 'eltdetail/js/custom_views.js', 'eltdetail/js/canvas.js'], css=['eltdetail/css/bootstrap-switch.css', 'eltdetail/css/eltdetail.css', 'eltdetail/css/jquery.Jcrop.css', 'eltdetail/css/canvas.css'], user=user, app=app, refresh=True, breadcrumb=breadcrumb, title=title)
 
 %# Main variables
 %elt_name = elt.host_name if elt_type=='host' else elt.service_description+' on '+elt.host.host_name
@@ -1031,7 +1031,7 @@ Invalid element name
             <div class="tab-pane fade" id="timeline">
                <div class="panel panel-default">
                   <div class="panel-body">
-                     <div id="inner_timeline" data-elt-name='{{elt.get_full_name()}}'>
+                     <div id="inner_timeline" data-element='{{elt.get_full_name()}}'>
                         <span class="alert alert-error">Sorry, I cannot load the timeline graph!</span>
                      </div>
                   </div>

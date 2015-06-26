@@ -299,16 +299,18 @@ function on_page_refresh() {
       });
    })
 
-/*
-   // When a nav item is selected update the page hash
-   $('a[data-toggle="tab"][href="#history"]').on('shown.bs.tab', function (e) {
-      if (eltdetail_logs) console.debug("Selected history tab ...")
-      // Get the full name of the object from div data
-      var element = $('#inner_history').data('element');
-      // Get history tab content ...
-      $('#inner_history').load('/logs/inner/'+element);
+
+   /*
+    * Timeline
+    */
+   $('a[data-toggle="tab"][href="#timeline"]').on('shown.bs.tab', function (e) {
+      // First we get the full name of the object from div data
+      var hostname = $('#inner_timeline').data('element');
+      // Get timeline tab content ...
+      $('#inner_timeline').load('/timeline/inner/'+hostname);
+      
    })
-*/
+   
    
    /*
     * Graphs
@@ -346,8 +348,6 @@ function on_page_refresh() {
       get_range();
    });
 }
-
-
 
 
 /* 
