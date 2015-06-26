@@ -80,9 +80,9 @@ def load_cfg():
         params['logs_limit'] = int(params['logs_limit'])
         params['logs_type'] = [item.strip() for item in params['logs_type'].split(',')]
         
-        logger.debug("WebUI plugin '%s', configuration loaded.", plugin_name)
-        logger.debug("Plugin %s configuration, database: %s (%s) : %s", plugin_name, params['mongo_host'], params['mongo_port'], params['db_name'])
-        logger.debug("Plugin %s configuration, fetching: %d %s", plugin_name, params['logs_limit'], params['logs_type'])
+        logger.info("[WebUI-timeline] configuration loaded.")
+        logger.info("[WebUI-timeline] configuration, database: %s (%s) : %s", params['mongo_host'], params['mongo_port'], params['db_name'])
+        logger.info("[WebUI-timeline] configuration, fetching: %d %s", params['logs_limit'], params['logs_type'])
         return True
     except Exception, exp:
         logger.warning("WebUI plugin '%s', configuration file (%s) not available: %s" % (plugin_name, configuration_file, str(exp)))
@@ -147,38 +147,67 @@ def get_json(hostname):
 
     records=[]
 
+    # {
+    # "_id" : ObjectId("53140d923dbf176872000014"),
+    # "comment" : "",
+    # "plugin_output" : "",
+    # "attempt" : 0,
+    # "message" : "[1393823120] CURRENT SERVICE STATE: localhost;Load;PENDING;HARD;0;",
+    # "logclass" : 6,
+    # "options" : "",
+    # "state_type" : "HARD",
+    # "lineno" : 21,
+    # "state" : "PENDING",
+    # "host_name" : "localhost",
+    # "time" : 1393823120,
+    # "service_description" : "Load",
+    # "logobject" : 2,
+    # "type" : "CURRENT SERVICE STATE",
+    # "contact_name" : "",
+    # "command_name" : ""
+    # }
+
     try:
-        logger.info("[Timeline] Fetching records from database for host %s: %s (max %d)", hostname, params['logs_type'], params['logs_limit'])
+        logger.info("[WebUI-timeline] Fetching records from database for host %s: %s (max %d)", hostname, params['logs_type'], params['logs_limit'])
 
-        # {
-        # "_id" : ObjectId("53140d923dbf176872000014"),
-        # "comment" : "",
-        # "plugin_output" : "",
-        # "attempt" : 0,
-        # "message" : "[1393823120] CURRENT SERVICE STATE: localhost;Load;PENDING;HARD;0;",
-        # "logclass" : 6,
-        # "options" : "",
-        # "state_type" : "HARD",
-        # "lineno" : 21,
-        # "state" : "PENDING",
-        # "host_name" : "localhost",
-        # "time" : 1393823120,
-        # "service_description" : "Load",
-        # "logobject" : 2,
-        # "type" : "CURRENT SERVICE STATE",
-        # "contact_name" : "",
-        # "command_name" : ""
-        # }
+        logs_limit = params['logs_limit']
+        logs_type = params['logs_type']
+        logs_hosts = [hostname]
+        # logs_services = params['logs_services']
 
-        for log in db.logs.find({ "$and" : [ { "type" : { "$in": params['logs_type'] }}, { "host_name" : hostname }  ]}).sort("time", -1).limit(params['logs_limit']):
-            records.append({
-                "date" : int(log["time"]),
-                "host" : log['host_name'],
-                "service" : log['service_description'],
-                "message" : log['message'].split(":")[1].lstrip()
-            })
+        query = []
+        if len(logs_type) > 0 and logs_type[0] != '':
+            query.append({ "type" : { "$in": logs_type }})
+        if len(logs_hosts) > 0 and logs_hosts[0] != '':
+            query.append({ "host_name" : { "$in": logs_hosts }})
+        # if len(logs_services) > 0 and logs_services[0] != '':
+            # query.append({ "service_description" : { "$in": logs_services }})
+        logger.info("[WebUI-timeline] Query: %s", query)
+            
+        records=[]
+        if len(query) > 0:
+            for log in db.logs.find({'$and': query}).sort("time",-1).limit(logs_limit):
+                message = log['message']
+                logger.info("[WebUI-timeline] Fetched message: %s", message)
+                m = re.search(r"\[(\d+)\] (.*)", message)
+                if m and m.group(2):
+                    message = m.group(2)
+                    
+                records.append({
+                    "date" : int(log["time"]),
+                    "host" : log['host_name'],
+                    "service" : log['service_description'],
+                    "message" : message
+                })
+        # for log in db.logs.find({ "$and" : [ { "type" : { "$in": params['logs_type'] }}, { "host_name" : hostname }  ]}).sort("time", -1).limit(params['logs_limit']):
+            # records.append({
+                # "date" : int(log["time"]),
+                # "host" : log['host_name'],
+                # "service" : log['service_description'],
+                # "message" : log['message'].split(":")[1].lstrip()
+            # })
         message = "%d records fetched from database." % len(records)
-        logger.info("[Timeline] %d records fetched from database.", len(records))
+        logger.info("[WebUI-timeline] %d records fetched from database.", len(records))
     except Exception, exp:
         logger.error("[Logs] Exception when querying database: %s" % (str(exp)))
         return
@@ -188,7 +217,7 @@ def get_json(hostname):
     timeline = []
     for record in records:
         t=datetime.datetime.fromtimestamp(record['date'])
-        logger.warning("[Timeline] Record: %s / %s -> %s" % (t.strftime('%Y,%m,%d %H:%m'), t.isoformat(), record['message']))
+        logger.warning("[WebUI-timeline] Record: %s / %s -> %s" % (t.strftime('%Y,%m,%d %H:%m'), t.isoformat(), record['message']))
         message = record['message'].split(";")
         content = 'Host is %s<br>' % message[2].lower()
         content +='<img src="/static/timeline/img/host_%s.png" style="width:32px; height:32px;"><br/>' % message[2].lower()
@@ -203,7 +232,7 @@ def get_json(hostname):
     # start_date = 0
     # for record in records:
         # t=datetime.datetime.fromtimestamp(record['date'])
-        # logger.warning("[Timeline] Record: %s -> %s" % (t.strftime('%Y,%m,%d %H:%m'), record['message']))
+        # logger.warning("[WebUI-timeline] Record: %s -> %s" % (t.strftime('%Y,%m,%d %H:%m'), record['message']))
         # message = record['message'].split(";")
         
         # if message[1] != "OK":
@@ -217,7 +246,7 @@ def get_json(hostname):
             # content = 'Host is %s<br>' % current_state
             # content +='<img src="/static/timeline/img/host_%s.png" style="width:32px; height:32px;"><br/>' % current_state.lower()
 
-            # logger.warning("[Timeline] -> Period: %s" % (content))
+            # logger.warning("[WebUI-timeline] -> Period: %s" % (content))
             # timeline.append({
                     # "start": start_date,
                     # "end": record['date'],
@@ -227,7 +256,7 @@ def get_json(hostname):
             
             # start_date = 0
     
-    logger.debug("[Timeline] Finished compiling fetched records")
+    logger.debug("[WebUI-timeline] Finished compiling fetched records")
     return json.dumps(timeline)
 
 # Load plugin configuration parameters
