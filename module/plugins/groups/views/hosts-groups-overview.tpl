@@ -46,7 +46,7 @@
             <section class="left">
                <h3>
                   <a role="menuitem" href="/all?search=type:host"><i class="fa fa-angle-double-down"></i>
-                     All hosts {{!helper.get_business_impact_text(h['bi'])}}</h3>
+                     All hosts {{!helper.get_business_impact_text(h['bi'])}}
                   </a>
                </h3>
                <div>
