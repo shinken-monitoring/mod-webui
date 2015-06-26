@@ -31,7 +31,7 @@
 %end
 
 <!-- Problems filtering and display -->
- <div id="problems">
+<div id="problems">
 
    %if not pbs:
    <center>
