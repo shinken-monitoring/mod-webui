@@ -560,10 +560,10 @@ class Webui_broker(BaseModule, Daemon):
                 logger.debug("[WebUI] calling plugin %s, load configuration", fdir)
                 f(self)
                 
-            logger.debug("[WebUI] loaded plugin %s", fdir)
+            logger.info("[WebUI] loaded plugin %s", fdir)
 
         except Exception, exp:
-            logger.error("[WebUI] loading plugin %s, exception: %s", fdir, exp)
+            logger.error("[WebUI] loading plugin %s, exception: %s", fdir, str(exp))
     
     
     # Add static route in the Web server
