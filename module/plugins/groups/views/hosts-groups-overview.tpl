@@ -102,17 +102,9 @@
          <li class="group list-group-item clearfix {{'alert-danger' if h['nb_elts'] == h['nb_down'] and h['nb_elts'] != 0 else ''}} {{even}}">
             <section class="left">
                <h3>
-                  %if nGroups > 0:
-                  <a role="menuitem" href="hosts-groups?level={{int(level+1)}}&parent={{group.get_name()}}"><i class="fa fa-angle-double-down"></i>
-                  %else:
                   <a role="menuitem" href="/all?search=type:host hg:{{group.get_name()}}"><i class="fa fa-angle-double-down"></i>
-                  %end
                      {{group.alias if group.alias != '' else group.get_name()}} {{!helper.get_business_impact_text(h['bi'])}}</h3>
-                  %if nGroups > 0:
                   </a>
-                  %else:
-                  </a>
-                  %end
                <div>
                   %for state in 'up', 'unreachable', 'down', 'pending':
                   <span class="{{'font-' + state if h['nb_' + state] > 0 else 'font-greyed'}}">

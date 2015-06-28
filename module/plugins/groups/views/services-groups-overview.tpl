@@ -102,17 +102,9 @@
          <li class="group list-group-item clearfix {{'empty' if s['nb_elts'] == s['nb_critical'] and s['nb_elts'] != 0 else ''}} {{even}}">
             <section class="left">
                <h3>
-                  %if nGroups > 0:
-                  <a role="menuitem" href="services-groups?level={{int(level+1)}}&parent={{group.get_name()}}"><i class="fa fa-angle-double-down"></i>
-                  %else:
                   <a role="menuitem" href="/all?search=type:service sg:{{group.get_name()}}"><i class="fa fa-angle-double-down"></i>
-                  %end
                      {{group.alias if group.alias != '' else group.get_name()}} {{!helper.get_business_impact_text(s['bi'])}}</h3>
-                  %if nGroups > 0:
                   </a>
-                  %else:
-                  </a>
-                  %end
                <div>
                   %for state in 'ok', 'warning', 'critical':
                   <span class="{{'font-' + state if s['nb_' + state] > 0 else 'font-greyed'}}">
