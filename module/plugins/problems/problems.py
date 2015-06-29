@@ -62,10 +62,6 @@ def get_all():
     # Now sort it!
     items.sort(hst_srv_sort)
 
-    logger.debug("[%s] problems after host/service sort", app.name)
-    for i in items:
-        logger.debug("[%s] problems, item: %s, %d, %d", app.name, i.get_full_name(), i.business_impact, i.state_id)
-
     total = len(items)
     # If we overflow, came back as normal
     if start > total:
@@ -83,24 +79,19 @@ def get_pbs_widget():
 
     # We want to limit the number of elements, The user will be able to increase it
     nb_elements = max(0, int(app.request.GET.get('nb_elements', '10')))
-    search = app.request.GET.get('search', '')
+    refine_search = app.request.GET.get('search', '')
 
-    pbs = app.datamgr.get_all_problems(to_sort=False)
-
-    # Filter with the user interests
-    pbs = only_related_to(pbs, user)
+    items = app.search_hosts_and_services("isnot:UP isnot:OK isnot:PENDING ack:false downtime:false", user, get_impacts=False)
 
     # Sort it now
-    pbs.sort(hst_srv_sort)
+    items.sort(hst_srv_sort)
 
-    # Ok, if need, appli the search filter
-    if search:
-        print "SEARCHING FOR", search
-        print "Before filtering", len(pbs)
+    # Ok, if needed, apply the widget refine search filter
+    if refine_search:
         # We compile the pattern
-        pat = re.compile(search, re.IGNORECASE)
+        pat = re.compile(refine_search, re.IGNORECASE)
         new_pbs = []
-        for p in pbs:
+        for p in items:
             if pat.search(p.get_full_name()):
                 new_pbs.append(p)
                 continue
@@ -114,23 +105,22 @@ def get_pbs_widget():
             if to_add:
                 new_pbs.append(p)
 
-        pbs = new_pbs[:nb_elements]
-        print "After filtering", len(pbs)
+        items = new_pbs[:nb_elements]
 
-    pbs = pbs[:nb_elements]
+    pbs = items[:nb_elements]
 
     wid = app.request.GET.get('wid', 'widget_problems_' + str(int(time.time())))
     collapsed = (app.request.GET.get('collapsed', 'False') == 'True')
 
-    options = {'search': {'value': search, 'type': 'text', 'label': 'Filter by name'},
+    options = {'search': {'value': refine_search, 'type': 'text', 'label': 'Filter by name'},
                'nb_elements': {'value': nb_elements, 'type': 'int', 'label': 'Max number of elements to show'},
                }
 
     title = 'IT problems'
-    if search:
-        title = 'IT problems (%s)' % search
+    if refine_search:
+        title = 'IT problems (%s)' % refine_search
 
-    return {'app': app, 'pbs': pbs, 'user': user, 'search': search, 'page': 'problems',
+    return {'app': app, 'pbs': pbs, 'user': user, 'search': refine_search, 'page': 'problems',
             'wid': wid, 'collapsed': collapsed, 'options': options, 'base_url': '/widget/problems', 'title': title,
             }
 

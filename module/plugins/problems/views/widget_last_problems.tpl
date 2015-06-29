@@ -7,29 +7,29 @@
 %rebase("widget")
 
 %if len(pbs) == 0:
-  <span>No IT problems! Congrats.</span>
+   <span>No problems!</span>
 %else:
-  <table class="table table-condensed" style="margin:0;">
-    <tbody style="border: none;">
+   <table class="table table-condensed" style="margin:0;">
+      <tbody style="border: none;">
       %for pb in pbs:
-      <tr>
-        <td align=center>
-          {{!helper.get_fa_icon_state(pb)}}
-        </td>
-        
-        <td style="font-size: x-small; font-weight: normal;">
-          {{!helper.get_link(pb)}}
-        </td>
-        
-        <td align="center" class="font-{{pb.state.lower()}}"><strong>
-         {{ pb.state }}
-        </strong></td>
-        
-        <td style="font-size: x-small; font-weight: normal; width: 15%;">
-          {{!helper.get_business_impact_text(pb.business_impact)}}
-        </td>
-      </tr>
+         <tr>
+            <td align=center>
+               {{!helper.get_fa_icon_state(pb)}}
+            </td>
+
+            <td>
+               <small>{{!helper.get_link(pb)}}</small>
+            </td>
+
+            <td class="hidden-sm hidden-xs">
+               <small>{{!helper.get_business_impact_text(pb.business_impact)}}</small>
+            </td>
+
+            <td class="hidden-sm hidden-xs font-{{pb.state.lower()}}" align="center">
+               <small>{{ pb.state }}</small>
+            </td>
+         </tr>
       %end
-    </tbody>
-  </table>
+      </tbody>
+   </table>
 %end
