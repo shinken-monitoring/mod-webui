@@ -1,66 +1,117 @@
 #cv_kiosk{
-  position:absolute;
-	background-color: #eee;
+   position:absolute;
+   background-color: #eeeeee;
 }
 
-/* CPU consumption donut */
-#cv_kiosk .cpu_container {
-	position: absolute;
-
-	top: 65px;
-	left: 240px;
+/* 
+ * Host container 
+ */
+#cv_kiosk [name="host_container"] {
+   position: absolute; top: 0px; left: 0px;
 }
 
-#cv_kiosk .donut_value {
-	font-weight: bold;
-	position: absolute;
-	top: 32px;
-	left: -35px;
-	line-height: 30px;
-	color: #222;
-	text-align: center;
-	font-size: 20px;
+#cv_kiosk [name="host_container"] img {
+   position: absolute; top: 55px; left: 65px;
+   width: 48px;
 }
 
-#cv_kiosk .donut_label {
-	font-size: 11px;
-	position: absolute;
-	top: 60px;
-	left: -15px;
-	color: #222;
-	margin: 0;
-	text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
+#cv_kiosk [name="host_container"] h1 {
+   position: absolute; top: 0px; left: 5px;
+   font-weight: bold;
+   color: #000000;
+   text-align: center;
+   display: block;
 }
 
-/* Memory consumption cylinders */
-#cv_kiosk .cylinderContainer {
-	position: absolute;
-	top: 210px;
-	left: 205px;
+
+
+/* 
+ * CPU container 
+ */
+#cv_kiosk [name="cpu_container"] {
+   position: absolute;
+
+   top: 70px;
+   left: 300px;
 }
 
-#cv_kiosk .cylinderContainer div {
-	float: left;
-	margin-right: 5px;
+#cv_kiosk [name="cpu_container"] div.donut {
+   float: left;
+   margin-right: 0px;
+   display: block;
+   
+   margin-bottom: -40px;
 }
 
-#cv_kiosk .cylinderContainer div[name=cylinder_mem] {
+#cv_kiosk [name="cpu_container"] div.name {
+   position: relative; top: -60px; 
+   font-weight: bold;
+   color: #000000;
+   text-align: center;
 }
 
-#cv_kiosk .cylinderContainer div[name=cylinder_swap] {
+#cv_kiosk [name="cpu_container"] div.value {
+   position: relative; top: -60px; 
+   font-weight: bold;
+   color: #000000;
+   text-align: center;
 }
 
-#cv_kiosk .cylinderContainer canvas {
-	text-align: center;
-	margin: auto;
-	display: block;
+/*
+ * Memory container 
+ */
+#cv_kiosk [name="memory_container"] {
+   position: absolute;
+   top: 200px;
+   left: 300px;
 }
 
-#cv_kiosk .cylinderContainer span {
-	font-size: 10px;
-	color: #222;
-	margin: auto;
-	font-weight: bold;
-	text-align: center;
-	display: block;
+#cv_kiosk [name="memory_container"] div.barchart {
+   width: 400px; height: 200px;
+   display: block;
+}
+
+/*
+ * Disks container 
+ */
+#cv_kiosk [name="disks_container"] {
+   position: absolute;
+   top: 350px;
+   left: 300px;
+}
+
+#cv_kiosk [name="disks_container"] div {
+}
+
+
+/*
+ * Network container 
+ */
+#cv_kiosk [name="network_container"] {
+   position: absolute;
+   top: 205px;
+   left: 70px;
+}
+
+#cv_kiosk [name="network_container"] img {
+   width: 48px;
+}
+
+#cv_kiosk [name="network_container"] div.name, #cv_kiosk [name="network_container"] div.value {
+   position: relative; top: -60px; 
+   font-weight: bold;
+   font-size: 8pt;
+   color: #000000;
+   text-align: center;
+}
+
+
+
+/*
+ * Services container 
+ */
+#cv_kiosk [name="services_container"] {
+   position: absolute;
+   top: 295px;
+   left: 49px;
 }

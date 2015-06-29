@@ -31,16 +31,19 @@ from shinken.misc.perfdata import PerfDatas
 app = None
 
 # Get plugin's parameters from configuration file
+# Define service/perfdata name for each element in graph
 params = {}
 params['view_name'] = "cv_kiosk"
-params['svc_cpu_name'] = "nsca_cpu"
-params['svc_cpu_used'] = "1m"
-params['svc_disk_name'] = "nsca_disk"
-params['svc_disk_used'] = "^[A-Z]: %$"
-params['svc_mem_name'] = "nsca_memory"
-params['svc_mem_used'] = "physical memory %"
-params['svc_swap_name'] = "nsca_memory"
-params['svc_swap_used'] = "paged bytes %"
+params['svc_cpu_name'] = "cpu"
+params['svc_cpu_used'] = "total (.*)"
+params['svc_disk_name'] = "disk"
+params['svc_disk_used'] = "^[A-Z]: used %$"
+params['svc_mem_name'] = "memory"
+params['svc_mem_used'] = "^(.*) %$"
+params['svc_printer_name'] = "printer"
+params['svc_printer_used'] = "^(.*) Pages$"
+params['svc_net_name'] = "network"
+params['svc_net_used'] = "CurrentBandwidth|BytesReceivedPersec|BytesSentPersec"
 
 import os,sys
 from shinken.log import logger
@@ -51,214 +54,226 @@ try:
     configuration_file = "%s/%s" % (currentdir, 'plugin.cfg')
     logger.debug("Plugin configuration file: %s", configuration_file)
     scp = config_parser('#', '=')
-    params = scp.parse_config(configuration_file)
+    z = params.copy()
+    z.update(scp.parse_config(configuration_file))
+    params = z
 
-    logger.debug("WebUI plugin '%s', configuration loaded.", plugin_name)
-    logger.debug("Plugin %s configuration, view: %s", plugin_name, params['view_name'])
-    logger.debug("Plugin %s configuration, cpu: %s (%s)", plugin_name, params['svc_cpu_name'], params['svc_cpu_used'])
-    logger.debug("Plugin %s configuration, disk: %s (%s)", plugin_name, params['svc_disk_name'], params['svc_disk_used'])
-    logger.debug("Plugin %s configuration, memory: %s (%s)", plugin_name, params['svc_mem_name'], params['svc_mem_used'])
-    logger.debug("Plugin %s configuration, swap: %s (%s)", plugin_name, params['svc_swap_name'], params['svc_swap_used'])
+    logger.info("[WebUI-cvkiosk] configuration loaded.")
+    logger.info("[WebUI-cvkiosk] configuration, view: %s", params['view_name'])
+    logger.info("[WebUI-cvkiosk] configuration, cpu: %s (%s)", params['svc_cpu_name'], params['svc_cpu_used'])
+    logger.info("[WebUI-cvkiosk] configuration, disk: %s (%s)", params['svc_disk_name'], params['svc_disk_used'])
+    logger.info("[WebUI-cvkiosk] configuration, memory: %s (%s)", params['svc_mem_name'], params['svc_mem_used'])
+    logger.info("[WebUI-cvkiosk] configuration, network: %s (%s)", params['svc_net_name'], params['svc_net_used'])
 except Exception, exp:
-    logger.warning("WebUI plugin '%s', configuration file (%s) not available: %s", plugin_name, configuration_file, str(exp))
+    logger.warning("[WebUI-cvkiosk] configuration file (%s) not available: %s", configuration_file, str(exp))
+
 
 def _findServiceByName(host, service):
     for s in host.services:
         if re.search(service, s.get_name()):
-        # if service.lower() in s.get_name().lower():
             return s
     return None
     
     
 def get_disks(h):
-    all_disks = []
-    disks_state = 'UNKNOWN'
+    # all = []
+    all = {}
+    state = 'UNKNOWN'
+    
     s = _findServiceByName(h, params['svc_disk_name'])
     if s:
-        logger.debug("Plugin %s, found %s", plugin_name, s.get_full_name())
-        disks_state = s.state
-        p = PerfDatas(s.perf_data)
-        for m in p:
-            if m.name and m.value is not None:
-                if re.search(params['svc_disk_used'], m.name):
-                    logger.debug("Plugin %s, got %s = %s", plugin_name, m.name, m.value)
-                    # Only first word, limited to two digits ...
-                    name = m.name.split()[0] 
-                    all_disks.append((name if len(name)<=2 else name[0:2], float(m.value)))
-            
-    return disks_state,all_disks
+        logger.info("[WebUI-cvkiosk], found %s", s.get_full_name())
+        state = s.state
+        
+        try:
+            p = PerfDatas(s.perf_data)
+            for m in p:
+                if m.name and m.value is not None:
+                    logger.info("[WebUI-cvkiosk], metric '%s' = %s", m.name, m.value)
+                    if re.match(params['svc_disk_used'], m.name):
+                        all[m.name] = m.value
+                        logger.info("[WebUI-cvkiosk], got '%s' = %s", m.name, m.value)
+        except Exception, exp:
+            logger.warning("[WebUI-cvkiosk] get_disks, exception: %s", str(exp))
+
+    logger.info("[WebUI-cvkiosk], get_disks %s", all)
+    return state, all
 
 
 def get_memory(h):
-    mem_state = paged_state = 'UNKNOWN'
-    mem = paged = 0
+    # all = []
+    all = {}
+    state = 'UNKNOWN'
     
     s = _findServiceByName(h, params['svc_mem_name'])
     if s:
-        logger.debug("Plugin %s, found %s", plugin_name, s.get_full_name())
-        mem_state = s.state
-        # Now grep perfdata in it
-        p = PerfDatas(s.perf_data)
-        for m in p:
-            if m.name and m.value is not None:
-                if params['svc_mem_used'] in m.name:
-                    logger.debug("Plugin %s, got %s = %s", plugin_name, m.name, m.value)
-                    mem = float(m.value)
+        logger.info("[WebUI-cvkiosk], found %s", s.get_full_name())
+        state = s.state
 
+        try:
+            p = PerfDatas(s.perf_data)
+            for m in p:
+                if m.name and m.value is not None:
+                    logger.info("[WebUI-cvkiosk], metric '%s' = %s", m.name, m.value)
+                    if re.match(params['svc_mem_used'], m.name):
+                        logger.info("[WebUI-cvkiosk], got '%s' = %s", m.name, m.value)
+                        # all.append({m.name, m.value})
+                        all[m.name] = m.value
+        except Exception, exp:
+            logger.warning("[WebUI-cvkiosk] get_memory, exception: %s", str(exp))
 
-    s = _findServiceByName(h, params['svc_swap_name'])
-    if s:
-        logger.debug("Plugin %s, found %s", plugin_name, s.get_full_name())
-        paged_state = s.state
-        # Now grep perfdata in it
-        p = PerfDatas(s.perf_data)
-        for m in p:
-            if m.name and m.value is not None:
-                if params['svc_swap_used'] in m.name:
-                    logger.debug("Plugin %s, got %s = %s", plugin_name, m.name, m.value)
-                    paged = float(m.value)
-
-    return mem_state,paged_state,mem,paged
+    logger.info("[WebUI-cvkiosk], get_memory %s", all)
+    return state, all
 
 
 def get_cpu(h):
-    cpu_state = 'UNKNOWN'
-    cpu = 0
-
+    # all = []
+    all = {}
+    state = 'UNKNOWN'
+    
     s = _findServiceByName(h, params['svc_cpu_name'])
     if s:
-        logger.debug("Plugin %s, found %s", plugin_name, s.get_full_name())
-        cpu_state = s.state
-        # Now grep perfdata in it
-        p = PerfDatas(s.perf_data)
-        for m in p:
-            if m.name and m.value is not None:
-                if params['svc_cpu_used'] in m.name:
-                    logger.debug("Plugin %s, got %s = %s", plugin_name, m.name, m.value)
-                    cpu = float(m.value)
+        logger.info("[WebUI-cvkiosk], found %s", s.get_full_name())
+        state = s.state
 
-    return cpu_state, cpu
+        try:
+            p = PerfDatas(s.perf_data)
+            for m in p:
+                if m.name and m.value is not None:
+                    logger.info("[WebUI-cvkiosk], metric '%s' = %s", m.name, m.value)
+                    if re.match(params['svc_cpu_used'], m.name):
+                        logger.debug("[WebUI-cvkiosk], got '%s' = %s", m.name, m.value)
+                        all[m.name] = m.value
+        except Exception, exp:
+            logger.warning("[WebUI-cvkiosk] get_cpu, exception: %s", str(exp))
 
-
-def get_printer(h):
-    s = _findServiceByName(h, 'printer')
-    if not s:
-        return 'UNKNOWN',0
-    print "Service found", s.get_full_name()
-
-    printed_pages = 0
-    printer_state = s.state
-    
-    # Now perfdata
-    p = PerfDatas(s.perf_data)
-    # p = PerfDatas("'CutPages'=12[c];;;; 'RetractedPages'=8[c];;;;")
-    print "PERFDATA", p, p.__dict__
-    
-    if 'CutPages' in p:
-        m = p['CutPages']
-        if m.name and m.value is not None:
-            printed_pages = m.value
-    if 'Cut Pages' in p:
-        m = p['Cut Pages']
-        if m.name and m.value is not None:
-            printed_pages = m.value
-    # if 'Retracted Pages' in p:
-        # m = p['Retracted Pages']
-        # if m.name and m.value is not None:
-            # retracted = m.value
-
-    return printer_state, printed_pages
+    logger.info("[WebUI-cvkiosk], get_cpu %s", all)
+    return state, all
 
 
 def get_network(h):
-    all_nics = []
-    network_state = 'UNKNOWN'
-    s = _findServiceByName(h, 'network')
-    if not s:
-        return 'UNKNOWN',all_nics
-    print "Service found", s.get_full_name()
+    # all = []
+    all = {}
+    state = 'UNKNOWN'
+    
+    s = _findServiceByName(h, params['svc_net_name'])
+    if s:
+        logger.info("[WebUI-cvkiosk], found %s", s.get_full_name())
+        state = s.state
 
-    # Host perfdata
-    p = PerfDatas(h.perf_data)
-    print "PERFDATA", p, p.__dict__
-    # all_nics.append(('perfdata', h.perf_data))
-    
-    network_state = s.state
-    p = PerfDatas(s.perf_data)
-    
-    if 'BytesTotalPersec' in p:
-        all_nics.append(('BytesTotalPersec', p['BytesTotalPersec'].value))
-        
-    if 'CurrentBandwidth' in p:
-        all_nics.append(('CurrentBandwidth', p['CurrentBandwidth'].value))
+        try:
+            p = PerfDatas(s.perf_data)
+            for m in p:
+                if m.name and m.value is not None:
+                    logger.info("[WebUI-cvkiosk], metric '%s' = %s", m.name, m.value)
+                    if re.match(params['svc_net_used'], m.name):
+                        logger.info("[WebUI-cvkiosk], got bandwidth %s = %s", m.name, m.value)
+                        # all.append({"Bandwidth", float(m.value)})
+                        # all["Bandwidth"] = m.value
+                        all[m.name] = m.value
+                    # if re.match(params['svc_net_received'], m.name):
+                        # logger.info("[WebUI-cvkiosk], got bandwidth %s = %s", m.name, m.value)
+                        # all["Received"] = m.value
+                    # if re.match(params['svc_net_sent'], m.name):
+                        # logger.info("[WebUI-cvkiosk], got bandwidth %s = %s", m.name, m.value)
+                        # all["Sent"] = m.value
+        except Exception, exp:
+            logger.warning("[WebUI-cvkiosk] get_network, exception: %s", str(exp))
 
-    return network_state, all_nics
+    logger.info("[WebUI-cvkiosk], get_network %s", all)
+    return state, all
     
     
+def get_printer(h):
+    # all = []
+    all = {}
+    state = 'UNKNOWN'
+    
+    s = _findServiceByName(h, params['svc_printer_name'])
+    if s:
+        logger.info("[WebUI-cvkiosk], found %s", s.get_full_name())
+        state = s.state
+
+        try:
+            p = PerfDatas(s.perf_data)
+            for m in p:
+                if m.name and m.value is not None:
+                    logger.info("[WebUI-cvkiosk], metric '%s' = %s", m.name, m.value)
+                    if re.match(params['svc_printer_used'], m.name):
+                        logger.debug("[WebUI-cvkiosk], got '%s' = %s", m.name, m.value)
+                        # all.append({m.name, m.value})
+                        all[m.name] = m.value
+        except Exception, exp:
+            logger.warning("[WebUI-cvkiosk] get_printer, exception: %s", str(exp))
+
+    logger.info("[WebUI-cvkiosk], get_printer %s", all)
+    return state, all
+
+
 def get_services(h):
-    all_services = []
-    services_states = {}
+    # all = []
+    all = {}
+    state = 'UNKNOWN'
 
     # Get host's services list
-    for item in h.services:
-        view_state = item.state
-        if item.problem_has_been_acknowledged:
+    for s in h.services:
+        state = max(state, s.state_id)
+
+        view_state = s.state
+        if s.problem_has_been_acknowledged:
             view_state = 'ACK'
-        if item.in_scheduled_downtime:
+        if s.in_scheduled_downtime:
             view_state = 'DOWNTIME'
-        all_services.append((item.get_name(), view_state))
-        services_states[item.get_name()] = item.state
+        # all.append((s.get_name(), view_state))
+        all[s.get_name()] = view_state
+        # services_states[s.get_name()] = s.state
 
     # Compute the worst state of all packages
-    services_states = compute_worst_state(services_states)
+    state = compute_worst_state(all)
     
-    return services_states,all_services
+    logger.info("[WebUI-cvkiosk], get_services %s", all)
+    return state, all
 
 
-def compute_worst_state(d):
-    _ref = {'OK':0, 'UP':0, 'DOWN':3, 'UNREACHABLE':1, 'UNKNOWN':1, 'CRITICAL':3, 'WARNING':2, 'PENDING' :1}
+def compute_worst_state(all_states):
+    _ref = {'OK':0, 'UP':0, 'DOWN':3, 'UNREACHABLE':1, 'UNKNOWN':1, 'CRITICAL':3, 'WARNING':2, 'PENDING' :1, 'ACK' :1, 'DOWNTIME' :1}
     cur_level = 0
-    for (k,v) in d.iteritems():
+    for (k,v) in all_states.iteritems():
+        logger.info("[WebUI-cvkiosk], compute_worst_state: %s/%s", k, v)
         level = _ref[v]
         cur_level = max(cur_level, level)
     return {3:'CRITICAL', 2:'WARNING', 1:'UNKNOWN', 0:'OK'}[cur_level]
 
 
 def get_page(hname):
-    # First we look for the user sid
-    # so we bail out if it's a false one
     user = app.check_user_authentication()
 
-    # Ok, we can lookup it
-    h = app.datamgr.get_host(hname)
+    logger.info("[WebUI-cvkiosk], get_page for %s", hname)
 
     all_perfs = {}
-    all_states = {"global": "UNKNOWN", "cpu": "UNKNOWN", "disks": "UNKNOWN", "memory": "UNKNOWN", "virtual": "UNKNOWN", "paged": "UNKNOWN", "printer": "UNKNOWN"}
-
+    all_states = {"global": 'UNKNOWN', "cpu": 'UNKNOWN', "disks": 'UNKNOWN', "memory": 'UNKNOWN', "network": 'UNKNOWN', "printer": 'UNKNOWN', "services": 'UNKNOWN', "global": 'UNKNOWN'}
+    
+    # Ok, we can lookup it
+    h = app.get_host(hname)
     if h:
         # Set the host state first
-        all_states["global"] = h.state
-        all_states["icon"] = app.helper.get_small_icon_state(h)
+        all_states["host"] = h.state
         # First look at disks
-        all_states["disks"], all_perfs['all_disks'] = get_disks(h)
+        all_states["disks"], all_perfs['disks'] = get_disks(h)
         # Then memory
-        mem_state, paged_state, mem, paged = get_memory(h)
-        all_perfs["memory"] = mem
-        all_perfs["paged"] = paged
-        all_states['memory'] = mem_state
-        all_states['paged'] = paged_state
+        all_states["memory"], all_perfs['memory']  = get_memory(h)
         # And CPU too
         all_states['cpu'], all_perfs['cpu'] = get_cpu(h)
         # Then printer
-        all_states['printer'], all_perfs['printed_pages'] = get_printer(h)
+        all_states['printer'], all_perfs['printer'] = get_printer(h)
         # And Network
-        network_state, all_nics = get_network(h)
-        all_perfs['all_nics'] = all_nics
-        all_states['network'] = network_state
+        all_states['network'], all_perfs['network'] = get_network(h)
         # And services
-        all_states['services'], all_perfs['all_services'] = get_services(h)
+        all_states['services'], all_perfs['services'] = get_services(h)
         # Then global
-        # all_states["view"] = compute_worst_state(all_states)
+        all_states["global"] = compute_worst_state(all_states)
+        
+    logger.info("[WebUI-cvkiosk], overall state: %s", all_states)
         
     return {'app': app, 'elt': h, 'all_perfs':all_perfs, 'all_states':all_states, 'view_name':params['view_name']}
 
