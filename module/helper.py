@@ -27,7 +27,8 @@ import time
 import copy
 import math
 import operator
-from pprint import pprint
+import re
+
 try:
     import json
 except ImportError:
@@ -174,28 +175,7 @@ class Helper(object):
             for d in ds:
                 dicts.append(d)
         j = json.dumps(dicts)
-        #safe_print("Create json", j)
-        #pprint(dicts)
-        #print "create_json_dep_graph::Json creation time", time.time() - t0
         return j
-
-    # Return something like:
-    # {
-    #                  "id": "localhost",
-    #                  "name": "localhost",
-    #                  "data": {"$color":"red", "$dim": 5*2, "some other key": "some other value"},
-    #                  "adjacencies": [{
-    #                          "nodeTo": "main router",
-    #                          "data": {
-    #                              "$type":"arrow",
-    #                              "$color":"gray",
-    #                              "weight": 3,
-    #                              "$direction": ["localhost", "main router"],
-    #                          }
-    #                      }
-    #                      ]
-    #              }
-    # But as a python dict
 
     def get_all_nodes_from_aggregation_node(self, tree):
         res = [{'path' : tree['path'], 'services': tree['services'], 'state': tree['state'], 'full_path': tree['full_path']}]
@@ -212,8 +192,6 @@ class Helper(object):
         hname = elt.get_name()
         tree = self.get_host_service_aggregation_tree(elt)
         all_nodes = self.get_all_nodes_from_aggregation_node(tree)
-        #print "aLL NODES"
-        #pprint(all_nodes)
 
         res = []
         for n in all_nodes:
@@ -234,7 +212,6 @@ class Helper(object):
             # by default the father linkis the host
             father =  elt.get_dbg_name()
             # But if the aggregation is a level1+ it must be the level-1 one
-            #print "FULL PATH"*20, n['full_path'], n['full_path'].count('/'), self.get_aggregation_paths(n['full_path'])
             agg_parts = [s for s in self.get_aggregation_paths(n['full_path']) if s]
 
             # Root, no block for it
@@ -679,7 +656,7 @@ class Helper(object):
             
             If disabled is True, the font used is greyed
             
-            If label is empty, only an icon is returne
+            If label is empty, only an icon is returned
             If label is set as 'state', the icon title is used as text
             Else, the content of label is used as text near the icon.
             
@@ -842,6 +819,10 @@ class Helper(object):
 
     def strip_html_id(self, s):
         return s.replace('/', '--').replace(' ', '_').replace('.', '_').replace(':', '_')
+
+    # Make an HTML element identifier
+    def make_html_id(self, s):
+        return re.sub('[^A-Za-z0-9]', '', s)
 
     # URI with spaces are BAD, must change them with %20
     def get_uri_name(self, elt):
