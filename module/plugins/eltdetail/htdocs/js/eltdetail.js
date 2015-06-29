@@ -96,13 +96,12 @@ function on_page_refresh() {
    // Show each active custom view
    $('.cv_pane.active').each(function(index, elt ) {
       var cvname = $(elt).data('name');
-      if (! _already_loaded[cvname]) {
+      // if (! _already_loaded[cvname]) {
          show_custom_view($(elt));
-      } else {
-         if (eltdetail_logs) console.debug('Custom view '+cvname+' already exists !');
-      }
+      // } else {
+         // if (eltdetail_logs) console.debug('Custom view '+cvname+' already exists !');
+      // }
    });
-   
    
    /*
     * Dependency graph
