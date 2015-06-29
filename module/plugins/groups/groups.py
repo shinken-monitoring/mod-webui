@@ -43,7 +43,7 @@ def show_hostgroups():
     
     return {
         'app': app, 'user': user, 'level': level, 
-        'hostgroups': sorted(app.get_hostgroups(parent=parent), key=lambda hostgroup: hostgroup.hostgroup_name)
+        'hostgroups': sorted(app.get_hostgroups(parent=parent, user=user), key=lambda hostgroup: hostgroup.hostgroup_name)
         }
 
 
@@ -58,7 +58,7 @@ def show_hostgroups_dashboard():
     
     return {
         'app': app, 'user': user, 'level': level, 
-        'hostgroups': sorted(app.get_hostgroups(parent=parent), key=lambda hostgroup: hostgroup.hostgroup_name)
+        'hostgroups': sorted(app.get_hostgroups(parent=parent, user=user), key=lambda hostgroup: hostgroup.hostgroup_name)
         }
 
 
@@ -77,7 +77,7 @@ def show_servicegroups():
     
     return {
         'app': app, 'user': user, 'level': level, 
-        'servicegroups': sorted(app.get_servicegroups(), key=lambda servicegroup: servicegroup.servicegroup_name)
+        'servicegroups': sorted(app.get_servicegroups(parent=parent, user=user), key=lambda servicegroup: servicegroup.servicegroup_name)
         }
 
 pages = {
