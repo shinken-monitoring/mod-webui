@@ -734,7 +734,7 @@ class Helper(object):
                      label)
         
 
-    def get_fa_icon_state_and_label(self, obj=None, cls='host', state='UP', label="", disabled=False):
+    def get_fa_icon_state_and_label(self, obj=None, cls='host', state='UP', label="", disabled=False, useTitle=True):
         color = state.lower() if not disabled else 'greyed'
         return '''
           <span class="font-%s">
@@ -742,7 +742,7 @@ class Helper(object):
              <span class="num">%s</span>
           </span> 
           ''' % (color,
-                 self.get_fa_icon_state(obj=obj, cls=cls, state=state, disabled=disabled),
+                 self.get_fa_icon_state(obj=obj, cls=cls, state=state, disabled=disabled, useTitle=useTitle),
                  label)
 
 
