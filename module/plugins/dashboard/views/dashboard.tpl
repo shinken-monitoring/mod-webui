@@ -33,7 +33,7 @@
 
          <td>
          %if len(widgets) > 0:
-         <a id="small_show_panel" data-toggle="popover" href="#widgets" class="btn btn-sm btn-success"><i class="fa fa-plus"></i> Add a new widget</a>
+         <a id="widgets_show_panel" href="#widgets" class="btn btn-sm btn-success"><i class="fa fa-plus"></i> Add a new widget</a>
          %end
          </td>
        
@@ -58,40 +58,18 @@
    </tbody>
 </table>
 
-<div id="loading" class="pull-left"> <img src='/static/images/spinner.gif'> Loading widgets</div>
+<div id="widgets_loading" class="pull-left"> <img src='/static/images/spinner.gif'> Loading widgets ...</div>
 
 %# Go in the center of the page!
 %if len(widgets) == 0:
 <span id="center-button" class="col-sm-4 col-sm-offset-4 page-center" >
    <h3>You don't have any widget yet ...</h3>
    <!-- Button trigger widgets modal -->
-   <a id="small_show_panel" data-toggle="popover" href="#widgets" class="btn btn-block btn-success"><i class="fa fa-plus"></i>... add a new widget</a>
+   <a id="widgets_show_panel" data-toggle="popover" title="Popover title" href="#widgets" class="btn btn-block btn-success"><i class="fa fa-plus"></i>... add a new widget</a>
 </span>
 %end
 
-<script type="text/javascript">
-   // Activate the popover
-   $(function () {
-      $('#small_show_panel').popover({ 
-         html : true,
-         placement: 'bottom', 
-         title: 'Available widgets', 
-         content: function() {
-            return $('#widgets').html();
-         }
-      });
-
-      // Now load all widgets
-      %for w in widgets:
-         %if 'base_url' in w and 'position' in w:
-            %uri = w['base_url'] + "?" + w['options_uri']
-            AddWidget("{{!uri}}", "{{w['position']}}");
-         %end
-      %end
-   });
-</script>
-
-<div id="widgets" class="hidden" style="width: 480px;">
+<div id="widgets" class="hidden">
    %for w in app.get_widgets_for('dashboard'):
       <button type="button" class="btn btn-block" style="margin-bottom: 2px;" data-toggle="collapse" data-target="#desc_{{w['widget_name']}}">
         {{w['widget_name']}}
@@ -99,7 +77,7 @@
 
       <div id="desc_{{w['widget_name']}}" class='widget_desc collapse' >
          <div class="row">
-            <span class="col-sm-6">
+            <span class="col-sm-6 hidden-sm hidden-xs">
                <img class="img-rounded" style="width:100%" src="{{w['widget_picture']}}" id="widget_desc_{{w['widget_name']}}"/>
             </span>
             <span>{{!w['widget_desc']}}</span>
@@ -109,12 +87,33 @@
    %end
 </div>
 
-<div class="widget-place" id="widget-place-1"> </div>
+<div class="widget-place col-sm-12" id="widget-place-1"> </div>
 <!-- /place-1 -->
 
-<div class="widget-place" id="widget-place-2"> </div>
+<div class="widget-place col-sm-12" id="widget-place-2"> </div>
 <!-- /place-2 -->
 
-<div class="widget-place" id="widget-place-3"> </div>
+<div class="widget-place col-sm-12" id="widget-place-3"> </div>
 <!-- /place-3 -->
 
+<script type="text/javascript">
+   // Activate the popover ...
+   $(function () {
+      $('#widgets_show_panel').popover({ 
+         html : true,
+         placement: 'bottom', 
+         title: 'Available widgets', 
+         content: function() {
+            return $('#widgets').html();
+         }
+      });
+
+      // ... and load all widgets.
+      %for w in widgets:
+         %if 'base_url' in w and 'position' in w:
+            %uri = w['base_url'] + "?" + w['options_uri']
+            AddWidget("{{!uri}}", "{{w['position']}}");
+         %end
+      %end
+   });
+</script>
