@@ -30,20 +30,22 @@ from shinken.log import logger
 ### Will be populated by the UI with it's own value
 app = None
 
-# Get plugin's parameters from configuration file (not useful currently but future ideas ...)
-params = {}
-params['fake'] = "localhost"
-
 
 def system_page():
     user = app.check_user_authentication()
 
-    schedulers = app.datamgr.get_schedulers()
-    brokers = app.datamgr.get_brokers()
-    reactionners = app.datamgr.get_reactionners()
-    receivers = app.datamgr.get_receivers()
-    pollers = app.datamgr.get_pollers()
+    schedulers = app.get_schedulers()
+    brokers = app.get_brokers()
+    reactionners = app.get_reactionners()
+    receivers = app.get_receivers()
+    pollers = app.get_pollers()
 
+    logger.debug("[WebUI-system] schedulers: %s", schedulers)
+    logger.debug("[WebUI-system] brokers: %s", brokers)
+    logger.debug("[WebUI-system] reactionners: %s", reactionners)
+    logger.debug("[WebUI-system] receivers: %s", receivers)
+    logger.debug("[WebUI-system] pollers: %s", pollers)
+    
     return {'app': app, 'user': user, 'schedulers': schedulers,
             'brokers': brokers, 'reactionners': reactionners,
             'receivers': receivers, 'pollers': pollers,
@@ -59,6 +61,12 @@ def system_widget():
     receivers = app.datamgr.get_receivers()
     pollers = app.datamgr.get_pollers()
 
+    logger.debug("[WebUI-system] schedulers: %s", schedulers)
+    logger.debug("[WebUI-system] brokers: %s", brokers)
+    logger.debug("[WebUI-system] reactionners: %s", reactionners)
+    logger.debug("[WebUI-system] receivers: %s", receivers)
+    logger.debug("[WebUI-system] pollers: %s", pollers)
+    
     wid = app.request.GET.get('wid', 'widget_system_' + str(int(time.time())))
     collapsed = (app.request.GET.get('collapsed', 'False') == 'True')
     print "SYSTEM COLLAPSED?", collapsed, type(collapsed)
@@ -83,6 +91,7 @@ widget_desc = '''
 Show an aggregated view of all Shinken daemons.
 '''
 
-pages = {system_page: {'routes': ['/system', '/system/'], 'view': 'system', 'static': True},
-         system_widget: {'routes': ['/widget/system'], 'view': 'system_widget', 'static': True, 'widget': ['dashboard'], 'widget_desc': widget_desc, 'widget_name': 'system', 'widget_picture': '/static/system/img/widget_system.png'},
-         }
+pages = {
+    system_page: {'routes': ['/system', '/system/'], 'view': 'system', 'static': True},
+    system_widget: {'routes': ['/widget/system'], 'view': 'system_widget', 'static': True, 'widget': ['dashboard'], 'widget_desc': widget_desc, 'widget_name': 'system', 'widget_picture': '/static/system/img/widget_system.png'},
+}

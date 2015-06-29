@@ -1092,7 +1092,7 @@ class Webui_broker(BaseModule, Daemon):
                 for imp in item.impacts:
                     if user in imp.contacts:
                         r.add(item)
-
+            
         return list(r)
         
         
@@ -1571,6 +1571,29 @@ class Webui_broker(BaseModule, Daemon):
     def get_realm(self, r):
         if r in self.datamgr.rg.realms:
             return r
+        return None
+
+    ##
+    # Shinken program
+    ##
+    def get_schedulers(self):
+        return self.datamgr.rg.schedulers
+
+    def get_pollers(self):
+        return self.datamgr.rg.pollers
+
+    def get_brokers(self):
+        return self.datamgr.rg.brokers
+
+    def get_receivers(self):
+        return self.datamgr.rg.receivers
+
+    def get_reactionners(self):
+        return self.datamgr.rg.reactionners
+
+    def get_program_start(self):
+        for c in self.datamgr.rg.configs.values():
+            return c.program_start
         return None
 
     ##
