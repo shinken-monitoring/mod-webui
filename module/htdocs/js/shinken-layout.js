@@ -49,10 +49,18 @@ function loadjscssfile(filename, filetype){
  * - callback function called after data are posted
 **/
 function save_user_preference(key, value, callback) {
+   callback = (typeof callback !== 'undefined') ? callback : function() {
+      console.debug('No callback function');
+   };
+   
    $.post("/user/save_pref", { 'key' : key, 'value' : value}, function() {
       raise_message_ok("User parameter "+key+" saved");
-      if (callback)
+      try {
          window[callback]();
+      }
+      catch(err) {
+         // console.error('Callback function does not exist!', callback);
+      }
    });
 }
 
@@ -62,10 +70,18 @@ function save_user_preference(key, value, callback) {
  * - callback function called after data are posted
 **/
 function save_common_preference(key, value, callback) {
+   callback = (typeof callback !== 'undefined') ? callback : function() {
+      console.debug('No callback function');
+   };
+   
    $.post("/user/save_common_pref", { 'key' : key, 'value' : value}, function() {
       raise_message_ok("Common parameter "+key+" set to "+value);
-      if (callback)
+      try {
          window[callback]();
+      }
+      catch(err) {
+         // console.error('Callback function does not exist!', callback);
+      }
    });
 }
 
