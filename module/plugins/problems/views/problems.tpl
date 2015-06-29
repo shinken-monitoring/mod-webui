@@ -16,14 +16,6 @@
    %for b in bookmarksro:
     declare_bookmarksro("{{!b['name']}}","{{!b['uri']}}");
    %end
-
- // On page loaded ...
- $(function(){
-    // We prevent the dropdown to close when we go on a form into it.
-    $('.form_in_dropdown').on('click', function (e) {
-       e.stopPropagation()
-    });
- });
 </script>
 
 %if len(app.get_all_problems()) and app.play_sound:
