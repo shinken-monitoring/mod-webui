@@ -51,7 +51,7 @@
                </h3>
                <div>
                   %for state in 'up', 'unreachable', 'down', 'pending':
-                  <a role="menuitem" href="/all?search=type:host state:{{state}}">
+                  <a role="menuitem" href="/all?search=type:host is:{{state}}">
                   <span class="{{'font-' + state if h['nb_' + state] > 0 else 'font-greyed'}}">
                     %label = "%s <i>(%s%%)</i>" % (h['nb_' + state], h['pct_' + state])
                     {{!helper.get_fa_icon_state_and_label(cls='host', state=state, label=label)}}
@@ -61,7 +61,7 @@
                </div>
                <div>
                   %for state in 'unknown', 'ack', 'downtime':
-                  <a role="menuitem" href="/all?search=type:host state:{{state}}">
+                  <a role="menuitem" href="/all?search=type:host is:{{state}}">
                   <span class="{{'font-' + state if h['nb_' + state] > 0 else 'font-greyed'}}">
                     %label = "%s <i>(%s%%)</i>" % (h['nb_' + state], h['pct_' + state])
                     {{!helper.get_fa_icon_state_and_label(cls='host', state=state, label=label)}}
@@ -111,7 +111,7 @@
                   </a>
                <div>
                   %for state in 'up', 'unreachable', 'down', 'pending':
-                  <a role="menuitem" href="/all?search=type:host hg:{{group.get_name()}} state:{{state}}">
+                  <a role="menuitem" href="/all?search=type:host hg:{{group.get_name()}} is:{{state}}">
                   <span class="{{'font-' + state if h['nb_' + state] > 0 else 'font-greyed'}}">
                     %label = "%s <i>(%s%%)</i>" % (h['nb_' + state], h['pct_' + state])
                     {{!helper.get_fa_icon_state_and_label(cls='host', state=state, label=label)}}
@@ -121,7 +121,7 @@
                </div>
                <div>
                   %for state in 'unknown', 'ack', 'downtime':
-                  <a role="menuitem" href="/all?search=type:host hg:{{group.get_name()}} state:{{state}}">
+                  <a role="menuitem" href="/all?search=type:host hg:{{group.get_name()}} is:{{state}}">
                   <span class="{{'font-' + state if h['nb_' + state] > 0 else 'font-greyed'}}">
                     %label = "%s <i>(%s%%)</i>" % (h['nb_' + state], h['pct_' + state])
                     {{!helper.get_fa_icon_state_and_label(cls='host', state=state, label=label)}}
