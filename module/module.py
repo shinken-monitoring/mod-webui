@@ -1048,16 +1048,38 @@ class Webui_broker(BaseModule, Daemon):
         # Ok the user is a simple user, we should filter
         r = set()
         for item in lst:
-            # Maybe the user is a direct contact
+            # May be the user is a direct contact
             if hasattr(item, 'contacts') and user in item.contacts:
                 r.add(item)
                 continue
             # TODO: add a notified_contact pass
 
-            # Maybe it's a contact of a linked elements (source problems or impacts)
+            # May be it's a contact of a linked elements (source problems or impacts)
             found = False
             if hasattr(item, 'source_problems'): 
                 for s in item.source_problems:
+                    if user in s.contacts:
+                        r.add(item)
+                        found = True
+            # Ok skip this object now
+            if found:
+                continue
+
+            # May be it's a contact of a sub element ...
+            found = False
+            if item.__class__.my_type == 'hostgroup':
+                for h in item.get_hosts():
+                    if user in h.contacts:
+                        r.add(item)
+                        found = True
+            # Ok skip this object now
+            if found:
+                continue
+                
+            # May be it's a contact of a sub element ...
+            found = False
+            if item.__class__.my_type == 'servicegroup':
+                for s in item.get_services():
                     if user in s.contacts:
                         r.add(item)
                         found = True
