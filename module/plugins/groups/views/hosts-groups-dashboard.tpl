@@ -107,7 +107,7 @@
             </div>
 
             <h5 class="ellipsis" style="display:inline-block">
-               <a role="menuitem" href="/all?search=type:host">
+               <a role="menuitem" href="/all?search=type:host hg:{{group.get_name()}}">
                </small>{{group.alias if group.alias != '' else group.get_name()}} {{!helper.get_business_impact_text(h['bi'])}}</small>
                </a>
             </h5>
