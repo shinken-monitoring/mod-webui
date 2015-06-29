@@ -647,7 +647,7 @@ class Helper(object):
 
         return None
 
-    def get_fa_icon_state(self, obj=None, cls='host', state='UP', disabled=False, label=''):
+    def get_fa_icon_state(self, obj=None, cls='host', state='UP', disabled=False, label='', useTitle=True):
         '''
             Get an Html formatted string to display host/service state
             
@@ -659,6 +659,8 @@ class Helper(object):
             If label is empty, only an icon is returned
             If label is set as 'state', the icon title is used as text
             Else, the content of label is used as text near the icon.
+            
+            If useTitle is False, do not include title attribute.
             
             Returns a span element containing a Font Awesome icon that depicts 
            consistently the host/service current state (see issue #147)
@@ -710,7 +712,11 @@ class Helper(object):
             icon = icons[cls].get(state, 'UNKNOWN')
             icon_style = ""
         front = '''<i class="fa fa-%s fa-stack-1x %s"></i>''' % (icon, icon_color)
-        icon_text = '''<span class="fa-stack" %s title="%s">%s%s</span>''' % (icon_style, title, back, front)
+        
+        if useTitle:
+            icon_text = '''<span class="fa-stack" %s title="%s">%s%s</span>''' % (icon_style, title, back, front)
+        else:
+            icon_text = '''<span class="fa-stack" %s">%s%s</span>''' % (icon_style, back, front)
 
         if label=='':
             return icon_text
@@ -930,7 +936,8 @@ class Helper(object):
             s += "<li>"
             s += helper.get_fa_icon_state(svc)
             s += self.get_link(svc, short=True)
-            s += "(" + self.get_business_impact_text(svc.business_impact) + ")"
+            if svc.business_impact > 2:
+                s += "(" + self.get_business_impact_text(svc.business_impact) + ")"
             s += """ is <span class="font-%s"><strong>%s</strong></span>""" % (svc.state.lower(), svc.state)
             s += " since %s" % self.print_duration(svc.last_state_change, just_duration=True, x_elts=2)
             s += "</li>"

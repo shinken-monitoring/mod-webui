@@ -135,22 +135,18 @@
                %h = app.get_host(r)
                %if h:
                <tr>
-                  <td>
-                     <span title="{{h.state}} - {{helper.print_duration(h.last_chk)}} - {{h.output}}">
-                     {{!helper.get_fa_icon_state(h)}}
-                     </span>
+                  <td title="{{h.get_name()}} - {{h.state}} - {{helper.print_duration(h.last_chk)}} - {{h.output}}">
                      <a href="/host/{{h.get_name()}}">
+                        {{!helper.get_fa_icon_state(h, useTitle=False)}}
                         {{h.get_name()}}
                      </a>
                   </td>
                   %for c in columns:
                      %s = app.get_service(r, c)
                      %if s:
-                        <td>
+                        <td title="{{s.get_name()}} - {{s.state}} - {{helper.print_duration(s.last_chk)}} - {{s.output}}">
                            <a href="/service/{{h.get_name()}}/{{s.get_name()}}">
-                              <span title="{{s.state}} - {{helper.print_duration(s.last_chk)}} - {{s.output}}">
-                              {{!helper.get_fa_icon_state(s)}}
-                              </span>
+                              {{!helper.get_fa_icon_state(s, useTitle=False)}}
                            </a>
                         </td>
                      %else:
