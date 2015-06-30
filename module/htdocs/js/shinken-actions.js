@@ -273,6 +273,10 @@ function toggle_notifications(name, b){
       launch(url, capitalize(elts.type)+', notifications enabled');
    }
 }
+function disable_notifications(elts){
+   var url = '/action/DISABLE_'+elts.type+'_NOTIFICATIONS/'+elts.nameslash;
+   launch(url, capitalize(elts.type)+', notifications disabled');
+}
 
 
 /*
@@ -288,6 +292,10 @@ function toggle_event_handlers(name, b){
       var url = '/action/ENABLE_'+elts.type+'_EVENT_HANDLER/'+elts.nameslash;
       launch(url, capitalize(elts.type)+', event handler enabled');
    }
+}
+function disable_event_handlers(elts){
+   var url = '/action/DISABLE_'+elts.type+'_EVENT_HANDLER/'+elts.nameslash;
+   launch(url, capitalize(elts.type)+', event handler disabled');
 }
 
 

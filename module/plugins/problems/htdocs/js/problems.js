@@ -22,6 +22,8 @@
  along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+var problems_logs=false;
+
 
 /*
   Tool bar related code
@@ -205,7 +207,7 @@ function remove_all(user){
    flush_selected_elements();
 }
 
-function set_expand_outputs(){
+function on_page_refresh(){
    $('.collapse').on('show.bs.collapse', function () {
        $(this).closest('tr').prev().find('.output').removeClass("ellipsis", {duration:200});
    });
@@ -218,6 +220,56 @@ function set_expand_outputs(){
    $('[data-toggle="popover"]').popover({
       html: true,
       template: '<div class="popover img-popover"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
+   });
+   
+   // Event handler
+   $('button[action="event-handler"]').click(function () {
+      var elt = $(this).data('element');
+      if (problems_logs) console.debug("Button - try to fix: ", elt)
+      
+      try_to_fix_one(elt);
+   });
+
+   // Recheck
+   $('button[action="recheck"]').click(function () {
+      var elt = $(this).data('element');
+      if (problems_logs) console.debug("Button - recheck for: ", elt)
+      
+      recheck_now_one(elt);
+   });
+
+   // Force ok
+   $('button[action="force-ok"]').click(function () {
+      var elt = $(this).data('element');
+      var user = $(this).data('user');
+      if (problems_logs) console.debug("Button - force ok for: ", elt)
+      
+      submit_check_ok_one(elt, user);
+   });
+
+   // Add an acknowledge
+   $('button[action="add-acknowledge"]').click(function () {
+      var elt = $(this).data('element');
+      if (problems_logs) console.debug("Button - add an acknowledge for: ", elt)
+      
+      display_form("/forms/acknowledge/add/"+elt);
+   });
+
+   // Schedule a downtime ...
+   $('button[action="schedule-downtime"]').click(function () {
+      var elt = $(this).data('element');
+      if (problems_logs) console.debug("Button - schedule a downtime for: ", elt)
+      
+      display_form("/forms/downtime/add/"+$(this).data('element'));
+   });
+
+   // Ignore checks
+   $('button[action="ignore-checks"]').click(function () {
+      var elt = $(this).data('element');
+      var user = $(this).data('user');
+      if (problems_logs) console.debug("Button - force ok for: ", elt)
+      
+      remove_one(elt, user);
    });
 }
 

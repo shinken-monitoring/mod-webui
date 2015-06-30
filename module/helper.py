@@ -967,7 +967,8 @@ class Helper(object):
             # s += "%s is %s since %s %s\n" % (self.get_link(node), node.state, self.print_duration(node.last_state_change, just_duration=True), root_str)
             s += helper.get_fa_icon_state(node)
             s += self.get_link(node, short=True)
-            s += "(" + self.get_business_impact_text(node.business_impact) + ")"
+            if node.business_impact > 2:
+                s += "(" + self.get_business_impact_text(node.business_impact) + ")"
             s += """ is <span class="font-%s"><strong>%s</strong></span>""" % (node.state.lower(), node.state)
             s += " since %s" % self.print_duration(node.last_state_change, just_duration=True, x_elts=2)
 

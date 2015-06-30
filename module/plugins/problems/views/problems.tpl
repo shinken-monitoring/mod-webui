@@ -136,46 +136,51 @@
                    <td align="right">
                      <div class="btn-group" role="group" aria-label="...">
                        %if pb.event_handler_enabled and pb.event_handler:
-                       <button type="button" class="btn btn-default btn-xs" title="Try to fix (launch event handler if defined)" onClick="try_to_fix_one('{{ pb.get_full_name() }}');">
-                         <i class="fa fa-magic"></i><span class="hidden-sm hidden-xs"> Try to fix</span>
+                       <button class="btn btn-default btn-xs" 
+                              action="event-handler"
+                              data-toggle="tooltip" data-placement="bottom" title="Try to fix (launch event handler)"
+                              data-element="{{helper.get_uri_name(pb)}}" 
+                              >
+                           <i class="fa fa-magic"></i><span class="hidden-sm hidden-xs"> Try to fix<span>
                        </button>
                        %end
-                       <button type="button" class="btn btn-default btn-xs" title="Launch the check command " onClick="recheck_now_one('{{ pb.get_full_name() }}');">
-                         <i class="fa fa-refresh"></i><span class="hidden-sm hidden-xs"> Refresh<span>
+                       <button class="btn btn-default btn-xs" 
+                              action="recheck"
+                              data-toggle="tooltip" data-placement="bottom" title="Launch the check command"
+                              data-element="{{helper.get_uri_name(pb)}}" 
+                              >
+                           <i class="fa fa-refresh"></i><span class="hidden-sm hidden-xs"> Refresh<span>
                        </button>
-                       <button type="button" class="btn btn-default btn-xs" title="Force service to be considered as Ok" onClick="submit_check_ok_one('{{ pb.get_full_name() }}', '{{ user.get_name() }}');">
-                         <i class="fa fa-share"></i><span class="hidden-sm hidden-xs"> OK</span>
+                       <button class="btn btn-default btn-xs" 
+                              action="force-ok"
+                              data-toggle="tooltip" data-placement="bottom" title="Force service to be considered as Ok"
+                              data-element="{{helper.get_uri_name(pb)}}" 
+                              data-user="{{user}}" 
+                              >
+                           <i class="fa fa-share"></i><span class="hidden-sm hidden-xs"> OK</span>
                        </button>
-                       <button type="button" id="btn-acknowledge-{{helper.get_html_id(pb)}}" class="btn btn-default btn-xs" title="Acknowledge the problem">
-                         <i class="fa fa-check"></i><span class="hidden-sm hidden-xs"> ACK</span>
+                       <button class="btn btn-default btn-xs" 
+                              action="add-acknowledge"
+                              data-toggle="tooltip" data-placement="bottom" title="Acknowledge this problem"
+                              data-element="{{helper.get_uri_name(pb)}}" 
+                              >
+                           <i class="fa fa-check"></i><span class="hidden-sm hidden-xs"> Acknowledge</span>
                        </button>
-                       <script>
-                         $('button[id="btn-acknowledge-{{helper.get_html_id(pb)}}"]').click(function () {
-                           stop_refresh();
-                           $('#modal').modal({
-                             keyboard: true,
-                             show: true,
-                             backdrop: 'static',
-                             remote: "/forms/acknowledge/{{helper.get_uri_name(pb)}}"
-                           });
-                         });
-                       </script>
-                       <button type="button" id="btn-downtime-{{helper.get_html_id(pb)}}" class="btn btn-default btn-xs" title="Schedule a downtime for the problem">
+                       <button class="btn btn-default btn-xs" 
+                              action="schedule-downtime"
+                              data-toggle="tooltip" data-placement="bottom" title="Schedule a downtime for this problem"
+                              data-element="{{helper.get_uri_name(pb)}}" 
+                              >
                          <i class="fa fa-ambulance"></i><span class="hidden-sm hidden-xs"> Downtime</span>
                        </button>
-                       <script>
-                         $('button[id="btn-downtime-{{helper.get_html_id(pb)}}"]').click(function () {
-                           stop_refresh();
-                           $('#modal').modal({
-                             keyboard: true,
-                             show: true,
-                             backdrop: 'static',
-                             remote: "/forms/downtime/{{helper.get_uri_name(pb)}}"
-                           });
-                         });
-                       </script>
-                       <button type="button" class="btn btn-default btn-xs" title="Ignore checks for the service (disable checks, notifications, event handlers and force Ok)" onClick="remove_one('{{ pb.get_full_name() }}', '{{ user.get_name() }}');">
-                         <i class="fa fa-eraser"></i><span class="hidden-sm hidden-xs"> Remove</span>
+                       
+                       <button class="btn btn-default btn-xs" 
+                              action="ignore-checks"
+                              data-toggle="tooltip" data-placement="bottom" title="Ignore checks for the service (disable checks, notifications, event handlers and force Ok)"
+                              data-element="{{helper.get_uri_name(pb)}}" 
+                              data-user="{{user}}" 
+                              >
+                           <i class="fa fa-eraser"></i><span class="hidden-sm hidden-xs"> Remove<span>
                        </button>
                      </div>
                    </td>
@@ -222,5 +227,5 @@
 
 
 <script type="text/javascript">
-   set_expand_outputs();
+   on_page_refresh();
 </script>
