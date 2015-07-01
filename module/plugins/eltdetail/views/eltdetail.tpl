@@ -78,7 +78,7 @@ Invalid element name
       <div class="btn-group pull-right">
          %i=0
          %for t in sorted(elt.get_host_tags()):
-            <a href="/all?search=htag:{{t}}"/>
+            <a href="/all?search=htag:{{t}}">
                %if app.tag_as_image:
                <img src="/tag/{{t.lower()}}" alt="{{t.lower()}}" =title="Tag: {{t.lower()}}" style="height: 24px"></img>
                %else:
@@ -824,7 +824,7 @@ Invalid element name
                               %end
                               <button class="btn btn-default {{disabled_s}}" 
                                     action="schedule-downtime"
-                                    data-toggle="tooltip" data-placement="bottom" title="Set this {{elt_type}} as ok"
+                                    data-toggle="tooltip" data-placement="bottom" title="Schedule a downtime for this {{elt_type}}"
                                     data-element="{{helper.get_uri_name(elt)}}" 
                                     >
                                  <i class="fa fa-ambulance"></i> Schedule a downtime

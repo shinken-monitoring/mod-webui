@@ -212,9 +212,17 @@ function on_page_refresh() {
    // Check result
    $('button[action="check-result"]').click(function () {
       var elt = $(this).data('element');
-      if (eltdetail_logs) console.debug("Button - add an acknowledge for: ", elt)
+      if (eltdetail_logs) console.debug("Button - submit a check result for: ", elt)
       
       display_form("/forms/submit_check/"+elt);
+   });
+
+   // Event handler
+   $('button[action="event-handler"]').click(function () {
+      var elt = $(this).data('element');
+      if (eltdetail_logs) console.debug("Button - try to fix: ", elt)
+      
+      try_to_fix(elt);
    });
 
 
