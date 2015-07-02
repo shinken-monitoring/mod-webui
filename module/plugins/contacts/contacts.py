@@ -30,34 +30,6 @@ import time
 
 from shinken.util import safe_print
 
-# Get plugin's parameters from configuration file
-params = {}
-
-def load_cfg():
-    global params
-
-    import os,sys
-    from webui.config_parser import config_parser
-    from shinken.log import logger
-    plugin_name = os.path.splitext(os.path.basename(__file__))[0]
-    try:
-        currentdir = os.path.dirname(os.path.realpath(__file__))
-        configuration_file = "%s/%s" % (currentdir, 'plugin.cfg')
-        logger.debug("Plugin configuration file: %s" % (configuration_file))
-        scp = config_parser('#', '=')
-        params = scp.parse_config(configuration_file)
-
-        logger.info("[webui-contacts] configuration loaded.")
-        return True
-    except Exception, exp:
-        logger.warning("[webui-contacts] configuration file (%s) not available: %s", configuration_file, str(exp))
-        return False
-
-def reload_cfg():
-    load_cfg()
-    app.bottle.redirect("/config")
-
-
 # Contact page
 def show_contact(name):
     user = app.check_user_authentication()
@@ -66,7 +38,7 @@ def show_contact(name):
       app.bottle.redirect('/contacts')
 
     return {
-        'app': app, 'user': user, 'params': params,
+        'app': app, 'user': user, 
         'contact': app.get_contact(name)
         }
 
@@ -80,7 +52,7 @@ def show_contacts():
         contacts = (user,)
 
     return {
-        'app': app, 'user': user, 'params': params,
+        'app': app, 'user': user, 
         'contacts': sorted(contacts, key=lambda contact: contact.contact_name)
         }
 
@@ -88,8 +60,6 @@ def show_contacts():
 load_cfg()
 
 pages = {
-        reload_cfg: {'routes': ['/reload/contacts']},
-
         show_contact: {'routes': ['/contact/:name'], 'view': 'contact', 'static': True},
         show_contacts: {'routes': ['/contacts'], 'view': 'contacts', 'static': True},
-        }
+}
