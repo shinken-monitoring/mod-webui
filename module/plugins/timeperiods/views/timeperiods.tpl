@@ -3,6 +3,8 @@
 %rebase("layout", css=['timeperiods/css/timeperiods.css'], js=['timeperiods/js/timeperiods-overview.js'], title=title, refresh=True)
 
 %import time
+%import operator
+
 
 %display_all = True if params['display']=='all' else False
 
@@ -53,18 +55,18 @@
                 <tr>
                   <td colspan="2"><strong>Periods:</strong></td>
                 </tr>
-                %for elt in timeperiod.dateranges:
-                %(dr_start, dr_end) = elt.get_start_and_end_time()
+                %for dr in sorted(timeperiod.dateranges, key=operator.methodcaller("get_start_and_end_time")):
+                %(dr_start, dr_end) = dr.get_start_and_end_time()
                 %dr_start = time.strftime("%d %b %Y", time.localtime(dr_start))
                 %dr_end = time.strftime("%d %b %Y", time.localtime(dr_end))
                 <tr>
                   <td></td>
                   <td>
                     From: <strong>{{dr_start}}</strong> to:<strong>{{dr_end}}</strong>
-                    %if len(elt.timeranges) > 0:
+                    %if len(dr.timeranges) > 0:
                     &nbsp;(
                     %idx=0
-                    %for timerange in elt.timeranges:
+                    %for timerange in dr.timeranges:
                     %hr_start = ("%02d:%02d" % (timerange.hstart, timerange.mstart))
                     %hr_end = ("%02d:%02d" % (timerange.hend, timerange.mend))
                     <strong>{{hr_start}}-{{hr_end}}&nbsp;</strong>
