@@ -436,6 +436,7 @@ Invalid element name
                               </tr>
                            </thead>
                            <tbody style="font-size:x-small;">
+                              %if hasattr(elt, "check_period") and hasattr(elt.check_period, "get_name"):
                               <tr>
                                  <td><strong>Check period:</strong></td>
                                  %tp=app.get_timeperiod(elt.check_period.get_name())
@@ -448,6 +449,12 @@ Invalid element name
                                  <a href="/timeperiods">{{elt.check_period.alias}}</a>
                                  </td>
                               </tr>
+                              %else:
+                              <tr>
+                                 <td><strong>No defined check period!</strong></td>
+                                 <td></td>
+                              </tr>
+                              %end
                               %if elt.maintenance_period is not None:
                               <tr>
                                  <td><strong>Maintenance period:</strong></td>
