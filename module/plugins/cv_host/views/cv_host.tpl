@@ -136,7 +136,7 @@
       </div>
    </div>
 
-   <div class="row clearfix">
+   <div class="row" name="services_layout">
       <div class="col-sm-6" name="left_metrics">
          %if 'cpu' in all_states and 'cpu' in all_perfs:
          <div class="well well-sm" name="cpu_container">
@@ -352,13 +352,7 @@
       <div class="col-sm-6" name="right_metrics">
          %if 'services' in all_states:
          <div class="well well-sm" name="services_container">
-            %for svc in elt.services:
-            <div name="services-{{app.helper.make_html_id(svc.get_name())}}">
-               <a href="/service/{{elt.get_name()}}/{{svc.get_name()}}" title="{{svc.get_name()}} - {{svc.state}} - {{app.helper.print_duration(svc.last_chk)}} - {{svc.output}}">
-                  {{!app.helper.get_fa_icon_state_and_label(cls='service', state=svc.state, label=svc.get_name(), useTitle=False)}}
-               </a>
-            </div>
-            %end
+           {{!app.helper.print_aggregation_tree(app.helper.get_host_service_aggregation_tree(elt, app), app.helper.get_html_id(elt), expanded=True)}}
          </div>
          %end
       </div>

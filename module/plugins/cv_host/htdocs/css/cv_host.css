@@ -8,12 +8,17 @@
    margin-bottom: -100px;
 }
 
+/* 
+ * Services layout
+ */
+#cv_host [name="services_layout"] {
+   margin-top: 100px;
+}
+
 
 /* 
  * Left and right metrics
  */
-
-
 #cv_host [name="right_metrics"] {
 }
 #cv_host [name="left_metrics"] {
