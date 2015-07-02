@@ -56,9 +56,6 @@ def show_contacts():
         'contacts': sorted(contacts, key=lambda contact: contact.contact_name)
         }
 
-# Load plugin configuration parameters
-load_cfg()
-
 pages = {
         show_contact: {'routes': ['/contact/:name'], 'view': 'contact', 'static': True},
         show_contacts: {'routes': ['/contacts'], 'view': 'contacts', 'static': True},
