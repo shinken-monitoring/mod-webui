@@ -1,0 +1,109 @@
+#cv_host{
+}
+
+/* 
+ * Host layout
+ */
+#cv_host [name="host_layout"] {
+   margin-bottom: -100px;
+}
+
+
+/* 
+ * Left and right metrics
+ */
+
+
+#cv_host [name="right_metrics"] {
+}
+#cv_host [name="left_metrics"] {
+}
+
+/* 
+ * Host container 
+ */
+#cv_host [name="host_container"] {
+   margin-bottom: -200px;
+}
+
+#cv_host [name="host_container"] img {
+   position: relative; top: -150px; left: 50px;
+   width: 96px;
+}
+#cv_host [name="host_container"] h1 {
+   position: relative; top: -150px; left: 5px;
+   font-weight: bold;
+   color: #222222;
+}
+
+
+/* 
+ * CPU container 
+ */
+#cv_host [name="cpu_container"] {
+}
+
+#cv_host [name="cpu_container"] div.donut {
+   margin-right: 0px;
+   margin-bottom: -40px;
+   width: 110px; 
+   float: left;
+}
+#cv_host [name="cpu_container"] div.graph {
+
+}
+#cv_host [name="cpu_container"] div.name {
+   position: relative; top: -60px; 
+   font-weight: bold;
+   color: #000000;
+   text-align: center;
+}
+#cv_host [name="cpu_container"] div.value {
+   position: relative; top: -60px; 
+   font-weight: bold;
+   color: #000000;
+   text-align: center;
+}
+
+/*
+ * Memory container 
+ */
+#cv_host [name="memory_container"] {
+}
+#cv_host [name="memory_container"] div.barchart {
+   width: 100%; height: 200px;
+   display: block;
+}
+
+/*
+ * Disks container 
+ */
+#cv_host [name="disks_container"] {
+}
+#cv_host [name="disks_container"] div {
+}
+
+
+/*
+ * Network container 
+ */
+#cv_host [name="network_container"] {
+}
+#cv_host [name="network_container"] img {
+   width: 48px;
+}
+#cv_host [name="network_container"] div.name, #cv_host [name="network_container"] div.value {
+   position: relative; top: -60px; 
+   font-weight: bold;
+   font-size: 8pt;
+   color: #000000;
+   text-align: center;
+}
+
+
+
+/*
+ * Services container 
+ */
+#cv_host [name="services_container"] {
+}
