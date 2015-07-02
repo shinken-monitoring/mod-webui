@@ -326,7 +326,7 @@ Invalid element name
             <div class="tab-pane fade {{_go_active}} {{_go_fadein}}" data-name="{{cvname}}" data-element="{{elt.get_full_name()}}" id="cv{{cvname}}">
                <div class="panel panel-default">
                   <div class="panel-body">
-                     Cannot load the pane {{cvname}}.
+                     <span class="alert alert-error">Sorry, I cannot load the {{cvname}} view!</span>
                   </div>
                </div>
             </div>

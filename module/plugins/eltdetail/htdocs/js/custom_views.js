@@ -22,13 +22,15 @@
    along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+var custom_logs=true;
+
 var _already_loaded = {};
 
 // when we show a custom view tab, we lazy load it :D
-function show_custom_view(p){
-   var hname = p.data('element');
-   var cvname = p.data('name');
-   console.debug('Request for loading custom view: ', cvname, ' for ', hname);
+function show_custom_view(elt){
+   var hname = elt.data('element');
+   var cvname = elt.data('name');
+   if (custom_logs) console.debug('Request for loading custom view: ', cvname, ' for ', hname);
 
    if (cvname in _already_loaded){
       return;
@@ -44,15 +46,18 @@ function show_custom_view(p){
          $("#cv"+cvname+" .panel-body").each(function() {
             $(this).css('height', $('#cv_'+cvname).height() + "px");
          });
-         console.debug('Loaded custom view: ', cvname);
+         if (custom_logs) console.debug('Loaded custom view: ', cvname);
       }
    });
 
    _already_loaded[cvname] = true;
 }
 
-function reload_custom_view(name){
+function reload_custom_view(elt){
+   var hname = elt.data('element');
+   var cvname = elt.data('name');
+   
    // Be sure to remove the panel from already loaded panels, else it won't load
-   delete _already_loaded[name];
-   show_custom_view($('#tab-cv-'+name));
+   delete _already_loaded[cvname];
+   show_custom_view(elt);
 }
