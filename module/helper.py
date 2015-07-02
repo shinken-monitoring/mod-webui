@@ -897,7 +897,7 @@ class Helper(object):
 
         return tree
 
-    def print_aggregation_tree(self, tree, html_id):
+    def print_aggregation_tree(self, tree, html_id, expanded=False):
         path = tree['path']
         full_path = tree['full_path']
         sons = tree['sons']
@@ -911,7 +911,7 @@ class Helper(object):
 
         if path != '/':
             # If our state is OK, hide our sons
-            if state == 'ok':
+            if not expanded and state == 'ok':
                 display = 'none'
                 img = 'expand.png'
 
@@ -922,7 +922,7 @@ class Helper(object):
         # If we got no parents, no need to print the expand icon
         if len(sons) > 0:
             for son in sons:
-                sub_s = self.print_aggregation_tree(son, html_id)
+                sub_s = self.print_aggregation_tree(son, html_id, expanded=expanded)
                 s += '<li class="no_list_style">%s</li>' % sub_s
 
 
