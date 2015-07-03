@@ -634,7 +634,7 @@ class Helper(object):
             i=0
             for item in obj.notes.split('|'):
                 if obj.notes_url == '':
-                    notes.append(item)
+                    notes.append("%s,," % (item))
                 else:
                     notes_url = obj.notes_url.split('|')
                     if len(notes_url) > i:
