@@ -42,7 +42,7 @@
                <i class="fa fa-4x fa-exclamation-triangle font-darkgrey"></i>
                <span class="badger-title itproblem"><i class="fa fa-plus" style="color: #ccc"></i>&nbsp;IT Problems</span>
                %overall_itproblem = app.get_overall_it_state(app.get_user_auth())
-               <span title="Number of not acknowledged IT problems." class="badger-big alert-{{'ok' if overall_itproblem == 0 else 'warning' if overall_itproblem == 1 else 'critical'}}">{{app.get_overall_it_problems_count(app.get_user_auth(), False)}}</span>
+               <span title="Number of not acknowledged IT problems." class="badger-big alert-{{'ok' if overall_itproblem == 0 else 'warning' if overall_itproblem == 1 else 'critical'}}">{{app.get_overall_it_problems_count(app.get_user_auth(), get_acknowledged=False)}}</span>
             </a>
          </td>
 
