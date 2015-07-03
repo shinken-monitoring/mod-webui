@@ -23,8 +23,6 @@
 app = None
 
 from shinken.log import logger
-from shinken.misc.sorter import hst_srv_sort
-from shinken.misc.filter import only_related_to
 
 # Get plugin's parameters from configuration file
 # params = {}
@@ -70,8 +68,11 @@ from shinken.misc.filter import only_related_to
 def show_minemap():
     user = app.check_user_authentication()
 
-    # Apply search filter for minemap hosts ...
-    search = ' '.join(app.request.GET.getall('search')) or ""
+    # Apply search filter if exists ...
+    search = app.request.query.get('search', "type:host")
+    if not "type:host" in search:
+        search = "type:host "+search
+    logger.debug("[WebUI-worldmap] search parameters '%s'", search)
     items = app.search_hosts_and_services(search, user, get_impacts=False)
     
     # Fetch elements per page preference for user, default is 25
