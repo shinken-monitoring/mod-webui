@@ -1693,9 +1693,10 @@ class Webui_broker(BaseModule, Daemon):
         Get the number of IT problems for the current user if specified.
         If get_acknowledged is True, count problems even if acknowledged ...
         
-        Ignore problems that are impacts
+        If type is 'host', only count hosts problems
+        If type is 'service', only count services problems
         '''
-        logger.debug("[WebUI] get_overall_it_problems_count, user: %s, get_acknowledged: %d", user.contact_name, get_acknowledged)
+        logger.debug("[WebUI] get_overall_it_problems_count, user: %s, type: %s, get_acknowledged: %d", user.contact_name, type, get_acknowledged)
         
         if not get_acknowledged:
             h_states = [h for h in self.get_hosts(user) if h.state not in ['UP', 'PENDING'] and not h.is_impact and not h.problem_has_been_acknowledged]
@@ -1704,8 +1705,7 @@ class Webui_broker(BaseModule, Daemon):
             h_states = [h for h in self.get_hosts(user) if h.state not in ['UP', 'PENDING'] and not h.is_impact]
             s_states = [s for s in self.get_services(user) if s.state not in ['OK', 'PENDING'] and not s.is_impact]
             
-        logger.debug("[WebUI] get_overall_it_problems_count, hosts: %d", len(h_states))
-        logger.debug("[WebUI] get_overall_it_problems_count, services: %d", len(s_states))
+        logger.debug("[WebUI] get_overall_it_problems_count, hosts: %d, services: %d", len(h_states), len(s_states))
         
         if type == 'all':
             return len(h_states) + len(s_states)
