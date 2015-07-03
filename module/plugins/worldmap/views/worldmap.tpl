@@ -2,11 +2,22 @@
 
 <!-- HTML map container -->
 <div class="map_container">
-   <div id="map">
-      <div class="alert alert-info">
-         <a href="#" class="alert-link">Loading map ...</a>
+   %if not hosts:
+      <center>
+         %if search_string:
+         <h3>Bummer, we couldn't find anything.</h3>
+         Use the filters or the bookmarks to find what you are looking for, or try a new search query.
+         %else:
+         <h3>No host or service.</h3>
+         %end
+      </center>
+   %else:
+      <div id="map">
+         <div class="alert alert-info">
+            <a href="#" class="alert-link">Loading map ...</a>
+         </div>
       </div>
-   </div>
+   %end
 </div>
 
 <script>
@@ -113,38 +124,38 @@
             $.getScript(debugJs ? "/static/worldmap/js/markerwithlabel.js" : "/static/worldmap/js/markerwithlabel_packed.js", function( data, textStatus, jqxhr ) {
                if (debugJs) console.log('Google labeled marker API loaded ...');
                
-          if (mapLayer=='OSM') {
-            // Define OSM map type pointing at the OpenStreetMap tile server
-            map = new google.maps.Map(document.getElementById('map'),{
-              center: new google.maps.LatLng (defLat, defLng),
-              zoom: defaultZoom,
-              mapTypeId: "OSM",
-              mapTypeControl: false,
-              streetViewControl: false
-            });
+               if (mapLayer=='OSM') {
+                  // Define OSM map type pointing at the OpenStreetMap tile server
+                  map = new google.maps.Map(document.getElementById('map'),{
+                     center: new google.maps.LatLng (defLat, defLng),
+                     zoom: defaultZoom,
+                     mapTypeId: "OSM",
+                     mapTypeControl: false,
+                     streetViewControl: false
+                  });
 
-            map.mapTypes.set("OSM", new google.maps.ImageMapType({
-                getTileUrl: function(coord, zoom) {
-                    return "http://tile.openstreetmap.org/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
-                },
-                tileSize: new google.maps.Size(256, 256),
-                name: "OpenStreetMap",
-                maxZoom: 18
-            }));
-          } else {
-            map = new google.maps.Map(document.getElementById('map'),{
-               center: new google.maps.LatLng (defLat, defLng),
-               zoom: defaultZoom,
-               mapTypeId: google.maps.MapTypeId.ROADMAP,
-               panControl: true,
-               zoomControl: true,
-               mapTypeControl: false,
-               scaleControl: true,
-               streetViewControl: false
-            });
-          }
+                  map.mapTypes.set("OSM", new google.maps.ImageMapType({
+                     getTileUrl: function(coord, zoom) {
+                        return "http://tile.openstreetmap.org/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
+                     },
+                     tileSize: new google.maps.Size(256, 256),
+                     name: "OpenStreetMap",
+                     maxZoom: 18
+                  }));
+               } else {
+                  map = new google.maps.Map(document.getElementById('map'),{
+                     center: new google.maps.LatLng (defLat, defLng),
+                     zoom: defaultZoom,
+                     mapTypeId: google.maps.MapTypeId.ROADMAP,
+                     panControl: true,
+                     zoomControl: true,
+                     mapTypeControl: false,
+                     scaleControl: true,
+                     streetViewControl: false
+                  });
+               }
           
-          var bounds = new google.maps.LatLngBounds();
+               var bounds = new google.maps.LatLngBounds();
                infoWindow = new google.maps.InfoWindow;
                
                %# For all hosts ...

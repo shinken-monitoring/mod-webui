@@ -19,10 +19,12 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 
-import time
+### Will be populated by the UI with it's own value
+app = None
 
 from shinken.log import logger
-from shinken.misc.filter import only_related_to
+
+import time
 
 try:
     import json
@@ -34,9 +36,6 @@ except ImportError:
     except ImportError:
         print "Error: you need the json or simplejson module"
         raise
-
-### Will be populated by the UI with it's own value
-app = None
 
 ### Plugin's parameters
 params = {}
@@ -79,10 +78,17 @@ def load_config(app):
 def show_worldmap():
     user = app.check_user_authentication()
 
+    # Apply search filter if exists ...
+    search = app.request.query.get('search', "type:host")
+    if not "type:host" in search:
+        search = "type:host "+search
+    logger.debug("[WebUI-worldmap] search parameters '%s'", search)
+    items = app.search_hosts_and_services(search, user, get_impacts=False)
+    
     # We are looking for hosts with valid GPS coordinates,
     # and we just give them to the template to print them.
     valid_hosts = []
-    for h in app.get_hosts(user):
+    for h in items:
         logger.debug("[WebUI-worldmap] found host '%s'", h.get_name())
         
         # Filter hosts
@@ -113,7 +119,7 @@ def show_worldmap():
                 valid_hosts.append(h)
 
     # So now we can just send the valid hosts to the template
-    return {'app': app, 'user': user, 'params': params, 'hosts': valid_hosts}
+    return {'app': app, 'user': user, 'search_string': search, 'params': params, 'hosts': valid_hosts}
 
 
 def show_worldmap_widget():
