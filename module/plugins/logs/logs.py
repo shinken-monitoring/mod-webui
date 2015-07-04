@@ -59,7 +59,7 @@ params['mongo_host'] = "localhost"
 params['mongo_port'] = 27017
 params['db_name'] = "Logs"
 params['logs_limit'] = 500
-params['logs_type'] = []
+params['logs_type'] = ['INFO', 'WARNING', 'ERROR']
 params['logs_hosts'] = []
 params['logs_services'] = []
 
@@ -74,14 +74,18 @@ def load_cfg():
         configuration_file = "%s/%s" % (currentdir, 'plugin.cfg')
         logger.info("[WebUI-logs] Plugin configuration file: %s", configuration_file)
         scp = config_parser('#', '=')
-        params = scp.parse_config(configuration_file)
+        z = params.copy()
+        z.update(scp.parse_config(configuration_file))
+        params = z
 
         # mongo_host = params['mongo_host']
         params['mongo_port'] = int(params['mongo_port'])
         params['logs_limit'] = int(params['logs_limit'])
         params['logs_type'] = [item.strip() for item in params['logs_type'].split(',')]
-        params['logs_hosts'] = [item.strip() for item in params['logs_hosts'].split(',')]
-        params['logs_services'] = [item.strip() for item in params['logs_services'].split(',')]
+        if len(params['logs_hosts']) > 0:
+            params['logs_hosts'] = [item.strip() for item in params['logs_hosts'].split(',')]
+        if len(params['logs_services']) > 0:
+            params['logs_services'] = [item.strip() for item in params['logs_services'].split(',')]
         
         logger.info("[WebUI-logs] configuration loaded.")
         logger.info("[WebUI-logs] configuration, database: %s (%s)", params['mongo_host'], params['mongo_port'])

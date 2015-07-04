@@ -5,6 +5,8 @@
 %import time
 %import datetime
 
+%date_format='%Y-%m-%d %H:%M:%S'
+
 %today = datetime.datetime.now()
 %today_beginning = datetime.datetime(today.year, today.month, today.day,0,0,0,0)
 %today_beginning_time = int(time.mktime(today_beginning.timetuple()))
@@ -35,6 +37,7 @@
 %thismonth_end = thismonth_beginning + datetime.timedelta(days = 31)
 %thismonth_end_time = int(time.mktime(thismonth_end.timetuple()))
 
+<!-- Logs parameters -->
 <ul class="sliding-navigation drop-shadow" id="parameters">
   <li class="sliding-element"><h3>Parameters</h3></li>
   <li class="sliding-element">
@@ -42,7 +45,7 @@
   </li>
   %if len(params['logs_hosts']) > 0:
   <li class="sliding-element">
-    <a href="/logs/hosts_list" data-toggle="modal" data-target="#modal"><i class="fa fa-gear"></i> Hosts filter: 
+    <a href="/logs/hosts_list" data-toggle="modal" data-target="#modal"><i class="fa fa-gear"></i> Hosts filter: {{len(params['logs_hosts'])}}
     <ul>
     %for log_host in params['logs_hosts']:
       <li class="sliding-element">{{log_host}}</li>
@@ -102,110 +105,142 @@
 </script>
 
 <ul class="nav nav-tabs" id="myTab">
-  <li class="active"><a href="#today" data-toggle="tab">Today</a></li>
-  <li><a href="#yesterday" data-toggle="tab">Yesterday</a></li>
-  <li><a href="#thisweek" data-toggle="tab">This week</a></li>
-  <li><a href="#lastweek" data-toggle="tab">Last week</a></li>
-  <li><a href="#custom" data-toggle="tab">This month</a></li>
+   <li class="active"><a href="#today" data-toggle="tab">Today</a></li>
+   <li><a href="#yesterday" data-toggle="tab">Yesterday</a></li>
+   <li><a href="#thisweek" data-toggle="tab">This week</a></li>
+   <li><a href="#lastweek" data-toggle="tab">Last week</a></li>
+   <li><a href="#custom" data-toggle="tab">This month</a></li>
 </ul>
 
 <div class="tab-content">
-  <div class="tab-pane active" id="today">
-    <table class="table table-striped">
-      <tbody>
-        <tr>
-          <td colspan="4"><em>{{message}}</em></td>
-        </tr>
-        <tr>
-          <td colspan="4"><strong>From {{time.asctime(time.localtime(today_beginning_time))}} to {{time.asctime(time.localtime(today_end_time))}}</strong></td>
-        </tr>
-%for log in records:
-%if log['date'] >= today_beginning_time and log['date'] <= today_end_time:
-        <tr>
-          <td class="col-sm-1">{{time.asctime(time.localtime(log['date']))}}</td>
-          <td class="col-sm-1">{{log['host']}}</td>
-          <td class="col-sm-1">{{log['service']}}</td>
-          <td class="col-sm-8">{{log['message']}}</td>
-        </tr>
-%end
-%end
-      </tbody>
-    </table>
-  </div>
-  <div class="tab-pane" id="yesterday">
-    <table class="table table-striped">
-      <tbody>
-        <tr>
-          <td colspan="4"><strong>From {{time.asctime(time.localtime(yesterday_beginning_time))}} to {{time.asctime(time.localtime(yesterday_end_time))}}</strong></td>
-        </tr>
-%for log in records:
-%if log['date'] >= yesterday_beginning_time and log['date'] <= yesterday_end_time:
-        <tr>
-          <td>{{time.asctime(time.localtime(log['date']))}}</td>
-          <td>{{log['host']}}</td>
-          <td>{{log['service']}}</td>
-          <td>{{log['message']}}</td>
-        </tr>
-%end
-%end
-      </tbody>
-    </table>
-  </div>
-  <div class="tab-pane" id="thisweek">
-    <table class="table table-striped">
-      <tbody>
-        <tr>
-          <td colspan="4"><strong>From {{time.asctime(time.localtime(thisweek_beginning_time))}} to {{time.asctime(time.localtime(thisweek_end_time))}}</strong></td>
-        </tr>
-%for log in records:
-%if log['date'] >= thisweek_beginning_time and log['date'] <= thisweek_end_time:
-        <tr>
-          <td>{{time.asctime(time.localtime(log['date']))}}</td>
-          <td>{{log['host']}}</td>
-          <td>{{log['service']}}</td>
-          <td>{{log['message']}}</td>
-        </tr>
-%end
-%end
-      </tbody>
-    </table>
-  </div>
-  <div class="tab-pane" id="lastweek">
-    <table class="table table-striped">
-      <tbody>
-        <tr>
-          <td colspan="4"><strong>From {{time.asctime(time.localtime(lastweek_beginning_time))}} to {{time.asctime(time.localtime(lastweek_end_time))}}</strong></td>
-        </tr>
-%for log in records:
-%if log['date'] >= lastweek_beginning_time and log['date'] <= lastweek_end_time:
-        <tr>
-          <td>{{time.asctime(time.localtime(log['date']))}}</td>
-          <td>{{log['host']}}</td>
-          <td>{{log['service']}}</td>
-          <td>{{log['message']}}</td>
-        </tr>
-%end
-%end
-      </tbody>
-    </table>
-  </div>
-  <div class="tab-pane" id="lastmonth">
-    <table class="table table-striped">
-      <tbody>
-        <tr>
-          <td colspan="4"><strong>From {{time.asctime(time.localtime(thismonth_beginning_time))}} to {{time.asctime(time.localtime(thismonth_end_time))}}</strong></td>
-        </tr>
-%for log in records:
-%if log['date'] >= thismonth_beginning_time and log['date'] <= thismonth_end_time:
-        <tr>
-          <td>{{time.asctime(time.localtime(log['date']))}}</td>
-          <td>{{log['host']}}</td>
-          <td>{{log['service']}}</td>
-          <td>{{log['message']}}</td>
-        </tr>
-%end
-%end
-      </tbody>
-    </table>
-  </div>
+   <div class="tab-pane active" id="today">
+      <table class="table table-condensed">
+         <colgroup>
+            <col style="width: 10%" />
+            <col style="width: 90%" />
+         </colgroup>
+         <thead>
+            <tr>
+               <th colspan="2"><em>{{message}}</em></th>
+            </tr>
+            <tr>
+               <th colspan="2">From {{time.strftime(date_format, time.localtime(today_beginning_time))}} to {{time.strftime(date_format, time.localtime(today_end_time))}}</th>
+            </tr>
+         </thead>
+         <tbody style="font-size:x-small;">
+            %for log in records:
+            %if log['date'] >= today_beginning_time and log['date'] <= today_end_time:
+            <tr>
+               <td>{{time.strftime(date_format, time.localtime(log['date']))}}</td>
+               <td>{{log['message']}}</td>
+            </tr>
+            %end
+            %end
+         </tbody>
+      </table>
+   </div>
+   <div class="tab-pane" id="yesterday">
+      <table class="table table-condensed">
+         <colgroup>
+            <col style="width: 10%" />
+            <col style="width: 90%" />
+         </colgroup>
+         <thead>
+            <tr>
+               <th colspan="2"><em>{{message}}</em></th>
+            </tr>
+            <tr>
+               <th colspan="2">From {{time.strftime(date_format, time.localtime(yesterday_beginning_time))}} to {{time.strftime(date_format, time.localtime(yesterday_end_time))}}</th>
+            </tr>
+         </thead>
+         <tbody style="font-size:x-small;">
+            %for log in records:
+            %if log['date'] >= yesterday_beginning_time and log['date'] <= yesterday_end_time:
+            <tr>
+               <td>{{time.strftime(date_format, time.localtime(log['date']))}}</td>
+               <td>{{log['message']}}</td>
+            </tr>
+            %end
+            %end
+         </tbody>
+      </table>
+   </div>
+   <div class="tab-pane" id="thisweek">
+      <table class="table table-condensed">
+         <colgroup>
+            <col style="width: 10%" />
+            <col style="width: 90%" />
+         </colgroup>
+         <thead>
+            <tr>
+               <th colspan="2"><em>{{message}}</em></th>
+            </tr>
+            <tr>
+               <th colspan="2">From {{time.strftime(date_format, time.localtime(thisweek_beginning_time))}} to {{time.strftime(date_format, time.localtime(thisweek_end_time))}}</th>
+            </tr>
+         </thead>
+         <tbody style="font-size:x-small;">
+            %for log in records:
+            %if log['date'] >= thisweek_beginning_time and log['date'] <= thisweek_end_time:
+            <tr>
+               <td>{{time.strftime(date_format, time.localtime(log['date']))}}</td>
+               <td>{{log['message']}}</td>
+            </tr>
+            %end
+            %end
+         </tbody>
+      </table>
+   </div>
+   <div class="tab-pane" id="lastweek">
+      <table class="table table-condensed">
+         <colgroup>
+            <col style="width: 10%" />
+            <col style="width: 90%" />
+         </colgroup>
+         <thead>
+            <tr>
+               <th colspan="2"><em>{{message}}</em></th>
+            </tr>
+            <tr>
+               <th colspan="2">From {{time.strftime(date_format, time.localtime(lastweek_beginning_time))}} to {{time.strftime(date_format, time.localtime(lastweek_end_time))}}</th>
+            </tr>
+         </thead>
+         <tbody style="font-size:x-small;">
+            %for log in records:
+            %if log['date'] >= lastweek_beginning_time and log['date'] <= lastweek_end_time:
+            <tr>
+               <td>{{time.strftime(date_format, time.localtime(log['date']))}}</td>
+               <td>{{log['message']}}</td>
+            </tr>
+            %end
+            %end
+         </tbody>
+      </table>
+   </div>
+   <div class="tab-pane" id="lastmonth">
+      <table class="table table-condensed">
+         <colgroup>
+            <col style="width: 10%" />
+            <col style="width: 90%" />
+         </colgroup>
+         <thead>
+            <tr>
+               <th colspan="2"><em>{{message}}</em></th>
+            </tr>
+            <tr>
+               <th colspan="2">From {{time.strftime(date_format, time.localtime(thismonth_beginning_time))}} to {{time.strftime(date_format, time.localtime(thismonth_end_time))}}</th>
+            </tr>
+         </thead>
+         <tbody style="font-size:x-small;">
+            %for log in records:
+            %if log['date'] >= thismonth_beginning_time and log['date'] <= thismonth_end_time:
+            <tr>
+               <td>{{time.strftime(date_format, time.localtime(log['date']))}}</td>
+               <td>{{log['message']}}</td>
+            </tr>
+            %end
+            %end
+         </tbody>
+      </table>
+   </div>
 </div>
