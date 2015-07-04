@@ -71,16 +71,22 @@
                </div>
             </section>
             
+
             <section class="right">
-               <div class="btn-group btn-group-justified" role="group" aria-label="Minemap">
-                  <a class="btn btn-default" href="/minemap?search=type:host"><i class="fa fa-table"></i> Minemap</a>
-               </div>
+               <section class="notes">
+               </section>
                
-               <ul class="list-group">
-                  <li class="list-group-item">&nbsp;</li>
-                  <li class="list-group-item"><span class="badge">{{h['nb_elts']}}</span>Hosts</li>
-                  <li class="list-group-item"><span class="badge">{{nGroups}}</span>Groups</li>
-               </ul>
+               <section class="groups">
+                  <div class="btn-group btn-group-justified" role="group" aria-label="Minemap">
+                     <a class="btn btn-default" href="/minemap?search=type:host"><i class="fa fa-table"></i> Minemap</a>
+                  </div>
+                  
+                  <ul class="list-group">
+                     <li class="list-group-item">&nbsp;</li>
+                     <li class="list-group-item"><span class="badge">{{h['nb_elts']}}</span>Hosts</li>
+                     <li class="list-group-item"><span class="badge">{{nGroups}}</span>Groups</li>
+                  </ul>
+               </section>
             </section>
          </li>
       %end
@@ -132,45 +138,69 @@
             </section>
           
             <section class="right">
-               <div class="btn-group btn-group-justified" role="group" aria-label="Minemap">
-                  <a class="btn btn-default" href="/minemap?search=type:host hg:{{group.get_name()}}"><i class="fa fa-table"></i> Minemap</a>
-               </div>
-               
-               <ul class="list-group">
-                  <li class="list-group-item">
-                  %if nGroups > 0:
-                  <a class="text-left" role="menuitem" href="hosts-groups?level={{int(level+1)}}&parent={{group.get_name()}}"><i class="fa fa-level-down"></i>
-                  Down
-                  </a>
-                  %else:
-                  &nbsp;
-                  %end
-                  
-                  %if group.has('level') and group.level > 0:
-                  <a class="text-right" role="menuitem" href="hosts-groups?level={{int(level-1)}}"><i class="fa fa-level-up"></i>
-                  Up
-                  </a>
-                  %else:
-                  &nbsp;
-                  %end
-                  </li>
-                  <li class="list-group-item"><span class="badge">{{h['nb_elts']}}</span>Hosts</li>
-                  <li class="list-group-item"><span class="badge">{{nGroups}}</span>Groups</li>
-               </ul>
-<!--
-               <div class="dropdown form-group text-right">
-                  <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                     Views <span class="caret"></span>
-                  </button>
-                  <ul class="dropdown-menu" role="menu" aria-labelledby="group_actions">
-                     <li role="presentation"><a role="menuitem" href="/all?search=type:host hg:{{group.get_name()}}"><i class="fa fa-angle-double-down"></i> Details</a></li>
-                     <li role="presentation"><a role="menuitem" href="/minemap?search=type:host hg:{{group.get_name()}}"><i class="fa fa-table"></i> Minemap</a></li>
+               <section class="notes">
+                  %notes = helper.get_element_notes_url(group, default_title="Comment", default_icon="comment", popover=True)
+                  %if len(notes):
+                  <ul class="list-group">
+                     <li class="list-group-item">
+                        <strong>Notes:</strong>
+                     </li>
+                     %for note_url in notes:
+                     <li class="list-group-item">
+                        <button class="btn btn-default btn-xs">{{! note_url}}</button>
+                     </li>
+                     %end
                   </ul>
-               </div>
--->
+                  %end
+               </section>
+               
+               <section class="groups">
+                  <div class="btn-group btn-group-justified" role="group" aria-label="Minemap">
+                     <a class="btn btn-default" href="/minemap?search=type:host hg:{{group.get_name()}}"><i class="fa fa-table"></i> Minemap</a>
+                  </div>
+                  
+                  <ul class="list-group">
+                     <li class="list-group-item">
+                     %if nGroups > 0:
+                     <a class="text-left" role="menuitem" href="hosts-groups?level={{int(level+1)}}&parent={{group.get_name()}}"><i class="fa fa-level-down"></i>
+                     Down
+                     </a>
+                     %else:
+                     &nbsp;
+                     %end
+                     
+                     %if group.has('level') and group.level > 0:
+                     <a class="text-right" role="menuitem" href="hosts-groups?level={{int(level-1)}}"><i class="fa fa-level-up"></i>
+                     Up
+                     </a>
+                     %else:
+                     &nbsp;
+                     %end
+                     </li>
+                     <li class="list-group-item"><span class="badge">{{h['nb_elts']}}</span>Hosts</li>
+                     <li class="list-group-item"><span class="badge">{{nGroups}}</span>Groups</li>
+                  </ul>
+               </section>
             </section>
          </li>
          %#end
       %end
    </ul>
 </div>
+
+<script type="text/javascript">
+   // Elements popover
+   $('[data-toggle="popover"]').popover();
+
+   $('[data-toggle="popover medium"]').popover({ 
+      trigger: "hover", 
+      placement: 'bottom',
+      toggle : "popover",
+      viewport: {
+         selector: 'body',
+         padding: 10
+      },
+      
+      template: '<div class="popover popover-medium"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
+   });
+</script>
