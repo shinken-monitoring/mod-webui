@@ -597,7 +597,10 @@ class Helper(object):
                 description = 'No description provided'
                 real_url = url
             
-            url = MacroResolver().resolve_simple_macros_in_string(real_url, obj.get_data_for_checks())
+            # Replace MACROS in url and description
+            if hasattr(obj, 'get_data_for_checks'):
+                url = MacroResolver().resolve_simple_macros_in_string(real_url, obj.get_data_for_checks())
+                description = MacroResolver().resolve_simple_macros_in_string(description, obj.get_data_for_checks())
             
             logger.debug("[WebUI] get_urls, found: %s / %s / %s / %s", title, icon, url, description)
             
@@ -629,11 +632,11 @@ class Helper(object):
         Return list of element notes urls
         '''
         
-        if obj is not None:
+        if obj is not None and obj.notes:
             notes = []
             i=0
             for item in obj.notes.split('|'):
-                if obj.notes_url == '':
+                if not obj.notes_url:
                     notes.append("%s,," % (item))
                 else:
                     notes_url = obj.notes_url.split('|')
@@ -642,10 +645,11 @@ class Helper(object):
                     else:
                         notes.append("%s,," % (item))
                 i=i+1
+                logger.debug("[WebUI] get_element_notes_url, note: %s", notes)
                 
             return self.get_urls(obj, '|'.join(notes), default_title=default_title, default_icon=default_icon, popover=popover)
 
-        return None
+        return []
 
     def get_fa_icon_state(self, obj=None, cls='host', state='UP', disabled=False, label='', useTitle=True):
         '''
