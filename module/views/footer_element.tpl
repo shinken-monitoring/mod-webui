@@ -11,6 +11,7 @@
       <div class="actionbar-nav navbar-collapse">
          <ul class="nav" id="actions-menu">
          %if elt:
+         %elt_type = elt.__class__.my_type
             <li> <a href="#" action="add-comment" title="Add a comment for this {{elt_type}}"
                data-element="{{helper.get_uri_name(elt)}}" >
                <i class="fa fa-plus"></i> Add a comment
