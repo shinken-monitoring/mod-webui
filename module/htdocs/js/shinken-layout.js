@@ -85,6 +85,18 @@ function save_common_preference(key, value, callback) {
    });
 }
 
+   
+/**
+ *  Actions bar related code
+ */
+function hide_actions(){
+   $('#actions').hide();
+}
+
+function show_actions(){
+   $('#actions').show();
+}
+
 
 /**
  * Display the layout modal form
@@ -116,4 +128,8 @@ $(document).ready(function(){
 
    // Sidebar menu
    $('#sidebar-menu').metisMenu();
+
+   // Actions bar menu
+   $('#actions-menu').metisMenu();
+
 });

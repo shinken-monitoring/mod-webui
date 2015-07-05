@@ -25,25 +25,9 @@
 var problems_logs=false;
 
 
-/*
-  Tool bar related code
-*/
-function hide_actions(save){
-   $('#actions').hide();
-}
-
-function show_actions(save){
-   $('#actions').show();
-}
 
 
-
-/* We keep an array of all selected elements */
-var selected_elements = [];
-
-// When we select all, add all in the selected list,
-// and hide the select all button, and swap it with
-// unselect all one
+// When we select all, add all problems in the selected list,
 function select_all_problems(){
    // Maybe the actions are not allowed?
    if (!actions_enabled){
@@ -55,22 +39,16 @@ function select_all_problems(){
       // ... and add to the selected items list.
       add_element($(this).data('item'));
    });
-
-   $('#select_all_btn').hide();
-   $('#unselect_all_btn').show();
 }
 
 // Unselect all
 function unselect_all_problems(){
-   $('#select_all_btn').show();
-   $('#unselect_all_btn').hide();
    flush_selected_elements();
 }
 
 
 function add_remove_elements(name){
    // Maybe the actions are not allowed. If so, don't do anything ...
-   if (!actions_enabled) {return;}
 
    if (selected_elements.indexOf(name) != -1) {
       remove_element(name);
@@ -89,7 +67,6 @@ function add_element(name){
 
    if (selected_elements.length > 0) {
       show_actions();
-      if (actions_enabled) $('#actions').show();
       
       // Stop page refresh
       stop_refresh();
@@ -105,7 +82,6 @@ function remove_element(name){
 
    if (selected_elements.length == 0){
       hide_actions();
-      if (actions_enabled) $('#actions').hide();
 
       // Restart page refresh timer
       reinit_refresh();
@@ -114,7 +90,7 @@ function remove_element(name){
 
 
 /* Flush selected elements, so clean the list
-but also untick them in the UI */
+but also uncheck them in the UI */
 function flush_selected_elements(){
    /* We must copy the list so we can parse it in a clean way
    without fearing some bugs */
@@ -124,88 +100,6 @@ function flush_selected_elements(){
    });
 }
 
-
-/* 
- * Actions on the problems page
- */
-// Recheck 
-function recheck_now_one(name){
-   recheck_now(name);
-}
-function recheck_now_all(){
-   $.each(selected_elements,function(idx, name){
-      recheck_now(name);
-   });
-   flush_selected_elements();
-}
-
-
-// Submit check result
-function submit_check_ok_one(name, user){
-   submit_check(name, '0', 'Forced OK from WebUI by '+user);
-}
-function submit_check_ok_all(user){
-   $.each(selected_elements, function(idx, name){
-      submit_check(name, '0', 'Forced OK from WebUI by '+user);
-   });
-   flush_selected_elements();
-}
-
-
-// Try to fix
-function try_to_fix_one(name){
-   try_to_fix(name);
-}
-function try_to_fix_all(){
-   $.each(selected_elements, function(idx, name){
-      try_to_fix(name);
-   });
-   flush_selected_elements();
-}
-
-
-// Acknowledge
-function acknowledge_one(name, user){
-   do_acknowledge(name, 'Acknowledged from WebUI by '+user, user);
-}
-function acknowledge_all(user){
-   $.each(selected_elements, function(idx, name){
-      do_acknowledge(name, 'Acknowledged from WebUI by '+user, user);
-   });
-   flush_selected_elements();
-}
-
-
-// Schedule downtime
-function downtime_one(name, user){
-   // Initial start/stop for downtime, do not consider seconds ...
-   var downtime_start = moment().seconds(0);
-   var downtime_stop = moment().seconds(0).add('day', 1);
-
-   do_schedule_downtime(name, downtime_start.format('X'), downtime_stop.format('X'), user, 'Downtime scheduled from WebUI by '+user);
-}
-function downtime_all(user){
-   // Initial start/stop for downtime, do not consider seconds ...
-   var downtime_start = moment().seconds(0);
-   var downtime_stop = moment().seconds(0).add('day', 1);
-
-   $.each(selected_elements, function(idx, name){
-      do_schedule_downtime(name, downtime_start.format('X'), downtime_stop.format('X'), user, 'Downtime scheduled from WebUI by '+user);
-   });
-   flush_selected_elements();
-}
-
-
-// Remove from Web UI
-function remove_one(name, user){
-   do_remove(name, 'Removed from WebUI by '+user, user);
-}
-function remove_all(user){
-   $.each(selected_elements, function(idx, name){
-      do_remove(name, 'Removed from WebUI by '+user, user);
-   });
-   flush_selected_elements();
-}
 
 function on_page_refresh(){
    $('.collapse').on('show.bs.collapse', function () {
@@ -222,55 +116,6 @@ function on_page_refresh(){
       template: '<div class="popover img-popover"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
    });
    
-   // Event handler
-   $('button[action="event-handler"]').click(function () {
-      var elt = $(this).data('element');
-      if (problems_logs) console.debug("Button - try to fix: ", elt)
-      
-      try_to_fix_one(elt);
-   });
-
-   // Recheck
-   $('button[action="recheck"]').click(function () {
-      var elt = $(this).data('element');
-      if (problems_logs) console.debug("Button - recheck for: ", elt)
-      
-      recheck_now_one(elt);
-   });
-
-   // Force ok
-   $('button[action="force-ok"]').click(function () {
-      var elt = $(this).data('element');
-      var user = $(this).data('user');
-      if (problems_logs) console.debug("Button - force ok for: ", elt)
-      
-      submit_check_ok_one(elt, user);
-   });
-
-   // Add an acknowledge
-   $('button[action="add-acknowledge"]').click(function () {
-      var elt = $(this).data('element');
-      if (problems_logs) console.debug("Button - add an acknowledge for: ", elt)
-      
-      display_form("/forms/acknowledge/add/"+elt);
-   });
-
-   // Schedule a downtime ...
-   $('button[action="schedule-downtime"]').click(function () {
-      var elt = $(this).data('element');
-      if (problems_logs) console.debug("Button - schedule a downtime for: ", elt)
-      
-      display_form("/forms/downtime/add/"+$(this).data('element'));
-   });
-
-   // Ignore checks
-   $('button[action="ignore-checks"]').click(function () {
-      var elt = $(this).data('element');
-      var user = $(this).data('user');
-      if (problems_logs) console.debug("Button - force ok for: ", elt)
-      
-      remove_one(elt, user);
-   });
 }
 
 // On page loaded ... 

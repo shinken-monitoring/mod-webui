@@ -515,6 +515,19 @@ Invalid element name
                                  <td><strong>Process performance data:</strong></td>
                                  <td>{{! app.helper.get_on_off(elt.process_perf_data, 'Is perfdata process enabled?')}}</td>
                               </tr>
+                           </tbody>
+                        </table>
+                        <table class="table table-condensed">
+                           <colgroup>
+                              <col style="width: 40%" />
+                              <col style="width: 60%" />
+                           </colgroup>
+                           <thead>
+                              <tr>
+                                 <th colspan="2">Event handler:</td>
+                              </tr>
+                           </thead>
+                           <tbody style="font-size:x-small;">
                               <tr>
                                  <td><strong>Event handler enabled:</strong></td>
                                  <td>{{! app.helper.get_on_off(elt.event_handler_enabled, 'Is event handler enabled?')}}</td>
@@ -772,70 +785,6 @@ Invalid element name
             <div class="tab-pane fade" id="commands">
                <div class="panel panel-default">
                   <div class="panel-body">
-
-                     <div class="panel panel-default">
-                        <div class="panel-body text-center">
-                           <div class="btn-group">
-                              %disabled_s = ''
-                              <button class="btn btn-default {{disabled_s}}" 
-                                    action="add-comment"
-                                    data-toggle="tooltip" data-placement="bottom" title="Add a comment for this {{elt_type}}"
-                                    data-element="{{helper.get_uri_name(elt)}}" 
-                                    >
-                                 <i class="fa fa-plus"></i> Add a comment
-                              </button>
-                              %disabled_s = '' if elt.is_problem and elt.event_handler_enabled and elt.event_handler else 'disabled'
-                              <button class="btn btn-default {{disabled_s}}" 
-                                    action="event-handler"
-                                    data-toggle="tooltip" data-placement="bottom" title="Try to fix the current problem for this {{elt_type}}"
-                                    data-element="{{helper.get_uri_name(elt)}}" 
-                                    >
-                                 <i class="fa fa-magic"></i> Try to fix
-                              </button>
-                              %disabled_s = ''
-                              <button class="btn btn-default {{disabled_s}}" 
-                                    action="recheck"
-                                    data-toggle="tooltip" data-placement="bottom" title="Launch the defined check command for this {{elt_type}}"
-                                    data-element="{{helper.get_uri_name(elt)}}" 
-                                    >
-                                 <i class="fa fa-refresh"></i> Recheck
-                              </button>
-                              <button class="btn btn-default {{disabled_s}}" 
-                                    action="check-result"
-                                    data-toggle="tooltip" data-placement="bottom" title="Set this {{elt_type}} as ok"
-                                    data-element="{{helper.get_uri_name(elt)}}" 
-                                    >
-                                 <i class="fa fa-share"></i> Set Ok
-                              </button>
-                              %if elt.state != elt.ok_up and not elt.problem_has_been_acknowledged:
-                              %disabled_s = ''
-                              <button class="btn btn-default {{disabled_s}}" 
-                                    action="add-acknowledge"
-                                    data-toggle="tooltip" data-placement="bottom" title="Acknowledge this {{elt_type}} problem"
-                                    data-element="{{helper.get_uri_name(elt)}}" 
-                                    >
-                                 <i class="fa fa-check"></i> Acknowledge
-                              </button>
-                              %else:
-                              %disabled_s = ''
-                              <button class="btn btn-default {{disabled_s}}" 
-                                    action="remove-acknowledge"
-                                    data-toggle="tooltip" data-placement="bottom" title="Remove the acknowledge for this {{elt_type}} problem"
-                                    data-element="{{helper.get_uri_name(elt)}}" 
-                                    >
-                                 <i class="fa fa-check"></i> Unacknowledge
-                              </button>
-                              %end
-                              <button class="btn btn-default {{disabled_s}}" 
-                                    action="schedule-downtime"
-                                    data-toggle="tooltip" data-placement="bottom" title="Schedule a downtime for this {{elt_type}}"
-                                    data-element="{{helper.get_uri_name(elt)}}" 
-                                    >
-                                 <i class="fa fa-ambulance"></i> Schedule a downtime
-                              </button>
-                           </div>
-                        </div>
-                     </div>
 
                      <div class="col-sm-6">
                         <table class="table table-condensed">

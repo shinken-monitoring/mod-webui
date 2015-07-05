@@ -32,6 +32,9 @@ var elt_name = '{{elt.get_full_name()}}';
  * Function called when the page is loaded and on each page refresh ...
  */
 function on_page_refresh() {
+   // Show actions bar
+   show_actions();
+   
    // Buttons tooltips
    $('button').tooltip();
 
@@ -135,98 +138,6 @@ function on_page_refresh() {
       
       display_form("/forms/change_var/"+elt+"?variable="+variable+"&value="+value);
    });
-
-   // Add a comment
-   $('button[action="add-comment"]').click(function () {
-      var elt = $(this).data('element');
-      if (eltdetail_logs) console.debug("Button - add a comment for: ", elt)
-      
-      display_form("/forms/comment/add/"+elt);
-   });
-   
-   // Delete a comment
-   $('button[action="delete-comment"]').click(function () {
-      var elt = $(this).data('element');
-      var comment = $(this).data('comment');
-      if (eltdetail_logs) console.debug("Button - delete comment '"+comment+"' for: ", elt)
-      
-      display_form("/forms/comment/delete/"+elt+"?comment="+comment);
-   });
-   
-   // Delete all comments
-   $('button[action="delete-comments"]').click(function () {
-      var elt = $(this).data('element');
-      if (eltdetail_logs) console.debug("Button - delete all comments for: ", elt)
-      
-      display_form("/forms/comment/delete_all/"+elt);
-   });
-  
-   // Schedule a downtime ...
-   $('button[action="schedule-downtime"]').click(function () {
-      var elt = $(this).data('element');
-      if (eltdetail_logs) console.debug("Button - schedule a downtime for: ", elt)
-      
-      display_form("/forms/downtime/add/"+$(this).data('element'));
-   });
-   
-   // Delete a downtime
-   $('button[action="delete-downtime"]').click(function () {
-      var elt = $(this).data('element');
-      var downtime = $(this).data('downtime');
-      if (eltdetail_logs) console.debug("Button - delete downtime '"+downtime+"' for: ", elt)
-      
-      display_form("/forms/downtime/delete/"+elt+"?downtime="+downtime);
-   });
-   
-   // Delete all downtimes
-   $('button[action="delete-downtimes"]').click(function () {
-      var elt = $(this).data('element');
-      if (eltdetail_logs) console.debug("Button - delete all downtimes for: ", elt)
-      
-      display_form("/forms/downtime/delete_all/"+$(this).data('element'));
-   });
-
-   // Add an acknowledge
-   $('button[action="add-acknowledge"]').click(function () {
-      var elt = $(this).data('element');
-      if (eltdetail_logs) console.debug("Button - add an acknowledge for: ", elt)
-      
-      display_form("/forms/acknowledge/add/"+elt);
-   });
-
-   // Delete an acknowledge
-   $('button[action="remove-acknowledge"]').click(function () {
-      var elt = $(this).data('element');
-      if (eltdetail_logs) console.debug("Button - add an acknowledge for: ", elt)
-      
-      display_form("/forms/acknowledge/remove/"+elt);
-   });
-
-   // Recheck
-   $('button[action="recheck"]').click(function () {
-      var elt = $(this).data('element');
-      if (eltdetail_logs) console.debug("Button - recheck for: ", elt)
-      
-      recheck_now(elt);
-   });
-
-   // Check result
-   $('button[action="check-result"]').click(function () {
-      var elt = $(this).data('element');
-      if (eltdetail_logs) console.debug("Button - submit a check result for: ", elt)
-      
-      display_form("/forms/submit_check/"+elt);
-   });
-
-   // Event handler
-   $('button[action="event-handler"]').click(function () {
-      var elt = $(this).data('element');
-      if (eltdetail_logs) console.debug("Button - try to fix: ", elt)
-      
-      try_to_fix(elt);
-   });
-
-
    
    // Toggles ...
    $('input[action="toggle-active-checks"]').on('switch-change', function (e, data) {
@@ -354,6 +265,12 @@ function on_page_refresh() {
          onChange: update_coords
       });
       get_range();
+   });
+   
+   // On first page load, wait for document ready ...
+   $(document).ready(function(){
+      // Show actions bar
+      show_actions();
    });
 }
 
