@@ -90,6 +90,25 @@ function on_page_refresh() {
    
    
    /*
+    * Impacts view 
+    */
+   // When toggle list is activated ...
+   $('#impacts a.toggle-list').on('click', function () {
+      var state = $(this).data('state');
+      var target = $(this).data('target');
+      
+      if (state=='expanded') {
+         $('#impacts ul[name="'+target+'"]').hide();
+         $(this).data('state', 'collapsed')
+         $(this).children('i').removeClass('fa-minus').addClass('fa-plus');
+      } else {
+         $('#impacts ul[name="'+target+'"]').show();
+         $(this).data('state', 'expanded')
+         $(this).children('i').removeClass('fa-plus').addClass('fa-minus');
+      }
+   });
+   
+   /*
     * Custom views 
     */
    $('.cv_pane').on('shown.bs.tab', function (e) {

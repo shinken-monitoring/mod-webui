@@ -897,7 +897,7 @@ class Helper(object):
 
         return tree
 
-    def print_aggregation_tree(self, tree, html_id, expanded=False):
+    def print_aggregation_tree(self, tree, html_id, expanded=False, max_sons=5):
         path = tree['path']
         full_path = tree['full_path']
         sons = tree['sons']
@@ -908,32 +908,35 @@ class Helper(object):
 
         display = 'block'
         img = 'reduce.png'
+        icon = 'minus'
+        list_state = 'expanded'
 
         if path != '/':
             # If our state is OK, hide our sons
-            if not expanded and state == 'ok':
+            if state == 'ok' and (not expanded or len(sons) >= max_sons):
                 display = 'none'
                 img = 'expand.png'
+                icon = 'plus'
+                list_state = 'collapsed'
 
-            s += """<span class="alert-small alert-%s"> %s </span>""" % (state, path)
-            s += """<a id="togglelink-aggregation-%s" href="javascript:toggleAggregationElt('%s')"><img id="aggregation-toggle-img-%s" src="/static/images/%s" alt="toggle"> </a> \n""" % (_id, _id, _id, img)
+            s += """<a class="toggle-list" data-state="%s" data-target="ag-%s"> <span class="alert-small alert-%s"> %s </span> <i class="fa fa-%s"></i> </a>""" % (list_state, _id, state, path, icon)
 
-        s += """<ul id="aggregation-node-%s" style="display: %s">""" % (_id, display)
+        s += """<ul name="ag-%s" class="list-group" style="display: %s;">""" % (_id, display)
         # If we got no parents, no need to print the expand icon
         if len(sons) > 0:
             for son in sons:
                 sub_s = self.print_aggregation_tree(son, html_id, expanded=expanded)
-                s += '<li class="no_list_style">%s</li>' % sub_s
+                s += '<li class="list-group-item">%s</li>' % sub_s
 
 
-        s += '<li class="no_list_style">'
+        s += '<li class="list-group-item">'
         if path == '/' and len(services) > 0:
             s += """<span class="alert-small"> Others </span>"""
-        s += '<ul style="margin-left: 0px;">'
+        s += '<ul class="list-group">'
         # Sort our services before print them
         services.sort(hst_srv_sort)
         for svc in services:
-            s += "<li>"
+            s += '<li class="list-group-item">'
             s += helper.get_fa_icon_state(svc)
             s += self.get_link(svc, short=True)
             if svc.business_impact > 2:
@@ -978,20 +981,18 @@ class Helper(object):
             # and hide the tree
             if tree_is_good:
                 display = 'none'
-                img = 'expand.png'
-                state = 'collapsed'
+                list_state = 'collapsed'
                 icon = 'plus'
             else:  # we will already show the tree, and use a reduce image
                 display = 'block'
-                img = 'reduce.png'
-                state = 'expanded'
+                list_state = 'expanded'
                 icon = 'minus'
 
             # If we are the root, we already got this
             if level != 0:
-                s += '''<a class="pull-right toggle-list" data-state="%s" data-target="bp-%s"> <i class="fa fa-%s"></i> </a>''' % (state, self.make_html_id(name), icon)
+                s += '''<a class="pull-right toggle-list" data-state="%s" data-target="bp-%s"> <i class="fa fa-%s"></i> </a>''' % (list_state, self.make_html_id(name), icon)
 
-            s += """<ul class="list-group" id="bp-%s" style="display: %s;">""" % (self.make_html_id(name), display)
+            s += """<ul class="list-group" name="bp-%s" style="display: %s;">""" % (self.make_html_id(name), display)
 
             for n in fathers:
                 sub_node = n['node']

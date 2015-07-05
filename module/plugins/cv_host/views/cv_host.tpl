@@ -364,7 +364,7 @@
       <div class="col-sm-6" name="right_metrics">
          %if 'services' in all_states:
          <div class="well well-sm" name="services_container">
-           {{!app.helper.print_aggregation_tree(app.helper.get_host_service_aggregation_tree(elt, app), app.helper.get_html_id(elt), expanded=True)}}
+           {{!app.helper.print_aggregation_tree(app.helper.get_host_service_aggregation_tree(elt, app), app.helper.get_html_id(elt), expanded=False, max_sons=3)}}
          </div>
          %end
       </div>
@@ -373,12 +373,19 @@
 
 
 <script>
-   // Initialize all_donuts only if not done before
-   if (typeof all_donuts === "undefined"){
-      all_donuts = [];
-   }
-   register_all_donuts();
-   setInterval("update_donuts();", 50); 
-   
-   register_all_cylinders();
+   // When toggle list is activated ...
+   $('[name="services_container"] a.toggle-list').on('click', function () {
+      var state = $(this).data('state');
+      var target = $(this).data('target');
+      
+      if (state=='expanded') {
+         $('[name="services_container"] ul[name="'+target+'"]').hide();
+         $(this).data('state', 'collapsed')
+         $(this).children('i').removeClass('fa-minus').addClass('fa-plus');
+      } else {
+         $('[name="services_container"] ul[name="'+target+'"]').show();
+         $(this).data('state', 'expanded')
+         $(this).children('i').removeClass('fa-plus').addClass('fa-minus');
+      }
+   });
 </script>

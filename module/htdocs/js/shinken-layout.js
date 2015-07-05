@@ -126,22 +126,6 @@ $(document).ready(function(){
       $('.sidebar').hide();
    });
    
-   // When toggle list is activated ...
-   $('a.toggle-list').on('click', function () {
-      var state = $(this).data('state');
-      var target = $(this).data('target');
-      
-      if (state=='expanded') {
-         $('#'+target).hide();
-         $(this).data('state', 'collapsed')
-         $(this).children('i').removeClass('fa-minus').addClass('fa-plus');
-      } else {
-         $('#'+target).show();
-         $(this).data('state', 'expanded')
-         $(this).children('i').removeClass('fa-plus').addClass('fa-minus');
-      }
-   });
-
    // Sidebar menu
    $('#sidebar-menu').metisMenu();
 

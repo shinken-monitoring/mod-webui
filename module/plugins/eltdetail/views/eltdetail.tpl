@@ -688,7 +688,7 @@ Invalid element name
                         %displayed_services=True
                         <h4>My services:</h4>
                         <div class="host-services">
-                          {{!helper.print_aggregation_tree(helper.get_host_service_aggregation_tree(elt, app), helper.get_html_id(elt))}}
+                          {{!helper.print_aggregation_tree(helper.get_host_service_aggregation_tree(elt, app), helper.get_html_id(elt), expanded=False, max_sons=3)}}
                         </div>
                         %elif len(elt.parent_dependencies) == 0:
                         <h4>No services!</h4>
