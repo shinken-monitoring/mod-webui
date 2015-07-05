@@ -23,85 +23,39 @@
 *
 **/
 
-/* The panel that will contain all problem panels*/
-.problems-panels {
-}
-
-/* problem impact panel */
-.problems-panel {
-    min-height: 600px;
-    width: 550px;
-    background: #FAFAFA;
-    position: relative;
-    left: -450px; /* by default it's hidden*/
-    z-index: 3;
-    border-top: 1px solid #EBEBEB;
-    border-right: 1px solid #EBEBEB;
-    border-left: 1px solid #EBEBEB;
-    display: none;
-    overflow: hidden;
-    opacity : 0;
-    padding: 10px 20px;
-    width: 100%;
-}
-
 /* The whole left panel for impacts*/
 .impacts-panel {
-    float: left;
-    display: inline-block;
-    border-radius: 6px;
-    border-left: solid 1px #EBEBEB;
-    border-right: solid 1px #EBEBEB;
-    position: relative;
-    background: white;
-    height: 100%;
-    min-height: 983px;
-    z-index: 4;
-    margin-right:0;
-    padding-left: 0px;
-    padding-right: 0px;
 }
 
 /* One impact block*/
 .impact {
-    position: relative;
-    border-bottom: 1px solid #EBEBEB;
-    min-height: 60px;
-    clear: both;
-    display: block;
-    outline: none;
-    padding-left: 5px;
-    font-size: 15px;
-    position: relative;
-    zoom: 1;
-    cursor: pointer;
-    vertical-align: middle;
-/*    background-image: url("alpha.png");*/
+   position: relative;
+   border-bottom: 1px solid #EBEBEB;
+   outline: none;
+   cursor: pointer;
 }
 
 .impact-blade {
-    padding-left: 0px !important;
-    padding-right: 0px !important;
+   margin-top: 5px;
+   margin-bottom: 5px;
 }
 .impact-active, .impact:hover {
-    background-color: #0088CC;
-    color: #FFFFFF !important;
+   background-color: #0088CC;
+   color: #FFFFFF !important;
 }
 .impact:hover span {
-    color: #FFFFFF !important;
+   color: #FFFFFF !important;
 }
 
-.impact-active, .impact-active span, .impact-state-text {
-    color: #FFFFFF;
+.impact-icon {
+   margin-right: 5px;
 }
 
-.impact-active .impact-duration{
-    color: #FFFFFF;
+.show-problem {
+   margin-right: 5px;
+   margin-left: 5px;
 }
 
-.impact-active .impact-name{
-    color: #FFFFFF;
-}
 
 /* One problem block*/
 .problem {
@@ -117,41 +71,10 @@
     zoom: 1;
 }
 
-/* The show problem image, on the right of the impact*/
-.show-problem {
-    width: 20px;
-    height: 20px;
-    position: absolute;
-    margin-top: 8px;
-    z-index: 1;
-    outline: none;
-    right: 20px;
-    opacity : 0;
-}
-
-/* The impact icon (so the service one or the host one) */
-.impact-icon {
-    float: left;
-    overflow: hidden;
-    margin-top: 3px;
-}
-.impact-icon img {
-    height: 32px;
-    width: 32px;
-}
 .problem img {
     height: 32px;
     width: 32px;
 }
-
-.impact-icon-big {
-    float: left;
-    height: 80px;
-    overflow: hidden;
-    width: 80px;
-    margin-top: 3px;
-}
-
 
 
 
@@ -207,25 +130,6 @@
     left: 110px;
 }
 
-
-/* The show problem status image, on the right of the impact*/
-.impact-rows {
-    position: relative;
-    margin-top: 20px;
-    z-index: 1;
-    outline: none;
-/*    left: 20px;*/
-}
-
-
-/* Each line of the impact text is a row */
-.impact-row {
-    display: block;
-    position: relative;
-    line-height: 15px;
-    left: 5px;
-    vertical-align: middle;
-}
 
 /* The link of the impact on its name */
 .impact-name {

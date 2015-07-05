@@ -167,10 +167,8 @@ class Helper(object):
         # First we need ALL elements
         all_elts = self.get_all_linked_elts(elt, levels=levels)
 
-        #print "We got all our elements"
         dicts = []
         for i in all_elts:
-            #safe_print("Elt", i.get_dbg_name())
             ds = self.get_dep_graph_struct(i)
             for d in ds:
                 dicts.append(d)
@@ -262,19 +260,17 @@ class Helper(object):
 
         
         # Set the right info panel
-        d['data']['infos'] = r'''%s <h2 class="%s"><img style="width: 48px; height:48px" src="%s"/> %s: %s</h2>
-                   <p>since %s</p>
-                   <div style="float:right;"> <a href="%s">%s</a></div>''' % (
-            '<img src="/static/images/star.png" alt="star">' * (elt.business_impact - 2),
-            elt.state.lower(), self.get_icon_state(elt), elt.state, elt.get_full_name(),
-            self.print_duration(elt.last_state_change, just_duration=True, x_elts=2),
-            self.get_link_dest(elt), self.get_button('Go to details', img='/static/images/search.png'))
+        d['data']['infos']  = helper.get_fa_icon_state(elt)
+        d['data']['infos'] += self.get_link(elt, short=False)
+        if elt.business_impact > 2:
+            d['data']['infos'] += "(" + self.get_business_impact_text(elt.business_impact) + ")"
+        d['data']['infos'] += """ is <span class="font-%s"><strong>%s</strong></span>""" % (elt.state.lower(), elt.state)
+        d['data']['infos'] += " since %s" % self.print_duration(elt.last_state_change, just_duration=True, x_elts=2)
 
         d['data']['elt_type'] = elt.__class__.my_type
         d['data']['is_problem'] = elt.is_problem
         d['data']['state_id'] = elt.state_id
 
-        #safe_print("ELT:%s is %s" % (elt.get_full_name(), elt.state))
         if elt.state in ['OK', 'UP', 'PENDING']:
             d['data']['circle'] = 'none'
         elif elt.state in ['DOWN', 'CRITICAL']:
@@ -953,8 +949,6 @@ class Helper(object):
         return s
  
     def print_business_rules(self, tree, level=0, source_problems=[]):
-        #safe_print("Should print tree", tree)
-        #safe_print('with source_problems', source_problems)
         node = tree['node']
         name = node.get_full_name()
         fathers = tree['fathers']
@@ -964,11 +958,10 @@ class Helper(object):
         # Maybe we are the root problem of this, and so we are printing it
         root_str = ''
         if node in source_problems:
-            #print "I am a root problem"
             root_str = ' <span class="alert-small alert-critical"> Root problem</span>'
+            
         # Do not print the node if it's the root one, we already know its state!
         if level != 0:
-            # s += "%s is %s since %s %s\n" % (self.get_link(node), node.state, self.print_duration(node.last_state_change, just_duration=True), root_str)
             s += helper.get_fa_icon_state(node)
             s += self.get_link(node, short=True)
             if node.business_impact > 2:
@@ -986,22 +979,26 @@ class Helper(object):
             if tree_is_good:
                 display = 'none'
                 img = 'expand.png'
+                state = 'collapsed'
+                icon = 'plus'
             else:  # we will already show the tree, and use a reduce image
                 display = 'block'
                 img = 'reduce.png'
+                state = 'expanded'
+                icon = 'minus'
 
             # If we are the root, we already got this
             if level != 0:
-                s += """<a id="togglelink-%s" href="javascript:toggleBusinessElt('%s')"><img id="business-parents-img-%s" src="/static/images/%s" alt="toggle"> </a> \n""" % (name, name, name, img)
+                s += '''<a class="pull-right toggle-list" data-state="%s" data-target="bp-%s"> <i class="fa fa-%s"></i> </a>''' % (state, self.make_html_id(name), icon)
 
-            s += """<ul id="business-parents-%s" style="display: %s; ">""" % (name, display)
+            s += """<ul class="list-group" id="bp-%s" style="display: %s;">""" % (self.make_html_id(name), display)
 
             for n in fathers:
                 sub_node = n['node']
                 sub_s = self.print_business_rules(n, level=level+1, source_problems=source_problems)
-                s += '<li class="%s">%s</li>' % (self.get_small_icon_state(sub_node), sub_s)
+                s += '<li class="list-group-item %s">%s</li>' % (self.get_small_icon_state(sub_node), sub_s)
             s += "</ul>"
-        #safe_print("Returning s:", s)
+
         return s
    
     def get_timeperiod_html(self, tp):
