@@ -373,6 +373,21 @@
 
 
 <script>
+   // Elements popover
+   $('[data-toggle="popover"]').popover();
+
+   $('[data-toggle="popover medium"]').popover({ 
+      trigger: "hover", 
+      placement: 'bottom',
+      toggle : "popover",
+      viewport: {
+         selector: 'body',
+         padding: 10
+      },
+      
+      template: '<div class="popover popover-medium"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
+   });
+
    // When toggle list is activated ...
    $('[name="services_container"] a.toggle-list').on('click', function () {
       var state = $(this).data('state');
