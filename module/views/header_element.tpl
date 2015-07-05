@@ -172,7 +172,7 @@
         </li>
         <li> <a href="#"><i class="fa fa-gears"></i> System <i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
-            <li> <a href="/system-parameters"> <span class="fa fa-gears"></span> Configuration </a> </li>
+            <li> <a href="/parameters"> <span class="fa fa-gears"></span> Configuration </a> </li>
             <li> <a href="/system"> <span class="fa fa-gears"></span> Status </a> </li>
             <li> <a href="/logs"> <span class="fa fa-th-list"></span> Logs </a> </li>
           </ul>
