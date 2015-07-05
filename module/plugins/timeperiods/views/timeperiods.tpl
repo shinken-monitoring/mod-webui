@@ -1,6 +1,6 @@
 %timeperiods = app.get_timeperiods()
 %title='All timeperiods (%d time periods)' % len(timeperiods)
-%rebase("layout", css=['timeperiods/css/timeperiods.css'], js=['timeperiods/js/timeperiods-overview.js'], title=title, refresh=True)
+%rebase("layout", title=title, refresh=True)
 
 %import time
 %import operator
@@ -8,31 +8,23 @@
 
 %display_all = True if params['display']=='all' else False
 
-<div class="row">
-  <div class="pull-right col-sm-2">
-    <span class="btn-group pull-right">
-      <a href="#" id="listview" class="btn btn-small switcher pull-right active" data-original-title='List'> <i class="fa fa-align-justify"></i> </a>
-      <a href="#" id="gridview" class="btn btn-small switcher pull-right" data-original-title='Grid'> <i class="fa fa-th"></i> </a>
-    </span>
-  </div>
-</div>
-<div class="row">
-  <ul id="timeperiods" class="list row pull-right">
-    %even=''
-    %for timeperiod in timeperiods:
-      %if even =='':
-        %even='alt'
-      %else:
-        %even=''
-      %end
-      
-      <li class="clearfix {{even}} ">
-        <section class="left">
-          <h3>{{timeperiod.timeperiod_name}}</h3>
-          <div class="meta">
-            <table class="table table-condensed pull-left" style="table-layout: fixed; word-wrap: break-word;">
+<div id="timeperiods">
+   <table class="table table-condensed">
+      <colgroup>
+         <col style="width: 20%" />
+         <col style="width: 60%" />
+      </colgroup>
+      <tbody style="font-size:x-small;">
+      %for timeperiod in timeperiods:
+         <tr>
+            <td>
+               <h3>{{timeperiod.timeperiod_name}}</h3>
+            </td>
+         </tr>
+         <tr>
+            <table class="table table-condensed">
               <colgroup>
-                <col style="width: 120px" />
+                <col style="width: 20%" />
                 <col style="width: 60%" />
               </colgroup>
               <thead>
@@ -85,9 +77,8 @@
                 </tr>
               </tbody>
             </table>
-          </div>
-        </section>
-      </li>
-    %end
-  </ul>
+         </tr>
+      %end
+      </tbody>
+   </table>
 </div>
