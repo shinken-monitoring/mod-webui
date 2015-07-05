@@ -172,8 +172,8 @@
                %end
             </div>
          </div>
+         </div>
       </div>
-    </div>
 
       %if print_footer:
       %include("footer_element")
