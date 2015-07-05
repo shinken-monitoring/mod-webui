@@ -116,15 +116,8 @@ function on_page_refresh() {
    })
 
    // Show each active custom view
-   $('.cv_pane.active').each(function(index, elt ) {
-      var cvname = $(elt).data('name');
-      var cvconf = $(elt).data('conf');
-      if (! _already_loaded[cvname+cvconf]) {
-         show_custom_view($(elt));
-      } else {
-         if (eltdetail_logs) console.debug('Custom view '+cvname+cvconf+' already exists !');
-         reload_custom_view($(elt));
-      }
+   $('.cv_pane.active').each(function(index, elt) {
+      show_custom_view($(elt));
    });
    
    /*
