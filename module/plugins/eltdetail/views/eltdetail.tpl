@@ -310,9 +310,6 @@ Invalid element name
             %if 'history' in params['tabs']:
             <li class="history_pane"><a href="#history" data-toggle="tab" id="tab_to_history">History</a></li>
             %end
-            %if 'counters' in params['tabs']:
-            <li class="counters_pane"><a href="#counters" data-toggle="tab" id="tab_to_counters">Counters</a></li>
-            %end
          </ul>
          
          <div class="tab-content">
@@ -1162,32 +1159,6 @@ Invalid element name
             </div>
             %end
             <!-- Tab History end -->
-        
-            <!-- Tab Counters start -->
-            %if 'counters' in params['tabs']:
-            <div class="tab-pane fade" id="counters">
-               <div class="panel panel-default">
-                  <div class="panel-body">
-                     <div class="row-fluid well col-lg-12">
-                        %entity = '-1'
-                        %try:
-                        %entity = elt.customs['_ENTITIESID']
-                        %except Exception:
-                        %pass
-                        %end
-
-                        <div id="inner_counters" data-elt-name="{{elt.get_full_name()}}" data-elt-entity="{{entity}}">
-                           <div class="alert alert-danger">
-                              <p class="font-red">Sorry, I cannot load the {{elt_type}} counters!</p>
-                              <p class="font-red">({{elt_type}} entity is: {{entity}})</p>
-                           </div>
-                        </div>
-                     </div>
-                  </div>
-               </div>
-            </div>
-            %end
-            <!-- Tab Counters end -->
          </div>
       <!-- Detail info box end -->
    </div>
