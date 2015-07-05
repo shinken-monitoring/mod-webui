@@ -99,7 +99,6 @@ function display_form(form) {
    });
 }
 
-/* We will check timeout each 1s */
 $(document).ready(function(){
    // Clean modal box content when hidden ...
    $('#modal').on('hidden.bs.modal', function () {
@@ -114,4 +113,7 @@ $(document).ready(function(){
       // Hide sidebar menu ...
       $('.sidebar').hide();
    });
+
+   // Sidebar menu
+   $('#sidebar-menu').metisMenu();
 });

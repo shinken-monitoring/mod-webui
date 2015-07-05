@@ -150,7 +150,7 @@
   <!--SIDEBAR-->
   <div class="navbar-default sidebar" role="navigation">
     <div class="sidebar-nav navbar-collapse">
-      <ul class="nav" id="side-menu">
+      <ul class="nav" id="sidebar-menu">
         %if app:
         <li> <a href="/dashboard"> <span class="fa fa-dashboard"></span> Dashboard </a> </li>
         <li> <a href="/all?search=isnot:UP isnot:OK isnot:PENDING ack:false downtime:false"> <span class="fa fa-ambulance"></span> Problems </a> </li>
