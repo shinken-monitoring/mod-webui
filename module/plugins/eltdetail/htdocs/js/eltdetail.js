@@ -22,7 +22,7 @@
    along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-var eltdetail_logs=true;
+var eltdetail_logs=false;
 
 // @mohierf@: really need this global ?
 var elt_name = '{{elt.get_full_name()}}';
@@ -118,10 +118,11 @@ function on_page_refresh() {
    // Show each active custom view
    $('.cv_pane.active').each(function(index, elt ) {
       var cvname = $(elt).data('name');
-      if (! _already_loaded[cvname]) {
+      var cvconf = $(elt).data('conf');
+      if (! _already_loaded[cvname+cvconf]) {
          show_custom_view($(elt));
       } else {
-         if (eltdetail_logs) console.debug('Custom view '+cvname+' already exists !');
+         if (eltdetail_logs) console.debug('Custom view '+cvname+cvconf+' already exists !');
          reload_custom_view($(elt));
       }
    });

@@ -22,7 +22,7 @@
    along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-var custom_logs=true;
+var custom_logs=false;
 
 var _already_loaded = {};
 
@@ -30,14 +30,15 @@ var _already_loaded = {};
 function show_custom_view(elt){
    var hname = elt.data('element');
    var cvname = elt.data('name');
-   if (custom_logs) console.debug('Request for loading custom view: ', cvname, ' for ', hname);
+   var cvconf = elt.data('conf');
+   if (custom_logs) console.debug('Request for loading custom view: ', cvname, ' for ', hname, ', configuration: ', cvconf);
 
-   if (cvname in _already_loaded){
+   if (cvname+cvconf in _already_loaded){
       return;
    }
 
    var _t = new Date().getTime();
-   $("#cv"+cvname+" .panel-body").load('/cv/'+cvname+'/'+hname+"?_="+_t, function(response, status, xhr) {
+   $("#cv"+cvname+"_"+cvconf+" .panel-body").load('/cv/'+cvname+'/'+hname+'/'+cvconf+"?_="+_t, function(response, status, xhr) {
       if (status == "error") {
          var msg = "Sorry but there was an error: ";
          $('#cv'+cvname).html(msg + xhr.status + " " + xhr.statusText);
@@ -50,14 +51,15 @@ function show_custom_view(elt){
       }
    });
 
-   _already_loaded[cvname] = true;
+   _already_loaded[cvname+cvconf] = true;
 }
 
 function reload_custom_view(elt){
    var hname = elt.data('element');
    var cvname = elt.data('name');
+   var cvconf = elt.data('conf');
    
    // Be sure to remove the panel from already loaded panels, else it won't load
-   delete _already_loaded[cvname];
+   delete _already_loaded[cvname+cvconf];
    show_custom_view(elt);
 }

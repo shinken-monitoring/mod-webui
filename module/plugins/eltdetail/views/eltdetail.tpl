@@ -272,9 +272,13 @@ Invalid element name
             %_go_active = 'active'
             %if 'custom_views' in params['tabs']:
             %for cvname in elt.custom_views:
-            <li class="{{_go_active}} cv_pane" data-name="{{cvname}}" data-element='{{elt.get_full_name()}}' id='tab-cv-{{cvname}}'><a href="#cv{{cvname}}" data-toggle="tab">{{cvname.capitalize()}}</a></li>
+               %cvconf = 'default'
+               %if '/' in cvname:
+                  %cvconf = cvname.split('/')[1]
+                  %cvname = cvname.split('/')[0]
+               %end
+               <li class="{{_go_active}} cv_pane" data-name="{{cvname}}" data-conf="{{cvconf}}" data-element='{{elt.get_full_name()}}' id='tab-cv-{{cvname}}-{{cvconf}}'><a href="#cv{{cvname}}_{{cvconf}}" data-toggle="tab">{{cvname.capitalize()}}{{'/'+cvconf.capitalize() if cvconf!='default' else ''}}</a></li>
                %_go_active = ''
-            %_go_active = ''
             %end
             %end
 
@@ -320,15 +324,20 @@ Invalid element name
             %cvs = []
             %[cvs.append(item) for item in elt.custom_views if item not in cvs]
             %for cvname in cvs:
-            <div class="tab-pane fade {{_go_active}} {{_go_fadein}}" data-name="{{cvname}}" data-element="{{elt.get_full_name()}}" id="cv{{cvname}}">
-               <div class="panel panel-default">
-                  <div class="panel-body">
-                     <span class="alert alert-error">Sorry, I cannot load the {{cvname}} view!</span>
+               %cvconf = 'default'
+               %if '/' in cvname:
+                  %cvconf = cvname.split('/')[1]
+                  %cvname = cvname.split('/')[0]
+               %end
+               <div class="tab-pane fade {{_go_active}} {{_go_fadein}}" data-name="{{cvname}}" data-conf="{{cvconf}}" data-element="{{elt.get_full_name()}}" id="cv{{cvname}}_{{cvconf}}">
+                  <div class="panel panel-default">
+                     <div class="panel-body">
+                        <span class="alert alert-error">Sorry, I cannot load the {{cvname}}/{{cvconf}} view!</span>
+                     </div>
                   </div>
                </div>
-            </div>
-            %_go_active = ''
-            %_go_fadein = ''
+               %_go_active = ''
+               %_go_fadein = ''
             %end
             %end
             <!-- Tab custom views end -->

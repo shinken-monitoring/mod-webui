@@ -1,5 +1,10 @@
 %import json
 
+%if not 'global' in all_states:
+<div view="cv_host" conf="{{config}}">
+   <span class="alert alert-error">Sorry, I cannot load the view!</span>
+</div>
+%else:
 <script>
    // Load specific CSS
    loadjscssfile('/static/cv_host/css/cv_host.css', 'css');
@@ -17,7 +22,7 @@
    }
 </script>
 
-<div id='cv_host'>
+<div view="cv_host" conf="{{config}}">
    <div class="row" name="host_layout">
       <div class="col-sm-2" name="host_container">
          <canvas name="host_canvas" width="150" height="150"> </canvas>
@@ -25,7 +30,7 @@
          <img src="/static/cv_host/img/host_{{all_states['host'].lower()}}.png"> </img>
       </div>
       <script>
-         var host_canvas = $('#cv_host canvas[name="host_canvas"]');
+         var host_canvas = $('[view="cv_host"][conf="{{config}}"] canvas[name="host_canvas"]');
          var ctx = host_canvas[0].getContext('2d');
          // Purple : '#c1bad9', '#a79fcb'
          // Green  : '#A6CE8D', '#81BA6B'
@@ -125,12 +130,54 @@
 
    <div class="row" name="services_layout">
       <div class="col-sm-6" name="left_metrics">
+         %if 'load' in all_states and 'load' in all_perfs:
+         <div class="well well-sm" name="load_container">
+            <h4>Load average</h4>
+            %for load in all_perfs['load']:
+            <div class="donut ">
+               <div class="graph" style="width: 100px; height: 100px;" id="{{config}}-load-{{app.helper.make_html_id(load)}}"></div>
+               <div class="name">{{load}}</div>
+               <div class="value">{{all_perfs['load'][load]}}</div>
+            </div>
+            <script>
+               var data = [];
+
+               %if '%' in load:
+               data[1] = { label: "{{load}}", data: {{all_perfs['load'][load]}}, color: main_colors['{{all_states['load']}}'] };
+               data[0] = { label: "", data: 100-{{all_perfs['load'][load]}}, color: '#cccccc' };
+               %else:
+               data[1] = { label: "{{load}}", data: {{10 * all_perfs['load'][load]}}, color: main_colors['{{all_states['load']}}'] };
+               data[0] = { label: "", data: 100-{{10 * all_perfs['load'][load]}}, color: '#cccccc' };
+               %end
+
+               $.plot($('#{{config}}-load-{{app.helper.make_html_id(load)}}'), data, {
+                  series: {
+                     pie: { 
+                        show: true,
+                        radius: 1,
+                        innerRadius: 0.7,
+                        label: {
+                           show: false,
+                           radius: 3/4,
+                        }
+                     }
+                  },
+                  legend: {
+                     show: false
+                  }
+               });
+            </script>
+            %end
+            <div class="clearfix"></div>
+         </div>
+         %end
+
          %if 'cpu' in all_states and 'cpu' in all_perfs:
          <div class="well well-sm" name="cpu_container">
             <h4>CPU</h4>
             %for cpu in all_perfs['cpu']:
             <div class="donut ">
-               <div class="graph" style="width: 100px; height: 100px;" id="cpu-{{app.helper.make_html_id(cpu)}}"></div>
+               <div class="graph" style="width: 100px; height: 100px;" id="{{config}}-cpu-{{app.helper.make_html_id(cpu)}}"></div>
                <div class="name">{{cpu}}</div>
                <div class="value">{{all_perfs['cpu'][cpu]}}</div>
             </div>
@@ -145,7 +192,7 @@
                data[0] = { label: "", data: 100-{{all_perfs['cpu'][cpu]}}, color: '#cccccc' };
                %end
 
-               $.plot($('#cpu-{{app.helper.make_html_id(cpu)}}'), data, {
+               $.plot($('#{{config}}-cpu-{{app.helper.make_html_id(cpu)}}'), data, {
                   series: {
                      pie: { 
                         show: true,
@@ -170,11 +217,11 @@
          %if 'memory' in all_states and 'memory' in all_perfs:
          <div class="well well-sm" name="memory_container">
             <h4>Memory</h4>
-            <div class="barchart" style="width:100%; height: 120px;" id="memory-barchart"></div>
+            <div class="barchart" style="width:100%; height: 120px;" id="{{config}}-memory-barchart"></div>
          </div>
          <script>
             // Draw a bar chart ...
-            $.plot($('#memory-barchart'), [
+            $.plot($('#{{config}}-memory-barchart'), [
                %i=0
                %for mem in all_perfs['memory']:
                   {
@@ -226,11 +273,11 @@
          %if 'disks' in all_states and 'disks' in all_perfs:
          <div class="well well-sm" name="disks_container">
             <h4>Disks</h4>
-            <div class="barchart" style="width:100%; height: 120px;" id="disks-barchart"></div>
+            <div class="barchart" style="width:100%; height: 120px;" id="{{config}}-disks-barchart"></div>
          </div>
          <script>
             // Draw a bar chart ...
-            $.plot($('#disks-barchart'), [
+            $.plot($('#{{config}}-disks-barchart'), [
                %i=0
                %for disk in all_perfs['disks']:
                   {
@@ -282,11 +329,11 @@
          %if 'network' in all_states and 'network' in all_perfs:
          <div class="well well-sm" name="network_container">
             <h4>Network</h4>
-            <div class="barchart" style="width:100%; height: 120px;" id="network-barchart"></div>
+            <div class="barchart" style="width:100%; height: 120px;" id="{{config}}-network-barchart"></div>
          </div>
          <script>
             // Draw a bar chart ...
-            $.plot($('#network-barchart'), [
+            $.plot($('#{{config}}-network-barchart'), [
                %i=0
                %for net in all_perfs['network']:
                   {
@@ -379,3 +426,4 @@
       }
    });
 </script>
+%end

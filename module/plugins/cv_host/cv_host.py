@@ -36,14 +36,17 @@ app = None
 # Get plugin's parameters from configuration file
 # Define service/perfdata name for each element in graph
 params = {}
-params['svc_cpu_name'] = "cpu"
-params['svc_cpu_used'] = "total (.*)"
+params['svc_load_name'] = "load"
+params['svc_load_used'] = "load1|load5|load15"
+params['svc_load_uom'] = ""
+params['svc_cpu_name'] = "cpu|CPU"
+params['svc_cpu_used'] = "^cpu_all_idle|cpu_all_iowait|cpu_all_usr|cpu_all_nice"
 params['svc_cpu_uom'] = "^%$"
 params['svc_dsk_name'] = "disks|Disks"
 params['svc_dsk_used'] = "^(.*)used_pct$"
 params['svc_dsk_uom'] = "^%$"
-params['svc_mem_name'] = "memory"
-params['svc_mem_used'] = "cached|buffered|used|consumed|free"
+params['svc_mem_name'] = "memory|Memory"
+params['svc_mem_used'] = "^(.*)$"
 params['svc_mem_uom'] = "^%$"
 params['svc_net_name'] = "NET Stats"
 params['svc_net_used'] = "eth0_rx_by_sec|eth0_tx_by_sec|eth0_rxErrs_by_sec|eth0_txErrs_by_sec"
@@ -126,6 +129,30 @@ def get_cpu(h):
             logger.warning("[WebUI-cvhost] get_cpu, exception: %s", str(exp))
 
     logger.debug("[WebUI-cvhost], get_cpu %s", all)
+    return state, all
+
+
+def get_load(h):
+    all = {}
+    state = 'UNKNOWN'
+    
+    s = _findServiceByName(h, params['svc_load_name'])
+    if s:
+        logger.debug("[WebUI-cvhost], found %s", s.get_full_name())
+        state = s.state
+
+        try:
+            p = PerfDatas(s.perf_data)
+            for m in p:
+                if m.name and m.value is not None:
+                    logger.debug("[WebUI-cvhost], metric '%s' = %s, uom: %s", m.name, m.value, m.uom)
+                    if re.search(params['svc_load_used'], m.name) and re.match(params['svc_load_uom'], m.uom):
+                        logger.debug("[WebUI-cvhost], got '%s' = %s", m.name, m.value)
+                        all[m.name] = m.value
+        except Exception, exp:
+            logger.warning("[WebUI-cvhost] get_load, exception: %s", str(exp))
+
+    logger.debug("[WebUI-cvhost], get_load %s", all)
     return state, all
 
 
@@ -213,20 +240,25 @@ def compute_worst_state(all_states):
     return {3:'CRITICAL', 2:'WARNING', 1:'UNKNOWN', 0:'OK'}[cur_level]
 
 
-def get_page(hname):
+def get_page(name):
     global params
     
     user = app.check_user_authentication()
     
+    config = 'default'
+    if '/' in name:
+        config = name.split('/')[1]
+        name = name.split('/')[0]
+        
     # Find host type if provided in parameters ...
     # @mohierf: not yet implemented ...
     type = app.request.query.get('type', 'default')
 
-    logger.debug("[WebUI-cvhost], get_page for %s (%s)", hname, app.request.query_string)
+    logger.debug("[WebUI-cvhost], get_page for %s (%s)", name, app.request.query_string)
 
     try:
         currentdir = os.path.dirname(os.path.realpath(__file__))
-        configuration_file = "%s/%s.cfg" % (currentdir, 'default')
+        configuration_file = "%s/%s.cfg" % (currentdir, config)
         logger.debug("Plugin configuration file: %s", configuration_file)
         scp = config_parser('#', '=')
         z = params.copy()
@@ -234,6 +266,7 @@ def get_page(hname):
         params = z
 
         logger.debug("[WebUI-cvhost] configuration loaded.")
+        logger.debug("[WebUI-cvhost] configuration, load: %s (%s)", params['svc_load_name'], params['svc_load_used'])
         logger.debug("[WebUI-cvhost] configuration, cpu: %s (%s)", params['svc_cpu_name'], params['svc_cpu_used'])
         logger.debug("[WebUI-cvhost] configuration, disk: %s (%s)", params['svc_dsk_name'], params['svc_dsk_used'])
         logger.debug("[WebUI-cvhost] configuration, memory: %s (%s)", params['svc_mem_name'], params['svc_mem_used'])
@@ -241,12 +274,15 @@ def get_page(hname):
         # logger.debug("[WebUI-cvhost] configuration, printer: %s (%s)", params['svc_prn_name'], params['svc_prn_used'])
     except Exception, exp:
         logger.warning("[WebUI-cvhost] configuration file (%s) not available: %s", configuration_file, str(exp))
+        all_perfs = {}
+        all_states = {}
+        return {'app': app, 'config': config, 'all_perfs':all_perfs, 'all_states':all_states}
 
     all_perfs = {}
     all_states = {"global": 'UNKNOWN', "cpu": 'UNKNOWN', "disks": 'UNKNOWN', "memory": 'UNKNOWN', "network": 'UNKNOWN', "printer": 'UNKNOWN', "services": 'UNKNOWN', "global": 'UNKNOWN'}
     
     # Ok, we can lookup it
-    h = app.get_host(hname)
+    h = app.get_host(name)
     if h:
         # Set the host state first
         all_states["host"] = h.state
@@ -254,8 +290,10 @@ def get_page(hname):
         all_states["disks"], all_perfs['disks'] = get_disks(h)
         # Then memory
         all_states["memory"], all_perfs['memory']  = get_memory(h)
-        # And CPU too
+        # Then CPU 
         all_states['cpu'], all_perfs['cpu'] = get_cpu(h)
+        # Then load
+        all_states['load'], all_perfs['load'] = get_load(h)
         # Then printer ... TODO: later if needed !
         # all_states['printer'], all_perfs['printer'] = get_printer(h)
         # And Network
@@ -267,8 +305,8 @@ def get_page(hname):
         
     logger.debug("[WebUI-cvhost], overall state: %s", all_states)
         
-    return {'app': app, 'elt': h, 'all_perfs':all_perfs, 'all_states':all_states}
+    return {'app': app, 'elt': h, 'config': config, 'all_perfs':all_perfs, 'all_states':all_states}
 
 
 # Void plugin
-pages = {get_page: {'routes': ['/cv/host/:hname'], 'view': 'cv_host', 'static': True}}
+pages = {get_page: {'routes': ['/cv/host/<name:path>'], 'view': 'cv_host', 'static': True}}
