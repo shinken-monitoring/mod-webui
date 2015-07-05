@@ -155,6 +155,7 @@
                                        >
                                     <i class="fa fa-share"></i><span class="hidden-sm hidden-xs"> Submit check result</span>
                                  </button>
+                                 %if pb.state != pb.ok_up and not pb.problem_has_been_acknowledged:
                                  <button class="btn btn-default btn-xs" 
                                        action="add-acknowledge"
                                        data-toggle="tooltip" data-placement="bottom" title="Acknowledge this problem"
@@ -162,6 +163,7 @@
                                        >
                                     <i class="fa fa-check"></i><span class="hidden-sm hidden-xs"> Acknowledge</span>
                                  </button>
+                                 %end
                                  <button class="btn btn-default btn-xs" 
                                        action="schedule-downtime"
                                        data-toggle="tooltip" data-placement="bottom" title="Schedule a downtime for this problem"
