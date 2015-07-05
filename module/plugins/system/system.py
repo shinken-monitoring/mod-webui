@@ -31,6 +31,12 @@ from shinken.log import logger
 app = None
 
 
+def system_parameters():
+    user = app.check_user_authentication()
+
+    return {'app': app, 'user': user, 'configs': app.get_configs() }
+
+
 def system_page():
     user = app.check_user_authentication()
 
@@ -92,6 +98,7 @@ Show an aggregated view of all Shinken daemons.
 '''
 
 pages = {
+    system_parameters: {'routes': ['/system-parameters', '/system-parameters/'], 'view': 'parameters', 'static': True},
     system_page: {'routes': ['/system', '/system/'], 'view': 'system', 'static': True},
     system_widget: {'routes': ['/widget/system'], 'view': 'system_widget', 'static': True, 'widget': ['dashboard'], 'widget_desc': widget_desc, 'widget_name': 'system', 'widget_picture': '/static/system/img/widget_system.png'},
 }

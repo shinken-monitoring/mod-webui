@@ -1576,6 +1576,9 @@ class Webui_broker(BaseModule, Daemon):
     ##
     # Shinken program
     ##
+    def get_configs(self):
+        return self.datamgr.rg.configs.values()
+
     def get_schedulers(self):
         return self.datamgr.rg.schedulers
 
