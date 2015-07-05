@@ -112,7 +112,9 @@ function on_page_refresh() {
     */
    $('#tab_to_depgraph').on('shown.bs.tab', function (e) {
       // First we get the full name of the object from div data
-      var n = $('#inner_depgraph').attr('data-elt-name');
+      var n = $('#inner_depgraph').data('element');
+      // Loading indicator ...
+      $("#inner_history").html('<i class="fa fa-spinner fa-spin fa-3x"></i> Loading dependency graph ...');
       // Then we load the inner depgraph page. Easy isn't it? :)
       $('#inner_depgraph').load('/inner/depgraph/'+n);
    });
@@ -191,6 +193,8 @@ function on_page_refresh() {
       // First we get the full name of the object from div data
       var element = $('#inner_history').data('element');
       
+      // Loading indicator ...
+      $("#inner_history").html('<i class="fa fa-spinner fa-spin fa-3x"></i> Loading history ...');
       $.ajax({
          "url": '/logs/inner/'+element,
          "dataType": "json",
@@ -214,6 +218,8 @@ function on_page_refresh() {
          },
          "error": function (response){
            console.error(response);
+            // Error message ...
+           $("#inner_history").html('<div class="alert alert-danger"><p class="font-red">Sorry, I cannot load the history!</p></div>');
          }
       });
    })

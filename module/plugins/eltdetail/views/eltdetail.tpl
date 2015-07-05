@@ -1008,7 +1008,7 @@ Invalid element name
                      %uris = app.get_graph_uris(elt, graphstart, graphend)
                      %if len(uris) == 0:
                      <div class="alert alert-info">
-                         <div class="font-blue"><strong>Oh snap!</strong> No graphs available!</div>
+                         <div class="font-blue"><strong>No graphs available for this {{elt_type}}!</strong></div>
                      </div>
                      %else:
                      <!-- <h4>Graphs</h4> -->
@@ -1084,8 +1084,7 @@ Invalid element name
                      <div class="btn-group btn-group-sm pull-right">
                         <button action="fullscreen-request" class="btn btn-primary"><i class="fa fa-desktop"></i> Fullscreen</button>
                      </div>
-                     <div id="inner_depgraph" data-elt-name='{{elt.get_full_name()}}'>
-                        <span class="alert alert-error">Sorry, I cannot load the dependency graph!</span>
+                     <div id="inner_depgraph" data-element='{{elt.get_full_name()}}'>
                      </div>
                   </div>
                </div>
@@ -1099,9 +1098,6 @@ Invalid element name
                <div class="panel panel-default">
                   <div class="panel-body">
                      <div id="inner_history" data-element='{{elt.get_full_name()}}'>
-                        <div class="alert alert-danger">
-                           <p class="font-red">Sorry, I cannot load the {{elt_type}} history!</p>
-                        </div>
                      </div>
                   </div>
                </div>
