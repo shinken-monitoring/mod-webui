@@ -8,6 +8,18 @@
    console.log('{{! json.dumps(all_states)}}')
    console.log('{{! json.dumps(all_perfs)}}')
 
+   function draw_arc(ctx, x, y, radius, startAngle, endAngle, clockwise, color, lineWidth){
+      var savec_lineWidth = ctx.lineWidth;
+      var saved_color = ctx.strokeStyle;
+      ctx.strokeStyle = color;
+      ctx.lineWidth = lineWidth;
+      ctx.beginPath();
+      ctx.arc(x, y, radius, startAngle, endAngle, clockwise);
+      ctx.stroke();
+      ctx.strokeStyle = saved_color;
+      ctx.lineWidth = savec_lineWidth;
+   }
+
 /*
    // Get container dimensions
    var container = $('#cv_host').parent();
