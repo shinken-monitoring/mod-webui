@@ -103,6 +103,15 @@ function display_form(form) {
 $(document).ready(function(){
    // Clean modal box content when hidden ...
    $('#modal').on('hidden.bs.modal', function () {
+      // Show sidebar menu ...
+      $('.sidebar').show();
+      
       $(this).removeData('bs.modal');
+   });
+   
+   // When modal box is displayed ...
+   $('#modal').on('shown.bs.modal', function () {
+      // Hide sidebar menu ...
+      $('.sidebar').hide();
    });
 });
