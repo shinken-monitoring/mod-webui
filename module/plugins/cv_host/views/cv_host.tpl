@@ -4,10 +4,6 @@
    // Load specific CSS
    loadjscssfile('/static/cv_host/css/cv_host.css', 'css');
    
-   var debug = true;
-   console.log('{{! json.dumps(all_states)}}')
-   console.log('{{! json.dumps(all_perfs)}}')
-
    function draw_arc(ctx, x, y, radius, startAngle, endAngle, clockwise, color, lineWidth){
       var savec_lineWidth = ctx.lineWidth;
       var saved_color = ctx.strokeStyle;
@@ -19,27 +15,6 @@
       ctx.strokeStyle = saved_color;
       ctx.lineWidth = savec_lineWidth;
    }
-
-/*
-   // Get container dimensions
-   var container = $('#cv_host').parent();
-   if (debug) console.debug('Container size: ', container.innerWidth(), container.innerHeight());
-
-   // On resize ...
-   $(window).bind("load resize", function() {
-      // Get container dimensions
-      var container = $('#cv_host').parent();
-      if (debug) console.debug('Container size: ', container.innerWidth(), container.innerHeight());
-
-      $('#cv_host')
-         .css('width', container.innerWidth() - 30)
-         .css('height', container.innerHeight() - 30);
-         
-      $('#cv_host [name="host_container"]')
-         .css('width', container.innerWidth() - 34)
-         .css('height', container.innerHeight() - 34);
-   });
-*/
 </script>
 
 <div id='cv_host'>
