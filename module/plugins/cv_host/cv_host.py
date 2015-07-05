@@ -227,7 +227,7 @@ def get_page(hname):
     try:
         currentdir = os.path.dirname(os.path.realpath(__file__))
         configuration_file = "%s/%s.cfg" % (currentdir, 'default')
-        logger.info("Plugin configuration file: %s", configuration_file)
+        logger.debug("Plugin configuration file: %s", configuration_file)
         scp = config_parser('#', '=')
         z = params.copy()
         z.update(scp.parse_config(configuration_file))
