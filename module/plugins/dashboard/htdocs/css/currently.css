@@ -77,7 +77,7 @@ body, section.content {
  * Overall state
  */
 #overall-state div.panel-darkgrey {
-   background-color: #535456;
+   background-color: #444;
    border: 0;
 }
 
@@ -86,7 +86,7 @@ body, section.content {
  * Icons bar
  */
 #state-icons div.panel-darkgrey {
-   background-color: #535456;
+   background-color: #444;
    border: 0;
 }
 

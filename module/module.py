@@ -176,9 +176,13 @@ class Webui_broker(BaseModule, Daemon):
             time.tzset()
         logger.info("[WebUI] parameter timezone: %s", self.timezone)
 
-        # Hosts filtering
-        self.hosts_filter = []
-            
+        # Visual alerting thresholds
+        # Used in the dashboard view to select background color for percentages
+        self.hosts_states_warning       = int(getattr(modconf, 'hosts_states_warning', '95'))
+        self.hosts_states_critical      = int(getattr(modconf, 'hosts_states_critical', '90'))
+        self.services_states_warning    = int(getattr(modconf, 'services_states_warning', '95'))
+        self.services_states_critical   = int(getattr(modconf, 'services_states_critical', '90'))
+
         # Web UI information
         self.app_version = getattr(modconf, 'about_version', WEBUI_VERSION)
         self.app_copyright = getattr(modconf, 'about_copyright', WEBUI_COPYRIGHT)
