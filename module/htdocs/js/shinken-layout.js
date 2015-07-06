@@ -116,6 +116,10 @@ $(document).ready(function(){
    $('#modal').on('hidden.bs.modal', function () {
       // Show sidebar menu ...
       $('.sidebar').show();
+      if (selected_elements.length > 0) {
+         // Show actions bar ...
+         $('.actionbar').show();
+      }
       
       $(this).removeData('bs.modal');
    });
@@ -124,6 +128,8 @@ $(document).ready(function(){
    $('#modal').on('shown.bs.modal', function () {
       // Hide sidebar menu ...
       $('.sidebar').hide();
+      // Hide actions bar ...
+      $('.actionbar').hide();
    });
    
    // Sidebar menu
