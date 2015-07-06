@@ -619,6 +619,7 @@ class Webui_broker(BaseModule, Daemon):
         def server_static(path):
             # By default give from the root in bottle_dir/htdocs. If the file is missing,
             # search in the share dir
+            # TODO: should be more logical to search in share_dir first ?
             root = htdocs_dir
             p = os.path.join(root, path)
             if not os.path.exists(p):

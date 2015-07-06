@@ -38,7 +38,7 @@ from shinken.log import logger
 def get_perfometer_table_values(elt):
     # first try to get the command name called
     cmd = elt.check_command.call.split('!')[0]
-    logger.info("[WebUI] Looking for perfometer value for element: %s, command: %s", elt.get_full_name(), cmd)
+    logger.debug("[WebUI] Looking for perfometer value for element: %s, command: %s", elt.get_full_name(), cmd)
 
     tab = {'check_http': manage_check_http_command,
            'check_ping': manage_check_ping_command,
