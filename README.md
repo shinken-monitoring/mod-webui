@@ -1,7 +1,7 @@
 #mod-webui
 
 ###Description
-Shinken main Web interface
+Shinken Web User Interface
 
 ###Installation
 
