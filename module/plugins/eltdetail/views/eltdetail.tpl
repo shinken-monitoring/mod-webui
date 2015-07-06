@@ -28,7 +28,7 @@ Invalid element name
 %title = 'Service detail: ' + elt.service_description+' on '+elt.host.host_name
 %end
 
-%rebase("layout", js=['eltdetail/js/eltdetail.js', 'eltdetail/js/flot/jquery.flot.min.js', 'eltdetail/js/flot/jquery.flot.resize.min.js', 'eltdetail/js/flot/jquery.flot.pie.min.js', 'eltdetail/js/flot/jquery.flot.categories.min.js', 'eltdetail/js/flot/jquery.flot.time.min.js', 'eltdetail/js/flot/jquery.flot.stack.min.js', 'eltdetail/js/flot/jquery.flot.valuelabels.js',  'eltdetail/js/jquery.color.js', 'eltdetail/js/bootstrap-switch.js', 'eltdetail/js/jquery.Jcrop.js', 'eltdetail/js/graphs.js', 'eltdetail/js/custom_views.js', 'eltdetail/js/canvas.js'], css=['eltdetail/css/bootstrap-switch.css', 'eltdetail/css/eltdetail.css', 'eltdetail/css/jquery.Jcrop.css', 'eltdetail/css/canvas.css'], user=user, app=app, refresh=True, breadcrumb=breadcrumb, title=title)
+%rebase("layout", js=['eltdetail/js/eltdetail.js', 'eltdetail/js/flot/jquery.flot.min.js', 'eltdetail/js/flot/jquery.flot.resize.min.js', 'eltdetail/js/flot/jquery.flot.pie.min.js', 'eltdetail/js/flot/jquery.flot.categories.min.js', 'eltdetail/js/flot/jquery.flot.time.min.js', 'eltdetail/js/flot/jquery.flot.stack.min.js', 'eltdetail/js/flot/jquery.flot.valuelabels.js',  'eltdetail/js/jquery.color.js', 'eltdetail/js/bootstrap-switch.min.js', 'eltdetail/js/jquery.Jcrop.js', 'eltdetail/js/graphs.js', 'eltdetail/js/custom_views.js', 'eltdetail/js/canvas.js'], css=['eltdetail/css/bootstrap-switch.min.css', 'eltdetail/css/eltdetail.css', 'eltdetail/css/jquery.Jcrop.css', 'eltdetail/css/canvas.css'], user=user, app=app, refresh=True, breadcrumb=breadcrumb, title=title)
 
 %# Main variables
 %elt_name = elt.host_name if elt_type=='host' else elt.service_description+' on '+elt.host.host_name
@@ -488,7 +488,13 @@ Invalid element name
                               </tr>
                               <tr>
                                  <td><strong>Active checks:</strong></td>
-                                 <td>{{! app.helper.get_on_off(elt.active_checks_enabled, 'Is active checking enabled?')}}</td>
+                                 <td><!--{{! app.helper.get_on_off(elt.active_checks_enabled, 'Is active checking enabled?')}}-->
+                                    <input type="checkbox" {{'checked' if elt.active_checks_enabled else ''}} 
+                                          class="switch" data-size="mini" data-on-color="success" data-off-color="danger"
+                                          action="toggle-active-checks" 
+                                          data-element="{{helper.get_uri_name(elt)}}" data-value="{{elt.active_checks_enabled}}"
+                                          >
+                                 </td>
                               </tr>
                               %if (elt.active_checks_enabled):
                               <tr>
@@ -506,7 +512,13 @@ Invalid element name
                               %end
                               <tr>
                                  <td><strong>Passive checks:</strong></td>
-                                 <td>{{! app.helper.get_on_off(elt.passive_checks_enabled, 'Is passive checking enabled?')}}</td>
+                                 <td><!--{{! app.helper.get_on_off(elt.passive_checks_enabled, 'Is passive checking enabled?')}}-->
+                                    <input type="checkbox" {{'checked' if elt.passive_checks_enabled else ''}} 
+                                          class="switch" data-size="mini" data-on-color="success" data-off-color="danger"
+                                          action="toggle-passive-checks"
+                                          data-element="{{helper.get_uri_name(elt)}}" data-value="{{elt.passive_checks_enabled}}"
+                                          >
+                                 </td>
                               </tr>
                               %if (elt.passive_checks_enabled):
                               <tr>
@@ -539,7 +551,13 @@ Invalid element name
                            <tbody style="font-size:x-small;">
                               <tr>
                                  <td><strong>Event handler enabled:</strong></td>
-                                 <td>{{! app.helper.get_on_off(elt.event_handler_enabled, 'Is event handler enabled?')}}</td>
+                                 <td><!--{{! app.helper.get_on_off(elt.event_handler_enabled, 'Is event handler enabled?')}}-->
+                                    <input type="checkbox" {{'checked' if elt.event_handler_enabled else ''}}
+                                          class="switch" data-size="mini" data-on-color="success" data-off-color="danger"
+                                          action="toggle-event-handler"
+                                          data-element="{{helper.get_uri_name(elt)}}" data-value="{{elt.event_handler_enabled}}"
+                                          >
+                                 </td>
                               </tr>
                               %if elt.event_handler_enabled and elt.event_handler:
                               <tr>
@@ -547,6 +565,12 @@ Invalid element name
                                  <td>
                                     {{ elt.event_handler.get_name() }}
                                  </td>
+                              </tr>
+                              %end
+                              %if elt.event_handler_enabled and not elt.event_handler:
+                              <tr>
+                                 <td></td>
+                                 <td><strong>No event handler defined!</strong></td>
                               </tr>
                               %end
                            </tbody>
@@ -566,7 +590,13 @@ Invalid element name
                            <tbody style="font-size:x-small;">
                               <tr>
                                  <td><strong>Flapping detection:</strong></td>
-                                 <td>{{! app.helper.get_on_off(elt.flap_detection_enabled, 'Is status flapping detection enabled?')}}</td>
+                                 <td><!--{{! app.helper.get_on_off(elt.flap_detection_enabled, 'Is status flapping detection enabled?')}}-->
+                                    <input type="checkbox" {{'checked' if elt.flap_detection_enabled else ''}}
+                                          class="switch" data-size="mini" data-on-color="success" data-off-color="danger"
+                                          action="toggle-flap-detection"
+                                          data-element="{{helper.get_uri_name(elt)}}" data-value="{{elt.flap_detection_enabled}}"
+                                          >
+                                 </td>
                               </tr>
                               %if elt.flap_detection_enabled:
                               <tr>
@@ -598,7 +628,13 @@ Invalid element name
                            <tbody style="font-size:x-small;">
                               <tr>
                                  <td><strong>Notifications:</strong></td>
-                                 <td>{{! app.helper.get_on_off(elt.notifications_enabled, "Are notifications enabled for this element?")}}</td>
+                                 <td><!--{{! app.helper.get_on_off(elt.notifications_enabled, "Are notifications enabled for this element?")}}-->
+                                    <input type="checkbox" {{'checked' if elt.notifications_enabled else ''}} 
+                                          class="switch" data-size="mini" data-on-color="success" data-off-color="danger"
+                                          action="toggle-notifications"
+                                          data-element="{{helper.get_uri_name(elt)}}" data-value="{{elt.notifications_enabled}}"
+                                          >
+                                 </td>
                               </tr>
                               %if elt.notifications_enabled and elt.notification_period:
                               <tr>

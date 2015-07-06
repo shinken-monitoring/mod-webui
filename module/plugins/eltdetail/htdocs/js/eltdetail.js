@@ -152,43 +152,43 @@ function on_page_refresh() {
    });
    
    // Toggles ...
-   $('input[action="toggle-active-checks"]').on('switch-change', function (e, data) {
+   $('input[action="toggle-active-checks"]').on('switchChange.bootstrapSwitch', function (e, data) {
       var elt = $(this).data('element');
       var value = $(this).data('value')=='False' ? false : true;
       if (eltdetail_logs) console.debug("Toggle active checks for: ", elt, ", currently: ", value)
       toggle_active_checks(elt, value);
    });
-   $('input[action="toggle-passive-checks"]').on('switch-change', function (e, data) {
+   $('input[action="toggle-passive-checks"]').on('switchChange.bootstrapSwitch', function (e, data) {
       var elt = $(this).data('element');  
       var value = $(this).data('value')=='False' ? false : true;
       if (eltdetail_logs) console.debug("Toggle passive checks for: ", elt, ", currently: ", value)
       toggle_passive_checks(elt, value);
    });
-   $('input[action="toggle-check-freshness"]').on('switch-change', function (e, data) {
+   $('input[action="toggle-check-freshness"]').on('switchChange.bootstrapSwitch', function (e, data) {
       var elt = $(this).data('element');  
       var value = $(this).data('value')=='False' ? false : true;
       if (eltdetail_logs) console.debug("Toggle freshness checks for: ", elt, ", currently: ", value)
       toggle_freshness_check(elt, value);
    });
-   $('input[action="toggle-notifications"]').on('switch-change', function (e, data) {
+   $('input[action="toggle-notifications"]').on('switchChange.bootstrapSwitch', function (e, data) {
       var elt = $(this).data('element');  
       var value = $(this).data('value')=='False' ? false : true;
       if (eltdetail_logs) console.debug("Toggle notifications for: ", elt, ", currently: ", value)
       toggle_notifications(elt, value);
    });
-   $('input[action="toggle-event-handler"]').on('switch-change', function (e, data) {
+   $('input[action="toggle-event-handler"]').on('switchChange.bootstrapSwitch', function (e, data) {
       var elt = $(this).data('element');  
       var value = $(this).data('value')=='False' ? false : true;
       if (eltdetail_logs) console.debug("Toggle event handler for: ", elt, ", currently: ", value)
       toggle_event_handlers(elt, value);
    });
-   $('input[action="toggle-process-perfdata"]').on('switch-change', function (e, data) {
+   $('input[action="toggle-process-perfdata"]').on('switchChange.bootstrapSwitch', function (e, data) {
       var elt = $(this).data('element');  
       var value = $(this).data('value')=='False' ? false : true;
       if (eltdetail_logs) console.debug("Toggle perfdata processing for: ", elt, ", currently: ", value)
       toggle_process_perfdata(elt, value);
    });
-   $('input[action="toggle-flap-detection"]').on('switch-change', function (e, data) {
+   $('input[action="toggle-flap-detection"]').on('switchChange.bootstrapSwitch', function (e, data) {
       var elt = $(this).data('element');  
       var value = $(this).data('value')=='False' ? false : true;
       if (eltdetail_logs) console.debug("Toggle flap detection for: ", elt, ", currently: ", value)
