@@ -71,8 +71,8 @@
    </div>
    
    <div class="container-fluid">
-      <img src="/static/images/default_company_small.png" alt="Shinken Logo" style="height: 20px;"/>
-      <i class="col-lg-10 text-muted">Shinken {{VERSION}} Web User Interface, &copy;2011-2015</i>
+      <img src="/static/images/default_company_xxs.png" alt="Shinken Logo"/>
+      <i class="col-lg-10 text-muted">Shinken {{VERSION}} &mdash; Web User Interface, &copy;2011-2015</i>
    </div>
 </nav>
 <script>

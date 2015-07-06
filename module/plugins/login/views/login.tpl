@@ -1,61 +1,51 @@
-%rebase("layout", title='Shinken Web UI Login', print_header=False, print_menu=False, print_title=False, js=['login/js/capslock.js'], css=['login/css/login.css'])
+%rebase("layout", title='Shinken Web UI Login', print_header=False, print_menu=False, print_title=False)
 
 %from shinken.bin import VERSION
 
-<div class="row page-header">
-   <h1 class="col-sm-12 col-md-6">Shinken <small>version {{VERSION}}</small></h1>
-   <div class="col-sm-12 col-md-6"> <img src="/static/logo/{{company_logo}}" alt="Company logo" /> </div>
-</div>
-
-<div class="row">
-   <div class="col-sm-12 col-md-6">
-      <noscript>
-         <div class="row alert">
-            <button type="button" class="close" data-dismiss="alert">×</button>
-            <div class="font-red"><strong>Warning!</strong> Please enable Java Script in your browser and retry.</div>
-         </div>
-      </noscript>
-
-      %if login_text:
-      <p class="lead">{{login_text}}</p>
-      %end
-
-      <img src="/static/images/shinken.png" />
-   </div>
-
-   <div class="col-sm-12 col-md-6">
-      <div class="panel panel-default">
-         <div class="panel-heading">
-            <h2 class="panel-title">Login</h2>
-         </div>
-         <div class="panel-body">
-            <form method="post" id="loginform" role="form" action="/user/auth">
-               <fieldset>
-                  <div class="form-group">
-                     <label>Name</label>
-                     <div>
-                        <input class="form-control" name="login" type="text">
+<div class="container">
+   <div class="row">
+      <div class="col-md-4 col-md-offset-4">
+         <div class="login-panel panel panel-default">
+            <div class="panel-heading">
+               <h2>Shinken <small>version {{VERSION}}</small></h2>
+                  <img src="/static/logo/{{company_logo}}" alt="Company logo" style="width: 100%"/>
+            </div>
+            <div class="panel-body">
+               <form role="form" method="post" action="/user/auth">
+                  <fieldset>
+                     <div class="form-group">
+                        <input class="form-control" placeholder="username" name="login" type="text" autofocus>
                      </div>
-                  </div>
-                  <div class="form-group">
-                     <label>Password</label>
-                     <div>
-                        <input id="password" class="form-control" name="password" type="password" onkeypress="capsCheck(event,this);">
+                     <div class="form-group">
+                        <input class="form-control" placeholder="Password" name="password" type="password" value="">
                      </div>
-                  </div>
-                  <div class="form-group pull-right">
-                     <button class=" btn btn-default" type="submit" href="javascript: submitform()"><i class="fa fa-sign-in"></i> Login</button>
-                  </div>
-               </fieldset>
-            </form>
+                     <!--
+                     <div class="checkbox">
+                        <label>
+                           <input name="remember" type="checkbox" value="Remember Me">Remember Me
+                        </label>
+                     </div>
+                     -->
+                     
+                     <button class="btn btn-lg btn-success btn-block" type="submit"><i class="fa fa-sign-in"></i> Login</button>
+                  </fieldset>
+               </form>
+            </div>
+            <div class="panel-footer">
+               <div style="min-height: 70px;">
+                  <img src="/static/images/shinken.png" style="position: relative; top:-30px; left:-12px; height: 48px" class="pull-left"/>
+                  %if login_text:
+                  <h3>{{login_text}}</h3>
+                  %end
+               </div>
+               %if error:
+               <div class="alert alert-danger" role="alert">
+                  <strong>Warning!</strong>
+                  {{error}}
+               </div>
+               %end
+            </div>
          </div>
       </div>
-      %if error:
-      <div class="alert alert-danger" role="alert">
-         <strong>Warning!</strong>
-         {{error}}
-      </div>
-      %end
    </div>
 </div>
-
