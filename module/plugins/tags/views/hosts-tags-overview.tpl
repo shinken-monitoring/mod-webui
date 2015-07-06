@@ -12,15 +12,6 @@
 <div class="row">
    <ul id="groups" class="grid row">
       %for tag in htags:
-         %filtered=False
-         %for filter in app.hosts_filter:
-            %if tag['name'].startswith(filter):
-               %filtered=True
-            %end
-         %end
-         %if filtered:
-            %continue
-         %end
          %nHosts=0
          %hUp=hDown=hUnreachable=hPending=hUnknown=0
          %business_impact = 0
