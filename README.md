@@ -1,7 +1,7 @@
 #mod-webui
 
 ###Description
-Shinken main Web interface
+Shinken Web User Interface
 
 ###Installation
 
@@ -56,11 +56,7 @@ root@system# /etc/init.d/shinken restart
 
 ###Screenshots
 
-Host Detail
 ![Host Detail](doc/images/animation.gif)
-
-System
-![System](doc/ShinkenWebUISystem.png)
 
 ###Dependencies
 

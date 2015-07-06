@@ -78,7 +78,7 @@ define host{
 
 Custom views may be provided by the Shinken packs to enrich the WebUI element view. Each additional custom view creates a tab in the element view.
 
-TODO: to be completed ...
+The WebUI provides a default custom_view (*host*) that is configurable
 
 
 Host definition:
@@ -89,7 +89,8 @@ define host{
 
    # Defined in host template
    #custom_views                 +linux_ssh,linux_ssh_memory,linux_ssh_processes
-   custom_views                 +linux_ssh
+   #custom_views                 +linux_ssh
+   custom_views                 host
 
    ...
 }
