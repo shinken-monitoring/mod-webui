@@ -137,9 +137,6 @@ function on_page_refresh() {
       screenfull.request($('#inner_depgraph')[0]);
    });
 
-   // Trigger the onchange() to set the initial values
-   screenfull.onchange();
-
    
    /*
     * Commands buttons
