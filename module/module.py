@@ -131,6 +131,7 @@ class Webui_broker(BaseModule, Daemon):
         
         # Manage user's ACL
         self.manage_acl = to_bool(getattr(modconf, 'manage_acl', '1'))
+        self.allow_anonymous = to_bool(getattr(modconf, 'allow_anonymous', '0'))
         
         # Advanced options
         self.http_backend = getattr(modconf, 'http_backend', 'auto')
@@ -700,7 +701,7 @@ class Webui_broker(BaseModule, Daemon):
         username = self.request.get_cookie("user", secret=self.auth_secret)
 
         # If we cannot check the cookie, bailout ... 
-        if not allow_anonymous and not username:
+        if not self.allow_anonymous and not allow_anonymous and not username:
             return None
             
         # Allow anonymous access if requested and anonymous contact exists ...

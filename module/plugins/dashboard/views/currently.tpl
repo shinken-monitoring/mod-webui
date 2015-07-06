@@ -276,8 +276,8 @@
       <a href="/problems" class="btn btn-sm" title="Left">
       %end
          <div>
-            %h_state, s_state = app.get_overall_it_state(app.get_user_auth(), id=True)
-            %h_problems = app.get_overall_it_problems_count(app.get_user_auth(), type='host')
+            %h_state, s_state = app.get_overall_it_state(user, id=True)
+            %h_problems = app.get_overall_it_problems_count(user, type='host')
             <span class="badger-big badger-left alert-{{'critical' if h_state == 2 else 'warning' if h_state == 1 else 'ok'}}">{{h_problems}}</span>
             {{!helper.get_fa_icon_state(cls='host', state='down') if h_state == 2 else ''}}
             {{!helper.get_fa_icon_state(cls='host', state='unreachable') if h_state == 1 else ''}}
@@ -285,7 +285,7 @@
             {{!helper.get_fa_icon_state(cls='service', state='critical') if s_state == 2 else ''}}
             {{!helper.get_fa_icon_state(cls='service', state='warning') if s_state == 1 else ''}}
             {{!helper.get_fa_icon_state(cls='service', state='ok') if s_state == 0 else ''}}
-            %s_problems = app.get_overall_it_problems_count(app.get_user_auth(), type='service')
+            %s_problems = app.get_overall_it_problems_count(user, type='service')
             <span class="badger-big badger-left alert-{{'critical' if s_state == 2 else 'warning' if s_state == 1 else 'ok'}}">{{s_problems}}</span>
          </div>
 
@@ -302,8 +302,8 @@
       <a href="/impacts" class="slidelink btn btn-sm">
       %end
          <div>
-            %overall_state = app.get_overall_state(app.get_user_auth())
-            <span title="Number of not acknownledged IT problems." class="badger-big alert-{{'ok' if overall_state == 0 else 'warning' if overall_state == 1 else 'critical'}}">{{app.get_overall_state_problems_count(app.get_user_auth())}}</span>
+            %overall_state = app.get_overall_state(user)
+            <span title="Number of not acknownledged IT problems." class="badger-big alert-{{'ok' if overall_state == 0 else 'warning' if overall_state == 1 else 'critical'}}">{{app.get_overall_state_problems_count(user)}}</span>
          </div>
          
          <i class="fa fa-5x fa-flash"></i>
