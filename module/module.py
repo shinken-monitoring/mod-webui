@@ -706,11 +706,14 @@ class Webui_broker(BaseModule, Daemon):
         username = self.request.get_cookie("user", secret=self.auth_secret)
 
         # If we cannot check the cookie, bailout ... 
-        if not self.allow_anonymous and not allow_anonymous and not username:
+        if not allow_anonymous and not username:
             return None
             
         # Allow anonymous access if requested and anonymous contact exists ...
         if allow_anonymous:
+            if not self.allow_anonymous:
+                return None
+                
             c = self.get_contact('anonymous')
             if c:
                 return c
