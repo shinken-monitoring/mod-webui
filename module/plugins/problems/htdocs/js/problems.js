@@ -25,31 +25,7 @@
 var problems_logs=false;
 
 
-
-
-// When we select all, add all problems in the selected list,
-function select_all_problems(){
-   // Maybe the actions are not allowed?
-   if (!actions_enabled){
-      return;
-   }
-
-   // Get all elements name ...
-   $('td input[type=checkbox]').each(function(){
-      // ... and add to the selected items list.
-      add_element($(this).data('item'));
-   });
-}
-
-// Unselect all
-function unselect_all_problems(){
-   flush_selected_elements();
-}
-
-
 function add_remove_elements(name){
-   // Maybe the actions are not allowed. If so, don't do anything ...
-
    if (selected_elements.indexOf(name) != -1) {
       remove_element(name);
    } else {
@@ -63,6 +39,7 @@ function add_element(name){
    // Force to check the checkbox
    $('td input[type=checkbox][data-item="'+name+'"]').prop("checked", true);
    
+   if (problems_logs) console.log('Select element: ', name)
    selected_elements.push(name);
 
    if (selected_elements.length > 0) {
@@ -78,6 +55,7 @@ function remove_element(name){
    // Force to uncheck the checkbox
    $('td input[type=checkbox][data-item="'+name+'"]').prop("checked", false);
    
+   if (problems_logs) console.log('Unselect element: ', name)
    selected_elements.splice($.inArray(name, selected_elements),1);
 
    if (selected_elements.length == 0){
@@ -102,6 +80,25 @@ function flush_selected_elements(){
 
 
 function on_page_refresh(){
+   // If actions are not allowed, disable the button 'select all' and the checkboxes
+   if ("actions_enabled" in window && !actions_enabled) {
+      // Get actions buttons bar ... to hide it!
+      $('[data-type="actions"]').hide();
+      
+      // Get all selection buttons ...
+      $('button[data-type="business-impact"]').each(function(){
+         // ... then disable and hide button
+         $(this).prop("disabled", true).hide();
+      });
+      
+      // Get all elements ...
+      $('input[type=checkbox]').each(function(){
+         // ... then disable and hide checkbox
+         $(this).prop("disabled", true).hide();
+      });
+   }
+
+   // Text ellipsis in tables ...
    $('.collapse').on('show.bs.collapse', function () {
        $(this).closest('tr').prev().find('.output').removeClass("ellipsis", {duration:200});
    });
@@ -110,45 +107,55 @@ function on_page_refresh(){
        $(this).closest('tr').prev().find('.output').addClass("ellipsis", {duration:200});
    });
    
+   $('.ellipsis').on('mouseenter', function () {
+      var $this = $(this);
+      if (this.offsetWidth < this.scrollWidth && !$this.attr('title')) {
+         $this.tooltip({
+            title: $this.text(),
+            placement: "bottom"
+         });
+         $this.tooltip('show');
+      }
+   });
+
    // Graphs popover
    $('[data-toggle="popover"]').popover({
       html: true,
       template: '<div class="popover img-popover"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
    });
    
-}
+   // Business impact selection buttons
+   $('button[data-type="business-impact"]').on('click', function (e) {
+      if ($(this).data('state')=='off') {
+         if (problems_logs) console.log('Select all elements ...', $(this).data('business-impact'));
 
-// On page loaded ... 
-$(document).ready(function(){
-   // If actions are not allowed, disable the button 'select all' and the checkboxes
-   if ("actions_enabled" in window && !actions_enabled) {
-      $('#select_all_btn').addClass('disabled');
-      $('[id^=selector').attr('disabled', true);
-      
-      // Get all elements ...
-      $('input[type=checkbox]').each(function(){
-         // ... and disable and hide checkbox
-         $(this).prop("disabled", true).hide();
-      });
-   }
-
-   // Problems element check boxes
-   $('button[data-type="business-impact"]').click(function (e) {
-      if (selected_elements.length == 0){
-         $(this).html("Unselect all elements");
+         // Remove elements from selection
+         $('input[type=checkbox][data-type="problem"][data-business-impact="'+$(this).data('business-impact')+'"]').each(function() {
+            remove_element($(this).data('item'));
+         })
+         // Add elements to selection
+         $('input[type=checkbox][data-type="problem"][data-business-impact="'+$(this).data('business-impact')+'"]').each(function() {
+            add_element($(this).data('item'));
+         })
+         $(this).html("Unselect all elements").data('state', 'on');
       } else {
-         $(this).html("Select all elements");
+         if (problems_logs) console.log('Unselect all elements ...', $(this).data('business-impact'));
+            
+         // Remove elements from selection
+         $('input[type=checkbox][data-type="problem"][data-business-impact="'+$(this).data('business-impact')+'"]').each(function() {
+            remove_element($(this).data('item'));
+         })
+         $(this).html("Select all elements").data('state', 'off');
       }
       
-      // Add/remove element from selection
-      $('input[type=checkbox][data-type="problem"][data-business-impact="'+$(this).data('item')+'"]').trigger('click');
    });
 
    // Problems element check boxes
-   $('input[type=checkbox][data-type="problem"]').click(function (e) {
+   $('input[type=checkbox][data-type="problem"]').on('click', function (e) {
       e.stopPropagation();
       
+      if (problems_logs) console.log('Clicked: ', $(this).data('item'))
       // Add/remove element from selection
       add_remove_elements($(this).data('item'));
    });
-});
+}

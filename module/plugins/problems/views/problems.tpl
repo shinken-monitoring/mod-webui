@@ -46,7 +46,7 @@
       %hosts = groupby(bi_pbs, key=lambda x: x.host_name)
    <div class="panel panel-default">
    <div class="panel-body">
-      <button type="button" class="btn btn-default btn-xs pull-left" data-type="business-impact" data-business-impact="{{business_impact}}" data-item="{{business_impact}}">Select all elements</button>
+      <button type="button" class="btn btn-default btn-xs pull-left" data-type="business-impact" data-business-impact="{{business_impact}}" data-state="off">Select all elements</button>
 
       <i class="pull-right small">{{len(list(bi_pbs))}} elements</i>
       <h3 class="text-center">Business impact: {{!helper.get_business_impact_text(business_impact, text=True)}}</h3>
@@ -101,10 +101,12 @@
                      %end
                   </div>
                   <div class="ellipsis output">
-                     {{pb.output}}
+                     {{!helper.strip_html_output(pb.output[:app.max_output_length]) if app.allow_html_output else pb.output[:app.max_output_length]}}
+                     %if pb.long_output:
                      <div class="long-output">
-                        {{pb.long_output.replace('\n', '<br/>') if pb.long_output else ''}}
+                        {{!helper.strip_html_output(pb.long_output[:app.max_output_length]) if app.allow_html_output else pb.long_output[:app.max_output_length]}}
                      </div>
+                     %end
                   </div>
                </td>
             </tr>
@@ -130,10 +132,10 @@
                            %end
                            %if app.can_action():
                            <td align="right">
-                              <div class="btn-group" role="group" aria-label="Actions">
+                              <div class="btn-group" role="group" data-type="actions" aria-label="Actions">
                                  %if pb.event_handler_enabled and pb.event_handler:
                                  <button class="btn btn-default btn-xs" 
-                                       action="event-handler"
+                                       data-type="action" action="event-handler"
                                        data-toggle="tooltip" data-placement="bottom" title="Try to fix (launch event handler)"
                                        data-element="{{helper.get_uri_name(pb)}}" 
                                        >
@@ -141,14 +143,14 @@
                                  </button>
                                  %end
                                  <button class="btn btn-default btn-xs" 
-                                       action="recheck"
+                                       data-type="action" action="recheck"
                                        data-toggle="tooltip" data-placement="bottom" title="Launch the check command"
                                        data-element="{{helper.get_uri_name(pb)}}" 
                                        >
                                     <i class="fa fa-refresh"></i><span class="hidden-sm hidden-xs"> Refresh</span>
                                  </button>
                                  <button class="btn btn-default btn-xs" 
-                                       action="check-result"
+                                       data-type="action" action="check-result"
                                        data-toggle="tooltip" data-placement="bottom" title="Submit a check result"
                                        data-element="{{helper.get_uri_name(pb)}}" 
                                        data-user="{{user}}" 
@@ -157,7 +159,7 @@
                                  </button>
                                  %if pb.state != pb.ok_up and not pb.problem_has_been_acknowledged:
                                  <button class="btn btn-default btn-xs" 
-                                       action="add-acknowledge"
+                                       data-type="action" action="add-acknowledge"
                                        data-toggle="tooltip" data-placement="bottom" title="Acknowledge this problem"
                                        data-element="{{helper.get_uri_name(pb)}}" 
                                        >
@@ -165,14 +167,14 @@
                                  </button>
                                  %end
                                  <button class="btn btn-default btn-xs" 
-                                       action="schedule-downtime"
+                                       data-type="action" action="schedule-downtime"
                                        data-toggle="tooltip" data-placement="bottom" title="Schedule a downtime for this problem"
                                        data-element="{{helper.get_uri_name(pb)}}" 
                                        >
                                   <i class="fa fa-ambulance"></i><span class="hidden-sm hidden-xs"> Downtime</span>
                                  </button>
                                  <button class="btn btn-default btn-xs" 
-                                       action="ignore-checks"
+                                       data-type="action" action="ignore-checks"
                                        data-toggle="tooltip" data-placement="bottom" title="Ignore checks for the service (disable checks, notifications, event handlers and force Ok)"
                                        data-element="{{helper.get_uri_name(pb)}}" 
                                        data-user="{{user}}" 
@@ -185,25 +187,39 @@
                         </tr>
                      </table>
                      %if len(pb.impacts) > 0:
-                     <h4 style="margin-left: 20px;">{{ len(pb.impacts) }} impacts</h4>
-                     <table class="table table-condensed" style="margin:0;">
-                        %for i in helper.get_impacts_sorted(pb):
-                        %if i.state_id != 0:
-                        <tr>
-                           <td align=center>
-                              {{!helper.get_fa_icon_state(i)}}
-                           </td>
-                           <td width="200px"></td>
-                           <td width="200px">{{!helper.get_link(i, short=True)}}</td>
-                           <td width="90px" align="center" class="font-{{i.state.lower()}}"><strong>{{ i.state }}</strong></td>
-                           <td width="90px" align="center">{{!helper.print_duration(i.last_state_change, just_duration=True, x_elts=2)}}</td>
-                           <td class="row hidden-sm hidden-xs">
-                              {{ i.output }}
-                           </td>
-                        </tr>
-                        %end
-                        %end
-                     </table>
+                        <div class="col-sm-1"></div>
+                        <div class="col-sm-10">
+                           <div class="panel panel-default align-center">
+                           <div class="panel-body" style="margin-left: 20px;">
+                              <h4>{{ len(pb.impacts) }} impacts</h4>
+                              <table class="table table-condensed" style="table-layout:fixed;width:100%;">
+                                 %for i in helper.get_impacts_sorted(pb):
+                                 %if i.state_id != 0:
+                                 <tr>
+                                    <td align=center>
+                                       {{!helper.get_fa_icon_state(i)}}
+                                    </td>
+                                    <td>{{!helper.get_link(i, short=True)}}</td>
+                                    <td align="center" class="font-{{i.state.lower()}}"><strong>{{ i.state }}</strong></td>
+                                    <td align="center">{{!helper.print_duration(i.last_state_change, just_duration=True, x_elts=2)}}</td>
+                                    <td class="row hidden-sm hidden-xs">
+                                       <div class="ellipsis output">
+                                          {{!helper.strip_html_output(i.output[:app.max_output_length]) if app.allow_html_output else i.output[:app.max_output_length]}}
+                                          %if i.long_output:
+                                          <div class="long-output">
+                                             {{!helper.strip_html_output(i.long_output[:app.max_output_length]) if app.allow_html_output else i.long_output[:app.max_output_length]}}
+                                          </div>
+                                          %end
+                                       </div>
+                                    </td>
+                                 </tr>
+                                 %end
+                                 %end
+                              </table>
+                           </div>
+                           </div>
+                        </div>
+                        <div class="col-sm-1"></div>
                   %end
                   </div>
                </td>

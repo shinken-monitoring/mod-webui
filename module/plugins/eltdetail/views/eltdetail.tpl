@@ -491,7 +491,7 @@ Invalid element name
                                  <td><!--{{! app.helper.get_on_off(elt.active_checks_enabled, 'Is active checking enabled?')}}-->
                                     <input type="checkbox" {{'checked' if elt.active_checks_enabled else ''}} 
                                           class="switch" data-size="mini" data-on-color="success" data-off-color="danger"
-                                          action="toggle-active-checks" 
+                                          data-type="action" action="toggle-active-checks" 
                                           data-element="{{helper.get_uri_name(elt)}}" data-value="{{elt.active_checks_enabled}}"
                                           >
                                  </td>
@@ -515,7 +515,7 @@ Invalid element name
                                  <td><!--{{! app.helper.get_on_off(elt.passive_checks_enabled, 'Is passive checking enabled?')}}-->
                                     <input type="checkbox" {{'checked' if elt.passive_checks_enabled else ''}} 
                                           class="switch" data-size="mini" data-on-color="success" data-off-color="danger"
-                                          action="toggle-passive-checks"
+                                          data-type="action" action="toggle-passive-checks"
                                           data-element="{{helper.get_uri_name(elt)}}" data-value="{{elt.passive_checks_enabled}}"
                                           >
                                  </td>
@@ -554,7 +554,7 @@ Invalid element name
                                  <td><!--{{! app.helper.get_on_off(elt.event_handler_enabled, 'Is event handler enabled?')}}-->
                                     <input type="checkbox" {{'checked' if elt.event_handler_enabled else ''}}
                                           class="switch" data-size="mini" data-on-color="success" data-off-color="danger"
-                                          action="toggle-event-handler"
+                                          data-type="action" action="toggle-event-handler"
                                           data-element="{{helper.get_uri_name(elt)}}" data-value="{{elt.event_handler_enabled}}"
                                           >
                                  </td>
@@ -593,7 +593,7 @@ Invalid element name
                                  <td><!--{{! app.helper.get_on_off(elt.flap_detection_enabled, 'Is status flapping detection enabled?')}}-->
                                     <input type="checkbox" {{'checked' if elt.flap_detection_enabled else ''}}
                                           class="switch" data-size="mini" data-on-color="success" data-off-color="danger"
-                                          action="toggle-flap-detection"
+                                          data-type="action" action="toggle-flap-detection"
                                           data-element="{{helper.get_uri_name(elt)}}" data-value="{{elt.flap_detection_enabled}}"
                                           >
                                  </td>
@@ -631,7 +631,7 @@ Invalid element name
                                  <td><!--{{! app.helper.get_on_off(elt.notifications_enabled, "Are notifications enabled for this element?")}}-->
                                     <input type="checkbox" {{'checked' if elt.notifications_enabled else ''}} 
                                           class="switch" data-size="mini" data-on-color="success" data-off-color="danger"
-                                          action="toggle-notifications"
+                                          data-type="action" action="toggle-notifications"
                                           data-element="{{helper.get_uri_name(elt)}}" data-value="{{elt.notifications_enabled}}"
                                           >
                                  </td>
@@ -807,7 +807,7 @@ Invalid element name
                               %if app.can_action():
                               <td>
                                  <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm" 
-                                       action="change-variable"
+                                       data-type="action" action="change-variable"
                                        data-toggle="tooltip" data-placement="bottom" title="Change a custom variable for this {{elt_type}}"
                                        data-element="{{helper.get_uri_name(elt)}}" data-variable="{{var}}" data-value="{{elt.customs[var]}}"
                                        >
@@ -847,7 +847,7 @@ Invalid element name
                                  <td><strong>Active checks enabled:</strong></td>
                                  <td>
                                     <input type="checkbox" class="switch" {{'checked' if elt.active_checks_enabled else ''}} 
-                                          action="toggle-active-checks" 
+                                          data-type="action" action="toggle-active-checks" 
                                           data-element="{{helper.get_uri_name(elt)}}" data-value="{{elt.active_checks_enabled}}"
                                           >
                                  </td>
@@ -856,7 +856,7 @@ Invalid element name
                                  <td><strong>Passive checks enabled:</strong></td>
                                  <td>
                                     <input type="checkbox" class="switch" {{'checked' if elt.passive_checks_enabled else ''}} 
-                                          action="toggle-passive-checks"
+                                          data-type="action" action="toggle-passive-checks"
                                           data-element="{{helper.get_uri_name(elt)}}" data-value="{{elt.passive_checks_enabled}}"
                                           >
                                  </td>
@@ -865,7 +865,7 @@ Invalid element name
                                  <td><strong>Notifications enabled:</strong></td>
                                  <td>
                                     <input type="checkbox" class="switch" {{'checked' if elt.notifications_enabled else ''}} 
-                                          action="toggle-notifications"
+                                          data-type="action" action="toggle-notifications"
                                           data-element="{{helper.get_uri_name(elt)}}" data-value="{{elt.notifications_enabled}}"
                                           >
                                  </td>
@@ -874,7 +874,7 @@ Invalid element name
                                  <td><strong>Event handler enabled:</strong></td>
                                  <td>
                                     <input type="checkbox" class="switch" {{'checked' if elt.event_handler_enabled else ''}}
-                                          action="toggle-event-handler"
+                                          data-type="action" action="toggle-event-handler"
                                           data-element="{{helper.get_uri_name(elt)}}" data-value="{{elt.event_handler_enabled}}"
                                           >
                                  </td>
@@ -883,7 +883,7 @@ Invalid element name
                                  <td><strong>Flapping detection enabled:</strong></td>
                                  <td>
                                     <input type="checkbox" class="switch" {{'checked' if elt.flap_detection_enabled else ''}} 
-                                          action="toggle-flap-detection"
+                                          data-type="action" action="toggle-flap-detection"
                                           data-element="{{helper.get_uri_name(elt)}}" data-value="{{elt.flap_detection_enabled}}"
                                           >
                                  </td>
@@ -920,7 +920,7 @@ Invalid element name
                               <td>{{helper.print_date(c.entry_time)}}</td>
                               <td>
                                  <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm" 
-                                       action="delete-comment"
+                                       data-type="action" action="delete-comment"
                                        data-toggle="tooltip" data-placement="bottom" title="Delete the comment '{{c.id}}' for this {{elt_type}}"
                                        data-element="{{helper.get_uri_name(elt)}}" data-comment="{{c.id}}"
                                        >
@@ -939,7 +939,7 @@ Invalid element name
                      %end
                      
                      <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm" 
-                           action="add-comment"
+                           data-type="action" action="add-comment"
                            data-toggle="tooltip" data-placement="bottom" title="Add a comment for this {{elt_type}}"
                            data-element="{{helper.get_uri_name(elt)}}" 
                            >
@@ -947,7 +947,7 @@ Invalid element name
                      </button>
                      %if len(elt.comments) > 0:
                      <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm" 
-                           action="delete-comments"
+                           data-type="action" action="delete-comments"
                            data-toggle="tooltip" data-placement="bottom" title="Delete all the comments of this {{elt_type}}"
                            data-element="{{helper.get_uri_name(elt)}}" 
                            >
@@ -984,7 +984,7 @@ Invalid element name
                               <td>{{helper.print_date(dt.start_time)}} - {{helper.print_date(dt.end_time)}}</td>
                               <td>
                                  <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm" 
-                                       action="delete-downtime"
+                                       data-type="action" action="delete-downtime"
                                        data-toggle="tooltip" data-placement="bottom" title="Delete the downtime '{{dt.id}}' for this {{elt_type}}"
                                        data-element="{{helper.get_uri_name(elt)}}" data-downtime="{{dt.id}}"
                                        >
@@ -1002,7 +1002,7 @@ Invalid element name
                      %end
                   
                      <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm" 
-                           action="schedule-downtime"
+                           data-type="action" action="schedule-downtime"
                            data-toggle="tooltip" data-placement="bottom" title="Schedule a downtime for this {{elt_type}}"
                            data-element="{{helper.get_uri_name(elt)}}" 
                            >
@@ -1010,7 +1010,7 @@ Invalid element name
                      </button>
                      %if len(elt.downtimes) > 0:
                      <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm" 
-                           action="delete-downtimes"
+                           data-type="action" action="delete-downtimes"
                            data-toggle="tooltip" data-placement="bottom" title="Delete all the downtimes of this {{elt_type}}"
                            data-element="{{helper.get_uri_name(elt)}}" 
                            >
@@ -1127,7 +1127,7 @@ Invalid element name
                <div class="panel panel-default">
                   <div class="panel-body">
                      <div class="btn-group btn-group-sm pull-right">
-                        <button action="fullscreen-request" class="btn btn-primary"><i class="fa fa-desktop"></i> Fullscreen</button>
+                        <button data-type="action" action="fullscreen-request" class="btn btn-primary"><i class="fa fa-desktop"></i> Fullscreen</button>
                      </div>
                      <div id="inner_depgraph" data-element='{{elt.get_full_name()}}'>
                      </div>
