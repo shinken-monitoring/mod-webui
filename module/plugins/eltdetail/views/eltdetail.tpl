@@ -28,7 +28,7 @@ Invalid element name
 %title = 'Service detail: ' + elt.service_description+' on '+elt.host.host_name
 %end
 
-%rebase("layout", js=['eltdetail/js/eltdetail.js', 'eltdetail/js/flot/jquery.flot.min.js', 'eltdetail/js/flot/jquery.flot.resize.min.js', 'eltdetail/js/flot/jquery.flot.pie.min.js', 'eltdetail/js/flot/jquery.flot.categories.min.js', 'eltdetail/js/flot/jquery.flot.time.min.js', 'eltdetail/js/flot/jquery.flot.stack.min.js', 'eltdetail/js/flot/jquery.flot.valuelabels.js',  'eltdetail/js/jquery.color.js', 'eltdetail/js/bootstrap-switch.min.js', 'eltdetail/js/jquery.Jcrop.js', 'eltdetail/js/graphs.js', 'eltdetail/js/custom_views.js', 'eltdetail/js/canvas.js'], css=['eltdetail/css/bootstrap-switch.min.css', 'eltdetail/css/eltdetail.css', 'eltdetail/css/jquery.Jcrop.css', 'eltdetail/css/canvas.css'], user=user, app=app, refresh=True, breadcrumb=breadcrumb, title=title)
+%rebase("layout", js=['eltdetail/js/eltdetail.js', 'eltdetail/js/flot/jquery.flot.min.js', 'eltdetail/js/flot/jquery.flot.tickrotor.js', 'eltdetail/js/flot/jquery.flot.resize.min.js', 'eltdetail/js/flot/jquery.flot.pie.min.js', 'eltdetail/js/flot/jquery.flot.categories.min.js', 'eltdetail/js/flot/jquery.flot.time.min.js', 'eltdetail/js/flot/jquery.flot.stack.min.js', 'eltdetail/js/flot/jquery.flot.valuelabels.js',  'eltdetail/js/jquery.color.js', 'eltdetail/js/bootstrap-switch.min.js', 'eltdetail/js/jquery.Jcrop.js', 'eltdetail/js/graphs.js', 'eltdetail/js/custom_views.js', 'eltdetail/js/canvas.js'], css=['eltdetail/css/bootstrap-switch.min.css', 'eltdetail/css/eltdetail.css', 'eltdetail/css/jquery.Jcrop.css', 'eltdetail/css/canvas.css'], user=user, app=app, refresh=True, breadcrumb=breadcrumb, title=title)
 
 %# Main variables
 %elt_name = elt.host_name if elt_type=='host' else elt.service_description+' on '+elt.host.host_name
@@ -478,9 +478,9 @@ Invalid element name
                                  <td><strong>Check command:</strong></td>
                                  <td class="truncate_command">
                                  %try:
-                                    {{ MacroResolver().resolve_simple_macros_in_string(elt.get_check_command(), elt.get_data_for_checks()) }}
+                                    <a href="/commands#{{elt.get_check_command()}}">{{ MacroResolver().resolve_simple_macros_in_string(elt.get_check_command(), elt.get_data_for_checks()) }}</a>
                                  %except:
-                                    {{elt.get_check_command()}}
+                                    <a href="/commands#{{elt.get_check_command()}}">{{elt.get_check_command()}}</a>
                                  %end
                                  </td>
                                  <td>

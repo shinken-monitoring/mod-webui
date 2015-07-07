@@ -17,12 +17,8 @@
          %for command in commands:
             %if hasattr(command, 'command_line'):
             <tr>
-            <td><strong>{{command.command_name}}</strong></td>
+            <td><a name="{{command.command_name}}"></a><strong>{{command.command_name}}</strong></td>
             <td>{{command.command_line}}</td>
-            </tr>
-            %else:
-            <tr>
-            <td colspan="2"><strong>No command line defined!</strong></td>
             </tr>
             %end
          %end
