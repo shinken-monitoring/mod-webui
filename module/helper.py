@@ -507,15 +507,6 @@ class Helper(object):
         else:
             return '''<i title="%s" class="glyphicon glyphicon-remove font-red">%s</i>''' % (title, message)
 
-    # We will output as a ul/li list the impacts of this
-    def got_impacts_list_as_li(self, obj):
-        impacts = obj.impacts
-        r = '<ul>\n'
-        for i in impacts:
-            r += '<li>%s</li>\n' % i.get_full_name()
-        r += '</ul>\n'
-        return r
-
     # Return the impacts as a business sorted list
     def get_impacts_sorted(self, obj):
         t = copy.copy(obj.impacts)
