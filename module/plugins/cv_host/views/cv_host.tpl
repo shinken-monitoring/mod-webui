@@ -251,7 +251,7 @@
                      show: false
                   },
                   yaxis: {
-                     show: true, min: 0, max: 100
+                     show: true, min: 0, max: {{ max(100, max(all_perfs['memory'].values())) }}
                   },
                   xaxis: {
                      show: true,
@@ -307,7 +307,7 @@
                      show: false
                   },
                   yaxis: {
-                     show: true, min: 0, max: 100
+                     show: true, min: 0, max: {{ max(100, max(all_perfs['disks'].values())) }}
                   },
                   xaxis: {
                      show: true,
@@ -363,7 +363,7 @@
                      show: false
                   },
                   yaxis: {
-                     show: true, min: 0, max: 100
+                     show: true, min: 0, max: {{ max(100, max(all_perfs['network'].values())) }}
                   },
                   xaxis: {
                      show: true,
