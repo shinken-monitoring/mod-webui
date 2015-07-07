@@ -84,7 +84,7 @@ function remove_element(name){
       hide_actions();
 
       // Restart page refresh timer
-      reinit_refresh();
+      start_refresh();
    }
 }
 
