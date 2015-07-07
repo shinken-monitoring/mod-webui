@@ -22,24 +22,28 @@
  along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+var layout_logs=false;
+
 /*
  * To load on run some additional js or css files.
 */
 function loadjscssfile(filename, filetype){
-  if (filetype=="js"){ //if filename is a external JavaScript file
-    $.ajax({
-      url: filename,
-      dataType: "script",
-      error: function () {
-        console.error('Shinken script error, not loaded: ', filename);
-      }
-    });
-  } else if (filetype=="css"){ //if filename is an external CSS file
-    $('<link>')
-      .appendTo('head')
-      .attr({type : 'text/css', rel : 'stylesheet'})
-      .attr('href', filename);
-  }
+   if (filetype=="js") {
+      if (layout_logs) console.debug('Loading Js file: ', filename);
+      $.ajax({
+         url: filename,
+         dataType: "script",
+         error: function () {
+            console.error('Shinken script error, not loaded: ', filename);
+         }
+      });
+   } else if (filetype=="css") {
+      if (layout_logs) console.debug('Loading Css file: ', filename);
+      $('<link>')
+         .appendTo('head')
+         .attr({type : 'text/css', rel : 'stylesheet'})
+         .attr('href', filename);
+   }
 }
 
 
@@ -54,6 +58,7 @@ function save_user_preference(key, value, callback) {
    };
    
    $.post("/user/save_pref", { 'key' : key, 'value' : value}, function() {
+      if (layout_logs) console.debug('User preference saved: ', key, value);
       raise_message_ok("User parameter "+key+" saved");
       try {
          window[callback]();
@@ -75,6 +80,7 @@ function save_common_preference(key, value, callback) {
    };
    
    $.post("/user/save_common_pref", { 'key' : key, 'value' : value}, function() {
+      if (layout_logs) console.debug('Common preference saved: ', key, value);
       raise_message_ok("Common parameter "+key+" set to "+value);
       try {
          window[callback]();
@@ -90,10 +96,12 @@ function save_common_preference(key, value, callback) {
  *  Actions bar related code
  */
 function hide_actions(){
+   if (layout_logs) console.debug('Hiding actions bar');
    $('#actions').hide();
 }
 
 function show_actions(){
+   if (layout_logs) console.debug('Showing actions bar');
    $('#actions').show();
 }
 
@@ -102,6 +110,7 @@ function show_actions(){
  * Display the layout modal form
  */
 function display_form(form) {
+   if (layout_logs) console.debug('Displaying form: ', form);
    stop_refresh();
    $('#modal').modal({
       keyboard: true,
@@ -112,7 +121,7 @@ function display_form(form) {
 }
 
 $(document).ready(function(){
-   // Clean modal box content when hidden ...
+   // When modal box is hidden ...
    $('#modal').on('hidden.bs.modal', function () {
       // Show sidebar menu ...
       $('.sidebar').show();
@@ -121,6 +130,7 @@ $(document).ready(function(){
          $('.actionbar').show();
       }
       
+      // Clean modal box content ...
       $(this).removeData('bs.modal');
    });
    
