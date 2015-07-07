@@ -38,7 +38,7 @@
             <div class="show-problem pull-right" id="show-problem-{{imp_id}}"><i class="fa fa-arrow-right"></i></div>
             <div class="impact-rows">
                <span>
-                  {{impact.get_name()}}
+                  {{impact.get_full_name()}}
                   %if impact.business_impact > 2:
                      {{!helper.get_business_impact_text(impact.business_impact)}}
                   %end
