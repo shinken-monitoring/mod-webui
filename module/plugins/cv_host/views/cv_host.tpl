@@ -130,8 +130,9 @@
 
    <div class="row" name="services_layout">
       <div class="col-sm-6" name="left_metrics">
-         %if 'load' in all_states and 'load' in all_perfs:
+         %if 'load' in all_states and all_perfs['load']:
          <div class="well well-sm" name="load_container">
+            <span class="pull-right">{{!app.helper.get_fa_icon_state_and_label(cls='service', state=all_states['load'])}}</span>
             <h4>Load average</h4>
             %for load in all_perfs['load']:
             <div class="donut ">
@@ -172,8 +173,9 @@
          </div>
          %end
 
-         %if 'cpu' in all_states and 'cpu' in all_perfs:
+         %if 'cpu' in all_states and all_perfs['cpu']:
          <div class="well well-sm" name="cpu_container">
+            <span class="pull-right">{{!app.helper.get_fa_icon_state_and_label(cls='service', state=all_states['cpu'])}}</span>
             <h4>CPU</h4>
             %for cpu in all_perfs['cpu']:
             <div class="donut ">
@@ -214,8 +216,9 @@
          </div>
          %end
 
-         %if 'memory' in all_states and 'memory' in all_perfs:
+         %if 'memory' in all_states and all_perfs['memory']:
          <div class="well well-sm" name="memory_container">
+            <span class="pull-right">{{!app.helper.get_fa_icon_state_and_label(cls='service', state=all_states['memory'])}}</span>
             <h4>Memory</h4>
             <div class="barchart" style="width:100%; height: 120px;" id="{{config}}-memory-barchart"></div>
          </div>
@@ -226,7 +229,6 @@
                %for mem in all_perfs['memory']:
                   {
                      data: [ [{{i}}, {{all_perfs['memory'][mem]}}] ],
-                     label: '{{mem}}',
                      color: main_colors['{{all_states['memory']}}'],
                      valueLabels: {
                         show: true,
@@ -234,7 +236,6 @@
                         labelFormatter: function(v) {
                            return (+v).toFixed(0);
                         },
-                        //valign: 'top', align: 'center', font: "8pt 'Arial'", fontcolor: '#666'
                      },
                      bars: { 
                         show: true, align: "center", lineWidth: 2, barWidth: 0.5
@@ -251,18 +252,25 @@
                      show: false
                   },
                   yaxis: {
+                     %try:
                      show: true, min: 0, max: {{ max(100, max(all_perfs['memory'].values())) }}
+                     %except ValueError:
+                     show: true, min: 0, max: 100
+                     %end
                   },
                   xaxis: {
                      show: true,
                      position: "bottom",
                      tickSize: 1,
+                     rotateTicks: {{0 if len(all_perfs['memory']) < 5 else 60}}, 
                      tickFormatter: function(val, axis) {
-                        %i=0
+                        var values=[];
                         %for mem in all_perfs['memory']:
-                           if (val == {{i}}) return '{{mem}}';
-                          %i=i+1
+                           values.push('{{mem}}');
                         %end
+                        
+                        if (val==-1) return ('');
+                        return (values[val]);
                      }
                   }
                }
@@ -270,8 +278,9 @@
          </script>
          %end
 
-         %if 'disks' in all_states and 'disks' in all_perfs:
+         %if 'disks' in all_states and all_perfs['disks']:
          <div class="well well-sm" name="disks_container">
+            <span class="pull-right">{{!app.helper.get_fa_icon_state_and_label(cls='service', state=all_states['disks'])}}</span>
             <h4>Disks</h4>
             <div class="barchart" style="width:100%; height: 120px;" id="{{config}}-disks-barchart"></div>
          </div>
@@ -282,7 +291,6 @@
                %for disk in all_perfs['disks']:
                   {
                      data: [ [{{i}}, {{all_perfs['disks'][disk]}}] ],
-                     label: '{{disk}}',
                      color: main_colors['{{all_states['disks']}}'],
                      valueLabels: {
                         show: true,
@@ -307,18 +315,25 @@
                      show: false
                   },
                   yaxis: {
+                     %try:
                      show: true, min: 0, max: {{ max(100, max(all_perfs['disks'].values())) }}
+                     %except ValueError:
+                     show: true, min: 0, max: 100
+                     %end
                   },
                   xaxis: {
                      show: true,
                      position: "bottom",
                      tickSize: 1,
+                     rotateTicks: {{0 if len(all_perfs['disks']) < 5 else 60}}, 
                      tickFormatter: function(val, axis) {
-                        %i=0
-                        %for disk in all_perfs['disks']:
-                           if (val == {{i}}) return '{{disk}}';
-                          %i=i+1
+                        var values=[];
+                        %for mem in all_perfs['disks']:
+                           values.push('{{disk}}');
                         %end
+                        
+                        if (val==-1) return ('');
+                        return (values[val]);
                      }
                   }
                }
@@ -326,8 +341,9 @@
          </script>
          %end
          
-         %if 'network' in all_states and 'network' in all_perfs:
+         %if 'network' in all_states and all_perfs['network']:
          <div class="well well-sm" name="network_container">
+            <span class="pull-right">{{!app.helper.get_fa_icon_state_and_label(cls='service', state=all_states['network'])}}</span>
             <h4>Network</h4>
             <div class="barchart" style="width:100%; height: 120px;" id="{{config}}-network-barchart"></div>
          </div>
@@ -338,7 +354,6 @@
                %for net in all_perfs['network']:
                   {
                      data: [ [{{i}}, {{all_perfs['network'][net]}}] ],
-                     label: '{{net}}',
                      color: main_colors['{{all_states['network']}}'],
                      valueLabels: {
                         show: true,
@@ -363,18 +378,25 @@
                      show: false
                   },
                   yaxis: {
+                     %try:
                      show: true, min: 0, max: {{ max(100, max(all_perfs['network'].values())) }}
+                     %except ValueError:
+                     show: true, min: 0, max: 100
+                     %end
                   },
                   xaxis: {
                      show: true,
                      position: "bottom",
                      tickSize: 1,
+                     rotateTicks: {{0 if len(all_perfs['network']) < 5 else 60}}, 
                      tickFormatter: function(val, axis) {
-                        %i=0
-                        %for net in all_perfs['network']:
-                           if (val == {{i}}) return '{{net}}';
-                          %i=i+1
+                        var values=[];
+                        %for mem in all_perfs['network']:
+                           values.push('{{net}}');
                         %end
+                        
+                        if (val==-1) return ('');
+                        return (values[val]);
                      }
                   }
                }
