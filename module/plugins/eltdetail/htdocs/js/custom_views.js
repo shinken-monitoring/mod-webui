@@ -55,6 +55,9 @@ function show_custom_view(elt){
                   $(this).css('height', $('#cvhost_replace').height() + "px");
                });
                $('#cvhost_replace').prepend('<div class="alert alert-danger">Replacing the custom view \''+cvname+'\' that was not found ... hope it will help anyway :-)</div>');
+               setTimeout(function(){
+                  $('#cvhost_replace div.alert').remove();
+               }, 10000);
                if (custom_logs) console.debug('Loaded custom view (after error): ', 'cvhost_replace');
             }
          });
