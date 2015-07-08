@@ -53,6 +53,17 @@ html, body {
  */
 
 /*
+ * Services / impacts tree
+ */
+.services-tree ul {
+   padding-top: 0;  padding-bottom:0; border: 0;
+}
+.services-tree ul li{
+   background-color: transparent;
+   padding-top: 0;  padding-bottom:0; border: 0;
+}
+
+/*
  * Popover
  */
 .popover {
