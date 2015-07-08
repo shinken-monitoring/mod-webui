@@ -25,6 +25,7 @@ app = None
 from shinken.log import logger
 
 import time
+import re
 
 try:
     import json
@@ -39,7 +40,6 @@ except ImportError:
 
 ### Plugin's parameters
 params = {}
-
 
 # Hook called by WebUI module once the plugin is loaded ...
 def load_config(app):
@@ -128,12 +128,34 @@ def show_worldmap_widget():
     wid = app.request.GET.get('wid', 'widget_worldmap_' + str(int(time.time())))
     collapsed = (app.request.GET.get('collapsed', 'False') == 'True')
 
-    options = {}
+    # We want to limit the number of elements, The user will be able to increase it
+    nb_elements = max(0, int(app.request.GET.get('nb_elements', '10')))
+    refine_search = app.request.GET.get('search', '')
+    
+    # Apply search filter if exists ...
+    search = app.request.query.get('search', "type:host")
+    if not "type:host" in search:
+        search = "type:host "+search
+    logger.debug("[WebUI-worldmap] search parameters '%s'", search)
+    items = app.search_hosts_and_services(search, user, get_impacts=False)
+    items = items[:nb_elements]
+    
+    # Ok, if needed, apply the widget refine search filter
+    if refine_search:
+        # We compile the pattern
+        pat = re.compile(refine_search, re.IGNORECASE)
+        new_items = []
+        for item in items:
+            if pat.search(item.get_full_name()):
+                new_items.append(item)
+                continue
+
+        items = new_items[:nb_elements]
 
     # We are looking for hosts that got valid GPS coordinates,
     # and we just give them to the template to print them.
     valid_hosts = []
-    for h in app.get_hosts(user):
+    for h in items:
         # Filter hosts
         # if h.get_name() in params['map_hostsHide']:
             # continue
@@ -159,9 +181,20 @@ def show_worldmap_widget():
             if -180 <= _lat <= 180 and -180 <= _lng <= 180:
                 valid_hosts.append(h)
 
+    wid = app.request.GET.get('wid', 'widget_problems_' + str(int(time.time())))
+    collapsed = (app.request.GET.get('collapsed', 'False') == 'True')
+
+    options = {'search': {'value': refine_search, 'type': 'text', 'label': 'Filter by name'},
+               'nb_elements': {'value': nb_elements, 'type': 'int', 'label': 'Max number of elements to show'},
+               }
+
+    title = 'Worldmap'
+    if refine_search:
+        title = 'Worldmap (%s)' % refine_search
+
     return {'app': app, 'user': user, 'wid': wid,
             'collapsed': collapsed, 'options': options,
-            'base_url': '/widget/worldmap', 'title': 'Worldmap',
+            'base_url': '/widget/worldmap', 'title': title,
             'params': params, 'hosts' : valid_hosts
             }
 

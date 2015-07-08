@@ -2,11 +2,22 @@
 
 <!-- HTML map container -->
 <div class="map_container_widget">
-   <div id="map">
-      <div class="alert alert-info">
-         <a href="#" class="alert-link">Loading map ...</a>
+   %if not hosts:
+      <center>
+         %if search_string:
+         <h3>Bummer, we couldn't find anything.</h3>
+         Use the filters or the bookmarks to find what you are looking for, or try a new search query.
+         %else:
+         <h3>No host or service.</h3>
+         %end
+      </center>
+   %else:
+      <div id="map">
+         <div class="alert alert-info">
+            <a href="#" class="alert-link">Loading map ...</a>
+         </div>
       </div>
-   </div>
+   %end
 </div>
 
 <script>
@@ -113,38 +124,38 @@
             $.getScript(debugJs ? "/static/worldmap/js/markerwithlabel.js" : "/static/worldmap/js/markerwithlabel_packed.js", function( data, textStatus, jqxhr ) {
                if (debugJs) console.log('Google labeled marker API loaded ...');
                
-          if (mapLayer=='OSM') {
-            // Define OSM map type pointing at the OpenStreetMap tile server
-            map = new google.maps.Map(document.getElementById('map'),{
-              center: new google.maps.LatLng (defLat, defLng),
-              zoom: defaultZoom,
-              mapTypeId: "OSM",
-              mapTypeControl: false,
-              streetViewControl: false
-            });
+               if (mapLayer=='OSM') {
+                  // Define OSM map type pointing at the OpenStreetMap tile server
+                  map = new google.maps.Map(document.getElementById('map'),{
+                     center: new google.maps.LatLng (defLat, defLng),
+                     zoom: defaultZoom,
+                     mapTypeId: "OSM",
+                     mapTypeControl: false,
+                     streetViewControl: false
+                  });
 
-            map.mapTypes.set("OSM", new google.maps.ImageMapType({
-                getTileUrl: function(coord, zoom) {
-                    return "http://tile.openstreetmap.org/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
-                },
-                tileSize: new google.maps.Size(256, 256),
-                name: "OpenStreetMap",
-                maxZoom: 18
-            }));
-          } else {
-            map = new google.maps.Map(document.getElementById('map'),{
-               center: new google.maps.LatLng (defLat, defLng),
-               zoom: defaultZoom,
-               mapTypeId: google.maps.MapTypeId.ROADMAP,
-               panControl: true,
-               zoomControl: true,
-               mapTypeControl: false,
-               scaleControl: true,
-               streetViewControl: false
-            });
-          }
+                  map.mapTypes.set("OSM", new google.maps.ImageMapType({
+                     getTileUrl: function(coord, zoom) {
+                        return "http://tile.openstreetmap.org/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
+                     },
+                     tileSize: new google.maps.Size(256, 256),
+                     name: "OpenStreetMap",
+                     maxZoom: 18
+                  }));
+               } else {
+                  map = new google.maps.Map(document.getElementById('map'),{
+                     center: new google.maps.LatLng (defLat, defLng),
+                     zoom: defaultZoom,
+                     mapTypeId: google.maps.MapTypeId.ROADMAP,
+                     panControl: true,
+                     zoomControl: true,
+                     mapTypeControl: false,
+                     scaleControl: true,
+                     streetViewControl: false
+                  });
+               }
           
-          var bounds = new google.maps.LatLngBounds();
+               var bounds = new google.maps.LatLngBounds();
                infoWindow = new google.maps.InfoWindow;
                
                %# For all hosts ...
@@ -178,8 +189,8 @@
 
                   var markerInfoWindowContent = [
                      '<div class="map-infoView" id="iw-{{h.get_name()}}">',
-                     '<img class="map-iconHostState map-host-{{h.state}} map-host-{{h.state_type}}" src="{{app.helper.get_icon_state(h)}}" />',
-                     '<span class="map-hostname"><a href="/host/{{h.get_name()}}">{{h.get_name()}}</a> is {{h.state}}.</span>',
+                     '{{!app.helper.get_fa_icon_state(h)}}',
+                     '<span class="map-hostname"><a href="/host/{{h.get_name()}}">{{h.get_name()}}</a> {{!app.helper.get_business_impact_text(h.business_impact)}} is {{h.state}}.</span>',
                      %if h.in_scheduled_downtime:
                      '<div><i class="fa fa-ambulance"></i> Currently in scheduled downtime.</div>',
                      %end
@@ -192,22 +203,15 @@
                      %end
                      '<hr/>',
                      %if h.services:
-                     '<ul class="map-servicesList">',
+                     '<ul class="map-services">',
                      %for s in h.services:
                         %#if s.get_name() in params['map_servicesHide']:
                         %#continue
                         %#end
                         '<li>',
-                        %if s.problem_has_been_acknowledged:
-                        '<span class="map-service map-service-ACK map-service-{{s.state_type}}"></span>',
-                        '<i class="fa fa-check"></i>',
-                        %else:
-                        '<span class="map-service map-service-{{s.state}} map-service-{{s.state_type}}"></span>',
-                        %end
-                        %for i in range(0, s.business_impact-2):
-                        '<img src="/static/images/star.png">',
-                        %end
-                        '<a href="/service/{{h.get_name()}}/{{s.get_name()}}">{{s.get_name()}}</a> is {{s.state}}.</li>',
+                        '{{!app.helper.get_fa_icon_state(s)}}',
+                        '<a href="/service/{{h.get_name()}}/{{s.get_name()}}">{{s.get_name()}} {{s.get_name()}}</a> {{!app.helper.get_business_impact_text(s.business_impact)}} is {{s.state}}.',
+                        '</li>',
                      %end
                      '</ul>',
                      %end
@@ -379,9 +383,13 @@
    $(document).ready(function (){
       // Uncomment to activate javascript console logs ...
       // debugJs=true; 
-      $.getScript("http://maps.googleapis.com/maps/api/js?sensor=false&callback=mapInit", function() {
-         apiLoaded=true;
-         if (debugJs) console.log("Google maps API loaded ...");
-      });
+      if (! apiLoaded) {
+         $.getScript("http://maps.googleapis.com/maps/api/js?sensor=false&callback=mapInit", function() {
+            apiLoaded=true;
+            if (debugJs) console.log("Google maps API loaded ...");
+         });
+      } else {
+         mapInit();
+      }
    });
 </script>
