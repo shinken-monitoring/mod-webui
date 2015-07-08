@@ -910,7 +910,7 @@ class Helper(object):
                 icon = 'plus'
                 list_state = 'collapsed'
 
-            s += """<a class="toggle-list" data-state="%s" data-target="ag-%s"> <span class="alert-small alert-%s"> %s </span> <i class="fa fa-%s"></i> </a>""" % (list_state, _id, state, path, icon)
+            s += """<a class="toggle-list" data-state="%s" data-target="ag-%s"> <span class="alert-small alert-%s"> %s&nbsp;</span> <i class="fa fa-%s"></i> </a>""" % (list_state, _id, state, path, icon)
 
         s += """<ul name="ag-%s" class="list-group" style="display: %s;">""" % (_id, display)
         # If we got no parents, no need to print the expand icon
@@ -923,23 +923,27 @@ class Helper(object):
         s += '<li class="list-group-item">'
         if path == '/' and len(services) > 0:
             s += """<span class="alert-small"> Others </span>"""
-        s += '<ul class="list-group">'
-        # Sort our services before print them
-        services.sort(hst_srv_sort)
-        for svc in services:
-            s += '<li class="list-group-item">'
-            s += helper.get_fa_icon_state(svc)
-            s += self.get_link(svc, short=True)
-            if svc.business_impact > 2:
-                s += "(" + self.get_business_impact_text(svc.business_impact) + ")"
-            s += """ is <span class="font-%s"><strong>%s</strong></span>""" % (svc.state.lower(), svc.state)
-            s += " since %s" % self.print_duration(svc.last_state_change, just_duration=True, x_elts=2)
+            
+        if len(services):
+            s += '<ul class="list-group">'
+            # Sort our services before print them
+            services.sort(hst_srv_sort)
+            for svc in services:
+                s += '<li class="list-group-item">'
+                s += helper.get_fa_icon_state(svc)
+                s += self.get_link(svc, short=True)
+                if svc.business_impact > 2:
+                    s += "(" + self.get_business_impact_text(svc.business_impact) + ")"
+                s += """ is <span class="font-%s"><strong>%s</strong></span>""" % (svc.state.lower(), svc.state)
+                s += " since %s" % self.print_duration(svc.last_state_change, just_duration=True, x_elts=2)
+                s += "</li>"
+            s += "</ul></li>"
+        else:
             s += "</li>"
-        s += "</ul></li>"
 
                 
         s += "</ul>"
-        #safe_print("Returning s:", s)
+
         return s
  
     def print_business_rules(self, tree, level=0, source_problems=[]):
