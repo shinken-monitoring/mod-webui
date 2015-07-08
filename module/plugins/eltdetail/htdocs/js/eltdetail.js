@@ -127,7 +127,7 @@ function on_page_refresh() {
       // First we get the full name of the object from div data
       var n = $('#inner_depgraph').data('element');
       // Loading indicator ...
-      $("#inner_history").html('<i class="fa fa-spinner fa-spin fa-3x"></i> Loading dependency graph ...');
+      $("#inner_depgraph").html('<i class="fa fa-spinner fa-spin fa-3x"></i> Loading dependency graph ...');
       // Then we load the inner depgraph page. Easy isn't it? :)
       $('#inner_depgraph').load('/inner/depgraph/'+n);
    });
