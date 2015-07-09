@@ -57,13 +57,14 @@ app = None
 params = {}
 params['mongo_host'] = "localhost"
 params['mongo_port'] = 27017
-params['db_name'] = "Logs"
-params['logs_limit'] = 500
+params['database'] = "shinken"
+params['collection'] = "Logs"
+params['max_records'] = 500
 params['logs_type'] = ['INFO', 'WARNING', 'ERROR']
 params['logs_hosts'] = []
 params['logs_services'] = []
 
-def load_cfg():
+def load_config(app):
     global params
     
     import os,sys
@@ -78,9 +79,9 @@ def load_cfg():
         z.update(scp.parse_config(configuration_file))
         params = z
 
-        # mongo_host = params['mongo_host']
+        # Integers ...
         params['mongo_port'] = int(params['mongo_port'])
-        params['logs_limit'] = int(params['logs_limit'])
+        params['max_records'] = int(params['max_records'])
         params['logs_type'] = [item.strip() for item in params['logs_type'].split(',')]
         if len(params['logs_hosts']) > 0:
             params['logs_hosts'] = [item.strip() for item in params['logs_hosts'].split(',')]
@@ -88,19 +89,15 @@ def load_cfg():
             params['logs_services'] = [item.strip() for item in params['logs_services'].split(',')]
         
         logger.info("[WebUI-logs] configuration loaded.")
-        logger.info("[WebUI-logs] configuration, database: %s (%s)", params['mongo_host'], params['mongo_port'])
-        logger.info("[WebUI-logs] configuration, fetching limit / types: %d %s", params['logs_limit'], params['logs_type'])
+        logger.info("[WebUI-logs] configuration, database: %s (%s) - %s, %s", params['mongo_host'], params['mongo_port'], params['database'], params['collection'])
+        logger.info("[WebUI-logs] configuration, fetching limit: %d", params['max_records'])
+        logger.info("[WebUI-logs] configuration, fetching types: %s", params['logs_type'])
         logger.info("[WebUI-logs] configuration, hosts: %s", params['logs_hosts'])
         logger.info("[WebUI-logs] configuration, services: %s", params['logs_services'])
         return True
     except Exception, exp:
         logger.warning("[WebUI-logs] configuration file (%s) not available: %s", configuration_file, str(exp))
         return False
-
-
-def reload_cfg():
-    load_cfg()
-    app.bottle.redirect("/config")
 
 
 def getdb(dbname):
@@ -136,7 +133,7 @@ def getdb(dbname):
 def show_logs():
     user = app.check_user_authentication()
 
-    message,db = getdb(params['db_name'])
+    message,db = getdb(params['database'])
     if not db:
         return {
             'app': app,
@@ -149,9 +146,9 @@ def show_logs():
     records=[]
 
     try:
-        logger.debug("[WebUI-logs] fetching records from database: %s / %s / %s (max %d)", params['logs_type'], params['logs_hosts'], params['logs_services'], params['logs_limit'])
+        logger.debug("[WebUI-logs] fetching records from database: %s / %s / %s (max %d)", params['logs_type'], params['logs_hosts'], params['logs_services'], params['max_records'])
 
-        logs_limit = params['logs_limit']
+        max_records = params['max_records']
         logs_type = params['logs_type']
         logs_hosts = params['logs_hosts']
         logs_services = params['logs_services']
@@ -166,7 +163,7 @@ def show_logs():
             
         records=[]
         if len(query) > 0:
-            for log in db.logs.find({'$and': query}).sort("time",-1).limit(logs_limit):
+            for log in db.logs.find({'$and': query}).sort("time",pymongo.DESCENDING).limit(max_records):
                 message = log['message']
                 m = re.search(r"\[(\d+)\] (.*)", message)
                 if m and m.group(2):
@@ -179,7 +176,7 @@ def show_logs():
                     "message" : message
                 })
         else:
-            for log in db.logs.find().sort("time",-1).limit(logs_limit):
+            for log in db.logs.find().sort("time",pymongo.DESCENDING).limit(max_records):
                 message = log['message']
                 m = re.search(r"\[(\d+)\] (.*)", message)
                 if m and m.group(2):
@@ -274,10 +271,10 @@ def set_logs_type_list():
     app.bottle.redirect("/logs")
     return
 
-def get_json(name):
+def get_history(name):
     user = app.check_user_authentication()
 
-    logger.debug("[WebUI-logs] get_json, name: %s", name)
+    logger.debug("[WebUI-logs] get_history, name: %s", name)
     hostname = None
     service = None
     if '/' in name:
@@ -285,9 +282,9 @@ def get_json(name):
         hostname = name.split('/')[0]
     else:
         hostname = name
-    logger.debug("[WebUI-logs] get_json, host/service: %s/%s", hostname, service)
+    logger.debug("[WebUI-logs] get_history, host/service: %s/%s", hostname, service)
 
-    message,db = getdb(params['db_name'])
+    message,db = getdb(params['database'])
     if not db:
         return {
             'app': app,
@@ -300,7 +297,7 @@ def get_json(name):
     records=[]
 
     try:
-        logs_limit = params['logs_limit']
+        max_records = params['max_records']
         logs_type = []
         logs_hosts = [ hostname ]
         logs_services = [ ]
@@ -320,7 +317,7 @@ def get_json(name):
             
         records=[]
         if len(query) > 0:
-            for log in db.logs.find({'$and': query}).sort("time",-1).limit(logs_limit):
+            for log in db.logs.find({'$and': query}).sort("time",pymongo.DESCENDING).limit(max_records):
                 message = log['message']
                 m = re.search(r"\[(\d+)\] (.*)", message)
                 if m and m.group(2):
@@ -333,7 +330,7 @@ def get_json(name):
                     "message":      message
                 })
         else:
-            for log in db.logs.find().sort("time",-1).limit(logs_limit):
+            for log in db.logs.find().sort("time",pymongo.DESCENDING).limit(max_records):
                 message = log['message']
                 m = re.search(r"\[(\d+)\] (.*)", message)
                 if m and m.group(2):
@@ -350,19 +347,12 @@ def get_json(name):
     except Exception, exp:
         logger.error("[WebUI-logs] Exception when querying database: %s", str(exp))
     
-    logger.debug("[WebUI-logs] Finished compiling fetched records")
-    return json.dumps(records)
-
-# Load plugin configuration parameters
-load_cfg()
+    return {'app': app, 'records': records}
 
 pages = {   
-        reload_cfg: {'routes': ['/reload/logs']},
-
         show_logs: {'routes': ['/logs'], 'view': 'logs', 'static': True},
         
-        get_json: {'routes': ['/logs/inner/<name:path>']},
-        # get_json: {'routes': ['/history/:hostname/:service#.+#']},
+        get_history: {'routes': ['/logs/inner/<name:path>'], 'view': 'history'},
     
         form_hosts_list: {'routes': ['/logs/hosts_list'], 'view': 'form_hosts_list'},
         set_hosts_list: {'routes': ['/logs/set_hosts_list'], 'view': 'logs', 'method': 'POST'},
