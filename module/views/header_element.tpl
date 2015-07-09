@@ -175,6 +175,7 @@
             <li> <a href="/parameters"> <span class="fa fa-gears"></span> Configuration </a> </li>
             <li> <a href="/system"> <span class="fa fa-gears"></span> Status </a> </li>
             <li> <a href="/logs"> <span class="fa fa-th-list"></span> Logs </a> </li>
+            <li> <a href="/availability"> <span class="fa fa-bar-chart"></span> Availability </a> </li>
           </ul>
         </li>
         <!--<li> <a href="/shinken-io"> <span class="fa fa-gears"></span> Shinken IO </a> </li>-->
@@ -191,7 +192,7 @@
           <ul class="nav nav-second-level">
             %for c in other_uis:
             <li>
-              <a href="{{c['uri']}}" target="_blank">{{c['label']}}</a>
+              <a href="{{c['uri']}}" target="_blank"><span class="fa fa-rocket"></span> {{c['label']}}</a>
             </li>
             %end
           </ul>

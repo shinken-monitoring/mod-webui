@@ -123,10 +123,10 @@ def getdb(dbname):
     )
 
 
-def get_json(name):
+def get_element(name):
     user = app.check_user_authentication()
 
-    logger.info("[WebUI-availability] get_json, name: %s", name)
+    logger.info("[WebUI-availability] get_element, name: %s", name)
     hostname = None
     service = None
     if '/' in name:
@@ -134,7 +134,7 @@ def get_json(name):
         hostname = name.split('/')[0]
     else:
         hostname = name
-    logger.info("[WebUI-availability] get_json, host/service: %s/%s", hostname, service)
+    logger.info("[WebUI-availability] get_element, host/service: %s/%s", hostname, service)
 
     message,db = getdb(params['database'])
     if not db:
@@ -181,6 +181,43 @@ def get_json(name):
 
     return {'app': app, 'records': records}
     
+
+def get_page():
+    user = app.check_user_authentication()
+
+    logger.info("[WebUI-availability] get_page")
+    hostname = None
+    service = None
+
+    message,db = getdb(params['database'])
+    if not db:
+        return {
+            'app': app,
+            'user': user, 
+            'message': message,
+            'params': params,
+            'records': []
+        }
+
+    records=[]
+
+    try:
+        max_records = params['max_records']
+        logger.debug("[WebUI-availability] Fetching records from database for all hosts")
+
+        for log in db[params['collection']].find().sort("day",pymongo.DESCENDING).limit(max_records):
+            if '_id' in log:
+                del log['_id']
+            records.append(log)
+                
+        logger.debug("[WebUI-availability] %d records fetched from database.", len(records))
+    except Exception, exp:
+        logger.error("[WebUI-availability] Exception when querying database: %s", str(exp))
+
+    return {'app': app, 'user': user, 'records': records}
+    
+
 pages = {   
-    get_json: {'routes': ['/availability/inner/<name:path>'], 'view': 'availability', 'static': True},
+    get_element: {'routes': ['/availability/inner/<name:path>'], 'view': 'availability', 'static': True},
+    get_page: {'routes': ['/availability'], 'view': 'availability-all', 'static': True},
 }
