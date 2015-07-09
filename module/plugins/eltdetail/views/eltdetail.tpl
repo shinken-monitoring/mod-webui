@@ -314,6 +314,9 @@ Invalid element name
             %if 'history' in params['tabs']:
             <li class="history_pane"><a href="#history" data-toggle="tab" id="tab_to_history">History</a></li>
             %end
+            %if 'availability' in params['tabs']:
+            <li class="availability_pane"><a href="#availability" data-toggle="tab">Availability</a></li>
+            %end
          </ul>
          
          <div class="tab-content">
@@ -1127,7 +1130,7 @@ Invalid element name
                <div class="panel panel-default">
                   <div class="panel-body">
                      <div class="btn-group btn-group-sm pull-right">
-                        <button data-type="action" action="fullscreen-request" class="btn btn-primary"><i class="fa fa-desktop"></i> Fullscreen</button>
+                        <button data-type="action" action="fullscreen-request" data-element="inner_depgraph" class="btn btn-primary"><i class="fa fa-desktop"></i> Fullscreen</button>
                      </div>
                      <div id="inner_depgraph" data-element='{{elt.get_full_name()}}'>
                      </div>
@@ -1136,13 +1139,26 @@ Invalid element name
             </div>
             %end
             <!-- Tab Dependency graph End -->
-        
+
             <!-- Tab History start -->
             %if 'history' in params['tabs']:
             <div class="tab-pane fade" id="history">
                <div class="panel panel-default">
                   <div class="panel-body">
                      <div id="inner_history" data-element='{{elt.get_full_name()}}'>
+                     </div>
+                  </div>
+               </div>
+            </div>
+            %end
+            <!-- Tab History end -->
+
+            <!-- Tab Availability start -->
+            %if 'availability' in params['tabs']:
+            <div class="tab-pane fade" id="availability">
+               <div class="panel panel-default">
+                  <div class="panel-body">
+                     <div id="inner_availability" data-element='{{elt.get_full_name()}}'>
                      </div>
                   </div>
                </div>

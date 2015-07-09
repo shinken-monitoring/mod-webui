@@ -134,7 +134,8 @@ function on_page_refresh() {
    
    // Fullscreen management
    $('button[action="fullscreen-request"]').click(function() {
-      screenfull.request($('#inner_depgraph')[0]);
+      var elt = $(this).data('element');
+      screenfull.request($('#'+elt)[0]);
    });
 
    
@@ -204,32 +205,28 @@ function on_page_refresh() {
       var element = $('#inner_history').data('element');
       
       // Loading indicator ...
-      $("#inner_history").html('<i class="fa fa-spinner fa-spin fa-3x"></i> Loading history ...');
-      $.ajax({
-         "url": '/logs/inner/'+element,
-         "dataType": "json",
-         "success": function (response){
-            $("#inner_history").empty();
-            var table = $('<table />').addClass('table-condensed').addClass('table-bordered').appendTo("#inner_history");
-            var tr = $('<thead />').appendTo(table);
-            $('<th />').html('Time').appendTo(tr);
-            $('<th />').html('Service').appendTo(tr);
-            $('<th />').html('Message').appendTo(tr);
-            
-            $('<tbody />').css({fontSize: "x-small"}).appendTo(table);
+      $("#inner_history").html('<i class="fa fa-spinner fa-spin fa-3x"></i> Loading history data ...');
+      $("#inner_history").load('/logs/inner/'+element, function(response, status, xhr) {
+         if (status == "error") {
+            $('#inner_history').html('<div class="alert alert-danger">Sorry but there was an error: ' + xhr.status + ' ' + xhr.statusText+'</div>');
+         }
+      });
+   })
 
-            var tr;
-            $.each(response, function (index, log) {
-               tr = $('<tr />').appendTo("#inner_history table tbody");
-               $('<td />').html(moment.unix(log.timestamp).format('YYYY-MM-DD HH:mm:ss')).appendTo(tr);
-               $('<td />').html(log.service).appendTo(tr);
-               $('<td />').html(log.message).appendTo(tr);
-            });
-         },
-         "error": function (response){
-           console.error(response);
-            // Error message ...
-           $("#inner_history").html('<div class="alert alert-danger"><p class="font-red">Sorry, I cannot load the history!</p></div>');
+
+   /*
+    * Availability
+    */
+   $('a[data-toggle="tab"][href="#availability"]').on('shown.bs.tab', function (e) {
+      // First we get the full name of the object from div data
+      var element = $('#inner_availability').data('element');
+      
+      // Loading indicator ...
+      $("#inner_availability").html('<i class="fa fa-spinner fa-spin fa-3x"></i> Loading availability data ...');
+      
+      $("#inner_availability").load('/availability/inner/'+element, function(response, status, xhr) {
+         if (status == "error") {
+            $('#inner_availability').html('<div class="alert alert-danger">Sorry but there was an error: ' + xhr.status + ' ' + xhr.statusText+'</div>');
          }
       });
    })
