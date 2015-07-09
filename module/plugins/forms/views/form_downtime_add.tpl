@@ -37,7 +37,7 @@
          },
          
          function(start, end, label) {
-            downtime_start = start; downtime_stop = stop;
+            downtime_start = start; downtime_stop = end;
          }
       );
     
