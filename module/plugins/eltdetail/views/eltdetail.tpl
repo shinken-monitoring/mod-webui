@@ -296,20 +296,20 @@ Invalid element name
             %end
             
             %if 'comments' in params['tabs']:
-            <li><a class='link_to_tab' href="#comments" data-toggle="tab">Comments</a></li>
+            <li><a href="#comments" data-toggle="tab">Comments</a></li>
             %end
             %if 'downtimes' in params['tabs']:
-            <li><a class='link_to_tab' href="#downtimes" data-toggle="tab">Downtimes</a></li>
+            <li><a href="#downtimes" data-toggle="tab">Downtimes</a></li>
             %end
             
             %if 'timeline' in params['tabs']:
             <li class="timeline_pane"><a href="#timeline" data-toggle="tab" id="tab_to_timeline">Timeline</a></li>
             %end
             %if 'graphs' in params['tabs']:
-            <li><a class="link_to_tab" href="#graphs" data-toggle="tab" id="tab_to_graphs">Graphs</a></li>
+            <li><a href="#graphs" data-toggle="tab" id="tab_to_graphs">Graphs</a></li>
             %end
             %if 'depgraph' in params['tabs']:
-            <li><a class="link_to_tab" href="#depgraph" data-toggle="tab" id="tab_to_depgraph">Impact graph</a></li>
+            <li><a href="#depgraph" data-toggle="tab" id="tab_to_depgraph">Impact graph</a></li>
             %end
             %if 'history' in params['tabs']:
             <li class="history_pane"><a href="#history" data-toggle="tab" id="tab_to_history">History</a></li>
@@ -1059,7 +1059,6 @@ Invalid element name
                          <div class="font-blue"><strong>No graphs available for this {{elt_type}}!</strong></div>
                      </div>
                      %else:
-                     <!-- <h4>Graphs</h4> -->
                      <div class='well'>
                         <!-- Get the uris for the 5 standard time ranges in advance  -->
                         %fourhours = now - 3600*4
@@ -1105,8 +1104,6 @@ Invalid element name
                         img_src = img_src.replace(/(height=).*?(&)/,'$1' + ($('#real_graphs').width() / 3) + '$2');
                         
                         html_graphes['{{period}}'] +=  '<img src="'+ img_src +'" class="jcropelt"/> \
-                                                       <a href="{{link}}" target="_blank" class="btn"><i class="fa fa-plus"></i> Show more</a>\
-                                                       <a href="javascript:graph_zoom(\''+ element +'\')" class="btn"><i class="icon-zoom-in"></i> Zoom</a>\
                                                        <br>';
                         %end
                         html_graphes['{{period}}'] += '</p>';
