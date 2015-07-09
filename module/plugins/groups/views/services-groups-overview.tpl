@@ -12,24 +12,24 @@
          <div class="pull-left col-sm-2">
             <span class="pull-right">Total services: {{s['nb_elts']}}</span>
          </div>
-         <div class="pull-left progress col-sm-10 no-leftpadding no-rightpadding" >
+         <div class="progress" style="margin-bottom: 0px;">
             <div title="{{s['nb_ok']}} services Ok" class="progress-bar progress-bar-success quickinfo" role="progressbar" 
                data-toggle="tooltip" data-placement="bottom" 
                style="width: {{s['pct_ok']}}%;">{{s['pct_ok']}}% Ok</div>
 
-            <div title="{{s['nb_critical']}} services Critical" class="progress-bar progress-bar-danger quickinfo" 
+            <div title="{{s['nb_critical']}} services Critical" class="progress-bar progress-bar-danger quickinfo" role="progressbar" 
                data-toggle="tooltip" data-placement="bottom" 
                style="width: {{s['pct_critical']}}%;">{{s['pct_critical']}}% Critical</div>
 
-            <div title="{{s['nb_warning']}} services  Warning" class="progress-bar progress-bar-warning quickinfo" 
+            <div title="{{s['nb_warning']}} services  Warning" class="progress-bar progress-bar-warning quickinfo" role="progressbar" 
                data-toggle="tooltip" data-placement="bottom" 
                style="width: {{s['pct_warning']}}%;">{{s['pct_warning']}}% Warning</div>
 
-            <div title="{{s['nb_pending']}} services Pending" class="progress-bar progress-bar-info quickinfo" 
+            <div title="{{s['nb_pending']}} services Pending" class="progress-bar progress-bar-info quickinfo" role="progressbar" 
                data-toggle="tooltip" data-placement="bottom" 
                style="width: {{s['pct_pending']}}%;">{{s['pct_pending']}}% Pending</div>
 
-            <div title="{{s['nb_unknown']}} services Unknown" class="progress-bar progress-bar-info quickinfo" 
+            <div title="{{s['nb_unknown']}} services Unknown" class="progress-bar progress-bar-info quickinfo" role="progressbar" 
                data-toggle="tooltip" data-placement="bottom" 
                style="width: {{s['pct_unknown']}}%;">{{s['pct_unknown']}}% Unknown</div>
          </div>

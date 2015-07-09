@@ -12,24 +12,24 @@
          <div class="pull-left col-sm-2">
             <span class="pull-right">Total hosts: {{h['nb_elts']}}</span>
          </div>
-         <div class="pull-left progress col-sm-10 no-leftpadding no-rightpadding">
+         <div class="progress" style="margin-bottom: 0px;">
             <div title="{{h['nb_up']}} hosts Up" class="progress-bar progress-bar-success quickinfo" role="progressbar" 
                data-toggle="tooltip" data-placement="bottom" 
                style="width: {{h['pct_up']}}%;">{{h['pct_up']}}% Up</div>
 
-            <div title="{{h['nb_down']}} hosts Down" class="progress-bar progress-bar-danger quickinfo" 
+            <div title="{{h['nb_down']}} hosts Down" class="progress-bar progress-bar-danger quickinfo" role="progressbar" 
                data-toggle="tooltip" data-placement="bottom" 
                style="width: {{h['pct_down']}}%;">{{h['pct_down']}}% Down</div>
 
-            <div title="{{h['nb_unreachable']}} hosts Unreachable" class="progress-bar progress-bar-warning quickinfo" 
+            <div title="{{h['nb_unreachable']}} hosts Unreachable" class="progress-bar progress-bar-warning quickinfo" role="progressbar" 
                data-toggle="tooltip" data-placement="bottom" 
                style="width: {{h['pct_unreachable']}}%;">{{h['pct_unreachable']}}% Unreachable</div>
 
-            <div title="{{h['nb_pending']}} hosts Pending" class="progress-bar progress-bar-info quickinfo" 
+            <div title="{{h['nb_pending']}} hosts Pending" class="progress-bar progress-bar-info quickinfo" role="progressbar" 
                data-toggle="tooltip" data-placement="bottom" 
                style="width: {{h['pct_pending']}}%;">{{h['pct_pending']}}% Pending</div>
 
-            <div title="{{h['nb_unknown']}} hosts Unknown" class="progress-bar progress-bar-info quickinfo" 
+            <div title="{{h['nb_unknown']}} hosts Unknown" class="progress-bar progress-bar-info quickinfo" role="progressbar" 
                data-toggle="tooltip" data-placement="bottom" 
                style="width: {{h['pct_unknown']}}%;">{{h['pct_unknown']}}% Unknown</div>
          </div>
