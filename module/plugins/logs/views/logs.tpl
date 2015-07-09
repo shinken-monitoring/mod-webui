@@ -41,7 +41,7 @@
 <ul class="sliding-navigation drop-shadow" id="parameters">
   <li class="sliding-element"><h3>Parameters</h3></li>
   <li class="sliding-element">
-    <a><i class="fa fa-gear"></i> Logs limit: {{params['logs_limit']}}</a>
+    <a><i class="fa fa-gear"></i> Logs limit: {{params['max_records']}}</a>
   </li>
   %if len(params['logs_hosts']) > 0:
   <li class="sliding-element">
