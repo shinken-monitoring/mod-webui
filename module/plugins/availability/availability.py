@@ -26,6 +26,7 @@
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 
 import time
+import datetime
 import re
 
 from shinken.log import logger
@@ -185,9 +186,11 @@ def get_element(name):
 def get_page():
     user = app.check_user_authentication()
 
-    logger.info("[WebUI-availability] get_page")
-    hostname = None
-    service = None
+    # Find start and end date if provided in parameters ...
+    midnight_timestamp = time.mktime (datetime.date.today().timetuple())
+    range_start = int(app.request.GET.get('range_start', midnight_timestamp))
+    range_end = int(app.request.GET.get('range_end', midnight_timestamp+86399))
+    logger.warning("[WebUI-availability] get_page, range: %d - %d", range_start, range_end)
 
     message,db = getdb(params['database'])
     if not db:
@@ -200,21 +203,45 @@ def get_page():
         }
 
     records=[]
-
+    hosts_found=[]
+    days_found=[]
     try:
-        max_records = params['max_records']
-        logger.debug("[WebUI-availability] Fetching records from database for all hosts")
+        logger.info("[WebUI-availability] Fetching records from database, range: %d to %d", range_start, range_end)
 
-        for log in db[params['collection']].find().sort("day",pymongo.DESCENDING).limit(max_records):
+        for log in db[params['collection']].find( { 'day_ts': { '$gte': range_start, '$lte': range_end } } ).sort([
+                    ("day",pymongo.DESCENDING), 
+                    ("hostname",pymongo.ASCENDING), 
+                    ("service",pymongo.ASCENDING)]).limit(params['max_records']):
+                
             if '_id' in log:
                 del log['_id']
+                
+            log['found'] = True
+            if not log['hostname'] in hosts_found:
+                logger.info("[WebUI-availability] found info for host: %s", log['hostname'])
+                hosts_found.append(log['hostname'])
+            if not log['day'] in days_found:
+                logger.info("[WebUI-availability] found info for day: %s", log['day'])
+                days_found.append(log['day'])
+            
             records.append(log)
                 
         logger.debug("[WebUI-availability] %d records fetched from database.", len(records))
     except Exception, exp:
         logger.error("[WebUI-availability] Exception when querying database: %s", str(exp))
+    else:
+        for h in app.get_hosts():
+            if h.host_name not in hosts_found:
+                for d in days_found:
+                    logger.info("[WebUI-availability] add a record for host %s, day: %s", h.host_name, log['day'])
 
-    return {'app': app, 'user': user, 'records': records}
+                    records.append({ 
+                        "hostname": h.host_name, "service" : "", "day": d, "found": False, 
+                        "day_ts" : time.mktime(time.strptime(d, '%Y-%m-%d')), "first_check_state" : 3, "first_check_timestamp" : -1, "last_check_state" : 3, "last_check_timestamp" : -1, 
+                        "daily_0" : 0, "daily_1" : 0, "daily_2" : 0, "daily_3" : 86400, "daily_4" : 59947, "is_downtime" : "0"
+                    })
+        
+    return {'app': app, 'user': user, 'records': records, 'range_start': range_start, 'range_end': range_end}
     
 
 pages = {   
