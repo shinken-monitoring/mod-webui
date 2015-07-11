@@ -28,7 +28,7 @@ var refresh_timeout = app_refresh_period;
 var nb_refresh_try = 0;
 var refresh_stopped = false;
 
-var refresh_logs=true;
+var refresh_logs=false;
 
 function postpone_refresh(){
    // If we are not in our first try, warn the user
