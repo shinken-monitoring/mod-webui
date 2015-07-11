@@ -16,7 +16,7 @@
 %end
 %end
 
-%rebase("layout", title='Contact ' + username, user=user, app=app, refresh=True, css=['contacts/css/contacts.css'], breadcrumb=[ ['All contacts', '/contacts'], [username, '/contact/'+username] ])
+%rebase("layout", title='Contact ' + username, user=user, app=app, refresh=True, breadcrumb=[ ['All contacts', '/contacts'], [username, '/contact/'+username] ])
 
 %#Contact currently in downtime ?
 %in_scheduled_downtime=False
@@ -237,12 +237,12 @@
                        %i += 1
                        <tr>
                            <td><strong>&nbsp;&ndash;&nbsp;command:</strong></td>
-                           <td name="host_command{{i}}" class="popover-dismiss" data-html="true" data-toggle="popover" data-trigger="hover" title="Service notification command" data-placement="top" data-content="...">
-                              {{command.get_name()}}
+                           <td name="host_command{{i}}" class="popover-dismiss" data-html="true" data-toggle="popover" data-trigger="hover" title="Host notification command" data-placement="top" data-content="...">
+                              <a href="/commands#{{command.get_name()}}">{{command.get_name()}}</a>
                               <script>
                               $('td[name="host_command{{i}}"]')
                                 .attr('title', '{{command.get_name()}}')
-                                .attr('data-content', {{json.dumps(command.command.command_line)}})
+                                .attr('data-content', '{{json.dumps(command.command.command_line)}}')
                                 .popover();
                               </script>
                            </td>
@@ -301,7 +301,7 @@
                               <script>
                                  $('td[name="service_command{{i}}"]')
                                    .attr('title', '{{command.get_name()}}')
-                                   .attr('data-content', {{json.dumps(command.command.command_line)}})
+                                   .attr('data-content', '{{json.dumps(command.command.command_line)}}')
                                    .popover();
                               </script>
                            </td>
