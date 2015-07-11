@@ -110,8 +110,11 @@
             <dt>Member of:</dt>
             %if len(elt.hostgroups) > 0:
             <dd>
+            %i=0
             %for hg in elt.hostgroups:
-            <a href="/hosts-group/{{hg.get_name()}}" class="link">{{hg.alias}} ({{hg.get_name()}})</a>
+            {{',' if i != 0 else ''}}
+            <a href="/hosts-group/{{hg.get_name()}}" class="link">{{hg.alias if hg.alias else hg.get_name()}}</a>
+            %i=i+1
             %end
             </dd>
             %else:
