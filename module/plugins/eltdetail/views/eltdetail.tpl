@@ -479,12 +479,8 @@ Invalid element name
                               %end
                               <tr>
                                  <td><strong>Check command:</strong></td>
-                                 <td class="truncate_command">
-                                 %try:
-                                    <a href="/commands#{{elt.get_check_command()}}">{{ MacroResolver().resolve_simple_macros_in_string(elt.get_check_command(), elt.get_data_for_checks()) }}</a>
-                                 %except:
+                                 <td>
                                     <a href="/commands#{{elt.get_check_command()}}">{{elt.get_check_command()}}</a>
-                                 %end
                                  </td>
                                  <td>
                                  </td>
@@ -566,7 +562,7 @@ Invalid element name
                               <tr>
                                  <td><strong>Event handler:</strong></td>
                                  <td>
-                                    {{ elt.event_handler.get_name() }}
+                                    <a href="/commands#{{elt.event_handler.get_name()}}">{{ elt.event_handler.get_name() }}</a>
                                  </td>
                               </tr>
                               %end
