@@ -395,7 +395,7 @@ Invalid element name
                            <tbody style="font-size:x-small;">
                               <tr>
                                  <td><strong>Last Check:</strong></td>
-                                 <td><span class="quickinfo" data-original-title='Last check was at {{time.asctime(time.localtime(elt.last_chk))}}'>was {{helper.print_duration(elt.last_chk)}}</span></td>
+                                 <td><span class="popover-dismiss" data-html="true" data-toggle="popover" data-trigger="hover" data-placement="bottom" data-content="Last check was at {{time.asctime(time.localtime(elt.last_chk))}}">was {{helper.print_duration(elt.last_chk)}}</span></td>
                               </tr>
                               <tr>
                                  <td><strong>Output:</strong></td>
@@ -434,7 +434,7 @@ Invalid element name
                               </tr>
                               <tr>     
                                  <td><strong>Next Active Check:</strong></td>
-                                 <td><span class="quickinfo" data-original-title='Next active check at {{time.asctime(time.localtime(elt.next_chk))}}'>{{helper.print_duration(elt.next_chk)}}</span></td>
+                                 <td><span class="popover-dismiss" data-html="true" data-toggle="popover" data-trigger="hover" data-placement="bottom" data-content="Next active check at {{time.asctime(time.localtime(elt.next_chk))}}">{{helper.print_duration(elt.next_chk)}}</span></td>
                               </tr>
                            </tbody>
                         </table>
