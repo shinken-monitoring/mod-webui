@@ -1001,32 +1001,32 @@ class Helper(object):
         if len(tp.dateranges) == 0:
             return ''
             
-        # Build an Html table ...
-        # content = '''<table class="table table-condensed"><tbody style="font-size:x-small;">'''
+        # Build a definition list ...
         content = '''<dl>'''
         for dr in sorted(tp.dateranges, key=operator.methodcaller("get_start_and_end_time")):
-            # content += '''<tr><td colspan="2">%s</td></tr>''' % (dr)
             (dr_start, dr_end) = dr.get_start_and_end_time()
             dr_start = time.strftime("%d %b %Y", time.localtime(dr_start))
             dr_end = time.strftime("%d %b %Y", time.localtime(dr_end))
             if dr_start==dr_end:
-                # content += '''<tr><td colspan="2"><strong>%s</strong>:</td></tr>''' % (dr_start)
                 content += '''<dd>%s:</dd>''' % (dr_start)
             else:
-                # content += '''<tr><td>From: <strong>%s</strong></td> <td>To: <strong>%s</strong></td></tr>''' % (dr_start, dr_end)
                 content += '''<dd>From: %s, to: %s</dd>''' % (dr_start, dr_end)
                 
             if len(dr.timeranges) > 0:
                 content += '''<dt>'''
                 idx=1
                 for timerange in dr.timeranges:
-                    # if idx != 1 and idx != len(dr.timeranges):
-                        # content += ''', '''
                     content += '''&nbsp;%s-%s''' % ("%02d:%02d" % (timerange.hstart, timerange.mstart), "%02d:%02d" % (timerange.hend, timerange.mend))
                     idx += 1
                 content += '''</dt>'''
-        # content += '''</tbody></table>'''
         content += '''</dl>'''
+            
+        # Build a definition list ...
+        if tp.exclude:
+            content += '''<dl> Excluded: '''
+            for excl in tp.exclude:
+                content += self.get_timeperiod_html(excl)
+            content += '''</dl>'''
     
         return content
 
