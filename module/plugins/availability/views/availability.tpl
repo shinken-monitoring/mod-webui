@@ -82,6 +82,7 @@
             </td>
          </tr>
          -->
+         %if t_4 != 86400:
          <tr>
             <td colspan="6">&nbsp;</td>
             
@@ -118,6 +119,7 @@
                </div>
             </td>
          </tr>
+         %end
       %end
    </tbody>
 </table>

@@ -137,7 +137,7 @@
                            data-toggle="tooltip" data-placement="bottom" 
                            style="width: {{p_4}}%;">{{p_4}}% Unchecked</div>
                      </div>
-                  %end
+                     %end
                   </td>
                </tr>
                <!--
