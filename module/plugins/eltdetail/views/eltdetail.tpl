@@ -316,10 +316,10 @@ Invalid element name
             %if 'depgraph' in params['tabs']:
             <li><a href="#depgraph" data-toggle="tab" id="tab_to_depgraph">Impact graph</a></li>
             %end
-            %if 'history' in params['tabs']:
+            %if 'history' in params['tabs'] and app.get_history:
             <li class="history_pane"><a href="#history" data-toggle="tab" id="tab_to_history">History</a></li>
             %end
-            %if 'availability' in params['tabs']:
+            %if 'availability' in params['tabs'] and app.get_availability:
             <li class="availability_pane"><a href="#availability" data-toggle="tab">Availability</a></li>
             %end
          </ul>
@@ -1139,7 +1139,7 @@ Invalid element name
             <!-- Tab Dependency graph End -->
 
             <!-- Tab History start -->
-            %if 'history' in params['tabs']:
+            %if 'history' in params['tabs'] and app.get_history:
             <div class="tab-pane fade" id="history">
                <div class="panel panel-default">
                   <div class="panel-body">
@@ -1152,7 +1152,7 @@ Invalid element name
             <!-- Tab History end -->
 
             <!-- Tab Availability start -->
-            %if 'availability' in params['tabs']:
+            %if 'availability' in params['tabs'] and app.get_availability:
             <div class="tab-pane fade" id="availability">
                <div class="panel panel-default">
                   <div class="panel-body">
