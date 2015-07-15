@@ -635,6 +635,13 @@ class Webui_broker(BaseModule, Daemon):
         def give_favicon():
             return static_file('favicon.ico', root=os.path.join(htdocs_dir, 'images'))
 
+        # And add the opensearch xml
+        @route('/opensearch.xml')
+        def give_opensearch():
+            base_url = self.request.url.replace('opensearch.xml', '')
+            response.headers['Content-Type'] = 'text/xml'
+            return template('opensearch', base_url=base_url)
+
     # --------------------------------------------------------------------------------
     # User authentication / management
     # --------------------------------------------------------------------------------
