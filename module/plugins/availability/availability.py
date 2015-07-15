@@ -114,10 +114,6 @@ def getdb(dbname):
             None
         )
     
-    # Store connection and db handle ...
-    # self.con = con
-    # self.db = db
-    
     return (  
         "Connected to mongo database '%s'" % dbname,
         db
@@ -127,60 +123,67 @@ def getdb(dbname):
 def get_element(name):
     user = app.check_user_authentication()
 
-    logger.info("[WebUI-availability] get_element, name: %s", name)
-    hostname = None
-    service = None
-    if '/' in name:
-        service = name.split('/')[1]
-        hostname = name.split('/')[0]
-    else:
-        hostname = name
-    logger.info("[WebUI-availability] get_element, host/service: %s/%s", hostname, service)
-
-    message,db = getdb(params['database'])
-    if not db:
-        return {
-            'app': app,
-            'user': user, 
-            'message': message,
-            'params': params,
-            'records': []
-        }
-
-    records=[]
-
-    try:
-        max_records = params['max_records']
-        search_hosts = []
-        if hostname is not None:
-            search_hosts = [ hostname ]
-        search_services = []
-        if service is not None:
-            search_services = [ service ]
-        logger.debug("[WebUI-availability] Fetching records from database for host/service: '%s/%s'", hostname, service)
-
-        query = []
-        query.append({ "hostname" : { "$in": search_hosts }})
-        if len(search_services) > 0 and search_services[0] != '':
-            query.append({ "service" : { "$in": search_services }})
+    # If exists an external module ...
+    if app.get_availability:
+        records = app.get_availability(name)
+        return {'app': app, 'records': records}
             
-        if len(query) > 0:
-            for log in db[params['collection']].find({'$and': query}).sort("day",pymongo.DESCENDING).limit(max_records):
-                if '_id' in log:
-                    del log['_id']
-                records.append(log)
-        else:
-            for log in db[params['collection']].find().sort("day",pymongo.DESCENDING).limit(max_records):
-                if '_id' in log:
-                    del log['_id']
-                records.append(log)
-                
-        message = "%d records fetched from database." % len(records)
-        logger.debug("[WebUI-availability] %d records fetched from database.", len(records))
-    except Exception, exp:
-        logger.error("[WebUI-availability] Exception when querying database: %s", str(exp))
+    return {'app': app, 'records': None}
+    
+    # logger.info("[WebUI-availability] get_element, name: %s", name)
+    # hostname = None
+    # service = None
+    # if '/' in name:
+        # service = name.split('/')[1]
+        # hostname = name.split('/')[0]
+    # else:
+        # hostname = name
+    # logger.info("[WebUI-availability] get_element, host/service: %s/%s", hostname, service)
 
-    return {'app': app, 'records': records}
+    # message,db = getdb(params['database'])
+    # if not db:
+        # return {
+            # 'app': app,
+            # 'user': user, 
+            # 'message': message,
+            # 'params': params,
+            # 'records': []
+        # }
+
+    # records=[]
+
+    # try:
+        # max_records = params['max_records']
+        # search_hosts = []
+        # if hostname is not None:
+            # search_hosts = [ hostname ]
+        # search_services = []
+        # if service is not None:
+            # search_services = [ service ]
+        # logger.debug("[WebUI-availability] Fetching records from database for host/service: '%s/%s'", hostname, service)
+
+        # query = []
+        # query.append({ "hostname" : { "$in": search_hosts }})
+        # if len(search_services) > 0 and search_services[0] != '':
+            # query.append({ "service" : { "$in": search_services }})
+            
+        # if len(query) > 0:
+            # for log in db[params['collection']].find({'$and': query}).sort("day",pymongo.DESCENDING).limit(max_records):
+                # if '_id' in log:
+                    # del log['_id']
+                # records.append(log)
+        # else:
+            # for log in db[params['collection']].find().sort("day",pymongo.DESCENDING).limit(max_records):
+                # if '_id' in log:
+                    # del log['_id']
+                # records.append(log)
+                
+        # message = "%d records fetched from database." % len(records)
+        # logger.debug("[WebUI-availability] %d records fetched from database.", len(records))
+    # except Exception, exp:
+        # logger.error("[WebUI-availability] Exception when querying database: %s", str(exp))
+
+    # return {'app': app, 'records': records}
     
 
 def get_page():
@@ -192,56 +195,64 @@ def get_page():
     range_end = int(app.request.GET.get('range_end', midnight_timestamp+86399))
     logger.warning("[WebUI-availability] get_page, range: %d - %d", range_start, range_end)
 
-    message,db = getdb(params['database'])
-    if not db:
-        return {
-            'app': app,
-            'user': user, 
-            'message': message,
-            'params': params,
-            'records': []
-        }
-
-    records=[]
-    hosts_found=[]
-    days_found=[]
-    try:
-        logger.info("[WebUI-availability] Fetching records from database, range: %d to %d", range_start, range_end)
-
-        for log in db[params['collection']].find( { 'day_ts': { '$gte': range_start, '$lte': range_end } } ).sort([
-                    ("day",pymongo.DESCENDING), 
-                    ("hostname",pymongo.ASCENDING), 
-                    ("service",pymongo.ASCENDING)]).limit(params['max_records']):
-                
-            if '_id' in log:
-                del log['_id']
-                
-            log['found'] = True
-            if not log['hostname'] in hosts_found:
-                logger.info("[WebUI-availability] found info for host: %s", log['hostname'])
-                hosts_found.append(log['hostname'])
-            if not log['day'] in days_found:
-                logger.info("[WebUI-availability] found info for day: %s", log['day'])
-                days_found.append(log['day'])
+    # If exists an external module ...
+    if app.get_availability:
+        records = app.get_availability(name=None, range_start=range_start, range_end=range_end)
+        return {'app': app, 'user': user, 'records': records, 'range_start': range_start, 'range_end': range_end}
             
-            records.append(log)
-                
-        logger.debug("[WebUI-availability] %d records fetched from database.", len(records))
-    except Exception, exp:
-        logger.error("[WebUI-availability] Exception when querying database: %s", str(exp))
-    else:
-        for h in app.get_hosts():
-            if h.host_name not in hosts_found:
-                for d in days_found:
-                    logger.info("[WebUI-availability] add a record for host %s, day: %s", h.host_name, log['day'])
+    logger.warning("[WebUI-availability] no get availability external module defined!")
+    return {'app': app, 'user': user, 'records': None, 'range_start': range_start, 'range_end': range_end}
+    
+    # message,db = getdb(params['database'])
+    # if not db:
+        # return {
+            # 'app': app,
+            # 'user': user, 
+            # 'message': message,
+            # 'params': params,
+            # 'records': []
+        # }
 
-                    records.append({ 
-                        "hostname": h.host_name, "service" : "", "day": d, "found": False, 
-                        "day_ts" : time.mktime(time.strptime(d, '%Y-%m-%d')), "first_check_state" : 3, "first_check_timestamp" : -1, "last_check_state" : 3, "last_check_timestamp" : -1, 
-                        "daily_0" : 0, "daily_1" : 0, "daily_2" : 0, "daily_3" : 86400, "daily_4" : 59947, "is_downtime" : "0"
-                    })
+    # records=[]
+    # hosts_found=[]
+    # days_found=[]
+    # try:
+        # logger.info("[WebUI-availability] Fetching records from database, range: %d to %d", range_start, range_end)
+
+        # for log in db[params['collection']].find( { 'day_ts': { '$gte': range_start, '$lte': range_end } } ).sort([
+                    # ("day",pymongo.DESCENDING), 
+                    # ("hostname",pymongo.ASCENDING), 
+                    # ("service",pymongo.ASCENDING)]).limit(params['max_records']):
+                
+            # if '_id' in log:
+                # del log['_id']
+                
+            # log['found'] = True
+            # if not log['hostname'] in hosts_found:
+                # logger.info("[WebUI-availability] found info for host: %s", log['hostname'])
+                # hosts_found.append(log['hostname'])
+            # if not log['day'] in days_found:
+                # logger.info("[WebUI-availability] found info for day: %s", log['day'])
+                # days_found.append(log['day'])
+            
+            # records.append(log)
+                
+        # logger.debug("[WebUI-availability] %d records fetched from database.", len(records))
+    # except Exception, exp:
+        # logger.error("[WebUI-availability] Exception when querying database: %s", str(exp))
+    # else:
+        # for h in app.get_hosts():
+            # if h.host_name not in hosts_found:
+                # for d in days_found:
+                    # logger.info("[WebUI-availability] add a record for host %s, day: %s", h.host_name, log['day'])
+
+                    # records.append({ 
+                        # "hostname": h.host_name, "service" : "", "day": d, "found": False, 
+                        # "day_ts" : time.mktime(time.strptime(d, '%Y-%m-%d')), "first_check_state" : 3, "first_check_timestamp" : -1, "last_check_state" : 3, "last_check_timestamp" : -1, 
+                        # "daily_0" : 0, "daily_1" : 0, "daily_2" : 0, "daily_3" : 86400, "daily_4" : 59947, "is_downtime" : "0"
+                    # })
         
-    return {'app': app, 'user': user, 'records': records, 'range_start': range_start, 'range_end': range_end}
+    # return {'app': app, 'user': user, 'records': records, 'range_start': range_start, 'range_end': range_end}
     
 
 pages = {   
