@@ -282,7 +282,12 @@ class Webui_broker(BaseModule, Daemon):
         if not self.has_user_authentication_module():
             logger.error("[WebUI] No user authentication module configured. Please configure at least 'modules auth-cfg-password' in webui.cfg file")
             sys.exit(2)
-                        
+
+        # We check if we have an availability module
+        self.get_availability = None
+        if not self.has_availability_module():
+            logger.warning("[WebUI] No availability module configured. You should configure 'modules mongo-logs mongodb' in webui.cfg file to get hosts availability information.")
+
         # We check if we have an user preference module
         if not self.has_user_preference_module():
             logger.warning("[WebUI] No user preference module configured. Preferences will be stored in %s directory. Else, you may configure 'modules mongodb' or 'modules SQLitedb' in webui.cfg file", self.config_dir)
@@ -764,8 +769,6 @@ class Webui_broker(BaseModule, Daemon):
         
         c = self.get_contact(username)
         return c.is_admin or c.can_submit_commands
-        
-
 
     ##
     # Get user Gravatar picture if defined
@@ -822,7 +825,26 @@ class Webui_broker(BaseModule, Daemon):
             url="data:image/png;base64,{0}".format(data)
             lk=''
         return (url,lk)
-        
+
+
+    # ------------------------------------------------------------------------------------------
+    # Manage external availability logs
+    # ------------------------------------------------------------------------------------------
+    ##
+    # Check if an availability storage module is declared in webui.cfg
+    ##
+    def has_availability_module(self):
+        logger.debug("[WebUI] searching external module for availability ...")
+        self.get_availability = None
+        for mod in self.modules_manager.get_internal_instances():
+            f = getattr(mod, 'get_ui_availability', None)
+            if f and callable(f):
+                logger.info("[WebUI] Found availability module: %s", mod.get_name())
+                self.get_availability = f
+                return True
+        return False
+
+
     # ------------------------------------------------------------------------------------------
     # Manage common / user's preferences
     # ------------------------------------------------------------------------------------------
@@ -1006,7 +1028,9 @@ class Webui_broker(BaseModule, Daemon):
                     logger.warning("Back trace of this kill: %s", traceback.format_exc())
                     self.modules_manager.set_to_restart(mod)
 
-
+    ##
+    # Get/set user's bookmarks
+    ##
     def get_user_bookmarks(self, user):
         ''' Returns the user bookmarks. '''
         return json.loads(self.get_user_preference(user, 'bookmarks') or '[]')
