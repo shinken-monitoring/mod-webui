@@ -83,6 +83,8 @@
       <link rel="stylesheet" type="text/css" href="/static/{{p}}">
       %end
 
+      <link rel="search" type="application/opensearchdescription+xml" href="/opensearch.xml" title="Search for hosts and services in Shinken" />
+
       <!-- Scripts
       ================================================== -->
       <script src="/static/js/jquery-1.11.1.min.js"></script>
