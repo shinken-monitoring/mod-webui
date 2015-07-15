@@ -40,9 +40,11 @@
 <!-- Logs parameters -->
 <ul class="sliding-navigation drop-shadow" id="parameters">
   <li class="sliding-element"><h3>Parameters</h3></li>
+  <!--
   <li class="sliding-element">
     <a><i class="fa fa-gear"></i> Logs limit: {{params['max_records']}}</a>
   </li>
+  -->
   %if len(params['logs_hosts']) > 0:
   <li class="sliding-element">
     <a href="/logs/hosts_list" data-toggle="modal" data-target="#modal"><i class="fa fa-gear"></i> Hosts filter: {{len(params['logs_hosts'])}}
@@ -129,9 +131,9 @@
          </thead>
          <tbody style="font-size:x-small;">
             %for log in records:
-            %if log['date'] >= today_beginning_time and log['date'] <= today_end_time:
+            %if log['timestamp'] >= today_beginning_time and log['timestamp'] <= today_end_time:
             <tr>
-               <td>{{time.strftime(date_format, time.localtime(log['date']))}}</td>
+               <td>{{time.strftime(date_format, time.localtime(log['timestamp']))}}</td>
                <td>{{log['message']}}</td>
             </tr>
             %end
@@ -155,9 +157,9 @@
          </thead>
          <tbody style="font-size:x-small;">
             %for log in records:
-            %if log['date'] >= yesterday_beginning_time and log['date'] <= yesterday_end_time:
+            %if log['timestamp'] >= yesterday_beginning_time and log['timestamp'] <= yesterday_end_time:
             <tr>
-               <td>{{time.strftime(date_format, time.localtime(log['date']))}}</td>
+               <td>{{time.strftime(date_format, time.localtime(log['timestamp']))}}</td>
                <td>{{log['message']}}</td>
             </tr>
             %end
@@ -181,9 +183,9 @@
          </thead>
          <tbody style="font-size:x-small;">
             %for log in records:
-            %if log['date'] >= thisweek_beginning_time and log['date'] <= thisweek_end_time:
+            %if log['timestamp'] >= thisweek_beginning_time and log['timestamp'] <= thisweek_end_time:
             <tr>
-               <td>{{time.strftime(date_format, time.localtime(log['date']))}}</td>
+               <td>{{time.strftime(date_format, time.localtime(log['timestamp']))}}</td>
                <td>{{log['message']}}</td>
             </tr>
             %end
@@ -207,9 +209,9 @@
          </thead>
          <tbody style="font-size:x-small;">
             %for log in records:
-            %if log['date'] >= lastweek_beginning_time and log['date'] <= lastweek_end_time:
+            %if log['timestamp'] >= lastweek_beginning_time and log['timestamp'] <= lastweek_end_time:
             <tr>
-               <td>{{time.strftime(date_format, time.localtime(log['date']))}}</td>
+               <td>{{time.strftime(date_format, time.localtime(log['timestamp']))}}</td>
                <td>{{log['message']}}</td>
             </tr>
             %end
@@ -233,9 +235,9 @@
          </thead>
          <tbody style="font-size:x-small;">
             %for log in records:
-            %if log['date'] >= thismonth_beginning_time and log['date'] <= thismonth_end_time:
+            %if log['timestamp'] >= thismonth_beginning_time and log['timestamp'] <= thismonth_end_time:
             <tr>
-               <td>{{time.strftime(date_format, time.localtime(log['date']))}}</td>
+               <td>{{time.strftime(date_format, time.localtime(log['timestamp']))}}</td>
                <td>{{log['message']}}</td>
             </tr>
             %end
