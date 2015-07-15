@@ -286,7 +286,12 @@ class Webui_broker(BaseModule, Daemon):
         # We check if we have an availability module
         self.get_availability = None
         if not self.has_availability_module():
-            logger.warning("[WebUI] No availability module configured. You should configure 'modules mongo-logs mongodb' in webui.cfg file to get hosts availability information.")
+            logger.warning("[WebUI] No availability module configured. You should configure the module 'mongo-logs' in your broker and the module 'mongodb' in webui.cfg file to get hosts availability information.")
+
+        # We check if we have an history module
+        self.get_history = None
+        if not self.has_history_module():
+            logger.warning("[WebUI] No history module configured. You should configure the module 'mongo-logs' in your broker and the module 'mongodb' in webui.cfg file to get hosts history information.")
 
         # We check if we have an user preference module
         if not self.has_user_preference_module():
@@ -841,6 +846,24 @@ class Webui_broker(BaseModule, Daemon):
             if f and callable(f):
                 logger.info("[WebUI] Found availability module: %s", mod.get_name())
                 self.get_availability = f
+                return True
+        return False
+
+
+    # ------------------------------------------------------------------------------------------
+    # Manage external shinken logs
+    # ------------------------------------------------------------------------------------------
+    ##
+    # Check if a logs storage module is declared in webui.cfg
+    ##
+    def has_history_module(self):
+        logger.debug("[WebUI] searching external module for history ...")
+        self.get_history = None
+        for mod in self.modules_manager.get_internal_instances():
+            f = getattr(mod, 'get_ui_logs', None)
+            if f and callable(f):
+                logger.info("[WebUI] Found history module: %s", mod.get_name())
+                self.get_history = f
                 return True
         return False
 
