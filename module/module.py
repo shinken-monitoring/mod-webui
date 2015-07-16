@@ -1500,6 +1500,15 @@ class Webui_broker(BaseModule, Daemon):
         name = name.decode('utf8', 'ignore')
         return self.datamgr.rg.contactgroups.find_by_name(name)
 
+    def get_contactgroupmembers(self, name):
+        name = name.decode('utf8', 'ignore')
+        cg = self.datamgr.rg.contactgroups.find_by_name(name)
+        
+        contacts=[]
+        [contacts.append(item.alias if item.alias else item.get_name()) for item in cg.members if item not in contacts]
+        
+        return contacts
+
     ##
     # Hosts groups
     ##
