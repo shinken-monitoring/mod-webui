@@ -1367,6 +1367,15 @@ class Webui_broker(BaseModule, Daemon):
                             if pat.search(j.get_full_name()):
                                 new_items.append(i)
 
+                if not new_items:
+                    for i in items:
+                        if pat.search(i.output):
+                            new_items.append(i)
+                        else:
+                            for j in (i.impacts + i.source_problems):
+                                if pat.search(j.output):
+                                    new_items.append(i)
+
                 items = new_items
 
             if (t == 'hg' or t == 'hgroup') and s != 'all':
