@@ -60,7 +60,7 @@
                
                <tr>
                   <td>
-                  %h = app.get_host(log['hostname'])
+                  %h = app.datamgr.get_host(log['hostname'])
                   <a href="/host/{{h.get_name()}}">
                      {{!app.helper.get_fa_icon_state(h)}}&nbsp;{{h.get_name()}}
                   </a>

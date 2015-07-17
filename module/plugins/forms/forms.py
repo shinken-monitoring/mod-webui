@@ -45,9 +45,9 @@ def form_change_var(name):
     value = app.request.GET.get('value', '')
     
     if '/' in name:
-        elt = app.get_service(name.split('/')[0], name.split('/')[1])
+        elt = app.datamgr.get_service(name.split('/')[0], name.split('/')[1])
     else:
-        elt = app.get_host(name)
+        elt = app.datamgr.get_host(name)
 
     return {'app': app, 'user': user, 'elt': elt, 'name': name, 'variable': variable, 'value': value}
 
@@ -55,9 +55,9 @@ def form_var(name):
     user = app.check_user_authentication()
 
     if '/' in name:
-        elt = app.get_service(name)
+        elt = app.datamgr.get_service(name)
     else:
-        elt = app.get_host(name)
+        elt = app.datamgr.get_host(name)
 
     return {'app': app, 'user': user, 'elt': elt, 'name': name}
 

@@ -241,7 +241,7 @@ def get_page():
     # except Exception, exp:
         # logger.error("[WebUI-availability] Exception when querying database: %s", str(exp))
     # else:
-        # for h in app.get_hosts():
+        # for h in app.datamgr.get_hosts():
             # if h.host_name not in hosts_found:
                 # for d in days_found:
                     # logger.info("[WebUI-availability] add a record for host %s, day: %s", h.host_name, log['day'])

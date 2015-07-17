@@ -57,7 +57,7 @@ def get_all():
     end = int(app.request.GET.get('end', start + step))
 
     search = ' '.join(app.request.GET.getall('search')) or ""
-    items = app.search_hosts_and_services(search, user, get_impacts=False)
+    items = app.datamgr.search_hosts_and_services(search, user, get_impacts=False)
 
     # Now sort it!
     items.sort(hst_srv_sort)
@@ -81,7 +81,7 @@ def get_pbs_widget():
     nb_elements = max(0, int(app.request.GET.get('nb_elements', '10')))
     refine_search = app.request.GET.get('search', '')
 
-    items = app.search_hosts_and_services("isnot:UP isnot:OK isnot:PENDING ack:false downtime:false", user, get_impacts=False)
+    items = app.datamgr.search_hosts_and_services("isnot:UP isnot:OK isnot:PENDING ack:false downtime:false", user, get_impacts=False)
 
     # Sort it now
     items.sort(hst_srv_sort)

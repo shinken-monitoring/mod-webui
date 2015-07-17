@@ -1,7 +1,7 @@
 %rebase("layout", css=['groups/css/groups-overview.css'], title='Services groups overview', refresh=True)
 
 %helper = app.helper
-%services = app.get_services(user)
+%services = app.datamgr.get_services(user)
 %s = helper.get_synthesis(services)['services']
 
 
@@ -92,7 +92,7 @@
          %continue
          %end
 
-         %services = app.search_hosts_and_services('type:service sg:'+group.get_name(), user)
+         %services = app.datamgr.search_hosts_and_services('type:service sg:'+group.get_name(), user)
          %s = helper.get_synthesis(services)['services']
          %if even =='':
            %even='alt'

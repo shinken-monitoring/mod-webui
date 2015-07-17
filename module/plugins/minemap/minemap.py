@@ -73,7 +73,7 @@ def show_minemap():
     if not "type:host" in search:
         search = "type:host "+search
     logger.debug("[WebUI-worldmap] search parameters '%s'", search)
-    items = app.search_hosts_and_services(search, user, get_impacts=False)
+    items = app.datamgr.search_hosts_and_services(search, user, get_impacts=False)
     
     # Fetch elements per page preference for user, default is 25
     elts_per_page = app.get_user_preference(user, 'elts_per_page', 25)

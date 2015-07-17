@@ -3,7 +3,6 @@
 %title = 'Minemap for all hosts'
 
 %helper = app.helper
-%datamgr = app.datamgr
 
 %# Specific content for breadrumb
 %rebase("layout", title='Minemap for hosts/services', refresh=True, css=['minemap/css/minemap.css'], breadcrumb=[ ['All hosts', '/minemap'] ])
@@ -132,7 +131,7 @@
          </thead>
          <tbody>
             %for r in rows:
-               %h = app.get_host(r)
+               %h = app.datamgr.get_host(r)
                %if h:
                <tr>
                   <td title="{{h.get_name()}} - {{h.state}} - {{helper.print_duration(h.last_chk)}} - {{h.output}}">
@@ -142,7 +141,7 @@
                      </a>
                   </td>
                   %for c in columns:
-                     %s = app.get_service(r, c)
+                     %s = app.datamgr.get_service(r, c)
                      %if s:
                         <td title="{{s.get_name()}} - {{s.state}} - {{helper.print_duration(s.last_chk)}} - {{s.output}}">
                            <a href="/service/{{h.get_name()}}/{{s.get_name()}}">

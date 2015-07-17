@@ -28,7 +28,7 @@
 
 %# Contact is linked to hosts/services
 %my_hosts = []
-%for item in app.get_hosts(user):
+%for item in app.datamgr.get_hosts(user):
    %for item_contact in item.contacts:
       %if item_contact.contact_name == contact.contact_name:
          %my_hosts.append(item)
@@ -36,7 +36,7 @@
    %end
 %end
 %my_services = []
-%for item in app.get_services(user):
+%for item in app.datamgr.get_services(user):
    %for item_contact in item.contacts:
       %if item_contact.contact_name == contact.contact_name:
          %my_services.append(item)
@@ -44,7 +44,7 @@
    %end
 %end
 %my_contactgroups = []
-%for item in app.get_contactgroups(user):
+%for item in app.datamgr.get_contactgroups(user):
   %for item_contact in item.members:
     %if item_contact.contact_name == contact.contact_name:
       %my_contactgroups.append(item)
@@ -203,7 +203,7 @@
                         <td name="{{"host_notification_period%s" % i}}" class="popover-dismiss" data-html="true" data-toggle="popover" data-trigger="hover" title="Host notification period" data-placement="top" data-content="...">{{! app.helper.get_on_off(nw.host_notification_period.is_time_valid(time.time()), "Is notification period currently active?")}}
                            <a href="/timeperiods">{{nw.host_notification_period.alias}}</a>
                            <script>
-                              %tp=app.get_timeperiod(nw.host_notification_period.get_name())
+                              %tp=app.datamgr.get_timeperiod(nw.host_notification_period.get_name())
                               $('td[name="{{"host_notification_period%s" % i}}"]')
                                 .attr('title', '{{tp.alias if hasattr(tp, "alias") else tp.timeperiod_name}}')
                                 .attr('data-content', '{{! app.helper.get_timeperiod_html(tp)}}')
@@ -261,7 +261,7 @@
                         <td name="{{"service_notification_period%s" % i}}" class="popover-dismiss" data-html="true" data-toggle="popover" data-trigger="hover" title="service notification period" data-placement="top" data-content="...">{{! app.helper.get_on_off(nw.service_notification_period.is_time_valid(time.time()), "Is notification period currently active?")}}
                            <a href="/timeperiods">{{nw.service_notification_period.alias}}</a>
                            <script>
-                            %tp=app.get_timeperiod(nw.service_notification_period.get_name())
+                            %tp=app.datamgr.get_timeperiod(nw.service_notification_period.get_name())
                             $('td[name="{{"service_notification_period%s" % i}}"]')
                               .attr('title', '{{tp.alias if hasattr(tp, "alias") else tp.timeperiod_name}}')
                               .attr('data-content', '{{!app.helper.get_timeperiod_html(tp)}}')

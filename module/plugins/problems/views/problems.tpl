@@ -18,7 +18,7 @@
    %end
 </script>
 
-%if len(app.get_all_problems()) and app.play_sound:
+%if len(app.datamgr.get_all_problems()) and app.play_sound:
  <EMBED src="/static/sound/alert.wav" autostart=true loop=false volume=100 hidden=true>
 %end
 

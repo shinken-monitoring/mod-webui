@@ -1,4 +1,4 @@
-%timeperiods = app.get_timeperiods()
+%timeperiods = app.datamgr.get_timeperiods()
 %title='All timeperiods (%d time periods)' % len(timeperiods)
 %rebase("layout", title=title, refresh=True)
 
