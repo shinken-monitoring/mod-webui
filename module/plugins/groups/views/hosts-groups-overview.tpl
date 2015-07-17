@@ -1,7 +1,7 @@
 %rebase("layout", css=['groups/css/groups-overview.css'], title='Hosts groups overview', refresh=True)
 
 %helper = app.helper
-%hosts = app.get_hosts(user)
+%hosts = app.datamgr.get_hosts(user)
 %h = helper.get_synthesis(hosts)['hosts']
 
 
@@ -97,7 +97,7 @@
          %continue
          %end
          
-         %hosts = app.search_hosts_and_services('type:host hg:'+group.get_name(), user, hosts_only=True)
+         %hosts = app.datamgr.search_hosts_and_services('type:host hg:'+group.get_name(), user, hosts_only=True)
          %h = helper.get_synthesis(hosts)['hosts']
          %if even =='':
            %even='alt'

@@ -83,7 +83,7 @@ def show_worldmap():
     if not "type:host" in search:
         search = "type:host "+search
     logger.debug("[WebUI-worldmap] search parameters '%s'", search)
-    items = app.search_hosts_and_services(search, user, get_impacts=False)
+    items = app.datamgr.search_hosts_and_services(search, user, get_impacts=False)
     
     # We are looking for hosts with valid GPS coordinates,
     # and we just give them to the template to print them.
@@ -137,7 +137,7 @@ def show_worldmap_widget():
     if not "type:host" in search:
         search = "type:host "+search
     logger.debug("[WebUI-worldmap] search parameters '%s'", search)
-    items = app.search_hosts_and_services(search, user, get_impacts=False)
+    items = app.datamgr.search_hosts_and_services(search, user, get_impacts=False)
     items = items[:nb_elements]
     
     # Ok, if needed, apply the widget refine search filter

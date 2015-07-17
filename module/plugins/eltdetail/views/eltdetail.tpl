@@ -453,7 +453,7 @@ Invalid element name
                               %if hasattr(elt, "check_period") and hasattr(elt.check_period, "get_name"):
                               <tr>
                                  <td><strong>Check period:</strong></td>
-                                 %tp=app.get_timeperiod(elt.check_period.get_name())
+                                 %tp=app.datamgr.get_timeperiod(elt.check_period.get_name())
                                  <td name="check_period" class="popover-dismiss" 
                                        data-html="true" data-toggle="popover" data-trigger="hover" data-placement="left" 
                                        data-title='{{tp.alias if hasattr(tp, "alias") else tp.timeperiod_name}}' 
@@ -643,7 +643,7 @@ Invalid element name
                               %if elt.notifications_enabled and elt.notification_period:
                               <tr>
                                  <td><strong>Notification period:</strong></td>
-                                 %tp=app.get_timeperiod(elt.notification_period.get_name())
+                                 %tp=app.datamgr.get_timeperiod(elt.notification_period.get_name())
                                  <td name="notification_period" class="popover-dismiss" data-html="true" data-toggle="popover" data-trigger="hover" data-placement="left" 
                                        data-title='{{tp.alias if hasattr(tp, "alias") else tp.timeperiod_name}}' 
                                        data-content='{{!helper.get_timeperiod_html(tp)}}'>
@@ -700,7 +700,7 @@ Invalid element name
                               %i=0
                               %for (group) in elt.contact_groups: 
                               <tr>
-                                 %cg = app.get_contactgroup(group)
+                                 %cg = app.datamgr.get_contactgroup(group)
                                  <td style="text-align: right; font-style: italic;"><strong>{{cg.alias if cg.alias else cg.get_name()}}</strong></td>
                                  %contacts=[]
                                  %[contacts.append('<a href="/contact/'+item.contact_name+'">'+item.alias+'</a>' if item.alias else item.get_name()) for item in cg.members if item not in contacts]

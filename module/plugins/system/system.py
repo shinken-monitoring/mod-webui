@@ -34,17 +34,17 @@ app = None
 def system_parameters():
     user = app.check_user_authentication()
 
-    return {'app': app, 'user': user, 'configs': app.get_configs() }
+    return {'app': app, 'user': user, 'configs': app.datamgr.get_configs() }
 
 
 def system_page():
     user = app.check_user_authentication()
 
-    schedulers = app.get_schedulers()
-    brokers = app.get_brokers()
-    reactionners = app.get_reactionners()
-    receivers = app.get_receivers()
-    pollers = app.get_pollers()
+    schedulers = app.datamgr.get_schedulers()
+    brokers = app.datamgr.get_brokers()
+    reactionners = app.datamgr.get_reactionners()
+    receivers = app.datamgr.get_receivers()
+    pollers = app.datamgr.get_pollers()
 
     logger.debug("[WebUI-system] schedulers: %s", schedulers)
     logger.debug("[WebUI-system] brokers: %s", brokers)

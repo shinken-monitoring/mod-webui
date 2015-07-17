@@ -26,10 +26,6 @@
 ### Will be populated by the UI with it's own value
 app = None
 
-import time
-
-from shinken.util import safe_print
-
 # Contact page
 def show_contact(name):
     user = app.check_user_authentication()
@@ -39,7 +35,7 @@ def show_contact(name):
 
     return {
         'app': app, 'user': user, 
-        'contact': app.get_contact(name)
+        'contact': app.datamgr.get_contact(name)
         }
 
 # All contacts
@@ -47,7 +43,7 @@ def show_contacts():
     user = app.check_user_authentication()
 
     if user.is_admin:
-        contacts = app.get_contacts()
+        contacts = app.datamgr.get_contacts()
     else:
         contacts = (user,)
 

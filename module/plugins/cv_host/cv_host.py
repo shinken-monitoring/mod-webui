@@ -282,7 +282,7 @@ def get_page(name):
     all_states = {"global": 'UNKNOWN', "cpu": 'UNKNOWN', "disks": 'UNKNOWN', "memory": 'UNKNOWN', "network": 'UNKNOWN', "printer": 'UNKNOWN', "services": 'UNKNOWN', "global": 'UNKNOWN'}
     
     # Ok, we can lookup it
-    h = app.get_host(name)
+    h = app.datamgr.get_host(name)
     if h:
         # Set the host state first
         all_states["host"] = h.state

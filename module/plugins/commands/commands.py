@@ -32,7 +32,7 @@ def show_commands():
 
     return {
         'app': app, 'user': user, 
-        'commands': sorted(app.get_commands(), key=lambda command: command.command_name)
+        'commands': sorted(app.datamgr.get_commands(), key=lambda command: command.command_name)
         }
 
 pages = {
