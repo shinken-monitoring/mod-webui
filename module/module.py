@@ -48,6 +48,7 @@ import imp
 import hashlib
 import json
 import re
+import itertools
 
 from shinken.basemodule import BaseModule
 from shinken.message import Message
@@ -1370,14 +1371,27 @@ class Webui_broker(BaseModule, Daemon):
 
             if (t == 'hg' or t == 'hgroup') and s != 'all':
                 group = self.get_hostgroup(s)
+                if not group:
+                    return []  # :TODO:maethor:150716: raise an error
                 items = [i for i in items if group in i.get_hostgroups()]
 
             if (t == 'sg' or t == 'sgroup') and s != 'all':
                 group = self.get_servicegroup(s)
+                if not group:
+                    return []  # :TODO:maethor:150716: raise an error
                 items = [i for i in items if group in i.get_servicegroups()]
+
+            if (t == 'cg' or t == 'cgroup') and s != 'all':
+                group = self.get_contactgroup(s)
+                if not group:
+                    return []  # :TODO:maethor:150716: raise an error
+                contacts = [c for c in self.get_contacts() if c in group.members]
+                items = list(set(itertools.chain(*[self.only_related_to(items, c) for c in contacts])))
 
             if t == 'realm':
                 r = self.get_realm(s)
+                if not r:
+                    return []  # :TODO:maethor:150716: raise an error
                 items = [i for i in items if i.get_realm() == r]
 
             if t == 'htag' and s != 'all':
@@ -1385,6 +1399,10 @@ class Webui_broker(BaseModule, Daemon):
 
             if t == 'stag' and s != 'all':
                 items = [i for i in items if i.__class__.my_type == 'service' and s in i.get_service_tags()]
+
+            if t == 'ctag' and s != 'all':
+                contacts = [c for c in self.get_contacts() if s in c.tags]
+                items = list(set(itertools.chain(*[self.only_related_to(items, c) for c in contacts])))
 
             if t == 'type':
                 items = [i for i in items if i.__class__.my_type == s]
