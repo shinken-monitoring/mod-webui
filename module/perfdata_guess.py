@@ -43,7 +43,6 @@ def get_perfometer_table_values(elt):
     tab = {'check_http': manage_check_http_command,
            'check_ping': manage_check_ping_command,
            'check_tcp': manage_check_tcp_command,
-           'check_ftp': manage_check_tcp_command,
         }
 
     f = tab.get(cmd, None)
@@ -116,7 +115,6 @@ def manage_check_ping_command(elt):
     title = '%sms' % v
     #print "HTTP: return", {'lnk': lnk, 'metrics': metrics, 'title': title}
     return {'lnk': lnk, 'metrics': metrics, 'title': title}
-
 
 def manage_check_tcp_command(elt):
     safe_print('Get check_tcp perfdata of', elt.get_full_name())
