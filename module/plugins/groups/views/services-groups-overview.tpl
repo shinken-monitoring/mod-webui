@@ -51,18 +51,30 @@
                </h3>
                <div>
                   %for state in 'ok', 'warning', 'critical':
+                  %if s['nb_' + state]>0:
+                  <a role="menuitem" href="/all?search=type:service is:{{state}}">
+                  %end
                   <span class="{{'font-' + state if s['nb_' + state] > 0 else 'font-greyed'}}">
                     %label = "%s <i>(%s%%)</i>" % (s['nb_' + state], s['pct_' + state])
                     {{!helper.get_fa_icon_state_and_label(cls='service', state=state, label=label)}}
                   </span>
+                  %if s['nb_' + state]>0:
+                  </a>
+                  %end
                   %end
                </div>
                <div>
                   %for state in 'pending', 'unknown', 'ack', 'downtime':
+                  %if s['nb_' + state]>0:
+                  <a role="menuitem" href="/all?search=type:service is:{{state}}">
+                  %end
                   <span class="{{'font-' + state if s['nb_' + state] > 0 else 'font-greyed'}}">
                     %label = "%s <i>(%s%%)</i>" % (s['nb_' + state], s['pct_' + state])
                     {{!helper.get_fa_icon_state_and_label(cls='service', state=state, label=label)}}
                   </span>
+                  %if s['nb_' + state]>0:
+                  </a>
+                  %end
                   %end
                </div>
             </section>
@@ -112,18 +124,30 @@
                   </a>
                <div>
                   %for state in 'ok', 'warning', 'critical':
+                  %if s['nb_' + state]>0:
+                  <a role="menuitem" href="/all?search=type:service sg:{{group.get_name()}} is:{{state}}">
+                  %end
                   <span class="{{'font-' + state if s['nb_' + state] > 0 else 'font-greyed'}}">
                     %label = "%s <i>(%s%%)</i>" % (s['nb_' + state], s['pct_' + state])
                     {{!helper.get_fa_icon_state_and_label(cls='service', state=state, label=label)}}
                   </span>
+                  %if s['nb_' + state]>0:
+                  </a>
+                  %end
                   %end
                </div>
                <div>
                   %for state in 'pending', 'unknown', 'ack', 'downtime':
+                  %if s['nb_' + state]>0:
+                  <a role="menuitem" href="/all?search=type:service sg:{{group.get_name()}} is:{{state}}">
+                  %end
                   <span class="{{'font-' + state if s['nb_' + state] > 0 else 'font-greyed'}}">
                     %label = "%s <i>(%s%%)</i>" % (s['nb_' + state], s['pct_' + state])
                     {{!helper.get_fa_icon_state_and_label(cls='service', state=state, label=label)}}
                   </span>
+                  %if s['nb_' + state]>0:
+                  </a>
+                  %end
                   %end
                </div>
             </section>
