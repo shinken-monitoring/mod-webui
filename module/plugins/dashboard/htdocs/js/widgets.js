@@ -46,7 +46,8 @@ function AddWidget(url, placeId, replace){
    // We are saying to the user that we are loading a widget with
    // a spinner
    nb_widgets_loading += 1;
-   $('#widgets_loading').show();
+   // Loading indicator ...
+   $("#widgets_loading").html('<i class="fa fa-spinner fa-spin fa-3x"></i> <span class="lead">Loading widgets ... </span>').show();
 
    // We also hide the central span with the big button
    // And show the little one

@@ -58,17 +58,19 @@
    </tbody>
 </table>
 
-<div id="widgets_loading" class="pull-left"> <img src='/static/images/spinner.gif'> Loading widgets ...</div>
+<!-- Widgets loading indicator -->
+<div id="widgets_loading"></div>
 
 %# Go in the center of the page!
 %if len(widgets) == 0:
 <span id="center-button" class="col-sm-4 col-sm-offset-4 page-center" >
    <h3>You don't have any widget yet ...</h3>
    <!-- Button trigger widgets modal -->
-   <a id="widgets_show_panel" data-toggle="popover" title="Popover title" href="#widgets" class="btn btn-block btn-success"><i class="fa fa-plus"></i>... add a new widget</a>
+   <a id="widgets_show_panel" href="#widgets" class="btn btn-block btn-success"><i class="fa fa-plus"></i>... add a new widget</a>
 </span>
 %end
 
+<!-- Widgets selection popover content -->
 <div id="widgets" class="hidden">
    %for w in app.get_widgets_for('dashboard'):
       <button type="button" class="btn btn-block" style="margin-bottom: 2px;" data-toggle="collapse" data-target="#desc_{{w['widget_name']}}">
@@ -97,17 +99,23 @@
 <!-- /place-3 -->
 
 <script type="text/javascript">
-   // Activate the popover ...
    $(function () {
+      // Activate the popover ...
       $('#widgets_show_panel').popover({ 
          html : true,
          placement: 'bottom', 
-         title: 'Available widgets', 
+         title: 'Available widgets' + '<a class="close">×</a>', 
+         animation: true, 
          content: function() {
             return $('#widgets').html();
          }
       });
-
+      $('#widgets_show_panel').on('shown.bs.popover', function () {
+         $('a.close').on('click', function () {
+            $('#widgets_show_panel').popover('hide');
+         });
+      })
+      
       // ... and load all widgets.
       %for w in widgets:
          %if 'base_url' in w and 'position' in w:
