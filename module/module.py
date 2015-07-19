@@ -287,6 +287,11 @@ class Webui_broker(BaseModule, Daemon):
         if not self.has_history_module():
             logger.warning("[WebUI] No history module configured. You should configure the module 'mongo-logs' in your broker and the module 'mongodb' in webui.cfg file to get hosts history information.")
 
+        # We check if we have an helpdesk module
+        self.get_helpdesk = None
+        if not self.has_helpdesk_module():
+            logger.warning("[WebUI] No helpdesk module configured. You should configure the module 'glpi-tickets' in webui.cfg file to get helpdesk information.")
+
         # We check if we have an user preference module
         if not self.has_user_preference_module():
             logger.warning("[WebUI] No user preference module configured. Preferences will be stored in %s directory. Else, you may configure 'modules mongodb' or 'modules SQLitedb' in webui.cfg file", self.config_dir)
@@ -858,6 +863,35 @@ class Webui_broker(BaseModule, Daemon):
                 logger.info("[WebUI] Found history module: %s", mod.get_name())
                 self.get_history = f
                 return True
+        return False
+
+
+    # ------------------------------------------------------------------------------------------
+    # Manage helpdesk data
+    # ------------------------------------------------------------------------------------------
+    ##
+    # Check if an helpdesk module is declared in webui.cfg
+    ##
+    def has_helpdesk_module(self):
+        logger.debug("[WebUI] searching external module for helpdesk ...")
+        self.get_tickets = None
+        self.create_ticket = None
+        self.get_helpdesk_configuration = None
+        for mod in self.modules_manager.get_internal_instances():
+            f = getattr(mod, 'get_ui_tickets', None)
+            if f and callable(f):
+                logger.info("[WebUI] Found helpdesk module: %s", mod.get_name())
+                self.get_tickets = f
+                
+                f = getattr(mod, 'get_ui_helpdesk_configuration', None)
+                if f and callable(f):
+                    self.get_helpdesk_configuration = f
+                    
+                    f = getattr(mod, 'set_ui_ticket', None)
+                    if f and callable(f):
+                        self.create_ticket = f
+                        
+                        return True
         return False
 
 

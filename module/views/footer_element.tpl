@@ -46,6 +46,12 @@
                data-element="{{helper.get_uri_name(elt)}}" >
                <i class="fa fa-ambulance"></i> Schedule a downtime
             </a> </li>
+            %if app.create_ticket:
+            <li> <a href="#" action="create-ticket" title="Create a ticket for this {{elt_type}}"
+               data-element="{{helper.get_uri_name(elt)}}" >
+               <i class="fa fa-medkit"></i> Create a ticket
+            </a> </li>
+            %end
          %else:
             <li> <a href="#" action="event-handler" title="Try to fix the selected problems">
                <i class="fa fa-magic"></i> Try to fix
@@ -113,6 +119,17 @@
          if (eltdetail_logs) console.debug("Delete all comments for: ", elt)
          
          display_form("/forms/comment/delete_all/"+elt);
+      }
+   });
+   
+   // Create a ticket ...
+   $('[action="create-ticket"]').click(function () {
+      var elt = $(this).data('element');
+      var user = $(this).data('user');
+      if (elt) {
+         if (eltdetail_logs) console.debug("Create a ticket for: ", elt)
+         
+         display_form("/helpdesk/ticket/add/"+$(this).data('element'));
       }
    });
    

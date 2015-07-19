@@ -320,7 +320,10 @@ Invalid element name
             <li><a href="#history" data-toggle="tab">History</a></li>
             %end
             %if 'availability' in params['tabs'] and app.get_availability:
-            <li class="availability_pane"><a href="#availability" data-toggle="tab">Availability</a></li>
+            <li><a href="#availability" data-toggle="tab">Availability</a></li>
+            %end
+            %if 'helpdesk' in params['tabs'] and app.get_tickets:
+            <li><a href="#helpdesk" data-toggle="tab">Helpdesk</a></li>
             %end
          </ul>
          
@@ -1162,7 +1165,28 @@ Invalid element name
                </div>
             </div>
             %end
-            <!-- Tab History end -->
+            <!-- Tab Availability end -->
+
+            <!-- Tab Helpdesk start -->
+            %if 'helpdesk' in params['tabs'] and app.get_tickets:
+            <div class="tab-pane fade" id="helpdesk">
+               <div class="panel panel-default">
+                  <div class="panel-body">
+                     <div id="inner_helpdesk" data-element='{{elt.get_full_name()}}'>
+                     </div>
+                  
+                     <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm" 
+                           data-type="action" action="create-ticket"
+                           data-toggle="tooltip" data-placement="bottom" title="Create a ticket for this {{elt_type}}"
+                           data-element="{{helper.get_uri_name(elt)}}" 
+                           >
+                        <i class="fa fa-medkit"></i> Create a ticket
+                     </button>
+                  </div>
+               </div>
+            </div>
+            %end
+            <!-- Tab Helpdesk end -->
          </div>
       <!-- Detail info box end -->
    </div>

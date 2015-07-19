@@ -233,6 +233,24 @@ function on_page_refresh() {
 
 
    /*
+    * Helpdesk
+    */
+   $('a[data-toggle="tab"][href="#helpdesk"]').on('shown.bs.tab', function (e) {
+      // First we get the full name of the object from div data
+      var element = $('#inner_helpdesk').data('element');
+      
+      // Loading indicator ...
+      $("#inner_helpdesk").html('<i class="fa fa-spinner fa-spin fa-3x"></i> Loading helpdesk data ...');
+      
+      $("#inner_helpdesk").load('/helpdesk/tickets/'+element, function(response, status, xhr) {
+         if (status == "error") {
+            $('#inner_helpdesk').html('<div class="alert alert-danger">Sorry but there was an error: ' + xhr.status + ' ' + xhr.statusText+'</div>');
+         }
+      });
+   })
+
+
+   /*
     * Timeline
     */
    $('a[data-toggle="tab"][href="#timeline"]').on('shown.bs.tab', function (e) {

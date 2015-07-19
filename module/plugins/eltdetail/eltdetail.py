@@ -32,7 +32,7 @@ from shinken.util import safe_print
 # Get plugin's parameters from configuration file
 params = {}
 # Tabs to be displayed or not ...
-params['tabs'] = ['information', 'additional', 'configuration', 'custom_views', 'impacts', 'comments', 'downtimes', 'graphs', 'depgraph', 'history', 'availability']
+params['tabs'] = ['information', 'additional', 'configuration', 'custom_views', 'impacts', 'comments', 'downtimes', 'graphs', 'depgraph', 'history', 'availability', 'helpdesk']
 params['cfg_nb_impacts'] = 5
 
 # Main impacts view
