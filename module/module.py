@@ -709,8 +709,6 @@ class Webui_broker(BaseModule, Daemon):
             user = request.environ['USER']
         return user and ((not self.manage_acl) or user.is_admin or user.can_submit_commands)
 
-        return uris
-
     # ------------------------------------------------------------------------------------------
     # Manage embedded graphs
     # ------------------------------------------------------------------------------------------
