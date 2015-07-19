@@ -33,7 +33,7 @@ Invalid element name
 %# Main variables
 %elt_name = elt.host_name if elt_type=='host' else elt.service_description+' on '+elt.host.host_name
 %elt_display_name = elt.display_name if elt_type=='host' else elt.service_description
-<div class="row container-fluid">
+<div id="element">
 
    <!-- First row : tags and actions ... -->
    %if elt.action_url != '' or (elt_type=='host' and len(elt.get_host_tags()) != 0) or (elt_type=='service' and len(elt.get_service_tags()) != 0) or (elt_type=='host' and len(elt.hostgroups) > 0) or (elt_type=='service' and len(elt.servicegroups) > 0):
@@ -317,7 +317,7 @@ Invalid element name
             <li><a href="#depgraph" data-toggle="tab" id="tab_to_depgraph">Impact graph</a></li>
             %end
             %if 'history' in params['tabs'] and app.get_history:
-            <li class="history_pane"><a href="#history" data-toggle="tab" id="tab_to_history">History</a></li>
+            <li><a href="#history" data-toggle="tab">History</a></li>
             %end
             %if 'availability' in params['tabs'] and app.get_availability:
             <li class="availability_pane"><a href="#availability" data-toggle="tab">Availability</a></li>
@@ -1083,7 +1083,7 @@ Invalid element name
                      </div>
                      
                      <script>
-                     $('#tab_to_graphs').on('shown.bs.tab', function (e) {
+                     $('a[href="#graphs"]').on('shown.bs.tab', function (e) {
                         %uris = dict()
                         %uris['4h'] = app.get_graph_uris(elt, fourhours, now)
                         %uris['1d'] = app.get_graph_uris(elt, lastday,   now)
