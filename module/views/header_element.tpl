@@ -24,10 +24,9 @@
       <img src="/static/logo/{{app.company_logo}}" alt="Company logo" />
     </a>
   </div>
-  <!-- Collect the nav links, forms, and other content for toggling -->
-  <ul class="nav navbar-nav">
-    <!-- Host search ... -->
 
+  <ul class="nav navbar-nav">
+    <!-- Page filtering ... -->
     %include("_filters.tpl")
   </ul>
 
@@ -166,7 +165,7 @@
         <li> <a href="#"><i class="fa fa-gears"></i> System <i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
             <li> <a href="/parameters"> <span class="fa fa-gears"></span> Configuration </a> </li>
-            <li> <a href="/system"> <span class="fa fa-gears"></span> Status </a> </li>
+            <li> <a href="/system"> <span class="fa fa-heartbeat"></span> Status </a> </li>
             %if app.get_history:
             <li> <a href="/logs"> <span class="fa fa-th-list"></span> Logs </a> </li>
             %end
