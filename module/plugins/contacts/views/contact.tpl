@@ -26,7 +26,7 @@
 %end
 %end
 
-%# Contact is linked to hosts/services
+%# Contact is linked to hosts/services/contactgroups
 %my_hosts = []
 %for item in app.datamgr.get_hosts(user):
    %for item_contact in item.contacts:
