@@ -29,18 +29,14 @@ app = None
 
 
 def form_submit_check(name):
-    user = app.check_user_authentication()
-
     t = 'host'
     if '/' in name:
         t = 'service'
 
-    return {'app': app, 'user': user, 'name': name, 'obj_type': t}
+    return {'name': name, 'obj_type': t}
 
 
 def form_change_var(name):
-    user = app.check_user_authentication()
-
     variable = app.request.GET.get('variable', '')
     value = app.request.GET.get('value', '')
     
@@ -49,46 +45,41 @@ def form_change_var(name):
     else:
         elt = app.datamgr.get_host(name)
 
-    return {'app': app, 'user': user, 'elt': elt, 'name': name, 'variable': variable, 'value': value}
+    return {'elt': elt, 'name': name, 'variable': variable, 'value': value}
 
 def form_var(name):
-    user = app.check_user_authentication()
-
     if '/' in name:
         elt = app.datamgr.get_service(name)
     else:
         elt = app.datamgr.get_host(name)
 
-    return {'app': app, 'user': user, 'elt': elt, 'name': name}
+    return {'elt': elt, 'name': name}
 
 def form_ack_add(name):
-    user = app.check_user_authentication()
-    return {'app': app, 'user': user, 'name': name}
+    return {'name': name}
+
 def form_ack_remove(name):
-    user = app.check_user_authentication()
-    return {'app': app, 'user': user, 'name': name}
+    return {'name': name}
 
 def form_comment_add(name):
-    user = app.check_user_authentication()
-    return {'app': app, 'user': user, 'name': name}
+    return {'name': name}
+
 def form_comment_delete(name):
     comment = app.request.GET.get('comment', '-1')
-    user = app.check_user_authentication()
-    return {'app': app, 'user': user, 'name': name, 'comment': comment}
+    return {'name': name, 'comment': comment}
+
 def form_comment_delete_all(name):
-    user = app.check_user_authentication()
-    return {'app': app, 'user': user, 'name': name}
+    return {'name': name}
 
 def form_downtime_add(name):
-    user = app.check_user_authentication()
-    return {'app': app, 'user': user, 'name': name}
+    return {'name': name}
+
 def form_downtime_delete(name):
-    user = app.check_user_authentication()
     downtime = app.request.GET.get('downtime', '-1')
-    return {'app': app, 'user': user, 'name': name, 'downtime': downtime}
+    return {'name': name, 'downtime': downtime}
+
 def form_downtime_delete_all(name):
-    user = app.check_user_authentication()
-    return {'app': app, 'user': user, 'name': name}
+    return {'name': name}
 
 
 pages = {

@@ -33,7 +33,7 @@ def show_hostgroup(name):
 
 
 def show_hostgroups():
-    user = app.check_user_authentication()
+    user = app.request.environ['USER']
 
     # Set hostgroups level ...
     app.datamgr.set_hostgroups_level(user)
@@ -42,13 +42,13 @@ def show_hostgroups():
     parent = app.request.GET.get('parent', None)
     
     return {
-        'app': app, 'user': user, 'level': level, 
+        'level': level, 
         'hostgroups': sorted(app.datamgr.get_hostgroups(parent=parent, user=user), key=lambda hostgroup: hostgroup.hostgroup_name)
         }
 
 
 def show_hostgroups_dashboard():
-    user = app.check_user_authentication()
+    user = app.request.environ['USER']
 
     # Set hostgroups level ...
     app.datamgr.set_hostgroups_level(user)
@@ -57,7 +57,7 @@ def show_hostgroups_dashboard():
     parent = app.request.GET.get('parent', None)
     
     return {
-        'app': app, 'user': user, 'level': level, 
+        'level': level, 
         'hostgroups': sorted(app.datamgr.get_hostgroups(parent=parent, user=user), key=lambda hostgroup: hostgroup.hostgroup_name)
         }
 
@@ -67,7 +67,7 @@ def show_servicegroup(name):
 
 
 def show_servicegroups():
-    user = app.check_user_authentication()
+    user = app.request.environ['USER']
 
     # Set servicegroups level ...
     app.datamgr.set_servicegroups_level(user)
@@ -76,7 +76,7 @@ def show_servicegroups():
     parent = app.request.GET.get('parent', None)
     
     return {
-        'app': app, 'user': user, 'level': level, 
+        'level': level, 
         'servicegroups': sorted(app.datamgr.get_servicegroups(parent=parent, user=user), key=lambda servicegroup: servicegroup.servicegroup_name)
         }
 

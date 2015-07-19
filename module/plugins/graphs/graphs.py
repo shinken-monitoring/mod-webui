@@ -31,8 +31,6 @@ app = None
 
 # Our page
 def get_graphs_widget():
-    user = app.check_user_authentication()
-
     search = app.request.GET.get('search', '')
     duration = app.request.GET.get('duration', '86400')
     duration_list = {
@@ -74,9 +72,7 @@ def get_graphs_widget():
     title = 'Element graphs for %s' % search
 
     return {
-        'app': app,
         'elt': elt,
-        'user': user,
         'wid': wid,
         'collapsed': collapsed,
         'options': options,

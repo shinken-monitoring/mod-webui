@@ -30,8 +30,6 @@ app = None
 
 
 def depgraph_host(name):
-    user = app.check_user_authentication()
-
     # Ok we are in a detail page but the user ask for a specific search
     search = app.request.GET.get('global_search', None)
     loop = bool(int(app.request.GET.get('loop', '0')))
@@ -43,12 +41,10 @@ def depgraph_host(name):
             app.bottle.redirect("/depgraph/" + search)
 
     h = app.datamgr.get_host(name)
-    return {'app': app, 'elt': h, 'user': user, 'valid_user': True, 'loop' : loop, 'loop_time' : loop_time}
+    return {'elt': h, 'valid_user': True, 'loop' : loop, 'loop_time' : loop_time}
 
 
 def depgraph_srv(hname, desc):
-    user = app.check_user_authentication()
-
     loop = bool(int(app.request.GET.get('loop', '0')))
     loop_time = int(app.request.GET.get('loop_time', '10'))
 
@@ -60,12 +56,10 @@ def depgraph_srv(hname, desc):
             app.bottle.redirect("/depgraph/" + search)
 
     s = app.datamgr.get_service(hname, desc)
-    return {'app': app, 'elt': s, 'user': user, 'valid_user': True, 'loop' : loop, 'loop_time' : loop_time}
+    return {'elt': s, 'valid_user': True, 'loop' : loop, 'loop_time' : loop_time}
 
 
 def get_depgraph_widget():
-    user = app.check_user_authentication()
-
     search = app.request.GET.get('search', '').strip()
 
     if not search:
@@ -90,14 +84,12 @@ def get_depgraph_widget():
 
     title = 'Relation graph for %s' % search
 
-    return {'app': app, 'elt': s, 'user': user,
+    return {'elt': s,
             'wid': wid, 'collapsed': collapsed, 'options': options, 'base_url': '/widget/depgraph', 'title': title,
             }
 
 
 def get_depgraph_inner(name):
-    user = app.check_user_authentication()
-
     elt = None
     if '/' in name:
         elts = name.split('/', 1)
@@ -105,7 +97,7 @@ def get_depgraph_inner(name):
     else:
         elt = app.datamgr.get_host(name)
 
-    return {'app': app, 'elt': elt, 'user': user}
+    return {'elt': elt}
 
 widget_desc = '''<h4>Relation graph</h4>
 Show a graph of an object relations

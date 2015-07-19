@@ -78,7 +78,7 @@
       <tbody>
       %i=0
       %for group in hostgroups:
-         %hosts = app.datamgr.search_hosts_and_services('type:host hg:'+group.get_name(), user, hosts_only=True)
+         %hosts = app.datamgr.search_hosts_and_services('type:host hg:'+group.get_name(), user)
          %h = helper.get_synthesis(hosts)['hosts']
          %nHosts=h['nb_elts']
          %nGroups=len(group.get_hostgroup_members())

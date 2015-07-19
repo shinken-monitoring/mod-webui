@@ -23,9 +23,10 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 
-from shinken.misc.filter import only_related_to
 from shinken.misc.sorter import hst_srv_sort
 from shinken.log import logger
+
+#from lib.bottle import request
 
 # Will be populated by the UI with it's own value
 app = None
@@ -39,8 +40,7 @@ def get_page():
 
 
 def get_all():
-    user = app.check_user_authentication()
-
+    user = app.bottle.request.environ['USER']
     # Fetch elements per page preference for user, default is 25
     elts_per_page = app.get_user_preference(user, 'elts_per_page', 25)
 
@@ -71,11 +71,11 @@ def get_all():
     navi = app.helper.get_navi(total, start, step=step)
     pbs = items[start:end]
 
-    return {'app': app, 'pbs': pbs, 'all_pbs': items, 'user': user, 'navi': navi, 'search_string': search, 'bookmarks': app.get_user_bookmarks(user), 'bookmarksro': app.get_common_bookmarks(), 'sound': sound_pref, 'elts_per_page': elts_per_page}
+    return {'pbs': pbs, 'all_pbs': items, 'navi': navi, 'search_string': search, 'bookmarks': app.get_user_bookmarks(user), 'bookmarksro': app.get_common_bookmarks(), 'sound': sound_pref, 'elts_per_page': elts_per_page}
 
 
 def get_pbs_widget():
-    user = app.check_user_authentication()
+    user = app.bottle.request.environ['USER']
 
     # We want to limit the number of elements, The user will be able to increase it
     nb_elements = max(0, int(app.request.GET.get('nb_elements', '10')))
@@ -120,21 +120,18 @@ def get_pbs_widget():
     if refine_search:
         title = 'IT problems (%s)' % refine_search
 
-    return {'app': app, 'pbs': pbs, 'user': user, 'search': refine_search, 'page': 'problems',
+    return {'pbs': pbs, 'search': refine_search, 'page': 'problems',
             'wid': wid, 'collapsed': collapsed, 'options': options, 'base_url': '/widget/problems', 'title': title,
             }
 
 
 def get_last_errors_widget():
-    user = app.check_user_authentication()
+    user = app.bottle.request.environ['USER']
 
     # We want to limit the number of elements, The user will be able to increase it
     nb_elements = max(0, int(app.request.GET.get('nb_elements', '10')))
 
-    pbs = app.datamgr.get_problems_time_sorted()
-
-    # Filter with the user interests
-    pbs = only_related_to(pbs, user)
+    pbs = app.datamgr.get_problems_time_sorted(user)
 
     # Keep only nb_elements
     pbs = pbs[:nb_elements]
@@ -147,7 +144,7 @@ def get_last_errors_widget():
 
     title = 'Last IT problems'
 
-    return {'app': app, 'pbs': pbs, 'user': user, 'page': 'problems',
+    return {'pbs': pbs, 'page': 'problems',
             'wid': wid, 'collapsed': collapsed, 'options': options, 'base_url': '/widget/last_problems', 'title': title,
             }
 

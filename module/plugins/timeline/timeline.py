@@ -65,7 +65,7 @@ params['logs_type'] = []
 def load_cfg():
     global params
     
-    import os,sys
+    import os
     from webui.config_parser import config_parser
     plugin_name = os.path.splitext(os.path.basename(__file__))[0]
     try:
@@ -123,23 +123,15 @@ def getdb(dbname):
 # Our page. If the user call /dummy/TOTO arg1 will be TOTO.
 # if it's /dummy/, it will be 'nothing'
 def get_page(hostname='nothing'):
-    user = app.check_user_authentication()
-
-    return {'app': app, 'user': user, 'hostname': hostname}
+    return {'hostname': hostname}
 
 
 def get_json(hostname):
-    user = app.check_user_authentication()
-
     app.response.content_type = 'application/json'
-
-    host = app.datamgr.get_host(hostname)
     
     message,db = getdb(params['db_name'])
     if not db:
         return {
-            'app': app,
-            'user': user, 
             'message': message,
             'params': params,
             'records': []

@@ -75,16 +75,8 @@ def get_page(cmd=None):
     callback = app.request.query.get('callback', None)
     response_text = app.request.query.get('response_text', 'Command launched')
 
-    # First we look for the user sid
-    # so we bail out if it's a false one
-    user = app.get_user_auth()
-
-    # Maybe the user is not known at all
-    if not user:
-        return forge_response(callback, 401, 'Invalid session')
-
     # Or he is not allowed to launch commands?
-    if app.manage_acl and not user.can_submit_commands:
+    if not app.can_action():
         return forge_response(callback, 403, 'You are not authorized to launch commands')
 
     now = subsNOW()

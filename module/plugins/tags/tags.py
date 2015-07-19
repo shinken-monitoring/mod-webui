@@ -27,9 +27,6 @@
 # Will be populated by the UI with it's own value
 app = None
 
-from shinken.misc.filter import only_related_to
-
-
 def show_tag(name):
     app.bottle.redirect("/all?search=type:host htag:" + name)
 
@@ -39,27 +36,27 @@ def show_stag(name):
 
 
 def show_tags():
-    user = app.check_user_authentication()
+    user = app.request.environ['USER']
 
     fake_htags = []
     for tag in app.datamgr.get_host_tags_sorted():
-        hosts = only_related_to(app.datamgr.get_hosts_tagged_with(tag[0]), user)
+        hosts = app.datamgr.get_hosts_tagged_with(tag[0], user)
         if len(hosts) > 0:
             fake_htags.append({'name': tag[0], 'hosts': hosts})
 
-    return {'app': app, 'user': user, 'htags': fake_htags}
+    return {'htags': fake_htags}
 
 
 def show_stags():
-    user = app.check_user_authentication()
+    user = app.request.environ['USER']
 
     fake_stags = []
     for tag in app.datamgr.get_service_tags_sorted():
-        services = only_related_to(app.datamgr.get_services_tagged_with(tag[0]), user)
+        services = app.datamgr.get_services_tagged_with(tag[0], user)
         if len(services) > 0:
             fake_stags.append({'name': tag[0], 'services': services})
 
-    return {'app': app, 'user': user, 'stags': fake_stags}
+    return {'stags': fake_stags}
 
 
 pages = {

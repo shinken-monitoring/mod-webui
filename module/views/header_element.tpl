@@ -44,7 +44,7 @@
 %h = synthesis['hosts']
   <ul class="nav navbar-top-links navbar-right">
     <li>
-      %host_state = app.datamgr.get_percentage_hosts_state(app.get_user_auth(), False)
+      %host_state = app.datamgr.get_percentage_hosts_state(user, False)
        <a class="quickinfo states" href="/all?search=type:host" data-original-title="Hosts states" data-toggle="popover" title="Overall hosts states, {{h['nb_elts']}} hosts" data-html="true" data-trigger="hover" data-placement="bottom" data-content='
             <table class="table table-invisible table-condensed">
                <tbody>
@@ -69,7 +69,7 @@
     </li>
    
     <li>
-      %service_state = app.datamgr.get_percentage_service_state(app.get_user_auth(), False)
+      %service_state = app.datamgr.get_percentage_service_state(user, False)
        <a class="quickinfo states" href="/all?search=type:service" data-original-title="Services states" data-toggle="popover" title="Overall services states, {{s['nb_elts']}} services" data-html="true" data-trigger="hover" data-placement="bottom" data-content='
             <table class="table table-invisible table-condensed">
                <tbody>

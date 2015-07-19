@@ -105,7 +105,7 @@
          %continue
          %end
          
-         %hosts = app.datamgr.search_hosts_and_services('type:host hg:'+group.get_name(), user, hosts_only=True)
+         %hosts = app.datamgr.search_hosts_and_services('type:host hg:'+group.get_name(), user)
          %h = helper.get_synthesis(hosts)['hosts']
          %if even =='':
            %even='alt'

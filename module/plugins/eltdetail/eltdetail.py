@@ -27,8 +27,6 @@ app = None
 
 import time
 
-from shinken.util import safe_print
-
 # Get plugin's parameters from configuration file
 params = {}
 # Tabs to be displayed or not ...
@@ -37,10 +35,8 @@ params['cfg_nb_impacts'] = 5
 
 # Main impacts view
 def show_host(host_name):
-    user = app.check_user_authentication()
-
     # Ok we are in a detail page but the user ask for a specific search
-    if host_name.startswith('all'):
+    if host_name.startswith('all'):  # :DEBUG:maethor:150718: WHAT ?
         search = ' '.join(app.request.GET.getall('search')) or ""
         app.bottle.redirect('/'+host_name+'?search='+search)
 
@@ -51,15 +47,13 @@ def show_host(host_name):
 
     # Ok, we can lookup it
     h = app.datamgr.get_host(host_name)
-    return {'app': app, 'elt': h, 'valid_user': True, 'user': user, 'params': params, 'graphstart': graphstart,
+    return {'elt': h, 'valid_user': True, 'params': params, 'graphstart': graphstart,
             'graphend': graphend}
 
 
 def show_service(host_name, service):
-    user = app.check_user_authentication()
-
     # Ok we are in a detail page but the user ask for a specific search
-    if host_name.startswith('all'):
+    if host_name.startswith('all'):  # :DEBUG:maethor:150718: WHAT ?
         search = ' '.join(app.request.GET.getall('search')) or ""
         app.bottle.redirect('/'+host_name+'?search='+search)
 
@@ -70,7 +64,7 @@ def show_service(host_name, service):
 
     # Ok, we can lookup it :)
     s = app.datamgr.get_service(host_name, service)
-    return {'app': app, 'elt': s, 'valid_user': True, 'user': user, 'params': params, 'graphstart': graphstart,
+    return {'elt': s, 'valid_user': True, 'params': params, 'graphstart': graphstart,
             'graphend': graphend}
 
 pages = {

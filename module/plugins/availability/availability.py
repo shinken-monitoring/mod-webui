@@ -69,9 +69,8 @@ params['search_services'] = []
 def load_config(app):
     global params
     
-    import os,sys
+    import os
     from webui.config_parser import config_parser
-    plugin_name = os.path.splitext(os.path.basename(__file__))[0]
     try:
         currentdir = os.path.dirname(os.path.realpath(__file__))
         configuration_file = "%s/%s" % (currentdir, 'plugin.cfg')
@@ -104,6 +103,7 @@ def getdb(dbname):
         return (  
             "Error : Unable to create mongo DB connection %s:%s" % (params['mongo_host'],params['mongo_port']),
             None
+
         )
 
     try:
@@ -121,14 +121,12 @@ def getdb(dbname):
 
 
 def get_element(name):
-    user = app.check_user_authentication()
-
     # If exists an external module ...
     if app.get_availability:
         records = app.get_availability(name)
-        return {'app': app, 'records': records}
+        return {'records': records}
             
-    return {'app': app, 'records': None}
+    return {'records': None}
     
     # logger.info("[WebUI-availability] get_element, name: %s", name)
     # hostname = None
@@ -187,8 +185,6 @@ def get_element(name):
     
 
 def get_page():
-    user = app.check_user_authentication()
-
     # Find start and end date if provided in parameters ...
     midnight_timestamp = time.mktime (datetime.date.today().timetuple())
     range_start = int(app.request.GET.get('range_start', midnight_timestamp))
@@ -198,10 +194,10 @@ def get_page():
     # If exists an external module ...
     if app.get_availability:
         records = app.get_availability(name=None, range_start=range_start, range_end=range_end)
-        return {'app': app, 'user': user, 'records': records, 'range_start': range_start, 'range_end': range_end}
+        return {'records': records, 'range_start': range_start, 'range_end': range_end}
             
     logger.warning("[WebUI-availability] no get availability external module defined!")
-    return {'app': app, 'user': user, 'records': None, 'range_start': range_start, 'range_end': range_end}
+    return {'records': None, 'range_start': range_start, 'range_end': range_end}
     
     # message,db = getdb(params['database'])
     # if not db:

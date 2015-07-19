@@ -66,7 +66,7 @@ from shinken.log import logger
     # app.bottle.redirect("/config")
 
 def show_minemap():
-    user = app.check_user_authentication()
+    user = app.request.environ['USER']
 
     # Apply search filter if exists ...
     search = app.request.query.get('search', "type:host")
@@ -91,11 +91,9 @@ def show_minemap():
 
     navi = app.helper.get_navi(total, start, step=step)
 
-    return {'app': app, 'user': user, 'navi': navi, 'search_string': search, 'items': items[start:end], 'page': "minemap"}
+    return {'navi': navi, 'search_string': search, 'items': items[start:end], 'page': "minemap"}
 
 def show_minemaps():
-    user = app.check_user_authentication()
-
     app.bottle.redirect("/minemap/all")
 
 

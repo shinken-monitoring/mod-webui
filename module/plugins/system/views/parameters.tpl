@@ -9,7 +9,7 @@
 %end
 %end
 
-%rebase("layout", user=user, app=app, refresh=True, css=['user/css/user.css'], breadcrumb=[ ['System parameters', '/system-parameters'] ], title='System parameters')
+%rebase("layout", refresh=True, css=['user/css/user.css'], breadcrumb=[ ['System parameters', '/system-parameters'] ], title='System parameters')
 
 %setdefault('app', None)
 %setdefault('user', None)

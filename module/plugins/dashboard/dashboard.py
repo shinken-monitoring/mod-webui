@@ -34,7 +34,7 @@ except ImportError:
     try:
         import simplejson as json
     except ImportError:
-        print "Error: you need the json or simplejson module"
+        logger.error("[WebUI-dashboard] Error: you need the json or simplejson module")
         raise
 
 ### Will be populated by the UI with it's own value
@@ -43,7 +43,7 @@ app = None
 
 # Our page
 def get_page():
-    user = app.check_user_authentication()
+    user = app.request.environ['USER']
 
     # Look for the widgets as the json entry
     s = app.get_user_preference(user, 'widgets')
@@ -74,14 +74,10 @@ def get_page():
         w['options_uri'] = '&'.join('%s=%s' % (k, v) for (k, v) in args.iteritems())
         widgets.append(w)
 
-    return {'app': app, 'user': user, 'widgets': widgets}
+    return {'widgets': widgets}
 
 def get_currently():
-    user = app.get_user_auth(allow_anonymous=app.allow_anonymous)
-    if not user:
-        app.bottle.redirect("/user/login")
-
-    return {'app': app, 'user': user}
+    return {}
 
 pages = {
     get_page: {'routes': ['/dashboard'], 'view': 'dashboard', 'static': True},

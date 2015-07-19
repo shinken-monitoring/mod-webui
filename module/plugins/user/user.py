@@ -42,16 +42,11 @@ app = None
 # Test user preferences page ...
 
 def show_pref():
-    user = app.check_user_authentication()
-
-    return {
-        'app': app, 'user': user
-        }
+    return {}
 
 
 def save_pref():
-    user = app.check_user_authentication()
-
+    user = app.request.environ['USER']
     key = app.request.forms.get('key', None)
     value = app.request.forms.get('value', None)
 
@@ -66,7 +61,7 @@ def save_pref():
 
 
 def save_common_pref():
-    user = app.check_user_authentication()
+    user = app.request.environ['USER']
 
     key = app.request.forms.get('key', None)
     value = app.request.forms.get('value', None)

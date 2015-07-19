@@ -1,5 +1,3 @@
-%import json
-
 %if not 'global' in all_states:
 <div view="cv_host" conf="{{config}}">
    <span class="alert alert-error">Sorry, I cannot load the view!</span>

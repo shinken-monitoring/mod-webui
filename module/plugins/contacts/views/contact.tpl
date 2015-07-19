@@ -16,7 +16,7 @@
 %end
 %end
 
-%rebase("layout", title='Contact ' + username, user=user, app=app, refresh=True, breadcrumb=[ ['All contacts', '/contacts'], [username, '/contact/'+username] ])
+%rebase("layout", title='Contact ' + username, refresh=True, breadcrumb=[ ['All contacts', '/contacts'], [username, '/contact/'+username] ])
 
 %#Contact currently in downtime ?
 %in_scheduled_downtime=False
@@ -26,7 +26,7 @@
 %end
 %end
 
-%# Contact is linked to hosts/services/contactgroups
+%# Contact is linked to hosts/services
 %my_hosts = []
 %for item in app.datamgr.get_hosts(user):
    %for item_contact in item.contacts:

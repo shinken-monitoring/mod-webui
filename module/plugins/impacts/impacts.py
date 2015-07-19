@@ -24,9 +24,6 @@
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 import time
 
-from shinken.util import safe_print
-from shinken.misc.filter  import only_related_to
-
 # Global value that will be changed by the main app
 app = None
 
@@ -48,9 +45,9 @@ def hst_srv_sort(s1, s2):
 
 
 def show_impacts():
-    user = app.check_user_authentication()
+    user = app.request.environ['USER']
 
-    all_imp_impacts = only_related_to(app.datamgr.get_important_elements(),user)
+    all_imp_impacts = app.datamgr.get_important_elements(user)
     all_imp_impacts.sort(hst_srv_sort)
 
     impacts = {}
@@ -61,7 +58,7 @@ def show_impacts():
         imp_id += 1
         impacts[imp_id] = imp
 
-    return {'app': app, 'impacts': impacts, 'valid_user': True, 'user': user}
+    return {'impacts': impacts, 'valid_user': True}
 
 
 def impacts_widget():
@@ -86,8 +83,9 @@ def impacts_widget():
 
     return d
 
-widget_desc = '<h4>Impacts</h3>Show an aggregated view of the more important business impacts!</h4>'
+widget_desc = '<h4>Impacts</h3>Show an aggregated view of the most important business impacts!</h4>'
 
-pages = {show_impacts: {'routes': ['/impacts'], 'view': 'impacts', 'static': True},
-         impacts_widget: {'routes': ['/widget/impacts'], 'view': 'widget_impacts', 'static': True, 'widget': ['dashboard'], 'widget_desc': widget_desc, 'widget_name': 'impacts', 'widget_picture': '/static/impacts/img/widget_impacts.png'},
-         }
+pages = {
+    show_impacts: {'routes': ['/impacts'], 'view': 'impacts', 'static': True},
+    impacts_widget: {'routes': ['/widget/impacts'], 'view': 'widget_impacts', 'static': True, 'widget': ['dashboard'], 'widget_desc': widget_desc, 'widget_name': 'impacts', 'widget_picture': '/static/impacts/img/widget_impacts.png'},
+}

@@ -28,15 +28,13 @@ app = None
 
 from shinken.log import logger
 
-
 # Our page
 def get_page():
     return user_login()
 
 
 def user_login():
-    user = app.get_user_auth()
-    if user:
+    if app.request.get_cookie("user", secret=app.auth_secret):
         app.bottle.redirect("/")
 
     err = app.request.GET.get('error', None)
@@ -79,7 +77,7 @@ def user_auth():
         logger.warning("[WebUI]  user '%s' access denied", login)
         app.bottle.redirect("/user/login?error=Invalid user or Password")
 
-    return {'app': app, 'is_auth': is_authenticated}
+    return {'is_auth': is_authenticated}
 
 
 # manage the /. If the user is known, go to home page.

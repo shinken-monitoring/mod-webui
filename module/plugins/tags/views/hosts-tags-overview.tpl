@@ -1,7 +1,5 @@
 %rebase("layout", css=['tags/css/tags-overview.css'], js=['tags/js/tags-overview.js'], title='Hosts tags overview', refresh=True)
 
-%from shinken.misc.filter import only_related_to
-
 <div class="row">
   <span class="btn-group pull-right">
     <a href="#" id="listview" class="btn btn-small switcher quickinfo pull-right" data-original-title='List'> <i class="fa fa-align-justify"></i> </a>

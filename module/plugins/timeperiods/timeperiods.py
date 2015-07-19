@@ -26,10 +26,6 @@
 ### Will be populated by the UI with it's own value
 app = None
 
-import time
-
-from shinken.util import safe_print
-
 # Get plugin's parameters from configuration file
 params = {}
 params['display'] = ''
@@ -64,11 +60,7 @@ def reload_cfg():
 
 # All timeperiods
 def show_timeperiods():
-    user = app.check_user_authentication()
-
-    return {
-        'app': app, 'user': user, 'params': params
-        }
+    return {'params': params}
 
 
 # Load plugin configuration parameters

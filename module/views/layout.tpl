@@ -137,7 +137,7 @@
                <!-- Page header -->
                <section class="content-header">
                   %if navi:
-                  %include("pagination_element", navi=navi, app=app, page=page, elts_per_page=elts_per_page, display_steps_form=True)
+                  %include("pagination_element", navi=navi, page=page, elts_per_page=elts_per_page, display_steps_form=True)
                   %end
                   <h3 class="page-header" style="margin-top: 10px">
                     <ol class="breadcrumb" style="margin:0px">
@@ -169,7 +169,7 @@
                %if navi and len(navi) > 1:
                <hr>
                <section class="pagination-footer">
-                %include("pagination_element", navi=navi, app=app, page=page, elts_per_page=None)
+                %include("pagination_element", navi=navi, page=page, elts_per_page=None)
                </section>
                %end
             </div>

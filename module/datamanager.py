@@ -31,6 +31,7 @@ import itertools
 
 
 from shinken.misc.datamanager import DataManager
+from shinken.misc.sorter import last_state_change_earlier
 
 
 class WebUIDataManager(DataManager):
@@ -138,8 +139,10 @@ class WebUIDataManager(DataManager):
     ##
     # Services
     ##
-    def get_services(self, user=None):
+    def get_services(self, user=None, get_impacts=True):
         items = super(WebUIDataManager, self).get_services()
+        if not get_impacts:
+            items = [i for i in items if not i.is_impact]
         return self.only_related_to(items, user)
 
     def get_service(self, hname, sdesc):
@@ -165,6 +168,7 @@ class WebUIDataManager(DataManager):
     ##
     # Hosts and services
     ##
+    # :TODO:maethor:150718: Merge with search_hosts_and_services
     def get_all_hosts_and_services(self, user=None, get_impacts=True):
         """
         Get a list of all hosts and services
@@ -175,15 +179,11 @@ class WebUIDataManager(DataManager):
 
         """
         all = []
-        if get_impacts:
-            all.extend(self.get_hosts(user))
-            all.extend(self.get_services(user))
-        else:
-            all.extend([h for h in self.get_hosts(user) if not h.is_impact])
-            all.extend([s for s in self.get_services(user) if not s.is_impact])
+        all.extend(self.get_hosts(user, get_impacts))
+        all.extend(self.get_services(user, get_impacts))
         return all
 
-    def search_hosts_and_services(self, search, user=None, get_impacts=True, hosts_only=False):
+    def search_hosts_and_services(self, search, user=None, get_impacts=True):
         """@todo: Docstring for search_hosts_and_services.
 
         :search: @todo
@@ -192,10 +192,7 @@ class WebUIDataManager(DataManager):
         :returns: @todo
 
         """
-        if hosts_only:
-            items = self.get_hosts(user, get_impacts=False)
-        else:
-            items = self.get_all_hosts_and_services(user, get_impacts=False)
+        items = self.get_all_hosts_and_services(user, get_impacts=False)
 
         search = [s for s in search.split(' ')]
 
@@ -414,7 +411,7 @@ class WebUIDataManager(DataManager):
     def set_servicegroup_level(self, group, level, user=None):
         setattr(group, 'level', level)
 
-        # Search hostgroups referenced in another group
+        # Search servicegroups referenced in another group
         if group.has('servicegroup_members'):
             for g in sorted(group.get_servicegroup_members()):
                 child_group = self.get_servicegroup(g)
@@ -448,12 +445,8 @@ class WebUIDataManager(DataManager):
         return r
 
     # Get the hosts tagged with a specific tag
-    def get_hosts_tagged_with(self, tag):
-        r = []
-        for h in self.get_hosts():
-            if tag in h.get_host_tags():
-                r.append(h)
-        return r
+    def get_hosts_tagged_with(self, tag, user=None):
+        return self.search_hosts_and_services('type:host htag:%s' % tag, user)
 
     ##
     # Services tags
@@ -468,12 +461,8 @@ class WebUIDataManager(DataManager):
         return r
 
     # Get the services tagged with a specific tag
-    def get_services_tagged_with(self, tag):
-        r = []
-        for s in self.get_services():
-            if tag in s.get_service_tags():
-                r.append(s)
-        return r
+    def get_services_tagged_with(self, tag, user=None):
+        return self.search_hosts_and_services('type:service stag:%s' % tag, user)
 
     ##
     # Realms
@@ -594,5 +583,15 @@ class WebUIDataManager(DataManager):
             return len(s_states)
         else:
             return -1
+
+    # :TODO:maethor:150718:  Legacy methods, kept for backward compatibility. To remove.
+    def get_important_elements(self, user=None):
+        return self.search_hosts_and_services('bi:>2', user)
+
+    def get_all_problems(self, user=None, to_sort=True, get_acknowledged=False):
+        return self.search_hosts_and_services('isnot:UP isnot:OK isnot:PENDING ack:%s' % str(get_acknowledged), user)
+
+    def get_problems_time_sorted(self, user=None):
+        return self.get_all_problems(user=user, to_sort=None).sort(last_state_change_earlier)
 
 datamgr = WebUIDataManager()

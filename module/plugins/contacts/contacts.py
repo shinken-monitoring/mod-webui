@@ -28,19 +28,18 @@ app = None
 
 # Contact page
 def show_contact(name):
-    user = app.check_user_authentication()
+    user = app.request.environ['USER']
 
     if not user.is_admin and user.get_name != name:
       app.bottle.redirect('/contacts')
 
     return {
-        'app': app, 'user': user, 
         'contact': app.datamgr.get_contact(name)
         }
 
 # All contacts
 def show_contacts():
-    user = app.check_user_authentication()
+    user = app.request.environ['USER']
 
     if user.is_admin:
         contacts = app.datamgr.get_contacts()
@@ -48,7 +47,6 @@ def show_contacts():
         contacts = (user,)
 
     return {
-        'app': app, 'user': user, 
         'contacts': sorted(contacts, key=lambda contact: contact.contact_name)
         }
 

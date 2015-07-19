@@ -76,7 +76,7 @@ def load_config(app):
 
 # Our page. If the user call /worldmap
 def show_worldmap():
-    user = app.check_user_authentication()
+    user = app.request.environ['USER']
 
     # Apply search filter if exists ...
     search = app.request.query.get('search', "type:host")
@@ -119,11 +119,11 @@ def show_worldmap():
                 valid_hosts.append(h)
 
     # So now we can just send the valid hosts to the template
-    return {'app': app, 'user': user, 'search_string': search, 'params': params, 'hosts': valid_hosts}
+    return {'search_string': search, 'params': params, 'hosts': valid_hosts}
 
 
 def show_worldmap_widget():
-    user = app.check_user_authentication()
+    user = app.request.environ['USER']
 
     wid = app.request.GET.get('wid', 'widget_worldmap_' + str(int(time.time())))
     collapsed = (app.request.GET.get('collapsed', 'False') == 'True')
@@ -192,7 +192,7 @@ def show_worldmap_widget():
     if refine_search:
         title = 'Worldmap (%s)' % refine_search
 
-    return {'app': app, 'user': user, 'wid': wid,
+    return {'wid': wid,
             'collapsed': collapsed, 'options': options,
             'base_url': '/widget/worldmap', 'title': title,
             'params': params, 'hosts' : valid_hosts

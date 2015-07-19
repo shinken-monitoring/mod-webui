@@ -67,9 +67,8 @@ params['logs_services'] = []
 def load_config(app):
     global params
     
-    import os,sys
+    import os
     from webui.config_parser import config_parser
-    plugin_name = os.path.splitext(os.path.basename(__file__))[0]
     try:
         currentdir = os.path.dirname(os.path.realpath(__file__))
         configuration_file = "%s/%s" % (currentdir, 'plugin.cfg')
@@ -131,15 +130,13 @@ def getdb(dbname):
 
 
 def show_logs():
-    user = app.check_user_authentication()
-
     # If exists an external module ...
     if app.get_history:
         records = app.get_history(name=None, logs_type = params['logs_type'])
-        return {'app': app, 'user': user, 'records': records, 'params': params, 'message': "%d records fetched from database." % len(records)}
+        return {'records': records, 'params': params, 'message': "%d records fetched from database." % len(records)}
             
     logger.warning("[WebUI-logs] no get history external module defined!")
-    return {'app': app, 'user': user, 'records': None, 'params': params, 'message': "No module configured to get Shinken logs from a database!"}
+    return {'records': None, 'params': params, 'message': "No module configured to get Shinken logs from a database!"}
     
     # message,db = getdb(params['database'])
     # if not db:
@@ -211,13 +208,9 @@ def show_logs():
 
 
 def form_hosts_list():
-    user = app.check_user_authentication()
-
-    return {'app': app, 'user': user, 'params': params}
+    return {'params': params}
 
 def set_hosts_list():
-    user = app.check_user_authentication()
-
     # Form cancel
     if app.request.forms.get('cancel'): 
         app.bottle.redirect("/logs")
@@ -234,13 +227,9 @@ def set_hosts_list():
     return
 
 def form_services_list():
-    user = app.check_user_authentication()
-
-    return {'app': app, 'user': user, 'params': params}
+    return {'params': params}
 
 def set_services_list():
-    user = app.check_user_authentication()
-
     # Form cancel
     if app.request.forms.get('cancel'): 
         app.bottle.redirect("/logs")
@@ -257,13 +246,9 @@ def set_services_list():
     return
 
 def form_logs_type_list():
-    user = app.check_user_authentication()
-
-    return {'app': app, 'user': user, 'params': params}
+    return {'params': params}
 
 def set_logs_type_list():
-    user = app.check_user_authentication()
-
     # Form cancel
     if app.request.forms.get('cancel'): 
         app.bottle.redirect("/logs")
@@ -280,15 +265,13 @@ def set_logs_type_list():
     return
 
 def get_history(name):
-    user = app.check_user_authentication()
-
     # If exists an external module ...
     if app.get_history:
         records = app.get_history(name=name)
-        return {'app': app, 'records': records}
+        return {'records': records}
             
     logger.warning("[WebUI-logs] no get history external module defined!")
-    return {'app': app, 'records': None}
+    return {'records': None}
 
     # logger.debug("[WebUI-logs] get_history, name: %s", name)
     # hostname = None
@@ -363,7 +346,7 @@ def get_history(name):
     # except Exception, exp:
         # logger.error("[WebUI-logs] Exception when querying database: %s", str(exp))
     
-    # return {'app': app, 'records': records}
+    # return {'records': records}
 
 pages = {   
         show_logs: {'routes': ['/logs'], 'view': 'logs', 'static': True},

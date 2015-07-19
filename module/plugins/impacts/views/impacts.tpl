@@ -1,7 +1,7 @@
 %helper = app.helper
 %datamgr = app.datamgr
 
-%rebase("layout", css=['impacts/css/impacts.css'], js=['impacts/js/impacts.js'], title='All critical impacts for your business', refresh=True, user=user)
+%rebase("layout", css=['impacts/css/impacts.css'], js=['impacts/js/impacts.js'], title='All critical impacts for your business', refresh=True)
 
 
 <div id="impact-container">

@@ -32,14 +32,10 @@ app = None
 
 
 def system_parameters():
-    user = app.check_user_authentication()
-
-    return {'app': app, 'user': user, 'configs': app.datamgr.get_configs() }
+    return {'configs': app.datamgr.get_configs() }
 
 
 def system_page():
-    user = app.check_user_authentication()
-
     schedulers = app.datamgr.get_schedulers()
     brokers = app.datamgr.get_brokers()
     reactionners = app.datamgr.get_reactionners()
@@ -52,15 +48,13 @@ def system_page():
     logger.debug("[WebUI-system] receivers: %s", receivers)
     logger.debug("[WebUI-system] pollers: %s", pollers)
     
-    return {'app': app, 'user': user, 'schedulers': schedulers,
+    return {'schedulers': schedulers,
             'brokers': brokers, 'reactionners': reactionners,
             'receivers': receivers, 'pollers': pollers,
             }
 
 
 def system_widget():
-    user = app.check_user_authentication()
-
     schedulers = app.datamgr.get_schedulers()
     brokers = app.datamgr.get_brokers()
     reactionners = app.datamgr.get_reactionners()
@@ -77,12 +71,9 @@ def system_widget():
     collapsed = (app.request.GET.get('collapsed', 'False') == 'True')
     print "SYSTEM COLLAPSED?", collapsed, type(collapsed)
 
-    got_childs = (app.request.GET.get('got_childs', 'False') == 'True')
-    key = app.request.GET.get('key', 1)
-
     options = {}
 
-    return {'app': app, 'user': user, 'wid': wid,
+    return {'wid': wid,
             'collapsed': collapsed, 'options': options,
             'base_url': '/widget/system', 'title': 'System Information',
             'schedulers': schedulers,

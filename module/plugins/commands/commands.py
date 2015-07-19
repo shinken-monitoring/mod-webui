@@ -28,10 +28,7 @@ app = None
 
 # All commands
 def show_commands():
-    user = app.check_user_authentication()
-
     return {
-        'app': app, 'user': user, 
         'commands': sorted(app.datamgr.get_commands(), key=lambda command: command.command_name)
         }
 

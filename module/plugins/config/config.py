@@ -23,8 +23,6 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 
-import time
-
 from shinken.log import logger
 
 ### Will be populated by the UI with it's own value
@@ -34,7 +32,7 @@ app = None
 params = {}
 params['fake'] = "fake"
 
-import os,sys
+import os
 from webui.config_parser import config_parser
 plugin_name = os.path.splitext(os.path.basename(__file__))[0]
 try:
@@ -54,11 +52,8 @@ except Exception, exp:
 
 
 def config_page():
-    user = app.check_user_authentication()    
-
     app.bottle.redirect("/")
-    
-    return {'app': app, 'user': user}
+    return {}
 
 
 pages = {

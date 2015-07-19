@@ -42,7 +42,6 @@ import os
 import time
 import threading
 import imp
-import hashlib
 import json
 
 from shinken.basemodule import BaseModule
@@ -59,6 +58,7 @@ from shinken.util import to_bool
 from lib.bottle import run, static_file, view, route, request, response, template
 import lib.bottle as bottle
 from datamanager import WebUIDataManager
+from user import User
 from helper import helper
 
 # Debug
@@ -76,8 +76,7 @@ properties = {
     'daemons': ['broker', 'scheduler'],
     'type': 'webui',
     'phases': ['running'],
-    'external': True,
-    }
+    'external': True}
 
 
 # called by the plugin manager to get an instance
@@ -109,7 +108,7 @@ class Webui_broker(BaseModule, Daemon):
         self.login_text = getattr(modconf, 'login_text', None)
         # TODO : common preferences
         self.company_logo = getattr(modconf, 'company_logo', 'default_company')
-        if self.company_logo=='':
+        if self.company_logo == '':
             # Set a dummy value if webui.cfg value is empty to force using the default logo ...
             self.company_logo = 'abcdef'
         # TODO : common preferences
@@ -172,10 +171,10 @@ class Webui_broker(BaseModule, Daemon):
 
         # Visual alerting thresholds
         # Used in the dashboard view to select background color for percentages
-        self.hosts_states_warning       = int(getattr(modconf, 'hosts_states_warning', '95'))
-        self.hosts_states_critical      = int(getattr(modconf, 'hosts_states_critical', '90'))
-        self.services_states_warning    = int(getattr(modconf, 'services_states_warning', '95'))
-        self.services_states_critical   = int(getattr(modconf, 'services_states_critical', '90'))
+        self.hosts_states_warning = int(getattr(modconf, 'hosts_states_warning', '95'))
+        self.hosts_states_critical = int(getattr(modconf, 'hosts_states_critical', '90'))
+        self.services_states_warning = int(getattr(modconf, 'services_states_warning', '95'))
+        self.services_states_critical = int(getattr(modconf, 'services_states_critical', '90'))
 
         # Web UI information
         self.app_version = getattr(modconf, 'about_version', WEBUI_VERSION)
@@ -193,12 +192,12 @@ class Webui_broker(BaseModule, Daemon):
         # Mu bottle object ...
         self.bottle = bottle
 
+        bottle.BaseTemplate.defaults['app'] = self
 
     # Called by Broker so we can do init stuff
     def init(self):
         logger.info("[WebUI] Initializing ...")
         self.rg.load_external_queue(self.from_q)
-
 
     # This is called only when we are in a scheduler
     # and just before we are started. So we can gain time, and
@@ -209,11 +208,9 @@ class Webui_broker(BaseModule, Daemon):
         print "pre_scheduler_mod_start::", sched.__dict__
         self.rg.load_from_scheduler(sched)
 
-
     # In a scheduler we will have a filter of what we really want as a brok
     def want_brok(self, b):
         return self.rg.want_brok(b)
-
 
     def main(self):
         self.set_proctitle(self.name)
@@ -251,7 +248,6 @@ class Webui_broker(BaseModule, Daemon):
             except Exception, exp:
                 logger.error("[WebUI] Photo dir creation failed: %s", exp)
 
-
         # We check if the share directory exists. If not, try to create it
         logger.debug("[WebUI] Checking share dir: %s", self.share_dir)
         if not os.path.exists(self.share_dir):
@@ -261,7 +257,6 @@ class Webui_broker(BaseModule, Daemon):
             except Exception, exp:
                 logger.error("[WebUI] Share dir creation failed: %s", exp)
 
-
         # We check if the config directory exists. If not, try to create it
         logger.debug("[WebUI] Checking config dir: %s", self.config_dir)
         if not os.path.exists(self.config_dir):
@@ -270,7 +265,6 @@ class Webui_broker(BaseModule, Daemon):
                 logger.info("[WebUI] Created config dir: %s", self.config_dir)
             except Exception, exp:
                 logger.error("[WebUI] Config dir creation failed: %s", exp)
-
 
         # We check if we have an user authentication module
         if not self.has_user_authentication_module():
@@ -304,6 +298,13 @@ class Webui_broker(BaseModule, Daemon):
         self.response = response
         self.template_call = template
 
+        # :TODO:maethor:150717: Doesn't work
+        username = self.request.get_cookie("user", secret=self.auth_secret)
+        if username:
+            self.user = User.from_contact(self.datamgr.get_contact(username), self.gravatar)
+        else:
+            self.user = None
+
         try:
             self.do_main()
         except Exception, exp:
@@ -313,7 +314,6 @@ class Webui_broker(BaseModule, Daemon):
             time.sleep(2)
             raise
 
-
     # A plugin send us en external command. We just put it
     # in the good queue
     def push_external_command(self, e):
@@ -322,7 +322,6 @@ class Webui_broker(BaseModule, Daemon):
             self.from_q.put(e)
         except Exception, exp:
             logger.error("[WebUI] External command push, exception: %s", str(exp))
-
 
     # Real main function
     def do_main(self):
@@ -350,7 +349,6 @@ class Webui_broker(BaseModule, Daemon):
                 mod_plugins_path = os.path.abspath(f(self))
                 self.load_plugins(mod_plugins_path)
 
-
         # Then look at the plugins into core and load all we can there
         core_plugin_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'plugins')
         self.load_plugins(core_plugin_dir)
@@ -368,7 +366,7 @@ class Webui_broker(BaseModule, Daemon):
         # handle of the Queue()? That's just because under Windows, select
         # only manage winsock (so network) file descriptor! What a shame!
         logger.info("[WebUI] starting Web UI server ...")
-        srv = run(host=self.host, port=self.port, server=self.http_backend, **self.serveropts)
+        run(host=self.host, port=self.port, server=self.http_backend, **self.serveropts)
 
         # ^ IMPORTANT ^
         # We are not managing the lock at this
@@ -377,11 +375,9 @@ class Webui_broker(BaseModule, Daemon):
         # pages: need it. So it's managed at a
         # function wrapper at loading pass
 
-
     # It will say if we can launch a page rendering or not.
     # We can only if there is no writer running from now
     def wait_for_no_writers(self):
-        can_run = False
         while True:
             self.global_lock.acquire()
             # We will be able to run
@@ -395,7 +391,6 @@ class Webui_broker(BaseModule, Daemon):
             # Before checking again, we should wait a bit
             # like 1ms
             time.sleep(0.001)
-
 
     # It will say if we can launch a brok management or not
     # We can only if there is no readers running from now
@@ -420,7 +415,6 @@ class Webui_broker(BaseModule, Daemon):
                 print "WARNING: we are in lock/read since more than 30s!"
                 start = time.time()
 
-
     # We want a lock manager version of the plugin functions
     def lockable_function(self, f):
         def lock_version(**args):
@@ -436,7 +430,6 @@ class Webui_broker(BaseModule, Daemon):
                 self.global_lock.release()
 
         return lock_version
-
 
     # It's the thread function that will get broks
     # and update data. Will lock the whole thing
@@ -484,7 +477,6 @@ class Webui_broker(BaseModule, Daemon):
 
         logger.debug("[WebUI] manage_brok_thread end ...")
 
-
     # Here we will load all plugins (pages) under the webui/plugins
     # directory. Each one can have a page, views and htdocs dir that we must
     # route correctly
@@ -504,7 +496,6 @@ class Webui_broker(BaseModule, Daemon):
         # Try to import all found plugins
         for fdir in plugin_dirs:
             self.load_plugin(fdir, plugin_dir)
-
 
     # Load a WebUI plugin
     def load_plugin(self, fdir, plugin_dir):
@@ -578,7 +569,6 @@ class Webui_broker(BaseModule, Daemon):
         except Exception, exp:
             logger.error("[WebUI] loading plugin %s, exception: %s", fdir, str(exp))
 
-
     # Add static route in the Web server
     def add_static_route(self, fdir, m_dir):
         logger.debug("[WebUI] add static route: %s", fdir)
@@ -588,21 +578,20 @@ class Webui_broker(BaseModule, Daemon):
             return static_file(path, root=os.path.join(m_dir, 'htdocs'))
         route(static_route, callback=plugin_static)
 
-
     def declare_common_static(self):
         @route('/static/photos/:path#.+#')
         def give_photo(path):
             # If the file really exist, give it. If not, give a dummy image.
-            if os.path.exists(os.path.join(self.photo_dir, path+'.png')):
-                return static_file(path+'.png', root=self.photo_dir)
+            if os.path.exists(os.path.join(self.photo_dir, path + '.png')):
+                return static_file(path + '.png', root=self.photo_dir)
             else:
                 return static_file('images/default_user.png', root=htdocs_dir)
 
         @route('/static/logo/:path#.+#')
         def give_logo(path):
             # If the file really exist, give it. If not, give a dummy image.
-            if os.path.exists(os.path.join(self.photo_dir, path+'.png')):
-                return static_file(path+'.png', root=self.photo_dir)
+            if os.path.exists(os.path.join(self.photo_dir, path + '.png')):
+                return static_file(path + '.png', root=self.photo_dir)
             else:
                 return static_file('images/default_company.png', root=htdocs_dir)
 
@@ -661,7 +650,6 @@ class Webui_broker(BaseModule, Daemon):
                 return True
         return False
 
-
     ##
     # Check if provided username/password is accepted for login the Web UI
     #
@@ -710,89 +698,18 @@ class Webui_broker(BaseModule, Daemon):
         return (is_ok and c is not None)
 
     ##
-    # Return currently logged in user
-    #
-    # If anonymous is requested and anonymous contact exists,
-    # returns the anonymous contact
-    ##
-    def get_user_auth(self, allow_anonymous=False):
-        # First we look for the user sid
-        # so we bail out if it's a false one
-        username = self.request.get_cookie("user", secret=self.auth_secret)
-
-        # If we cannot check the cookie, bailout ...
-        if not allow_anonymous and not username:
-            return None
-
-        # Allow anonymous access if requested and anonymous contact exists ...
-        if allow_anonymous:
-            if not self.allow_anonymous:
-                return None
-
-            c = self.datamgr.get_contact('anonymous')
-            if c:
-                return c
-
-        c = self.datamgr.get_contact(username)
-
-        # Set user picture
-        if c is not None and self.user_picture == '':
-            self.user_picture = '/static/photos/%s' % username
-            if self.gravatar and c.email:
-                gravatar = self.get_gravatar(c.email, 32)
-                if gravatar is not None:
-                    self.user_picture = gravatar
-
-        return c
-
-    ##
-    # Check if a user is currently logged in
-    ##
-    def check_user_authentication(self):
-        user = self.get_user_auth()
-        if not user:
-            self.bottle.redirect("/user/login")
-        else:
-            return user
-
-    ##
     # Current user can launch commands ?
     # If username is provided, check for the specified user ...
     ##
+    # :TODO:maethor:150717: find a better name for this method
     def can_action(self, username=None):
-        if not self.manage_acl:
-            return true
+        if username:
+            user = User.from_contact(self.datamgr.get_contact(username), self.gravatar)
+        else:
+            user = request.environ['USER']
+        return user and ((not self.manage_acl) or user.is_admin or user.can_submit_commands)
 
-        if username is None:
-            user = self.get_user_auth()
-            if not user:
-                self.bottle.redirect("/user/login")
-            else:
-                return user.is_admin or user.can_submit_commands
-
-        c = self.datamgr.get_contact(username)
-        return c.is_admin or c.can_submit_commands
-
-    ##
-    # Get user Gravatar picture if defined
-    ##
-    def get_gravatar(self, email, size=64, default='404'):
-        logger.debug("[WebUI], get Gravatar, email: %s, size: %d, default: %s", email, size, default)
-
-        try:
-            import urllib2
-            parameters = { 's' : size, 'd' : default}
-            url = "https://secure.gravatar.com/avatar/%s?%s" % (hashlib.md5(email.lower()).hexdigest(), urllib.urlencode(parameters))
-            ret = urllib2.urlopen(url)
-            if ret.code == 200:
-                return url
-            else:
-                return None
-        except:
-            return None
-
-        return None
-
+        return uris
 
     # ------------------------------------------------------------------------------------------
     # Manage embedded graphs
@@ -800,7 +717,7 @@ class Webui_broker(BaseModule, Daemon):
     # Try to got for an element the graphs uris from modules
     # The source variable describes the source of the calling. Are we displaying
     # graphs for the element detail page (detail), or a widget in the dashboard (dashboard) ?
-    def get_graph_uris(self, elt, graphstart, graphend, source = 'detail'):
+    def get_graph_uris(self, elt, graphstart, graphend, source='detail'):
         logger.debug("[WebUI] Fetching graph URIs for %s (%s)", elt.host_name, source)
 
         uris = []
@@ -819,6 +736,7 @@ class Webui_broker(BaseModule, Daemon):
                 self.modules_manager.set_to_restart(mod)
 
         return uris
+
 
     def get_graph_img_src(self,uri,link):
         url=uri
@@ -917,7 +835,7 @@ class Webui_broker(BaseModule, Daemon):
     def get_user_preferences(self):
         logger.debug("[WebUI] Fetching all user preferences ...")
 
-        return self.get_user_preference(self.get_user_auth())
+        return self.get_user_preference(self.user)
 
     ##
     # Get a user preference by name
@@ -932,13 +850,13 @@ class Webui_broker(BaseModule, Daemon):
                 for file in files:
                     logger.debug("[WebUI] found %s file, key = %s", file, key)
                     try:
-                        f=open("%s/%s/%s" % (self.config_dir, user.get_name(), file), 'r')
-                        lines=f.read()
+                        f = open("%s/%s/%s" % (self.config_dir, user.get_name(), file), 'r')
+                        lines = f.read()
                         f.close()
                     except:
                         pass
 
-                    if key is not None and file == "%s"%key:
+                    if key is not None and file == "%s" % key:
                         logger.debug("[WebUI] found key = %s", lines)
                         return lines
                     elif key is None:
@@ -982,7 +900,7 @@ class Webui_broker(BaseModule, Daemon):
                     logger.error("[WebUI] User preference directory creation failed: %s", exp)
 
             # Preferences are stored in self.config_dir/user.get_name()/key
-            f=open("%s/%s" % (dir, key),'w')
+            f = open("%s/%s" % (dir, key), 'w')
             f.write(value)
             f.close()
             logger.debug("[WebUI] Updated '%s', %s = %s", user.get_name(), key, value)
@@ -1013,13 +931,13 @@ class Webui_broker(BaseModule, Daemon):
                 for file in files:
                     logger.debug("[WebUI] found %s file, key = %s", file, key)
                     try:
-                        f=open("%s/%s/%s" % (self.config_dir, 'common', file), 'r')
-                        lines=f.read()
+                        f = open("%s/%s/%s" % (self.config_dir, 'common', file), 'r')
+                        lines = f.read()
                         f.close()
                     except:
                         pass
 
-                    if key is not None and file == "%s"%key:
+                    if key is not None and file == "%s" % key:
                         logger.debug("[WebUI] found key = %s", lines)
                         return lines
                     elif key is None:
@@ -1062,7 +980,7 @@ class Webui_broker(BaseModule, Daemon):
                     logger.error("[WebUI] Common preference directory creation failed: %s", exp)
 
             # Preferences are stored in self.config_dir/user.get_name()/key
-            f=open("%s/%s" % (dir, key),'w')
+            f = open("%s/%s" % (dir, key), 'w')
             f.write(value)
             f.close()
             logger.debug("[WebUI] Updated '%s', %s = %s", 'common', key, value)
@@ -1087,7 +1005,6 @@ class Webui_broker(BaseModule, Daemon):
         ''' Returns the user bookmarks. '''
         return json.loads(self.get_user_preference(user, 'bookmarks') or '[]')
 
-
     def get_common_bookmarks(self):
         ''' Returns the common bookmarks. '''
         return json.loads(self.get_common_preference('bookmarks') or '[]')
@@ -1097,7 +1014,6 @@ class Webui_broker(BaseModule, Daemon):
     # For a specific place like dashboard we return widget lists
     def get_widgets_for(self, place):
         return self.widgets.get(place, [])
-
 
     ##
     # External UI links for other modules
@@ -1123,3 +1039,25 @@ class Webui_broker(BaseModule, Daemon):
                 self.modules_manager.set_to_restart(mod)
 
         return lst
+
+
+@bottle.hook('before_request')
+def login_required():
+    # :COMMENT:maethor:150718: This hack is crazy, but I don't know how to do it properly
+    app = bottle.BaseTemplate.defaults['app']
+    request.environ['APP'] = app
+
+    if request.urlparts.path == '/user/login':
+        return
+    if request.urlparts.path.startswith('/static'):
+        return
+
+    username = bottle.request.get_cookie("user", secret=app.auth_secret)
+    if not username and not app.allow_anonymous:
+        app.bottle.redirect("/user/login")
+    contact = app.datamgr.get_contact(username or 'anonymous')
+    if not contact:
+        app.bottle.redirect("/user/login")
+
+    request.environ['USER'] = User.from_contact(contact, app.gravatar)
+    bottle.BaseTemplate.defaults['user'] = request.environ['USER']
