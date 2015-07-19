@@ -880,15 +880,17 @@ class Webui_broker(BaseModule, Daemon):
         for mod in self.modules_manager.get_internal_instances():
             f = getattr(mod, 'get_ui_tickets', None)
             if f and callable(f):
-                logger.info("[WebUI] Found helpdesk module: %s", mod.get_name())
+                logger.info("[WebUI] Found helpdesk module: %s, get_ui_tickets", mod.get_name())
                 self.get_tickets = f
                 
                 f = getattr(mod, 'get_ui_helpdesk_configuration', None)
                 if f and callable(f):
+                    logger.info("[WebUI] Found helpdesk module: %s, get_ui_helpdesk_configuration", mod.get_name())
                     self.get_helpdesk_configuration = f
                     
                     f = getattr(mod, 'set_ui_ticket', None)
                     if f and callable(f):
+                        logger.info("[WebUI] Found helpdesk module: %s, set_ui_ticket", mod.get_name())
                         self.create_ticket = f
                         
                         return True
