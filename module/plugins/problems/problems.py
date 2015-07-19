@@ -36,7 +36,7 @@ import re
 
 
 def get_page():
-    app.bottle.redirect("/all?search=isnot:UP isnot:OK isnot:PENDING ack:false downtime:false")
+    app.bottle.redirect("/all?search=isnot:UP isnot:OK isnot:PENDING isnot:ACK isnot:DOWNTIME")
 
 
 def get_all():
@@ -57,9 +57,10 @@ def get_all():
     end = int(app.request.GET.get('end', start + step))
 
     search = ' '.join(app.request.GET.getall('search')) or ""
-    items = app.datamgr.search_hosts_and_services(search, user, get_impacts=False)
+    items = app.datamgr.search_hosts_and_services(search, user)
 
     # Now sort it!
+    # @mohierf: sorting is really necessary ?
     items.sort(hst_srv_sort)
 
     total = len(items)

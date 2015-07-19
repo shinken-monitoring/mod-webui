@@ -29,13 +29,6 @@
     <!-- Host search ... -->
 
     %include("_filters.tpl")
-
-    <!-- Clock ... -->
-    <!--<p class="navbar-text hidden-sm hidden-xs hidden-md">-->
-      <!--<span class="headClock">-->
-        <!--<span class="date">&nbsp;</span> - <span class="time">&nbsp;</span>-->
-      <!--</span>-->
-    <!--</p>-->
   </ul>
 
   <!-- Right buttons ... -->
@@ -153,7 +146,7 @@
       <ul class="nav" id="sidebar-menu">
         %if app:
         <li> <a href="/dashboard"> <span class="fa fa-dashboard"></span> Dashboard </a> </li>
-        <li> <a href="/all?search=isnot:UP isnot:OK isnot:PENDING ack:false downtime:false"> <span class="fa fa-ambulance"></span> Problems </a> </li>
+        <li> <a href="/problems"> <span class="fa fa-ambulance"></span> Problems </a> </li>
         <li> <a href="#"><i class="fa fa-sitemap"></i> Groups and tags <i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
             <li> <a href="/hosts-groups"> <span class="fa fa-sitemap"></span> Hosts groups </a> </li>

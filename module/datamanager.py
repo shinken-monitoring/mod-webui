@@ -192,7 +192,7 @@ class WebUIDataManager(DataManager):
         :returns: @todo
 
         """
-        items = self.get_all_hosts_and_services(user, get_impacts=False)
+        items = self.get_all_hosts_and_services(user=user, get_impacts=get_impacts)
 
         search = [s for s in search.split(' ')]
 
