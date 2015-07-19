@@ -123,7 +123,7 @@ function on_page_refresh() {
    /*
     * Dependency graph
     */
-   $('#tab_to_depgraph').on('shown.bs.tab', function (e) {
+   $('a[href="#depgraph"]').on('shown.bs.tab', function (e) {
       // First we get the full name of the object from div data
       var n = $('#inner_depgraph').data('element');
       // Loading indicator ...
@@ -254,7 +254,7 @@ function on_page_refresh() {
       they will have a null size. So how to do it?
       The key is to hook the graph tab. onshow will raise when we active it (and was shown).
    */
-   $('#tab_to_graphs').on('shown.bs.tab', function (e) {
+   $('a[href="#graphs"]').on('shown.bs.tab', function (e) {
       // console.log("Display graph: ", current_graph)
       $('a[data-type="graph"][data-period="'+current_graph+'"]').trigger('click');
    })

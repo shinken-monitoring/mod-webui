@@ -20,7 +20,7 @@
 
 // When we show the counters view tab, we lazy load the view ...
 $(window).ready(function(){
-   $('#tab_to_counters').on('shown.bs.tab', function (e) {
+   $('a[href="#counters"]').on('shown.bs.tab', function (e) {
       console.debug('Show counters tab ...');
       // First we get the full name of the object from div data
       var hostname = $('#inner_counters').attr('data-elt-name');
