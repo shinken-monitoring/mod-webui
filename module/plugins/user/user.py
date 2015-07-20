@@ -62,7 +62,6 @@ def save_pref():
 
 def save_common_pref():
     user = app.request.environ['USER']
-
     key = app.request.forms.get('key', None)
     value = app.request.forms.get('value', None)
 
