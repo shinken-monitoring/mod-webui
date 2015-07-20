@@ -66,24 +66,23 @@ function AddWidget(url, placeId, replace){
 
    $.ajax({
       url: url,
-      context: container_object,
-      success: function(html){
-         $.fn.AddEasyWidget(html, this.attr('id'), {});
-      },
-      error: function(xhr) {
-         this.html('Error loading this widget: ', widgetId, url);
-         // var widget = search_widget(widgetId);
-         // widget.data('deleted', 1);
-         jQuery('#' + widgetId).remove();
-         saveWidgets();
-      },
-      complete: function() {
-         nb_widgets_loading -= 1;
-         // Maybe we are the last widget to load, if so,
-         // remove the spinner
-         if (nb_widgets_loading==0){
-            $('#widgets_loading').hide();
-         }
+      method: "GET",
+      context: container_object
+   })
+   .done(function( data, textStatus, jqXHR ) {
+      $.fn.AddEasyWidget(data, this.attr('id'), {});
+   })
+   .fail(function( jqXHR, textStatus, errorThrown ) {
+      $(this).html('Error loading this widget: ', widgetId, url);
+      jQuery('#' + widgetId).remove();
+      saveWidgets();
+   })
+   .always(function( ) {
+      nb_widgets_loading -= 1;
+      // Maybe we are the last widget to load, if so,
+      // remove the spinner
+      if (nb_widgets_loading==0){
+         $('#widgets_loading').hide();
       }
    });
 }
