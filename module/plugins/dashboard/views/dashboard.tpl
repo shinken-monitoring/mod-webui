@@ -16,8 +16,8 @@
                <i class="fa fa-4x fa-server font-darkgrey"></i>
                <span class="badger-title hosts"><i class="fa fa-plus" style="color: #ccc"></i>&nbsp;Hosts</span>
                %host_state = app.datamgr.get_percentage_hosts_state(user, False)
-               <span class="badger-big badger-left alert-inverse">{{len(app.datamgr.get_hosts(user))}}</span>
-               <span class="badger-big badger-right alert-{{'critical' if host_state <= app.hosts_states_warning else 'warning' if host_state <= app.hosts_states_critical else 'ok'}}">{{host_state}}%</span>
+               <span class="badger-big badger-left">{{len(app.datamgr.get_hosts(user))}}</span>
+               <span class="badger-big badger-right background-{{'critical' if host_state <= app.hosts_states_warning else 'warning' if host_state <= app.hosts_states_critical else 'ok'}}">{{host_state}}%</span>
             </a>
          </td>
 
@@ -26,8 +26,8 @@
                <i class="fa fa-4x fa-bars font-darkgrey"></i>
                <span class="badger-title services"><i class="fa fa-plus" style="color: #ccc"></i>&nbsp;Services</span>
                %service_state = app.datamgr.get_percentage_service_state(user, False)
-               <span class="badger-big badger-left alert-inverse">{{len(app.datamgr.get_services(user))}}</span>
-               <span class="badger-big badger-right alert-{{'critical' if service_state <= app.services_states_warning else 'warning' if service_state <= app.services_states_critical else 'ok'}}">{{service_state}}%</span>
+               <span class="badger-big badger-left">{{len(app.datamgr.get_services(user))}}</span>
+               <span class="badger-big badger-right background-{{'critical' if service_state <= app.services_states_warning else 'warning' if service_state <= app.services_states_critical else 'ok'}}">{{service_state}}%</span>
             </a>
          </td>
 
@@ -42,7 +42,7 @@
                <i class="fa fa-4x fa-exclamation-triangle font-darkgrey"></i>
                <span class="badger-title itproblem"><i class="fa fa-plus" style="color: #ccc"></i>&nbsp;IT Problems</span>
                %overall_itproblem = app.datamgr.get_overall_it_state(user)
-               <span title="Number of not acknowledged IT problems." class="badger-big alert-{{'ok' if overall_itproblem == 0 else 'warning' if overall_itproblem == 1 else 'critical'}}">{{app.datamgr.get_overall_it_problems_count(user, get_acknowledged=False)}}</span>
+               <span title="Number of not acknowledged IT problems." class="badger-big background-{{'ok' if overall_itproblem == 0 else 'warning' if overall_itproblem == 1 else 'critical'}}">{{app.datamgr.get_overall_it_problems_count(user, get_acknowledged=False)}}</span>
             </a>
          </td>
 
@@ -51,7 +51,7 @@
                <i class="fa fa-4x fa-flash font-darkgrey"></i>
                <span class="badger-title impacts"><i class="fa fa-plus" style="color: #ccc"></i>&nbsp;Impacts</span>
                %overall_state = app.datamgr.get_overall_state(user)
-               <span title="Number of not acknownledged IT problems." class="badger-big alert-{{'ok' if overall_state == 0 else 'warning' if overall_state == 1 else 'critical'}}">{{app.datamgr.get_overall_state_problems_count(user)}}</span>
+               <span title="Number of not acknownledged IT problems." class="badger-big background-{{'ok' if overall_state == 0 else 'warning' if overall_state == 1 else 'critical'}}">{{app.datamgr.get_overall_state_problems_count(user)}}</span>
             </a>
          </td>
       </tr>
