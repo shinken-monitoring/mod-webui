@@ -833,7 +833,8 @@ class Webui_broker(BaseModule, Daemon):
     def get_user_preferences(self):
         logger.debug("[WebUI] Fetching all user preferences ...")
 
-        return self.get_user_preference(self.user)
+        user = request.environ['USER']
+        return self.get_user_preference(user)
 
     ##
     # Get a user preference by name
