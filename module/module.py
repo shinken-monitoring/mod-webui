@@ -1048,6 +1048,8 @@ def login_required():
 
     if request.urlparts.path == '/user/login':
         return
+    if request.urlparts.path == '/user/auth':
+        return
     if request.urlparts.path.startswith('/static'):
         return
 
