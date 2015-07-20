@@ -309,6 +309,9 @@ Invalid element name
             %if 'timeline' in params['tabs']:
             <li class="timeline_pane"><a href="#timeline" data-toggle="tab">Timeline</a></li>
             %end
+            %if 'metrics' in params['tabs']:
+            <li><a href="#metrics" data-toggle="tab">Metrics</a></li>
+            %end
             %if 'graphs' in params['tabs']:
             <li><a href="#graphs" data-toggle="tab">Graphs</a></li>
             %end
@@ -1062,7 +1065,105 @@ Invalid element name
                </div>
             </div>
             %end
-            <!-- Tab Graph end -->
+            <!-- Tab Timeline end -->
+
+            <!-- Tab Metrics start -->
+            %if 'metrics' in params['tabs']:
+            %from shinken.misc.perfdata import PerfDatas
+            <div class="tab-pane fade" id="metrics">
+               <div class="panel panel-default">
+                  <div class="panel-body">
+                     <table class="table table-condensed">
+                        <thead>
+                           <tr>
+                              %if elt_type=='host' and elt.services:
+                              <th>Service</th>
+                              %end
+                              <th>Metric</th>
+                              <th>Value</th>
+                              <th>Warning</th>
+                              <th>Critical</th>
+                              <th>Min</th>
+                              <th>Max</th>
+                              <th>UOM</th>
+                              <th></th>
+                           </tr>
+                        </thead>
+                        <tbody style="font-size:x-small;">
+                        %if elt_type=='host' and elt.services:
+                        %for s in elt.services:
+                           %service_line = True
+                           %perfdatas = PerfDatas(s.perf_data)
+                           %if perfdatas:
+                           %for metric in sorted(perfdatas, key=lambda metric: metric.name):
+                           %if metric.name and metric.value:
+                           <tr>
+                              <td><strong>{{s.get_name() if service_line else ''}}</strong></td>
+                              %service_line = False
+                              <td><strong>{{metric.name}}</strong></td>
+                              <td>{{metric.value}}</td>
+                              <td>{{metric.warning if metric.warning else ''}}</td>
+                              <td>{{metric.critical if metric.critical else ''}}</td>
+                              <td>{{metric.min if metric.min else ''}}</td>
+                              <td>{{metric.max if metric.max else ''}}</td>
+                              <td>{{metric.uom if metric.uom else ''}}</td>
+                              
+                              <td>
+                                 %# Graphs
+                                 %import time
+                                 %import re
+                                 %now = time.time()
+                                 %graphs = app.get_graph_uris(s, now-4*3600, now)
+                                 %for graph in graphs:
+                                    %if re.findall('\\b'+metric.name+'\\b', graph['img_src']):
+                                       <a role="button" tabindex="0" data-toggle="popover" title="{{ s.get_full_name() }}" data-html="true" data-content="<img src='{{ graph['img_src'] }}' width='600px' height='200px'>" data-trigger="hover" data-placement="left">{{!helper.get_perfometer(s, metric.name)}}</a>
+                                    %end
+                                 %end
+                              </td>
+                           </tr>
+                           %end
+                           %end
+                           %end
+                        %end
+                        %end
+                        %if elt_type=='service':
+                           %perfdatas = PerfDatas(elt.perf_data)
+                           %if perfdatas:
+                           %for metric in sorted(perfdatas, key=lambda metric: metric.name):
+                           %if metric.name and metric.value:
+                           <tr>
+                              <td><strong>{{metric.name}}</strong></td>
+                              <td>{{metric.value}}</td>
+                              <td>{{metric.warning if metric.warning else ''}}</td>
+                              <td>{{metric.critical if metric.critical else ''}}</td>
+                              <td>{{metric.min if metric.min else ''}}</td>
+                              <td>{{metric.max if metric.max else ''}}</td>
+                              <td>{{metric.uom if metric.uom else ''}}</td>
+                              
+                              <td>
+                                 %# Graphs
+                                 %import time
+                                 %import re
+                                 %now = time.time()
+                                 %graphs = app.get_graph_uris(elt, now-4*3600, now)
+                                 %for graph in graphs:
+                                    %if re.findall('\\b'+metric.name+'\\b', graph['img_src']):
+                                       <a role="button" tabindex="0" data-toggle="popover" title="{{ elt.get_full_name() }}" data-html="true" data-content="<img src='{{ graph['img_src'] }}' width='600px' height='200px'>" data-trigger="hover" data-placement="left">{{!helper.get_perfometer(elt, metric.name)}}</a>
+                                    %end
+                                 %end
+                              </td>
+                           </tr>
+                           %end
+                           %end
+                           %end
+                        %end
+                        </tbody>
+                     </table>
+                  </div>
+               </div>
+            </div>
+            %end
+            <!-- Tab Metrics end -->
 
             <!-- Tab Graph start -->
             %if 'graphs' in params['tabs']:

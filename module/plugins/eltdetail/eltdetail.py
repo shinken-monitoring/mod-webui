@@ -30,7 +30,7 @@ import time
 # Get plugin's parameters from configuration file
 params = {}
 # Tabs to be displayed or not ...
-params['tabs'] = ['information', 'additional', 'configuration', 'custom_views', 'impacts', 'comments', 'downtimes', 'graphs', 'depgraph', 'history', 'availability', 'helpdesk']
+params['tabs'] = ['information', 'additional', 'configuration', 'custom_views', 'impacts', 'comments', 'downtimes', 'metrics', 'graphs', 'depgraph', 'history', 'availability', 'helpdesk']
 params['cfg_nb_impacts'] = 5
 
 # Main impacts view
