@@ -120,8 +120,9 @@
             <section class="left">
                <h3>
                   <a role="menuitem" href="/all?search=type:service sg:{{group.get_name()}}"><i class="fa fa-angle-double-down"></i>
-                     {{group.alias if group.alias != '' else group.get_name()}} {{!helper.get_business_impact_text(s['bi'])}}</h3>
+                     {{group.alias if group.alias != '' else group.get_name()}} {{!helper.get_business_impact_text(s['bi'])}}
                   </a>
+               </h3>
                <div>
                   %for state in 'ok', 'warning', 'critical':
                   %if s['nb_' + state]>0:
