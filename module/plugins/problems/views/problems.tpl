@@ -1,7 +1,7 @@
 %helper = app.helper
 %datamgr = app.datamgr
 
-%rebase("layout", title=title, js=['problems/js/problems.js', 'problems/js/bookmarks.js'], css=['problems/css/problems.css'], refresh=True, navi=navi, page="/all", elts_per_page=elts_per_page)
+%rebase("layout", title=title, js=['problems/js/problems.js'], css=['problems/css/problems.css'], refresh=True, navi=navi, page="/all", elts_per_page=elts_per_page)
 
 <script type="text/javascript">
    var actions_enabled = {{'true' if app.can_action() else 'false'}};

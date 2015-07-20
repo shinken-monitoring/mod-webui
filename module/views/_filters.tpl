@@ -37,10 +37,16 @@
       <li role="presentation" class="dropdown-header">User bookmarks</li>
       %for b in user_bookmarks:
       <li role="presentation"><a role="menuitem" tabindex="-1" href="{{!b['uri']}}">{{!b['name']}}</a></li>
+      <script type="text/javascript">
+         declare_bookmark("{{!b['name']}}","{{!b['uri']}}");
+      </script>
       %end
       <li role="presentation" class="dropdown-header">Global bookmarks</li>
       %for b in common_bookmarks:
       <li role="presentation"><a role="menuitem" tabindex="-1" href="{{!b['uri']}}">{{!b['name']}}</a></li>
+      <script type="text/javascript">
+         declare_bookmarksro("{{!b['name']}}","{{!b['uri']}}");
+      </script>
       %end
       %if search_string:
       <li role="presentation" class="divider"></li>

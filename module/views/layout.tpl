@@ -116,6 +116,7 @@
       <!--Shinken ones : actions, user's prefs, ... -->
       <script src="/static/js/shinken-actions.js"></script>
       <script src="/static/js/shinken-layout.js"></script>
+      <script src="/static/js/shinken-bookmarks.js"></script>
 
       %# End of classic js import. Now call for specific ones ...
       %for p in js:

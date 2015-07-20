@@ -1,3 +1,6 @@
+var bookmarks = [];
+var bookmarksro = [];
+
 function add_new_bookmark(){
    var f = document.forms['bookmark_save'];
    var name = f.bookmark_name.value;
@@ -53,56 +56,12 @@ function push_to_common_bookmarks(name,uri) {
 
 
 function declare_bookmark(name, uri){
-   var b = {'name' : name, 'uri' : uri};
-   bookmarks.push(b);
+   bookmarks.push({'name' : name, 'uri' : uri});
 }
 
 function declare_bookmarksro(name, uri){
-   var b = {'name' : name, 'uri' : uri};
-   bookmarksro.push(b);
+   bookmarksro.push({'name' : name, 'uri' : uri});
 }
-
-
-// Refresh bookmarks in HTML
-function refresh_bookmarks(){
-   if (bookmarks.length == 0){
-      $('#bookmarks').html('<ul class="list-group"><li class="list-group-item list-group-item-danger">No user bookmarks</li></ul>');
-      return;
-   }
-
-   s = 'Your bookmarks: <ul class="list-group">';
-   $.each(bookmarks, function(idx, b){
-      l = '<span><a href="'+b.uri+'"><i class="fa fa-tag"></i> '+b.name+'</a></span>';
-      fun = "delete_bookmark('"+b.name+"');";
-      c = '<span><a href="javascript:'+fun+'" class="close">&times;</a></span>';
-      fun2 = "push_to_common_bookmarks('"+b.name+"','"+b.uri+"');";
-      c2 = '<span><a href="javascript:'+fun2+'" class="close">&plus;</a></span>';
-
-      s+= '<li class="list-group-item">'+l+c+c2+'</li>';
-   });
-   s += '</ul>';
-   
-   $('#bookmarks').html(s);
-}
-
-function refresh_bookmarksro(){
-   if (bookmarksro.length == 0) {
-      $('#bookmarksro').html('<ul class="list-group"><li class="list-group-item list-group-item-danger">No common bookmarks</li></ul>');
-      return;
-   }
-
-   sro = 'Common bookmarks: <ul class="list-group">';
-   $.each(bookmarksro, function(idx, b) {
-      l = '<span><a href="'+b.uri+'"><i class="fa fa-tag"></i> '+b.name+'</a></span>';
-      fun = "delete_bookmarkro('"+b.name+"');";
-      c = '<span><a href="javascript:'+fun+'" class="close">&times;</a></span>';
-      sro+= '<li class="list-group-item">'+l+c+'</li>';
-   });
-   sro += '</ul>';
-   
-   $('#bookmarksro').html(sro);
-}
-
 
 
 // Delete a specific bookmark by its name
@@ -127,10 +86,3 @@ function delete_bookmarkro(name){
    bookmarksro = new_bookmarksro;
    save_bookmarksro();
 }
-
-// On page loaded ... 
-$(document).ready(function(){
-   // Refresh bookmarks
-   refresh_bookmarks(); 
-   refresh_bookmarksro();
-});
