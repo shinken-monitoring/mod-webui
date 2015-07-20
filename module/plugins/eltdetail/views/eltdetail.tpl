@@ -234,7 +234,7 @@ Invalid element name
    %end
 
    <!-- Third row : business impact alerting ... -->
-   %if elt.is_problem and elt.business_impact > 2 and not elt.problem_has_been_acknowledged:
+   %if app.can_action() and elt.is_problem and elt.business_impact > 2 and not elt.problem_has_been_acknowledged:
    <div class="row" style="padding: 10px;">
       <div class="col-lg-1 font-yellow pull-left">
          <span class="medium-pulse aroundpulse">
@@ -243,10 +243,9 @@ Invalid element name
          </span>
       </div>
       <div class="col-lg-11 font-white">
-         %disabled = '' if not app.can_action() else 'disabled'
          %disabled_ack = '' if elt.is_problem and not elt.problem_has_been_acknowledged else 'disabled'
          %disabled_fix = '' if elt.is_problem and elt.event_handler_enabled and elt.event_handler else 'disabled'
-         <p class="alert alert-critical">This element has an important impact on your business, you may <button name="bt-acknowledge" class="{{disabled_ack}} {{disabled}} btn btn-primary btn-xs" data-toggle="tooltip" data-placement="bottom" title="Acknowledge this {{elt_type}} problem">acknowledge it</button> or <button name="bt-event-handler" class="{{disabled_fix}} {{disabled}} btn btn-primary btn-xs" data-toggle="tooltip" data-placement="bottom" title="Launch the event handler for this {{elt_type}}">try to fix it</button>.</p>
+         <p class="alert alert-critical">This element has an important impact on your business, you may <button name="bt-acknowledge" class="{{disabled_ack}} btn btn-primary btn-xs" data-toggle="tooltip" data-placement="bottom" title="Acknowledge this {{elt_type}} problem">acknowledge it</button> or <button name="bt-event-handler" class="{{disabled_fix}} btn btn-primary btn-xs" data-toggle="tooltip" data-placement="bottom" title="Launch the event handler for this {{elt_type}}">try to fix it</button>.</p>
       </div>
    </div>
    %end
