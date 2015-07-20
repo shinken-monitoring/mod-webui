@@ -28,6 +28,14 @@
 app = None
 
 
+def show_contactgroups():
+    user = app.request.environ['USER']
+
+    return {
+        'contactgroups': sorted(app.datamgr.get_contactgroups(user=user), key=lambda contactgroup: contactgroup.contactgroup_name)
+        }
+
+
 def show_hostgroup(name):
     app.bottle.redirect("/all?search=type:host hg:" + name)
 
@@ -36,6 +44,7 @@ def show_hostgroups():
     user = app.request.environ['USER']
 
     # Set hostgroups level ...
+    # @mohierf: should be done only once for initialization ... to be delegated to datamanager!
     app.datamgr.set_hostgroups_level(user)
 
     level = int(app.request.GET.get('level', 0))
@@ -70,6 +79,7 @@ def show_servicegroups():
     user = app.request.environ['USER']
 
     # Set servicegroups level ...
+    # @mohierf: should be done only once for initialization ... to be delegated to datamanager!
     app.datamgr.set_servicegroups_level(user)
 
     level = int(app.request.GET.get('level', 0))
@@ -81,6 +91,7 @@ def show_servicegroups():
         }
 
 pages = {
+    show_contactgroups: {'routes': ['/contacts-groups'], 'view': 'contacts-groups-overview', 'static': True},
     show_hostgroup: {'routes': ['/hosts-group/:name'], 'view': 'hosts-group', 'static': True},
     show_hostgroups: {'routes': ['/hosts-groups'], 'view': 'hosts-groups-overview', 'static': True},
     show_hostgroups_dashboard: {'routes': ['/hosts-groups-dashboard'], 'view': 'hosts-groups-dashboard', 'static': True},

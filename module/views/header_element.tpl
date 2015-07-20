@@ -148,6 +148,7 @@
         <li> <a href="/problems"> <span class="fa fa-ambulance"></span> Problems </a> </li>
         <li> <a href="#"><i class="fa fa-sitemap"></i> Groups and tags <i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
+            <li> <a href="/contacts-groups"> <span class="fa fa-users"></span> Contacts groups </a> </li>
             <li> <a href="/hosts-groups"> <span class="fa fa-sitemap"></span> Hosts groups </a> </li>
             <li> <a href="/services-groups"> <span class="fa fa-sitemap"></span> Services groups </a> </li>
             <li> <a href="/hosts-tags"> <span class="fa fa-tags"></span> Hosts tags </a> </li>
