@@ -28,7 +28,7 @@ Invalid element name
 %title = 'Service detail: ' + elt.service_description+' on '+elt.host.host_name
 %end
 
-%rebase("layout", js=['eltdetail/js/eltdetail.js', 'eltdetail/js/flot/jquery.flot.min.js', 'eltdetail/js/flot/jquery.flot.tickrotor.js', 'eltdetail/js/flot/jquery.flot.resize.min.js', 'eltdetail/js/flot/jquery.flot.pie.min.js', 'eltdetail/js/flot/jquery.flot.categories.min.js', 'eltdetail/js/flot/jquery.flot.time.min.js', 'eltdetail/js/flot/jquery.flot.stack.min.js', 'eltdetail/js/flot/jquery.flot.valuelabels.js',  'eltdetail/js/jquery.color.js', 'eltdetail/js/bootstrap-switch.min.js', 'eltdetail/js/jquery.Jcrop.js', 'eltdetail/js/graphs.js', 'eltdetail/js/custom_views.js', 'eltdetail/js/canvas.js'], css=['eltdetail/css/bootstrap-switch.min.css', 'eltdetail/css/eltdetail.css', 'eltdetail/css/jquery.Jcrop.css', 'eltdetail/css/canvas.css'], refresh=True, breadcrumb=breadcrumb, title=title)
+%rebase("layout", js=['eltdetail/js/eltdetail.js', 'eltdetail/js/flot/jquery.flot.min.js', 'eltdetail/js/flot/jquery.flot.tickrotor.js', 'eltdetail/js/flot/jquery.flot.resize.min.js', 'eltdetail/js/flot/jquery.flot.pie.min.js', 'eltdetail/js/flot/jquery.flot.categories.min.js', 'eltdetail/js/flot/jquery.flot.time.min.js', 'eltdetail/js/flot/jquery.flot.stack.min.js', 'eltdetail/js/flot/jquery.flot.valuelabels.js',  'eltdetail/js/jquery.color.js', 'eltdetail/js/bootstrap-switch.min.js', 'eltdetail/js/graphs.js', 'eltdetail/js/custom_views.js', 'eltdetail/js/canvas.js'], css=['eltdetail/css/bootstrap-switch.min.css', 'eltdetail/css/eltdetail.css', 'eltdetail/css/canvas.css'], refresh=True, breadcrumb=breadcrumb, title=title)
 
 %# Main variables
 %elt_name = elt.host_name if elt_type=='host' else elt.service_description+' on '+elt.host.host_name
@@ -307,13 +307,13 @@ Invalid element name
             %end
             
             %if 'timeline' in params['tabs']:
-            <li class="timeline_pane"><a href="#timeline" data-toggle="tab" id="tab_to_timeline">Timeline</a></li>
+            <li class="timeline_pane"><a href="#timeline" data-toggle="tab">Timeline</a></li>
             %end
             %if 'graphs' in params['tabs']:
-            <li><a href="#graphs" data-toggle="tab" id="tab_to_graphs">Graphs</a></li>
+            <li><a href="#graphs" data-toggle="tab">Graphs</a></li>
             %end
             %if 'depgraph' in params['tabs']:
-            <li><a href="#depgraph" data-toggle="tab" id="tab_to_depgraph">Impact graph</a></li>
+            <li><a href="#depgraph" data-toggle="tab">Impact graph</a></li>
             %end
             %if 'history' in params['tabs'] and app.get_history:
             <li><a href="#history" data-toggle="tab">History</a></li>
@@ -1091,11 +1091,11 @@ Invalid element name
                         %lastyear =  now - 86400*365
 
                         <ul id="graph_periods" class="nav nav-pills nav-justified">
-                          <li class="active"><a href="#" data-type="graph" data-period="4h" data-graphend="{{now}}" data-graphstart="{{fourhours}}"  > 4 hours</a></li>
-                          <li><a href="#" data-type="graph" data-period="1d" data-graphend="{{now}}" data-graphstart="{{lastday}}"    > 1 day</a></li>
-                          <li><a href="#" data-type="graph" data-period="1w" data-graphend="{{now}}" data-graphstart="{{lastweek}}"   > 1 week</a></li>
-                          <li><a href="#" data-type="graph" data-period="1m" data-graphend="{{now}}" data-graphstart="{{lastmonth}}"  > 1 month</a></li>
-                          <li><a href="#" data-type="graph" data-period="1y" data-graphend="{{now}}" data-graphstart="{{lastyear}}"   > 1 year</a></li>
+                          <li><a data-type="graph" data-period="4h" data-graphend="{{now}}" data-graphstart="{{fourhours}}"  > 4 hours</a></li>
+                          <li><a data-type="graph" data-period="1d" data-graphend="{{now}}" data-graphstart="{{lastday}}"    > 1 day</a></li>
+                          <li><a data-type="graph" data-period="1w" data-graphend="{{now}}" data-graphstart="{{lastweek}}"   > 1 week</a></li>
+                          <li><a data-type="graph" data-period="1m" data-graphend="{{now}}" data-graphstart="{{lastmonth}}"  > 1 month</a></li>
+                          <li><a data-type="graph" data-period="1y" data-graphend="{{now}}" data-graphstart="{{lastyear}}"   > 1 year</a></li>
                         </ul>
                      </div>
 
@@ -1135,6 +1135,7 @@ Invalid element name
                         
                         // Set first graph
                         current_graph = '4h';
+                        $('a[data-type="graph"][data-period="'+current_graph+'"]').trigger('click');
                      });
                      </script>
                      %end

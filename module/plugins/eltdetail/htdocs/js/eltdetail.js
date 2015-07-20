@@ -265,18 +265,6 @@ function on_page_refresh() {
    /*
     * Graphs
     */
-   // This to allow the range to change after the page is loaded.
-   get_range();
-   
-   /* We can't apply Jcrop on ready. Why? Because the images are not yet loaded, and so
-      they will have a null size. So how to do it?
-      The key is to hook the graph tab. onshow will raise when we active it (and was shown).
-   */
-   $('a[href="#graphs"]').on('shown.bs.tab', function (e) {
-      // console.log("Display graph: ", current_graph)
-      $('a[data-type="graph"][data-period="'+current_graph+'"]').trigger('click');
-   })
-   
    // Change graph
    $('a[data-type="graph"]').click(function (e) {
       current_graph=$(this).data('period');
@@ -287,15 +275,8 @@ function on_page_refresh() {
       $("#real_graphs").html( html_graphes[current_graph] );
 
       // Update active period selected
-      $("#graph_periods li.active").removeClass('active');
+      $('#graph_periods li').removeClass('active');
       $(this).parent('li').addClass('active');
-      
-      // and call the jcrop javascript
-      $('.jcropelt').Jcrop({
-         onSelect: update_coords,
-         onChange: update_coords
-      });
-      get_range();
    });
    
    // On first page load, wait for document ready ...
