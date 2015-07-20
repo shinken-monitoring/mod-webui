@@ -8,8 +8,8 @@
 %if not tickets:
    <center>
       <h3>No helpdesk records (tickets) found.</h3>
-      <p>You should install the <strong>glpi-tickets</strong> Shinken module in WebUI to get helpdesk data from Glpi database.</p>
-      <p>If you installed the <strong>glpi-tickets</strong> Shinken module, your host is probably not known in Glpi database.</p>
+      <p>You should install the <strong>glpi-helpdesk</strong> Shinken module in WebUI to get helpdesk data from Glpi database.</p>
+      <p>If you installed the <strong>glpi-helpdesk</strong> Shinken module, your host is probably not known in Glpi database.</p>
    </center>
 %else:
    <table class="table table-condensed">

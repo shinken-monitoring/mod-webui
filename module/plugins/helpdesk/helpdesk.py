@@ -39,11 +39,6 @@ def forge_response(callback, status, text):
         return "{'status':%s,'text':'%s'}" % (status, text)
 
 def create_ticket(name):
-    user = app.check_user_authentication()
-    # Allowed to launch commands?
-    if app.manage_acl and not user.can_submit_commands:
-        return "{'status': 403, 'text':'You are not authorized to launch commands'}"
-
     logger.info("[WebUI-helpdesk] request to create a ticket for %s", name)
     
     app.response.content_type = 'application/json'
@@ -77,8 +72,6 @@ def create_ticket(name):
         return json.dumps(result)
 
 def add_ticket(name):
-    user = app.check_user_authentication()
-
     if '/' in name:
         elt = app.datamgr.get_service(name.split('/')[0], name.split('/')[1])
     else:
@@ -88,17 +81,15 @@ def add_ticket(name):
     items_id = elt.customs['_ITEMSID']
     entities_id = elt.customs['_ENTITIESID']
     
-    return {'app': app, 'user': user, 'name': name, 'itemtype': itemtype, 'items_id': items_id, 'entities_id': entities_id}
+    return {'name': name, 'itemtype': itemtype, 'items_id': items_id, 'entities_id': entities_id}
 
 def get_element_tickets(name):
-    user = app.check_user_authentication()
-
     # If exists an external module ...
     if app.get_tickets:
         tickets = app.get_tickets(name)
         return {'app': app, 'tickets': tickets}
             
-    return {'app': app, 'tickets': None}
+    return {'tickets': None}
     
 pages = {   
     create_ticket:          { 'routes': ['/helpdesk/ticket/create/<name:path>'] },
