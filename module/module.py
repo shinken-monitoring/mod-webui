@@ -725,7 +725,7 @@ class Webui_broker(BaseModule, Daemon):
                 f = getattr(mod, 'get_graph_uris', None)
                 if f and callable(f):
                     r = f(elt, graphstart, graphend, source)
-                    logger.debug("[WebUI] Fetched: %s", r)
+                    logger.debug("[WebUI] Got graphs: %s", r)
                     uris.extend(r)
             except Exception, exp:
                 logger.warning("[WebUI] The mod %s raise an exception: %s, I'm tagging it to restart later", mod.get_name(), str(exp))

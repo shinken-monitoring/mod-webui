@@ -26,7 +26,6 @@
 
 import math
 
-from shinken.util import safe_print
 from shinken.misc.perfdata import PerfDatas
 from shinken.log import logger
 
@@ -35,7 +34,7 @@ from shinken.log import logger
 # lnk: link to add in this perfdata thing
 # title: text to show on it
 # metrics: list of ('html color', percent) like [('#68f', 35), ('white', 64)]
-def get_perfometer_table_values(elt):
+def get_perfometer_table_values(elt, metric=None):
     # first try to get the command name called
     cmd = elt.check_command.call.split('!')[0]
     logger.debug("[WebUI] Looking for perfometer value for element: %s, command: %s", elt.get_full_name(), cmd)
@@ -47,26 +46,24 @@ def get_perfometer_table_values(elt):
 
     f = tab.get(cmd, None)
     if f:
-        return f(elt)
+        return f(elt, metric)
 
     try:
-        r = manage_unknown_command(elt)
+        r = manage_unknown_command(elt, metric)
     except:
         return None
     return r
 
 
-def manage_check_http_command(elt):
-    safe_print('Get check_http perfdata of', elt.get_full_name())
+def manage_check_http_command(elt, metric='time'):
+    logger.debug("[WebUI] Get check_http perfdata of %s", elt.get_full_name())
     p = PerfDatas(elt.perf_data)
-    if not 'time' in p:
-        print "No time in p"
+    if not metric in p:
         return None
 
-    m = p['time']
+    m = p[metric]
     v = m.value
     if not v:
-        print "No value, I bailout"
         return None
 
     # Percent of ok should be time/1s
@@ -85,18 +82,16 @@ def manage_check_http_command(elt):
     #print "HTTP: return", {'lnk': lnk, 'metrics': metrics, 'title': title}
     return {'lnk': lnk, 'metrics': metrics, 'title': title}
 
-def manage_check_ping_command(elt):
-    safe_print('Get check_ping perfdata of', elt.get_full_name())
+def manage_check_ping_command(elt, metric='rta'):
+    logger.debug("[WebUI] Get check_ping perfdata of %s", elt.get_full_name())
     p = PerfDatas(elt.perf_data)
-    if not 'rta' in p:
-        print "No rta in p"
+    if not metric in p:
         return None
 
-    m = p['rta']
+    m = p[metric]
     v = m.value
     crit = m.critical
     if not v or not crit:
-        print "No value, I bailout"
         return None
 
     # Percent of ok should be the log of time versus max/2
@@ -116,18 +111,16 @@ def manage_check_ping_command(elt):
     #print "HTTP: return", {'lnk': lnk, 'metrics': metrics, 'title': title}
     return {'lnk': lnk, 'metrics': metrics, 'title': title}
 
-def manage_check_tcp_command(elt):
-    safe_print('Get check_tcp perfdata of', elt.get_full_name())
+def manage_check_tcp_command(elt, metric='time'):
+    logger.debug("[WebUI] Get check_tcp perfdata of %s", elt.get_full_name())
     p = PerfDatas(elt.perf_data)
-    if not 'time' in p:
-        print "No time in p"
+    if not metric in p:
         return None
 
-    m = p['time']
+    m = p[metric]
     v = m.value
 
     if not v or not m.max:
-        print "No value, I bailout"
         return None
 
     # Percent of ok should be the log of time versus m.max / 2
@@ -154,23 +147,27 @@ def manage_check_tcp_command(elt):
     return {'lnk': lnk, 'metrics': metrics, 'title': title}
 
 
-def manage_unknown_command(elt):
-    logger.debug("[WebUI] perfometer, manage command for: %s", elt.get_full_name())
+def manage_unknown_command(elt, metric=None):
+    logger.debug("[WebUI] perfometer, manage command for: %s, metric: %s", elt.get_full_name(), metric)
     p = PerfDatas(elt.perf_data)
     if len(p) == 0:
         return None
 
-    metric = None
     # Got some override name we know to be ok for printing
-    if 'time' in p and p['time'].value is not None:
+    if metric is None and 'time' in p and p['time'].value is not None:
         metric = p['time']
     else:
-        for v in p:
-            if v.name is not None and v.value is not None:
-                metric = v
-                break
-    if not metric:
-        return metric
+        if metric is None:
+            for v in p:
+                if v.name is not None and v.value is not None:
+                    metric = v
+        else:
+            for v in p:
+                if v.name is not None and v.value is not None and v.name == metric:
+                    metric = v
+        
+    if metric is None:
+        return None
     
     name = metric.name
     value = metric.value

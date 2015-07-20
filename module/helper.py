@@ -779,9 +779,9 @@ class Helper(object):
         return res
 
     # Get a perfometer part for html printing
-    def get_perfometer(self, elt):
-        if elt.perf_data != '':
-            r = get_perfometer_table_values(elt)
+    def get_perfometer(self, elt, metric=None):
+        if elt.perf_data:
+            r = get_perfometer_table_values(elt, metric=metric)
             if r is None:
                 return ''
 
