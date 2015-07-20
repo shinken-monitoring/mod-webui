@@ -8,7 +8,9 @@
          <div class="login-panel panel panel-default">
             <div class="panel-heading">
                <h2>Shinken <small>version {{VERSION}}</small></h2>
-                  <img src="/static/logo/{{company_logo}}" alt="Company logo" style="width: 100%"/>
+               <center>
+                  <img src="/static/logo/{{company_logo}}" alt="Company logo" style="width: 80%"/>
+               </center>
             </div>
             <div class="panel-body">
                <form role="form" method="post" action="/user/auth">
@@ -32,18 +34,18 @@
                </form>
             </div>
             <div class="panel-footer">
-               <div style="min-height: 70px;">
-                  <img src="/static/images/shinken.png" style="position: relative; top:-30px; left:-12px; height: 48px" class="pull-left"/>
-                  %if login_text:
-                  <h3>{{login_text}}</h3>
-                  %end
-               </div>
                %if error:
                <div class="alert alert-danger" role="alert">
                   <strong>Warning!</strong>
                   {{error}}
                </div>
                %end
+               <div style="min-height: 100px;">
+                  <img src="/static/images/shinken.png" style="position: relative; top:-30px; left:-12px; width: 120px;" class="pull-left"/>
+                  %if login_text:
+                  <h3>{{login_text}}</h3>
+                  %end
+               </div>
             </div>
          </div>
       </div>
