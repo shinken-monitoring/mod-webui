@@ -37,7 +37,7 @@
   <ul class="nav navbar-top-links navbar-right">
     <li>
       %host_state = app.datamgr.get_percentage_hosts_state(user, False)
-       <a class="quickinfo states" href="/all?search=type:host" data-original-title="Hosts states" data-toggle="popover" title="Overall hosts states, {{h['nb_elts']}} hosts" data-html="true" data-trigger="hover" data-placement="bottom" data-content='
+       <a class="quickinfo states" href="/all?search=type:host" data-original-title="Hosts states" data-toggle="popover popover-navbar" title="Overall hosts states, {{h['nb_elts']}} hosts" data-html="true" data-trigger="hover" data-placement="bottom" data-content='
             <table class="table table-invisible table-condensed">
                <tbody>
                   <tr>
@@ -62,7 +62,7 @@
    
     <li>
       %service_state = app.datamgr.get_percentage_service_state(user, False)
-       <a class="quickinfo states" href="/all?search=type:service" data-original-title="Services states" data-toggle="popover" title="Overall services states, {{s['nb_elts']}} services" data-html="true" data-trigger="hover" data-placement="bottom" data-content='
+       <a class="quickinfo states" href="/all?search=type:service" data-original-title="Services states" data-toggle="popover popover-navbar" title="Overall services states, {{s['nb_elts']}} services" data-html="true" data-trigger="hover" data-placement="bottom" data-content='
             <table class="table table-invisible table-condensed">
                <tbody>
                   <tr>
@@ -205,15 +205,9 @@
 </nav>
 
 <script type="text/javascript">
-   // On page loaded ...
-   $(function() {
-      // Date / time
-      $('.headClock .time').jclock({ format: '%H:%M:%S' });
-      $('.headClock .date').jclock({ format: '%d/%m/%Y' });
-
-      $('[data-toggle="popover"]').popover({
-        html: true,
-        template: '<div class="popover img-popover"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
-      });
+   // Popovers ...
+   $('[data-toggle="popover popover-navbar"]').popover({
+     html: true,
+     template: '<div class="popover img-popover"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
    });
 </script>
