@@ -243,7 +243,7 @@ def compute_worst_state(all_states):
 def get_page(name):
     global params
     
-    user = app.check_user_authentication()
+    # user = app.check_user_authentication()
     
     config = 'default'
     if '/' in name:
