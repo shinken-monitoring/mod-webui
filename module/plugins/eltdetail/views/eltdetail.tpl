@@ -621,6 +621,26 @@ Invalid element name
                            </tbody>
                         </table>
 
+                        %if len(elt.stalking_options) > 0 and elt.stalking_options[0]:
+                        <table class="table table-condensed">
+                           <colgroup>
+                              <col style="width: 40%" />
+                              <col style="width: 60%" />
+                           </colgroup>
+                           <thead>
+                              <tr>
+                                 <th colspan="2">Stalking options:</td>
+                              </tr>
+                           </thead>
+                           <tbody style="font-size:x-small;">
+                              <tr>
+                                 <td><strong>Options:</strong></td>
+                                 <td>{{', '.join(elt.stalking_options)}}</td>
+                              </tr>
+                           </tbody>
+                        </table>
+                        %end
+
                         <table class="table table-condensed">
                            <colgroup>
                               <col style="width: 40%" />
