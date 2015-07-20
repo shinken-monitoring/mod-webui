@@ -6,12 +6,13 @@
   <div class="dropdown form-group text-left">
     <button class="btn btn-default dropdown-toggle" type="button" id="filters_menu" data-toggle="dropdown" aria-expanded="true"><i class="fa fa-filter"></i><span class="hidden-sm hidden-xs hidden-md"> Filters</span> <span class="caret"></span></button>
     <ul class="dropdown-menu" role="menu" aria-labelledby="filters_menu">
-      <li role="presentation"><a role="menuitem" href="?search=">All resources</a></li>
-      <li role="presentation"><a role="menuitem" href="?search=type:host">All hosts</a></li>
-      <li role="presentation"><a role="menuitem" href="?search=type:service">All services</a></li>
+      <li role="presentation"><a role="menuitem" href="/all?search=&title=All resources">All resources</a></li>
+      <li role="presentation"><a role="menuitem" href="/all?search=type:host&title=All hosts">All hosts</a></li>
+      <li role="presentation"><a role="menuitem" href="/all?search=type:service&title=All services">All services</a></li>
       <li role="presentation" class="divider"></li>
-      <li role="presentation"><a role="menuitem" href="?search=ack:true">Acknowledged problems</a></li>
-      <li role="presentation"><a role="menuitem" href="?search=downtime:true">Scheduled downtimes</a></li>
+      <li role="presentation"><a role="menuitem" href="/all?search=isnot:0 isnot:ack isnot:downtime&title=New problems">New problems</a></li>
+      <li role="presentation"><a role="menuitem" href="/all?search=is:ack&title=Acknowledged problems">Acknowledged problems</a></li>
+      <li role="presentation"><a role="menuitem" href="/all?search=is:downtime&title=Scheduled downtimes">Scheduled downtimes</a></li>
       <li role="presentation" class="divider"></li>
       <li role="presentation"><a role="menuitem" href="?search=bp:>=5">Impact : {{!helper.get_business_impact_text(5, text=True)}}</a></li>
       <li role="presentation"><a role="menuitem" href="?search=bp:>=4">Impact : {{!helper.get_business_impact_text(4, text=True)}}</a></li>

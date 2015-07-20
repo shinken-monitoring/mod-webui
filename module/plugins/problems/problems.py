@@ -56,6 +56,8 @@ def get_all():
     start = int(app.request.GET.get('start', '0'))
     end = int(app.request.GET.get('end', start + step))
 
+    title = app.request.GET.get('title', 'All problems')
+    
     search = ' '.join(app.request.GET.getall('search')) or ""
     items = app.datamgr.search_hosts_and_services(search, user)
 
@@ -72,7 +74,7 @@ def get_all():
     navi = app.helper.get_navi(total, start, step=step)
     pbs = items[start:end]
 
-    return {'pbs': pbs, 'all_pbs': items, 'navi': navi, 'search_string': search, 'bookmarks': app.get_user_bookmarks(user), 'bookmarksro': app.get_common_bookmarks(), 'sound': sound_pref, 'elts_per_page': elts_per_page}
+    return {'pbs': pbs, 'all_pbs': items, 'navi': navi, 'title': title, 'search_string': search, 'bookmarks': app.get_user_bookmarks(user), 'bookmarksro': app.get_common_bookmarks(), 'sound': sound_pref, 'elts_per_page': elts_per_page}
 
 
 def get_pbs_widget():
