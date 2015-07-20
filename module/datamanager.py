@@ -665,6 +665,13 @@ class WebUIDataManager(DataManager):
     def get_important_elements(self, user=None):
         return self.search_hosts_and_services('bi:>2', user=user)
 
+    def get_impacts(self, user=None, sorted=True):
+        res = self.search_hosts_and_services('is:impact', user=user, get_impacts=True)
+        
+        if sorted:
+            res.sort(worse_first)
+        return res
+
     def get_important_impacts(self, user=None, sorted=True):
         res = self.search_hosts_and_services('bi:>2 is:impact', user=user, get_impacts=True)
         

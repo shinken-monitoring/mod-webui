@@ -47,8 +47,7 @@ def hst_srv_sort(s1, s2):
 def show_impacts():
     user = app.request.environ['USER']
 
-    all_imp_impacts = app.datamgr.get_important_elements(user)
-    all_imp_impacts.sort(hst_srv_sort)
+    all_imp_impacts = app.datamgr.get_impacts(user, sorted=True)
 
     impacts = {}
 
