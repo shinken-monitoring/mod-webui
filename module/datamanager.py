@@ -113,79 +113,76 @@ class WebUIDataManager(DataManager):
         super(WebUIDataManager, self).__init__()
         self.rg = rg
 
-    # :TODO:maethor:150717: replace by a "related_to" filter
-    def only_related_to(self, lst, user):
+    @staticmethod
+    def _is_related_to(item, contact):
+        """ Is the item (host, service, group…) related to the contact?
+
+            In other words, can the user see this item in the WebUI?
+            .. todo:: should be a method of Item or Contact…
+                      but the shinken model is incomplete,
+                      so we have to do it here.
+
+            :returns: True or False
+        """
         # if the user is an admin, show all
-        if user is None or user.is_admin:
-            return lst
+        if contact is None or contact.is_admin:
+            return True
 
-        # Ok the user is a simple user, we should filter
-        r = set()
-        for item in lst:
-            # May be the user is a direct contact
-            if hasattr(item, 'contacts') and user in item.contacts:
-                r.add(item)
-                continue
-            # TODO: add a notified_contact pass
+        # May be the user is a direct contact
+        if hasattr(item, 'contacts') and contact in item.contacts:
+            return True
+        # TODO: add a notified_contact pass
 
-            # May be it's a contact of a linked elements
-            # source problems or impacts)
-            found = False
-            if hasattr(item, 'source_problems'):
-                for s in item.source_problems:
-                    if user in s.contacts:
-                        r.add(item)
-                        found = True
-            # Ok skip this object now
-            if found:
-                continue
+        # May be it's a contact of a linked items
+        # source problems or impacts)
+        if hasattr(item, 'source_problems'):
+            for s in item.source_problems:
+                if contact in s.contacts:
+                    return True
 
-            # May be it's a contact of a sub element ...
-            found = False
-            if item.__class__.my_type == 'hostgroup':
-                for h in item.get_hosts():
-                    if user in h.contacts:
-                        r.add(item)
-                        found = True
-            # Ok skip this object now
-            if found:
-                continue
+        if item.__class__.my_type == 'hostgroup':
+            for h in item.get_hosts():
+                if contact in h.contacts:
+                    return True
 
-            # May be it's a contact of a sub element ...
-            found = False
-            if item.__class__.my_type == 'servicegroup':
-                for s in item.get_services():
-                    if user in s.contacts:
-                        r.add(item)
-                        found = True
-            # Ok skip this object now
-            if found:
-                continue
+        # May be it's a contact of a sub item ...
+        if item.__class__.my_type == 'servicegroup':
+            for s in item.get_services():
+                if contact in s.contacts:
+                    return True
 
-            # Now impacts related maybe?
-            if hasattr(item, 'impacts'):
-                for imp in item.impacts:
-                    if user in imp.contacts:
-                        r.add(item)
+        # Now impacts related maybe?
+        if hasattr(item, 'impacts'):
+            for imp in item.impacts:
+                if contact in imp.contacts:
+                    return True
 
-        return list(r)
+        return False
+
+    @staticmethod
+    def _only_related_to(lst, contact):
+        """ This function is just a wrapper to _is_related_to.
+
+            Kept for backward compatibility reasons.
+
+            :returns: List of elements related to the contact
+        """
+        return [l for l in lst if WebUIDataManager._is_related_to(l, contact)]
 
     ##
     # Hosts
     ##
     def get_hosts(self, user=None, get_impacts=True):
-        """
-        Get a list of all hosts
+        """ Get a list of all hosts
 
-        :user: concerned user
-        :get_impacts: should impact hosts be included in the list?
-        :returns: list of all hosts
-
+            :user: concerned user
+            :get_impacts: should impact hosts be included in the list?
+            :returns: list of all hosts
         """
         items = super(WebUIDataManager, self).get_hosts()
         if not get_impacts:
             items = [i for i in items if not i.is_impact]
-        return self.only_related_to(items, user)
+        return self._only_related_to(items, user)
 
     def get_host(self, hname):
         hname = hname.decode('utf8', 'ignore')
@@ -216,7 +213,7 @@ class WebUIDataManager(DataManager):
         items = super(WebUIDataManager, self).get_services()
         if not get_impacts:
             items = [i for i in items if not i.is_impact]
-        return self.only_related_to(items, user)
+        return self._only_related_to(items, user)
 
     def get_service(self, hname, sdesc):
         hname = hname.decode('utf8', 'ignore')
@@ -319,7 +316,7 @@ class WebUIDataManager(DataManager):
                 if not group:
                     return []  # :TODO:maethor:150716: raise an error
                 contacts = [c for c in self.get_contacts() if c in group.members]
-                items = list(set(itertools.chain(*[self.only_related_to(items, c) for c in contacts])))
+                items = list(set(itertools.chain(*[self._only_related_to(items, c) for c in contacts])))
 
             if t == 'realm':
                 r = self.get_realm(s)
@@ -335,7 +332,7 @@ class WebUIDataManager(DataManager):
 
             if t == 'ctag' and s != 'all':
                 contacts = [c for c in self.get_contacts() if s in c.tags]
-                items = list(set(itertools.chain(*[self.only_related_to(items, c) for c in contacts])))
+                items = list(set(itertools.chain(*[self._only_related_to(items, c) for c in contacts])))
 
             if t == 'type':
                 items = [i for i in items if i.__class__.my_type == s]
@@ -424,7 +421,7 @@ class WebUIDataManager(DataManager):
     ##
     def get_contacts(self, user=None):
         items = self.rg.contacts
-        return self.only_related_to(items, user)
+        return self._only_related_to(items, user)
 
     def get_contact(self, name):
         name = name.decode('utf8', 'ignore')
@@ -435,7 +432,7 @@ class WebUIDataManager(DataManager):
     ##
     def get_contactgroups(self, user=None):
         items = self.rg.contactgroups
-        return self.only_related_to(items, user)
+        return self._only_related_to(items, user)
 
     def get_contactgroup(self, name):
         name = name.decode('utf8', 'ignore')
@@ -472,7 +469,7 @@ class WebUIDataManager(DataManager):
         else:
             items = self.rg.hostgroups
 
-        return self.only_related_to(items, user)
+        return self._only_related_to(items, user)
 
     def get_hostgroup(self, name):
         return self.rg.hostgroups.find_by_name(name)
@@ -504,7 +501,7 @@ class WebUIDataManager(DataManager):
         else:
             items = self.rg.servicegroups
 
-        return self.only_related_to(items, user)
+        return self._only_related_to(items, user)
 
     def get_servicegroup(self, name):
         return self.rg.servicegroups.find_by_name(name)
