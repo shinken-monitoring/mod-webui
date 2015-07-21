@@ -116,7 +116,7 @@ Invalid element name
 
    <!-- Second row : host/service overview ... -->
    <div class="panel panel-default">
-      <div class="panel-heading fitted-header cursor" data-toggle="collapse" data-parent="#Overview" href="#collapseOverview">
+      <div class="panel-heading cursor" data-toggle="collapse" data-parent="#Overview" href="#collapseOverview">
          <h4 class="panel-title"><span class="caret"></span>&nbsp;Overview {{elt_name}} ({{elt.display_name if elt.display_name else elt.alias if elt.alias else 'none'}}) {{!helper.get_business_impact_text(elt.business_impact)}}</h4>
       </div>
   
@@ -207,6 +207,38 @@ Invalid element name
       </div>
    </div>
 
+   <!-- Third row : business impact alerting ... -->
+   %if app.can_action() and elt.is_problem and elt.business_impact > 2 and not elt.problem_has_been_acknowledged:
+   <div class="panel panel-default">
+      <div class="panel-heading" style="padding-bottom: -10">
+         <div class="aroundpulse pull-left" style="padding: 8px;">
+            <span class="big-pulse pulse"></span>
+            <i class="fa fa-3x fa-spin fa-gear"></i>
+         </div>
+         <div style="margin-left: 60px;">
+         %disabled_ack = '' if elt.is_problem and not elt.problem_has_been_acknowledged else 'disabled'
+         %disabled_fix = '' if elt.is_problem and elt.event_handler_enabled and elt.event_handler else 'disabled'
+         <p class="alert alert-danger" style="margin-bottom:0">This element has an important impact on your business, you may <button name="bt-acknowledge" class="{{disabled_ack}} btn btn-primary btn-xs" data-toggle="tooltip" data-placement="bottom" title="Acknowledge this {{elt_type}} problem">acknowledge it</button> or <button name="bt-event-handler" class="{{disabled_fix}} btn btn-primary btn-xs" data-toggle="tooltip" data-placement="bottom" title="Launch the event handler for this {{elt_type}}">try to fix it</button>.</p>
+         </div>
+      </div>
+   </div>
+   %end
+  
+   <!-- Third row (bis) : business rule ... -->
+   %if business_rule:
+   <div class="panel panel-default">
+      <div class="panel-heading" style="padding-bottom: -10">
+         <div class="aroundpulse pull-left" style="padding: 8px;">
+            <span class="medium-pulse pulse"></span>
+            <i class="fa fa-2x fa-university"></i>
+         </div>
+         <div style="margin-left: 60px;">
+            <p class="alert alert-warning" style="margin-bottom:0">This element is a business rule.</p>
+         </div>
+      </div>
+   </div>
+   %end
+  
    %if elt_type=='host':
    %synthesis = helper.get_synthesis(elt.services)
    %s = synthesis['services']
@@ -233,42 +265,6 @@ Invalid element name
    </div>
    %end
 
-   <!-- Third row : business impact alerting ... -->
-   %if app.can_action() and elt.is_problem and elt.business_impact > 2 and not elt.problem_has_been_acknowledged:
-   <div class="row" style="padding: 10px;">
-      <div class="col-lg-1 font-yellow pull-left">
-         <span class="medium-pulse aroundpulse">
-            <span class="medium-pulse pulse"></span>
-            <i class="fa fa-3x fa-bolt"></i>
-         </span>
-      </div>
-      <div class="col-lg-11 font-white">
-         %disabled_ack = '' if elt.is_problem and not elt.problem_has_been_acknowledged else 'disabled'
-         %disabled_fix = '' if elt.is_problem and elt.event_handler_enabled and elt.event_handler else 'disabled'
-         <p class="alert alert-critical">This element has an important impact on your business, you may <button name="bt-acknowledge" class="{{disabled_ack}} btn btn-primary btn-xs" data-toggle="tooltip" data-placement="bottom" title="Acknowledge this {{elt_type}} problem">acknowledge it</button> or <button name="bt-event-handler" class="{{disabled_fix}} btn btn-primary btn-xs" data-toggle="tooltip" data-placement="bottom" title="Launch the event handler for this {{elt_type}}">try to fix it</button>.</p>
-      </div>
-   </div>
-   %end
-  
-   <!-- Third row (bis) : business rule ... -->
-   %if business_rule:
-   <div class="row" style="padding: 10px;">
-      <div class="col-lg-2 hidden-md"></div>
-      <div class="col-lg-8 col-md-12">
-         <div class="col-lg-1 pull-left">
-            <span class="medium-pulse aroundpulse">
-               <span class="medium-pulse pulse"></span>
-               <i class="fa fa-2x fa-university"></i>
-            </span>
-         </div>
-         <div class="col-lg-11 font-white">
-            <p class="alert alert-warning">This element is a business rule.</p>
-         </div>
-      </div>
-      <div class="col-lg-2 hidden-md"></div>
-   </div>
-   %end
-  
    <!-- Fourth row : host/service information -->
    <div>
       <!-- Detail info box start -->
@@ -290,7 +286,7 @@ Invalid element name
             <li class="{{_go_active}}"><a href="#information" data-toggle="tab">Information</a></li>
             %end
             %if 'impacts' in params['tabs']:
-            <li><a href="#impacts" data-toggle="tab">Impacts</a></li>
+            <li><a href="#impacts" data-toggle="tab">{{'Services' if elt_type == 'host' else 'Impacts'}}</a></li>
             %end
             %if 'configuration' in params['tabs'] and elt.customs:
             <li><a href="#configuration" data-toggle="tab">Configuration</a></li>
