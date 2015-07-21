@@ -31,7 +31,7 @@
   </ul>
 
   <!-- Right buttons ... -->
-%synthesis = helper.get_synthesis(app.datamgr.get_all_hosts_and_services(user))
+%synthesis = helper.get_synthesis(app.datamgr.search_hosts_and_services(user=user))
 %s = synthesis['services']
 %h = synthesis['hosts']
   <ul class="nav navbar-top-links navbar-right">
