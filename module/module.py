@@ -558,7 +558,7 @@ class Webui_broker(BaseModule, Daemon):
             # useful stuff
             m.app = self
 
-            # Load plugin configuration
+            # Load/set plugin configuration
             f = getattr(m, 'load_config', None)
             if f and callable(f):
                 logger.debug("[WebUI] calling plugin %s, load configuration", fdir)
