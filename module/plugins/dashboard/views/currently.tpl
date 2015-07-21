@@ -262,7 +262,7 @@
             %end
                <div>
                   %h_state, s_state = app.datamgr.get_overall_it_state(user)
-                  %h_problems = len(app.datamgr.get_important_problems(user, type='host'))
+                  %h_problems = len(app.datamgr.get_important_problems(user, type='host', sorter=None))
                   <span class="badger-big badger-left alert-{{'critical' if h_state == 2 else 'warning' if h_state == 1 else 'ok'}}">{{h_problems}}</span>
                   {{!helper.get_fa_icon_state(cls='host', state='down') if h_state == 2 else ''}}
                   {{!helper.get_fa_icon_state(cls='host', state='unreachable') if h_state == 1 else ''}}
@@ -270,7 +270,7 @@
                   {{!helper.get_fa_icon_state(cls='service', state='critical') if s_state == 2 else ''}}
                   {{!helper.get_fa_icon_state(cls='service', state='warning') if s_state == 1 else ''}}
                   {{!helper.get_fa_icon_state(cls='service', state='ok') if s_state == 0 else ''}}
-                  %s_problems = len(app.datamgr.get_important_problems(user, type='service'))
+                  %s_problems = len(app.datamgr.get_important_problems(user, type='service', sorter=None))
                   <span class="badger-big badger-left alert-{{'critical' if s_state == 2 else 'warning' if s_state == 1 else 'ok'}}">{{s_problems}}</span>
                </div>
 
@@ -288,7 +288,7 @@
             %end
                <div>
                   %overall_state = app.datamgr.get_overall_state(user)
-                  <span title="Number of not acknownledged IT problems." class="badger-big alert-{{'ok' if overall_state == 0 else 'warning' if overall_state == 1 else 'critical'}}">{{len(app.datamgr.get_important_impacts(user))}}</span>
+                  <span title="Number of not acknownledged IT problems." class="badger-big alert-{{'ok' if overall_state == 0 else 'warning' if overall_state == 1 else 'critical'}}">{{len(app.datamgr.get_important_impacts(user, sorter=None))}}</span>
                </div>
                
                <i class="fa fa-5x fa-flash"></i>

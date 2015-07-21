@@ -133,7 +133,7 @@ def get_last_errors_widget():
     # We want to limit the number of elements, The user will be able to increase it
     nb_elements = max(0, int(app.request.GET.get('nb_elements', '10')))
 
-    pbs = app.datamgr.get_problems(user, sorted=True, sorter=last_state_change_earlier)
+    pbs = app.datamgr.get_problems(user, sorter=last_state_change_earlier)
 
     # Keep only nb_elements
     pbs = pbs[:nb_elements]

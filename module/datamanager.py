@@ -250,8 +250,7 @@ class WebUIDataManager(DataManager):
         else:
             return int(100 - (len(problems) * 100) / float(len(all_services)))
 
-    # :TODO:maethor:150721: Add sorting algorithm
-    def search_hosts_and_services(self, search="", user=None, get_impacts=True):
+    def search_hosts_and_services(self, search="", user=None, get_impacts=True, sorter=None):
         """ Search hosts and services.
 
             This method is the heart of the datamanager. All other methods should be based on this one.
@@ -259,6 +258,7 @@ class WebUIDataManager(DataManager):
             :search: Search string. default=""
             :user: concerned user
             :get_impacts: should impacts be included in the list?
+            :sorter: function to sort the items. default=None (means no sorting)
             :returns: list of hosts and services
         """
         items = []
@@ -395,6 +395,9 @@ class WebUIDataManager(DataManager):
                     search.append("is:downtime")
             if t == 'crit':
                 search.append("is:critical")
+
+        if sorter is not None:
+            items.sort(sorter)
 
         return items
 
@@ -557,9 +560,12 @@ class WebUIDataManager(DataManager):
     def get_reactionners(self):
         return self.rg.reactionners
 
+    ##
+    # Shortcuts
+    ##
     def get_overall_state(self, user=None):
         ''' Get the worst state of all business impacting elements. '''
-        impacts = self.get_important_impacts(user, sorted=True)
+        impacts = self.get_important_impacts(user, sorter=worse_first)
         if impacts:
             return impacts[0].state_id
         else:
@@ -567,62 +573,26 @@ class WebUIDataManager(DataManager):
 
     def get_overall_it_state(self, user=None):
         ''' Get the worst state of IT problems. '''
-        hosts = self.get_important_elements(user, type='host', sorted=True)
-        services = self.get_important_elements(user, type='service', sorted=True)
+        hosts = self.get_important_elements(user, type='host', sorter=worse_first)
+        services = self.get_important_elements(user, type='service', sorter=worse_first)
         hosts_state = hosts[0].state_id if hosts else 0
         services_state = services[0].state_id if hosts else 0
         return hosts_state, services_state
 
-    def get_overall_it_problems_count(self, user=None, type='all', get_acknowledged=False):
-        '''
-        Get the number of IT problems for the current user if specified.
-        If get_acknowledged is True, count problems even if acknowledged ...
+    def get_important_elements(self, user=None, type='all', sorter=worse_first):
+        return self.search_hosts_and_services('bi:>2 ack:false type:%s' % type, user=user, sorter=sorter)
 
-        If type is 'host', only count hosts problems
-        If type is 'service', only count services problems
-        '''
+    def get_impacts(self, user=None, bi='>=0', type='all', sorter=worse_first):
+        return self.search_hosts_and_services('is:impact bi:%s type:%s' % (bi, type), user=user, get_impacts=True, sorter=sorter)
 
-        if not get_acknowledged:
-            h_states = [h for h in self.get_hosts(user) if h.state not in ['UP', 'PENDING'] and not h.is_impact and not h.problem_has_been_acknowledged]
-            s_states = [s for s in self.get_services(user) if s.state not in ['OK', 'PENDING'] and not s.is_impact and not s.problem_has_been_acknowledged and not s.host.problem_has_been_acknowledged]
-        else:
-            h_states = [h for h in self.get_hosts(user) if h.state not in ['UP', 'PENDING'] and not h.is_impact]
-            s_states = [s for s in self.get_services(user) if s.state not in ['OK', 'PENDING'] and not s.is_impact]
+    def get_important_impacts(self, user=None, type='all', sorter=worse_first):
+        return self.get_impacts(user=user, type=type, bi='>2', sorter=sorter)
 
-        if type == 'all':
-            return len(h_states) + len(s_states)
-        elif type == 'host':
-            return len(h_states)
-        elif type == 'service':
-            return len(s_states)
-        else:
-            return -1
+    def get_problems(self, user=None, get_acknowledged=False, get_downtimed=False, bi='>=0', type='all', sorter=worse_first):
+        return self.search_hosts_and_services('isnot:UP isnot:OK isnot:PENDING ack:%s downtime:%s bi:%s type:%s' % (str(get_acknowledged), str(get_downtimed), bi, type), user=user, sorter=sorter)
 
-    # :TODO:maethor:150718:  Legacy methods, kept for backward compatibility. To remove.
-    def get_important_elements(self, user=None, type='all', sorted=True, sorter=worse_first):
-        res = self.search_hosts_and_services('bi:>2 ack:false type:%s' % type, user=user)
-        if sorted:
-            res.sort(sorter)
-        return res
-
-    def get_impacts(self, user=None, bi='>=0', type='all', sorted=True, sorter=worse_first):
-        res = self.search_hosts_and_services('is:impact bi:%s type:%s' % (bi, type), user=user, get_impacts=True)
-        if sorted:
-            res.sort(sorter)
-        return res
-
-    def get_important_impacts(self, user=None, type='all', sorted=True, sorter=worse_first):
-        return self.get_impacts(user=user, type=type, bi='>2', sorted=sorted, sorter=sorter)
-
-    def get_problems(self, user=None, get_acknowledged=False, get_downtimed=False, bi='>=0', type='all', sorted=True, sorter=worse_first):
-        res = self.search_hosts_and_services('isnot:UP isnot:OK isnot:PENDING ack:%s downtime:%s bi:%s type:%s' % (str(get_acknowledged), str(get_downtimed), bi, type), user=user)
-
-        if sorted:
-            res.sort(sorter)
-        return res
-
-    def get_important_problems(self, user=None, type='all', sorted=True, sorter=worse_first):
-        return self.get_problems(user, bi=">2", type=type, sorted=sorted, sorter=sorter)
+    def get_important_problems(self, user=None, type='all', sorter=worse_first):
+        return self.get_problems(user, bi=">2", type=type, sorter=sorter)
 
 
 datamgr = WebUIDataManager()
