@@ -39,7 +39,7 @@ def show_tags():
     user = app.request.environ['USER']
 
     fake_htags = []
-    for tag in app.datamgr.get_host_tags_sorted():
+    for tag in app.datamgr.get_host_tags():
         hosts = app.datamgr.get_hosts_tagged_with(tag[0], user)
         if len(hosts) > 0:
             fake_htags.append({'name': tag[0], 'hosts': hosts})
@@ -51,7 +51,7 @@ def show_stags():
     user = app.request.environ['USER']
 
     fake_stags = []
-    for tag in app.datamgr.get_service_tags_sorted():
+    for tag in app.datamgr.get_service_tags():
         services = app.datamgr.get_services_tagged_with(tag[0], user)
         if len(services) > 0:
             fake_stags.append({'name': tag[0], 'services': services})

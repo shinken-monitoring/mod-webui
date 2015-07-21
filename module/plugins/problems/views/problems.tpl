@@ -7,7 +7,6 @@
    var actions_enabled = {{'true' if app.can_action() else 'false'}};
 </script>
 
-
 <!-- Problems filtering and display -->
 <div id="problems">
    %if not pbs:

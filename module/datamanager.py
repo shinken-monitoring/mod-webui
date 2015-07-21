@@ -31,6 +31,7 @@ import itertools
 
 from shinken.misc.datamanager import DataManager
 
+
 # Sort hosts and services by impact, states and co
 def hst_srv_sort(s1, s2):
     if s1.business_impact > s2.business_impact:
@@ -172,10 +173,10 @@ class WebUIDataManager(DataManager):
     # Hosts
     ##
     def get_hosts(self, user=None, get_impacts=True):
-        """ Get a list of all hosts
+        """ Get a list of all hosts.
 
-            :user: concerned user
-            :get_impacts: should impact hosts be included in the list?
+            :param user: concerned user
+            :param get_impacts: should impact hosts be included in the list?
             :returns: list of all hosts
         """
         items = super(WebUIDataManager, self).get_hosts()
@@ -184,21 +185,24 @@ class WebUIDataManager(DataManager):
         return self._only_related_to(items, user)
 
     def get_host(self, hname):
+        """ Get a host by its hostname. """
         hname = hname.decode('utf8', 'ignore')
         return self.rg.hosts.find_by_name(hname)
 
-    # Get percentage of all Hosts
-    # problem=False, returns % of hosts not in problems
-    # problem=True, returns % of hosts in problems
     def get_percentage_hosts_state(self, user=None, problem=False):
+        """ Get percentage of hosts not in (or in) problems.
+
+            :param problem: False to return the % of hosts not in problems,
+                            True to return the % of hosts in problems.
+                            False by default
+        """
         all_hosts = self.get_hosts(user)
-        if len(all_hosts) == 0:
+        if not all_hosts:
             return 0
 
-        problems = []
-        problems.extend([h for h in all_hosts
-                         if h.state not in ['UP', 'PENDING']
-                         and not h.is_impact])
+        problems = [h for h in all_hosts
+                    if h.state not in ['UP', 'PENDING']
+                    and not h.is_impact]
 
         if problem:
             return int((len(problems) * 100) / float(len(all_hosts)))
@@ -209,59 +213,57 @@ class WebUIDataManager(DataManager):
     # Services
     ##
     def get_services(self, user=None, get_impacts=True):
+        """ Get a list of all services.
+
+            :param user: concerned user
+            :param get_impacts: should impact services be included in the list?
+            :returns: list of all services
+        """
         items = super(WebUIDataManager, self).get_services()
         if not get_impacts:
             items = [i for i in items if not i.is_impact]
         return self._only_related_to(items, user)
 
     def get_service(self, hname, sdesc):
+        """ Get a service by its hostname and service description. """
         hname = hname.decode('utf8', 'ignore')
         sdesc = sdesc.decode('utf8', 'ignore')
         return self.rg.services.find_srv_by_name_and_hostname(hname, sdesc)
 
     def get_percentage_service_state(self, user=None, problem=False):
+        """ Get percentage of services not in (or in) problems.
+
+            :param problem: False to return the % of services not in problems,
+                            True to return the % of services in problems.
+                            False by default
+        """
         all_services = self.get_services(user)
-        if len(all_services) == 0:
+        if not all_services:
             return 0
 
-        problems = []
-        problems.extend([s for s in all_services
-                         if s.state not in ['OK', 'PENDING']
-                         and not s.is_impact])
+        problems = [s for s in all_services
+                    if s.state not in ['OK', 'PENDING']
+                    and not s.is_impact]
 
         if problem:
             return int((len(problems) * 100) / float(len(all_services)))
         else:
             return int(100 - (len(problems) * 100) / float(len(all_services)))
 
-    ##
-    # Hosts and services
-    ##
-    # :TODO:maethor:150718: Merge with search_hosts_and_services
-    def get_all_hosts_and_services(self, user=None, get_impacts=True):
+    # :TODO:maethor:150721: Add sorting algorithm
+    def search_hosts_and_services(self, search="", user=None, get_impacts=True):
+        """ Search hosts and services.
+
+            This method is the heart of the datamanager. All other methods should be based on this one.
+
+            :search: Search string. default=""
+            :user: concerned user
+            :get_impacts: should impacts be included in the list?
+            :returns: list of hosts and services
         """
-        Get a list of all hosts and services
-
-        :user: concerned user
-        :get_impacts: should impact hosts/services be included in the list ?
-        :returns: list of all hosts and services
-
-        """
-        all = []
-        all.extend(self.get_hosts(user, get_impacts))
-        all.extend(self.get_services(user, get_impacts))
-        return all
-
-    def search_hosts_and_services(self, search, user=None, get_impacts=True):
-        """@todo: Docstring for search_hosts_and_services.
-
-        :search: @todo
-        :user: @todo
-        :get_impacts: @todo
-        :returns: @todo
-
-        """
-        items = self.get_all_hosts_and_services(user=user, get_impacts=get_impacts)
+        items = []
+        items.extend(self.get_hosts(user, get_impacts))
+        items.extend(self.get_services(user, get_impacts))
 
         search = [s for s in search.split(' ')]
 
@@ -422,9 +424,12 @@ class WebUIDataManager(DataManager):
         items = self.rg.contacts
         return self._only_related_to(items, user)
 
-    def get_contact(self, name):
+    def get_contact(self, name, user=None):
         name = name.decode('utf8', 'ignore')
-        return self.rg.contacts.find_by_name(name)
+        item = self.rg.contacts.find_by_name(name)
+        if self._is_related_to(item, user):
+            return item
+        return None
 
     ##
     # Contacts groups
@@ -433,9 +438,12 @@ class WebUIDataManager(DataManager):
         items = self.rg.contactgroups
         return self._only_related_to(items, user)
 
-    def get_contactgroup(self, name):
+    def get_contactgroup(self, name, user=None):
         name = name.decode('utf8', 'ignore')
-        return self.rg.contactgroups.find_by_name(name)
+        item = self.rg.contactgroups.find_by_name(name)
+        if self._is_related_to(item, user):
+            return item
+        return None
 
     ##
     # Hosts groups
@@ -449,22 +457,17 @@ class WebUIDataManager(DataManager):
     def set_hostgroup_level(self, group, level, user=None):
         setattr(group, 'level', level)
 
-        # Search hostgroups referenced in another group
-        if group.has('hostgroup_members'):
-            for g in sorted(group.get_hostgroup_members()):
-                try:
-                    child_group = self.get_hostgroup(g)
-                    self.set_hostgroup_level(child_group, level + 1, user)
-                except AttributeError:
-                    pass
+        for g in sorted(group.get_hostgroup_members()):
+            try:
+                child_group = self.get_hostgroup(g)
+                self.set_hostgroup_level(child_group, level + 1, user)
+            except AttributeError:
+                pass
 
     def get_hostgroups(self, user=None, parent=None):
         if parent:
             group = self.rg.hostgroups.find_by_name(parent)
-            if group.has('hostgroup_members'):
-                items = [self.get_hostgroup(g) for g in group.get_hostgroup_members()]
-            else:
-                return None
+            items = [self.get_hostgroup(g) for g in group.get_hostgroup_members()]
         else:
             items = self.rg.hostgroups
 
@@ -484,19 +487,14 @@ class WebUIDataManager(DataManager):
     def set_servicegroup_level(self, group, level, user=None):
         setattr(group, 'level', level)
 
-        # Search servicegroups referenced in another group
-        if group.has('servicegroup_members'):
-            for g in sorted(group.get_servicegroup_members()):
-                child_group = self.get_servicegroup(g)
-                self.set_servicegroup_level(child_group, level + 1, user)
+        for g in sorted(group.get_servicegroup_members()):
+            child_group = self.get_servicegroup(g)
+            self.set_servicegroup_level(child_group, level + 1, user)
 
     def get_servicegroups(self, user=None, parent=None):
         if parent:
             group = self.rg.servicegroups.find_by_name(parent)
-            if group.has('servicegroup_members'):
-                items = [self.get_servicegroup(g) for g in group.get_servicegroup_members()]
-            else:
-                return None
+            items = [self.get_servicegroup(g) for g in group.get_servicegroup_members()]
         else:
             items = self.rg.servicegroups
 
@@ -508,33 +506,23 @@ class WebUIDataManager(DataManager):
     ##
     # Hosts tags
     ##
-    # Get the hosts tags sorted by names, and zero size in the end
-    def get_host_tags_sorted(self):
-        r = []
-        names = self.rg.tags.keys()
-        names.sort()
-        for n in names:
-            r.append((n, self.rg.tags[n]))
-        return r
+    def get_host_tags(self):
+        ''' Get the hosts tags sorted by names. '''
+        return sorted(self.rg.tags)
 
-    # Get the hosts tagged with a specific tag
     def get_hosts_tagged_with(self, tag, user=None):
+        ''' Get the hosts tagged with a specific tag. '''
         return self.search_hosts_and_services('type:host htag:%s' % tag, user)
 
     ##
     # Services tags
     ##
-    # Get the services tags sorted by names, and zero size in the end
-    def get_service_tags_sorted(self):
-        r = []
-        names = self.rg.services_tags.keys()
-        names.sort()
-        for n in names:
-            r.append((n, self.rg.services_tags[n]))
-        return r
+    def get_service_tags(self):
+        ''' Get the services tags sorted by names. '''
+        return sorted(self.rg.services_tags)
 
-    # Get the services tagged with a specific tag
     def get_services_tagged_with(self, tag, user=None):
+        ''' Get the services tagged with a specific tag. '''
         return self.search_hosts_and_services('type:service stag:%s' % tag, user)
 
     ##
@@ -569,69 +557,22 @@ class WebUIDataManager(DataManager):
     def get_reactionners(self):
         return self.rg.reactionners
 
-    # For all business impacting elements, and give the worse state
-    # if warning or critical
     def get_overall_state(self, user=None):
-        h_states = [h.state_id for h in self.get_hosts(user) if h.business_impact > 2 and h.is_impact and h.state_id in [1, 2]]
-        s_states = [s.state_id for s in self.get_services(user) if s.business_impact > 2 and s.is_impact and s.state_id in [1, 2]]
-        if len(h_states) == 0:
-            h_state = 0
+        ''' Get the worst state of all business impacting elements. '''
+        impacts = self.get_important_impacts(user, sorted=True)
+        if impacts:
+            return impacts[0].state_id
         else:
-            h_state = max(h_states)
-        if len(s_states) == 0:
-            s_state = 0
-        else:
-            s_state = max(s_states)
+            return 0
 
-        return max(h_state, s_state)
+    def get_overall_it_state(self, user=None):
+        ''' Get the worst state of IT problems. '''
+        hosts = self.get_important_elements(user, type='host', sorted=True)
+        services = self.get_important_elements(user, type='service', sorted=True)
+        hosts_state = hosts[0].state_id if hosts else 0
+        services_state = services[0].state_id if hosts else 0
+        return hosts_state, services_state
 
-    # For all business impacting elements, and give the worse state
-    # if warning or critical
-    def get_overall_state_problems_count(self, user=None):
-        h_states = [h.state_id for h in self.get_hosts(user) if h.business_impact > 2 and h.is_impact and h.state_id in [1, 2]]
-        s_states = [s.state_id for s in self.get_services(user) if s.business_impact > 2 and s.is_impact and s.state_id in [1, 2]]
-
-        return len(h_states) + len(s_states)
-
-    # Same but for pure IT problems
-    def get_overall_it_state(self, user=None, get_acknowledged=False, id=False):
-        '''
-        Get the worst state of IT problems for the current user if specified.
-        If get_acknowledged is True, count problems even if acknowledged ...
-        If id is True, state id are returned else state texts are returned
-        '''
-        state = {'host':
-                 {0: 'UP',
-                  2: 'DOWN',
-                  1: 'UNREACHABLE',
-                  3: 'UNKNOWN'},
-                 'service':
-                 {0: 'OK',
-                  2: 'CRITICAL',
-                  1: 'WARNING',
-                  3: 'UNKNOWN'}
-                 }
-
-        if not get_acknowledged:
-            h_states = [h.state_id for h in self.get_hosts(user) if h.state_id in [1, 2] and not h.problem_has_been_acknowledged]
-            s_states = [s.state_id for s in self.get_services(user) if s.state_id in [1, 2] and not s.problem_has_been_acknowledged]
-        else:
-            h_states = [h.state_id for h in self.get_hosts(user) if h.state_id in [1, 2]]
-            s_states = [s.state_id for s in self.get_services(user) if s.state_id in [1, 2]]
-
-        if len(h_states) == 0:
-            h_state = state['host'].get(0, 'UNKNOWN') if not id else 0
-        else:
-            h_state = state['host'].get(max(h_states), 'UNKNOWN') if not id else max(h_states)
-
-        if len(s_states) == 0:
-            s_state = state['service'].get(0, 'UNKNOWN') if not id else 0
-        else:
-            s_state = state['service'].get(max(s_states), 'UNKNOWN') if not id else max(s_states)
-
-        return h_state, s_state
-
-    # Get the number of all problems, even the ack ones
     def get_overall_it_problems_count(self, user=None, type='all', get_acknowledged=False):
         '''
         Get the number of IT problems for the current user if specified.
@@ -658,35 +599,30 @@ class WebUIDataManager(DataManager):
             return -1
 
     # :TODO:maethor:150718:  Legacy methods, kept for backward compatibility. To remove.
-    def get_important_elements(self, user=None):
-        return self.search_hosts_and_services('bi:>2', user=user)
-
-    def get_impacts(self, user=None, sorted=True):
-        res = self.search_hosts_and_services('is:impact', user=user, get_impacts=True)
-        
+    def get_important_elements(self, user=None, type='all', sorted=True, sorter=worse_first):
+        res = self.search_hosts_and_services('bi:>2 ack:false type:%s' % type, user=user)
         if sorted:
-            res.sort(worse_first)
+            res.sort(sorter)
         return res
 
-    def get_important_impacts(self, user=None, sorted=True):
-        res = self.search_hosts_and_services('bi:>2 is:impact', user=user, get_impacts=True)
-        
+    def get_impacts(self, user=None, bi='>=0', type='all', sorted=True, sorter=worse_first):
+        res = self.search_hosts_and_services('is:impact bi:%s type:%s' % (bi, type), user=user, get_impacts=True)
         if sorted:
-            res.sort(worse_first)
+            res.sort(sorter)
         return res
 
-    def get_all_problems(self, user=None, sorted=True, get_acknowledged=False, get_downtimed=False):
-        res = self.search_hosts_and_services('isnot:UP isnot:OK isnot:PENDING ack:%s downtime:%s' % (str(get_acknowledged), str(get_downtimed)), user=user)
-        
+    def get_important_impacts(self, user=None, type='all', sorted=True, sorter=worse_first):
+        return self.get_impacts(user=user, type=type, bi='>2', sorted=sorted, sorter=sorter)
+
+    def get_problems(self, user=None, get_acknowledged=False, get_downtimed=False, bi='>=0', type='all', sorted=True, sorter=worse_first):
+        res = self.search_hosts_and_services('isnot:UP isnot:OK isnot:PENDING ack:%s downtime:%s bi:%s type:%s' % (str(get_acknowledged), str(get_downtimed), bi, type), user=user)
+
         if sorted:
-            res.sort(worse_first)
+            res.sort(sorter)
         return res
 
-    def get_problems_time_sorted(self, user=None, sorted=True, get_acknowledged=False, get_downtimed=False):
-        res = self.search_hosts_and_services('isnot:UP isnot:OK isnot:PENDING ack:%s downtime:%s' % (str(get_acknowledged), str(get_downtimed)), user=user)
-        
-        if sorted:
-            res.sort(last_state_change_earlier)
-        return res
+    def get_important_problems(self, user=None, type='all', sorted=True, sorter=worse_first):
+        return self.get_problems(user, bi=">2", type=type, sorted=sorted, sorter=sorter)
+
 
 datamgr = WebUIDataManager()

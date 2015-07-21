@@ -40,7 +40,7 @@ def get_page():
     impacts = app.datamgr.get_important_impacts(user=user, sorted=True)
 
     # Last problems
-    all_pbs =  app.datamgr.get_all_problems(user=user, sorted=True)
+    all_pbs =  app.datamgr.get_problems(user=user, sorted=True)
     now = time.time()
     # Get only the last hour errors
     last_pbs = [pb for pb in all_pbs if pb.last_state_change > now - 3600]

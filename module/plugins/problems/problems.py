@@ -23,8 +23,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 
-from shinken.misc.sorter import hst_srv_sort
-from shinken.log import logger
+from shinken.misc.sorter import hst_srv_sort, last_state_change_earlier
 
 #from lib.bottle import request
 
@@ -134,7 +133,7 @@ def get_last_errors_widget():
     # We want to limit the number of elements, The user will be able to increase it
     nb_elements = max(0, int(app.request.GET.get('nb_elements', '10')))
 
-    pbs = app.datamgr.get_problems_time_sorted(user)
+    pbs = app.datamgr.get_problems(user, sorted=True, sorter=last_state_change_earlier)
 
     # Keep only nb_elements
     pbs = pbs[:nb_elements]
