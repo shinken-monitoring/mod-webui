@@ -262,9 +262,7 @@ html, body {
 }
 
 /*
- * ------------------------------------------------------------------------
  * Shinken basics
- * ------------------------------------------------------------------------
  */
  
 .font-ok, .font-up {
@@ -291,6 +289,7 @@ html, body {
   color: #ccc !important;
 }
 
+
 .background-ok, .background-up {
   background-color: #5bb75b !important;
 }
@@ -314,6 +313,58 @@ html, body {
 .background-greyed {
   background-color: #ccc !important;
 }
+
+
+/*
+ * Special font styles (Font Color)
+ */
+.font-white {color: #FFFFFF;}
+
+.font-black {color: #000000;}
+
+.font-green {color: #468847;}
+
+.font-yellow {color: #FFEE00;}
+
+.font-orange {color: #F89406;}
+
+.font-red {color: #DA4F49;}
+
+.font-green {color: #51A351;}
+
+.font-grey {color: #505050;}
+
+.font-lightgrey {color: #EBEBEB;}
+
+.font-darkgrey {color: #535456;}
+
+.font-blue {color: #3A87AD;}
+
+
+/*
+ * Special background colors
+ */
+.bg-white {background-color: #FFFFFF;}
+
+.bg-black {background-color: #000000;}
+
+.bg-green {background-color: #468847;}
+
+.bg-yellow {background-color: #FFEE00;}
+
+.bg-orange {background-color: #F89406;}
+
+.bg-red {background-color: #DA4F49;}
+
+.bg-green {background-color: #51A351;}
+
+.bg-grey {background-color: #505050;}
+
+.bg-lightgrey {background-color: #EBEBEB;}
+
+.bg-darkgrey {background-color: #535456;}
+
+.bg-blue {background-color: #3A87AD;}
 
 /* 
  * States
@@ -412,30 +463,6 @@ html, body {
 }
 
 
-/*  Special Font Awesome styles (Font Color)
-    ------------------------------------------------------- 
-.font-white {color: #FFFFFF;}
-
-.font-black {color: #000000;}
-
-.font-green {color: #468847;}
-
-.font-yellow {color: #FFEE00;}
-
-.font-orange {color: #F89406;}
-
-.font-red {color: #DA4F49;}
-
-.font-green {color: #51A351;}
-
-.font-grey {color: #505050;}
-
-.font-lightgrey {color: #EBEBEB;}
-
-.font-darkgrey {color: #535456;}
-
-.font-blue {color: #3A87AD;}
-*/
 /*  Special Shinken Box
     ------------------------------------------------------- 
 .fitted-header {
