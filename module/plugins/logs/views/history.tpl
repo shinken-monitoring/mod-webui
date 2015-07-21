@@ -1,8 +1,7 @@
 %import json
 %import time
 
-%#date_format='%Y-%m-%d %H:%M:%S'
-%date_format='%H:%M:%S'
+%date_format='%Y-%m-%d %H:%M:%S'
 
 <table class="table table-condensed">
    <thead>

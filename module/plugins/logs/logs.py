@@ -29,18 +29,6 @@ import re
 
 from shinken.log import logger
 
-# Json lib
-try:
-    import json
-except ImportError:
-    # For old Python version, load
-    # simple json (it can be hard json?! It's 2 functions guy!)
-    try:
-        import simplejson as json
-    except ImportError:
-        print "Error: you need the json or simplejson module"
-        raise
-
 # Mongodb lib
 try:
     import pymongo
@@ -99,36 +87,6 @@ def load_config(app):
         return False
 
 
-def getdb(dbname):
-    con = None
-    db = None
-
-    try:
-        con = Connection(params['mongo_host'],int(params['mongo_port']))
-    except:
-        return (  
-            "Error : Unable to create mongo DB connection %s:%s" % (params['mongo_host'],params['mongo_port']),
-            None
-        )
-
-    try:
-        db = con[dbname]
-    except:
-        return (  
-            "Error : Unable to connect to mongo database %s" % dbname,
-            None
-        )
-    
-    # Store connection and db handle ...
-    # self.con = con
-    # self.db = db
-    
-    return (  
-        "Connected to mongo database '%s'" % dbname,
-        db
-    )
-
-
 def show_logs():
     # If exists an external module ...
     if app.get_history:
@@ -138,74 +96,6 @@ def show_logs():
     logger.warning("[WebUI-logs] no get history external module defined!")
     return {'records': None, 'params': params, 'message': "No module configured to get Shinken logs from a database!"}
     
-    # message,db = getdb(params['database'])
-    # if not db:
-        # return {
-            # 'app': app,
-            # 'user': user, 
-            # 'message': message,
-            # 'params': params,
-            # 'records': []
-        # }
-
-    # records=[]
-
-    # try:
-        # logger.debug("[WebUI-logs] fetching records from database: %s / %s / %s (max %d)", params['logs_type'], params['logs_hosts'], params['logs_services'], params['max_records'])
-
-        # max_records = params['max_records']
-        # logs_type = params['logs_type']
-        # logs_hosts = params['logs_hosts']
-        # logs_services = params['logs_services']
-
-        # query = []
-        # if len(logs_type) > 0 and logs_type[0] != '':
-            # query.append({ "type" : { "$in": logs_type }})
-        # if len(logs_hosts) > 0 and logs_hosts[0] != '':
-            # query.append({ "host_name" : { "$in": logs_hosts }})
-        # if len(logs_services) > 0 and logs_services[0] != '':
-            # query.append({ "service_description" : { "$in": logs_services }})
-            
-        # records=[]
-        # if len(query) > 0:
-            # for log in db.logs.find({'$and': query}).sort("time",pymongo.DESCENDING).limit(max_records):
-                # message = log['message']
-                # m = re.search(r"\[(\d+)\] (.*)", message)
-                # if m and m.group(2):
-                    # message = m.group(2)
-                    
-                # records.append({
-                    # "date" : int(log["time"]),
-                    # "host" : log['host_name'],
-                    # "service" : log['service_description'],
-                    # "message" : message
-                # })
-        # else:
-            # for log in db.logs.find().sort("time",pymongo.DESCENDING).limit(max_records):
-                # message = log['message']
-                # m = re.search(r"\[(\d+)\] (.*)", message)
-                # if m and m.group(2):
-                    # message = m.group(2)
-                    
-                # records.append({
-                    # "date" : int(log["time"]),
-                    # "host" : log['host_name'],
-                    # "service" : log['service_description'],
-                    # "message" : message
-                # })
-        # message = "%d records fetched from database." % len(records)
-        # logger.info("[WebUI-logs] %d records fetched from database.", len(records))
-    # except Exception, exp:
-        # logger.error("[WebUI-logs] Exception when querying database: %s", str(exp))
-
-    # return {
-        # 'app': app,
-        # 'user': user, 
-        # 'message': message,
-        # 'params': params,
-        # 'records': records
-    # }
-
 
 def form_hosts_list():
     return {'params': params}
@@ -273,80 +163,6 @@ def get_history(name):
     logger.warning("[WebUI-logs] no get history external module defined!")
     return {'records': None}
 
-    # logger.debug("[WebUI-logs] get_history, name: %s", name)
-    # hostname = None
-    # service = None
-    # if '/' in name:
-        # service = name.split('/')[1]
-        # hostname = name.split('/')[0]
-    # else:
-        # hostname = name
-    # logger.debug("[WebUI-logs] get_history, host/service: %s/%s", hostname, service)
-
-    # message,db = getdb(params['database'])
-    # if not db:
-        # return {
-            # 'app': app,
-            # 'user': user, 
-            # 'message': message,
-            # 'params': params,
-            # 'records': []
-        # }
-
-    # records=[]
-
-    # try:
-        # max_records = params['max_records']
-        # logs_type = []
-        # logs_hosts = [ hostname ]
-        # logs_services = [ ]
-        # if service is not None:
-            # logger.debug("[WebUI-logs] Fetching records from database for host/service: %s/%s", hostname, service)
-            # logs_services = [ service ]
-        # else:
-            # logger.debug("[WebUI-logs] Fetching records from database for host: %s", hostname)
-
-        # query = []
-        # if len(logs_type) > 0 and logs_type[0] != '':
-            # query.append({ "type" : { "$in": logs_type }})
-        # if len(logs_hosts) > 0 and logs_hosts[0] != '':
-            # query.append({ "host_name" : { "$in": logs_hosts }})
-        # if len(logs_services) > 0 and logs_services[0] != '':
-            # query.append({ "service_description" : { "$in": logs_services }})
-            
-        # records=[]
-        # if len(query) > 0:
-            # for log in db.logs.find({'$and': query}).sort("time",pymongo.DESCENDING).limit(max_records):
-                # message = log['message']
-                # m = re.search(r"\[(\d+)\] (.*)", message)
-                # if m and m.group(2):
-                    # message = m.group(2)
-                    
-                # records.append({
-                    # "timestamp":    int(log["time"]),
-                    # "host":         log['host_name'],
-                    # "service":      log['service_description'],
-                    # "message":      message
-                # })
-        # else:
-            # for log in db.logs.find().sort("time",pymongo.DESCENDING).limit(max_records):
-                # message = log['message']
-                # m = re.search(r"\[(\d+)\] (.*)", message)
-                # if m and m.group(2):
-                    # message = m.group(2)
-                    
-                # records.append({
-                    # "timestamp":    int(log["time"]),
-                    # "host":         log['host_name'],
-                    # "service":      log['service_description'],
-                    # "message":      message
-                # })
-        # message = "%d records fetched from database." % len(records)
-        # logger.debug("[WebUI-logs] %d records fetched from database.", len(records))
-    # except Exception, exp:
-        # logger.error("[WebUI-logs] Exception when querying database: %s", str(exp))
-    
-    # return {'records': records}
 
 pages = {   
         show_logs: {'routes': ['/logs'], 'view': 'logs', 'static': True},
