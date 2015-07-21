@@ -270,6 +270,10 @@ class Webui_broker(BaseModule, Daemon):
             logger.error("[WebUI] No user authentication module configured. Please configure at least 'modules auth-cfg-password' in webui.cfg file")
             sys.exit(2)
 
+        # We check if we have a graphs module
+        if not self.has_graphs_module():
+            logger.warning("[WebUI] No graphs module configured. You should configure the module 'graphite' in your broker and the module 'ui-graphite' in webui.cfg file to be able to display graphs.")
+
         # We check if we have an availability module
         self.get_availability = None
         if not self.has_availability_module():
@@ -714,24 +718,29 @@ class Webui_broker(BaseModule, Daemon):
     # Try to got for an element the graphs uris from modules
     # The source variable describes the source of the calling. Are we displaying
     # graphs for the element detail page (detail), or a widget in the dashboard (dashboard) ?
+    ##
+    # Check if a graphs module is declared in webui.cfg
+    ##
+    def has_graphs_module(self):
+        logger.debug("[WebUI] searching external module for graphs ...")
+        self.get_graphs = None
+        for mod in self.modules_manager.get_internal_instances():
+            f = getattr(mod, 'get_graph_uris', None)
+            if f and callable(f):
+                logger.info("[WebUI] Found graphs module: %s", mod.get_name())
+                self.get_graphs = f
+                return True
+        return False
+
+
     def get_graph_uris(self, elt, graphstart, graphend, source='detail'):
         logger.debug("[WebUI] Fetching graph URIs for %s (%s)", elt.host_name, source)
 
         uris = []
-        for mod in self.modules_manager.get_internal_instances():
-            try:
-                logger.debug("[WebUI] module %s, get_graph_uris", mod)
-                f = getattr(mod, 'get_graph_uris', None)
-                if f and callable(f):
-                    r = f(elt, graphstart, graphend, source)
-                    logger.debug("[WebUI] Got graphs: %s", r)
-                    uris.extend(r)
-            except Exception, exp:
-                logger.warning("[WebUI] The mod %s raise an exception: %s, I'm tagging it to restart later", mod.get_name(), str(exp))
-                logger.debug("[WebUI] Exception type: %s", type(exp))
-                logger.debug("Back trace of this kill: %s", traceback.format_exc())
-                self.modules_manager.set_to_restart(mod)
-
+        if self.get_graphs:
+            r = self.get_graphs(elt, graphstart, graphend, source)
+            logger.debug("[WebUI] Got graphs: %s", r)
+            uris.extend(r)
         return uris
 
 

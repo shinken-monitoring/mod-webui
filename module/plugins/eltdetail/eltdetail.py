@@ -29,9 +29,20 @@ import time
 
 # Get plugin's parameters from configuration file
 params = {}
-# Tabs to be displayed or not ...
-params['tabs'] = ['information', 'additional', 'configuration', 'custom_views', 'impacts', 'comments', 'downtimes', 'metrics', 'graphs', 'depgraph', 'history', 'availability', 'helpdesk']
-params['cfg_nb_impacts'] = 5
+# Standard tabs to be displayed for an element ...
+params['tabs'] = ['information', 'additional', 'configuration', 'custom_views', 'impacts', 'comments', 'downtimes', 'metrics', 'depgraph']
+
+# Update configuration depending upon installed modules
+def load_config(app):
+    if app.has_graphs_module():
+        params['tabs'].append('graphs')
+    if app.has_helpdesk_module():
+        params['tabs'].append('helpdesk')
+    if app.has_history_module():
+        params['tabs'].append('history')
+    if app.has_availability_module():
+        params['tabs'].append('availability')
+
 
 # Main impacts view
 def show_host(host_name):
