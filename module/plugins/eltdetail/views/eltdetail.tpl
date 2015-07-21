@@ -229,7 +229,7 @@ Invalid element name
    <div class="panel panel-default">
       <div class="panel-heading" style="padding-bottom: -10">
          <div class="aroundpulse pull-left" style="padding: 8px;">
-            <span class="medium-pulse pulse"></span>
+            <span class="big-pulse pulse"></span>
             <i class="fa fa-2x fa-university"></i>
          </div>
          <div style="margin-left: 60px;">
