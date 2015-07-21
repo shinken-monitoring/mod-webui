@@ -5,16 +5,11 @@
 
 <script type="text/javascript">
    var actions_enabled = {{'true' if app.can_action() else 'false'}};
-
 </script>
 
-%if len(app.datamgr.get_all_problems()) and app.play_sound:
- <EMBED src="/static/sound/alert.wav" autostart=true loop=false volume=100 hidden=true>
-%end
 
 <!-- Problems filtering and display -->
 <div id="problems">
-
    %if not pbs:
    <center>
      %if search_string:
