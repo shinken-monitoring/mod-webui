@@ -80,17 +80,6 @@
             <span class="label label-as-badge label-{{label}}">{{h["nb_down"]+h["nb_unreachable"]}}</span>
          </a>
       </li>
-      <script type="text/javascript">
-      // Activate the popover ...
-      $('#hosts-states-popover').popover({ 
-         placement: 'bottom', 
-         animation: true, 
-         template: '<div class="popover img-popover"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
-         content: function() {
-            return $('#hosts-states-popover-content').html();
-         }
-      });
-      </script>
       <!--end-hosts-states-->
    
       <!--begin-services-states-->
@@ -105,17 +94,6 @@
             <span class="label label-as-badge label-{{label}}">{{s["nb_critical"]+s["nb_warning"]}}</span>
          </a>
       </li>
-      <script type="text/javascript">
-      // Activate the popover ...
-      $('#services-states-popover').popover({ 
-         placement: 'bottom', 
-         animation: true, 
-         template: '<div class="popover img-popover"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
-         content: function() {
-            return $('#services-states-popover-content').html();
-         }
-      });
-      </script>
       <!--end-services-states-->
     
       <li>
@@ -296,6 +274,26 @@
          $('#sound_alerting i.fa-ban').removeClass('hidden');
       } else {
          playAlertSound();
+      }
+   });
+   
+   // Activate the popover ...
+   $('#hosts-states-popover').popover({ 
+      placement: 'bottom', 
+      animation: true, 
+      template: '<div class="popover img-popover"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
+      content: function() {
+         return $('#hosts-states-popover-content').html();
+      }
+   });
+
+   // Activate the popover ...
+   $('#services-states-popover').popover({ 
+      placement: 'bottom', 
+      animation: true, 
+      template: '<div class="popover img-popover"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
+      content: function() {
+         return $('#services-states-popover-content').html();
       }
    });
 </script>

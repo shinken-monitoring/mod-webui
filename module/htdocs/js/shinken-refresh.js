@@ -23,13 +23,13 @@
 */
 
 
-var refresh_logs=true;
+var refresh_logs=false;
 
 /* By default, we set the page to reload each period defined in WebUI configuration */
 var refresh_timeout = app_refresh_period;
 var nb_refresh_try = 0;
 if (! sessionStorage.getItem("refresh_active")) {
-   console.debug("Refresh active storage does not exist");
+   if (refresh_logs) console.debug("Refresh active storage does not exist");
    // Store default value ...
    sessionStorage.setItem("refresh_active", refresh_timeout==0 ? '0' : '1');
 }
@@ -86,13 +86,43 @@ function do_refresh(){
      dataType: "html"
    })
    .done(function( html, textStatus, jqXHR ) {
-      // This var declaration includes the response in the document body ... bad luck!
-      // In fact, each refresh do include all the received Html and then we filter 
-      // what we are interested in ... not really efficient and quite buggy !
+      /* This var declaration includes the response in the document body ... bad luck!
+       * ------------------------------------------------------------------------------
+       * In fact, each refresh do include all the received Html and then we filter 
+       * what we are interested in ... not really efficient and quite buggy !
+       */
       var $response = $('<div />').html(html);
       $('#page-content').html($response.find('#page-content').html());
       $('#overall-hosts-states').html($response.find('#overall-hosts-states').html());
       $('#overall-services-states').html($response.find('#overall-services-states').html());
+
+      /* Because of what is explaind in the previous comment ... we must use this 
+       * awful hack ! 
+       * Hoping this is a temporary solution ... :/P
+       * 
+       * An idea : only refreshing the values in the popover would be enough!
+       */
+      // Activate the popover ...
+      $('#hosts-states-popover').popover({ 
+         placement: 'bottom', 
+         animation: true, 
+         template: '<div class="popover img-popover"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
+         content: function() {
+            return $('#hosts-states-popover-content').html();
+         }
+      });
+
+      // Activate the popover ...
+      $('#services-states-popover').popover({ 
+         placement: 'bottom', 
+         animation: true, 
+         template: '<div class="popover img-popover"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
+         content: function() {
+            return $('#services-states-popover-content').html();
+         }
+      });
+      
+      // Clean the DOM after refresh update ...
       $response.remove();
       
 /*
@@ -149,7 +179,7 @@ function do_refresh(){
       } else {
          $('#header_loading').addClass('font-greyed');
       }
-      console.debug("Refresh active is ", sessionStorage.getItem("refresh_active"));
+      if (refresh_logs) console.debug("Refresh active is ", sessionStorage.getItem("refresh_active"));
       
       // Refresh is finished
       $('#header_loading').removeClass('fa-spin');

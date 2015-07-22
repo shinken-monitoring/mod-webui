@@ -56,39 +56,6 @@ function on_page_refresh() {
       template: '<div class="popover popover-medium"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
    });
 
-   /**
-    * Page refresh and tabs management 
-    * ---------
-    * Commented: use a Js instead in layout.tpl !
-    * ---------
-   // Look at the hash part of the URI. If it match a nav name, go for it
-   if (location.hash.length > 0) {
-      if (eltdetail_logs) console.debug('Displaying tab: ', location.hash)
-      $('.nav-tabs li a[href="' + location.hash + '"]').trigger('click');
-   } else {
-      if (eltdetail_logs) console.debug('Displaying first tab')
-      $('.nav-tabs li a:first').trigger('click');
-   }
-   
-   // Avoid scrolling the window when a nav tab is selected ...
-   // Not functionnal !
-   $('.nav-tabs li a').click(function(e){
-      if (eltdetail_logs) console.debug('Clicked ', $(this).attr('href'))
-      // Try to stop bootstrap scroll to anchor effect ...
-      e.preventDefault();
-      e.stopImmediatePropagation();
-      // Display tab
-      $(this).tab('show');
-   });
-
-   // When a nav item is selected update the page hash
-   $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
-      if (eltdetail_logs) console.debug('Shown ', $(this).attr('href'))
-      location.hash = $(this).attr('href');
-   })
-    */
-   
-   
    /*
     * Impacts view 
     */
@@ -279,11 +246,11 @@ function on_page_refresh() {
       $(this).parent('li').addClass('active');
    });
    
-   // On first page load, wait for document ready ...
-   $(document).ready(function(){
-      // Show actions bar
-      show_actions();
-   });
+   // Restore previously selected tab
+   bootstrap_tab_bookmark();
+   
+   // Show actions bar
+   show_actions();
 }
 
 
@@ -331,3 +298,5 @@ function toggleBusinessElt(e) {
     }
 }
 
+
+on_page_refresh();

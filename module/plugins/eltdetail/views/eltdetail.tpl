@@ -28,13 +28,15 @@ Invalid element name
 %title = 'Service detail: ' + elt.service_description+' on '+elt.host.host_name
 %end
 
-%rebase("layout", js=['eltdetail/js/eltdetail.js', 'eltdetail/js/flot/jquery.flot.min.js', 'eltdetail/js/flot/jquery.flot.tickrotor.js', 'eltdetail/js/flot/jquery.flot.resize.min.js', 'eltdetail/js/flot/jquery.flot.pie.min.js', 'eltdetail/js/flot/jquery.flot.categories.min.js', 'eltdetail/js/flot/jquery.flot.time.min.js', 'eltdetail/js/flot/jquery.flot.stack.min.js', 'eltdetail/js/flot/jquery.flot.valuelabels.js',  'eltdetail/js/jquery.color.js', 'eltdetail/js/bootstrap-switch.min.js', 'eltdetail/js/graphs.js', 'eltdetail/js/custom_views.js', 'eltdetail/js/canvas.js'], css=['eltdetail/css/bootstrap-switch.min.css', 'eltdetail/css/eltdetail.css', 'eltdetail/css/canvas.css'], breadcrumb=breadcrumb, title=title)
+%js=['eltdetail/js/flot/jquery.flot.min.js', 'eltdetail/js/flot/jquery.flot.tickrotor.js', 'eltdetail/js/flot/jquery.flot.resize.min.js', 'eltdetail/js/flot/jquery.flot.pie.min.js', 'eltdetail/js/flot/jquery.flot.categories.min.js', 'eltdetail/js/flot/jquery.flot.time.min.js', 'eltdetail/js/flot/jquery.flot.stack.min.js', 'eltdetail/js/flot/jquery.flot.valuelabels.js',  'eltdetail/js/jquery.color.js', 'eltdetail/js/bootstrap-switch.min.js', 'eltdetail/js/graphs.js', 'eltdetail/js/custom_views.js', 'eltdetail/js/eltdetail.js']
+%css=['eltdetail/css/bootstrap-switch.min.css', 'eltdetail/css/eltdetail.css']
+%rebase("layout", js=js, css=css, breadcrumb=breadcrumb, title=title)
 
 %# Main variables
 %elt_name = elt.host_name if elt_type=='host' else elt.service_description+' on '+elt.host.host_name
 %elt_display_name = elt.display_name if elt_type=='host' else elt.service_description
-<div id="element">
 
+<div id="element">
    <!-- First row : tags and actions ... -->
    %if elt.action_url != '' or (elt_type=='host' and len(elt.get_host_tags()) != 0) or (elt_type=='service' and len(elt.get_service_tags()) != 0) or (elt_type=='host' and len(elt.hostgroups) > 0) or (elt_type=='service' and len(elt.servicegroups) > 0):
    <div>
@@ -460,7 +462,7 @@ Invalid element name
                                        data-title='{{tp.alias if hasattr(tp, "alias") else tp.timeperiod_name}}' 
                                        data-content='{{!helper.get_timeperiod_html(tp)}}'
                                        >
-                                 {{! app.helper.get_on_off(elt.check_period.is_time_valid(now), 'Is element check period currently active?')}}
+                                 {{! helper.get_on_off(elt.check_period.is_time_valid(now), 'Is element check period currently active?')}}
                                  <a href="/timeperiods">{{elt.check_period.alias}}</a>
                                  </td>
                               </tr>
@@ -478,7 +480,7 @@ Invalid element name
                                        data-title='{{tp.alias if hasattr(tp, "alias") else tp.timeperiod_name}}'
                                        data-content='{{!helper.get_timeperiod_html(tp)}}'
                                        >
-                                 {{! app.helper.get_on_off(elt.maintenance_period.is_time_valid(now), 'Is element maintenance period currently active?')}}
+                                 {{! helper.get_on_off(elt.maintenance_period.is_time_valid(now), 'Is element maintenance period currently active?')}}
                                  <a href="/timeperiods">{{elt.maintenance_period.alias}}</a>
                                  </td>
                               </tr>
@@ -493,7 +495,7 @@ Invalid element name
                               </tr>
                               <tr>
                                  <td><strong>Active checks:</strong></td>
-                                 <td><!--{{! app.helper.get_on_off(elt.active_checks_enabled, 'Is active checking enabled?')}}-->
+                                 <td>
                                     <input type="checkbox" {{'checked' if elt.active_checks_enabled else ''}} 
                                           class="switch" data-size="mini" data-on-color="success" data-off-color="danger"
                                           data-type="action" action="toggle-active-checks" 
@@ -517,7 +519,7 @@ Invalid element name
                               %end
                               <tr>
                                  <td><strong>Passive checks:</strong></td>
-                                 <td><!--{{! app.helper.get_on_off(elt.passive_checks_enabled, 'Is passive checking enabled?')}}-->
+                                 <td>
                                     <input type="checkbox" {{'checked' if elt.passive_checks_enabled else ''}} 
                                           class="switch" data-size="mini" data-on-color="success" data-off-color="danger"
                                           data-type="action" action="toggle-passive-checks"
@@ -528,7 +530,7 @@ Invalid element name
                               %if (elt.passive_checks_enabled):
                               <tr>
                                  <td><strong>Freshness check:</strong></td>
-                                 <td>{{! app.helper.get_on_off(elt.check_freshness, 'Is freshness check enabled?')}}</td>
+                                 <td>{{! helper.get_on_off(elt.check_freshness, 'Is freshness check enabled?')}}</td>
                               </tr>
                               %if (elt.check_freshness):
                               <tr>
@@ -539,7 +541,7 @@ Invalid element name
                               %end
                               <tr>
                                  <td><strong>Process performance data:</strong></td>
-                                 <td>{{! app.helper.get_on_off(elt.process_perf_data, 'Is perfdata process enabled?')}}</td>
+                                 <td>{{! helper.get_on_off(elt.process_perf_data, 'Is perfdata process enabled?')}}</td>
                               </tr>
                            </tbody>
                         </table>
@@ -556,7 +558,7 @@ Invalid element name
                            <tbody style="font-size:x-small;">
                               <tr>
                                  <td><strong>Event handler enabled:</strong></td>
-                                 <td><!--{{! app.helper.get_on_off(elt.event_handler_enabled, 'Is event handler enabled?')}}-->
+                                 <td>
                                     <input type="checkbox" {{'checked' if elt.event_handler_enabled else ''}}
                                           class="switch" data-size="mini" data-on-color="success" data-off-color="danger"
                                           data-type="action" action="toggle-event-handler"
@@ -595,7 +597,7 @@ Invalid element name
                            <tbody style="font-size:x-small;">
                               <tr>
                                  <td><strong>Flapping detection:</strong></td>
-                                 <td><!--{{! app.helper.get_on_off(elt.flap_detection_enabled, 'Is status flapping detection enabled?')}}-->
+                                 <td>
                                     <input type="checkbox" {{'checked' if elt.flap_detection_enabled else ''}}
                                           class="switch" data-size="mini" data-on-color="success" data-off-color="danger"
                                           data-type="action" action="toggle-flap-detection"
@@ -653,7 +655,7 @@ Invalid element name
                            <tbody style="font-size:x-small;">
                               <tr>
                                  <td><strong>Notifications:</strong></td>
-                                 <td><!--{{! app.helper.get_on_off(elt.notifications_enabled, "Are notifications enabled for this element?")}}-->
+                                 <td>
                                     <input type="checkbox" {{'checked' if elt.notifications_enabled else ''}} 
                                           class="switch" data-size="mini" data-on-color="success" data-off-color="danger"
                                           data-type="action" action="toggle-notifications"
@@ -668,7 +670,7 @@ Invalid element name
                                  <td name="notification_period" class="popover-dismiss" data-html="true" data-toggle="popover" data-trigger="hover" data-placement="left" 
                                        data-title='{{tp.alias if hasattr(tp, "alias") else tp.timeperiod_name}}' 
                                        data-content='{{!helper.get_timeperiod_html(tp)}}'>
-                                    {{! app.helper.get_on_off(elt.notification_period.is_time_valid(now), 'Is element notification period currently active?')}}
+                                    {{! helper.get_on_off(elt.notification_period.is_time_valid(now), 'Is element notification period currently active?')}}
                                     <a href="/timeperiods">{{elt.notification_period.alias}}</a>
                                  </td>
                               </tr>
@@ -696,7 +698,7 @@ Invalid element name
                                  <td><strong>Notification options:</strong></td>
                                  <td>
                                  %for m in message:
-                                    {{! app.helper.get_on_off(m in elt.notification_options, '', message[m]+'&nbsp;')}}
+                                    {{! helper.get_on_off(m in elt.notification_options, '', message[m]+'&nbsp;')}}
                                  %end
                                  </td>
                               </tr>
@@ -1308,10 +1310,5 @@ Invalid element name
       <!-- Detail info box end -->
    </div>
 </div>
-
-<script type="text/javascript">
-   on_page_refresh();
-   bootstrap_tab_bookmark();
-</script>
 %#End of the element exist or not case
 %end
