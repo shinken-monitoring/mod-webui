@@ -22,7 +22,7 @@
  along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-var actions_logs=true;
+var actions_logs=false;
 
 // Utility function
 function capitalize (text) {
@@ -49,6 +49,10 @@ function launch(url, response_message){
    .fail(function( jqXHR, textStatus, errorThrown ) {
       if (actions_logs) console.error('Done: ', url, jqXHR, textStatus, errorThrown);
       raise_message_ko(textStatus);
+   })
+   .always(function(  ) {
+      // Refresh the current page
+      do_refresh();
    });
 }
 
@@ -57,27 +61,11 @@ function launch(url, response_message){
  * Message raise part 
  */
 function raise_message_ok(text){
-   $.meow({
-      message: text,
-      duration: 5000,
-      icon: '/static/images/ui_notifications/ok.png',
-      onTimeout: function () {
-         // Reload the current page
-         location.reload();
-      }
-   });
+   alertify.log(text, "success", 5000);
 }
 
 function raise_message_ko(text){
-   $.meow({
-      message: text,
-      duration: 5000,
-      icon: '/static/images/ui_notifications/ko.png',
-      onTimeout: function () {
-         // Reload the current page
-         location.reload();
-      }
-   });
+   alertify.log(text, "error", 5000);
 }
 
 
