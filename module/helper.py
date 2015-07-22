@@ -910,7 +910,7 @@ class Helper(object):
                 icon = 'plus'
                 list_state = 'collapsed'
 
-            s += """<a class="toggle-list" data-state="%s" data-target="ag-%s"> <span class="alert-small alert-%s"> %s&nbsp;</span> <i class="fa fa-%s"></i> </a>""" % (list_state, _id, state, path, icon)
+            s += """<a class="toggle-list" data-state="%s" data-target="ag-%s"> <span class="alert-small alert-%s"> <i class="fa fa-%s"></i> %s&nbsp;</span> </a>""" % (list_state, _id, state, icon, path)
 
         s += """<ul name="ag-%s" class="list-group" style="display: %s;">""" % (_id, display)
         # If we got no parents, no need to print the expand icon
