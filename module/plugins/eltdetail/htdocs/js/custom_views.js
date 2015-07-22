@@ -22,7 +22,7 @@
    along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-var custom_logs=false;
+var custom_logs=true;
 
 // when we show a custom view tab, we lazy load it :D
 function show_custom_view(elt){
@@ -32,42 +32,58 @@ function show_custom_view(elt){
    if (custom_logs) console.debug('Request for loading custom view: ', cvname, ' for ', hname, ', configuration: ', cvconf);
 
    var _t = new Date().getTime();
-   $("#cv"+cvname+"_"+cvconf+" .panel-body").load('/cv/'+cvname+'/'+hname+'/'+cvconf+'?_='+_t, function(response, status, xhr) {
-      if (status == "error") {
-         // Let us try with default host view ... we never know :-)
-         // First rename tab ...
-         $("#tab-cv-"+cvname+"-"+cvconf)
-            .data('name', 'host')
-            .data('conf', 'replace')
-            .attr('id', 'tab-cv-host-replace')
-            .children('a')
-            .attr('href', '#cvhost_replace');
-         $("#cv"+cvname+"_"+cvconf)
-            .data('name', 'host')
-            .data('conf', 'replace')
-            .attr('id', 'cvhost_replace');
-         $("#cvhost_replace .panel-body").load('/cv/host/'+hname+'/replace?_='+_t, function(response, status, xhr) {
-            if (status == "error") {
-               $('#cvhost_replace').html('<div class="alert alert-danger">Sorry but there really was an error: ' + xhr.status + ' ' + xhr.statusText+'</div>');
-            } else {
-               // Panel container height is updated with the custom view height ...
-               $("#cvhost_replace .panel-body").each(function() {
-                  $(this).css('height', $('#cvhost_replace').height() + "px");
-               });
-               $('#cvhost_replace').prepend('<div class="alert alert-danger">Replacing the custom view \''+cvname+'\' that was not found ... hope it will help anyway :-)</div>');
-               setTimeout(function(){
-                  $('#cvhost_replace div.alert').remove();
-               }, 10000);
-               if (custom_logs) console.debug('Loaded custom view (after error): ', 'cvhost_replace');
-            }
-         });
-      } else {
+   $.ajax({
+      url: '/cv/'+cvname+'/'+hname+'/'+cvconf+'?_='+_t,
+      method: "get",
+      dataType: "html"
+   })
+   .done(function( html, textStatus, jqXHR ) {
+      $("#cv"+cvname+"_"+cvconf+" .panel-body").html(html);
+      
+      // Panel container height is updated with the custom view height ...
+      $("#cv"+cvname+"_"+cvconf+" .panel-body").each(function() {
+         $(this).css('height', $('#cv_'+cvname+"_"+cvconf).height() + "px");
+      });
+      if (custom_logs) console.debug('Loaded custom view: ', cvname+"_"+cvconf);
+   })
+   .fail(function( jqXHR, textStatus, errorThrown ) {
+      if (custom_logs) console.log('Required view is not available. Trying default view ...');
+      
+      // Let us try with default host view ... we never know :-)
+      // First rename tab ...
+      $("#tab-cv-"+cvname+"-"+cvconf)
+         .data('name', 'host')
+         .data('conf', 'replace')
+         .attr('id', 'tab-cv-host-replace')
+         .children('a')
+         .attr('href', '#cvhost_replace');
+      $("#cv"+cvname+"_"+cvconf)
+         .data('name', 'host')
+         .data('conf', 'replace')
+         .attr('id', 'cvhost_replace');
+      
+      // Let us try the default view ...
+      $.ajax({
+         url: '/cv/host/'+hname+'/replace?_='+_t,
+         method: "get",
+         dataType: "html"
+      })
+      .done(function( html, textStatus, jqXHR ) {
+         $("#cvhost_replace .panel-body").html(html);
+         
          // Panel container height is updated with the custom view height ...
-         $("#cv"+cvname+"_"+cvconf+" .panel-body").each(function() {
+         $("#cvcvhost_replace .panel-body").each(function() {
             $(this).css('height', $('#cv_'+cvname+"_"+cvconf).height() + "px");
          });
          if (custom_logs) console.debug('Loaded custom view: ', cvname+"_"+cvconf);
-      }
+      })
+      .fail(function( jqXHR, textStatus, errorThrown ) {
+         $('#cvhost_replace').html('<div class="alert alert-danger">Sorry but there really was an error: ' + xhr.status + ' ' + xhr.statusText+'</div>');
+      })
+      .always(function() {
+      });
+   })
+   .always(function() {
    });
 }
 

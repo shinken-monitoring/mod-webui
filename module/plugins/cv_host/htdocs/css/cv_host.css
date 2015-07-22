@@ -35,7 +35,7 @@
    position: relative; top: -150px; left: 50px;
    width: 96px;
 }
-[view="cv_host"] [name="host_container"] h1 {
+[view="cv_host"] [name="host_container"] .hostname {
    position: relative; top: -150px; left: 5px;
    font-weight: bold;
    color: #222222;

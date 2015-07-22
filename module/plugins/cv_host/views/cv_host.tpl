@@ -24,7 +24,7 @@
    <div class="row" name="host_layout">
       <div class="col-sm-2" name="host_container">
          <canvas name="host_canvas" width="150" height="150"> </canvas>
-         <h1>{{elt.get_name()}}</h1>
+         <h3 class="hostname">{{elt.get_name()}}</h3>
          <img src="/static/cv_host/img/host_{{all_states['host'].lower()}}.png"> </img>
       </div>
       <script>
