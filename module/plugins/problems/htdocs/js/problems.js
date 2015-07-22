@@ -33,8 +33,7 @@ function add_remove_elements(name){
    }
 }
 
-
-/* function when we add an element*/
+// Adding an element in the selected elements list
 function add_element(name){
    // Force to check the checkbox
    $('td input[type=checkbox][data-item="'+name+'"]').prop("checked", true);
@@ -50,7 +49,7 @@ function add_element(name){
    }
 }
 
-/* And of course when we remove it... */
+// Removing an element from the selected elements list
 function remove_element(name){
    // Force to uncheck the checkbox
    $('td input[type=checkbox][data-item="'+name+'"]').prop("checked", false);
@@ -66,9 +65,7 @@ function remove_element(name){
    }
 }
 
-
-/* Flush selected elements, so clean the list
-but also uncheck them in the UI */
+// Flush selected elements list
 function flush_selected_elements(){
    /* We must copy the list so we can parse it in a clean way
    without fearing some bugs */
@@ -80,6 +77,8 @@ function flush_selected_elements(){
 
 
 function on_page_refresh(){
+   if (problems_logs) console.log('Problems page - on_page_refresh')
+      
    // If actions are not allowed, disable the button 'select all' and the checkboxes
    if ("actions_enabled" in window && !actions_enabled) {
       // Get actions buttons bar ... to hide it!
@@ -159,3 +158,6 @@ function on_page_refresh(){
       add_remove_elements($(this).data('item'));
    });
 }
+
+// First page loading ...
+on_page_refresh();

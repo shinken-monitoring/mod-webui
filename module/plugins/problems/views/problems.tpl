@@ -221,8 +221,3 @@
    %# Close problems div ...
    %end
  </div>
-
-
-<script type="text/javascript">
-   on_page_refresh();
-</script>
