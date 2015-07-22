@@ -23,12 +23,23 @@
 */
 
 
+var refresh_logs=true;
+
 /* By default, we set the page to reload each period defined in WebUI configuration */
 var refresh_timeout = app_refresh_period;
 var nb_refresh_try = 0;
-var refresh_stopped = false;
-
-var refresh_logs=false;
+if (! sessionStorage.getItem("refresh_active")) {
+   console.debug("Refresh active storage does not exist");
+   // Store default value ...
+   sessionStorage.setItem("refresh_active", refresh_timeout==0 ? '0' : '1');
+}
+if (refresh_logs) console.debug("Refresh active is ", sessionStorage.getItem("refresh_active"));
+if (sessionStorage.getItem("refresh_active") == '1') {
+   $('#header_loading').removeClass('font-greyed');
+} else {
+   $('#header_loading').addClass('font-greyed');
+}
+if (refresh_logs) console.debug("Refresh active is ", sessionStorage.getItem("refresh_active"));
 
 function postpone_refresh(){
    // If we are not in our first try, warn the user
@@ -39,21 +50,84 @@ function postpone_refresh(){
       });
    }
    nb_refresh_try += 1;
-   /* Ok, we are now for a new loop before retrying... */
+   
+   // Start a new loop before retrying... 
    reinit_refresh();
 }
 
+/*
+ * This function is called on each refresh of the current page.
+ * ----------------------------------------------------------------------------
+ *  It is to be noted that this function makes an Ajax call on the current URL
+ * to get the new version of the current page. This is the most interesting 
+ * strategy for refreshing ... but the drawbacks are that it gets an entire 
+ * Html page including <head>, <body> and ... <script> 
+ * 
+ *  The only elements that are replaced in the current page are :
+ * - #page-content
+ * - #overall-hosts-states
+ * - #overall-services-states
+ * => These elements are the real "dynamic" elements in the page ...
+ *
+ *  Because of the new received Html inclusion method, the embedded scripts  
+ * are not executed ... this implies that the necessary scripts for refresh 
+ * management are to be included in this function in the always Ajax promise!
+ * ---------------------------------------------------------------------------
+ */
 function do_refresh(){
    if (refresh_logs) console.debug("Refreshing: ", document.URL);
    
+   // Refresh starting indicator ...
    $('#header_loading').addClass('fa-spin');
-   $.get(document.URL, {}, function(data) {
-      var $response = $('<div />').html(data);
-      $('#page-content').html($response.find('#page-content').html());
-      $('#hosts-overall-state').html($response.find('#hosts-overall-state').html());
-      $('#services-overall-state').html($response.find('#services-overall-state').html());
-      $('#header_loading').removeClass('fa-spin');
    
+   $.ajax({
+     url: document.URL,
+     method: "get",
+     dataType: "html"
+   })
+   .done(function( html, textStatus, jqXHR ) {
+      // This var declaration includes the response in the document body ... bad luck!
+      // In fact, each refresh do include all the received Html and then we filter 
+      // what we are interested in ... not really efficient and quite buggy !
+      var $response = $('<div />').html(html);
+      $('#page-content').html($response.find('#page-content').html());
+      $('#overall-hosts-states').html($response.find('#overall-hosts-states').html());
+      $('#overall-services-states').html($response.find('#overall-services-states').html());
+      $response.remove();
+      
+/*
+      @mohierf: for future refresh implementation ...
+      -----------------------------------------------
+      // The solution is to not parse received Html with jQuery and extract some parts
+      // of the data using regexp ...
+      var content = html.match(/<!--begin-page-content--[^>]*>((\r|\n|.)*)<!--end-page-content--/m);
+      content = content ? content[1] : 'Refresh for page content failed!';
+      var script = content.match(/<script[^>]*>((\r|\n|.)*)<\/script/m);
+      script = script ? script[1] : 'Refresh for hosts states failed!';
+      var $response = $('<div />').html(content);
+      $('#page-content').html($response.find('#page-content').html()).append('<script>'+script+'</script>');
+      
+      var content = html.match(/<!--begin-hosts-states--[^>]*>((\r|\n|.)*)<!--end-hosts-states--/m);
+      content = content ? content[1] : 'Refresh for hosts states failed!';
+      var script = content.match(/<script[^>]*>((\r|\n|.)*)<\/script/m);
+      script = script ? script[1] : 'Refresh for hosts states failed!';
+      var $response = $('<div />').html(content);
+      $('#overall-hosts-states').html($response.find('#overall-hosts-states').html()).append('<script>'+script+'</script>');
+      
+      var content = html.match(/<!--begin-services-states--[^>]*>((\r|\n|.)*)<!--end-services-states--/m);
+      content = content ? content[1] : 'Refresh for services states failed!';
+      var script = content.match(/<script[^>]*>((\r|\n|.)*)<\/script/m);
+      script = script ? script[1] : 'Refresh for hosts states failed!';
+      var $response = $('<div />').html(content);
+      $('#overall-services-states').html($response.find('#overall-services-states').html()).append('<script>'+script+'</script>');
+*/
+
+      // Each plugin may provide its on_page_refresh function that will be called here ...
+      if (typeof on_page_refresh !== 'undefined' && $.isFunction(on_page_refresh)) {
+         if (refresh_logs) console.debug('Calling page refresh function ...', on_page_refresh);
+         on_page_refresh();
+      }
+      
       // Look at the hash part of the URI. If it match a nav name, go for it
       if (location.hash.length > 0) {
          if (refresh_logs) console.debug('Displaying tab: ', location.hash)
@@ -62,29 +136,45 @@ function do_refresh(){
          if (refresh_logs) console.debug('Displaying first tab')
          $('.nav-tabs li a:first').trigger('click');
       }
-   }, 'html');
+      
+      $('#header_loading').removeClass('fa-spin');
+   })
+   .fail(function( jqXHR, textStatus, errorThrown ) {
+      if (refresh_logs) console.error('Done: ', jqXHR, textStatus, errorThrown);
+   })
+   .always(function() {
+      // Set refresh icon ...
+      if (sessionStorage.getItem("refresh_active") == '1') {
+         $('#header_loading').removeClass('font-greyed');
+      } else {
+         $('#header_loading').addClass('font-greyed');
+      }
+      console.debug("Refresh active is ", sessionStorage.getItem("refresh_active"));
+      
+      // Refresh is finished
+      $('#header_loading').removeClass('fa-spin');
+   });
 }
 
 /* We will try to see if the UI is not in restating mode, and so
-   don't have enough data to refresh the page as it should. (force login) */
-function check_for_data(){
+   don't have enough data to refresh the page as it should ... */
+function check_UI_backend(){
    $.ajax({
-      "url": '/gotfirstdata?callback=?',
-      "dataType": "jsonp",
-      "success": function (response) {
-         if (response.status == 200 && response.text == '1') {
-            if (! refresh_stopped) {
-               // Go Refresh
-               do_refresh();
-            }
-
-            reinit_refresh();
-         } else {
-            postpone_refresh();
-        }
+      url: '/gotfirstdata?callback=?',
+      dataType: "jsonp",
+      method: "GET"
+   })
+   .done(function( data, textStatus, jqXHR ) {
+      if (sessionStorage.getItem("refresh_active") == '1') {
+         // Go Refresh
+         do_refresh();
       }
-      ,
-      "error": postpone_refresh
+
+      reinit_refresh();
+   })
+   .fail(function( jqXHR, textStatus, errorThrown ) {
+      if (refresh_logs) console.error('UI backend is not available, retrying later ...');
+      postpone_refresh();
    });
 }
 
@@ -93,45 +183,46 @@ function check_for_data(){
 function check_refresh(){
    if (refresh_timeout < 0){
       // We will first check if the backend is available or not. It's useless to refresh
-      // if the backend is reloading, because it will prompt for login, when wait a little bit
+      // if the backend is reloading, because it will prompt for login, but waiting a little
       // will make the data available.
-      check_for_data();
+      check_UI_backend();
    }
    refresh_timeout = refresh_timeout - 1;
 }
 
 
-function toggle_refresh() {
-    if (refresh_stopped) {
-        start_refresh();
-    } else {
-        stop_refresh();
-    }
-}
-
-/* Someone ask us to start the refresh so the page will reload */
-function start_refresh(){
-   $('#header_loading').removeClass('font-greyed');
-   refresh_stopped = false;
-}
-
-
-/* Someone ask us to stop the refresh so the user will have time to
-   do some things like ask actions or something like that */
-function stop_refresh(){
-   $('#header_loading').addClass('font-greyed');
-   refresh_stopped = true;
-}
-
-
 /* Someone ask us to reinit the refresh so the user will have time to
-   do some things like ask actions or something like that */
+   do something ... */
 function reinit_refresh(){
-   if (refresh_logs) console.debug("Refresh restart: ", app_refresh_period);
+   if (refresh_logs) console.debug("Refresh period restarted: " + app_refresh_period + " seconds");
    refresh_timeout = app_refresh_period;
 }
 
+
+function stop_refresh() {
+   $('#header_loading').addClass('font-greyed');
+   sessionStorage.setItem("refresh_active", '0');
+}
+
+
+function start_refresh() {
+   $('#header_loading').removeClass('font-greyed');
+   sessionStorage.setItem("refresh_active", '1');
+}
+
+
 /* We will check timeout each 1s */
 $(document).ready(function(){
+   // Start refresh periodical check ...
    setInterval("check_refresh();", 1000);
+   
+   // Toggle refresh ...
+   $('[action="toggle-page-refresh"]').on('click', function (e, data) {
+      if (sessionStorage.getItem("refresh_active") == '1') {
+         stop_refresh();
+      } else {
+         start_refresh();
+      }
+   if (refresh_logs) console.debug("Refresh active is ", sessionStorage.getItem("refresh_active"));
+   });
 });

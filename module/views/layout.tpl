@@ -106,14 +106,6 @@
       <script src="/static/js/shinken-actions.js"></script>
       <script src="/static/js/shinken-layout.js"></script>
       <script src="/static/js/shinken-bookmarks.js"></script>
-   
-      <!-- 
-       Shinken scripts ...
-      -->
-      %# Include specific Js files ...
-      %for p in js:
-      <script type="text/javascript" src="/static/{{p}}"></script>
-      %end
    </head>
 
    <body>
@@ -241,5 +233,13 @@
             </div>
          </div>
       </div>
+   
+      <!-- 
+       Shinken scripts ...
+      -->
+      %# Include specific Js files ...
+      %for p in js:
+      <script type="text/javascript" src="/static/{{p}}"></script>
+      %end
    </body>
 </html>

@@ -4,139 +4,183 @@
 %username = 'anonymous'
 %if user is not None:
 %if hasattr(user, 'alias') and user.alias != 'none':
-%	username = user.alias
+%username = user.alias
 %else:
-%	username = user.get_name()
+%username = user.get_name()
 %end
 %end
 
 
 <!-- Header Navbar -->
 <nav class="header navbar navbar-default navbar-static-top" style="margin-bottom:0px;">
-  <div class="navbar-header">
-    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-      <span class="sr-only">Toggle navigation</span>
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
-    </button>
-    <a href="#about" data-toggle="modal" data-target="#about" class="logo navbar-brand">
-      <img src="/static/logo/{{app.company_logo}}" alt="Company logo" />
-    </a>
-  </div>
+   <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+         <span class="sr-only">Toggle navigation</span>
+         <span class="icon-bar"></span>
+         <span class="icon-bar"></span>
+         <span class="icon-bar"></span>
+      </button>
+      <a href="#about" data-toggle="modal" data-target="#about" class="logo navbar-brand">
+         <img src="/static/logo/{{app.company_logo}}" alt="Company logo" />
+      </a>
+   </div>
 
-  <ul class="nav navbar-nav">
-    <!-- Page filtering ... -->
-    %include("_filters.tpl")
-  </ul>
+   <ul class="nav navbar-nav">
+      <!-- Page filtering ... -->
+      %include("_filters.tpl")
+   </ul>
 
-  <!-- Right buttons ... -->
+   <!-- Right part ... -->
 %synthesis = helper.get_synthesis(app.datamgr.search_hosts_and_services(user=user))
-%s = synthesis['services']
-%h = synthesis['hosts']
-  <ul class="nav navbar-top-links navbar-right">
-    <li>
-      %host_state = app.datamgr.get_percentage_hosts_state(user, False)
-       <a class="quickinfo states" href="/all?search=type:host" data-original-title="Hosts states" data-toggle="popover popover-navbar" title="Overall hosts states, {{h['nb_elts']}} hosts" data-html="true" data-trigger="hover" data-placement="bottom" data-content='
-            <table class="table table-invisible table-condensed">
-               <tbody>
-                  <tr>
-                     %for state in "up", "unreachable", "down", "pending", "unknown", "ack", "downtime":
-                     <td>
-                       %label = "%s <i>(%s%%)</i>" % (h['nb_' + state], h['pct_' + state])
-                       {{!helper.get_fa_icon_state_and_label(cls="host", state=state, label=label, disabled=(not h["nb_" + state]))}}
-                     </td>
-                     %end
-                  </tr>
-               </tbody>
-            </table>
-         '>
-         <i class="fa fa-server"></i>
-         %state = 100.0-h['pct_up']
-         %threshold_warning=5.0
-         %threshold_critical=10.0
-         %label='success' if state < threshold_warning else 'warning' if state < threshold_critical else 'danger'
-         <span class="label label-as-badge label-{{label}}">{{host_state}}%</span>
-       </a>
-    </li>
+   %s = synthesis['services']
+   %h = synthesis['hosts']
+   <div id="hosts-states-popover-content" class="hidden">
+      <table class="table table-invisible table-condensed">
+         <tbody>
+            <tr>
+               %for state in "up", "unreachable", "down", "pending", "unknown", "ack", "downtime":
+               <td>
+                 %label = "%s <i>(%s%%)</i>" % (h["nb_" + state], h["pct_" + state])
+                 {{!helper.get_fa_icon_state_and_label(cls="host", state=state, label=label, disabled=(not h["nb_" + state]))}}
+               </td>
+               %end
+            </tr>
+         </tbody>
+      </table>
+   </div>
+   <div id="services-states-popover-content" class="hidden">
+      <table class="table table-invisible table-condensed">
+         <tbody>
+            <tr>
+               %for state in "ok", "warning", "critical", "pending", "unknown", "ack", "downtime":
+               <td>
+                 %label = "%s <i>(%s%%)</i>" % (s["nb_" + state], s["pct_" + state])
+                 {{!helper.get_fa_icon_state_and_label(cls="service", state=state, label=label, disabled=(not s["nb_" + state]))}}
+               </td>
+               %end
+            </tr>
+         </tbody>
+      </table>
+   </div>
+
+   <ul class="nav navbar-top-links navbar-right">
+      <!-- Do not remove the next comment!
+         Everything between 'begin-hosts-states' comment and 'end-hosts-states' comment 
+         is used by the layout page refresh.
+      -->
+      <!--begin-hosts-states-->
+      <li id="overall-hosts-states">
+         %host_state = app.datamgr.get_percentage_hosts_state(user, False)
+         <a id="hosts-states-popover" href="/all?search=type:host" data-original-title="Hosts states" data-toggle="popover" title="Overall hosts states, {{h['nb_elts']}} hosts, {{h["nb_down"]+h["nb_unreachable"]}} problems" data-html="true" data-trigger="hover">
+            <i class="fa fa-server"></i>
+            %state = 100.0-h['pct_up']
+            %threshold_warning=5.0
+            %threshold_critical=10.0
+            %label='success' if state < threshold_warning else 'warning' if state < threshold_critical else 'danger'
+            <span class="label label-as-badge label-{{label}}">{{h["nb_down"]+h["nb_unreachable"]}}</span>
+         </a>
+      </li>
+      <script type="text/javascript">
+      // Activate the popover ...
+      $('#hosts-states-popover').popover({ 
+         placement: 'bottom', 
+         animation: true, 
+         template: '<div class="popover img-popover"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
+         content: function() {
+            return $('#hosts-states-popover-content').html();
+         }
+      });
+      </script>
+      <!--end-hosts-states-->
    
-    <li>
-      %service_state = app.datamgr.get_percentage_service_state(user, False)
-       <a class="quickinfo states" href="/all?search=type:service" data-original-title="Services states" data-toggle="popover popover-navbar" title="Overall services states, {{s['nb_elts']}} services" data-html="true" data-trigger="hover" data-placement="bottom" data-content='
-            <table class="table table-invisible table-condensed">
-               <tbody>
-                  <tr>
-                     %for state in "ok", "warning", "critical", "pending", "unknown", "ack", "downtime":
-                     <td>
-                       %label = "%s <i>(%s%%)</i>" % (s["nb_" + state], s["pct_" + state])
-                       {{!helper.get_fa_icon_state_and_label(cls="service", state=state, label=label, disabled=(not s["nb_" + state]))}}
-                     </td>
-                     %end
-                  </tr>
-               </tbody>
-            </table>
-         '>
-         <i class="fa fa-bars"></i>
-         %state = 100-s['pct_ok']
-         %threshold_warning=5.0
-         %threshold_critical=10.0
-         %label='success' if state < threshold_warning else 'warning' if state < threshold_critical else 'danger'
-         <span class="label label-as-badge label-{{label}}">{{service_state}}%</span>
-       </a>
-    </li>
+      <!--begin-services-states-->
+      <li id="overall-services-states">
+         %service_state = app.datamgr.get_percentage_service_state(user, False)
+         <a id="services-states-popover" href="/all?search=type:service" data-original-title="Services states" data-toggle="popover popover-services" title="Overall services states, {{s['nb_elts']}} services, {{s["nb_critical"]+s["nb_warning"]}} problems" data-html="true" data-trigger="hover">
+            <i class="fa fa-bars"></i>
+            %state = 100-s['pct_ok']
+            %threshold_warning=5.0
+            %threshold_critical=10.0
+            %label='success' if state < threshold_warning else 'warning' if state < threshold_critical else 'danger'
+            <span class="label label-as-badge label-{{label}}">{{s["nb_critical"]+s["nb_warning"]}}</span>
+         </a>
+      </li>
+      <script type="text/javascript">
+      // Activate the popover ...
+      $('#services-states-popover').popover({ 
+         placement: 'bottom', 
+         animation: true, 
+         template: '<div class="popover img-popover"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
+         content: function() {
+            return $('#services-states-popover-content').html();
+         }
+      });
+      </script>
+      <!--end-services-states-->
     
-    <li>
-      <a class="quickinfo" data-original-title='Currently' href="/dashboard/currently" title="Currently">
-         <i class="fa fa-eye"></i>
-      </a>
-    </li>
+      <li>
+         <a class="quickinfo" data-original-title='Currently' href="/dashboard/currently" title="Dashboard currently">
+            <i class="fa fa-eye"></i>
+         </a>
+      </li>
 
-    %if refresh:
-    <li>
-       <a class="quickinfo" data-original-title='Refreshing' title="Automatic refresh" href="javascript:toggle_refresh()">
-         <i id="header_loading" class="fa fa-refresh"></i>
-       </a>
-    </li>
-    %end
+      %if refresh:
+      <li>
+         <a class="quickinfo" action="toggle-page-refresh" data-original-title='Refreshing' href="#">
+            <i id="header_loading" class="fa fa-refresh"></i>
+         </a>
+      </li>
+      %end
    
-    <!-- User info -->
-    <li class="dropdown user user-menu">
-      <a href="#" class="dropdown-toggle" data-original-title='User menu' data-toggle="dropdown">
-        <i class="fa fa-user"></i>
-        <span><span class="username hidden-sm hidden-xs hidden-md">{{username}}</span> <i class="caret"></i></span>
-      </a>
+      %if app.play_sound:
+      <li>
+         <a class="quickinfo" action="toggle-sound-alert" data-original-title='Sound alerting' href="#">
+            <span id="sound_alerting" class="fa-stack">
+              <i class="fa fa-music fa-stack-1x"></i>
+              <i class="fa fa-ban fa-stack-2x text-danger"></i>
+            </span>
+         </a>
+      </li>
+      %end
+   
+      <!-- User info -->
+      <li class="dropdown user user-menu">
+         <a href="#" class="dropdown-toggle" data-original-title='User menu' data-toggle="dropdown">
+            <i class="fa fa-user"></i>
+            <span><span class="username hidden-sm hidden-xs hidden-md">{{username}}</span> <i class="caret"></i></span>
+         </a>
 
-      <ul class="dropdown-menu">
-        <li class="user-header">
-          <div class="panel panel-info" id="user_info">
-            <div class="panel-body panel-default">
-              <!-- User image / name -->
-              <p class="username">{{username}}</p>
-              %if app.can_action():
-              <p class="usercategory">
-                <small>{{'Administrator' if user.is_admin else 'User'}}</small>
-              </p>
-              %end
-              <img src="{{app.user_picture}}" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}">
-            </div>
-            <div class="panel-footer">
-              <!-- User actions -->
-              <div class="btn-group" role="group">
-                <a href="https://shinken.readthedocs.org/en/latest/" target="_blank" class="btn btn-default btn-flat"><i class="fa fa-book"></i> </a>
-              </div>
-              <div class="btn-group" role="group">
-                <a href="#actions" data-toggle="modal" class="btn btn-default btn-flat disabled"><span class="fa fa-gear"></span> </a>
-                <a href="/user/pref" data-toggle="modal" class="btn btn-default btn-flat"><span class="fa fa-pencil"></span> </a>
-              </div>
-              <div class="btn-group" role="group">
-                <a href="/user/logout" class="btn btn-default btn-flat" data-toggle="modal" data-target="/user/logout"><span class="fa fa-sign-out"></span> </a>
-              </div>
-            </div>
-          </div>
-        </li>
-      </ul>
-    </li>
-  </ul>
+         <ul class="dropdown-menu">
+            <li class="user-header">
+               <div class="panel panel-info" id="user_info">
+                  <div class="panel-body panel-default">
+                     <!-- User image / name -->
+                     <p class="username">{{username}}</p>
+                     %if app.can_action():
+                     <p class="usercategory">
+                        <small>{{'Administrator' if user.is_admin else 'User'}}</small>
+                     </p>
+                     %end
+                     <img src="{{app.user_picture}}" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}">
+                  </div>
+                  <div class="panel-footer">
+                     <!-- User actions -->
+                     <div class="btn-group" role="group">
+                        <a href="https://shinken.readthedocs.org/en/latest/" target="_blank" class="btn btn-default btn-flat"><i class="fa fa-book"></i> </a>
+                     </div>
+                     <div class="btn-group" role="group">
+                        <a href="#actions" data-toggle="modal" class="btn btn-default btn-flat disabled"><span class="fa fa-gear"></span> </a>
+                        <a href="/user/pref" data-toggle="modal" class="btn btn-default btn-flat"><span class="fa fa-pencil"></span> </a>
+                     </div>
+                     <div class="btn-group" role="group">
+                        <a href="/user/logout" class="btn btn-default btn-flat" data-toggle="modal" data-target="/user/logout"><span class="fa fa-sign-out"></span> </a>
+                     </div>
+                  </div>
+               </div>
+            </li>
+         </ul>
+      </li>
+   </ul>
 
 
   <!--SIDEBAR-->
@@ -204,10 +248,56 @@
   <!-- /.navbar-static-side -->
 </nav>
 
-<script type="text/javascript">
-   // Popovers ...
-   $('[data-toggle="popover popover-navbar"]').popover({
-     html: true,
-     template: '<div class="popover img-popover"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
+%how_many_problems_actually = len(app.datamgr.get_all_problems())
+%if app.play_sound:
+<audio id="alert-sound" volume="1.0">
+   <source src="/static/sound/alert.wav" type="audio/wav">
+   Your browser does not support the <code>HTML5 Audio</code> element.
+   <EMBED src="/static/sound/alert.wav" autostart=true loop=false volume=100 >
+</audio>
+
+<script>
+   // Play alerting sound ...
+   function playAlertSound() {
+      var audio = document.getElementById('alert-sound');
+      var canPlay = !!audio.canPlayType && audio.canPlayType('audio/wav') != "";
+      if (canPlay) {
+         audio.play();
+         sessionStorage.setItem("sound_play", "1");
+         $('#sound_alerting i.fa-ban').addClass('hidden');
+         console.debug("Sound play session storage is now on");
+      }
+   }
+   
+   // Set alerting sound icon ...
+   if (! sessionStorage.getItem("sound_play")) {
+      // Default is to play ...
+      sessionStorage.setItem("sound_play", {{'1' if app.play_sound else '0'}});
+   }
+   if (! sessionStorage.getItem("how_many_problems_actually")) {
+      // Default is current value ...
+      sessionStorage.setItem("how_many_problems_actually", {{how_many_problems_actually}});
+   }
+   
+   if (sessionStorage.getItem("sound_play") == '1') {
+      $('#sound_alerting i.fa-ban').addClass('hidden');
+      if (Number(sessionStorage.getItem("how_many_problems_actually")) < {{how_many_problems_actually}}) {
+         playAlertSound();
+      }
+   } else {
+      $('#sound_alerting i.fa-ban').removeClass('hidden');
+   }
+   sessionStorage.setItem("how_many_problems_actually", {{how_many_problems_actually}});
+
+   // Toggle sound ...
+   $('[action="toggle-sound-alert"]').on('click', function (e, data) {
+      if (sessionStorage.getItem("sound_play") == '1') {
+         sessionStorage.setItem("sound_play", "0");
+         $('#sound_alerting i.fa-ban').removeClass('hidden');
+      } else {
+         playAlertSound();
+      }
    });
 </script>
+%end
+
