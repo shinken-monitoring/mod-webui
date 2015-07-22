@@ -1,6 +1,5 @@
 %timeperiods = app.datamgr.get_timeperiods()
-%title='All timeperiods (%d time periods)' % len(timeperiods)
-%rebase("layout", title=title, refresh=True)
+%rebase("layout", title='All timeperiods (%d time periods)' % len(timeperiods))
 
 %import time
 %import operator

@@ -1,4 +1,4 @@
-%rebase("layout", css=['tags/css/tags-overview.css'], js=['tags/js/tags-overview.js'], title='Hosts tags overview', refresh=True)
+%rebase("layout", css=['tags/css/tags-overview.css'], js=['tags/js/tags-overview.js'], title='Hosts tags overview')
 
 <div class="row">
   <span class="btn-group pull-right">

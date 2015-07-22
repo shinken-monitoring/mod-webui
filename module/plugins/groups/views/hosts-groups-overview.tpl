@@ -1,4 +1,4 @@
-%rebase("layout", css=['groups/css/groups-overview.css'], title='Hosts groups overview', refresh=True)
+%rebase("layout", css=['groups/css/groups-overview.css'], title='Hosts groups overview')
 
 %helper = app.helper
 %hosts = app.datamgr.get_hosts(user)

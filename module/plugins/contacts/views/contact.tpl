@@ -16,7 +16,7 @@
 %end
 %end
 
-%rebase("layout", title='Contact ' + username, refresh=True, breadcrumb=[ ['All contacts', '/contacts'], [username, '/contact/'+username] ])
+%rebase("layout", title='Contact ' + username, breadcrumb=[ ['All contacts', '/contacts'], [username, '/contact/'+username] ])
 
 %#Contact currently in downtime ?
 %in_scheduled_downtime=False

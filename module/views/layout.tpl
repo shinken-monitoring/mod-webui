@@ -12,17 +12,12 @@
 %# - side menu: left sidebar menu
 %# - content: including current page layout with title
 %# - page footer: copyright
-%# Following variables allow to include or not different layout pieces: 
-%setdefault('print_menu'  , True)
-%setdefault('print_header', True)
-%setdefault('print_title' , True)
-%setdefault('print_footer', True)
 %# For breadcrumb, declare as is when rebasing layout: 
 %# - breadcrumb=[ ['Groups', '/servicegroups'], [groupalias, '/servicegroup/'+groupname] ]
 %setdefault('breadcrumb', '')
 
-%# Current page may be refreshed or not
-%setdefault('refresh', False)
+%# Current page may be refreshed or not (default is True)
+%setdefault('refresh', True)
 
 %setdefault('user', None)
 %setdefault('app', None)
@@ -62,16 +57,12 @@
       <link href="/static/css/bootstrap.min.css" rel="stylesheet">
       <link href="/static/css/bootstrap-theme.min.css" rel="stylesheet">
       <link href="/static/css/font-awesome.min.css" rel="stylesheet">
-
       <link href="/static/css/metisMenu.min.css" rel="stylesheet">
       <link href="/static/css/sb-admin-2.css" rel="stylesheet">
-      
-      <link href="/static/css/jquery.meow.css" rel="stylesheet">
       <link href="/static/css/typeahead.css" rel="stylesheet">
-
       <link href="/static/css/daterangepicker.css" rel="stylesheet">
-
       <link href="/static/css/shinken-layout.css" rel="stylesheet">
+      <link href="/static/css/alertify.css" rel="stylesheet">
 
       <!-- css3 effect for pulse is not available on IE It's not real comment, if so it will not work. -->
       <!--[IF !IE]> -->
@@ -83,6 +74,8 @@
       <link rel="stylesheet" type="text/css" href="/static/{{p}}">
       %end
 
+      <!-- Opensearch
+      ================================================== -->
       <link rel="search" type="application/opensearchdescription+xml" href="/opensearch.xml" title="Search for hosts and services in Shinken" />
 
       <!-- Scripts
@@ -90,35 +83,34 @@
       <script src="/static/js/jquery-1.11.1.min.js"></script>
       <script src="/static/js/bootstrap.min.js"></script>
       <script src="/static/js/bootstrap-tab-bookmark.js"></script>
-
       <script src="/static/js/metisMenu.min.js"></script>
       <script src="/static/js/sb-admin-2.js"></script>
-
       <script src="/static/js/moment.min.js"></script>
-
-      <!-- See: https://github.com/dangrossman/bootstrap-daterangepicker -->
       <script src="/static/js/daterangepicker.js"></script>
-
       <script src="/static/js/jquery.jclock.js"></script>
       <script src="/static/js/jquery.jTruncate.js"></script>
-      <script src="/static/js/jquery.meow.js"></script>
+      <script src="/static/js/alertify.js"></script>
       <script src="/static/js/typeahead.bundle.min.js"></script>
-
       <script src="/static/js/screenfull.js"></script>
       
-      <!--Shinken ones : refresh pages -->
+      <!-- 
+       Shinken scripts ...
+      -->
       %if refresh:
       <script>
       var app_refresh_period = {{app.refresh_period}};
       </script>
       <script src="/static/js/shinken-refresh.js"></script>
       %end
-      <!--Shinken ones : actions, user's prefs, ... -->
+
       <script src="/static/js/shinken-actions.js"></script>
       <script src="/static/js/shinken-layout.js"></script>
       <script src="/static/js/shinken-bookmarks.js"></script>
-
-      %# End of classic js import. Now call for specific ones ...
+   
+      <!-- 
+       Shinken scripts ...
+      -->
+      %# Include specific Js files ...
       %for p in js:
       <script type="text/javascript" src="/static/{{p}}"></script>
       %end
@@ -126,61 +118,62 @@
 
    <body>
       <div id="wrapper">
-        %if print_header:
-        %include("header_element")
-        <div id="page-wrapper">
-        %else:
-        <div class="container">
-        %end
-        <div id="page-content">
-            <div class="row">
-               %if print_title:
-               <!-- Page header -->
-               <section class="content-header">
-                  %if navi:
-                  %include("pagination_element", navi=navi, page=page, elts_per_page=elts_per_page, display_steps_form=True)
+         %include("header_element")
+         <div id="page-wrapper">
+
+            <!-- Do not remove the next comment!
+               Everything between 'begin-page-content' comment and 'end-page-content' comment 
+               is used by the layout page refresh.
+               @mohierf: for future refresh implementation ... not used currently!
+            -->
+            <!--begin-page-content-->
+            <div id="page-content">
+               <div class="row">
+                  <!-- Page header -->
+                  <section class="content-header">
+                     %if navi:
+                     %include("pagination_element", navi=navi, page=page, elts_per_page=elts_per_page, display_steps_form=True)
+                     %end
+                     <h3 class="page-header" style="margin-top: 10px">
+                       <ol class="breadcrumb" style="margin:0px">
+                         <li><a href="/">Home</a></li>
+                         %if breadcrumb == '':
+                         <li class="active">{{title or 'No title'}}</li>
+                         %else:
+                         %_go_active = 'active'
+                         %for p in breadcrumb:
+                         %_go_active = ''
+                         %if p[0]:
+                         <li class="{{_go_active}}"><a href="{{p[1]}}">{{p[0]}}</a></li>
+                         %else:
+                         <li class="{{_go_active}}">{{p}}</li>
+                         %end
+                         %end
+                         %end
+                       </ol>
+                     </h3>
+
+                  </section>
+                  
+                  <!-- Page content -->
+                  <section class="content">
+                   %include
+                  </section>
+
+                  %if navi and len(navi) > 1:
+                  <hr>
+                  <section class="pagination-footer">
+                   %include("pagination_element", navi=navi, page=page, elts_per_page=None)
+                  </section>
                   %end
-                  <h3 class="page-header" style="margin-top: 10px">
-                    <ol class="breadcrumb" style="margin:0px">
-                      <li><a href="/">Home</a></li>
-                      %if breadcrumb == '':
-                      <li class="active">{{title or 'No title'}}</li>
-                      %else:
-                      %_go_active = 'active'
-                      %for p in breadcrumb:
-                      %_go_active = ''
-                      %if p[0]:
-                      <li class="{{_go_active}}"><a href="{{p[1]}}">{{p[0]}}</a></li>
-                      %else:
-                      <li class="{{_go_active}}">{{p}}</li>
-                      %end
-                      %end
-                      %end
-                    </ol>
-                  </h3>
-
-               </section>
-               %end
-               
-               <!-- Page content -->
-               <section class="content">
-                %include
-               </section>
-
-               %if navi and len(navi) > 1:
-               <hr>
-               <section class="pagination-footer">
-                %include("pagination_element", navi=navi, page=page, elts_per_page=None)
-               </section>
-               %end
+               </div>
             </div>
-         </div>
+            <!--end-page-content-->
+
          </div>
       </div>
 
-      %if print_footer:
       %include("footer_element")
-      %end
 
       <!-- A modal div that will be filled and shown when we want forms ... -->
       <div class="modal fade" id="modal" role="dialog" aria-labelledby="Generic modal box" aria-hidden="true">

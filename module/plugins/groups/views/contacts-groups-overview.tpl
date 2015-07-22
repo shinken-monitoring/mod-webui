@@ -1,4 +1,4 @@
-%rebase("layout", css=['groups/css/groups-overview.css'], title='Contacts groups overview', refresh=True)
+%rebase("layout", css=['groups/css/groups-overview.css'], title='Contacts groups overview')
 
 %helper = app.helper
 

@@ -9,10 +9,7 @@
 %end
 %end
 
-%rebase("layout", refresh=True, css=['user/css/user.css'], breadcrumb=[ ['System parameters', '/system-parameters'] ], title='System parameters')
-
-%setdefault('app', None)
-%setdefault('user', None)
+%rebase("layout", css=['user/css/user.css'], breadcrumb=[ ['System parameters', '/system-parameters'] ], title='System parameters')
 
 <div class="row">
    <div class="col-sm-12">

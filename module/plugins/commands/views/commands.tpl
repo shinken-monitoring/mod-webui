@@ -1,5 +1,4 @@
-%title='All commands (%d commands)' % len(commands)
-%rebase("layout", title=title, refresh=True)
+%rebase("layout", title='All commands (%d commands)' % len(commands))
 
 <div id="commands">
 

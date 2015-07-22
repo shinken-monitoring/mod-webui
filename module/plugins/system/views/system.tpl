@@ -1,4 +1,4 @@
-%rebase("layout", title='Shinken daemons status', refresh=True)
+%rebase("layout", title='Shinken daemons status')
 
 %from shinken.bin import VERSION
 %helper = app.helper

@@ -4,11 +4,11 @@
 
 <script type="text/javascript">
 %for p in css:
-  loadjscssfile('/static/'+'{{p}}', 'css');
+  loadjscssfile('/static/{{p}}', 'css');
 %end
 
 %for p in js:
-  loadjscssfile('/static/'+'{{p}}', 'js');
+  loadjscssfile('/static/{{p}}', 'js');
 %end
 </script>
 

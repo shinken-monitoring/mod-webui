@@ -1,5 +1,4 @@
-%title='All contacts (%d contacts)' % len(contacts)
-%rebase("layout", title=title, refresh=True)
+%rebase("layout", title='All contacts (%d contacts)' % len(contacts))
 
 <div id="contacts">
 

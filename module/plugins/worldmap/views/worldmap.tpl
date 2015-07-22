@@ -1,3 +1,4 @@
+%# No default refresh for this page
 %rebase("layout", css=['worldmap/css/worldmap.css'], title='Worldmap', refresh=False)
 
 <!-- HTML map container -->

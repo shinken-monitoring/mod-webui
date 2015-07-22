@@ -6,7 +6,7 @@
 %states = ['Up', 'down', 'unreachable', 'unknown', 'unchecked']
 
 %# Specific content for breadrumb
-%rebase("layout", title='Availability for all hosts', refresh=True, breadcrumb=[ ['All hosts', '/minemap'] ])
+%rebase("layout", title='Availability for all hosts', breadcrumb=[ ['All hosts', '/minemap'] ])
 
 
 <div id="availability">

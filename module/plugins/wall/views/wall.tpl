@@ -1,6 +1,4 @@
-%helper = app.helper
-
-%rebase("layout", css=['wall/css/jquery.bxslider.css'], js=['wall/js/jquery.bxslider.min.js'], title='Wall view', refresh=True, user=user)
+%rebase("layout", css=['wall/css/jquery.bxslider.css'], js=['wall/js/jquery.bxslider.min.js'], title='Wall view')
 
 <div id="wall">
    %if impacts:
@@ -15,7 +13,7 @@
       %end
       <center class="col-sm-3 pull-left">
          <div style="margin: 5px;">
-            <a href="{{app.helper.get_link_dest(imp)}}" class='btn' title="Details">
+            <a href="{{helper.get_link_dest(imp)}}" class='btn' title="Details">
                <div class="font-{{imp.state.lower()}}">{{imp.get_full_name()}}</div>
                <div>{{! helper.get_fa_icon_state(imp, label='title')}}</div>
             </a>
@@ -40,7 +38,7 @@
       %end
       <center class="col-sm-4 pull-left">
          <div style="margin: 5px;">
-            <a href="{{app.helper.get_link_dest(pb)}}" class='btn' title="Details">
+            <a href="{{helper.get_link_dest(pb)}}" class='btn' title="Details">
                <div class="font-{{pb.state.lower()}}">{{pb.get_full_name()}}</div>
                <div class="font-{{pb.state.lower()}}">{{! helper.get_fa_icon_state(pb, label='title')}} since {{helper.print_duration(pb.last_state_change, just_duration=True, x_elts=2)}}</div>
             </a>
@@ -67,7 +65,7 @@
       %end
       <center class="col-sm-4 pull-left">
          <div style="margin: 5px;">
-            <a href="{{app.helper.get_link_dest(pb)}}" class='btn' title="Details">
+            <a href="{{helper.get_link_dest(pb)}}" class='btn' title="Details">
                <div class="font-{{pb.state.lower()}}">{{pb.get_full_name()}}</div>
                <div class="font-{{pb.state.lower()}}">{{! helper.get_fa_icon_state(pb, label='title')}} since {{helper.print_duration(pb.last_state_change, just_duration=True, x_elts=2)}}</div>
             </a>

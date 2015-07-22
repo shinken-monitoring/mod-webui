@@ -14,7 +14,7 @@ Invalid element
 %helper = app.helper
 %datamgr = app.datamgr
 
-
+%# No default refresh for this page
 %rebase("layout", title='Dependencies graph of ' + elt.get_full_name(),  refresh=False)
 
 
