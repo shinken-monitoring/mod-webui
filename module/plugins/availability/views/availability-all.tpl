@@ -1,7 +1,7 @@
 %import json
 %import time
 
-%# Specific content for breadrumb
+%# Specific content for breadcrumb
 %rebase("layout", title='Availability for all hosts', breadcrumb=[ ['All hosts', '/minemap'] ])
 
 
@@ -68,19 +68,5 @@
          $('#range_start').val(range_start.unix());
          $('#range_end').val(range_end.unix());
       });
-    
-      // Form submit ...
-      /*
-      $('button[type="submit"]').on('click', function(ev, picker) {
-         console.log('Selected range: ', range_start.format('YYYY-MM-DD'), range_end.format('YYYY-MM-DD'))
-         console.log(location.href)
-         var url = window.location.href;
-         var separator = (url.indexOf('?') > -1) ? "&" : "?";
-         var rs = "range_start=" + encodeURIComponent(range_start.format('YYYY-MM-DD'));
-         var re = "range_end=" + encodeURIComponent(range_end.format('YYYY-MM-DD'));
-         console.log(url + separator + rs + '&' + re)
-         window.location = "http://google.fr?test=1"; //url + separator + rs + '&' + re;
-      });
-      */
    </script>
 </div>

@@ -26,7 +26,9 @@
     <tbody style="font-size:x-small;">
       %for log in records:
       <tr>
-        <td>{{log['hostname']}}</td>
+        <td>
+          <a href="/host/{{log['hostname']}}">{{log['hostname']}}</a>
+        </td>
         <td>{{log['service']}}</td>
         <td>{{log['day']}}</td>
 
