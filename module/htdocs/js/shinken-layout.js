@@ -53,18 +53,14 @@ function loadjscssfile(filename, filetype){
  * - callback function called after data are posted
 **/
 function save_user_preference(key, value, callback) {
-   callback = (typeof callback !== 'undefined') ? callback : function() {
-      console.debug('No callback function');
-   };
-   
+
    $.post("/user/save_pref", { 'key' : key, 'value' : value}, function() {
       if (layout_logs) console.debug('User preference saved: ', key, value);
-      raise_message_ok("User parameter "+key+" saved");
-      try {
-         window[callback]();
-      }
-      catch(err) {
-         // console.error('Callback function does not exist!', callback);
+      raise_message_ok("User parameter saved");
+      
+      if (typeof callback !== 'undefined' && $.isFunction(callback)) {
+         if (layout_logs) console.debug('Calling callback function ...', callback);
+         callback();
       }
    });
 }
@@ -75,18 +71,14 @@ function save_user_preference(key, value, callback) {
  * - callback function called after data are posted
 **/
 function save_common_preference(key, value, callback) {
-   callback = (typeof callback !== 'undefined') ? callback : function() {
-      console.debug('No callback function');
-   };
-   
+
    $.post("/user/save_common_pref", { 'key' : key, 'value' : value}, function() {
       if (layout_logs) console.debug('Common preference saved: ', key, value);
-      raise_message_ok("Common parameter "+key+" set to "+value);
-      try {
-         window[callback]();
-      }
-      catch(err) {
-         // console.error('Callback function does not exist!', callback);
+      raise_message_ok("Common parameter saved");
+      
+      if (typeof callback !== 'undefined' && $.isFunction(callback)) {
+         if (layout_logs) console.debug('Calling callback function ...', callback);
+         callback();
       }
    });
 }
