@@ -16,7 +16,7 @@
          <li class="group list-group-item clearfix {{even}}">
             <section class="left">
                <h3>
-                  <a role="menuitem" href="/all?search=type:host cg:{{group.get_name()}}"><i class="fa fa-angle-double-down"></i>
+                  <a role="menuitem" href="/all?search=cg:{{group.get_name()}}"><i class="fa fa-angle-double-down"></i>
                      {{group.alias if group.alias else group.get_name()}}
                   </a>
                </h3>
