@@ -92,25 +92,18 @@ Invalid element name
       </div>
       %end
       %if hasattr(elt, 'get_service_tags') and len(elt.get_service_tags()) != 0:
-      <div id="service_tags" class="btn-group pull-right">
-         <script>
-            %j=0
-            %for t in sorted(elt.get_service_tags()):
-               var b{{j}} = $('<a href="/all?search=stag:{{t}}"/>').appendTo($('#service_tags'));
-               $('<img />')
-                  .attr({ 'src': '/static/images/tags/{{t.lower()}}.png', 'alt': '{{t.lower()}}', 'title': 'Tag: {{t.lower()}}' })
-                  .css({height: "24px"})
-                  .load(function() {
-                  })
-                  .error(function() {
-                    $(this).remove();
-                    $("<span/>").attr({ 'class': 'btn btn-default btn-xs'}).append('{{t}}').appendTo(b{{j}});
-                  })
-                  .appendTo(b{{j}});
-               var span = $("<span/>").append('&nbsp;').appendTo($('#service_tags'));
-               %j=j+1
-            %end
-         </script>
+      <div class="btn-group pull-right">
+         %i=0
+         %for t in sorted(elt.get_service_tags()):
+            <a href="/all?search=stag:{{t}}">
+               %if app.tag_as_image:
+               <img src="/tag/{{t.lower()}}" alt="{{t.lower()}}" =title="Tag: {{t.lower()}}" style="height: 24px"></img>
+               %else:
+               <button class="btn btn-default btn-xs"><i class="fa fa-tag"></i> {{t.lower()}}</button>
+               %end
+            </a>
+            %i=i+1
+         %end
       </div>
       %end
    </div>
