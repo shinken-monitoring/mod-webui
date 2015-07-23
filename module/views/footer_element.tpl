@@ -78,7 +78,7 @@
    
    <div class="container-fluid">
       <img src="/static/images/default_company_xxs.png" alt="Shinken Logo"/>
-      <i class="col-lg-10 text-muted">Shinken {{VERSION}} &mdash; Web User Interface, &copy;2011-2015</i>
+      <i class="col-lg-10 text-muted">Shinken {{VERSION}} &mdash; Web User Interface {{app.app_version}}, &copy;2011-2015</i>
    </div>
 </nav>
 <script>
