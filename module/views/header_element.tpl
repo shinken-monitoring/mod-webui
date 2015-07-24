@@ -31,7 +31,7 @@
    </ul>
 
    <!-- Right part ... -->
-%synthesis = helper.get_synthesis(app.datamgr.search_hosts_and_services(user=user))
+   %synthesis = helper.get_synthesis(app.datamgr.search_hosts_and_services(user=user))
    %s = synthesis['services']
    %h = synthesis['hosts']
    <div id="hosts-states-popover-content" class="hidden">
@@ -77,7 +77,7 @@
             %threshold_warning=5.0
             %threshold_critical=10.0
             %label='success' if state < threshold_warning else 'warning' if state < threshold_critical else 'danger'
-            <span class="label label-as-badge label-{{label}}">{{h["nb_down"]+h["nb_unreachable"]}}</span>
+            <span class="label label-as-badge label-{{label}}">{{ len(app.datamgr.get_problems(user=user, type='host')) }}</span>
          </a>
       </li>
       <!--end-hosts-states-->
@@ -91,7 +91,7 @@
             %threshold_warning=5.0
             %threshold_critical=10.0
             %label='success' if state < threshold_warning else 'warning' if state < threshold_critical else 'danger'
-            <span class="label label-as-badge label-{{label}}">{{s["nb_critical"]+s["nb_warning"]}}</span>
+            <span class="label label-as-badge label-{{label}}">{{ len(app.datamgr.get_problems(user=user, type='service')) }}</span>
          </a>
       </li>
       <!--end-services-states-->
