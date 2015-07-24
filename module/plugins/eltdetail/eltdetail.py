@@ -34,13 +34,12 @@ params['tabs'] = ['information', 'additional', 'configuration', 'custom_views', 
 
 # Update configuration depending upon installed modules
 def load_config(app):
-    if app.has_graphs_module():
+    if app.graphs_module:
         params['tabs'].append('graphs')
-    if app.has_helpdesk_module():
+    if app.helpdesk_module:
         params['tabs'].append('helpdesk')
-    if app.has_history_module():
+    if app.logs_module:
         params['tabs'].append('history')
-    if app.has_availability_module():
         params['tabs'].append('availability')
 
 

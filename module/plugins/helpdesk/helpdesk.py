@@ -85,8 +85,8 @@ def add_ticket(name):
 
 def get_element_tickets(name):
     # If exists an external module ...
-    if app.get_tickets:
-        tickets = app.get_tickets(name)
+    if app.helpdesk_module:
+        tickets = app.helpdesk_module.get_ui_tickets(name)
         return {'app': app, 'tickets': tickets}
             
     return {'tickets': None}

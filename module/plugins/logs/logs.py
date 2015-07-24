@@ -89,8 +89,8 @@ def load_config(app):
 
 def show_logs():
     # If exists an external module ...
-    if app.get_history:
-        records = app.get_history(name=None, logs_type = params['logs_type'])
+    if app.logs_module:
+        records = app.logs_module.get_ui_logs(name=None, logs_type = params['logs_type'])
         return {'records': records, 'params': params, 'message': "%d records fetched from database." % len(records)}
             
     logger.warning("[WebUI-logs] no get history external module defined!")
@@ -156,8 +156,8 @@ def set_logs_type_list():
 
 def get_history(name):
     # If exists an external module ...
-    if app.get_history:
-        records = app.get_history(name=name)
+    if app.logs_module:
+        records = app.logs_module.get_ui_logs(name=name)
         return {'records': records}
             
     logger.warning("[WebUI-logs] no get history external module defined!")

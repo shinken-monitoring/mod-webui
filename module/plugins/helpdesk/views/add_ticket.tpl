@@ -6,7 +6,7 @@
    // Set default downtime period as two days
    var downtime_stop = moment().seconds(0).add('days', 2);
   
-   var helpdesk_configuration = {{! json.dumps(app.get_helpdesk_configuration())}};
+   var helpdesk_configuration = {{! json.dumps(app.helpdesk_module.get_ui_helpdesk_configuration())}};
 
    // Form submission ...
    $( 'form' ).submit(function(event) {
