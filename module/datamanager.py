@@ -277,6 +277,9 @@ class WebUIDataManager(DataManager):
             if len(elts) > 1:
                 t = elts[0]
                 s = elts[1]
+                
+            s = s.lower()
+            t = t.lower()
 
             if t == 'hst_srv':
                 pat = re.compile(s, re.IGNORECASE)
