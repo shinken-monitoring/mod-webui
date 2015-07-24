@@ -51,8 +51,10 @@ function launch(url, response_message){
       raise_message_ko(textStatus);
    })
    .always(function(  ) {
-      // Refresh the current page
-      do_refresh();
+      window.setTimeout(function() {
+         // Refresh the current page after a short delay
+         do_refresh();
+      }, 5000);
    });
 }
 
