@@ -39,10 +39,8 @@ function loadjscssfile(filename, filetype){
       });
    } else if (filetype=="css") {
       if (layout_logs) console.debug('Loading Css file: ', filename);
-      $('<link>')
-         .appendTo('head')
-         .attr({type : 'text/css', rel : 'stylesheet'})
-         .attr('href', filename);
+       if (!$('link[href="' + filename + '"]').length)
+           $('head').append('<link rel="stylesheet" type="text/css" href="' + filename + '">');
    }
 }
 
@@ -111,6 +109,7 @@ function display_form(form) {
       remote: form
    });
 }
+
 
 $(document).ready(function(){
    // When modal box is hidden ...
