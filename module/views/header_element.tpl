@@ -189,10 +189,8 @@
           <ul class="nav nav-second-level">
             <li> <a href="/parameters"> <span class="fa fa-gears"></span> Configuration </a> </li>
             <li> <a href="/system"> <span class="fa fa-heartbeat"></span> Status </a> </li>
-            %if app.get_history:
+            %if app.logs_module:
             <li> <a href="/logs"> <span class="fa fa-th-list"></span> Logs </a> </li>
-            %end
-            %if app.get_availability:
             <li> <a href="/availability"> <span class="fa fa-bar-chart"></span> Availability </a> </li>
             %end
           </ul>

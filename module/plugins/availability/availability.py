@@ -34,8 +34,8 @@ app = None
 
 
 def _get_availability(*args, **kwargs):
-    if app.get_availability:
-        return app.get_availability(*args, **kwargs)
+    if app.logs_module:
+        return app.logs_module.get_ui_availability(*args, **kwargs)
     else:
         logger.warning("[WebUI-availability] no get availability external module defined!")
         return None
