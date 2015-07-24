@@ -59,6 +59,7 @@ import lib.bottle as bottle
 from datamanager import WebUIDataManager
 from user import User
 from helper import helper
+from preferences import MongoDBPreferences
 
 # Debug
 bottle.debug(True)
@@ -183,6 +184,8 @@ class Webui_broker(BaseModule, Daemon):
         # We will save all widgets
         self.widgets = {}
 
+        self.prefs = MongoDBPreferences(modconf)
+
         # We need our regenerator now (before main) so if we are in a scheduler,
         # rg will be able to skip some broks
         # self.rg = WebUIRegenerator()
@@ -288,10 +291,6 @@ class Webui_broker(BaseModule, Daemon):
         self.get_helpdesk = None
         if not self.has_helpdesk_module():
             logger.warning("[WebUI] No helpdesk module configured. You should configure the module 'glpi-tickets' in webui.cfg file to get helpdesk information.")
-
-        # We check if we have an user preference module
-        if not self.has_user_preference_module():
-            logger.warning("[WebUI] No user preference module configured. Preferences will be stored in %s directory. Else, you may configure 'modules mongodb' or 'modules SQLitedb' in webui.cfg file", self.config_dir)
 
         # Data manager
         self.datamgr = WebUIDataManager(self.rg)
@@ -825,17 +824,6 @@ class Webui_broker(BaseModule, Daemon):
     # Manage common / user's preferences
     # ------------------------------------------------------------------------------------------
     ##
-    # Check if a user preference storage module is declared in webui.cfg
-    ##
-    def has_user_preference_module(self):
-        for mod in self.modules_manager.get_internal_instances():
-            f = getattr(mod, 'get_ui_user_preference', None)
-            if f and callable(f):
-                return True
-        return False
-
-
-    ##
     # Get all user preferences
     ##
     def get_user_preferences(self):
@@ -849,161 +837,28 @@ class Webui_broker(BaseModule, Daemon):
     ##
     def get_user_preference(self, user, key=None, default=None):
         logger.debug("[WebUI] Fetching user preference for: %s / %s", user.get_name(), key)
-
-        if not self.has_user_preference_module():
-            result = {} if key is None else default
-            # Preferences are stored in self.config_dir/user.get_name()/key
-            for subdir, dirs, files in os.walk("%s/%s" % (self.config_dir, user.get_name())):
-                for file in files:
-                    logger.debug("[WebUI] found %s file, key = %s", file, key)
-                    try:
-                        f = open("%s/%s/%s" % (self.config_dir, user.get_name(), file), 'r')
-                        lines = f.read()
-                        f.close()
-                    except:
-                        pass
-
-                    if key is not None and file == "%s" % key:
-                        logger.debug("[WebUI] found key = %s", lines)
-                        return lines
-                    elif key is None:
-                        # result.append( { file: lines } )
-                        result[file] = lines
-
-            logger.debug("[WebUI] User preference %s, returning: %s", key, result)
-            return result
-
-        for mod in self.modules_manager.get_internal_instances():
-            try:
-                logger.debug("[WebUI] Trying to get preference %s from %s", key, mod.get_name())
-                f = getattr(mod, 'get_ui_user_preference', None)
-                if f and callable(f):
-                    r = f(user, key)
-                    logger.debug("[WebUI] Found '%s', %s = %s", user.get_name(), key, r)
-                    if r is not None:
-                        return r
-            except Exception, exp:
-                logger.warning("[WebUI] The mod %s raise an exception: %s, I'm tagging it to restart later", mod.get_name(), str(exp))
-                logger.warning("[WebUI] Exception type: %s", type(exp))
-                logger.warning("Back trace of this kill: %s", traceback.format_exc())
-                self.modules_manager.set_to_restart(mod)
-
-        logger.debug("[WebUI] No user preferences found, returning default value: %s", default)
-        return default
+        return self.prefs.get_ui_user_preference(user, key) or default
 
     ##
     # Set a user preference by name / value
     ##
     def set_user_preference(self, user, key, value):
         logger.debug("[WebUI] Saving user preference for: %s / %s", user.get_name(), key)
-
-        if not self.has_user_preference_module():
-            dir = "%s/%s" % (self.config_dir, user.get_name())
-            if not os.path.exists(dir):
-                try:
-                    os.mkdir(dir)
-                    logger.debug("[WebUI] Created user preferences directory: %s", dir)
-                except Exception, exp:
-                    logger.error("[WebUI] User preference directory creation failed: %s", exp)
-
-            # Preferences are stored in self.config_dir/user.get_name()/key
-            f = open("%s/%s" % (dir, key), 'w')
-            f.write(value)
-            f.close()
-            logger.debug("[WebUI] Updated '%s', %s = %s", user.get_name(), key, value)
-
-        else:
-            for mod in self.modules_manager.get_internal_instances():
-                try:
-                    f = getattr(mod, 'set_ui_user_preference', None)
-                    if f and callable(f):
-                        f(user, key, value)
-                        logger.debug("[WebUI] Updated '%s', %s = %s", user.get_name(), key, value)
-                except Exception, exp:
-                    logger.warning("[WebUI] The mod %s raise an exception: %s, I'm tagging it to restart later", mod.get_name(), str(exp))
-                    logger.warning("[WebUI] Exception type: %s", type(exp))
-                    logger.warning("Back trace of this kill: %s", traceback.format_exc())
-                    self.modules_manager.set_to_restart(mod)
+        return self.prefs.set_ui_user_preference(user, key, value)
 
     ##
     # Get a common preference by name
     ##
     def get_common_preference(self, key, default=None):
         logger.debug("[WebUI] Fetching common preference for: %s", key)
-
-        if not self.has_user_preference_module():
-            result = [] if key is None else default
-            # Preferences are stored in self.config_dir/user.get_name()/key
-            for subdir, dirs, files in os.walk("%s/%s" % (self.config_dir, 'common')):
-                for file in files:
-                    logger.debug("[WebUI] found %s file, key = %s", file, key)
-                    try:
-                        f = open("%s/%s/%s" % (self.config_dir, 'common', file), 'r')
-                        lines = f.read()
-                        f.close()
-                    except:
-                        pass
-
-                    if key is not None and file == "%s" % key:
-                        logger.debug("[WebUI] found key = %s", lines)
-                        return lines
-                    elif key is None:
-                        result.append(lines)
-
-            logger.debug("[WebUI] No common preferences found for %s, returning default value: %s", key, default)
-            return result
-
-        for mod in self.modules_manager.get_internal_instances():
-            try:
-                logger.debug("[WebUI] Trying to get common preference %s from %s", key, mod.get_name())
-                f = getattr(mod, 'get_ui_common_preference', None)
-                if f and callable(f):
-                    r = f(key)
-                    logger.debug("[WebUI] Found 'common', %s = %s", key, r)
-                    if r is not None:
-                        return r
-            except Exception, exp:
-                logger.warning("[WebUI] The mod %s raise an exception: %s, I'm tagging it to restart later", mod.get_name(), str(exp))
-                logger.warning("[WebUI] Exception type: %s", type(exp))
-                logger.warning("Back trace of this kill: %s", traceback.format_exc())
-                self.modules_manager.set_to_restart(mod)
-
-        logger.debug("[WebUI] No common preferences found, returning default value: %s", default)
-        return default
+        return self.prefs.get_ui_common_preference(key) or default
 
     ##
     # Set a common preference by name / value
     ##
     def set_common_preference(self, key, value):
         logger.debug("[WebUI] Saving common preference: %s = %s", key, value)
-
-        if not self.has_user_preference_module():
-            dir = "%s/common" % (self.config_dir)
-            if not os.path.exists(dir):
-                try:
-                    os.mkdir(dir)
-                    logger.debug("[WebUI] Created common preferences directory: %s", dir)
-                except Exception, exp:
-                    logger.error("[WebUI] Common preference directory creation failed: %s", exp)
-
-            # Preferences are stored in self.config_dir/user.get_name()/key
-            f = open("%s/%s" % (dir, key), 'w')
-            f.write(value)
-            f.close()
-            logger.debug("[WebUI] Updated '%s', %s = %s", 'common', key, value)
-
-        else:
-            for mod in self.modules_manager.get_internal_instances():
-                try:
-                    f = getattr(mod, 'set_ui_common_preference', None)
-                    if f and callable(f):
-                        f(key, value)
-                        logger.debug("[WebUI] Updated 'common', %s = %s", key, value)
-                except Exception, exp:
-                    logger.warning("[WebUI] The mod %s raise an exception: %s, I'm tagging it to restart later", mod.get_name(), str(exp))
-                    logger.warning("[WebUI] Exception type: %s", type(exp))
-                    logger.warning("Back trace of this kill: %s", traceback.format_exc())
-                    self.modules_manager.set_to_restart(mod)
+        return self.prefs.set_ui_common_preference(key, value)
 
     ##
     # Get/set user's bookmarks
