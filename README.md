@@ -11,7 +11,7 @@ If you want to test this branch (assuming you already have the WebUI installed):
 
 ```
 $ git clone -b bs3 https://github.com/shinken-monitoring/mod-webui
-$ sudo shinken install --local webui
+$ sudo shinken install --local mod-webui
 ```
 
 To update, just `git pull` the repository, and reinstall it with the same command.
@@ -29,7 +29,7 @@ $ cat /etc/shinken/brokers/broker-master.cfg
 modules     webui
 [...]
 ```
-* Install an authentication module. For instance 
+* Install an authentication module. For instance
 ```
 $ shinken install auth-cfg-password
 ```
@@ -47,7 +47,7 @@ modules             auth-cfg-password
 $ vi /etc/shinken/modules/webui.cfg
 ```
  This file is commented and self explanatory ...
- 
+
 
 * Restart shinken and connect to the WebUI that will be available on the 7767 port.
 ```
