@@ -31,6 +31,67 @@ var old_show_pb = null;
 var current_id = 0;
 
 
+function get_impact(id){
+   var impacts = $('.impact');
+   for (var i = 0; i < impacts.length; i++) {
+      var impact = impacts.eq(i);
+      if (impact.attr('id') == id) {
+         return impact;
+      }
+   }
+   return null;
+}
+
+
+/* Our main toggle function */
+function toggleBox(pb_nb){
+   // Get our current impact click element
+   impact = get_impact(pb_nb);
+
+   // And find the panel we will slide
+   el = $('#problems-'+pb_nb);
+
+   if (old_show_pb != null) {
+      new Fx.Tween(old_show_pb, {property: 'opacity'}).start(0);
+      old_show_pb = null;
+   }
+
+   var click_same_problem = false;
+   if (old_problem == el ) {
+      click_same_problem = true;
+   }
+
+
+   // If we got an open problem, close it
+   if (old_problem != null && old_problem.attr('id') != el.attr('id')){
+      old_problem.css('display','none');
+      // And clean the active impact class too
+      old_impact.removeClass("impact-active");
+   }
+
+   old_problem = el;
+   old_impact = impact;
+
+
+   /* If it was hidden, show ... */
+   if (el.css('opacity') == 0) {
+      current_id = pb_nb;
+      el.css('display','block');
+      el.animate({
+         opacity: 1,
+      }, 500);
+   } else {
+      /* else it was shown, hide ... */
+      current_id = 0;
+      el.animate({
+         opacity: 0,
+      }, 500, function() {
+         el.css('display','none');
+      });
+   }
+   impact.toggleClass("impact-active");
+}
+
 /*
  * Function called when the page is loaded and on each page refresh ...
  */
@@ -46,67 +107,6 @@ function on_page_refresh() {
    });
 
    
-   function get_impact(id){
-      var impacts = $('.impact');
-      for (var i = 0; i < impacts.length; i++) {
-         var impact = impacts.eq(i);
-         if (impact.attr('id') == id) {
-            return impact;
-         }
-      }
-      return null;
-   }
-
-
-   /* Our main toggle function */
-   function toggleBox(pb_nb){
-      // Get our current impact click element
-      impact = get_impact(pb_nb);
-
-      // And find the panel we will slide
-      el = $('#problems-'+pb_nb);
-
-      if (old_show_pb != null) {
-         new Fx.Tween(old_show_pb, {property: 'opacity'}).start(0);
-         old_show_pb = null;
-      }
-
-      var click_same_problem = false;
-      if (old_problem == el ) {
-         click_same_problem = true;
-      }
-
-
-      // If we got an open problem, close it
-      if (old_problem != null && old_problem.attr('id') != el.attr('id')){
-         old_problem.css('display','none');
-         // And clean the active impact class too
-         old_impact.removeClass("impact-active");
-      }
-
-      old_problem = el;
-      old_impact = impact;
-
-
-      /* If it was hidden, show ... */
-      if (el.css('opacity') == 0) {
-         current_id = pb_nb;
-         el.css('display','block');
-         el.animate({
-            opacity: 1,
-         }, 500);
-      } else {
-         /* else it was shown, hide ... */
-         current_id = 0;
-         el.animate({
-            opacity: 0,
-         }, 500, function() {
-            el.css('display','none');
-         });
-      }
-      impact.toggleClass("impact-active");
-   }
-
    // This values is filled by the /impact page. By default it's -1
    // and so it do not ask for a default expand. But it will ask for the first value if
    // it's an bad state
