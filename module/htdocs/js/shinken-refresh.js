@@ -93,7 +93,7 @@ function do_refresh(){
       $('#overall-hosts-states').html($response.find('#overall-hosts-states').html());
       $('#overall-services-states').html($response.find('#overall-services-states').html());
 
-      /* Because of what is explaind in the previous comment ... we must use this 
+      /* Because of what is explained in the previous comment ... we must use this 
        * awful hack ! 
        * Hoping this is a temporary solution ... :/P
        * 
@@ -153,6 +153,12 @@ function do_refresh(){
       if (typeof on_page_refresh !== 'undefined' && $.isFunction(on_page_refresh)) {
          if (refresh_logs) console.debug('Calling page refresh function ...', on_page_refresh);
          on_page_refresh();
+      }
+
+      // Refresh bindings of actions buttons ...
+      if (typeof bind_actions !== 'undefined' && $.isFunction(bind_actions)) {
+         if (refresh_logs) console.debug('Calling actions bindings function ...', bind_actions);
+         bind_actions();
       }
       
       // Look at the hash part of the URI. If it match a nav name, go for it
