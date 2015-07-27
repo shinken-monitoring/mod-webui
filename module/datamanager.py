@@ -338,7 +338,7 @@ class WebUIDataManager(DataManager):
                 contacts = [c for c in self.get_contacts() if s in c.tags]
                 items = list(set(itertools.chain(*[self._only_related_to(items, c) for c in contacts])))
 
-            if t == 'type':
+            if t == 'type' and s != 'all':
                 items = [i for i in items if i.__class__.my_type == s]
 
             if t == 'bp' or t == 'bi':
