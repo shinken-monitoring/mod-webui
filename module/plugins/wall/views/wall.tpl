@@ -1,4 +1,5 @@
-%rebase("layout", css=['wall/css/jquery.bxslider.css'], js=['wall/js/jquery.bxslider.min.js'], title='Wall view')
+%rebase("layout", css=['wall/css/jquery.bxslider.css'], js=['wall/js/jquery.bxslider.min.js', 'wall/js/wall.js'], title='Wall view')
+%# Use bxslider : http://bxslider.com/
 
 <div id="wall">
    %if impacts:
@@ -13,9 +14,9 @@
       %end
       <center class="col-sm-3 pull-left">
          <div style="margin: 5px;">
-            <a href="{{helper.get_link_dest(imp)}}" class='btn' title="Details">
+            <a href="{{app.helper.get_link_dest(imp)}}" class='btn' title="Details">
                <div class="font-{{imp.state.lower()}}">{{imp.get_full_name()}}</div>
-               <div>{{! helper.get_fa_icon_state(imp, label='title')}}</div>
+               <div>{{! app.helper.get_fa_icon_state(imp, label='title')}}</div>
             </a>
          </div>
       </center>
@@ -24,6 +25,8 @@
       %end
       %end
    </ul>
+   %else:
+   <h3>No impacts</h3>
    %end
    
    %if problems:
@@ -38,9 +41,9 @@
       %end
       <center class="col-sm-4 pull-left">
          <div style="margin: 5px;">
-            <a href="{{helper.get_link_dest(pb)}}" class='btn' title="Details">
+            <a href="{{app.helper.get_link_dest(pb)}}" class='btn' title="Details">
                <div class="font-{{pb.state.lower()}}">{{pb.get_full_name()}}</div>
-               <div class="font-{{pb.state.lower()}}">{{! helper.get_fa_icon_state(pb, label='title')}} since {{helper.print_duration(pb.last_state_change, just_duration=True, x_elts=2)}}</div>
+               <div class="font-{{pb.state.lower()}}">{{! app.helper.get_fa_icon_state(pb, label='title')}} since {{app.helper.print_duration(pb.last_state_change, just_duration=True, x_elts=2)}}</div>
             </a>
          </div>
       </center>
@@ -50,7 +53,7 @@
       %end
    </ul>
    %else:
-   <h3>No new IT problems in the last hour</h3>
+   <h3>No IT problems</h3>
    %end
    
    %if last_problems:
@@ -65,9 +68,9 @@
       %end
       <center class="col-sm-4 pull-left">
          <div style="margin: 5px;">
-            <a href="{{helper.get_link_dest(pb)}}" class='btn' title="Details">
+            <a href="{{app.helper.get_link_dest(pb)}}" class='btn' title="Details">
                <div class="font-{{pb.state.lower()}}">{{pb.get_full_name()}}</div>
-               <div class="font-{{pb.state.lower()}}">{{! helper.get_fa_icon_state(pb, label='title')}} since {{helper.print_duration(pb.last_state_change, just_duration=True, x_elts=2)}}</div>
+               <div class="font-{{pb.state.lower()}}">{{! app.helper.get_fa_icon_state(pb, label='title')}} since {{app.helper.print_duration(pb.last_state_change, just_duration=True, x_elts=2)}}</div>
             </a>
          </div>
       </center>
@@ -80,18 +83,3 @@
    <h3>No new IT problems in the last hour</h3>
    %end
 </div>
-
-<script>
-   $('#wall-impacts').bxSlider({
-     auto: true,
-     autoControls: true
-   });
-   $('#wall-problems').bxSlider({
-     auto: true,
-     autoControls: true
-   });
-   $('#wall-last-problems').bxSlider({
-     auto: true,
-     autoControls: true
-   });
-</script>
