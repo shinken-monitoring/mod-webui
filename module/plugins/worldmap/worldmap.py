@@ -47,28 +47,28 @@ def load_config(app):
 
     logger.info("[WebUI-worldmap] loading configuration ...")
     
-    default_position = app.get_common_preference('worldmap-default_position', '')
+    default_position = app.prefs_module.get_ui_common_preference('worldmap-default_position', '')
     if default_position == '':
-        app.set_common_preference('worldmap-default_position', '{"default_zoom": 16, "default_Lng": 5.080625, "default_Lat": 45.054148}')
-        default_position = app.get_common_preference('worldmap-default_position', '')
+        app.prefs_module.set_ui_common_preference('worldmap-default_position', '{"default_zoom": 16, "default_Lng": 5.080625, "default_Lat": 45.054148}')
+        default_position = app.prefs_module.get_ui_common_preference('worldmap-default_position', '')
     params.update(json.loads(default_position))
     
-    hosts = app.get_common_preference('worldmap-hosts', '')
+    hosts = app.prefs_module.get_ui_common_preference('worldmap-hosts', '')
     if hosts == '':
-        app.set_common_preference('worldmap-hosts', '{"hosts_level": [1,2,3,4,5]}')
-        hosts = app.get_common_preference('worldmap-hosts', '')
+        app.prefs_module.set_ui_common_preference('worldmap-hosts', '{"hosts_level": [1,2,3,4,5]}')
+        hosts = app.prefs_module.get_ui_common_preference('worldmap-hosts', '')
     params.update(json.loads(hosts))
     
-    services = app.get_common_preference('worldmap-services', '')
+    services = app.prefs_module.get_ui_common_preference('worldmap-services', '')
     if services == '':
-        app.set_common_preference('worldmap-services', '{"services_level": [1,2,3,4,5]}')
-        services = app.get_common_preference('worldmap-services', '')
+        app.prefs_module.set_ui_common_preference('worldmap-services', '{"services_level": [1,2,3,4,5]}')
+        services = app.prefs_module.get_ui_common_preference('worldmap-services', '')
     params.update(json.loads(services))
     
-    layer = app.get_common_preference('worldmap-layer', '')
+    layer = app.prefs_module.get_ui_common_preference('worldmap-layer', '')
     if layer == '':
-        app.set_common_preference('worldmap-layer', '{"layer": ""}')
-        layer = app.get_common_preference('worldmap-layer', '')
+        app.prefs_module.set_ui_common_preference('worldmap-layer', '{"layer": ""}')
+        layer = app.prefs_module.get_ui_common_preference('worldmap-layer', '')
     params.update(json.loads(layer))
 
     logger.info("[WebUI-worldmap] configuration loaded.")

@@ -309,13 +309,13 @@ Invalid element name
             %if 'depgraph' in params['tabs']:
             <li><a href="#depgraph" data-toggle="tab">Impact graph</a></li>
             %end
-            %if 'history' in params['tabs'] and app.logs_module:
+            %if 'history' in params['tabs'] and app.logs_module.is_available():
             <li><a href="#history" data-toggle="tab">History</a></li>
             %end
-            %if 'availability' in params['tabs'] and app.logs_module:
+            %if 'availability' in params['tabs'] and app.logs_module.is_available():
             <li><a href="#availability" data-toggle="tab">Availability</a></li>
             %end
-            %if 'helpdesk' in params['tabs'] and app.helpdesk_module:
+            %if 'helpdesk' in params['tabs'] and app.helpdesk_module.is_available():
             <li><a href="#helpdesk" data-toggle="tab">Helpdesk</a></li>
             %end
          </ul>
@@ -1254,7 +1254,7 @@ Invalid element name
             <!-- Tab Dependency graph End -->
 
             <!-- Tab History start -->
-            %if 'history' in params['tabs'] and app.logs_module:
+            %if 'history' in params['tabs'] and app.logs_module.is_available():
             <div class="tab-pane fade" id="history">
                <div class="panel panel-default">
                   <div class="panel-body">
@@ -1267,7 +1267,7 @@ Invalid element name
             <!-- Tab History end -->
 
             <!-- Tab Availability start -->
-            %if 'availability' in params['tabs'] and app.logs_module:
+            %if 'availability' in params['tabs'] and app.logs_module.is_available():
             <div class="tab-pane fade" id="availability">
                <div class="panel panel-default">
                   <div class="panel-body">
@@ -1280,7 +1280,7 @@ Invalid element name
             <!-- Tab Availability end -->
 
             <!-- Tab Helpdesk start -->
-            %if 'helpdesk' in params['tabs'] and app.helpdesk_module:
+            %if 'helpdesk' in params['tabs'] and app.helpdesk_module.is_available():
             <div class="tab-pane fade" id="helpdesk">
                <div class="panel panel-default">
                   <div class="panel-body">

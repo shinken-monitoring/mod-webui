@@ -187,7 +187,7 @@
           <ul class="nav nav-second-level">
             <li> <a href="/parameters"> <span class="fa fa-gears"></span> Configuration </a> </li>
             <li> <a href="/system"> <span class="fa fa-heartbeat"></span> Status </a> </li>
-            %if app.logs_module:
+            %if app.logs_module.is_available():
             <li> <a href="/logs"> <span class="fa fa-th-list"></span> Logs </a> </li>
             <li> <a href="/availability"> <span class="fa fa-bar-chart"></span> Availability </a> </li>
             %end

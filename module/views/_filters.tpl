@@ -1,6 +1,6 @@
 %setdefault("search_string", "")
-%setdefault("common_bookmarks", app.get_common_bookmarks())
-%setdefault("user_bookmarks", app.get_user_bookmarks(user))
+%setdefault("common_bookmarks", app.prefs_module.get_common_bookmarks())
+%setdefault("user_bookmarks", app.prefs_module.get_user_bookmarks(user))
 
 <form class="navbar-form navbar-left hidden-xs" method="get" action="all">
   <div class="dropdown form-group text-left">

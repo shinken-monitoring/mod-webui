@@ -41,13 +41,13 @@ def get_page():
 def get_all():
     user = app.bottle.request.environ['USER']
     # Fetch elements per page preference for user, default is 25
-    elts_per_page = app.get_user_preference(user, 'elts_per_page', 25)
+    elts_per_page = app.prefs_module.get_ui_user_preference(user, 'elts_per_page', 25)
 
     # Fetch sound preference for user, default is 'no'
-    sound_pref = app.get_user_preference(user, 'sound', 'yes' if app.play_sound else 'no')
+    sound_pref = app.prefs_module.get_ui_user_preference(user, 'sound', 'yes' if app.play_sound else 'no')
     sound = app.request.GET.get('sound', '')
     if sound != sound_pref and sound in ['yes', 'no']:
-        app.set_user_preference(user, 'sound', sound)
+        app.prefs_module.set_ui_user_preference(user, 'sound', sound)
         sound_pref = sound
 
     # We want to limit the number of elements
@@ -73,7 +73,7 @@ def get_all():
     navi = app.helper.get_navi(total, start, step=step)
     pbs = items[start:end]
 
-    return {'pbs': pbs, 'all_pbs': items, 'navi': navi, 'title': title, 'search_string': search, 'bookmarks': app.get_user_bookmarks(user), 'bookmarksro': app.get_common_bookmarks(), 'sound': sound_pref, 'elts_per_page': elts_per_page}
+    return {'pbs': pbs, 'all_pbs': items, 'navi': navi, 'title': title, 'search_string': search, 'bookmarks': app.prefs_module.get_user_bookmarks(user), 'bookmarksro': app.prefs_module.get_common_bookmarks(), 'sound': sound_pref, 'elts_per_page': elts_per_page}
 
 
 def get_pbs_widget():

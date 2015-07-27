@@ -89,7 +89,7 @@ def load_config(app):
 
 def show_logs():
     # If exists an external module ...
-    if app.logs_module:
+    if app.logs_module.is_available():
         records = app.logs_module.get_ui_logs(name=None, logs_type = params['logs_type'])
         return {'records': records, 'params': params, 'message': "%d records fetched from database." % len(records)}
             
@@ -156,7 +156,7 @@ def set_logs_type_list():
 
 def get_history(name):
     # If exists an external module ...
-    if app.logs_module:
+    if app.logs_module.is_available():
         records = app.logs_module.get_ui_logs(name=name)
         return {'records': records}
             

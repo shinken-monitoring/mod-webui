@@ -55,7 +55,7 @@ def save_pref():
 
     s = json.dumps('{%s: %s}' % (key, value))
 
-    app.set_user_preference(user, key, value)
+    app.prefs_module.set_ui_user_preference(user, key, value)
 
     return
 
@@ -74,7 +74,7 @@ def save_common_pref():
     print "As %s" % s
 
     if user.is_admin:
-        app.set_common_preference( key, value)
+        app.prefs_module.set_ui_common_preference( key, value)
 
     return
 
