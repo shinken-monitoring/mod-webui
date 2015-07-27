@@ -76,7 +76,7 @@ def show_minemap():
     items = app.datamgr.search_hosts_and_services(search, user, get_impacts=False)
     
     # Fetch elements per page preference for user, default is 25
-    elts_per_page = app.get_user_preference(user, 'elts_per_page', 25)
+    elts_per_page = app.prefs_module.get_ui_user_preference(user, 'elts_per_page', 25)
 
     # We want to limit the number of elements
     step = int(app.request.GET.get('step', elts_per_page))

@@ -46,10 +46,10 @@ def get_page():
     user = app.request.environ['USER']
 
     # Look for the widgets as the json entry
-    s = app.get_user_preference(user, 'widgets')
+    s = app.prefs_module.get_ui_user_preference(user, 'widgets')
     # If void, create an empty one
     if not s:
-        app.set_user_preference(user, 'widgets', '[]')
+        app.prefs_module.set_ui_user_preference(user, 'widgets', '[]')
         s = '[]'
     widget_names = json.loads(s)
     widgets = []

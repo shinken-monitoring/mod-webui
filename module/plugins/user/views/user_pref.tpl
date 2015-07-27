@@ -91,13 +91,13 @@
                      </tr>
                   </thead>
                   <tbody style="font-size:x-small;">
-                  %if app.get_user_preferences():
-                  %for preference in app.get_user_preferences():
+                  %if app.prefs_module.is_available():
+                  %for preference in app.prefs_module.get_ui_user_preference(user):
                   %if preference in ['_id']:
                   %continue
                   %end
                   <script>
-                     value = '{{json.dumps(app.get_user_preference(user, preference))}}';
+                     value = '{{json.dumps(app.prefs_module.get_ui_user_preference(user, preference))}}';
 /*
                      $.each(value, function( index, value ) {
                         <tr>
@@ -109,21 +109,21 @@
                   </script>
                      <tr>
                         <td>{{preference}}</td>
-                        <td>{{app.get_user_preference(user, preference)}}</td>
+                        <td>{{app.prefs_module.get_ui_user_preference(user, preference)}}</td>
                      </tr>
                   %end
                   %else:
                      <tr>
                         <td>toolbar</td>
-                        <td>{{app.get_user_preference(user, 'toolbar')}}</td>
+                        <td>{{app.prefs_module.get_ui_user_preference(user, 'toolbar')}}</td>
                      </tr>
                      <tr>
                         <td>bookmarks</td>
-                        <td>{{app.get_user_preference(user, 'bookmarks')}}</td>
+                        <td>{{app.prefs_module.get_ui_user_preference(user, 'bookmarks')}}</td>
                      </tr>
                      <tr>
                         <td>elts_per_page</td>
-                        <td>{{app.get_user_preference(user, 'elts_per_page')}}</td>
+                        <td>{{app.prefs_module.get_ui_user_preference(user, 'elts_per_page')}}</td>
                      </tr>
                   %end
                   </tbody>

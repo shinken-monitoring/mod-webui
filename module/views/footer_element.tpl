@@ -46,7 +46,7 @@
                data-element="{{helper.get_uri_name(elt)}}" >
                <i class="fa fa-ambulance"></i> Schedule a downtime
             </a> </li>
-            %if app.helpdesk_module:
+            %if app.helpdesk_module.is_available():
             <li> <a href="#" action="create-ticket" title="Create a ticket for this {{elt_type}}"
                data-element="{{helper.get_uri_name(elt)}}" >
                <i class="fa fa-medkit"></i> Create a ticket

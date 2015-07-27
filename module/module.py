@@ -58,7 +58,12 @@ import lib.bottle as bottle
 from datamanager import WebUIDataManager
 from user import User
 from helper import helper
-from preferences import MongoDBPreferences
+
+from submodules.prefs import PrefsMetaModule
+from submodules.auth import AuthMetaModule
+from submodules.logs import LogsMetaModule
+from submodules.graphs import GraphsMetaModule
+from submodules.helpdesk import HelpdeskMetaModule
 
 # Debug
 bottle.debug(True)
@@ -95,6 +100,7 @@ class Webui_broker(BaseModule, Daemon):
         BaseModule.__init__(self, modconf)
 
         self.plugins = []
+        self.modconf = modconf
 
         # Web server configuration
         self.host = getattr(modconf, 'host', '0.0.0.0')
@@ -183,8 +189,6 @@ class Webui_broker(BaseModule, Daemon):
         # We will save all widgets
         self.widgets = {}
 
-        self.default_prefs_module = MongoDBPreferences(modconf)
-
         # We need our regenerator now (before main) so if we are in a scheduler,
         # rg will be able to skip some broks
         self.rg = Regenerator()
@@ -247,24 +251,11 @@ class Webui_broker(BaseModule, Daemon):
                     logger.error("[WebUI] Dir creation failed: %s", exp)
 
         # :TODO:maethor:150724: Complete with other function names
-        self.auth_module = self.find_module('check_auth')
-        self.prefs_module = self.find_module('get_ui_user_preference') or self.default_prefs_module
-        self.logs_module = self.find_module('get_ui_logs')
-        self.graphs_module = self.find_module('get_graph_uris')
-        self.helpdesk_module = self.find_module('get_ui_tickets')
-
-        if not self.auth_module:
-            logger.error("[WebUI] No user authentication module configured. Please configure at least 'modules auth-cfg-password' in webui.cfg file")
-            sys.exit(2)
-
-        if not self.logs_module:
-            logger.warning("[WebUI] No logs module configured. You should configure the module 'mongo-logs' in your broker and the module 'mongodb' in webui.cfg file to get hosts history and availability information.")
-
-        if not self.graphs_module:
-            logger.warning("[WebUI] No graphs module configured. You should configure the module 'graphite' in your broker and the module 'ui-graphite' in webui.cfg file to be able to display graphs.")
-
-        if not self.helpdesk_module:
-            logger.warning("[WebUI] No helpdesk module configured. You should configure the module 'glpi-tickets' in webui.cfg file to get helpdesk information.")
+        self.auth_module = AuthMetaModule(AuthMetaModule.find_modules(self.modules_manager.get_internal_instances()), self)
+        self.prefs_module = PrefsMetaModule(PrefsMetaModule.find_modules(self.modules_manager.get_internal_instances()), self)
+        self.logs_module = LogsMetaModule(LogsMetaModule.find_modules(self.modules_manager.get_internal_instances()), self)
+        self.graphs_module = GraphsMetaModule(GraphsMetaModule.find_modules(self.modules_manager.get_internal_instances()), self)
+        self.helpdesk_module = HelpdeskMetaModule(HelpdeskMetaModule.find_modules(self.modules_manager.get_internal_instances()), self)
 
         # Data manager
         self.datamgr = WebUIDataManager(self.rg)
@@ -289,20 +280,6 @@ class Webui_broker(BaseModule, Daemon):
             # wait 2 sec so we know that the broker got our message, and die
             time.sleep(2)
             raise
-
-    def find_module(self, *functions):
-        logger.debug("[WebUI] searching module containing %s…" % ', '.join(functions))
-        for mod in self.modules_manager.get_internal_instances():
-            found = True
-            for name in functions:
-                f = getattr(mod, name, None)
-                if not f or not callable(f):
-                    found = False
-                    continue
-            if found:
-                logger.info("[WebUI] Module found: %s", mod.get_name())
-                return mod
-        return None
 
     # A plugin send us en external command. We just put it
     # in the good queue
@@ -639,6 +616,7 @@ class Webui_broker(BaseModule, Daemon):
     # 2/ one of the WebUI modules providing a 'check_auth'
     #   method must accept the username/password couple
     ##
+    # :TODO:maethor:150727: Remove this method
     def check_authentication(self, username, password):
         logger.info("[WebUI] Checking authentication for user: %s", username)
         self.user_picture = None
@@ -648,25 +626,17 @@ class Webui_broker(BaseModule, Daemon):
             logger.error("[WebUI] You need to have a contact having the same name as your user: %s", username)
             return False
 
-        try:
-            r = self.auth_module.check_auth(username, password)
-            if r:
-                logger.info("[WebUI] User '%s' is authenticated by %s", username, self.auth_module.get_name())
-                # :TODO:maethor:150724: Remove this, nothing to do here
-                # Define user picture
-                self.user_picture = '/static/photos/%s' % username
-                if self.gravatar:
-                    gravatar = self.get_gravatar(c.email, 32)
-                    if gravatar is not None:
-                        self.user_picture = gravatar
-                logger.info("[WebUI] User picture: %s", self.user_picture)
-                return c is not None
-        except Exception, exp:
-            print exp.__dict__
-            logger.warning("[WebUI] The mod %s raise an exception: %s, I'm tagging it to restart later", self.auth_module.get_name(), str(exp))
-            logger.debug("[WebUI] Exception type: %s", type(exp))
-            logger.debug("Back trace of this kill: %s" % (traceback.format_exc()))
-            self.modules_manager.set_to_restart(self.auth_module)
+        r = self.auth_module.check_auth(username, password)
+        if r:
+            # :TODO:maethor:150724: Remove this, nothing to do here
+            # Define user picture
+            self.user_picture = '/static/photos/%s' % username
+            if self.gravatar:
+                gravatar = self.get_gravatar(c.email, 32)
+                if gravatar is not None:
+                    self.user_picture = gravatar
+            logger.info("[WebUI] User picture: %s", self.user_picture)
+            return c is not None
 
         return False
 
@@ -691,17 +661,11 @@ class Webui_broker(BaseModule, Daemon):
     ##
     # Check if a graphs module is declared in webui.cfg
     ##
+    # :TODO:maethor:150727: Remove this method (duplicate module)
     def get_graph_uris(self, elt, graphstart, graphend, source='detail'):
-        logger.debug("[WebUI] Fetching graph URIs for %s (%s)", elt.host_name, source)
+        return self.graphs_module.get_graph_uris(elt, graphstart, graphend, source)
 
-        uris = []
-        if self.graphs_module:
-            uris = self.graphs_module.get_graph_uris(elt, graphstart, graphend, source)
-            logger.debug("[WebUI] Got graphs: %s", uris)
-        return uris
-
-
-    def get_graph_img_src(self,uri,link):
+    def get_graph_img_src(self, uri, link):
         url=uri
         lk=link
         if self.embeded_graph:
@@ -709,91 +673,6 @@ class Webui_broker(BaseModule, Daemon):
             url="data:image/png;base64,{0}".format(data)
             lk=''
         return (url,lk)
-
-
-    # ------------------------------------------------------------------------------------------
-    # Manage helpdesk data
-    # ------------------------------------------------------------------------------------------
-    ##
-    # Check if an helpdesk module is declared in webui.cfg
-    ##
-    #def has_helpdesk_module(self):
-        #logger.debug("[WebUI] searching external module for helpdesk ...")
-        #self.get_tickets = None
-        #self.create_ticket = None
-        #self.get_helpdesk_configuration = None
-        #for mod in self.modules_manager.get_internal_instances():
-            #f = getattr(mod, 'get_ui_tickets', None)
-            #if f and callable(f):
-                #logger.info("[WebUI] Found helpdesk module: %s, get_ui_tickets", mod.get_name())
-                #self.get_tickets = f
-                
-                #f = getattr(mod, 'get_ui_helpdesk_configuration', None)
-                #if f and callable(f):
-                    #logger.info("[WebUI] Found helpdesk module: %s, get_ui_helpdesk_configuration", mod.get_name())
-                    #self.get_helpdesk_configuration = f
-                    
-                    #f = getattr(mod, 'set_ui_ticket', None)
-                    #if f and callable(f):
-                        #logger.info("[WebUI] Found helpdesk module: %s, set_ui_ticket", mod.get_name())
-                        #self.create_ticket = f
-                        
-                        #return True
-        #return False
-
-
-    # ------------------------------------------------------------------------------------------
-    # Manage common / user's preferences
-    # ------------------------------------------------------------------------------------------
-    # :TODO:maethor:150724: Remove this methods
-    ##
-    # Get all user preferences
-    ##
-    def get_user_preferences(self):
-        logger.debug("[WebUI] Fetching all user preferences ...")
-
-        user = request.environ['USER']
-        return self.get_user_preference(user)
-
-    ##
-    # Get a user preference by name
-    ##
-    def get_user_preference(self, user, key=None, default=None):
-        logger.debug("[WebUI] Fetching user preference for: %s / %s", user.get_name(), key)
-        return self.prefs_module.get_ui_user_preference(user, key) or default
-
-    ##
-    # Set a user preference by name / value
-    ##
-    def set_user_preference(self, user, key, value):
-        logger.debug("[WebUI] Saving user preference for: %s / %s", user.get_name(), key)
-        return self.prefs_module.set_ui_user_preference(user, key, value)
-
-    ##
-    # Get a common preference by name
-    ##
-    def get_common_preference(self, key, default=None):
-        logger.debug("[WebUI] Fetching common preference for: %s", key)
-        return self.prefs_module.get_ui_common_preference(key) or default
-
-    ##
-    # Set a common preference by name / value
-    ##
-    def set_common_preference(self, key, value):
-        logger.debug("[WebUI] Saving common preference: %s = %s", key, value)
-        return self.prefs_module.set_ui_common_preference(key, value)
-
-    ##
-    # Get/set user's bookmarks
-    ##
-    def get_user_bookmarks(self, user):
-        ''' Returns the user bookmarks. '''
-        return json.loads(self.get_user_preference(user, 'bookmarks') or '[]')
-
-    def get_common_bookmarks(self):
-        ''' Returns the common bookmarks. '''
-        return json.loads(self.get_common_preference('bookmarks') or '[]')
-
 
     # TODO : move this function to dashboard plugin
     # For a specific place like dashboard we return widget lists
