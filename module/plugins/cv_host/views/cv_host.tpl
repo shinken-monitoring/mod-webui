@@ -392,7 +392,7 @@
                      rotateTicks: {{0 if len(all_perfs['network']) < 5 else 60}}, 
                      tickFormatter: function(val, axis) {
                         var values=[];
-                        %for mem in all_perfs['network']:
+                        %for net in all_perfs['network']:
                            values.push('{{net}}');
                         %end
                         
