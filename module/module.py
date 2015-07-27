@@ -46,7 +46,6 @@ import json
 from shinken.basemodule import BaseModule
 from shinken.message import Message
 from shinken.misc.regenerator import Regenerator
-# from webui_regenerator import WebUIRegenerator
 from shinken.log import logger
 from shinken.modulesctx import modulesctx
 from shinken.modulesmanager import ModulesManager
@@ -86,7 +85,7 @@ def get_instance(plugin):
     bottle.TEMPLATE_PATH.append(webuimod_dir)
 
     instance = Webui_broker(plugin)
-    logger.info("[WebUI] got an instance for plugin: %s", plugin.get_name())
+    logger.info("[WebUI] got an instance of Webui_broker for module: %s", plugin.get_name())
     return instance
 
 
@@ -188,10 +187,9 @@ class Webui_broker(BaseModule, Daemon):
 
         # We need our regenerator now (before main) so if we are in a scheduler,
         # rg will be able to skip some broks
-        # self.rg = WebUIRegenerator()
         self.rg = Regenerator()
 
-        # Mu bottle object ...
+        # My bottle object ...
         self.bottle = bottle
 
         bottle.BaseTemplate.defaults['app'] = self
@@ -442,6 +440,8 @@ class Webui_broker(BaseModule, Daemon):
                 try:
                     self.rg.manage_brok(b)
 
+                    # Do not send broks to internal modules ... 
+                    # No internal WebUI modules have something to do with broks!
                     for mod in self.modules_manager.get_internal_instances():
                         try:
                             mod.manage_brok(b)
