@@ -44,10 +44,7 @@ if (refresh_logs) console.debug("Refresh active is ", sessionStorage.getItem("re
 function postpone_refresh(){
    // If we are not in our first try, warn the user
    if (nb_refresh_try > 0){
-      $.meow({
-         message: 'The UI backend is not available.',
-         icon: '/static/images/ui_notifications/ko.png'
-      });
+      alertify.log("The Web UI backend is not available", "info", 5000);
    }
    nb_refresh_try += 1;
    
