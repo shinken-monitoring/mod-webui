@@ -66,31 +66,29 @@
    <ul class="nav navbar-top-links navbar-right">
       <!-- Do not remove the next comment!
          Everything between 'begin-hosts-states' comment and 'end-hosts-states' comment 
-         is used by the layout page refresh.
+         may be used by the layout page refresh.
       -->
       <!--begin-hosts-states-->
       <li id="overall-hosts-states">
-         %host_state = app.datamgr.get_percentage_hosts_state(user, False)
+         %state = app.datamgr.get_percentage_hosts_state(user, False)
+         %label = 'danger' if state <= app.hosts_states_warning else 'warning' if state <= app.hosts_states_critical else 'success'
          <a id="hosts-states-popover" href="/all?search=type:host" data-original-title="Hosts states" data-toggle="popover" title="Overall hosts states, {{h['nb_elts']}} hosts, {{h["nb_down"]+h["nb_unreachable"]}} problems" data-html="true" data-trigger="hover">
             <i class="fa fa-server"></i>
-            %state = 100.0-h['pct_up']
-            %threshold_warning=5.0
-            %threshold_critical=10.0
-            %label='success' if state < threshold_warning else 'warning' if state < threshold_critical else 'danger'
             <span class="label label-as-badge label-{{label}}">{{ len(app.datamgr.get_problems(user=user, type='host')) }}</span>
          </a>
       </li>
       <!--end-hosts-states-->
    
+      <!-- Do not remove the next comment!
+         Everything between 'begin-services-states' comment and 'end-services-states' comment 
+         may be used by the layout page refresh.
+      -->
       <!--begin-services-states-->
       <li id="overall-services-states">
-         %service_state = app.datamgr.get_percentage_service_state(user, False)
+         %state = app.datamgr.get_percentage_service_state(user, False)
+         %label = 'danger' if state <= app.services_states_warning else 'warning' if state <= app.services_states_critical else 'success'
          <a id="services-states-popover" href="/all?search=type:service" data-original-title="Services states" data-toggle="popover popover-services" title="Overall services states, {{s['nb_elts']}} services, {{s["nb_critical"]+s["nb_warning"]}} problems" data-html="true" data-trigger="hover">
             <i class="fa fa-bars"></i>
-            %state = 100-s['pct_ok']
-            %threshold_warning=5.0
-            %threshold_critical=10.0
-            %label='success' if state < threshold_warning else 'warning' if state < threshold_critical else 'danger'
             <span class="label label-as-badge label-{{label}}">{{ len(app.datamgr.get_problems(user=user, type='service')) }}</span>
          </a>
       </li>
