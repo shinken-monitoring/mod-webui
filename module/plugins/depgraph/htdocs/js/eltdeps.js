@@ -22,6 +22,8 @@
 */
 
 
+var depgraph_logs=true;
+
 
 var labelType, useGradients, nativeTextSupport, animate;
 
@@ -90,9 +92,8 @@ function change_rgraph_root(root){
 }
 
 function init_graph(root, jsgraph, width, height, inject) {
-   
-   if(typeof $jit === "undefined"){
-      console.log('depgraph - Warning : there is no $jit, I postpone my init for 1s');
+   if (typeof $jit === "undefined") {
+      if (depgraph_logs) console.log('depgraph - Warning : there is no $jit, I postpone my init for 1s');
       // Still not load $jit? racing problems are a nightmare :)
       // Ok, we retry in the next second...
       setTimeout(function(){init_graph(root,jsgraph,width,height,inject)},1000);
@@ -100,7 +101,7 @@ function init_graph(root, jsgraph, width, height, inject) {
       return;
    }
 
-   console.log('depgraph - On load is ok!');
+   if (depgraph_logs) console.log('depgraph - On load is ok!');
    //init data
    //If a node in this JSON structure
    //has the "$type" or "$dim" parameters
