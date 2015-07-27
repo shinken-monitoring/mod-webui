@@ -114,3 +114,6 @@ function on_page_refresh() {
       $('.impact[id="'+impact_to_expand+'"]').trigger('click');
    }
 }
+
+// First page loading ...
+on_page_refresh();

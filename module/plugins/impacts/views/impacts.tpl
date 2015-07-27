@@ -4,7 +4,13 @@
 %rebase("layout", css=['impacts/css/impacts.css'], js=['impacts/js/impacts.js'], title='All critical impacts for your business', refresh=True)
 
 
-<div id="impact-container">
+<div id="impacts-container">
+   %if not impacts:
+   <center>
+     <h3>No impacts.</h3>
+   </center>
+   %else:
+
    <div class="impacts-panel col-sm-5">
       %# " We look for separate bad and good elements, so we remember last state"
       %last_was_bad = False
@@ -176,8 +182,5 @@
       %# end for imp_id in impacts:
       %end
    </div>
+   %end
 </div>
-
-<script type="text/javascript">
-   on_page_refresh();
-</script>
