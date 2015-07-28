@@ -221,7 +221,7 @@
                      <div class="control-group">
                         <label class="control-label" for="app_release">Release notes</label>
                         <div class="controls">
-                           <input readonly="" name="app_release" type="text" class="form-control" placeholder="Not set" class="input-medium" value="{{app.app_release if app is not None else ''}}">
+                           <textarea readonly="" name="app_release" rows="5" class="form-control" placeholder="Not set">{{app.app_release if app is not None else ''}}</textarea>
                         </div>
                      </div>
                   </fieldset>
