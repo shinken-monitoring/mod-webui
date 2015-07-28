@@ -166,6 +166,7 @@ class Webui_broker(BaseModule, Daemon):
         self.additional_plugins_dir = getattr(modconf, 'additional_plugins_dir', '')
         if self.additional_plugins_dir:
             self.additional_plugins_dir = os.path.abspath(self.additional_plugins_dir)
+        logger.info("[WebUI] Additional plugins dir: %s", self.additional_plugins_dir)
 
         self.timezone = getattr(modconf, 'timezone', 'Europe/Paris')
         if self.timezone:
@@ -473,7 +474,7 @@ class Webui_broker(BaseModule, Daemon):
             # Put the full qualified path of the module we want to load
             # for example we will give  webui/plugins/eltdetail/
             mod_path = os.path.join(plugin_dir, fdir)
-            # Then we load the eltdetail.py inside this directory
+            # Then we load the plugin.py inside this directory
             m = imp.load_module('%s' % (fdir), *imp.find_module(fdir, [mod_path]))
             m_dir = os.path.abspath(os.path.dirname(m.__file__))
             sys.path.append(m_dir)
