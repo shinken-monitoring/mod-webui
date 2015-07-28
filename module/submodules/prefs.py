@@ -74,16 +74,16 @@ class MongoDBPreferences():
             import pymongo
             from pymongo import MongoClient
         except ImportError:
-            logger.error('[WebUI - MongoDB] Can not import pymongo and/or MongoClient'
+            logger.error('[WebUI-MongoDBPreferences] Can not import pymongo and/or MongoClient'
                          'Your pymongo lib is too old. '
                          'Please install it with a 3.x+ version from '
                          'https://pypi.python.org/pypi/pymongo')
             raise
         self.uri = getattr(mod_conf, 'uri', 'mongodb://localhost/?safe=false')
-        logger.info('[WebUI - MongoDB] mongo uri: %s' % self.uri)
+        logger.info('[WebUI-MongoDBPreferences] mongo uri: %s' % self.uri)
         self.replica_set = getattr(mod_conf, 'replica_set', None)
         if self.replica_set and int(pymongo.version[0]) < 3:
-            logger.error('[WebUI - MongoDB] Can not initialize module with '
+            logger.error('[WebUI-MongoDBPreferences] Can not initialize module with '
                          'replica_set because your pymongo lib is too old. '
                          'Please install it with a 3.x+ version from '
                          'https://pypi.python.org/pypi/pymongo')
@@ -91,12 +91,12 @@ class MongoDBPreferences():
         self.database = getattr(mod_conf, 'database', 'shinken')
         self.username = getattr(mod_conf, 'username', None)
         self.password = getattr(mod_conf, 'password', None)
-        logger.info('[WebUI - MongoDB] database: %s' % self.database)
+        logger.info('[WebUI-MongoDBPreferences] database: %s' % self.database)
 
         self.con = None
         self.db = None
 
-        logger.info("[WebUI - MongoDB] Try to open a Mongodb connection to %s, database: %s" % (self.uri, self.database))
+        logger.info("[WebUI-MongoDBPreferences] Try to open a Mongodb connection to %s, database: %s" % (self.uri, self.database))
         try:
             if self.replica_set:
                 self.con = MongoClient(self.uri, replicaSet=self.replica_set, fsync=False)
@@ -107,24 +107,24 @@ class MongoDBPreferences():
             if self.username and self.password:
                 self.db.authenticate(self.username, self.password)
         except Exception, e:
-            logger.warning("[WebUI - MongoDB] Exception type: %s", type(e))
-            logger.warning("[WebUI - MongoDB] Back trace of this kill: %s", traceback.format_exc())
+            logger.warning("[WebUI-MongoDBPreferences] Exception type: %s", type(e))
+            logger.warning("[WebUI-MongoDBPreferences] Back trace of this kill: %s", traceback.format_exc())
             # Depending on exception type, should raise ...
             
-        logger.info("[WebUI - MongoDB] Connection OK")
+        logger.info("[WebUI-MongoDBPreferences] Connection OK")
 
     # We will get in the mongodb database the user preference entry, for the 'shinken-global' user
     # and get the key they are asking us
     def get_ui_common_preference(self, key):
         if not self.db:
-            logger.error("[WebUI - MongoDB] error during initialization, no database connection!")
+            logger.error("[WebUI-MongoDBPreferences] error during initialization, no database connection!")
             return None
 
         e = self.db.ui_user_preferences.find_one({'_id': 'shinken-global'})
 
         # Maybe it's a new entryor missing this parameter, bail out
         if not e or key not in e:
-            logger.warning("[WebUI - MongoDB] error during initialization, no database connection")
+            logger.warning("[WebUI-MongoDBPreferences] error during initialization, no database connection")
             return None
 
         return e.get(key)
@@ -133,11 +133,11 @@ class MongoDBPreferences():
     # they are asking us
     def get_ui_user_preference(self, user, key):
         if not self.db:
-            logger.error("[WebUI - MongoDB] error during initialization, no database connection!")
+            logger.error("[WebUI-MongoDBPreferences] error during initialization, no database connection!")
             return None
 
         if not user:
-            print '[WebUI - MongoDB]: error get_ui_user_preference, no user'
+            print '[WebUI-MongoDBPreferences]: error get_ui_user_preference, no user'
             return None
 
         e = self.db.ui_user_preferences.find_one({'_id': user.get_name()})
@@ -155,11 +155,11 @@ class MongoDBPreferences():
     # Same but for saving
     def set_ui_user_preference(self, user, key, value):
         if not self.db:
-            logger.error("[WebUI - MongoDB] error during initialization, no database connection!")
+            logger.error("[WebUI-MongoDBPreferences] error during initialization, no database connection!")
             return None
 
         if not user:
-            logger.warning("[WebUI - MongoDB] error set_ui_user_preference, no user!")
+            logger.warning("[WebUI-MongoDBPreferences] error set_ui_user_preference, no user!")
             return None
 
         # check a collection exist for this user
@@ -174,16 +174,16 @@ class MongoDBPreferences():
             # Maybe the user exist, if so, get the whole user entry
             u = self.db.ui_user_preferences.find_one({'_id': user.get_name()})
             if not u:
-                logger.debug ("[WebUI - MongoDB] No user entry for %s, I create a new one", user.get_name())
+                logger.debug ("[WebUI-MongoDBPreferences] No user entry for %s, I create a new one", user.get_name())
                 self.db.ui_user_preferences.save({'_id': user.get_name(), key: value})
             else:  # ok, it was just the key that was missing, just update it and save it
                 u[key] = value
-                logger.debug ("[WebUI - MongoDB] Just saving the new key in the user pref")
+                logger.debug ("[WebUI-MongoDBPreferences] Just saving the new key in the user pref")
                 self.db.ui_user_preferences.save(u)
 
     def set_ui_common_preference(self, key, value):
         if not self.db:
-            logger.error("[WebUI - MongoDB] error during initialization, no database connection!")
+            logger.error("[WebUI-MongoDBPreferences] error during initialization, no database connection!")
             return None
 
         # check a collection exist for this user
