@@ -11,7 +11,7 @@ from submodules.metamodule import MetaModule
 class HelpdeskMetaModule(MetaModule):
 
     _functions = ['get_ui_tickets', 'get_ui_helpdesk_configuration']
-    _custom_log = "You should configure the module 'glpi-tickets' in webui.cfg file to get helpdesk information."
+    _custom_log = "You should configure the module 'glpi-helpdesk' in webui.cfg file to get helpdesk information."
 
     def get_ui_tickets(self, name):
         ''' Aggregates the `get_ui_tickets` output of all the submodules. '''
