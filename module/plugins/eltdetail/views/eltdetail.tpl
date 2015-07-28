@@ -13,50 +13,46 @@ Invalid element name
 
 %from shinken.macroresolver import MacroResolver
 
+%# Main variables
 %elt_type = elt.__class__.my_type
+%elt_host = elt if elt_type=='host' else elt.host
+%elt_service = elt if elt_type=='service' else None
+%elt_name = elt.host_name if elt_type=='host' else elt.host.host_name+'/'+elt.service_description
+%elt_display_name = elt_host.display_name if elt_type=='host' else elt_service.display_name+' on '+elt_host.display_name
 
 %business_rule = False
 %if elt.get_check_command().startswith('bp_rule'):
 %business_rule = True
 %end
 
-%if elt_type=='host':
-%breadcrumb = [ ['All hosts', '/hosts-groups'], [elt.host_name, '/host/'+elt.host_name] ]
-%title = 'Host detail: ' + elt.host_name
-%else:
-%breadcrumb = [ ['All services', '/services-groups'], [elt.host.host_name, '/host/'+elt.host.host_name], [elt.service_description, '/service/'+elt.host.host_name+'/'+elt.service_description] ]
-%title = 'Service detail: ' + elt.service_description+' on '+elt.host.host_name
+%breadcrumb = [ ['All '+elt_type.title()+'s', '/'+elt_type+'s-groups'], [elt_host.display_name, '/host/'+elt_host.host_name] ]
+%title = elt_type.title()+' detail: ' + elt_display_name
+%if elt_service:
+%breadcrumb += [[elt_service.display_name, '/service/'+elt_name] ]
 %end
 
 %js=['eltdetail/js/flot/jquery.flot.min.js', 'eltdetail/js/flot/jquery.flot.tickrotor.js', 'eltdetail/js/flot/jquery.flot.resize.min.js', 'eltdetail/js/flot/jquery.flot.pie.min.js', 'eltdetail/js/flot/jquery.flot.categories.min.js', 'eltdetail/js/flot/jquery.flot.time.min.js', 'eltdetail/js/flot/jquery.flot.stack.min.js', 'eltdetail/js/flot/jquery.flot.valuelabels.js',  'eltdetail/js/jquery.color.js', 'eltdetail/js/bootstrap-switch.min.js', 'eltdetail/js/graphs.js', 'eltdetail/js/custom_views.js', 'eltdetail/js/eltdetail.js']
 %css=['eltdetail/css/bootstrap-switch.min.css', 'eltdetail/css/eltdetail.css']
 %rebase("layout", js=js, css=css, breadcrumb=breadcrumb, title=title)
 
-%# Main variables
-%elt_name = elt.host_name if elt_type=='host' else elt.service_description+' on '+elt.host.host_name
-%elt_display_name = elt.display_name if elt_type=='host' else elt.service_description
+<div id="element" class="row container-fluid">
 
-<div id="element">
+   %groups=elt_service.servicegroups if elt_service else elt_host.hostgroups
+   %tags=elt_service.get_service_tags() if elt_service else elt_host.get_host_tags()
+
+
    <!-- First row : tags and actions ... -->
-   %if elt.action_url != '' or (elt_type=='host' and len(elt.get_host_tags()) != 0) or (elt_type=='service' and len(elt.get_service_tags()) != 0) or (elt_type=='host' and len(elt.hostgroups) > 0) or (elt_type=='service' and len(elt.servicegroups) > 0):
+   %if elt.action_url != '' or len(tags)>0 or len(groups) > 0:
    <div>
-      %if (elt_type=='host' and len(elt.hostgroups) > 0) or (elt_type=='service' and len(elt.servicegroups) > 0):
+      %if len(groups) > 0:
       <div class="btn-group pull-right">
          <button class="btn btn-primary btn-xs"><i class="fa fa-sitemap"></i> Groups</button>
          <button class="btn btn-primary btn-xs dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>
          <ul class="dropdown-menu pull-right">
-         %if elt_type=='host':
-            %for hg in elt.hostgroups:
+         %for g in groups:
             <li>
-            <a href="/hosts-group/{{hg.get_name()}}">{{hg.alias if hg.alias else hg.get_name()}}</a>
+            <a href="/{{elt_type}}s-group/{{g.get_name()}}">{{g.alias if g.alias else g.get_name()}}</a>
             </li>
-            %end
-         %else:
-            %for sg in elt.servicegroups:
-            <li>
-            <a href="/services-group/{{sg.get_name()}}">{{sg.alias if sg.alias else sg.get_name()}}</a>
-            </li>
-            %end
          %end
          </ul>
       </div>
@@ -76,33 +72,17 @@ Invalid element name
       </div>
       <div class="pull-right">&nbsp;&nbsp;</div>
       %end
-      %if hasattr(elt, 'get_host_tags') and len(elt.get_host_tags()) != 0:
+      %if len(tags)>0:
+      %tag=elt_type[0]+'tag'
       <div class="btn-group pull-right">
-         %i=0
-         %for t in sorted(elt.get_host_tags()):
-            <a href="/all?search=htag:{{t}}">
+         %for t in sorted(tags):
+            <a href="/all?search={{tag}}:{{t}}">
                %if app.tag_as_image:
                <img src="/tag/{{t.lower()}}" alt="{{t.lower()}}" =title="Tag: {{t.lower()}}" style="height: 24px"></img>
                %else:
                <button class="btn btn-default btn-xs"><i class="fa fa-tag"></i> {{t.lower()}}</button>
                %end
             </a>
-            %i=i+1
-         %end
-      </div>
-      %end
-      %if hasattr(elt, 'get_service_tags') and len(elt.get_service_tags()) != 0:
-      <div class="btn-group pull-right">
-         %i=0
-         %for t in sorted(elt.get_service_tags()):
-            <a href="/all?search=stag:{{t}}">
-               %if app.tag_as_image:
-               <img src="/tag/{{t.lower()}}" alt="{{t.lower()}}" =title="Tag: {{t.lower()}}" style="height: 24px"></img>
-               %else:
-               <button class="btn btn-default btn-xs"><i class="fa fa-tag"></i> {{t.lower()}}</button>
-               %end
-            </a>
-            %i=i+1
          %end
       </div>
       %end
@@ -111,18 +91,18 @@ Invalid element name
 
    <!-- Second row : host/service overview ... -->
    <div class="panel panel-default">
-      <div class="panel-heading cursor" data-toggle="collapse" data-parent="#Overview" href="#collapseOverview">
-         <h4 class="panel-title"><span class="caret"></span>&nbsp;Overview {{elt_name}} ({{elt.display_name if elt.display_name else elt.alias if elt.alias else 'none'}}) {{!helper.get_business_impact_text(elt.business_impact)}}</h4>
+      <div class="panel-heading fitted-header cursor" data-toggle="collapse" data-parent="#Overview" href="#collapseOverview">
+         <h4 class="panel-title"><span class="caret"></span>&nbsp;Overview {{elt_display_name}} {{!helper.get_business_impact_text(elt.business_impact)}}</h4>
       </div>
   
       <div id="collapseOverview" class="panel-body panel-collapse collapse">
          %if elt_type=='host':
          <dl class="col-sm-6 dl-horizontal">
             <dt>Alias:</dt>
-            <dd>{{elt.alias}}</dd>
+            <dd>{{elt_host.alias}}</dd>
 
             <dt>Address:</dt>
-            <dd>{{elt.address}}</dd>
+            <dd>{{elt_host.address}}</dd>
 
             <dt>Importance:</dt>
             <dd>{{!helper.get_business_impact_text(elt.business_impact, True)}}</dd>
@@ -130,25 +110,32 @@ Invalid element name
         
          <dl class="col-sm-6 dl-horizontal">
             <dt>Parents:</dt>
-            %if len(elt.parents) > 0:
+            %if len(elt_host.parents) > 0:
             <dd>
-            %for parent in elt.parents:
-            <a href="/host/{{parent.get_name()}}" class="link">{{parent.alias}} ({{parent.get_name()}})</a>
-            %end
+            %parents=['<a href="/host/'+parent.host_name+'" class="link">'+parent.display_name+'</a>' for parent in sorted(elt_host.parents,key=lambda x:x.display_name)]
+            {{!','.join(parents)}}
             </dd>
             %else:
             <dd>(none)</dd>
             %end
 
-
-            <dt>Member of:</dt>
-            %if len(elt.hostgroups) > 0:
+            <dt>Children:</dt>
+            %if len(elt_host.childs) > 0:
             <dd>
-            %i=0
-            %for hg in elt.hostgroups:
-            {{',' if i != 0 else ''}}
+            %children=['<a href="/host/'+child.host_name+'" class="link">'+child.display_name+'</a>' for child in sorted(elt_host.childs,key=lambda x:x.display_name)]
+            {{!','.join(children)}}
+            </dd>
+            %else:
+            <dd>(none)</dd>
+            %end
+         </dl>
+
+         <dl class="col-sm-6 dl-horizontal">
+            <dt>Member of:</dt>
+            %if len(elt_host.hostgroups) > 0:
+            <dd>
+            %for hg in elt_host.hostgroups:
             <a href="/hosts-group/{{hg.get_name()}}" class="link">{{hg.alias if hg.alias else hg.get_name()}}</a>
-            %i=i+1
             %end
             </dd>
             %else:
@@ -166,7 +153,7 @@ Invalid element name
          <dl class="col-sm-6 dl-horizontal">
             <dt>Host:</dt>
             <dd>
-               <a href="/host/{{elt.host.host_name}}" class="link">{{elt.host.host_name}} ({{elt.host.display_name if elt.host.display_name else elt.host.alias if elt.host.alias else 'none'}})</a>
+               <a href="/host/{{elt_host.host_name}}" class="link">{{elt_host.display_name}}</a>
             </dd>
 
             <dt>Importance:</dt>
@@ -175,12 +162,10 @@ Invalid element name
         
          <dl class="col-sm-6 dl-horizontal">
             <dt>Member of:</dt>
-            %if len(elt.servicegroups) > 0:
+            %if len(elt_service.servicegroups) > 0:
             <dd>
-            %i=0
-            %for sg in elt.servicegroups:
-            {{',' if i != 0 else ''}}
-            <a href="/services-group/{{sg.get_name()}}" class="link">{{sg.alias if sg.alias else sg.get_name()}}</a>
+            %for sg in elt_service.servicegroups:
+            <a href="/services-group/{{sg.get_name()}}" class="link">{{sg.alias}} ({{sg.get_name()}})</a>
             %end
             </dd>
             %else:
@@ -422,7 +407,7 @@ Invalid element name
                               
                               <tr>
                                  <td><strong>Last State Change:</strong></td>
-                                 <td>{{time.asctime(time.localtime(elt.last_state_change))}}</td>
+                                 <td><span class="popover-dismiss" data-html="true" data-toggle="popover" data-trigger="hover" data-placement="bottom" data-content="Last state change at {{time.asctime(time.localtime(elt.last_state_change))}}">{{helper.print_duration(elt.last_state_change)}}</span></td>
                               </tr>
                               <tr>                             
                                  <td><strong>Current Attempt:</strong></td>
@@ -706,7 +691,7 @@ Invalid element name
                               <tr>
                                  <td><strong>Contacts:</strong></td>
                                  %contacts=[]
-                                 %[contacts.append('<a href="/contact/'+item.contact_name+'">'+item.alias+'</a>' if item.alias else item.get_name()) for item in elt.contacts if item not in contacts]
+                                 %[contacts.append('<a href="/contact/'+item.contact_name+'">'+item.alias if item.alias else item.contact_name+'</a>') for item in elt.contacts if item not in contacts]
                                  <td>{{!', '.join(contacts)}}</td>
                               </tr>
                               <tr>
@@ -719,7 +704,7 @@ Invalid element name
                                  %cg = app.datamgr.get_contactgroup(group)
                                  <td style="text-align: right; font-style: italic;"><strong>{{cg.alias if cg.alias else cg.get_name()}}</strong></td>
                                  %contacts=[]
-                                 %[contacts.append('<a href="/contact/'+item.contact_name+'">'+item.alias+'</a>' if item.alias else item.get_name()) for item in cg.members if item not in contacts]
+                                 %[contacts.append('<a href="/contact/'+item.contact_name+'">'+item.alias if item.alias else item.contact_name+'</a>')  for item in cg.members if item not in contacts]
                                  <td>{{!', '.join(contacts)}}</td>
                                  %i=i+1
                               </tr>
