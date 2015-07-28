@@ -225,20 +225,27 @@ Invalid element name
    %if elt_type=='host':
    %synthesis = helper.get_synthesis(elt.services)
    %s = synthesis['services']
-   %h = synthesis['hosts']
    <div class="panel panel-default">
      <div class="panel-body">
        <table class="table table-invisible table-condensed">
          <tbody>
            <tr>
              <td>
-               <b>{{s['nb_elts']}} services:&nbsp;</b> 
+               <a role="menuitem" href="/all?search=type:service {{elt_name}}">
+                  <b>{{s['nb_elts']}} services:&nbsp;</b> 
+               </a>
              </td>
 
              %for state in 'ok', 'warning', 'critical', 'pending', 'unknown', 'ack', 'downtime':
              <td>
-               %label = "%s <i>(%s%%)</i>" % (s['nb_' + state], s['pct_' + state])
-               {{!helper.get_fa_icon_state_and_label(cls='service', state=state, label=label, disabled=(not s['nb_' + state]))}}
+               %if s['nb_' + state]>0:
+               <a role="menuitem" href="/all?search=type:service is:{{state}} {{elt_name}}">
+               %end
+                  %label = "%s <i>(%s%%)</i>" % (s['nb_' + state], s['pct_' + state])
+                  {{!helper.get_fa_icon_state_and_label(cls='service', state=state, label=label, disabled=(not s['nb_' + state]))}}
+               %if s['nb_' + state]>0:
+               </a>
+               %end
              </td>
              %end
            </tr>
