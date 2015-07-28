@@ -329,7 +329,7 @@
                      rotateTicks: {{0 if len(all_perfs['disks']) < 5 else 60}}, 
                      tickFormatter: function(val, axis) {
                         var values=[];
-                        %for mem in all_perfs['disks']:
+                        %for disk in all_perfs['disks']:
                            values.push('{{disk}}');
                         %end
                         
