@@ -198,7 +198,10 @@ Invalid element name
          <div style="margin-left: 60px;">
          %disabled_ack = '' if elt.is_problem and not elt.problem_has_been_acknowledged else 'disabled'
          %disabled_fix = '' if elt.is_problem and elt.event_handler_enabled and elt.event_handler else 'disabled'
-         <p class="alert alert-danger" style="margin-bottom:0">This element has an important impact on your business, you may <button name="bt-acknowledge" class="{{disabled_ack}} btn btn-primary btn-xs" data-toggle="tooltip" data-placement="bottom" title="Acknowledge this {{elt_type}} problem">acknowledge it</button> or <button name="bt-event-handler" class="{{disabled_fix}} btn btn-primary btn-xs" data-toggle="tooltip" data-placement="bottom" title="Launch the event handler for this {{elt_type}}">try to fix it</button>.</p>
+         <p class="alert alert-danger" style="margin-bottom:0">This element has an important impact on your business, you may 
+         <a href="#" action="add-acknowledge" class="{{disabled_ack}} btn btn-primary btn-xs" title="Acknowledge this {{elt_type}} problem" data-element="{{helper.get_uri_name(elt)}}"><i class="fa fa-check"></i> acknowledge it</a>
+         or 
+         <a href="#" action="event-handler" class="{{disabled_fix}} btn btn-primary btn-xs" title="Launch the event handler for this {{elt_type}}" data-element="{{helper.get_uri_name(elt)}}"><i class="fa fa-magic"></i> try to fix it</a>.</p>
          </div>
       </div>
    </div>
