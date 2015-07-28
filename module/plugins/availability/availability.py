@@ -46,7 +46,9 @@ def get_element(name):
 
 def get_page():
     # Find start and end date if provided in parameters ...
+    # Default is current day
     midnight_timestamp = time.mktime(datetime.date.today().timetuple())
+    
     range_start = int(app.request.GET.get('range_start', midnight_timestamp))
     range_end = int(app.request.GET.get('range_end', midnight_timestamp + 86399))
     logger.debug("[WebUI-availability] get_page, range: %d - %d", range_start, range_end)
