@@ -86,194 +86,190 @@
    var selected_elements = [];
    var eltdetail_logs=false;
 
-   function bind_actions() {
-      // Add a comment
-      $('[action="add-comment"]').click(function () {
-         var elt = $(this).data('element');
-         if (! elt) {
-            if (eltdetail_logs) console.error("Unavailable add a comment for a list of problems!")
-         } else {
-            if (eltdetail_logs) console.debug("Add a comment for: ", elt)
-            display_form("/forms/comment/add/"+elt);
-         }
-      });
-      
-      // Delete a comment
-      $('[action="delete-comment"]').click(function () {
-         var elt = $(this).data('element');
-         var comment = $(this).data('comment');
-         if (! elt) {
-            if (eltdetail_logs) console.error("Unavailable delete a comment for a list of problems!")
-         } else {
-            if (eltdetail_logs) console.debug("Delete comment '"+comment+"' for: ", elt)
-            
-            display_form("/forms/comment/delete/"+elt+"?comment="+comment);
-         }
-      });
-      
-      // Delete all comments
-      $('[action="delete-comments"]').click(function () {
-         var elt = $(this).data('element');
-         if (! elt) {
-            if (eltdetail_logs) console.error("Unavailable delete all comments for a list of problems!")
-         } else {
-            if (eltdetail_logs) console.debug("Delete all comments for: ", elt)
-            
-            display_form("/forms/comment/delete_all/"+elt);
-         }
-      });
-      
-      // Create a ticket ...
-      $('[action="create-ticket"]').click(function () {
-         var elt = $(this).data('element');
-         var user = $(this).data('user');
-         if (elt) {
-            if (eltdetail_logs) console.debug("Create a ticket for: ", elt)
-            
-            display_form("/helpdesk/ticket/add/"+$(this).data('element'));
-         }
-      });
-      
-      // Schedule a downtime ...
-      $('[action="schedule-downtime"]').click(function () {
-         var elt = $(this).data('element');
-         var user = $(this).data('user');
-         if (! elt) {
-            // Initial start/stop for downtime, do not consider seconds ...
-            var downtime_start = moment().seconds(0);
-            var downtime_stop = moment().seconds(0).add('day', 1);
-
-            $.each(selected_elements, function(idx, name){
-               if (eltdetail_logs) console.debug("Schedule a downtime for: ", name)
-               do_schedule_downtime(name, downtime_start.format('X'), downtime_stop.format('X'), user, 'One day downtime scheduled by '+user);
-            });
-            flush_selected_elements();
-         } else {
-            if (eltdetail_logs) console.debug("Schedule a downtime for: ", elt)
-            
-            display_form("/forms/downtime/add/"+$(this).data('element'));
-         }
-      });
-      
-      // Delete a downtime
-      $('[action="delete-downtime"]').click(function () {
-         var elt = $(this).data('element');
-         var downtime = $(this).data('downtime');
-         if (! elt) {
-            if (eltdetail_logs) console.error("Unavailable delete a downtime for a list of problems!")
-         } else {
-            if (eltdetail_logs) console.debug("Delete downtime '"+downtime+"' for: ", elt)
-            
-            display_form("/forms/downtime/delete/"+elt+"?downtime="+downtime);
-         }
-      });
-      
-      // Delete all downtimes
-      $('[action="delete-downtimes"]').click(function () {
-         var elt = $(this).data('element');
-         if (! elt) {
-            if (eltdetail_logs) console.error("Unavailable delete all downtimes for a list of problems!")
-         } else {
-            if (eltdetail_logs) console.debug("Delete all downtimes for: ", elt)
-            
-            display_form("/forms/downtime/delete_all/"+$(this).data('element'));
-         }
-      });
-      
-      // Add an acknowledge
-      $('[action="add-acknowledge"]').click(function () {
-         var elt = $(this).data('element');
-         var user = $(this).data('user');
-         if (! elt) {
-            $.each(selected_elements, function(idx, name){
-               if (eltdetail_logs) console.debug("Add acknowledge for: ", name)
-               do_acknowledge(name, 'Acknowledged by '+user, user);
-            });
-            flush_selected_elements();
-         } else {
-            if (eltdetail_logs) console.debug("Button - add an acknowledge for: ", elt)
-            
-            display_form("/forms/acknowledge/add/"+elt);
-         }
-      });
-
-      // Delete an acknowledge
-      $('[action="remove-acknowledge"]').click(function () {
-         var elt = $(this).data('element');
-         if (! elt) {
-            if (eltdetail_logs) console.error("Unavailable delete acknowledge for a list of problems!")
-         } else {
-            if (eltdetail_logs) console.debug("Delete an acknowledge for: ", elt)
-            
-            display_form("/forms/acknowledge/remove/"+elt);
-         }
-      });
-      
-      // Recheck
-      $('[action="recheck"]').click(function () {
-         var elt = $(this).data('element');
-         if (! elt) {
-            $.each(selected_elements, function(idx, name){
-               if (eltdetail_logs) console.debug("Recheck for: ", name)
-               recheck_now(name);
-            });
-            flush_selected_elements();
-         } else {
-            if (eltdetail_logs) console.debug("Recheck for: ", elt)
-            recheck_now(elt);
-         }
-      });
-
-      // Check result
-      $('[action="check-result"]').click(function () {
-         var elt = $(this).data('element');
-         var user = $(this).data('user');
-         if (! elt) {
-            $.each(selected_elements, function(idx, name){
-               if (eltdetail_logs) console.debug("Submit check for: ", name)
-               submit_check(name, '0', 'Forced OK/UP by '+user);
-            });
-            flush_selected_elements();
-         } else {
-            if (eltdetail_logs) console.debug("Submit a check result for: ", elt)
-            
-            display_form("/forms/submit_check/"+elt);
-         }
-      });
-
-      // Event handler
-      $('[action="event-handler"]').click(function () {
-         var elt = $(this).data('element');
-         if (! elt) {
-            $.each(selected_elements, function(idx, name){
-               if (eltdetail_logs) console.debug("Try to fix for: ", name)
-               try_to_fix(name);
-            });
-            flush_selected_elements();
-         } else {
-            if (eltdetail_logs) console.debug("Try to fix: ", elt)
-            
-            try_to_fix(elt);
-         }
-      });
-
-      // Ignore checks
-      $('[action="ignore-checks"]').click(function () {
-         var elt = $(this).data('element');
-         var user = $(this).data('user');
-         if (! elt) {
-            $.each(selected_elements, function(idx, name){
-               if (eltdetail_logs) console.debug("Remove for: ", name)
-               do_remove(name, 'Removed by '+user, user);
-            });
-            flush_selected_elements();
-         } else {
-            if (problems_logs) console.debug("Remove for: ", elt)
-            
-            do_remove(elt, 'Removed by '+user, user);
-         }
-      });
-   }
+   // Add a comment
+   $('body').on("click", '[action="add-comment"]', function () {
+      var elt = $(this).data('element');
+      if (! elt) {
+         if (eltdetail_logs) console.error("Unavailable add a comment for a list of problems!")
+      } else {
+         if (eltdetail_logs) console.debug("Add a comment for: ", elt)
+         display_form("/forms/comment/add/"+elt);
+      }
+   });
    
-   bind_actions();
+   // Delete a comment
+   $('body').on("click", '[action="delete-comment"]', function () {
+      var elt = $(this).data('element');
+      var comment = $(this).data('comment');
+      if (! elt) {
+         if (eltdetail_logs) console.error("Unavailable delete a comment for a list of problems!")
+      } else {
+         if (eltdetail_logs) console.debug("Delete comment '"+comment+"' for: ", elt)
+         
+         display_form("/forms/comment/delete/"+elt+"?comment="+comment);
+      }
+   });
+   
+   // Delete all comments
+   $('body').on("click", '[action="delete-comments"]', function () {
+      var elt = $(this).data('element');
+      if (! elt) {
+         if (eltdetail_logs) console.error("Unavailable delete all comments for a list of problems!")
+      } else {
+         if (eltdetail_logs) console.debug("Delete all comments for: ", elt)
+         
+         display_form("/forms/comment/delete_all/"+elt);
+      }
+   });
+   
+   // Schedule a downtime ...
+   $('body').on("click", '[action="schedule-downtime"]', function () {
+      var elt = $(this).data('element');
+      var user = $(this).data('user');
+      if (! elt) {
+         // Initial start/stop for downtime, do not consider seconds ...
+         var downtime_start = moment().seconds(0);
+         var downtime_stop = moment().seconds(0).add('day', 1);
+
+         $.each(selected_elements, function(idx, name){
+            if (eltdetail_logs) console.debug("Schedule a downtime for: ", name)
+            do_schedule_downtime(name, downtime_start.format('X'), downtime_stop.format('X'), user, 'One day downtime scheduled by '+user);
+         });
+         flush_selected_elements();
+      } else {
+         if (eltdetail_logs) console.debug("Schedule a downtime for: ", elt)
+         
+         display_form("/forms/downtime/add/"+$(this).data('element'));
+      }
+   });
+   
+   // Delete a downtime
+   $('body').on("click", '[action="delete-downtime"]', function () {
+      var elt = $(this).data('element');
+      var downtime = $(this).data('downtime');
+      if (! elt) {
+         if (eltdetail_logs) console.error("Unavailable delete a downtime for a list of problems!")
+      } else {
+         if (eltdetail_logs) console.debug("Delete downtime '"+downtime+"' for: ", elt)
+         
+         display_form("/forms/downtime/delete/"+elt+"?downtime="+downtime);
+      }
+   });
+   
+   // Delete all downtimes
+   $('body').on("click", '[action="delete-downtimes"]', function () {
+      var elt = $(this).data('element');
+      if (! elt) {
+         if (eltdetail_logs) console.error("Unavailable delete all downtimes for a list of problems!")
+      } else {
+         if (eltdetail_logs) console.debug("Delete all downtimes for: ", elt)
+         
+         display_form("/forms/downtime/delete_all/"+$(this).data('element'));
+      }
+   });
+   
+   // Add an acknowledge
+   $('body').on("click", '[action="add-acknowledge"]', function () {
+      var elt = $(this).data('element');
+      var user = $(this).data('user');
+      if (! elt) {
+         $.each(selected_elements, function(idx, name){
+            if (eltdetail_logs) console.debug("Add acknowledge for: ", name)
+            do_acknowledge(name, 'Acknowledged by '+user, user);
+         });
+         flush_selected_elements();
+      } else {
+         if (eltdetail_logs) console.debug("Button - add an acknowledge for: ", elt)
+         
+         display_form("/forms/acknowledge/add/"+elt);
+      }
+   });
+
+   // Delete an acknowledge
+   $('body').on("click", '[action="remove-acknowledge"]', function () {
+      var elt = $(this).data('element');
+      if (! elt) {
+         if (eltdetail_logs) console.error("Unavailable delete acknowledge for a list of problems!")
+      } else {
+         if (eltdetail_logs) console.debug("Delete an acknowledge for: ", elt)
+         
+         display_form("/forms/acknowledge/remove/"+elt);
+      }
+   });
+   
+   // Recheck
+   $('body').on("click", '[action="recheck"]', function () {
+      var elt = $(this).data('element');
+      if (! elt) {
+         $.each(selected_elements, function(idx, name){
+            if (eltdetail_logs) console.debug("Recheck for: ", name)
+            recheck_now(name);
+         });
+         flush_selected_elements();
+      } else {
+         if (eltdetail_logs) console.debug("Recheck for: ", elt)
+         recheck_now(elt);
+      }
+   });
+
+   // Check result
+   $('body').on("click", '[action="check-result"]', function () {
+      var elt = $(this).data('element');
+      var user = $(this).data('user');
+      if (! elt) {
+         $.each(selected_elements, function(idx, name){
+            if (eltdetail_logs) console.debug("Submit check for: ", name)
+            submit_check(name, '0', 'Forced OK/UP by '+user);
+         });
+         flush_selected_elements();
+      } else {
+         if (eltdetail_logs) console.debug("Submit a check result for: ", elt)
+         
+         display_form("/forms/submit_check/"+elt);
+      }
+   });
+
+   // Event handler
+   $('body').on("click", '[action="event-handler"]', function () {
+      var elt = $(this).data('element');
+      if (! elt) {
+         $.each(selected_elements, function(idx, name){
+            if (eltdetail_logs) console.debug("Try to fix for: ", name)
+            try_to_fix(name);
+         });
+         flush_selected_elements();
+      } else {
+         if (eltdetail_logs) console.debug("Try to fix: ", elt)
+         
+         try_to_fix(elt);
+      }
+   });
+
+   // Ignore checks
+   $('body').on("click", '[action="ignore-checks"]', function () {
+      var elt = $(this).data('element');
+      var user = $(this).data('user');
+      if (! elt) {
+         $.each(selected_elements, function(idx, name){
+            if (eltdetail_logs) console.debug("Remove for: ", name)
+            do_remove(name, 'Removed by '+user, user);
+         });
+         flush_selected_elements();
+      } else {
+         if (problems_logs) console.debug("Remove for: ", elt)
+         
+         do_remove(elt, 'Removed by '+user, user);
+      }
+   });
+
+   // Create a ticket ...
+   $('body').on("click", '[action="create-ticket"]', function () {
+      var elt = $(this).data('element');
+      var user = $(this).data('user');
+      if (elt) {
+         if (eltdetail_logs) console.debug("Create a ticket for: ", elt)
+         
+         display_form("/helpdesk/ticket/add/"+$(this).data('element'));
+      }
+   });
 </script>

@@ -155,11 +155,13 @@ function do_refresh(){
          on_page_refresh();
       }
 
+      /*
       // Refresh bindings of actions buttons ...
       if (typeof bind_actions !== 'undefined' && $.isFunction(bind_actions)) {
          if (refresh_logs) console.debug('Calling actions bindings function ...', bind_actions);
          bind_actions();
       }
+      */
       
       // Look at the hash part of the URI. If it match a nav name, go for it
       if (location.hash.length > 0) {
