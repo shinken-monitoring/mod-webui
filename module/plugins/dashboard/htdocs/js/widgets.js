@@ -210,7 +210,7 @@ $(function(){
             closeText : '<i class="fa fa-trash-o font-grey"></i>',
             collapseText : '<i class="fa fa-chevron-up font-grey"></i>',
             cancelEditText : '<i class="fa fa-edit font-grey"></i>',
-            extendText : '<i class="fa fa-chevron-down font-grey"></i>',
+            extendText : '<i class="fa fa-chevron-down font-grey"></i>'
       },
       effects : {
             effectDuration : 100,
