@@ -32,7 +32,9 @@ app = None
 
 
 def system_parameters():
-    return {'configs': app.datamgr.get_configs() }
+    configs = app.datamgr.get_configs()
+    configs = sorted(vars(configs[0]).iteritems())
+    return {'configs': configs }
 
 
 def system_page():
