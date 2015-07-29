@@ -80,10 +80,6 @@
   %end
 </ul>
 <script type="text/javascript">
-  $("#parameters").draggable({
-    handle: ".modal-header"
-  });
-  
   $(document).ready(function() {
     $('.multiselect').multiselect();
   });
