@@ -76,6 +76,61 @@ function flush_selected_elements(){
 }
 
 
+// Text ellipsis in tables ...
+$('body').on('show.bs.collapse', '.collapse', function () {
+    $(this).closest('tr').prev().find('.output').removeClass("ellipsis", {duration:200});
+});
+
+$('body').on('hide.bs.collapse', '.collapse', function () {
+    $(this).closest('tr').prev().find('.output').addClass("ellipsis", {duration:200});
+});
+
+$('body').on('mouseenter', '.ellipsis', function () {
+   var $this = $(this);
+   if (this.offsetWidth < this.scrollWidth && !$this.attr('title')) {
+      $this.tooltip({
+         title: $this.text(),
+         placement: "bottom"
+      });
+      $this.tooltip('show');
+   }
+});
+
+// Business impact selection buttons
+$('body').on('click', 'button[data-type="business-impact"]', function (e) {
+   if ($(this).data('state')=='off') {
+      if (problems_logs) console.log('Select all elements ...', $(this).data('business-impact'));
+
+      // Remove elements from selection
+      $('input[type=checkbox][data-type="problem"][data-business-impact="'+$(this).data('business-impact')+'"]').each(function() {
+         remove_element($(this).data('item'));
+      })
+      // Add elements to selection
+      $('input[type=checkbox][data-type="problem"][data-business-impact="'+$(this).data('business-impact')+'"]').each(function() {
+         add_element($(this).data('item'));
+      })
+      $(this).html("Unselect all elements").data('state', 'on');
+   } else {
+      if (problems_logs) console.log('Unselect all elements ...', $(this).data('business-impact'));
+         
+      // Remove elements from selection
+      $('input[type=checkbox][data-type="problem"][data-business-impact="'+$(this).data('business-impact')+'"]').each(function() {
+         remove_element($(this).data('item'));
+      })
+      $(this).html("Select all elements").data('state', 'off');
+   }
+   
+});
+
+// Problems element check boxes
+$('body').on('click', 'input[type=checkbox][data-type="problem"]', function (e) {
+   e.stopPropagation();
+   
+   if (problems_logs) console.log('Clicked: ', $(this).data('item'))
+   // Add/remove element from selection
+   add_remove_elements($(this).data('item'));
+});
+
 function on_page_refresh(){
    if (problems_logs) console.log('Problems page - on_page_refresh')
       
@@ -96,67 +151,13 @@ function on_page_refresh(){
          $(this).prop("disabled", true).hide();
       });
    }
-
-   // Text ellipsis in tables ...
-   $('.collapse').on('show.bs.collapse', function () {
-       $(this).closest('tr').prev().find('.output').removeClass("ellipsis", {duration:200});
-   });
-
-   $('.collapse').on('hide.bs.collapse', function () {
-       $(this).closest('tr').prev().find('.output').addClass("ellipsis", {duration:200});
-   });
    
-   $('.ellipsis').on('mouseenter', function () {
-      var $this = $(this);
-      if (this.offsetWidth < this.scrollWidth && !$this.attr('title')) {
-         $this.tooltip({
-            title: $this.text(),
-            placement: "bottom"
-         });
-         $this.tooltip('show');
-      }
-   });
-
    // Graphs popover
    $('[data-toggle="popover"]').popover({
       html: true,
       template: '<div class="popover img-popover"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
    });
-   
-   // Business impact selection buttons
-   $('button[data-type="business-impact"]').on('click', function (e) {
-      if ($(this).data('state')=='off') {
-         if (problems_logs) console.log('Select all elements ...', $(this).data('business-impact'));
 
-         // Remove elements from selection
-         $('input[type=checkbox][data-type="problem"][data-business-impact="'+$(this).data('business-impact')+'"]').each(function() {
-            remove_element($(this).data('item'));
-         })
-         // Add elements to selection
-         $('input[type=checkbox][data-type="problem"][data-business-impact="'+$(this).data('business-impact')+'"]').each(function() {
-            add_element($(this).data('item'));
-         })
-         $(this).html("Unselect all elements").data('state', 'on');
-      } else {
-         if (problems_logs) console.log('Unselect all elements ...', $(this).data('business-impact'));
-            
-         // Remove elements from selection
-         $('input[type=checkbox][data-type="problem"][data-business-impact="'+$(this).data('business-impact')+'"]').each(function() {
-            remove_element($(this).data('item'));
-         })
-         $(this).html("Select all elements").data('state', 'off');
-      }
-      
-   });
-
-   // Problems element check boxes
-   $('input[type=checkbox][data-type="problem"]').on('click', function (e) {
-      e.stopPropagation();
-      
-      if (problems_logs) console.log('Clicked: ', $(this).data('item'))
-      // Add/remove element from selection
-      add_remove_elements($(this).data('item'));
-   });
 }
 
 // First page loading ...
