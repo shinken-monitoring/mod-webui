@@ -25,6 +25,18 @@
 var layout_logs=false;
 
 /*
+ * For IE missing window.console ...
+*/
+(function () {
+    var f = function () {};
+    if (!window.console) {
+        window.console = {
+            log:f, info:f, warn:f, debug:f, error:f
+        };
+    }
+}());
+
+/*
  * To load on run some additional js or css files.
 */
 function loadjscssfile(filename, filetype){
