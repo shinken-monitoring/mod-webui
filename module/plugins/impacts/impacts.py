@@ -82,7 +82,10 @@ def impacts_widget():
 
     return d
 
-widget_desc = '<h4>Impacts</h3>Show an aggregated view of the most important business impacts!</h4>'
+widget_desc = """
+<h4>Impacts</h4>
+Show an aggregated view of the most important business impacts!
+"""
 
 pages = {
     show_impacts: {'routes': ['/impacts'], 'view': 'impacts', 'static': True},
