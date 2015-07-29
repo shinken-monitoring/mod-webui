@@ -595,12 +595,12 @@ class Helper(object):
                 if url != '':
                     result.append('''<a href="%s" target="_blank" role="button" data-toggle="popover medium" data-html="true" data-content="%s" data-trigger="hover focus" data-placement="bottom"><i class="fa fa-%s"></i>&nbsp;%s</a>''' % (url, description, icon, title))
                 else:
-                    result.append('''<span data-toggle="popover medium" data-html="true" data-content="%s" data-trigger="hover focus" data-placement="bottom"><i class="fa fa-%s"></i>&nbsp;%s</a>''' % (description, icon, title))
+                    result.append('''<span data-toggle="popover medium" data-html="true" data-content="%s" data-trigger="hover focus" data-placement="bottom"><i class="fa fa-%s"></i>&nbsp;%s</span>''' % (description, icon, title))
             else:
                 if url != '':
                     result.append('''<a href="%s" target="_blank" title="%s"><i class="fa fa-%s"></i>&nbsp;%s</a>''' % (url, description, icon, title))
                 else:
-                    result.append('''<span title="%s"><i class="fa fa-%s"></i>&nbsp;%s</a>''' % (description, icon, title))
+                    result.append('''<span title="%s"><i class="fa fa-%s"></i>&nbsp;%s</span>''' % (description, icon, title))
 
         return result
                     
