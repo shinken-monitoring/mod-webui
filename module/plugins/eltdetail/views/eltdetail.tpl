@@ -354,7 +354,7 @@ Invalid element name
                            </colgroup>
                            <thead>
                               <tr>
-                                 <th colspan="2">Status:</td>
+                                 <th colspan="2">Status:</th>
                               </tr>
                            </thead>
                            <tbody style="font-size:x-small;">
@@ -380,7 +380,7 @@ Invalid element name
                            </colgroup>
                            <thead>
                               <tr>
-                                 <th colspan="2">Last check:</td>
+                                 <th colspan="2">Last check:</th>
                               </tr>
                            </thead>
                            <tbody style="font-size:x-small;">
@@ -437,7 +437,7 @@ Invalid element name
                            </colgroup>
                            <thead>
                               <tr>
-                                 <th colspan="2">Checks configuration:</td>
+                                 <th colspan="2">Checks configuration:</th>
                               </tr>
                            </thead>
                            <tbody style="font-size:x-small;">
@@ -540,7 +540,7 @@ Invalid element name
                            </colgroup>
                            <thead>
                               <tr>
-                                 <th colspan="2">Event handler:</td>
+                                 <th colspan="2">Event handler:</th>
                               </tr>
                            </thead>
                            <tbody style="font-size:x-small;">
@@ -579,7 +579,7 @@ Invalid element name
                            </colgroup>
                            <thead>
                               <tr>
-                                 <th colspan="2">Flapping detection:</td>
+                                 <th colspan="2">Flapping detection:</th>
                               </tr>
                            </thead>
                            <tbody style="font-size:x-small;">
@@ -618,7 +618,7 @@ Invalid element name
                            </colgroup>
                            <thead>
                               <tr>
-                                 <th colspan="2">Stalking options:</td>
+                                 <th colspan="2">Stalking options:</th>
                               </tr>
                            </thead>
                            <tbody style="font-size:x-small;">
@@ -637,7 +637,7 @@ Invalid element name
                            </colgroup>
                            <thead>
                               <tr>
-                                 <th colspan="2">Notifications:</td>
+                                 <th colspan="2">Notifications:</th>
                               </tr>
                            </thead>
                            <tbody style="font-size:x-small;">
@@ -701,7 +701,7 @@ Invalid element name
                               <tr>
                                  <td><strong>Contacts:</strong></td>
                                  %contacts=[]
-                                 %[contacts.append('<a href="/contact/'+item.contact_name+'">'+item.alias if item.alias else item.contact_name+'</a>') for item in elt.contacts if item not in contacts]
+                                 %[contacts.append('<a href="/contact/'+item.contact_name+'">'+item.alias+'</a>' if item.alias else item.contact_name+'</a>') for item in elt.contacts if item not in contacts]
                                  <td>{{!', '.join(contacts)}}</td>
                               </tr>
                               <tr>
@@ -811,7 +811,7 @@ Invalid element name
                         </colgroup>
                         <thead>
                            <tr>
-                              <th colspan="3">Customs:</td>
+                              <th colspan="3">Customs:</th>
                            </tr>
                         </thead>
                         <tbody style="font-size:x-small;">
@@ -854,7 +854,7 @@ Invalid element name
                            </colgroup>
                            <thead>
                               <tr>
-                                 <th colspan="2">Toggle current:</td>
+                                 <th colspan="2">Toggle current:</th>
                               </tr>
                            </thead>
                            <tbody>

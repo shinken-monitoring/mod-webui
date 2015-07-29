@@ -22,7 +22,7 @@
 */
 
 
-var depgraph_logs=true;
+var depgraph_logs=false;
 
 
 var labelType, useGradients, nativeTextSupport, animate;

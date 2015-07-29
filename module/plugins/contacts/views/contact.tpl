@@ -82,7 +82,7 @@
                   </colgroup>
                   <thead>
                      <tr>
-                        <th colspan="2"></td>
+                        <th colspan="2"></th>
                      </tr>
                   </thead>
                   <tbody style="font-size:x-small;">
