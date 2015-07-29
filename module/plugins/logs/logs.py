@@ -155,10 +155,14 @@ def set_logs_type_list():
     return
 
 def get_history(name):
+    elt_type = 'host'
+    if '/' in name:
+        elt_type = 'service'
+        
     # If exists an external module ...
     if app.logs_module.is_available():
         records = app.logs_module.get_ui_logs(name=name)
-        return {'records': records}
+        return {'records': records, 'elt_type': elt_type}
             
     logger.warning("[WebUI-logs] no get history external module defined!")
     return {'records': None}

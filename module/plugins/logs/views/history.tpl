@@ -1,4 +1,3 @@
-%import json
 %import time
 
 %date_format='%Y-%m-%d %H:%M:%S'
@@ -7,7 +6,9 @@
    <thead>
       <tr>
          <th>Time</th>
+         %if elt_type == 'host':
          <th>Service</th>
+         %end
          <th>Message</th>
       </tr>
    </thead>
@@ -15,7 +16,9 @@
       %for log in records:
          <tr>
             <td>{{time.strftime(date_format, time.localtime(log['timestamp']))}}</td>
+            %if elt_type == 'host':
             <td>{{log['service']}}</td>
+            %end
             <td>{{log['message']}}</td>
          </tr>
       %end
