@@ -17,7 +17,7 @@ class PrefsMetaModule(MetaModule):
                   'set_ui_common_preference']
 
     def __init__(self, modules, app):
-        ''' Because it would'nt make sense to use many submodules in this
+        ''' Because it wouldn't make sense to use many submodules in this
             MetaModule, we only use the first one in the list of modules. 
             If there is no module in the list, we try to init a default module.
         '''

@@ -17,7 +17,7 @@ class MetaModule(object):
         For instance, AuthMetaModule.check_auth() would call the check_auth()
         methods of all it's "submodules" until one return True.
 
-        Finally, a MetaModule can provides a default behavior for some methods.
+        Finally, a MetaModule can provide a default behaviour for some methods.
         For instance, if there is no auth module in the WebUI, AuthMetaModule
         is still working, because it provides it's own check_auth().
 
