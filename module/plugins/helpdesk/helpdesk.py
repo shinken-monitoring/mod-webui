@@ -32,12 +32,6 @@ from shinken.log import logger
 ### Will be populated by the UI with it's own value
 app = None
 
-def forge_response(callback, status, text):
-    if callback:
-        return "%s({'status':%s,'text':'%s'})" % (callback, status, text)
-    else:
-        return "{'status':%s,'text':'%s'}" % (status, text)
-
 def create_ticket(name):
     logger.info("[WebUI-helpdesk] request to create a ticket for %s", name)
     
@@ -59,16 +53,20 @@ def create_ticket(name):
     
     result = { 'status': 405, 'message': "Ticket creation failed", 'ticket': None}
 
-    # Request for ticket creation
-    ticket = None
-    if app.create_ticket:
-        ticket = app.create_ticket(parameters)
-        if ticket:
-            result = { 'status': 200, 'message': response_text, 'ticket': ticket}
-        
-    if callback:
-        return '''%s(%s)''' % (callback, json.dumps(result))
-    else:
+    try:
+        # Request for ticket creation
+        ticket = None
+        if app.create_ticket:
+            ticket = app.create_ticket(parameters)
+            if ticket:
+                result = { 'status': 200, 'message': response_text, 'ticket': ticket}
+            
+        if callback:
+            return '''%s(%s)''' % (callback, json.dumps(result))
+        else:
+            return json.dumps(result)
+    except Exception:
+        logger.info("[WebUI-helpdesk] ticket creation failed!")
         return json.dumps(result)
 
 def add_ticket(name):
@@ -76,12 +74,22 @@ def add_ticket(name):
         elt = app.datamgr.get_service(name.split('/')[0], name.split('/')[1])
     else:
         elt = app.datamgr.get_host(name)
-        
-    itemtype = elt.customs['_ITEMTYPE']
-    items_id = elt.customs['_ITEMSID']
-    entities_id = elt.customs['_ENTITIESID']
     
-    return {'name': name, 'itemtype': itemtype, 'items_id': items_id, 'entities_id': entities_id}
+    try:
+        itemtype = elt.customs['_ITEMTYPE']
+        items_id = elt.customs['_ITEMSID']
+        entities_id = elt.customs['_ENTITIESID']
+    
+        # helpdesk_configuration = app.helpdesk_module.get_ui_helpdesk_configuration()
+        session = app.helpdesk_module.get_ui_session()
+        types = app.helpdesk_module.get_ui_types()
+        categories = app.helpdesk_module.get_ui_categories()
+        templates = app.helpdesk_module.get_ui_templates()
+        
+        return {'name': name, 'itemtype': itemtype, 'items_id': items_id, 'entities_id': entities_id, 'types': types, 'categories': categories, 'templates': templates}
+    except Exception:
+        logger.info("[WebUI-helpdesk] ticket creation is not possible for %s", name)
+        return {'name': None}
 
 def get_element_tickets(name):
     # If exists an external module ...

@@ -7,6 +7,12 @@
    var downtime_stop = moment().seconds(0).add('days', 2);
   
    var helpdesk_configuration = {{! json.dumps(app.helpdesk_module.get_ui_helpdesk_configuration())}};
+   var types = {{! json.dumps(types)}};
+   console.debug(types)
+   var categories = {{! json.dumps(categories)}};
+   console.debug(categories)
+   var templates = {{! json.dumps(templates)}};
+   console.debug(templates)
 
    // Form submission ...
    $( 'form' ).submit(function(event) {
@@ -22,6 +28,9 @@
          , 'ticket_category': $("#ticket_category option:selected").val()
          , 'ticket_type':     $("input[name='ticket_type']:checked").val()
       };
+      $('#ticket_hidden_fields input').each(function(index, field) {
+         parameters[$(field).attr('name')] = $(field).val();
+      });
       console.debug('Ticket creation parameters: ', parameters);
 
       $.ajax({
@@ -50,33 +59,6 @@
          do_schedule_downtime("{{name}}", downtime_start.format('X'), downtime_stop.format('X'), '{{user.get_name()}}', $('#ticket_title').val());
       }
       
-/*
-      $.ajax( {
-         url: "http://glpi085/glpi/plugins/webservices/rest.php", 
-         type: "GET",
-         dataType: "json",
-         // contentType: "application/json",
-         data: parameters
-      })
-      .done(function(jqXHR) {
-         console.log("Ticket created ...");
-      })
-      .fail(function(jqXHR, textStatus) {
-         //console.error("Server connection is not available: " + textStatus + " !");
-         //console.error(textStatus, jqXHR);
-
-         jsonValue = jQuery.parseJSON( jqXHR.responseText );
-         console.log('Error message: ', jsonValue.Message);
-      })
-      .always( function( response ) {
-         // Schedule a downtime ...
-         if ($('#ticket_downtime').prop("checked")) {
-            // Launch downtime request and bailout this modal view
-            do_schedule_downtime("{{name}}", downtime_start.format('X'), downtime_stop.format('X'), '{{user.get_name()}}', $('#ticket_title').val());
-         }
-      });
-*/
-
       start_refresh();
       $('#modal').modal('hide');
    });
@@ -98,7 +80,7 @@
 
       $('#ticket_category').empty().append($("<option />").val('').text("Select a ticket category"));
       var counter=0;
-      $.each(helpdesk_configuration['categories'], function(key,value) {
+      $.each(categories, function(key,value) {
          if (value['is_request']=='1') {
             $('#ticket_category').append($("<option />").attr('template_id', value.id_template_request).val(value.id).text(value.completename));
             counter++;
@@ -114,13 +96,12 @@
       //$('#ticket_category').selectmenu("refresh", true);
       $('label[for="ticket_content"]').html('Description of the demand');
    });
-
    $( "#ticket_type_incident" ).on( "change", function (event) {
       $('#ticket_type_incident').prop("checked", true);
 
       $('#ticket_category').empty().append($("<option />").val('').text("Select a ticket category"));
       var counter=0;
-      $.each(helpdesk_configuration['categories'], function(key,value) {
+      $.each(categories, function(key,value) {
          if (value['is_incident']=='1') {
             $('#ticket_category').append($("<option />").attr('template_id', value.id_template_incident).val(value.id).text(value.name));
             counter++;
@@ -163,8 +144,8 @@
    });
 
    $('#modal').on('shown.bs.modal', function () {
-      $("#dtr_downtime").daterangepicker(
-         {
+      // Set up date range picker ...
+      $("#dtr_downtime").daterangepicker({
             ranges: {
                '2 hours':       [moment(), moment().add('hours', 2)],
                '8 hours':       [moment(), moment().add('hours', 8)],
@@ -176,7 +157,6 @@
             format: 'YYYY-MM-DD HH:mm',
             separator: '   to   ',
             minDate: moment(),
-            //dateLimit: moment(),
             startDate: moment(),
             endDate: moment().add('days', 2),
             timePicker: true,
@@ -193,7 +173,7 @@
       );
     
       // Default date range is one hour from now ...
-      $('#dtr_downtime').val(downtime_start.format('YYYY-MM-DD HH:mm') + '   to   ' +  downtime_stop.format('YYYY-MM-DD HH:mm'));
+      $('#dtr_downtime').val(downtime_start.format('YYYY-MM-DD HH:mm') + ' to ' +  downtime_stop.format('YYYY-MM-DD HH:mm'));
     
       // Update dates on apply button ...
       $('#dtr_downtime').on('apply.daterangepicker', function(ev, picker) {
