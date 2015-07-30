@@ -313,7 +313,7 @@ class WebUIDataManager(DataManager):
                 group = self.get_servicegroup(s)
                 if not group:
                     return []  # :TODO:maethor:150716: raise an error
-                items = [i for i in items if group in i.get_servicegroups()]
+                items = [i for i in items if group in i.servicegroups]
 
             if (t == 'cg' or t == 'cgroup') and s != 'all':
                 group = self.get_contactgroup(s)
