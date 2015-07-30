@@ -10,39 +10,52 @@ from submodules.metamodule import MetaModule
 
 class HelpdeskMetaModule(MetaModule):
 
-    _functions = ['get_ui_tickets', 'get_ui_helpdesk_configuration']
+    # Only those functions are enough for an helpdesk module ...
+    _functions = ['get_ui_session',
+                  'get_ui_tickets', 
+                  'get_ui_helpdesk_configuration']
     _custom_log = "You should configure the module 'glpi-helpdesk' in webui.cfg file to get helpdesk information."
 
-    def get_ui_tickets(self, name):
-        ''' Aggregates the `get_ui_tickets` output of all the submodules. '''
-        records = []
-        for mod in self.modules:
-            try:
-                records.extend(mod.get_ui_tickets(name))
-            except Exception, exp:
-                print exp.__dict__
-                logger.warning("[WebUI] The mod %s raise an exception: %s, I'm tagging it to restart later", mod.get_name(), str(exp))
-                logger.debug("[WebUI] Exception type: %s", type(exp))
-                logger.debug("Back trace of this kill: %s" % (traceback.format_exc()))
-                self.app.modules_manager.set_to_restart(mod)
-        return records
-
-    def get_ui_helpdesk_configuration(self, all=False):
-        ''' If all is True, this methods returns a list of the
-            `get_ui_helpdesk_configuration` outputs of all the submodules.
-            Else, it returns the output of the first module in the list.
+    def __init__(self, modules, app):
+        ''' Because it wouldn't make sense to use many submodules in this
+            MetaModule, we only use the first one in the list of modules. 
         '''
-        configs = []
-        for mod in self.modules:
-            try:
-                configs.append(mod.get_helpdesk_configuration())
-            except Exception, exp:
-                print exp.__dict__
-                logger.warning("[WebUI] The mod %s raise an exception: %s, I'm tagging it to restart later", mod.get_name(), str(exp))
-                logger.debug("[WebUI] Exception type: %s", type(exp))
-                logger.debug("Back trace of this kill: %s" % (traceback.format_exc()))
-                self.app.modules_manager.set_to_restart(mod)
-        if all:
-            return configs
-        else:
-            return configs[0]
+        self.app = app
+        self.module = None
+        if modules:
+            if len(modules) > 1:
+                logger.warning('[WebUI] Too much helpdesk modules declared (%s > 1). Using %s.' % (len(modules), modules[0]))
+            self.module = modules[0]
+
+    def is_available(self):
+        return self.module is not None
+
+    def get_ui_session(self, default=None):
+        if self.is_available():
+            return self.module.get_ui_session() or default
+        return default
+        
+    def get_ui_tickets(self, name, default=None):
+        if self.is_available():
+            return self.module.get_ui_tickets(name) or default
+        return default
+
+    def get_ui_helpdesk_configuration(self, default=None):
+        if self.is_available():
+            return self.module.get_ui_helpdesk_configuration() or default
+        return default
+
+    def get_ui_types(self, default=None):
+        if self.is_available():
+            return self.module.get_ui_types() or default
+        return default
+        
+    def get_ui_categories(self, default=None):
+        if self.is_available():
+            return self.module.get_ui_categories() or default
+        return default
+        
+    def get_ui_templates(self, default=None):
+        if self.is_available():
+            return self.module.get_ui_templates() or default
+        return default
