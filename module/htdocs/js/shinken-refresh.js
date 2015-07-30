@@ -151,7 +151,7 @@ function do_refresh(){
 
       // Each plugin may provide its on_page_refresh function that will be called here ...
       if (typeof on_page_refresh !== 'undefined' && $.isFunction(on_page_refresh)) {
-         if (refresh_logs) console.debug('Calling page refresh function ...', on_page_refresh);
+         if (refresh_logs) console.debug('Calling page refresh function ...');
          on_page_refresh();
       }
 
@@ -251,13 +251,20 @@ $(document).ready(function(){
    // Start refresh periodical check ...
    setInterval("check_refresh();", 1000);
    
+   if (sessionStorage.getItem("refresh_active") == '1') {
+      $('#header_loading').removeClass('font-greyed');
+   } else {
+      $('#header_loading').addClass('font-greyed');
+   }
+
    // Toggle refresh ...
-   $('[action="toggle-page-refresh"]').on('click', function (e, data) {
+   $('body').on("click", '[action="toggle-page-refresh"]', function (e, data) {
       if (sessionStorage.getItem("refresh_active") == '1') {
          stop_refresh();
       } else {
          start_refresh();
       }
-   if (refresh_logs) console.debug("Refresh active is ", sessionStorage.getItem("refresh_active"));
+      if (refresh_logs) console.debug("Refresh active is ", sessionStorage.getItem("refresh_active"));
    });
+
 });
