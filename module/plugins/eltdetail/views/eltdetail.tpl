@@ -1170,19 +1170,13 @@ Invalid element name
                      </div>
                      %else:
                      <div class='well'>
-                        <!-- Get the uris for the 5 standard time ranges in advance  -->
-                        %fourhours = now - 3600*4
-                        %lastday =   now - 86400
-                        %lastweek =  now - 86400*7
-                        %lastmonth = now - 86400*31
-                        %lastyear =  now - 86400*365
-
+                        <!-- 5 standard time ranges to display ...  -->
                         <ul id="graph_periods" class="nav nav-pills nav-justified">
-                          <li><a data-type="graph" data-period="4h" data-graphend="{{now}}" data-graphstart="{{fourhours}}"  > 4 hours</a></li>
-                          <li><a data-type="graph" data-period="1d" data-graphend="{{now}}" data-graphstart="{{lastday}}"    > 1 day</a></li>
-                          <li><a data-type="graph" data-period="1w" data-graphend="{{now}}" data-graphstart="{{lastweek}}"   > 1 week</a></li>
-                          <li><a data-type="graph" data-period="1m" data-graphend="{{now}}" data-graphstart="{{lastmonth}}"  > 1 month</a></li>
-                          <li><a data-type="graph" data-period="1y" data-graphend="{{now}}" data-graphstart="{{lastyear}}"   > 1 year</a></li>
+                          <li><a data-type="graph" data-period="4h" > 4 hours</a></li>
+                          <li><a data-type="graph" data-period="1d" > 1 day</a></li>
+                          <li><a data-type="graph" data-period="1w" > 1 week</a></li>
+                          <li><a data-type="graph" data-period="1m" > 1 month</a></li>
+                          <li><a data-type="graph" data-period="1y" > 1 year</a></li>
                         </ul>
                      </div>
 
@@ -1194,11 +1188,11 @@ Invalid element name
                      <script>
                      $('a[href="#graphs"]').on('shown.bs.tab', function (e) {
                         %uris = dict()
-                        %uris['4h'] = app.graphs_module.get_graph_uris(elt, fourhours, now)
-                        %uris['1d'] = app.graphs_module.get_graph_uris(elt, lastday,   now)
-                        %uris['1w'] = app.graphs_module.get_graph_uris(elt, lastweek,  now)
-                        %uris['1m'] = app.graphs_module.get_graph_uris(elt, lastmonth, now)
-                        %uris['1y'] = app.graphs_module.get_graph_uris(elt, lastyear,  now)
+                        %uris['4h'] = app.graphs_module.get_graph_uris(elt, duration=     4*3600)
+                        %uris['1d'] = app.graphs_module.get_graph_uris(elt, duration=    24*3600)
+                        %uris['1w'] = app.graphs_module.get_graph_uris(elt, duration=  7*24*3600)
+                        %uris['1m'] = app.graphs_module.get_graph_uris(elt, duration= 31*24*3600)
+                        %uris['1y'] = app.graphs_module.get_graph_uris(elt, duration=365*24*3600)
 
                         // let's create the html content for each time range
                         var element='/{{elt_type}}/{{elt.get_full_name()}}';
@@ -1206,14 +1200,12 @@ Invalid element name
                         
                         html_graphes['{{period}}'] = '<p>';
                         %for g in uris[period]:
-                        
                         // Adjust image width / height parameter ... width is sized to container, and height is 1/3
                         var img_src = "{{g['img_src']}}".replace("'","\'")
                         img_src = img_src.replace(/(width=).*?(&)/,'$1' + $('#real_graphs').width() + '$2');
                         img_src = img_src.replace(/(height=).*?(&)/,'$1' + ($('#real_graphs').width() / 3) + '$2');
                         
-                        html_graphes['{{period}}'] +=  '<img src="'+ img_src +'" class="jcropelt"/> \
-                                                       <br>';
+                        html_graphes['{{period}}'] +=  '<img src="'+ img_src +'" class="jcropelt"/> <p></p>';
                         %end
                         html_graphes['{{period}}'] += '</p>';
 

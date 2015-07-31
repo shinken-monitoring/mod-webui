@@ -235,8 +235,6 @@ function on_page_refresh() {
    // Change graph
    $('a[data-type="graph"]').click(function (e) {
       current_graph=$(this).data('period');
-      graphstart=$(this).data('graphstart');
-      graphend=$(this).data('graphend');
 
       // Update graphs
       $("#real_graphs").html( html_graphes[current_graph] );
