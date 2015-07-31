@@ -168,11 +168,11 @@
         <li> <a href="/problems"> <span class="fa fa-ambulance"></span> Problems </a> </li>
         <li> <a href="#"><i class="fa fa-sitemap"></i> Groups and tags <i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
-            <li> <a href="/contacts-groups"> <span class="fa fa-users"></span> Contacts groups </a> </li>
             <li> <a href="/hosts-groups"> <span class="fa fa-sitemap"></span> Hosts groups </a> </li>
             <li> <a href="/services-groups"> <span class="fa fa-sitemap"></span> Services groups </a> </li>
             <li> <a href="/hosts-tags"> <span class="fa fa-tags"></span> Hosts tags </a> </li>
             <li> <a href="/services-tags"> <span class="fa fa-tags"></span> Services tags </a> </li>
+            <li> <a href="/contacts-groups"> <span class="fa fa-users"></span> Contacts groups </a> </li>
           </ul>
         </li>
         <li> <a href="#"><i class="fa fa-bar-chart"></i> Tactical views <i class="fa arrow"></i></a>
@@ -181,26 +181,29 @@
             <li> <a href="/minemap"> <span class="fa fa-table"></span> Minemap </a> </li>
             <li> <a href="/worldmap"> <span class="fa fa-globe"></span> World map </a> </li>
             <li> <a href="/wall"> <span class="fa fa-th-large"></span> Wall </a> </li>
-          </ul>
-        </li>
-        <li> <a href="#"><i class="fa fa-gears"></i> System <i class="fa arrow"></i></a>
-          <ul class="nav nav-second-level">
-            <li> <a href="/parameters"> <span class="fa fa-gears"></span> Configuration </a> </li>
-            <li> <a href="/system"> <span class="fa fa-heartbeat"></span> Status </a> </li>
             %if app.logs_module.is_available():
-            <li> <a href="/logs"> <span class="fa fa-th-list"></span> Logs </a> </li>
             <li> <a href="/availability"> <span class="fa fa-bar-chart"></span> Availability </a> </li>
             %end
           </ul>
         </li>
-        <!--<li> <a href="/shinken-io"> <span class="fa fa-gears"></span> Shinken IO </a> </li>-->
+        %if user.is_admin:
+        <li> <a href="#"><i class="fa fa-gears"></i> System <i class="fa arrow"></i></a>
+          <ul class="nav nav-second-level">
+            <li> <a href="/system"> <span class="fa fa-heartbeat"></span> Status </a> </li>
+            %if app.logs_module.is_available():
+            <li> <a href="/logs"> <span class="fa fa-th-list"></span> Logs </a> </li>
+            %end
+          </ul>
+        </li>
         <li> <a href="#"><i class="fa fa-wrench"></i> Configuration <i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
+            <li> <a href="/parameters"> <span class="fa fa-gears"></span> Parameters </a> </li>
             <li> <a href="/contacts"> <span class="fa fa-users"></span> Contacts </a> </li>
             <li> <a href="/commands"> <span class="fa fa-terminal"></span> Commands </a> </li>
             <li> <a href="/timeperiods"> <span class="fa fa-calendar"></span> Time periods </a> </li>
           </ul>
         </li>
+        %end
         %other_uis = app.get_ui_external_links()
         %if len(other_uis) > 0:
         <li> <a href="#"><i class="fa fa-rocket"></i> External <i class="fa arrow"></i></a>

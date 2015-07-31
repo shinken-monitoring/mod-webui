@@ -25,32 +25,27 @@
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 
 import time
-import re
+import datetime
 
 from shinken.log import logger
-
-# Mongodb lib
-try:
-    import pymongo
-    from pymongo.connection import Connection
-    import gridfs
-except ImportError:
-    Connection = None
-
 
 ### Will be populated by the UI with it's own value
 app = None
 
 # Get plugin's parameters from configuration file
 params = {}
-params['mongo_host'] = "localhost"
-params['mongo_port'] = 27017
-params['database'] = "shinken"
-params['collection'] = "Logs"
-params['max_records'] = 500
 params['logs_type'] = ['INFO', 'WARNING', 'ERROR']
 params['logs_hosts'] = []
 params['logs_services'] = []
+
+
+def _get_logs(*args, **kwargs):
+    if app.logs_module.is_available():
+        return app.logs_module.get_ui_logs(*args, **kwargs)
+    else:
+        logger.warning("[WebUI-logs] no get history external module defined!")
+        return None
+        
 
 def load_config(app):
     global params
@@ -66,9 +61,6 @@ def load_config(app):
         z.update(scp.parse_config(configuration_file))
         params = z
 
-        # Integers ...
-        params['mongo_port'] = int(params['mongo_port'])
-        params['max_records'] = int(params['max_records'])
         params['logs_type'] = [item.strip() for item in params['logs_type'].split(',')]
         if len(params['logs_hosts']) > 0:
             params['logs_hosts'] = [item.strip() for item in params['logs_hosts'].split(',')]
@@ -76,8 +68,6 @@ def load_config(app):
             params['logs_services'] = [item.strip() for item in params['logs_services'].split(',')]
         
         logger.info("[WebUI-logs] configuration loaded.")
-        logger.info("[WebUI-logs] configuration, database: %s (%s) - %s, %s", params['mongo_host'], params['mongo_port'], params['database'], params['collection'])
-        logger.info("[WebUI-logs] configuration, fetching limit: %d", params['max_records'])
         logger.info("[WebUI-logs] configuration, fetching types: %s", params['logs_type'])
         logger.info("[WebUI-logs] configuration, hosts: %s", params['logs_hosts'])
         logger.info("[WebUI-logs] configuration, services: %s", params['logs_services'])
@@ -86,16 +76,6 @@ def load_config(app):
         logger.warning("[WebUI-logs] configuration file (%s) not available: %s", configuration_file, str(exp))
         return False
 
-
-def show_logs():
-    # If exists an external module ...
-    if app.logs_module.is_available():
-        records = app.logs_module.get_ui_logs(name=None, logs_type = params['logs_type'])
-        return {'records': records, 'params': params, 'message': "%d records fetched from database." % len(records)}
-            
-    logger.warning("[WebUI-logs] no get history external module defined!")
-    return {'records': None, 'params': params, 'message': "No module configured to get Shinken logs from a database!"}
-    
 
 def form_hosts_list():
     return {'params': params}
@@ -154,24 +134,36 @@ def set_logs_type_list():
     app.bottle.redirect("/logs")
     return
 
-def get_history(name):
+def get_host_history(name):
     elt_type = 'host'
     if '/' in name:
         elt_type = 'service'
         
-    # If exists an external module ...
-    if app.logs_module.is_available():
-        records = app.logs_module.get_ui_logs(name=name)
-        return {'records': records, 'elt_type': elt_type}
-            
-    logger.warning("[WebUI-logs] no get history external module defined!")
-    return {'records': None}
+    logs = _get_logs(name=name)
+    return {'records': logs, 'elt_type': elt_type}
+
+
+def get_global_history():
+    midnight_timestamp = time.mktime(datetime.date.today().timetuple())
+    range_start = int(app.request.GET.get('range_start', midnight_timestamp))
+    range_end = int(app.request.GET.get('range_end', midnight_timestamp + 86399))
+    logger.debug("[WebUI-logs] get_global_history, range: %d - %d", range_start, range_end)
+
+    logs = _get_logs(name=None, logs_type=params['logs_type'], range_start=range_start, range_end=range_end)
+    if len(logs) > 200:
+        logs = logs[:200]
+    if logs is not None:
+        message = "%s records fetched from database" % len(logs)
+    else:
+        message = "No module configured to get Shinken logs from database!"
+    return {'records': logs, 'params': params, 'message': message, 'range_start': range_start, 'range_end': range_end}
+    
 
 
 pages = {   
-        show_logs: {'routes': ['/logs'], 'view': 'logs', 'static': True},
+        get_global_history: {'routes': ['/logs'], 'view': 'logs', 'static': True},
         
-        get_history: {'routes': ['/logs/inner/<name:path>'], 'view': 'history'},
+        get_host_history: {'routes': ['/logs/inner/<name:path>'], 'view': 'history'},
     
         form_hosts_list: {'routes': ['/logs/hosts_list'], 'view': 'form_hosts_list'},
         set_hosts_list: {'routes': ['/logs/set_hosts_list'], 'view': 'logs', 'method': 'POST'},

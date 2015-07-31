@@ -14,18 +14,35 @@
    </script>
 
    <div class="row row-fluid">
-      <!--<p>{{range_start}} - {{range_end}}</p>-->
-      <form class="form-inline pull-left" role="form" method="get" action="/availability">
+     <div class="col-md-6">
+       <!--<div class="btn-group pull-left">-->
+         <!--<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">-->
+           <!--Period <span class="caret"></span>-->
+         <!--</button>-->
+         <!--<ul class="dropdown-menu">-->
+           <!--<li><a href="#">Today</a></li>-->
+           <!--<li><a href="#">Yesterday</a></li>-->
+           <!--<li><a href="#">This week</a></li>-->
+           <!--<li><a href="#">Last week</a></li>-->
+           <!--<li><a href="#">This month</a></li>-->
+           <!--<li><a href="#">Last month</a></li>-->
+           <!--<li><a href="#">This year</a></li>-->
+           <!--<li><a href="#">Last year</a></li>-->
+         <!--</ul>-->
+       <!--</div>-->
+       <!--<p>{{range_start}} - {{range_end}}</p>-->
+       <form class="form-inline pull-left" role="form" method="get" action="/availability">
          <div class="form-group">
-            <div class="input-group">
-               <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-               <input type="text" class="form-control" id="dtr_downtime" placeholder="..." />
-            </div>
-            <input type="hidden" id="range_start" name="range_start" />
-            <input type="hidden" id="range_end" name="range_end" />
+           <div class="input-group">
+             <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+             <input type="text" class="form-control" id="dtr_downtime" placeholder="..." />
+           </div>
+           <input type="hidden" id="range_start" name="range_start" />
+           <input type="hidden" id="range_end" name="range_end" />
          </div>
          <button type="submit" class="btn btn-default btn-primary">Submit</button>
-      </form>
+       </form>
+     </div>
    </div>
 
    %include('availability.tpl', records=records)

@@ -102,16 +102,29 @@
   }
 </script>
 
-<ul class="nav nav-tabs" id="myTab">
-   <li class="active"><a href="#today" data-toggle="tab">Today</a></li>
-   <li><a href="#yesterday" data-toggle="tab">Yesterday</a></li>
-   <li><a href="#thisweek" data-toggle="tab">This week</a></li>
-   <li><a href="#lastweek" data-toggle="tab">Last week</a></li>
-   <li><a href="#custom" data-toggle="tab">This month</a></li>
-</ul>
+   <script type="text/javascript">
+      // Initial start/stop range ...
+      var range_start = moment.unix({{range_start}}, 'YYYY-MM-DD');
+      // Set default downtime period as two days
+      var range_end = moment.unix({{range_end}}, 'YYYY-MM-DD');
+   </script>
 
-<div class="tab-content">
-   <div class="tab-pane active" id="today">
+   <div class="row row-fluid">
+     <div class="col-md-6">
+       <form class="form-inline pull-left" role="form" method="get" action="/logs">
+         <div class="form-group">
+           <div class="input-group">
+             <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+             <input type="text" class="form-control" id="dtr_downtime" placeholder="..." />
+           </div>
+           <input type="hidden" id="range_start" name="range_start" />
+           <input type="hidden" id="range_end" name="range_end" />
+         </div>
+         <button type="submit" class="btn btn-default btn-primary">Submit</button>
+       </form>
+     </div>
+   </div>
+
       <table class="table table-condensed">
          <colgroup>
             <col style="width: 10%" />
@@ -121,124 +134,55 @@
             <tr>
                <th colspan="2"><em>{{message}}</em></th>
             </tr>
-            <tr>
-               <th colspan="2">From {{time.strftime(date_format, time.localtime(today_beginning_time))}} to {{time.strftime(date_format, time.localtime(today_end_time))}}</th>
-            </tr>
          </thead>
          <tbody style="font-size:x-small;">
             %for log in records:
-            %if log['timestamp'] >= today_beginning_time and log['timestamp'] <= today_end_time:
             <tr>
                <td>{{time.strftime(date_format, time.localtime(log['timestamp']))}}</td>
                <td>{{log['message']}}</td>
             </tr>
             %end
-            %end
          </tbody>
       </table>
-   </div>
-   <div class="tab-pane" id="yesterday">
-      <table class="table table-condensed">
-         <colgroup>
-            <col style="width: 10%" />
-            <col style="width: 90%" />
-         </colgroup>
-         <thead>
-            <tr>
-               <th colspan="2"><em>{{message}}</em></th>
-            </tr>
-            <tr>
-               <th colspan="2">From {{time.strftime(date_format, time.localtime(yesterday_beginning_time))}} to {{time.strftime(date_format, time.localtime(yesterday_end_time))}}</th>
-            </tr>
-         </thead>
-         <tbody style="font-size:x-small;">
-            %for log in records:
-            %if log['timestamp'] >= yesterday_beginning_time and log['timestamp'] <= yesterday_end_time:
-            <tr>
-               <td>{{time.strftime(date_format, time.localtime(log['timestamp']))}}</td>
-               <td>{{log['message']}}</td>
-            </tr>
-            %end
-            %end
-         </tbody>
-      </table>
-   </div>
-   <div class="tab-pane" id="thisweek">
-      <table class="table table-condensed">
-         <colgroup>
-            <col style="width: 10%" />
-            <col style="width: 90%" />
-         </colgroup>
-         <thead>
-            <tr>
-               <th colspan="2"><em>{{message}}</em></th>
-            </tr>
-            <tr>
-               <th colspan="2">From {{time.strftime(date_format, time.localtime(thisweek_beginning_time))}} to {{time.strftime(date_format, time.localtime(thisweek_end_time))}}</th>
-            </tr>
-         </thead>
-         <tbody style="font-size:x-small;">
-            %for log in records:
-            %if log['timestamp'] >= thisweek_beginning_time and log['timestamp'] <= thisweek_end_time:
-            <tr>
-               <td>{{time.strftime(date_format, time.localtime(log['timestamp']))}}</td>
-               <td>{{log['message']}}</td>
-            </tr>
-            %end
-            %end
-         </tbody>
-      </table>
-   </div>
-   <div class="tab-pane" id="lastweek">
-      <table class="table table-condensed">
-         <colgroup>
-            <col style="width: 10%" />
-            <col style="width: 90%" />
-         </colgroup>
-         <thead>
-            <tr>
-               <th colspan="2"><em>{{message}}</em></th>
-            </tr>
-            <tr>
-               <th colspan="2">From {{time.strftime(date_format, time.localtime(lastweek_beginning_time))}} to {{time.strftime(date_format, time.localtime(lastweek_end_time))}}</th>
-            </tr>
-         </thead>
-         <tbody style="font-size:x-small;">
-            %for log in records:
-            %if log['timestamp'] >= lastweek_beginning_time and log['timestamp'] <= lastweek_end_time:
-            <tr>
-               <td>{{time.strftime(date_format, time.localtime(log['timestamp']))}}</td>
-               <td>{{log['message']}}</td>
-            </tr>
-            %end
-            %end
-         </tbody>
-      </table>
-   </div>
-   <div class="tab-pane" id="lastmonth">
-      <table class="table table-condensed">
-         <colgroup>
-            <col style="width: 10%" />
-            <col style="width: 90%" />
-         </colgroup>
-         <thead>
-            <tr>
-               <th colspan="2"><em>{{message}}</em></th>
-            </tr>
-            <tr>
-               <th colspan="2">From {{time.strftime(date_format, time.localtime(thismonth_beginning_time))}} to {{time.strftime(date_format, time.localtime(thismonth_end_time))}}</th>
-            </tr>
-         </thead>
-         <tbody style="font-size:x-small;">
-            %for log in records:
-            %if log['timestamp'] >= thismonth_beginning_time and log['timestamp'] <= thismonth_end_time:
-            <tr>
-               <td>{{time.strftime(date_format, time.localtime(log['timestamp']))}}</td>
-               <td>{{log['message']}}</td>
-            </tr>
-            %end
-            %end
-         </tbody>
-      </table>
-   </div>
+
+   <script type="text/javascript">
+      $("#dtr_downtime").daterangepicker({
+         ranges: {
+            '1 day':         [moment().add('days', -1), moment()],
+            '2 days':        [moment().add('days', -2), moment()],
+            '1 week':        [moment().add('days', -7), moment()],
+            '1 month':       [moment().add('month', -1), moment()]
+         },
+         format: 'YYYY-MM-DD',
+         separator: ' to ',
+         maxDate: moment(),
+         startDate: range_start,
+         endDate: range_end,
+         timePicker: false,
+         timePickerIncrement: 1,
+         timePicker12Hour: false,
+         showDropdowns: false,
+         showWeekNumbers: false,
+         opens: 'right',
+         },
+         
+         function(start, end, label) {
+            range_start = start; range_end = end;
+         }
+      );
+    
+      // Set default date range values
+      $('#dtr_downtime').val(range_start.format('YYYY-MM-DD') + ' to ' +  range_end.format('YYYY-MM-DD'));
+      $('#range_start').val(range_start.format('X'));
+      $('#range_end').val(range_end.format('X'));
+    
+      // Update dates on apply button ...
+      $('#dtr_downtime').on('apply.daterangepicker', function(ev, picker) {
+         range_start = picker.startDate; range_end = picker.endDate;
+         console.log(range_start, range_end)
+         $('#range_start').val(range_start.unix());
+         $('#range_end').val(range_end.unix());
+      });
+   </script>
+
 </div>

@@ -33,9 +33,9 @@ class LogsMetaModule(MetaModule):
     def is_available(self):
         return self.module is not None
 
-    def get_ui_logs(self, name, logs_type=None, default=None):
+    def get_ui_logs(self, name, logs_type=None, default=None, range_start=None, range_end=None):
         if self.is_available():
-            return self.module.get_ui_logs(name, logs_type) or default
+            return self.module.get_ui_logs(name, logs_type, range_start, range_end) or default
         return default
 
     def get_ui_availability(self, name, range_start=None, range_end=None, default=None):
@@ -85,8 +85,8 @@ class MongoDBLogs():
         self.hav_collection = getattr(mod_conf, 'hav_collection', 'availability')
         logger.info('[WebUI-mongo-logs] hosts availability collection: %s', self.hav_collection)
         
-        self.max_records = int(getattr(mod_conf, 'max_records', '200'))
-        logger.info('[WebUI-mongo-logs] max records: %s' % self.max_records)
+        #self.max_records = int(getattr(mod_conf, 'max_records', '200'))
+        #logger.info('[WebUI-mongo-logs] max records: %s' % self.max_records)
 
         self.mongodb_fsync = getattr(mod_conf, 'mongodb_fsync', "True") == "True"
         
@@ -127,7 +127,7 @@ class MongoDBLogs():
         self.conn.disconnect()
 
     # We will get in the mongodb database the logs
-    def get_ui_logs(self, name, logs_type=None):
+    def get_ui_logs(self, name, logs_type=None, range_start=None, range_end=None):
         if not self.db:
             logger.error("[mongo-logs] error Problem during init phase, no database connection")
             return None
@@ -153,16 +153,16 @@ class MongoDBLogs():
                 query.append( { "service_description" : { "$in": [ service ] }} )
             if logs_type and len(logs_type) > 0 and logs_type[0] != '':
                 query.append({ "type" : { "$in": logs_type }})
-            # if range_start:
-                # query.append( { 'day_ts': { '$gte': range_start } } )
-            # if range_end:
-                # query.append( { 'day_ts': { '$lte': range_end } } )
+            if range_start:
+                query.append( { 'time': { '$gte': range_start } } )
+            if range_end:
+                query.append( { 'time': { '$lte': range_end } } )
 
             if len(query) > 0:
                 logger.debug("[mongo-logs] Fetching records from database with query: '%s'", query)
 
                 for log in self.db[self.logs_collection].find({'$and': query}).sort([
-                                    ("time",pymongo.DESCENDING)]).limit(self.max_records):
+                                    ("time",pymongo.DESCENDING)]):
                     message = log['message']
                     m = re.search(r"\[(\d+)\] (.*)", message)
                     if m and m.group(2):
@@ -177,7 +177,7 @@ class MongoDBLogs():
 
             else:
                 for log in self.db[self.logs_collection].find().sort([
-                                    ("day",pymongo.DESCENDING)]).limit(self.max_records):
+                                    ("day",pymongo.DESCENDING)]):
                     message = log['message']
                     m = re.search(r"\[(\d+)\] (.*)", message)
                     if m and m.group(2):
@@ -232,7 +232,7 @@ class MongoDBLogs():
                 for log in self.db[self.hav_collection].find({'$and': query}).sort([
                                     ("day",pymongo.DESCENDING), 
                                     ("hostname",pymongo.ASCENDING), 
-                                    ("service",pymongo.ASCENDING)]).limit(self.max_records):
+                                    ("service",pymongo.ASCENDING)]):
                     if '_id' in log:
                         del log['_id']
                     records.append(log)
@@ -240,7 +240,7 @@ class MongoDBLogs():
                 for log in self.db[self.hav_collection].find().sort([
                                     ("day",pymongo.DESCENDING), 
                                     ("hostname",pymongo.ASCENDING), 
-                                    ("service",pymongo.ASCENDING)]).limit(self.max_records):
+                                    ("service",pymongo.ASCENDING)]):
                     if '_id' in log:
                         del log['_id']
                     records.append(log)
