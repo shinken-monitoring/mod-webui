@@ -82,7 +82,7 @@ class MongoDBLogs():
         self.logs_collection = getattr(mod_conf, 'logs_collection', 'logs')
         logger.info('[WebUI-mongo-logs] shinken logs collection: %s', self.logs_collection)
         
-        self.hav_collection = getattr(mod_conf, 'hav_collection', 'logs')
+        self.hav_collection = getattr(mod_conf, 'hav_collection', 'availability')
         logger.info('[WebUI-mongo-logs] hosts availability collection: %s', self.hav_collection)
         
         self.max_records = int(getattr(mod_conf, 'max_records', '200'))
