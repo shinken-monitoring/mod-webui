@@ -1,4 +1,5 @@
 %import time
+%import re
 %now = int(time.time())
 
 %# If got no element, bailout
@@ -1098,11 +1099,7 @@ Invalid element name
                               
                               %if app.graphs_module.is_available():
                               <td>
-                                 %# Graphs
-                                 %import time
-                                 %import re
-                                 %now = time.time()
-                                 %graphs = app.graphs_module.get_graph_uris(s, now-4*3600, now)
+                                 %graphs = app.graphs_module.get_graph_uris(s, duration=12*3600)
                                  %for graph in graphs:
                                     %if re.findall('\\b'+metric.name+'\\b', graph['img_src']):
                                        <a role="button" tabindex="0" data-toggle="popover" title="{{ s.get_full_name() }}" data-html="true" data-content="<img src='{{ graph['img_src'] }}' width='600px' height='200px'>" data-trigger="hover" data-placement="left">{{!helper.get_perfometer(s, metric.name)}}</a>
@@ -1133,10 +1130,7 @@ Invalid element name
                               %if app.graphs_module.is_available():
                               <td>
                                  %# Graphs
-                                 %import time
-                                 %import re
-                                 %now = time.time()
-                                 %graphs = app.graphs_module.get_graph_uris(elt, now-4*3600, now)
+                                 %graphs = app.graphs_module.get_graph_uris(elt, duration=12*3600)
                                  %for graph in graphs:
                                     %if re.findall('\\b'+metric.name+'\\b', graph['img_src']):
                                        <a role="button" tabindex="0" data-toggle="popover" title="{{ elt.get_full_name() }}" data-html="true" data-content="<img src='{{ graph['img_src'] }}' width='600px' height='200px'>" data-trigger="hover" data-placement="left">{{!helper.get_perfometer(elt, metric.name)}}</a>
