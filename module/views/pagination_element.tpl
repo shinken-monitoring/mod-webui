@@ -1,7 +1,7 @@
 %setdefault('display_steps_form', False)
 %setdefault('div_class', "pull-right")
 %setdefault('ul_class', "")
-%setdefault('div_style', "margin-top:5; margin-bottom:5;")
+%setdefault('div_style', "margin-top:-15px;")
 
 <div class="{{ div_class }}" style="{{ div_style }}">
   %if display_steps_form and elts_per_page is not None:
