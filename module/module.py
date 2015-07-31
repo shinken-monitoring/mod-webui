@@ -406,18 +406,20 @@ class Webui_broker(BaseModule, Daemon):
         logger.debug("[WebUI] manage_brok_thread start ...")
 
         while True:
+            start = time.clock()
             l = self.to_q.get()
 
             # try to relaunch dead module (like mongo one when mongo is not available at startup for example)
             self.check_and_del_zombie_modules()
 
-            logger.debug("[WebUI] manage_brok_thread got %d broks", len(l))
+            logger.debug("[WebUI] manage_brok_thread got %d broks, queue length: %d", len(l), self.to_q.qsize())
             for b in l:
                 b.prepare()
                 self.wait_for_no_readers()
                 try:
                     self.rg.manage_brok(b)
 
+                    # Question: 
                     # Do not send broks to internal modules ... 
                     # No internal WebUI modules have something to do with broks!
                     for mod in self.modules_manager.get_internal_instances():
@@ -444,6 +446,8 @@ class Webui_broker(BaseModule, Daemon):
                     self.global_lock.acquire()
                     self.nb_writers -= 1
                     self.global_lock.release()
+
+            logger.debug("[WebUI] time to manage %s broks (time %.2gs)", len(l), time.clock() - start)
 
         logger.debug("[WebUI] manage_brok_thread end ...")
 
