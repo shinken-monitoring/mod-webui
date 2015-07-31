@@ -6,7 +6,7 @@ import traceback
 
 from shinken.log import logger
 
-from submodules.metamodule import MetaModule
+from .metamodule import MetaModule
 
 class HelpdeskMetaModule(MetaModule):
 

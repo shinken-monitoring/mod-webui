@@ -7,7 +7,7 @@ import json
 
 from shinken.log import logger
 
-from submodules.metamodule import MetaModule
+from .metamodule import MetaModule
 
 class PrefsMetaModule(MetaModule):
 
