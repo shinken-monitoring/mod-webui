@@ -75,15 +75,17 @@
                <td align="center" class="font-{{pb.state.lower()}}"><strong>{{ pb.state }}</strong></td>
                <td align="center">{{!helper.print_duration(pb.last_state_change, just_duration=True, x_elts=2)}}</td>
                <td class="row hidden-sm hidden-xs">
+                  %if app.graphs_module.is_available():
                   <div class="pull-right">
                      %# Graphs
                      %import time
                      %now = time.time()
-                     %graphs = app.get_graph_uris(pb, now-4*3600, now)
+                     %graphs = app.graphs_module.get_graph_uris(pb, duration=12*3600)
                      %if len(graphs) > 0:
                         <a role="button" tabindex="0" data-toggle="popover" title="{{ pb.get_full_name() }}" data-html="true" data-content="<img src='{{ graphs[0]['img_src'] }}' width='600px' height='200px'>" data-trigger="hover" data-placement="left">{{!helper.get_perfometer(pb)}}</a>
                      %end
                   </div>
+                  %end
                   <div class="ellipsis output">
                      {{!helper.strip_html_output(pb.output[:app.max_output_length]) if app.allow_html_output else pb.output[:app.max_output_length]}}
                      %if pb.long_output:
