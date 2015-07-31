@@ -32,7 +32,7 @@ class GraphsMetaModule(MetaModule):
             if not duration:
                 uris.extend(mod.get_graph_uris(elt, graphstart, graphend, source))
             else:
-                f = getattr(mod, 'get_relative_graphs_uri', None)
+                f = getattr(mod, 'get_relative_graph_uris', None)
                 if f and callable(f):
                     uris.extend(f(elt, duration, source))
                 else:
