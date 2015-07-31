@@ -160,7 +160,8 @@ class Webui_broker(BaseModule, Daemon):
 
         self.user_picture = ''
 
-        self.embeded_graph = to_bool(getattr(modconf, 'embeded_graph', '0'))
+        # @mohierf: still useful ? No value in webui.cfg, so always False ...
+        # self.embeded_graph = to_bool(getattr(modconf, 'embeded_graph', '0'))
 
         # Look for an additional pages dir
         self.additional_plugins_dir = getattr(modconf, 'additional_plugins_dir', '')
@@ -657,27 +658,6 @@ class Webui_broker(BaseModule, Daemon):
             user = request.environ['USER']
         return user and ((not self.manage_acl) or user.is_admin or user.can_submit_commands)
 
-    # ------------------------------------------------------------------------------------------
-    # Manage embedded graphs
-    # ------------------------------------------------------------------------------------------
-    # Try to got for an element the graphs uris from modules
-    # The source variable describes the source of the calling. Are we displaying
-    # graphs for the element detail page (detail), or a widget in the dashboard (dashboard) ?
-    ##
-    # Check if a graphs module is declared in webui.cfg
-    ##
-    # :TODO:maethor:150727: Remove this method (duplicate module)
-    def get_graph_uris(self, elt, graphstart, graphend, source='detail'):
-        return self.graphs_module.get_graph_uris(elt, graphstart, graphend, source)
-
-    def get_graph_img_src(self, uri, link):
-        url=uri
-        lk=link
-        if self.embeded_graph:
-            data = urllib.urlopen(uri, 'rb').read().encode('base64').replace('\n', '')
-            url="data:image/png;base64,{0}".format(data)
-            lk=''
-        return (url,lk)
 
     # TODO : move this function to dashboard plugin
     # For a specific place like dashboard we return widget lists

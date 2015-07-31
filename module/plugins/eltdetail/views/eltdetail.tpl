@@ -298,7 +298,7 @@ Invalid element name
             %if 'metrics' in params['tabs']:
             <li><a href="#metrics" data-toggle="tab">Metrics</a></li>
             %end
-            %if 'graphs' in params['tabs']:
+            %if 'graphs' in params['tabs'] and app.graphs_module.is_available():
             <li><a href="#graphs" data-toggle="tab">Graphs</a></li>
             %end
             %if 'depgraph' in params['tabs']:
@@ -1072,7 +1072,9 @@ Invalid element name
                               <th>Min</th>
                               <th>Max</th>
                               <th>UOM</th>
+                              %if app.graphs_module.is_available():
                               <th></th>
+                              %end
                            </tr>
                         </thead>
                         <tbody style="font-size:x-small;">
@@ -1094,18 +1096,20 @@ Invalid element name
                               <td>{{metric.max if metric.max else ''}}</td>
                               <td>{{metric.uom if metric.uom else ''}}</td>
                               
+                              %if app.graphs_module.is_available():
                               <td>
                                  %# Graphs
                                  %import time
                                  %import re
                                  %now = time.time()
-                                 %graphs = app.get_graph_uris(s, now-4*3600, now)
+                                 %graphs = app.graphs_module.get_graph_uris(s, now-4*3600, now)
                                  %for graph in graphs:
                                     %if re.findall('\\b'+metric.name+'\\b', graph['img_src']):
                                        <a role="button" tabindex="0" data-toggle="popover" title="{{ s.get_full_name() }}" data-html="true" data-content="<img src='{{ graph['img_src'] }}' width='600px' height='200px'>" data-trigger="hover" data-placement="left">{{!helper.get_perfometer(s, metric.name)}}</a>
                                     %end
                                  %end
                               </td>
+                              %end
                            </tr>
                            %end
                            %end
@@ -1126,18 +1130,20 @@ Invalid element name
                               <td>{{metric.max if metric.max else ''}}</td>
                               <td>{{metric.uom if metric.uom else ''}}</td>
                               
+                              %if app.graphs_module.is_available():
                               <td>
                                  %# Graphs
                                  %import time
                                  %import re
                                  %now = time.time()
-                                 %graphs = app.get_graph_uris(elt, now-4*3600, now)
+                                 %graphs = app.graphs_module.get_graph_uris(elt, now-4*3600, now)
                                  %for graph in graphs:
                                     %if re.findall('\\b'+metric.name+'\\b', graph['img_src']):
                                        <a role="button" tabindex="0" data-toggle="popover" title="{{ elt.get_full_name() }}" data-html="true" data-content="<img src='{{ graph['img_src'] }}' width='600px' height='200px'>" data-trigger="hover" data-placement="left">{{!helper.get_perfometer(elt, metric.name)}}</a>
                                     %end
                                  %end
                               </td>
+                              %end
                            </tr>
                            %end
                            %end
@@ -1152,7 +1158,7 @@ Invalid element name
             <!-- Tab Metrics end -->
 
             <!-- Tab Graph start -->
-            %if 'graphs' in params['tabs']:
+            %if 'graphs' in params['tabs'] and app.graphs_module.is_available():
             <script>
             var html_graphes = [];
             var current_graph = '';
@@ -1163,7 +1169,7 @@ Invalid element name
                <div class="panel panel-default">
                   <div class="panel-body">
                      %# Set source as '' or module ui-graphite will try to fetch templates from default 'detail'
-                     %uris = app.get_graph_uris(elt, graphstart, graphend)
+                     %uris = app.graphs_module.get_graph_uris(elt, graphstart, graphend)
                      %if len(uris) == 0:
                      <div class="alert alert-info">
                          <div class="font-blue"><strong>No graphs available for this {{elt_type}}!</strong></div>
@@ -1194,11 +1200,11 @@ Invalid element name
                      <script>
                      $('a[href="#graphs"]').on('shown.bs.tab', function (e) {
                         %uris = dict()
-                        %uris['4h'] = app.get_graph_uris(elt, fourhours, now)
-                        %uris['1d'] = app.get_graph_uris(elt, lastday,   now)
-                        %uris['1w'] = app.get_graph_uris(elt, lastweek,  now)
-                        %uris['1m'] = app.get_graph_uris(elt, lastmonth, now)
-                        %uris['1y'] = app.get_graph_uris(elt, lastyear,  now)
+                        %uris['4h'] = app.graphs_module.get_graph_uris(elt, fourhours, now)
+                        %uris['1d'] = app.graphs_module.get_graph_uris(elt, lastday,   now)
+                        %uris['1w'] = app.graphs_module.get_graph_uris(elt, lastweek,  now)
+                        %uris['1m'] = app.graphs_module.get_graph_uris(elt, lastmonth, now)
+                        %uris['1y'] = app.graphs_module.get_graph_uris(elt, lastyear,  now)
 
                         // let's create the html content for each time range
                         var element='/{{elt_type}}/{{elt.get_full_name()}}';
@@ -1206,10 +1212,9 @@ Invalid element name
                         
                         html_graphes['{{period}}'] = '<p>';
                         %for g in uris[period]:
-                        %(img_src, link) = app.get_graph_img_src( g['img_src'], g['link'])
                         
                         // Adjust image width / height parameter ... width is sized to container, and height is 1/3
-                        var img_src = "{{img_src}}".replace("'","\'")
+                        var img_src = "{{g['img_src']}}".replace("'","\'")
                         img_src = img_src.replace(/(width=).*?(&)/,'$1' + $('#real_graphs').width() + '$2');
                         img_src = img_src.replace(/(height=).*?(&)/,'$1' + ($('#real_graphs').width() / 3) + '$2');
                         
