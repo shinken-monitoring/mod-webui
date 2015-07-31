@@ -80,8 +80,9 @@ class MongoDBPreferences():
     '''
 
     def __init__(self, mod_conf):
-        self.uri = getattr(mod_conf, 'uri', 'mongodb://localhost/?safe=false')
+        self.uri = getattr(mod_conf, 'uri', 'mongodb://localhost')
         logger.info('[WebUI-MongoDBPreferences] mongo uri: %s' % self.uri)
+        
         self.replica_set = getattr(mod_conf, 'replica_set', None)
         if self.replica_set and int(pymongo.version[0]) < 3:
             logger.error('[WebUI-MongoDBPreferences] Can not initialize module with '
@@ -89,6 +90,7 @@ class MongoDBPreferences():
                          'Please install it with a 3.x+ version from '
                          'https://pypi.python.org/pypi/pymongo')
             return None
+            
         self.database = getattr(mod_conf, 'database', 'shinken')
         self.username = getattr(mod_conf, 'username', None)
         self.password = getattr(mod_conf, 'password', None)
@@ -100,7 +102,8 @@ class MongoDBPreferences():
         self.con = None
         self.db = None
 
-        logger.info("[WebUI-MongoDBPreferences] Try to open a Mongodb connection to %s, database: %s" % (self.uri, self.database))
+        logger.info("[WebUI-MongoDBPreferences] Trying to open a Mongodb connection to %s, database: %s" % (self.uri, self.database))
+        self.open()
 
     def open(self):
         try:
