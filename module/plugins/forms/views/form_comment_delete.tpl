@@ -7,17 +7,13 @@
    }
 </script>
 
-<div class="modal-dialog">
-  <div class="modal-content">
-    <div class="modal-header">
-      <a class="close" data-dismiss="modal">×</a>
-      <h3>Confirm comment '{{comment}}' deletion</h3>
-    </div>
+<div class="modal-header">
+  <a class="close" data-dismiss="modal">×</a>
+  <h3>Confirm comment '{{comment}}' deletion</h3>
+</div>
 
-    <div class="modal-body">
-      <form name="input_form" role="form">
-        <a href="javascript:submit_local_form();" class="btn btn-danger btn-lg btn-block"> <i class="fa fa-save"></i> Submit</a>
-      </form>
-    </div>
-  </div>
+<div class="modal-body">
+  <form name="input_form" role="form">
+    <a href="javascript:submit_local_form();" class="btn btn-danger btn-lg btn-block"> <i class="fa fa-save"></i> Submit</a>
+  </form>
 </div>
