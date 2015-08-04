@@ -27,6 +27,7 @@
 
 import re
 import itertools
+import time
 
 
 from shinken.misc.datamanager import DataManager
@@ -354,6 +355,27 @@ class WebUIDataManager(DataManager):
                     if s.startswith('='):
                         s = s[1:]
                     items = [i for i in items if i.business_impact == int(s)]
+
+            if t == 'duration':
+                seconds_per_unit = {"s": 1, "m": 60, "h": 3600, "d": 86400, "w": 604800}
+                times = [(i, time.time() - int(i.last_state_change)) for i in items]
+                try:
+                    if s.startswith('>='):
+                        s = int(s[2:-1]) * seconds_per_unit[s[-1].lower()]
+                        items = [i[0] for i in times if i[1] >= s]
+                    elif s.startswith('<='):
+                        s = int(s[2:-1]) * seconds_per_unit[s[-1].lower()]
+                        items = [i[0] for i in times if i[1] <= s]
+                    elif s.startswith('>'):
+                        s = int(s[1:-1]) * seconds_per_unit[s[-1].lower()]
+                        items = [i[0] for i in times if i[1] > s]
+                    elif s.startswith('<'):
+                        s = int(s[1:-1]) * seconds_per_unit[s[-1].lower()]
+                        items = [i[0] for i in times if i[1] < s]
+                    else:
+                        items = []
+                except Exception:
+                    items = []
 
             if t == 'is':
                 if s.lower() == 'ack':
