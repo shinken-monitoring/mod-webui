@@ -124,4 +124,4 @@
          %end
       %end
    });
-</script>r
+</script>
