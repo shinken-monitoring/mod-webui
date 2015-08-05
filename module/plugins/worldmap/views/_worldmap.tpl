@@ -363,7 +363,7 @@
       // debugMaps=true; 
       if (window.google) console.debug("Google maps already loaded ...");
       if (! window.google && ! mapsApiLoaded) {
-         $.getScript("http://maps.googleapis.com/maps/api/js?sensor=false&callback=mapInit", function() {
+         $.getScript("https://maps.googleapis.com/maps/api/js?sensor=false&callback=mapInit", function() {
             mapsApiLoaded=true;
             if (debugMaps) console.log("Google maps API loaded ...");
          });
