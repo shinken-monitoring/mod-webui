@@ -15,8 +15,8 @@
    var imagesDir="/static/worldmap/img/";
 
    // Default camera position/zoom ...
-   var defLat={{params['default_Lat']}};
-   var defLng={{params['default_Lng']}};
+   var defLat={{params['default_lat']}};
+   var defLng={{params['default_lng']}};
    var defaultZoom={{params['default_zoom']}};
 
    // Default map layer ...
@@ -142,7 +142,7 @@
                try {
                   // Create a marker for all hosts having GPS coordinates ...
                   if (debugMaps) console.log("host {{h.get_name()}} is {{h.state}}. GPS is {{h.customs.get('_LOC_LAT')}} / {{h.customs.get('_LOC_LNG')}} :");
-                  var gpsLocation = new google.maps.LatLng( {{float(h.customs.get('_LOC_LAT', params['default_Lat']))}} , {{float(h.customs.get('_LOC_LNG', params['default_Lng']))}} );
+                  var gpsLocation = new google.maps.LatLng( {{float(h.customs.get('_LOC_LAT'))}} , {{float(h.customs.get('_LOC_LNG'))}} );
                   
                   var hostAcknowledged = false;
                   %if h.is_problem and h.problem_has_been_acknowledged:

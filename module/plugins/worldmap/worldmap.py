@@ -46,33 +46,52 @@ def load_config(app):
     global params
 
     logger.info("[WebUI-worldmap] loading configuration ...")
-    
-    default_position = app.prefs_module.get_ui_common_preference('worldmap-default_position', '')
-    if default_position == '':
-        app.prefs_module.set_ui_common_preference('worldmap-default_position', '{"default_zoom": 16, "default_Lng": 5.080625, "default_Lat": 45.054148}')
-        default_position = app.prefs_module.get_ui_common_preference('worldmap-default_position', '')
-    params.update(json.loads(default_position))
-    
-    hosts = app.prefs_module.get_ui_common_preference('worldmap-hosts', '')
-    if hosts == '':
-        app.prefs_module.set_ui_common_preference('worldmap-hosts', '{"hosts_level": [1,2,3,4,5]}')
-        hosts = app.prefs_module.get_ui_common_preference('worldmap-hosts', '')
-    params.update(json.loads(hosts))
-    
-    services = app.prefs_module.get_ui_common_preference('worldmap-services', '')
-    if services == '':
-        app.prefs_module.set_ui_common_preference('worldmap-services', '{"services_level": [1,2,3,4,5]}')
-        services = app.prefs_module.get_ui_common_preference('worldmap-services', '')
-    params.update(json.loads(services))
-    
-    layer = app.prefs_module.get_ui_common_preference('worldmap-layer', '')
-    if layer == '':
-        app.prefs_module.set_ui_common_preference('worldmap-layer', '{"layer": ""}')
-        layer = app.prefs_module.get_ui_common_preference('worldmap-layer', '')
-    params.update(json.loads(layer))
+
+    properties = {
+            'worldmap-zoom': '{"default_zoom": 16}',
+            'worldmap-lng': '{"default_lng": 5.080625}',
+            'worldmap-lat': '{"default_lat": 45.054148}',
+            'worldmap-hosts': '{"hosts_level": [1,2,3,4,5]}',
+            'worldmap-services': '{"services_level": [1,2,3,4,5]}',
+            'worldmap-layer': '{"layer": ""}',
+            }
+
+    for p, default in properties.items():
+        params.update(json.loads(app.prefs_module.get_ui_common_preference(p, default)))
 
     logger.info("[WebUI-worldmap] configuration loaded.")
     logger.info("[WebUI-worldmap] configuration, params: %s", params)
+
+
+def search_hosts_with_coordinates(search, user):
+    logger.debug("[WebUI-worldmap] search parameters '%s'", search)
+    items = app.datamgr.search_hosts_and_services(search, user, get_impacts=True)
+    
+    # We are looking for hosts with valid GPS coordinates,
+    # and we just give them to the template to print them.
+    # :COMMENT:maethor:150810: If you want default coordinates, just put them
+    # in the 'generic-host' template.
+    valid_hosts = []
+    for h in items:
+        logger.debug("[WebUI-worldmap] found host '%s'", h.get_name())
+        
+        if h.business_impact not in params['hosts_level']:
+            continue
+
+        try:
+            _lat = float(h.customs.get('_LOC_LAT', None))
+            _lng = float(h.customs.get('_LOC_LNG', None))
+            # lat/long must be between -180/180
+            if not (-180 <= _lat <= 180 and -180 <= _lng <= 180):
+                raise Exception()
+        except Exception:
+            logger.debug("[WebUI-worldmap] host '%s' has invalid GPS coordinates", h.get_name())
+            continue
+            
+        logger.debug("[WebUI-worldmap] host '%s' located on worldmap: %f - %f", h.get_name(), _lat, _lng)
+        valid_hosts.append(h)
+
+    return valid_hosts
 
 # Our page. If the user call /worldmap
 def show_worldmap():
@@ -80,46 +99,10 @@ def show_worldmap():
 
     # Apply search filter if exists ...
     search = app.request.query.get('search', "type:host")
-    if not "type:host" in search:
-        search = "type:host "+search
-    logger.debug("[WebUI-worldmap] search parameters '%s'", search)
-    items = app.datamgr.search_hosts_and_services(search, user, get_impacts=False)
-    
-    # We are looking for hosts with valid GPS coordinates,
-    # and we just give them to the template to print them.
-    valid_hosts = []
-    for h in items:
-        logger.debug("[WebUI-worldmap] found host '%s'", h.get_name())
-        
-        # Filter hosts
-        # if h.get_name() in params['map_hostsHide']:
-            # continue
-            
-        # if h.get_name() not in params['map_hostsShow'] and h.business_impact not in params['map_hostsLevel']:
-            # continue
-        
-        if h.business_impact not in params['hosts_level']:
-            continue
-        
-        _lat = h.customs.get('_LOC_LAT', params['default_Lat'])
-        _lng = h.customs.get('_LOC_LNG', params['default_Lng'])
-
-        if _lat and _lng:
-            try:
-                # Maybe the customs are set, but with invalid float?
-                _lat = float(_lat)
-                _lng = float(_lng)
-            except ValueError:
-                logger.debug("[WebUI-worldmap] host '%s' has invalid GPS coordinates (not float)", h.get_name())
-                continue
-                
-            # Look for good range, lat/long must be between -180/180
-            if -180 <= _lat <= 180 and -180 <= _lng <= 180:
-                logger.debug("[WebUI-worldmap] host '%s' located on worldmap: %f - %f", h.get_name(), _lat, _lng)
-                valid_hosts.append(h)
 
     # So now we can just send the valid hosts to the template
-    return {'search_string': search, 'params': params, 'hosts': valid_hosts}
+    return {'search_string': search, 'params': params,
+            'hosts': search_hosts_with_coordinates(search, user)}
 
 
 def show_worldmap_widget():
@@ -134,52 +117,15 @@ def show_worldmap_widget():
     
     # Apply search filter if exists ...
     search = app.request.query.get('search', "type:host")
-    if not "type:host" in search:
-        search = "type:host "+search
-    logger.debug("[WebUI-worldmap] search parameters '%s'", search)
-    items = app.datamgr.search_hosts_and_services(search, user, get_impacts=False)
-    items = items[:nb_elements]
+
+    items = search_hosts_with_coordinates(search, user)
     
     # Ok, if needed, apply the widget refine search filter
     if refine_search:
-        # We compile the pattern
         pat = re.compile(refine_search, re.IGNORECASE)
-        new_items = []
-        for item in items:
-            if pat.search(item.get_full_name()):
-                new_items.append(item)
-                continue
+        items = [ i for i in items if pat.search(i.get_full_name()) ]
 
-        items = new_items[:nb_elements]
-
-    # We are looking for hosts that got valid GPS coordinates,
-    # and we just give them to the template to print them.
-    valid_hosts = []
-    for h in items:
-        # Filter hosts
-        # if h.get_name() in params['map_hostsHide']:
-            # continue
-            
-        # if h.get_name() not in params['map_hostsShow'] and h.business_impact not in params['map_hostsLevel']:
-            # continue
-        
-        if h.business_impact not in params['hosts_level']:
-            continue
-        
-        _lat = h.customs.get('_LOC_LAT', params['default_Lat'])
-        _lng = h.customs.get('_LOC_LNG', params['default_Lng'])
-
-        if _lat and _lng:
-            try:
-                # Maybe the customs are set, but with invalid float?
-                _lat = float(_lat)
-                _lng = float(_lng)
-            except ValueError:
-                logger.debug("[WebUI-worldmap] host '%s' has invalid GPS coordinates (not float)", h.get_name())
-                continue
-            # Look for good range, lat/long must be between -180/180
-            if -180 <= _lat <= 180 and -180 <= _lng <= 180:
-                valid_hosts.append(h)
+    items = items[:nb_elements]
 
     wid = app.request.GET.get('wid', 'widget_problems_' + str(int(time.time())))
     collapsed = (app.request.GET.get('collapsed', 'False') == 'True')
@@ -195,7 +141,7 @@ def show_worldmap_widget():
     return {'wid': wid,
             'collapsed': collapsed, 'options': options,
             'base_url': '/widget/worldmap', 'title': title,
-            'params': params, 'hosts' : valid_hosts
+            'params': params, 'hosts' : items
             }
 
 
