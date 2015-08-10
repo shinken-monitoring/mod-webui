@@ -173,7 +173,7 @@ function on_page_refresh() {
       
       // Loading indicator ...
       $("#inner_history").html('<i class="fa fa-spinner fa-spin fa-3x"></i> Loading history data ...');
-      $("#inner_history").load('/logs/inner/'+element, function(response, status, xhr) {
+      $("#inner_history").load('/logs/inner/'+encodeURIComponent(element), function(response, status, xhr) {
          if (status == "error") {
             $('#inner_history').html('<div class="alert alert-danger">Sorry but there was an error: ' + xhr.status + ' ' + xhr.statusText+'</div>');
          }
