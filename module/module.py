@@ -121,7 +121,7 @@ class Webui_broker(BaseModule, Daemon):
         # TODO : common preferences
         self.allow_html_output = to_bool(getattr(modconf, 'allow_html_output', '0'))
         # TODO : common preferences
-        self.max_output_length = int(getattr(modconf, 'max_output_length', '100'))
+        #self.max_output_length = int(getattr(modconf, 'max_output_length', '100'))
         # TODO : common preferences
         self.refresh_period = int(getattr(modconf, 'refresh_period', '60'))
         # Use element tag as image or use text

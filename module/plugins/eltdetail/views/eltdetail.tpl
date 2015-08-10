@@ -396,7 +396,7 @@ Invalid element name
                                        data-title="{{elt.get_full_name()}} check output" 
                                        data-content=" {{elt.output}}{{'<br/>'+elt.long_output.replace('\n', '<br/>') if elt.long_output else ''}}"
                                        >
-                                  {{!helper.strip_html_output(elt.output[:app.max_output_length]) if app.allow_html_output else elt.output[:app.max_output_length]}}
+                                  {{!helper.strip_html_output(elt.output) if app.allow_html_output else elt.output}}
                                  </td>
                               </tr>
                               <tr>

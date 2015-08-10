@@ -65,9 +65,6 @@ This file is largely commented and is quite self explanatory.
                                  ; Allow or not HTML chars in plugins output.
                                  ; WARNING: Allowing can be a security issue.
                            
-      max_output_length          1024
-                                 ; Maximum output length for plugin output in webui
-                           
       play_sound                 0
                                  ; Play sound on new non-acknowledged problems.
 
