@@ -3,6 +3,7 @@
 # vim: ai ts=4 sts=4 et sw=4 nu
 
 import time
+import urllib
 
 from shinken.log import logger
 
@@ -41,4 +42,8 @@ class GraphsMetaModule(MetaModule):
                     uris.extend(mod.get_graph_uris(elt, graphstart, graphend, source))
                 
             logger.debug("[WebUI] Got graphs: %s", uris)
+
+        for uri in uris:
+            uri['img_src'] = '/graph?url=' + urllib.quote(uri['img_src'])
+
         return uris

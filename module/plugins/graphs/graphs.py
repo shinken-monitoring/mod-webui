@@ -23,10 +23,28 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 import time
+import requests
 
 
 ### Will be populated by the UI with it's own value
 app = None
+
+
+def proxy_graph():
+    ''' This route proxies graphs returned by the graph module.
+        The pnp4nagios/graphite image url have to be in the GET attributes,
+        encoded with urlencode. The graphs metamodule takes care of that. This
+        route should not be usefull anywhere else.
+    '''
+    url = app.request.GET.get('url', '')
+    try:
+        r = requests.get(url)
+        if r.status_code != 200:
+            raise Exception("Image not found")
+    except Exception as e:
+        raise app.bottle.HTTPError(404, e)
+    app.bottle.response.content_type = str(r.headers['content-type'])
+    return r.content
 
 
 # Our page
@@ -86,5 +104,6 @@ Show the perfdata graph
 '''
 
 pages = {
+    proxy_graph: {'routes': ['/graph'], 'view': 'graph', 'static': True},
     get_graphs_widget: {'routes': ['/widget/graphs'], 'view': 'widget_graphs', 'static': True, 'widget': ['dashboard'], 'widget_desc': widget_desc, 'widget_name': 'graphs', 'widget_picture': '/static/graphs/img/widget_graphs.png'},
     }
