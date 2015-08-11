@@ -85,16 +85,17 @@ $('body').on('hide.bs.collapse', '.collapse', function () {
     $(this).closest('tr').prev().find('.output').addClass("ellipsis", {duration:200});
 });
 
-$('body').on('mouseenter', '.ellipsis', function () {
-   var $this = $(this);
-   if (this.offsetWidth < this.scrollWidth && !$this.attr('title')) {
-      $this.tooltip({
-         title: $this.text(),
-         placement: "bottom"
-      });
-      $this.tooltip('show');
-   }
-});
+// :DEBUG:maethor:150811: This can make things very buggy if the output is long.
+//$('body').on('mouseenter', '.ellipsis', function () {
+   //var $this = $(this);
+   //if (this.offsetWidth < this.scrollWidth && !$this.attr('title')) {
+      //$this.tooltip({
+         //title: $this.text(),
+         //placement: "bottom"
+      //});
+      //$this.tooltip('show');
+   //}
+//});
 
 // Business impact selection buttons
 $('body').on('click', 'button[data-type="business-impact"]', function (e) {
