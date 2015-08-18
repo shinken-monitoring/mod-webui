@@ -41,7 +41,7 @@ def depgraph_host(name):
             app.bottle.redirect("/depgraph/" + search)
 
     h = app.datamgr.get_host(name)
-    return {'elt': h, 'valid_user': True, 'loop' : loop, 'loop_time' : loop_time}
+    return {'elt': h, 'loop' : loop, 'loop_time' : loop_time}
 
 
 def depgraph_srv(hname, desc):
@@ -56,7 +56,7 @@ def depgraph_srv(hname, desc):
             app.bottle.redirect("/depgraph/" + search)
 
     s = app.datamgr.get_service(hname, desc)
-    return {'elt': s, 'valid_user': True, 'loop' : loop, 'loop_time' : loop_time}
+    return {'elt': s, 'loop' : loop, 'loop_time' : loop_time}
 
 
 def get_depgraph_widget():

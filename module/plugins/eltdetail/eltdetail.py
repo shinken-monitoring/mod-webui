@@ -45,19 +45,15 @@ def load_config(app):
 
 # Main impacts view
 def show_host(host_name):
-    # Ok we are in a detail page but the user ask for a specific search
-    if host_name.startswith('all'):  # :DEBUG:maethor:150718: WHAT ?
-        search = ' '.join(app.request.GET.getall('search')) or ""
-        app.bottle.redirect('/'+host_name+'?search='+search)
+    # Ok, we can lookup it
+    user = app.bottle.request.environ['USER']
+    h = app.datamgr.get_host(host_name, user) or app.redirect404()
 
     # Get graph data. By default, show last 4 hours
     now = int(time.time())
     graphstart = int(app.request.GET.get('graphstart', str(now - 4*3600)))
     graphend = int(app.request.GET.get('graphend', str(now)))
-
-    # Ok, we can lookup it
-    h = app.datamgr.get_host(host_name)
-    return {'elt': h, 'valid_user': True, 'params': params, 'graphstart': graphstart,
+    return {'elt': h, 'params': params, 'graphstart': graphstart,
             'graphend': graphend}
 
 
@@ -74,7 +70,7 @@ def show_service(host_name, service):
 
     # Ok, we can lookup it :)
     s = app.datamgr.get_service(host_name, service)
-    return {'elt': s, 'valid_user': True, 'params': params, 'graphstart': graphstart,
+    return {'elt': s, 'params': params, 'graphstart': graphstart,
             'graphend': graphend}
 
 pages = {

@@ -689,6 +689,10 @@ class Webui_broker(BaseModule, Daemon):
         return lst
 
 
+    def redirect404(self, msg="Not found"):
+        raise self.bottle.HTTPError(404, msg)
+
+
 @bottle.hook('before_request')
 def login_required():
     # :COMMENT:maethor:150718: This hack is crazy, but I don't know how to do it properly

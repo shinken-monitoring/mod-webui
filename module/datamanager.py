@@ -185,10 +185,14 @@ class WebUIDataManager(DataManager):
             items = [i for i in items if not i.is_impact]
         return self._only_related_to(items, user)
 
-    def get_host(self, hname):
+    def get_host(self, hname, user=None):
         """ Get a host by its hostname. """
         hname = hname.decode('utf8', 'ignore')
-        return self.rg.hosts.find_by_name(hname)
+        host = self.rg.hosts.find_by_name(hname)
+        if host and self._is_related_to(host, user):
+            return host
+        else:
+            return None
 
     def get_percentage_hosts_state(self, user=None, problem=False):
         """ Get percentage of hosts not in (or in) problems.

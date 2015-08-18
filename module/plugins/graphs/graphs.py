@@ -42,7 +42,7 @@ def proxy_graph():
         if r.status_code != 200:
             raise Exception("Image not found")
     except Exception as e:
-        raise app.bottle.HTTPError(404, e)
+        app.redirect404(e)
     app.bottle.response.content_type = str(r.headers['content-type'])
     return r.content
 

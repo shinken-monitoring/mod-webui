@@ -57,7 +57,7 @@ def show_impacts():
         imp_id += 1
         impacts[imp_id] = imp
 
-    return {'impacts': impacts, 'valid_user': True}
+    return {'impacts': impacts}
 
 
 def impacts_widget():
