@@ -3,6 +3,7 @@
 # vim: ai ts=4 sts=4 et sw=4 nu
 
 import traceback
+import re
 
 from shinken.log import logger
 
@@ -44,25 +45,20 @@ class LogsMetaModule(MetaModule):
         return default
 
 
-
-import re
-
-try:
-    import pymongo
-    from pymongo import MongoClient
-except ImportError:
-    logger.error('[WebUI-mongo-logs] Can not import pymongo and/or MongoClient'
-                 'Your pymongo lib is too old. '
-                 'Please install it with a 3.x+ version from '
-                 'https://pypi.python.org/pypi/pymongo')
-    raise
-
 class MongoDBLogs():
     '''
     This module job is to get webui configuration data from a mongodb database:
     '''
 
     def __init__(self, mod_conf):
+        try:
+            import pymongo
+        except ImportError:
+            logger.error('[WebUI-mongo-logs] Can not import pymongo'
+                         'Your pymongo lib is too old. '
+                         'Please install it with a 3.x+ version from '
+                         'https://pypi.python.org/pypi/pymongo')
+            raise
         self.uri = getattr(mod_conf, 'uri', 'mongodb://localhost')
         logger.info('[WebUI-mongo-logs] mongo uri: %s' % self.uri)
         
@@ -99,6 +95,11 @@ class MongoDBLogs():
 
     def open(self):
         try:
+            from pymongo import MongoClient
+        except ImportError:
+            logger.error('[WebUI-mongo-logs] Can not import pymongo.MongoClient')
+            raise
+        try:
             if self.replica_set:
                 self.con = MongoClient(self.uri, replicaSet=self.replica_set, fsync=self.mongodb_fsync)
             else:
@@ -128,6 +129,7 @@ class MongoDBLogs():
 
     # We will get in the mongodb database the logs
     def get_ui_logs(self, name, logs_type=None, range_start=None, range_end=None):
+        import pymongo
         if not self.db:
             logger.error("[mongo-logs] error Problem during init phase, no database connection")
             return None
@@ -198,6 +200,7 @@ class MongoDBLogs():
 
     # We will get in the mongodb database the host availability
     def get_ui_availability(self, name, range_start=None, range_end=None):
+        import pymongo
         if not self.db:
             logger.error("[mongo-logs] error Problem during init phase, no database connection")
             return None
