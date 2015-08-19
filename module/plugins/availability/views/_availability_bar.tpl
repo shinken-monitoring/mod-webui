@@ -1,13 +1,14 @@
+%interval = range_end - range_start
 %t_0=int(log['daily_0'])
 %t_1=int(log['daily_1'])
 %t_2=int(log['daily_2'])
 %t_3=int(log['daily_3'])
 %t_4=int(log['daily_4'])
-%p_0=round(100.0 * t_0 / (86400-t_4), 2) if t_4 != 86400 else 0
-%p_1=round(100.0 * t_1 / (86400-t_4), 2) if t_4 != 86400 else 0
-%p_2=round(100.0 * t_2 / (86400-t_4), 2) if t_4 != 86400 else 0
-%p_3=round(100.0 * t_3 / (86400-t_4), 2) if t_4 != 86400 else 0
-%p_4=round(100.0 * t_4 / (86400-t_4), 2) if t_4 != 86400 else 0
+%p_0=round(100.0 * t_0 / (interval-t_4), 2) if t_4 != interval else 0
+%p_1=round(100.0 * t_1 / (interval-t_4), 2) if t_4 != interval else 0
+%p_2=round(100.0 * t_2 / (interval-t_4), 2) if t_4 != interval else 0
+%p_3=round(100.0 * t_3 / (interval-t_4), 2) if t_4 != interval else 0
+%p_4=round(100.0 * t_4 / (interval-t_4), 2) if t_4 != interval else 0
 
 <td>
   <div class="progress" style="margin-bottom: 0px;">

@@ -40,21 +40,28 @@ def _get_availability(*args, **kwargs):
         logger.warning("[WebUI-availability] no get availability external module defined!")
         return None
 
+
 def get_element(name):
     elt = app.datamgr.get_element(name) or app.redirect404()
     return {'records': _get_availability(elt=elt)}
 
 
 def get_page():
-    # Find start and end date if provided in parameters ...
-    # Default is current day
+    user = app.bottle.request.environ['USER']
+
+    # Apply search filter if exists ...
+    search = app.request.query.get('search', "type:host")
+    if "type:host" not in search:
+        search = "type:host " + search
+    logger.debug("[WebUI-availability] search parameters '%s'", search)
+    hosts = app.datamgr.search_hosts_and_services(search, user)
+
     midnight_timestamp = time.mktime(datetime.date.today().timetuple())
-    
     range_start = int(app.request.GET.get('range_start', midnight_timestamp))
     range_end = int(app.request.GET.get('range_end', midnight_timestamp + 86399))
     logger.debug("[WebUI-availability] get_page, range: %d - %d", range_start, range_end)
 
-    records = _get_availability(elt=None, range_start=range_start, range_end=range_end)
+    records = [_get_availability(elt=host, range_start=range_start, range_end=range_end) for host in hosts]
 
     return {'records': records, 'range_start': range_start, 'range_end': range_end}
 
