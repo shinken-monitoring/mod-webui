@@ -32,9 +32,9 @@
         <td>{{log['service']}}</td>
         <td>{{log['day']}}</td>
 
-        <td>{{time.strftime(date_format, time.localtime(log['first_check_timestamp']))}} {{!app.helper.get_fa_icon_state_and_label(cls='host', state=states[log['first_check_state']])}}</td>
+        <td><span class="moment-date" data-timestamp="{{log['first_check_timestamp']}}" data-format="calendar()">{{log['first_check_timestamp']}}</span> {{!app.helper.get_fa_icon_state_and_label(cls='host', state=states[log['first_check_state']])}}</td>
 
-        <td>{{time.strftime(date_format, time.localtime(log['last_check_timestamp']))}} {{!app.helper.get_fa_icon_state_and_label(cls='host', state=states[log['last_check_state']])}}</td>
+        <td><span class="moment-date" data-timestamp="{{log['last_check_timestamp']}}" data-format="calendar()">{{log['last_check_timestamp']}}</span> {{!app.helper.get_fa_icon_state_and_label(cls='host', state=states[log['last_check_state']])}}</td>
 
         <td>{{! app.helper.get_on_off(bool(log['is_downtime']=='1'), 'Is in downtime period?')}}</td>
 
@@ -44,3 +44,25 @@
     </tbody>
   </table>
 %end
+
+<script type="text/javascript">
+  function moment_render_date(elem) {
+      $(elem).text(eval('moment.unix("' + $(elem).data('timestamp') + '").' + $(elem).data('format') + ';'));
+      $(elem).removeClass('moment-date').show();
+  }
+  function moment_render_duration(elem) {
+      $(elem).attr('title', eval('moment.duration(' + $(elem).data('duration') + ', "seconds").humanize();'));
+      $(elem).removeClass('moment-duration').show();
+  }
+  function moment_render_all() {
+    $('.moment-date').each(function() {
+      moment_render_date(this);
+    })
+    $('.moment-duration').each(function() {
+      moment_render_duration(this);
+    })
+  }
+  $(document).ready(function() {
+    moment_render_all();
+  });
+</script>
