@@ -135,12 +135,9 @@ def set_logs_type_list():
     return
 
 def get_host_history(name):
-    elt_type = 'host'
-    if '/' in name:
-        elt_type = 'service'
-        
-    logs = _get_logs(name=name)
-    return {'records': logs, 'elt_type': elt_type}
+    elt = app.datamgr.get_element(name)
+    logs = _get_logs(elt=elt)
+    return {'records': logs, 'elt': elt}
 
 
 def get_global_history():
@@ -149,7 +146,7 @@ def get_global_history():
     range_end = int(app.request.GET.get('range_end', midnight_timestamp + 86399))
     logger.debug("[WebUI-logs] get_global_history, range: %d - %d", range_start, range_end)
 
-    logs = _get_logs(name=None, logs_type=params['logs_type'], range_start=range_start, range_end=range_end)
+    logs = _get_logs(elt=None, logs_type=params['logs_type'], range_start=range_start, range_end=range_end)
     if len(logs) > 200:
         logs = logs[:200]
     if logs is not None:

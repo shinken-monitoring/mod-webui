@@ -90,13 +90,7 @@ def get_depgraph_widget():
 
 
 def get_depgraph_inner(name):
-    elt = None
-    if '/' in name:
-        elts = name.split('/', 1)
-        elt = app.datamgr.get_service(elts[0], elts[1])
-    else:
-        elt = app.datamgr.get_host(name)
-
+    elt = app.datamgr.get_element(name)
     return {'elt': elt}
 
 widget_desc = '''<h4>Relation graph</h4>

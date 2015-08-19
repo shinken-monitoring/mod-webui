@@ -1,6 +1,7 @@
 %import time
 
 %date_format='%Y-%m-%d %H:%M:%S'
+%elt_type = elt.__class__.my_type
 
 %if hasattr(records,"__iter__"):
    <table class="table table-condensed">

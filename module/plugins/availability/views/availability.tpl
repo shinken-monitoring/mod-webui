@@ -6,6 +6,7 @@
 %states = ['Up', 'down', 'unreachable', 'unknown', 'unchecked']
 
 %if not records:
+  {{ records }}
   <center>
     <h3>No availability records found.</h3>
     You should install the <strong>mongo-logs</strong> Shinken module to collect hosts availability data.

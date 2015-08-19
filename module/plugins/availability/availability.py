@@ -41,7 +41,8 @@ def _get_availability(*args, **kwargs):
         return None
 
 def get_element(name):
-    return {'records': _get_availability(name)}
+    elt = app.datamgr.get_element(name) or app.redirect404()
+    return {'records': _get_availability(elt=elt)}
 
 
 def get_page():
@@ -53,7 +54,7 @@ def get_page():
     range_end = int(app.request.GET.get('range_end', midnight_timestamp + 86399))
     logger.debug("[WebUI-availability] get_page, range: %d - %d", range_start, range_end)
 
-    records = _get_availability(name=None, range_start=range_start, range_end=range_end)
+    records = _get_availability(elt=None, range_start=range_start, range_end=range_end)
 
     return {'records': records, 'range_start': range_start, 'range_end': range_end}
 

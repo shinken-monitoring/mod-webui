@@ -229,11 +229,15 @@ class WebUIDataManager(DataManager):
             items = [i for i in items if not i.is_impact]
         return self._only_related_to(items, user)
 
-    def get_service(self, hname, sdesc):
+    def get_service(self, hname, sdesc, user=None):
         """ Get a service by its hostname and service description. """
         hname = hname.decode('utf8', 'ignore')
         sdesc = sdesc.decode('utf8', 'ignore')
-        return self.rg.services.find_srv_by_name_and_hostname(hname, sdesc)
+        service = self.rg.services.find_srv_by_name_and_hostname(hname, sdesc)
+        if service and self._is_related_to(service, user):
+            return service
+        else:
+            return None
 
     def get_percentage_service_state(self, user=None, problem=False):
         """ Get percentage of services not in (or in) problems.
@@ -254,6 +258,18 @@ class WebUIDataManager(DataManager):
             return int((len(problems) * 100) / float(len(all_services)))
         else:
             return int(100 - (len(problems) * 100) / float(len(all_services)))
+
+    ##
+    # Elements
+    ##
+    def get_element(self, name, user=None):
+        """ Get an element by its name.
+            :name: Must be "host" or "host/service"
+        """
+        if '/' in name:
+            return self.get_service(name.split('/')[0], name.split('/')[1], user)
+        else:
+            return self.get_host(name, user)
 
     def search_hosts_and_services(self, search="", user=None, get_impacts=True, sorter=None):
         """ Search hosts and services.
@@ -282,7 +298,7 @@ class WebUIDataManager(DataManager):
             if len(elts) > 1:
                 t = elts[0]
                 s = elts[1]
-                
+
             s = s.lower()
             t = t.lower()
 

@@ -70,10 +70,7 @@ def create_ticket(name):
         return json.dumps(result)
 
 def add_ticket(name):
-    if '/' in name:
-        elt = app.datamgr.get_service(name.split('/')[0], name.split('/')[1])
-    else:
-        elt = app.datamgr.get_host(name)
+    elt = app.datamgr.get_element(name)
     
     try:
         itemtype = elt.customs['_ITEMTYPE']

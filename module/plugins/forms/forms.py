@@ -40,19 +40,12 @@ def form_change_var(name):
     variable = app.request.GET.get('variable', '')
     value = app.request.GET.get('value', '')
     
-    if '/' in name:
-        elt = app.datamgr.get_service(name.split('/')[0], name.split('/')[1])
-    else:
-        elt = app.datamgr.get_host(name)
+    elt = app.datamgr.get_element(name)
 
     return {'elt': elt, 'name': name, 'variable': variable, 'value': value}
 
 def form_var(name):
-    if '/' in name:
-        elt = app.datamgr.get_service(name)
-    else:
-        elt = app.datamgr.get_host(name)
-
+    elt = app.datamgr.get_element(name)
     return {'elt': elt, 'name': name}
 
 def form_ack_add(name):
