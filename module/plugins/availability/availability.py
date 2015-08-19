@@ -43,7 +43,7 @@ def _get_availability(*args, **kwargs):
 
 def get_element(name):
     elt = app.datamgr.get_element(name) or app.redirect404()
-    return {'records': _get_availability(elt=elt)}
+    return {'records': [_get_availability(elt=elt)]}
 
 
 def get_page():
