@@ -26,6 +26,9 @@
 
 import time
 import datetime
+import arrow
+
+from collections import OrderedDict
 
 from shinken.log import logger
 
@@ -43,7 +46,35 @@ def _get_availability(*args, **kwargs):
 
 def get_element(name):
     elt = app.datamgr.get_element(name) or app.redirect404()
-    return {'records': [_get_availability(elt=elt)]}
+    records = []
+    today = arrow.now().replace(hour=0,minute=0,second=0)
+    records = OrderedDict()
+    records['Today'] = _get_availability(elt=elt, range_start=today.timestamp)
+    records['This week'] = _get_availability(elt=elt,
+                                             range_start=today.replace(days=-today.weekday()).timestamp)
+    records['This month'] = _get_availability(elt=elt, range_start=today.replace(day=1).timestamp)
+    records['Yesterday'] = _get_availability(elt=elt,
+                                             range_start=today.replace(days=-1).timestamp,
+                                             range_end=today.timestamp)
+    records['Last week'] = _get_availability(elt=elt,
+                                             range_start=today.replace(days=-(7+today.weekday())).timestamp,
+                                             range_end=today.replace(days=-today.weekday()).timestamp)
+    records['Last month'] = _get_availability(elt=elt,
+                                              range_start=today.replace(day=1, months=-1).timestamp,
+                                              range_end=today.replace(day=1).timestamp)
+
+    # Find as many months as possible in the past
+    start = today.replace(day=1, months=-2)
+    while True:
+        record = _get_availability(elt=elt,
+                                   range_start=start.timestamp,
+                                   range_end=start.replace(months=1).timestamp)
+        if record is None:
+            break
+        records[start.format('MM-YYYY')] = record
+        start = start.replace(months=-1)
+
+    return {'elt': elt, 'records': records}
 
 
 def get_page():
@@ -67,6 +98,6 @@ def get_page():
 
 
 pages = {
-    get_element: {'routes': ['/availability/inner/<name:path>'], 'view': 'availability', 'static': True},
+    get_element: {'routes': ['/availability/inner/<name:path>'], 'view': 'availability-elt', 'static': True},
     get_page: {'routes': ['/availability'], 'view': 'availability-all', 'static': True},
 }

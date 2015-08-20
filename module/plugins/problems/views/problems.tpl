@@ -223,3 +223,7 @@
    %# Close problems div ...
    %end
  </div>
+
+ <script>
+   $('a[href="/problems"]').addClass('active');
+ </script>

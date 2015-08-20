@@ -92,6 +92,8 @@
       <script src="/static/js/alertify.js"></script>
       <script src="/static/js/typeahead.bundle.min.js"></script>
       <script src="/static/js/screenfull.js"></script>
+      <script src="/static/js/raphael.2.1.0.min.js"></script>
+      <script src="/static/js/justgage.js"></script>
       
       <!-- 
        Shinken scripts ...

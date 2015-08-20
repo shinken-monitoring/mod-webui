@@ -220,6 +220,9 @@ class MongoDBLogs():
         except Exception, exp:
             logger.error("[mongo-logs] Exception when querying database: %s", str(exp))
 
+        if not records:
+            return None
+
         # Aggregate logs in one record
         record = {'first_check_state': 0,
                   'day_ts': 0,
