@@ -229,7 +229,7 @@ class WebUIDataManager(DataManager):
             items = [i for i in items if not i.is_impact]
         return self._only_related_to(items, user)
 
-    def get_service(self, hname, sdesc, user=None):
+    def get_service(self, hname, sdesc, user):
         """ Get a service by its hostname and service description. """
         hname = hname.decode('utf8', 'ignore')
         sdesc = sdesc.decode('utf8', 'ignore')

@@ -58,18 +58,14 @@ def show_host(host_name):
 
 
 def show_service(host_name, service):
-    # Ok we are in a detail page but the user ask for a specific search
-    if host_name.startswith('all'):  # :DEBUG:maethor:150718: WHAT ?
-        search = ' '.join(app.request.GET.getall('search')) or ""
-        app.bottle.redirect('/'+host_name+'?search='+search)
+    user = app.bottle.request.environ['USER']
+    s = app.datamgr.get_service(host_name, service, user) or app.redirect404()
 
     # Get graph data. By default, show last 4 hours
     now = int(time.time())
     graphstart = int(app.request.GET.get('graphstart', str(now - 4*3600)))
     graphend = int(app.request.GET.get('graphend', str(now)))
 
-    # Ok, we can lookup it :)
-    s = app.datamgr.get_service(host_name, service)
     return {'elt': s, 'params': params, 'graphstart': graphstart,
             'graphend': graphend}
 

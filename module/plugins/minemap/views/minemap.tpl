@@ -141,7 +141,7 @@
                      </a>
                   </td>
                   %for c in columns:
-                     %s = app.datamgr.get_service(r, c)
+                     %s = app.datamgr.get_service(r, c, user)
                      %if s:
                         <td title="{{s.get_name()}} - {{s.state}} - {{helper.print_duration(s.last_chk)}} - {{s.output}}">
                            <a href="/service/{{h.get_name()}}/{{s.get_name()}}">
