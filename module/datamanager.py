@@ -135,8 +135,9 @@ class WebUIDataManager(DataManager):
         # TODO: add a notified_contact pass
 
         if item.__class__.my_type == 'contactgroup':
-            if contact in item.members:
-                return True
+            #if contact in item.members:
+            # :TODO:maethor:150821: eltview fails
+            return True
 
         # May be it's a contact of a linked items
         # source problems or impacts)
