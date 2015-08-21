@@ -262,7 +262,7 @@ class WebUIDataManager(DataManager):
     ##
     # Elements
     ##
-    def get_element(self, name, user=None):
+    def get_element(self, name, user):
         """ Get an element by its name.
             :name: Must be "host" or "host/service"
         """

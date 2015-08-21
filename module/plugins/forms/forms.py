@@ -40,38 +40,56 @@ def form_change_var(name):
     variable = app.request.GET.get('variable', '')
     value = app.request.GET.get('value', '')
     
-    elt = app.datamgr.get_element(name)
+    user = app.request.environ['USER']
+    elt = app.datamgr.get_element(name, user) or app.redirect404()
 
     return {'elt': elt, 'name': name, 'variable': variable, 'value': value}
 
 def form_var(name):
-    elt = app.datamgr.get_element(name)
+    user = app.request.environ['USER']
+    elt = app.datamgr.get_element(name, user) or app.redirect404()
     return {'elt': elt, 'name': name}
 
 def form_ack_add(name):
+    user = app.request.environ['USER']
+    app.datamgr.get_element(name, user) or app.redirect404()
     return {'name': name}
 
 def form_ack_remove(name):
+    user = app.request.environ['USER']
+    app.datamgr.get_element(name, user) or app.redirect404()
     return {'name': name}
 
 def form_comment_add(name):
+    user = app.request.environ['USER']
+    app.datamgr.get_element(name, user) or app.redirect404()
     return {'name': name}
 
 def form_comment_delete(name):
+    user = app.request.environ['USER']
+    app.datamgr.get_element(name, user) or app.redirect404()
     comment = app.request.GET.get('comment', '-1')
     return {'name': name, 'comment': comment}
 
 def form_comment_delete_all(name):
+    user = app.request.environ['USER']
+    app.datamgr.get_element(name, user) or app.redirect404()
     return {'name': name}
 
 def form_downtime_add(name):
+    user = app.request.environ['USER']
+    app.datamgr.get_element(name, user) or app.redirect404()
     return {'name': name}
 
 def form_downtime_delete(name):
+    user = app.request.environ['USER']
+    app.datamgr.get_element(name, user) or app.redirect404()
     downtime = app.request.GET.get('downtime', '-1')
     return {'name': name, 'downtime': downtime}
 
 def form_downtime_delete_all(name):
+    user = app.request.environ['USER']
+    app.datamgr.get_element(name, user) or app.redirect404()
     return {'name': name}
 
 

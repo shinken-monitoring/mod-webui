@@ -135,7 +135,8 @@ def set_logs_type_list():
     return
 
 def get_host_history(name):
-    elt = app.datamgr.get_element(name)
+    user = app.request.environ['USER']
+    elt = app.datamgr.get_element(name, user) or app.redirect404()
     logs = _get_logs(elt=elt)
     return {'records': logs, 'elt': elt}
 

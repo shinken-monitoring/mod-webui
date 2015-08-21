@@ -70,7 +70,8 @@ def create_ticket(name):
         return json.dumps(result)
 
 def add_ticket(name):
-    elt = app.datamgr.get_element(name)
+    user = app.request.environ['USER']
+    elt = app.datamgr.get_element(name, user) or app.redirect404()
     
     try:
         itemtype = elt.customs['_ITEMTYPE']

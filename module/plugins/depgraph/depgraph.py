@@ -90,7 +90,8 @@ def get_depgraph_widget():
 
 
 def get_depgraph_inner(name):
-    elt = app.datamgr.get_element(name)
+    user = app.request.environ['USER']
+    elt = app.datamgr.get_element(name, user) or app.redirect404()
     return {'elt': elt}
 
 widget_desc = '''<h4>Relation graph</h4>

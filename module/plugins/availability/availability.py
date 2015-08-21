@@ -45,7 +45,9 @@ def _get_availability(*args, **kwargs):
 
 
 def get_element(name):
-    elt = app.datamgr.get_element(name) or app.redirect404()
+    user = app.bottle.request.environ['USER']
+    elt = app.datamgr.get_element(name, user) or app.redirect404()
+
     records = []
     today = arrow.now().replace(hour=0,minute=0,second=0)
     records = OrderedDict()
