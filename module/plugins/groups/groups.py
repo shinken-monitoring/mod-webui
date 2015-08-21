@@ -30,9 +30,10 @@ app = None
 
 def show_contactgroups():
     user = app.request.environ['USER']
+    cgroups = sorted(app.datamgr.get_contactgroups(user), key=lambda cg: cg.contactgroup_name)
 
     return {
-        'contactgroups': sorted(app.datamgr.get_contactgroups(user=user), key=lambda contactgroup: contactgroup.contactgroup_name)
+        'contactgroups': cgroups
         }
 
 

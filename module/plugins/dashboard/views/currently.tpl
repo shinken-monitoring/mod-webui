@@ -58,7 +58,7 @@
    <h3 id="date"></h3>
 </div>
 
-%synthesis = helper.get_synthesis(app.datamgr.search_hosts_and_services(user=user))
+%synthesis = helper.get_synthesis(app.datamgr.search_hosts_and_services("", user))
 %s = synthesis['services']
 %h = synthesis['hosts']
 %search_string=""

@@ -31,7 +31,7 @@
    </ul>
 
    <!-- Right part ... -->
-   %synthesis = helper.get_synthesis(app.datamgr.search_hosts_and_services(user=user))
+   %synthesis = helper.get_synthesis(app.datamgr.search_hosts_and_services("", user))
    %s = synthesis['services']
    %h = synthesis['hosts']
    <div id="hosts-states-popover-content" class="hidden">

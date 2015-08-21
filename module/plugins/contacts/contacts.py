@@ -29,26 +29,16 @@ app = None
 # Contact page
 def show_contact(name):
     user = app.request.environ['USER']
+    contact = app.datamgr.get_contact(name, user) or app.redirect404()
 
-    if not user.is_admin and user.get_name != name:
-      app.bottle.redirect('/contacts')
-
-    return {
-        'contact': app.datamgr.get_contact(name)
-        }
+    return {'contact': contact}
 
 # All contacts
 def show_contacts():
     user = app.request.environ['USER']
+    contacts = sorted(app.datamgr.get_contacts(user), key=lambda c: c.contact_name)
 
-    if user.is_admin:
-        contacts = app.datamgr.get_contacts()
-    else:
-        contacts = (user,)
-
-    return {
-        'contacts': sorted(contacts, key=lambda contact: contact.contact_name)
-        }
+    return {'contacts': contacts}
 
 pages = {
         show_contact: {'routes': ['/contact/:name'], 'view': 'contact', 'static': True},

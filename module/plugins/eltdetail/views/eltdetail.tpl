@@ -712,7 +712,7 @@ Invalid element name
                               %i=0
                               %for (group) in elt.contact_groups: 
                               <tr>
-                                 %cg = app.datamgr.get_contactgroup(group)
+                                 %cg = app.datamgr.get_contactgroup(group, user)
                                  <td style="text-align: right; font-style: italic;"><strong>{{cg.alias if cg.alias else cg.get_name()}}</strong></td>
                                  %contacts=[]
                                  %[contacts.append('<a href="/contact/'+item.contact_name+'">'+item.alias if item.alias else item.contact_name+'</a>')  for item in cg.members if item not in contacts]

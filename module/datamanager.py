@@ -134,6 +134,10 @@ class WebUIDataManager(DataManager):
             return True
         # TODO: add a notified_contact pass
 
+        if item.__class__.my_type == 'contactgroup':
+            if contact in item.members:
+                return True
+
         # May be it's a contact of a linked items
         # source problems or impacts)
         if hasattr(item, 'source_problems'):
@@ -194,7 +198,7 @@ class WebUIDataManager(DataManager):
         else:
             return None
 
-    def get_percentage_hosts_state(self, user=None, problem=False):
+    def get_percentage_hosts_state(self, user, problem=False):
         """ Get percentage of hosts not in (or in) problems.
 
             :param problem: False to return the % of hosts not in problems,
@@ -239,7 +243,7 @@ class WebUIDataManager(DataManager):
         else:
             return None
 
-    def get_percentage_service_state(self, user=None, problem=False):
+    def get_percentage_service_state(self, user, problem=False):
         """ Get percentage of services not in (or in) problems.
 
             :param problem: False to return the % of services not in problems,
@@ -271,12 +275,12 @@ class WebUIDataManager(DataManager):
         else:
             return self.get_host(name, user)
 
-    def search_hosts_and_services(self, search="", user=None, get_impacts=True, sorter=None):
+    def search_hosts_and_services(self, search, user, get_impacts=True, sorter=None):
         """ Search hosts and services.
 
             This method is the heart of the datamanager. All other methods should be based on this one.
 
-            :search: Search string. default=""
+            :search: Search string
             :user: concerned user
             :get_impacts: should impacts be included in the list?
             :sorter: function to sort the items. default=None (means no sorting)
@@ -337,10 +341,10 @@ class WebUIDataManager(DataManager):
                 items = [i for i in items if group in i.servicegroups]
 
             if (t == 'cg' or t == 'cgroup') and s != 'all':
-                group = self.get_contactgroup(s)
+                group = self.get_contactgroup(s, user)
                 if not group:
                     return []  # :TODO:maethor:150716: raise an error
-                contacts = [c for c in self.get_contacts() if c in group.members]
+                contacts = [c for c in self.get_contacts(user) if c in group.members]
                 items = list(set(itertools.chain(*[self._only_related_to(items, c) for c in contacts])))
 
             if t == 'realm':
@@ -356,7 +360,7 @@ class WebUIDataManager(DataManager):
                 items = [i for i in items if i.__class__.my_type == 'service' and s in i.get_service_tags()]
 
             if t == 'ctag' and s != 'all':
-                contacts = [c for c in self.get_contacts() if s in c.tags]
+                contacts = [c for c in self.get_contacts(user) if s in c.tags]
                 items = list(set(itertools.chain(*[self._only_related_to(items, c) for c in contacts])))
 
             if t == 'type' and s != 'all':
@@ -468,7 +472,7 @@ class WebUIDataManager(DataManager):
     ##
     # Contacts
     ##
-    def get_contacts(self, user=None):
+    def get_contacts(self, user):
         items = self.rg.contacts
         return self._only_related_to(items, user)
 
@@ -482,11 +486,11 @@ class WebUIDataManager(DataManager):
     ##
     # Contacts groups
     ##
-    def get_contactgroups(self, user=None):
+    def get_contactgroups(self, user):
         items = self.rg.contactgroups
         return self._only_related_to(items, user)
 
-    def get_contactgroup(self, name, user=None):
+    def get_contactgroup(self, name, user):
         name = name.decode('utf8', 'ignore')
         item = self.rg.contactgroups.find_by_name(name)
         if self._is_related_to(item, user):
@@ -496,13 +500,13 @@ class WebUIDataManager(DataManager):
     ##
     # Hosts groups
     ##
-    def set_hostgroups_level(self, user=None):
+    def set_hostgroups_level(self, user):
         # All known hostgroups are level 0 groups ...
         for group in self.get_hostgroups(user=user):
             if not hasattr(group, 'level'):
                 self.set_hostgroup_level(group, 0, user)
 
-    def set_hostgroup_level(self, group, level, user=None):
+    def set_hostgroup_level(self, group, level, user):
         setattr(group, 'level', level)
 
         for g in sorted(group.get_hostgroup_members()):
@@ -512,7 +516,7 @@ class WebUIDataManager(DataManager):
             except AttributeError:
                 pass
 
-    def get_hostgroups(self, user=None, parent=None):
+    def get_hostgroups(self, user, parent=None):
         if parent:
             group = self.rg.hostgroups.find_by_name(parent)
             items = [self.get_hostgroup(g) for g in group.get_hostgroup_members()]
@@ -527,19 +531,19 @@ class WebUIDataManager(DataManager):
     ##
     # Services groups
     ##
-    def set_servicegroups_level(self, user=None):
+    def set_servicegroups_level(self, user):
         # All known hostgroups are level 0 groups ...
         for group in self.get_servicegroups(user=user):
             self.set_servicegroup_level(group, 0, user)
 
-    def set_servicegroup_level(self, group, level, user=None):
+    def set_servicegroup_level(self, group, level, user):
         setattr(group, 'level', level)
 
         for g in sorted(group.get_servicegroup_members()):
             child_group = self.get_servicegroup(g)
             self.set_servicegroup_level(child_group, level + 1, user)
 
-    def get_servicegroups(self, user=None, parent=None):
+    def get_servicegroups(self, user, parent=None):
         if parent:
             group = self.rg.servicegroups.find_by_name(parent)
             items = [self.get_servicegroup(g) for g in group.get_servicegroup_members()]
@@ -558,7 +562,7 @@ class WebUIDataManager(DataManager):
         ''' Get the hosts tags sorted by names. '''
         return sorted(self.rg.tags)
 
-    def get_hosts_tagged_with(self, tag, user=None):
+    def get_hosts_tagged_with(self, tag, user):
         ''' Get the hosts tagged with a specific tag. '''
         return self.search_hosts_and_services('type:host htag:%s' % tag, user)
 
@@ -569,7 +573,7 @@ class WebUIDataManager(DataManager):
         ''' Get the services tags sorted by names. '''
         return sorted(self.rg.services_tags)
 
-    def get_services_tagged_with(self, tag, user=None):
+    def get_services_tagged_with(self, tag, user):
         ''' Get the services tagged with a specific tag. '''
         return self.search_hosts_and_services('type:service stag:%s' % tag, user)
 
@@ -608,7 +612,7 @@ class WebUIDataManager(DataManager):
     ##
     # Shortcuts
     ##
-    def get_overall_state(self, user=None):
+    def get_overall_state(self, user):
         ''' Get the worst state of all business impacting elements. '''
         impacts = self.get_important_impacts(user, sorter=worse_first)
         if impacts:
@@ -616,7 +620,7 @@ class WebUIDataManager(DataManager):
         else:
             return 0
 
-    def get_overall_it_state(self, user=None):
+    def get_overall_it_state(self, user):
         ''' Get the worst state of IT problems. '''
         hosts = self.get_important_elements(user, type='host', sorter=worse_first)
         services = self.get_important_elements(user, type='service', sorter=worse_first)
@@ -624,19 +628,19 @@ class WebUIDataManager(DataManager):
         services_state = services[0].state_id if hosts else 0
         return hosts_state, services_state
 
-    def get_important_elements(self, user=None, type='all', sorter=worse_first):
+    def get_important_elements(self, user, type='all', sorter=worse_first):
         return self.search_hosts_and_services('bi:>2 ack:false type:%s' % type, user=user, sorter=sorter)
 
-    def get_impacts(self, user=None, bi='>=0', type='all', sorter=worse_first):
+    def get_impacts(self, user, bi='>=0', type='all', sorter=worse_first):
         return self.search_hosts_and_services('is:impact bi:%s type:%s' % (bi, type), user=user, get_impacts=True, sorter=sorter)
 
-    def get_important_impacts(self, user=None, type='all', sorter=worse_first):
+    def get_important_impacts(self, user, type='all', sorter=worse_first):
         return self.get_impacts(user=user, type=type, bi='>2', sorter=sorter)
 
-    def get_problems(self, user=None, get_acknowledged=False, get_downtimed=False, bi='>=0', type='all', sorter=worse_first):
+    def get_problems(self, user, get_acknowledged=False, get_downtimed=False, bi='>=0', type='all', sorter=worse_first):
         return self.search_hosts_and_services('isnot:UP isnot:OK isnot:PENDING ack:%s downtime:%s bi:%s type:%s' % (str(get_acknowledged), str(get_downtimed), bi, type), user=user, sorter=sorter)
 
-    def get_important_problems(self, user=None, type='all', sorter=worse_first):
+    def get_important_problems(self, user, type='all', sorter=worse_first):
         return self.get_problems(user, bi=">2", type=type, sorter=sorter)
 
 
