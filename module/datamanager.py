@@ -173,7 +173,7 @@ class WebUIDataManager(DataManager):
     ##
     # Hosts
     ##
-    def get_hosts(self, user=None, get_impacts=True):
+    def get_hosts(self, user, get_impacts=True):
         """ Get a list of all hosts.
 
             :param user: concerned user

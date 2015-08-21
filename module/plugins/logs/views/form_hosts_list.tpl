@@ -9,7 +9,7 @@
 			<form class="well" name="hosts_selection" action="/logs/set_hosts_list" method="post">
 				<div class="form-group">
 					<select id="hosts_list_select" name="hostsList[]" class="multiselect" multiple="multiple">
-						%for h in app.datamgr.get_hosts():
+						%for h in app.datamgr.get_hosts(user):
 						%if h.get_name() in params['logs_hosts']:
 							<option value="{{h.get_name()}}" selected="selected">{{h.get_name()}} ({{h.state}})</option>
 						%else:
