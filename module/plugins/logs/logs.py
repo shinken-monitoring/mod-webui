@@ -147,12 +147,14 @@ def get_global_history():
     logger.debug("[WebUI-logs] get_global_history, range: %d - %d", range_start, range_end)
 
     logs = _get_logs(elt=None, logs_type=params['logs_type'], range_start=range_start, range_end=range_end)
-    if len(logs) > 200:
-        logs = logs[:200]
-    if logs is not None:
-        message = "%s records fetched from database" % len(logs)
-    else:
+
+    if logs is None:
         message = "No module configured to get Shinken logs from database!"
+    else:
+        message = "%s records fetched from database" % len(logs)
+        if len(logs) > 200:
+            logs = logs[:200]
+
     return {'records': logs, 'params': params, 'message': message, 'range_start': range_start, 'range_end': range_end}
     
 
