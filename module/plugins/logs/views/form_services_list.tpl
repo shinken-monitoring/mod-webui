@@ -1,5 +1,5 @@
 %services = []
-%for s in app.datamgr.get_services():
+%for s in app.datamgr.get_services(user):
 	%if not s.get_name() in services:
 		%services.append(s.get_name())
 	%end

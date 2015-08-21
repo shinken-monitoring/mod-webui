@@ -217,7 +217,7 @@ class WebUIDataManager(DataManager):
     ##
     # Services
     ##
-    def get_services(self, user=None, get_impacts=True):
+    def get_services(self, user, get_impacts=True):
         """ Get a list of all services.
 
             :param user: concerned user
