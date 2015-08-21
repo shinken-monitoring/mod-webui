@@ -28,19 +28,22 @@ import time
 ### Will be populated by the UI with it's own value
 app = None
 
+# :TODO:maethor:150821: These function needs huge rewrite.
 
 def depgraph_host(name):
     # Ok we are in a detail page but the user ask for a specific search
     search = app.request.GET.get('global_search', None)
     loop = bool(int(app.request.GET.get('loop', '0')))
     loop_time = int(app.request.GET.get('loop_time', '10'))
+
+    user = app.request.environ['USER']
     
     if search:
-        new_h = app.datamgr.get_host(search)
+        new_h = app.datamgr.get_host(search, user)
         if new_h:
             app.bottle.redirect("/depgraph/" + search)
 
-    h = app.datamgr.get_host(name)
+    h = app.datamgr.get_host(name, user) or app.redirect404()
     return {'elt': h, 'loop' : loop, 'loop_time' : loop_time}
 
 
@@ -48,33 +51,31 @@ def depgraph_srv(hname, desc):
     loop = bool(int(app.request.GET.get('loop', '0')))
     loop_time = int(app.request.GET.get('loop_time', '10'))
 
+    user = app.request.environ['USER']
+
     # Ok we are in a detail page but the user ask for a specific search
     search = app.request.GET.get('global_search', None)
     if search:
-        new_h = app.datamgr.get_host(search)
+        new_h = app.datamgr.get_host(search, user)
         if new_h:
             app.bottle.redirect("/depgraph/" + search)
 
-    s = app.datamgr.get_service(hname, desc)
+    s = app.datamgr.get_service(hname, desc, user)
     return {'elt': s, 'loop' : loop, 'loop_time' : loop_time}
 
 
 def get_depgraph_widget():
     search = app.request.GET.get('search', '').strip()
+    user = app.request.environ['USER']
 
     if not search:
         # Ok look for the first host we can find
-        hosts = app.datamgr.get_hosts()
+        hosts = app.datamgr.get_hosts(user)
         for h in hosts:
             search = h.get_name()
             break
 
-
-    elts = search.split('/', 1)
-    if len(elts) == 1:
-        s = app.datamgr.get_host(search)
-    else:  # ok we got a service! :)
-        s = app.datamgr.get_service(elts[0], elts[1])
+    elt = app.datamgr.get_element(search, user) or app.redirect404() 
 
     wid = app.request.GET.get('wid', 'widget_depgraph_' + str(int(time.time())))
     collapsed = (app.request.GET.get('collapsed', 'False') == 'True')
@@ -84,7 +85,7 @@ def get_depgraph_widget():
 
     title = 'Relation graph for %s' % search
 
-    return {'elt': s,
+    return {'elt': elt,
             'wid': wid, 'collapsed': collapsed, 'options': options, 'base_url': '/widget/depgraph', 'title': title,
             }
 

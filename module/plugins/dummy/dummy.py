@@ -32,7 +32,8 @@ app = None
 def get_page(arg1='nothing'):
     # Here we can call app.datamgr because when the webui "loaded" us, it
     # populate app with it's own value.
-    my_host = app.datamgr.get_host(arg1)
+    user = app.request.environ['USER']
+    my_host = app.datamgr.get_host(arg1, user) or app.redirect404()
 
     # we return values for the template (view). But beware, theses values are the
     # only one the template will have, so we must give it an app link and the

@@ -282,30 +282,31 @@ def get_page(name):
     all_states = {"global": 'UNKNOWN', "cpu": 'UNKNOWN', "disks": 'UNKNOWN', "memory": 'UNKNOWN', "network": 'UNKNOWN', "printer": 'UNKNOWN', "services": 'UNKNOWN', "global": 'UNKNOWN'}
     
     # Ok, we can lookup it
-    h = app.datamgr.get_host(name)
-    if h:
-        # Set the host state first
-        all_states["host"] = h.state
-        # First look at disks
-        all_states["disks"], all_perfs['disks'] = get_disks(h)
-        # Then memory
-        all_states["memory"], all_perfs['memory']  = get_memory(h)
-        # Then CPU 
-        all_states['cpu'], all_perfs['cpu'] = get_cpu(h)
-        # Then load
-        all_states['load'], all_perfs['load'] = get_load(h)
-        # Then printer ... TODO: later if needed !
-        # all_states['printer'], all_perfs['printer'] = get_printer(h)
-        # And Network
-        all_states['network'], all_perfs['network'] = get_network(h)
-        # And services
-        all_states['services'], all_perfs['services'] = get_services(h)
-        # Then global
-        all_states["global"] = compute_worst_state(all_states)
+    user = app.request.environ['USER']
+    host = app.datamgr.get_host(name, user) or app.redirect404()
+
+    # Set the host state first
+    all_states["host"] = host.state
+    # First look at disks
+    all_states["disks"], all_perfs['disks'] = get_disks(host)
+    # Then memory
+    all_states["memory"], all_perfs['memory']  = get_memory(host)
+    # Then CPU 
+    all_states['cpu'], all_perfs['cpu'] = get_cpu(host)
+    # Then load
+    all_states['load'], all_perfs['load'] = get_load(host)
+    # Then printer ... TODO: later if needed !
+    # all_states['printer'], all_perfs['printer'] = get_printer(host)
+    # And Network
+    all_states['network'], all_perfs['network'] = get_network(host)
+    # And services
+    all_states['services'], all_perfs['services'] = get_services(host)
+    # Then global
+    all_states["global"] = compute_worst_state(all_states)
         
     logger.debug("[WebUI-cvhost], overall state: %s", all_states)
         
-    return {'app': app, 'elt': h, 'config': config, 'all_perfs':all_perfs, 'all_states':all_states}
+    return {'app': app, 'elt': host, 'config': config, 'all_perfs':all_perfs, 'all_states':all_states}
 
 
 # Void plugin

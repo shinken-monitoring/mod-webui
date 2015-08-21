@@ -131,7 +131,7 @@
          </thead>
          <tbody>
             %for r in rows:
-               %h = app.datamgr.get_host(r)
+               %h = app.datamgr.get_host(r, user)
                %if h:
                <tr>
                   <td title="{{h.get_name()}} - {{h.state}} - {{helper.print_duration(h.last_chk)}} - {{h.output}}">

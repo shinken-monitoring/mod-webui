@@ -49,7 +49,10 @@ def proxy_graph():
 
 # Our page
 def get_graphs_widget():
-    search = app.request.GET.get('search', '')
+    user = app.request.environ['USER']
+    search = app.request.GET.get('search', '') or app.datamgr.get_hosts(user)[0].host_name
+    elt = app.datamgr.get_element(search, user) or app.redirect(404)
+
     duration = app.request.GET.get('duration', '86400')
     duration_list = {
         '1h'   : '3600',
@@ -58,17 +61,6 @@ def get_graphs_widget():
         '30d'  : '2592000',
         '365d' : '31536000' ,
     }
-
-    if not search:
-        search = 'localhost'
-
-    # Look for an host or a service?
-    elt = None
-    if not '/' in search:
-        elt = app.datamgr.get_host(search)
-    else:
-        parts = search.split('/', 1)
-        elt = app.datamgr.get_service(parts[0], parts[1])
 
     wid = app.request.GET.get('wid', 'widget_graphs_' + str(int(time.time())))
     collapsed = (app.request.GET.get('collapsed', 'False') == 'True')

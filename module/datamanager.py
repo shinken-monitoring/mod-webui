@@ -185,7 +185,7 @@ class WebUIDataManager(DataManager):
             items = [i for i in items if not i.is_impact]
         return self._only_related_to(items, user)
 
-    def get_host(self, hname, user=None):
+    def get_host(self, hname, user):
         """ Get a host by its hostname. """
         hname = hname.decode('utf8', 'ignore')
         host = self.rg.hosts.find_by_name(hname)
