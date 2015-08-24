@@ -27,7 +27,7 @@
 # Will be populated by the UI with it's own value
 app = None
 
-def show_tag(name):
+def show_htag(name):
     app.bottle.redirect("/all?search=type:host htag:" + name)
 
 
@@ -35,7 +35,7 @@ def show_stag(name):
     app.bottle.redirect("/all?search=type:service stag:" + name)
 
 
-def show_tags():
+def show_htags():
     user = app.request.environ['USER']
 
     fake_htags = []
@@ -60,8 +60,8 @@ def show_stags():
 
 
 pages = {
-    show_tag: {'routes': ['/hosts-tag/:name'], 'view': 'hosts-tag', 'static': True},
+    show_htag: {'routes': ['/hosts-tag/:name'], 'view': 'hosts-tag', 'static': True},
     show_stag: {'routes': ['/services-tag/:name'], 'view': 'services-tag', 'static': True},
-    show_tags: {'routes': ['/hosts-tags'], 'view': 'hosts-tags-overview', 'static': True},
+    show_htags: {'routes': ['/hosts-tags'], 'view': 'hosts-tags-overview', 'static': True},
     show_stags: {'routes': ['/services-tags'], 'view': 'services-tags-overview', 'static': True},
 }
