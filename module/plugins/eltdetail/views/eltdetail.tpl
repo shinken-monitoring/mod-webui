@@ -701,25 +701,20 @@ Invalid element name
                               </tr>
                               <tr>
                                  <td><strong>Contacts:</strong></td>
-                                 %contacts=[]
-                                 %[contacts.append('<a href="/contact/'+item.contact_name+'">'+item.alias+'</a>' if item.alias else item.contact_name+'</a>') for item in elt.contacts if item not in contacts]
-                                 <td>{{!', '.join(contacts)}}</td>
+                                 <td>
+                                   %contacts = [c for c in elt.contacts if app.datamgr.get_contact(c.contact_name, user)]
+                                   %for c in contacts:
+                                   <a href="/contact/{{c.contact_name}}">{{ c.alias if c.alias and c.alias != 'none' else c.contact_name }}</a>, 
+                                   %end
+                                 </td>
                               </tr>
                               <tr>
                                  <td><strong>Contacts groups:</strong></td>
-                                 <td></td>
+                                 <td>
+                                   %contact_groups = [c for c in elt.contact_groups if app.datamgr.get_contactgroup(c, user)]
+                                   {{!', '.join(contact_groups)}}
+                                 </td>
                               </tr>
-                              %i=0
-                              %for (group) in elt.contact_groups: 
-                              <tr>
-                                 %cg = app.datamgr.get_contactgroup(group, user)
-                                 <td style="text-align: right; font-style: italic;"><strong>{{cg.alias if cg.alias else cg.get_name()}}</strong></td>
-                                 %contacts=[]
-                                 %[contacts.append('<a href="/contact/'+item.contact_name+'">'+item.alias if item.alias else item.contact_name+'</a>')  for item in cg.members if item not in contacts]
-                                 <td>{{!', '.join(contacts)}}</td>
-                                 %i=i+1
-                              </tr>
-                              %end
                               %end
                            </tbody>
                         </table>

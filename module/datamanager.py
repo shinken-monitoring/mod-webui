@@ -134,10 +134,12 @@ class WebUIDataManager(DataManager):
             return True
         # TODO: add a notified_contact pass
 
+        # is it me ?
+        if item.__class__.my_type == 'contact':
+            return item.contact_name == contact.contact_name
+
         if item.__class__.my_type == 'contactgroup':
-            #if contact in item.members:
-            # :TODO:maethor:150821: eltview fails
-            return True
+            return contact in item.members
 
         # May be it's a contact of a linked items
         # source problems or impacts)
