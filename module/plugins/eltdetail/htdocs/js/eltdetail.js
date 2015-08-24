@@ -92,11 +92,11 @@ function on_page_refresh() {
     */
    $('a[href="#depgraph"]').on('shown.bs.tab', function (e) {
       // First we get the full name of the object from div data
-      var n = $('#inner_depgraph').data('element');
+      var element = $('#inner_depgraph').data('element');
       // Loading indicator ...
       $("#inner_depgraph").html('<i class="fa fa-spinner fa-spin fa-3x"></i> Loading dependency graph ...');
       // Then we load the inner depgraph page. Easy isn't it? :)
-      $('#inner_depgraph').load('/inner/depgraph/'+n);
+      $('#inner_depgraph').load('/inner/depgraph/'+encodeURIComponent(element));
    });
    
    // Fullscreen management
@@ -191,7 +191,7 @@ function on_page_refresh() {
       // Loading indicator ...
       $("#inner_availability").html('<i class="fa fa-spinner fa-spin fa-3x"></i> Loading availability data ...');
       
-      $("#inner_availability").load('/availability/inner/'+element, function(response, status, xhr) {
+      $("#inner_availability").load('/availability/inner/'+encodeURIComponent(element), function(response, status, xhr) {
          if (status == "error") {
             $('#inner_availability').html('<div class="alert alert-danger">Sorry but there was an error: ' + xhr.status + ' ' + xhr.statusText+'</div>');
          }
@@ -209,7 +209,7 @@ function on_page_refresh() {
       // Loading indicator ...
       $("#inner_helpdesk").html('<i class="fa fa-spinner fa-spin fa-3x"></i> Loading helpdesk data ...');
       
-      $("#inner_helpdesk").load('/helpdesk/tickets/'+element, function(response, status, xhr) {
+      $("#inner_helpdesk").load('/helpdesk/tickets/'+encodeURIComponent(element), function(response, status, xhr) {
          if (status == "error") {
             $('#inner_helpdesk').html('<div class="alert alert-danger">Sorry but there was an error: ' + xhr.status + ' ' + xhr.statusText+'</div>');
          }
@@ -222,9 +222,9 @@ function on_page_refresh() {
     */
    $('a[data-toggle="tab"][href="#timeline"]').on('shown.bs.tab', function (e) {
       // First we get the full name of the object from div data
-      var hostname = $('#inner_timeline').data('element');
+      var element = $('#inner_timeline').data('element');
       // Get timeline tab content ...
-      $('#inner_timeline').load('/timeline/inner/'+hostname);
+      $('#inner_timeline').load('/timeline/inner/'+encodeURIComponent(element));
       
    })
    
