@@ -24,7 +24,7 @@ Enable the webui **module** in the broker daemon configuration file (*brokers/br
 
 WebUI configuration
 ========================
-The WebUI module has its own configuration file (*webui.cfg*) located in the *modules* directory.
+The Web UI module has its own configuration file (*modules/webui.cfg*) located in the Shinken configuration directory.
 
 This file is largely commented and is quite self explanatory.
 
