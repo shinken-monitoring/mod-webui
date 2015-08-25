@@ -116,7 +116,7 @@ function on_page_refresh() {
       var value = $(this).data('value');
       if (eltdetail_logs) console.debug("Button - set custom variable '"+variable+"'="+value+" for: ", elt)
       
-      display_form("/forms/change_var/"+elt+"?variable="+variable+"&value="+value);
+      display_modal("/forms/change_var/"+elt+"?variable="+variable+"&value="+value);
    });
    
    // Toggles ...

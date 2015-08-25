@@ -111,14 +111,14 @@ function show_actions(){
 /**
  * Display the layout modal form
  */
-function display_form(form) {
-   if (layout_logs) console.debug('Displaying form: ', form);
+function display_modal(inner_url) {
+   if (layout_logs) console.debug('Displaying modal: ', inner_url);
    stop_refresh();
    $('#modal').modal({
       keyboard: true,
       show: true,
       backdrop: 'static',
-      remote: form
+      remote: inner_url
    });
 }
 

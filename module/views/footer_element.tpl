@@ -93,7 +93,7 @@
          if (eltdetail_logs) console.error("Unavailable add a comment for a list of problems!")
       } else {
          if (eltdetail_logs) console.debug("Add a comment for: ", elt)
-         display_form("/forms/comment/add/"+elt);
+         display_modal("/forms/comment/add/"+elt);
       }
    });
    
@@ -106,7 +106,7 @@
       } else {
          if (eltdetail_logs) console.debug("Delete comment '"+comment+"' for: ", elt)
          
-         display_form("/forms/comment/delete/"+elt+"?comment="+comment);
+         display_modal("/forms/comment/delete/"+elt+"?comment="+comment);
       }
    });
    
@@ -118,7 +118,7 @@
       } else {
          if (eltdetail_logs) console.debug("Delete all comments for: ", elt)
          
-         display_form("/forms/comment/delete_all/"+elt);
+         display_modal("/forms/comment/delete_all/"+elt);
       }
    });
    
@@ -139,7 +139,7 @@
       } else {
          if (eltdetail_logs) console.debug("Schedule a downtime for: ", elt)
          
-         display_form("/forms/downtime/add/"+$(this).data('element'));
+         display_modal("/forms/downtime/add/"+$(this).data('element'));
       }
    });
    
@@ -152,7 +152,7 @@
       } else {
          if (eltdetail_logs) console.debug("Delete downtime '"+downtime+"' for: ", elt)
          
-         display_form("/forms/downtime/delete/"+elt+"?downtime="+downtime);
+         display_modal("/forms/downtime/delete/"+elt+"?downtime="+downtime);
       }
    });
    
@@ -164,7 +164,7 @@
       } else {
          if (eltdetail_logs) console.debug("Delete all downtimes for: ", elt)
          
-         display_form("/forms/downtime/delete_all/"+$(this).data('element'));
+         display_modal("/forms/downtime/delete_all/"+$(this).data('element'));
       }
    });
    
@@ -181,7 +181,7 @@
       } else {
          if (eltdetail_logs) console.debug("Button - add an acknowledge for: ", elt)
          
-         display_form("/forms/acknowledge/add/"+elt);
+         display_modal("/forms/acknowledge/add/"+elt);
       }
    });
 
@@ -193,7 +193,7 @@
       } else {
          if (eltdetail_logs) console.debug("Delete an acknowledge for: ", elt)
          
-         display_form("/forms/acknowledge/remove/"+elt);
+         display_modal("/forms/acknowledge/remove/"+elt);
       }
    });
    
@@ -225,7 +225,7 @@
       } else {
          if (eltdetail_logs) console.debug("Submit a check result for: ", elt)
          
-         display_form("/forms/submit_check/"+elt);
+         display_modal("/forms/submit_check/"+elt);
       }
    });
 
@@ -269,7 +269,7 @@
       if (elt) {
          if (eltdetail_logs) console.debug("Create a ticket for: ", elt)
          
-         display_form("/helpdesk/ticket/add/"+$(this).data('element'));
+         display_modal("/helpdesk/ticket/add/"+$(this).data('element'));
       }
    });
 </script>
