@@ -22,7 +22,7 @@
    along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-var custom_logs=true;
+var custom_logs=false;
 
 // when we show a custom view tab, we lazy load it :D
 function show_custom_view(elt){
