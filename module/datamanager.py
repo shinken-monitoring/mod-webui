@@ -563,7 +563,14 @@ class WebUIDataManager(DataManager):
     ##
     def get_host_tags(self):
         ''' Get the hosts tags sorted by names. '''
-        return sorted(self.rg.tags)
+        r = []
+        names = self.rg.tags.keys()
+        names.sort()
+        for name in names:
+            r.append((name, self.rg.tags[name]))
+        return r
+        
+        # return sorted(self.rg.tags)
 
     def get_hosts_tagged_with(self, tag, user):
         ''' Get the hosts tagged with a specific tag. '''
@@ -574,7 +581,14 @@ class WebUIDataManager(DataManager):
     ##
     def get_service_tags(self):
         ''' Get the services tags sorted by names. '''
-        return sorted(self.rg.services_tags)
+        r = []
+        names = self.rg.services_tags.keys()
+        names.sort()
+        for name in names:
+            r.append((name, self.rg.services_tags[name]))
+        return r
+        
+        # return sorted(self.rg.services_tags)
 
     def get_services_tagged_with(self, tag, user):
         ''' Get the services tagged with a specific tag. '''

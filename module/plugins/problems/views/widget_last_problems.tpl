@@ -1,12 +1,9 @@
 
-%import time
-%now = time.time()
 %helper = app.helper
-%datamgr = app.datamgr
 
 %rebase("widget")
 
-%if len(pbs) == 0:
+%if not pbs:
    <span>No problems!</span>
 %else:
    <table class="table table-condensed" style="margin:0;">
@@ -21,13 +18,15 @@
                <small>{{!helper.get_link(pb)}}</small>
             </td>
 
-            <td class="hidden-sm hidden-xs">
+            <td class="hidden-sm hidden-xs hidden-md">
                <small>{{!helper.get_business_impact_text(pb.business_impact)}}</small>
             </td>
 
-            <td class="hidden-sm hidden-xs font-{{pb.state.lower()}}" align="center">
+            <!--
+            <td class="hidden-sm hidden-xs hidden-md font-{{pb.state.lower()}}" align="center">
                <small>{{ pb.state }}</small>
             </td>
+            -->
          </tr>
       %end
       </tbody>
