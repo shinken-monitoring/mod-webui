@@ -614,6 +614,14 @@ class Webui_broker(BaseModule, Daemon):
             response.headers['Content-Type'] = 'text/xml'
             return template('opensearch', base_url=base_url)
 
+        @route('/modal/helpsearch')
+        def give_helpsearch():
+            return template('modal_helpsearch')
+
+        @route('/modal/about')
+        def give_about():
+            return template('modal_about')
+
     ##
     # Check if provided username/password is accepted for login the Web UI
     #
