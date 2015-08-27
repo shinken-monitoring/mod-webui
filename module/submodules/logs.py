@@ -221,6 +221,7 @@ class MongoDBLogs():
             logger.error("[mongo-logs] Exception when querying database: %s", str(exp))
 
         if not records:
+            logger.warning("[mongo-logs] no record fetched from database.")
             return None
 
         # Aggregate logs in one record

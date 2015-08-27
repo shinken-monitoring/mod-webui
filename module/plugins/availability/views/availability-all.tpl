@@ -57,6 +57,7 @@
       </thead>
       <tbody style="font-size:x-small;">
         %for log in records:
+        %if log is not None:
         <tr>
           <td>
             <a href="/host/{{log['hostname']}}">{{log['hostname']}}</a>
@@ -70,6 +71,7 @@
 
           %include("_availability_bar.tpl", log=log)
         </tr>
+        %end
         %end
       </tbody>
     </table>
