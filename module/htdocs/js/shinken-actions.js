@@ -83,13 +83,11 @@ function get_elements(name){
    if (elts.length == 1){
       // 1 element means HOST
       elt.type = 'HOST';
-      elt.type_long = 'HOST';
       elt.namevalue = elts[0];
       elt.nameslash = elts[0];
    } else { 
       // 2 means Service
       elt.type = 'SVC';
-      elt.type_long = 'SERVICE';
       elt.namevalue = elts[0]+';'+elts[1];
       elt.nameslash = elts[0]+'/'+elts[1];
     
@@ -159,7 +157,7 @@ check, along with optional performance data.
 */
 function submit_check(name, return_code, output){
    var elts = get_elements(name);
-   var url = '/action/PROCESS_'+elts.type_long+'_CHECK_RESULT/'+elts.nameslash+'/'+return_code+'/'+output;
+   var url = '/action/PROCESS_'+elts.type+'_CHECK_RESULT/'+elts.nameslash+'/'+return_code+'/'+output;
    // We can launch it :)
    launch(url, capitalize(elts.type)+': '+name+', check result submitted');
 }
