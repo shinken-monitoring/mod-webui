@@ -7,6 +7,15 @@
    function submit_local_form(){
       // Launch downtime request and bailout this modal view
       do_schedule_downtime("{{name}}", downtime_start.format('X'), downtime_stop.format('X'), '{{user.get_name()}}', $('#reason').val());
+      
+      %if elt.__class__.my_type=='host':
+      if ($('#dwn_services').is(":checked")) {
+      %for service in elt.services:
+         do_schedule_downtime("{{name}}/{{service.get_name()}}", downtime_start.format('X'), downtime_stop.format('X'), '{{user.get_name()}}', $('#reason').val());
+      %end
+      }
+      %end
+
       start_refresh();
       $('#modal').modal('hide');
    }
@@ -52,24 +61,30 @@
 </script>
 
 <div class="modal-header">
-  <a class="close" data-dismiss="modal">×</a>
-  <h3>Schedule downtime for {{name}}</h3>
+   <a class="close" data-dismiss="modal">×</a>
+   <h3>Schedule a downtime for {{name}}</h3>
 </div>
 
 <div class="modal-body">
-  <form name="input_form" role="form">
-    <div class="form-group">
-      <label for="dtr_downtime">Downtime date range</label>
-      <div class="input-group">
-        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-        <input type="text" name="dtr_downtime" id="dtr_downtime" class="form-control" />
+   <form name="input_form" role="form">
+      %if elt.__class__.my_type=='host':
+      <div class="form-group">
+         <input name="dwn_services" id="dwn_services" type="checkbox" checked="checked">Same downtime period for all services of the host?</input>
       </div>
-    </div>
+      %end
+      
+      <div class="form-group">
+         <label for="dtr_downtime">Downtime date range</label>
+         <div class="input-group">
+            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+            <input type="text" name="dtr_downtime" id="dtr_downtime" class="form-control" />
+         </div>
+      </div>
 
-    <div class="form-group">
-      <textarea name="reason" id="reason" class="form-control" rows="5" placeholder="Downtime comment…">Downtime scheduled from WebUI by {{user.get_name()}}</textarea>
-    </div>
+      <div class="form-group">
+         <textarea name="reason" id="reason" class="form-control" rows="5" placeholder="Downtime comment…">Downtime scheduled from WebUI by {{user.get_name()}}</textarea>
+      </div>
 
-    <a href="javascript:submit_local_form();" class="btn btn-primary btn-lg btn-block"> <i class="fa fa-save"></i> Submit</a>
-  </form>
+      <a href="javascript:submit_local_form();" class="btn btn-primary btn-lg btn-block"> <i class="fa fa-save"></i> Submit</a>
+   </form>
 </div>
