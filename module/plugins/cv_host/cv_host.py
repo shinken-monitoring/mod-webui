@@ -287,6 +287,10 @@ def get_page(name):
 
     # Set the host state first
     all_states["host"] = host.state
+    if host.is_problem and host.problem_has_been_acknowledged: 
+        all_states["host"] = 'ACK'
+    if host.in_scheduled_downtime: 
+        all_states["host"] = 'DOWNTIME'
     # First look at disks
     all_states["disks"], all_perfs['disks'] = get_disks(host)
     # Then memory
