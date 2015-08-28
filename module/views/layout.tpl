@@ -176,7 +176,7 @@
                   <h4 class="modal-title">Generic modal</h4>
                </div>
                <div class="modal-body">
-                  [>  ... <]
+                  <!-- Filled by application ... -->
                </div>
                <div class="modal-footer">
                   <a href="#" class="btn btn-default" data-dismiss="modal">Close</a>
