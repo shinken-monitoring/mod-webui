@@ -52,13 +52,13 @@ def form_var(name):
 
 def form_ack_add(name):
     user = app.request.environ['USER']
-    app.datamgr.get_element(name, user) or app.redirect404()
-    return {'name': name}
+    elt = app.datamgr.get_element(name, user) or app.redirect404()
+    return {'elt': elt, 'name': name}
 
 def form_ack_remove(name):
     user = app.request.environ['USER']
-    app.datamgr.get_element(name, user) or app.redirect404()
-    return {'name': name}
+    elt = app.datamgr.get_element(name, user) or app.redirect404()
+    return {'elt': elt, 'name': name}
 
 def form_comment_add(name):
     user = app.request.environ['USER']
