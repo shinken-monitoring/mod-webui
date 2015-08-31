@@ -153,8 +153,6 @@ def get_global_history():
         message = "No module configured to get Shinken logs from database!"
     else:
         message = "%s records fetched from database" % len(logs)
-        if len(logs) > 200:
-            logs = logs[:200]
 
     return {'records': logs, 'params': params, 'message': message, 'range_start': range_start, 'range_end': range_end}
     

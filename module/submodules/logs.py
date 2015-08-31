@@ -136,51 +136,36 @@ class MongoDBLogs():
 
         logger.debug("[mongo-logs] get_ui_logs, name: %s", elt)
 
+        query = []
+        if elt:
+            query.append({"host_name": elt.host_name})
+            if elt.__class__.my_type == 'service':
+                query.append({"service_description": elt.service_description})
+        if logs_type and len(logs_type) > 0 and logs_type[0] != '':
+            query.append({"type": {"$in": logs_type}})
+        if range_start:
+            query.append({'time': {'$gte': range_start}})
+        if range_end:
+            query.append({'time': {'$lte': range_end}})
+
+        query = {'$and': query} if query else None
+        logger.debug("[mongo-logs] Fetching records from database with query: '%s'", query)
+
         records = []
         try:
-            query = []
-            if elt:
-                query.append({"host_name": elt.host_name})
-                if elt.__class__.my_type == 'service':
-                    query.append({"service_description": elt.service_description})
-            if logs_type and len(logs_type) > 0 and logs_type[0] != '':
-                query.append({"type": {"$in": logs_type}})
-            if range_start:
-                query.append({'time': {'$gte': range_start}})
-            if range_end:
-                query.append({'time': {'$lte': range_end}})
-
-            if len(query) > 0:
-                logger.debug("[mongo-logs] Fetching records from database with query: '%s'", query)
-
-                for log in self.db[self.logs_collection].find({'$and': query}).sort([
-                                    ("time",pymongo.DESCENDING)]):
-                    message = log['message']
-                    m = re.search(r"\[(\d+)\] (.*)", message)
-                    if m and m.group(2):
-                        message = m.group(2)
-                        
-                    records.append({
-                        "timestamp":    int(log["time"]),
-                        "host":         log['host_name'],
-                        "service":      log['service_description'],
-                        "message":      message
-                    })
-
-            else:
-                for log in self.db[self.logs_collection].find().sort([
-                                    ("day",pymongo.DESCENDING)]):
-                    message = log['message']
-                    m = re.search(r"\[(\d+)\] (.*)", message)
-                    if m and m.group(2):
-                        message = m.group(2)
-                        
-                    records.append({
-                        "timestamp":    int(log["time"]),
-                        "host":         log['host_name'],
-                        "service":      log['service_description'],
-                        "message":      message
-                    })
+            for log in self.db[self.logs_collection].find(query).sort(
+                    [("time", pymongo.DESCENDING)]).limit(200):
+                message = log['message']
+                m = re.search(r"\[(\d+)\] (.*)", message)
+                if m and m.group(2):
+                    message = m.group(2)
+                    
+                records.append({
+                    "timestamp":    int(log["time"]),
+                    "host":         log['host_name'],
+                    "service":      log['service_description'],
+                    "message":      message
+                })
 
             logger.debug("[mongo-logs] %d records fetched from database.", len(records))
         except Exception, exp:
@@ -197,19 +182,20 @@ class MongoDBLogs():
 
         logger.debug("[mongo-logs] get_ui_availability, name: %s", elt)
 
+        query = [{"hostname": elt.host_name}]
+        if elt.__class__.my_type == 'service':
+            query.append({"service": elt.service_description})
+        if range_start:
+            query.append({'day_ts': {'$gte': range_start}})
+        if range_end:
+            query.append({'day_ts': {'$lte': range_end}})
+
+        query = {'$and': query}
+        logger.debug("[mongo-logs] Fetching records from database with query: '%s'", query)
+
         records = []
         try:
-            query = [{"hostname": elt.host_name}]
-            if elt.__class__.my_type == 'service':
-                query.append({"service": elt.service_description})
-            if range_start:
-                query.append({'day_ts': {'$gte': range_start}})
-            if range_end:
-                query.append({'day_ts': {'$lte': range_end}})
-
-            logger.debug("[mongo-logs] Fetching records from database with query: '%s'", query)
-
-            for log in self.db[self.hav_collection].find({'$and': query}).sort([
+            for log in self.db[self.hav_collection].find(query).sort([
                                 ("day",pymongo.DESCENDING),
                                 ("hostname",pymongo.ASCENDING),
                                 ("service",pymongo.ASCENDING)]):
