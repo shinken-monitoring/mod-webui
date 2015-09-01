@@ -24,6 +24,7 @@
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 
 import time
+import random
 
 ### Will be populated by the UI with it's own value
 app = None
@@ -85,7 +86,9 @@ def get_depgraph_widget():
 
     title = 'Relation graph for %s' % search
 
-    return {'elt': elt,
+    graphId = "graph_%d" % random.randint(1, 9999)
+
+    return {'elt': elt, 'graphId': graphId, 
             'wid': wid, 'collapsed': collapsed, 'options': options, 'base_url': '/widget/depgraph', 'title': title,
             }
 

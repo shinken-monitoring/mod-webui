@@ -110,15 +110,15 @@ function init_graph(root, jsgraph, width, height, inject) {
    //RGraph constructor.
 
     
-   /* Ok, for the circles, w need a particules system, and not recreate them too
-   much, but only once by iem, enven when it move! */
+   /* Ok, for the circles, we need a particles system, and not recreate them too
+   much, but only once by item, even when it moves! */
    var particles;
    var context;
    var particles = [];
    var particules_by_name = {};//new Hash();
 
-   // Main printing loop for particules, graph is print only when need, 
-   // but particules are print each loop
+   // Main printing loop for particles, graph is print only when need, 
+   // but particles are printed at each loop
    function loop() {
       for (i = 0, len = particles.length; i < len; i++) {
          var particle = particles[i];
@@ -175,7 +175,7 @@ function init_graph(root, jsgraph, width, height, inject) {
                context.fillStyle = particle.fillColor;
                context.arc(pos_x, pos_y, local_size/2, 0, Math.PI*2, true);
                context.fill();
-            } else { // print a cleaning particule
+            } else { // print a cleaning particle
                context.beginPath();
                context.fillStyle = 'rgba(255,255,255,0.8)';
                context.arc(pos_x, pos_y, 4,  0, Math.PI*(2), true);
@@ -195,8 +195,8 @@ function init_graph(root, jsgraph, width, height, inject) {
    }
 
 
-   // We should NOT create 1000 particules again and again
-   // but remeber them to "transalte" them if need (graph rewrite)
+   // We should NOT create 1000 particles again and again
+   // but remember them to "translate" them if need (graph rewrite)
    function create_or_update_particule(name, x, y, color, size) {
       //alert(particules_by_name['name']);
       if (particules_by_name[name] != undefined){
@@ -234,7 +234,7 @@ function init_graph(root, jsgraph, width, height, inject) {
    }
 
 
-   // A node shouldbe print if it's a important one
+   // A node should be printed if it's a important one
    // like an host, or a service near or with a huge business
    // impact, or a root problem.
    function should_be_print(node){
@@ -453,13 +453,9 @@ function init_graph(root, jsgraph, width, height, inject) {
    rgraph.loadJSON(jsgraph, 1);
    rgraph.root = root;
 
-
    //compute positions and plot
    rgraph.refresh();
    rgraph.controller.onBeforeCompute(rgraph.graph.getNode(rgraph.root));
 
    setInterval( loop, 1000 / 60 );
 };
-
-
-
