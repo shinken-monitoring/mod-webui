@@ -43,15 +43,6 @@ var labelType, useGradients, nativeTextSupport, animate;
    animate = !(iStuff || !nativeCanvasSupport);
 })();
 
-var Log = {
-   elem: false,
-   write: function(text){
-      if (!this.elem)
-      this.elem = document.getElementById('log');
-      this.elem.innerHTML = text;
-   }
-};
-
 
 
 function dump(arr, level) {
@@ -123,7 +114,7 @@ function init_graph(root, jsgraph, width, height, inject) {
       for (i = 0, len = particles.length; i < len; i++) {
          var particle = particles[i];
 
-         // If the particule is disabled, bail out
+         // If the particle is disabled, bail out
          if (!particle.active) {
             continue;
          }
@@ -339,10 +330,11 @@ function init_graph(root, jsgraph, width, height, inject) {
    });
 
    // init RGraph
+   if (depgraph_logs) console.log('depgraph - init graph', inject, width, height);
    rgraph = new $jit.RGraph({
       'injectInto': /*'infovis'*/'infovis-'+inject,
-      'width'     : /*700*/width,
-      'height'    : /*700*/height,
+      'width'     : width,
+      'height'    : height,
       //Optional: Add a background canvas
       //that draws some concentric circles.
       'background': false,
@@ -373,8 +365,7 @@ function init_graph(root, jsgraph, width, height, inject) {
       Tips: {
          enable: true,
          onShow: function(tip, node) {
-            var html = "<div class=\"tip-title border\">" + node.data.infos + "</div>";
-            tip.innerHTML = html;
+            tip.innerHTML = "<div class=\"tip-title border\">" + node.data.infos + "</div>";
          }
       },
       
@@ -398,7 +389,7 @@ function init_graph(root, jsgraph, width, height, inject) {
 
          // If one of the line border is a no print node
          // print this line in very few pixels
-         if(!should_be_print(src) || !should_be_print(dst)){
+         if (!should_be_print(src) || !should_be_print(dst)){
             adj.data.$lineWidth = 0.3;
          } else {
             adj.data.$lineWidth = 2;
@@ -406,12 +397,9 @@ function init_graph(root, jsgraph, width, height, inject) {
       },
 
       onBeforeCompute: function(node){
-         Log.write("Focusing on " + node.name + "...");
-
-         // Make right column relations list.
-         var html = node.data.infos;
-
-         $jit.id('inner-details-'+inject).innerHTML = html;
+         document.getElementById('log-'+inject).innerHTML = "Focusing on " + node.name + "...";
+         
+         $jit.id('inner-details-'+inject).innerHTML = node.data.infos;
       },
       
       //Add node click handler and some styles.
@@ -422,7 +410,7 @@ function init_graph(root, jsgraph, width, height, inject) {
             rgraph.onClick(node.id, {
                hideLabels: false,
                onComplete: function() {
-                  Log.write(" ");
+                  document.getElementById('log-'+inject).innerHTML = "";
                }
             });
          };
@@ -457,5 +445,5 @@ function init_graph(root, jsgraph, width, height, inject) {
    rgraph.refresh();
    rgraph.controller.onBeforeCompute(rgraph.graph.getNode(rgraph.root));
 
-   setInterval( loop, 1000 / 60 );
+   setInterval(loop, 1000 / 60);
 };

@@ -21,18 +21,14 @@
       </script>
 
 
-      <div id="{{graphId}}" class="gMap">
-         <div class="alert alert-info">
-            <a href="#" class="alert-link">Creating dependency graph ...</a>
-         </div>
-         <div id="inner-details-{{app.helper.get_html_id(elt)}}">
-         </div>
+      <div id="{{graphId}}">
+         <div class="depgraph-log" id="log-{{app.helper.get_html_id(elt)}}">Loading element informations...</div>
+         
+         <div class="depgraph-graph" id="infovis-{{app.helper.get_html_id(elt)}}"> </div>
+         
+         <div class="depgraph-details" id="inner-details-{{app.helper.get_html_id(elt)}}"></div>
       </div>
       
-      <div id="infovis-{{app.helper.get_html_id(elt)}}"> </div>
-
-      <div id="log">Loading element informations...</div>
-
       %#End of the Host Exist or not case
    %end
 </div>
