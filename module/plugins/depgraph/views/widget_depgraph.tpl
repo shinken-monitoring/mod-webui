@@ -14,12 +14,8 @@
       <script type="text/javascript">
          $(document).ready(function (){
             init_graph('{{elt.get_full_name()}}', {{!app.helper.create_json_dep_graph(elt, levels=4)}}, $('#{{graphId}}').width(), 300, '{{app.helper.get_html_id(elt)}}');
-            
-            // Loading indicator ...
-            $("#{{graphId}} .alert").hide();
          });
       </script>
-
 
       <div id="{{graphId}}">
          <div class="depgraph-log" id="log-{{app.helper.get_html_id(elt)}}">Loading element informations...</div>
@@ -28,7 +24,5 @@
          
          <div class="depgraph-details" id="inner-details-{{app.helper.get_html_id(elt)}}"></div>
       </div>
-      
-      %#End of the Host Exist or not case
    %end
 </div>

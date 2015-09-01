@@ -83,6 +83,8 @@ function change_rgraph_root(root){
 }
 
 function init_graph(root, jsgraph, width, height, inject) {
+   if (depgraph_logs) console.log('depgraph - init_graph ...');
+   
    if (typeof $jit === "undefined") {
       if (depgraph_logs) console.log('depgraph - Warning : there is no $jit, I postpone my init for 1s');
       // Still not load $jit? racing problems are a nightmare :)
@@ -397,7 +399,8 @@ function init_graph(root, jsgraph, width, height, inject) {
       },
 
       onBeforeCompute: function(node){
-         document.getElementById('log-'+inject).innerHTML = "Focusing on " + node.name + "...";
+         if (document.getElementById('log-'+inject))
+            document.getElementById('log-'+inject).innerHTML = "Focusing on " + node.name + "...";
          
          $jit.id('inner-details-'+inject).innerHTML = node.data.infos;
       },

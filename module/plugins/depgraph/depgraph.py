@@ -33,7 +33,7 @@ app = None
 
 def depgraph_host(name):
     # Ok we are in a detail page but the user ask for a specific search
-    search = app.request.GET.get('global_search', None)
+    search = app.request.GET.get('global_search', '')
     loop = bool(int(app.request.GET.get('loop', '0')))
     loop_time = int(app.request.GET.get('loop_time', '10'))
 
@@ -44,11 +44,21 @@ def depgraph_host(name):
         if new_h:
             app.bottle.redirect("/depgraph/" + search)
 
+    else:
+        # Ok look for the first host we can find
+        hosts = app.datamgr.get_hosts(user)
+        for h in hosts:
+            search = h.get_name()
+            break
+
     h = app.datamgr.get_host(name, user) or app.redirect404()
-    return {'elt': h, 'loop' : loop, 'loop_time' : loop_time}
+    
+    graphId = "graph_%d" % random.randint(1, 9999)
+
+    return {'elt': h, 'graphId': graphId, 'loop' : loop, 'loop_time' : loop_time}
 
 
-def depgraph_srv(hname, desc):
+def depgraph_service(hname, desc):
     loop = bool(int(app.request.GET.get('loop', '0')))
     loop_time = int(app.request.GET.get('loop_time', '10'))
 
@@ -62,7 +72,10 @@ def depgraph_srv(hname, desc):
             app.bottle.redirect("/depgraph/" + search)
 
     s = app.datamgr.get_service(hname, desc, user)
-    return {'elt': s, 'loop' : loop, 'loop_time' : loop_time}
+    
+    graphId = "graph_%d" % random.randint(1, 9999)
+
+    return {'elt': s, 'graphId': graphId, 'loop' : loop, 'loop_time' : loop_time}
 
 
 def get_depgraph_widget():
@@ -96,14 +109,18 @@ def get_depgraph_widget():
 def get_depgraph_inner(name):
     user = app.request.environ['USER']
     elt = app.datamgr.get_element(name, user) or app.redirect404()
-    return {'elt': elt}
+    
+    graphId = "graph_%d" % random.randint(1, 9999)
+
+    return {'elt': elt, 'graphId': graphId}
 
 widget_desc = '''<h4>Relation graph</h4>
 Show a graph of an object relations
 '''
 
-pages = {depgraph_host: {'routes': ['/depgraph/:name'], 'view': 'depgraph', 'static': True},
-         depgraph_srv: {'routes': ['/depgraph/:hname/:desc'], 'view': 'depgraph', 'static': True},
-         get_depgraph_widget: {'routes': ['/widget/depgraph'], 'view': 'widget_depgraph', 'static': True, 'widget': ['dashboard'], 'widget_desc': widget_desc, 'widget_name': 'depgraph', 'widget_picture': '/static/depgraph/img/widget_depgraph.png'},
-         get_depgraph_inner: {'routes': ['/inner/depgraph/:name#.+#'], 'view': 'inner_depgraph', 'static': True},
-         }
+pages = {
+    depgraph_host:          {'routes': ['/depgraph/:name'], 'view': 'depgraph', 'static': True},
+    depgraph_service:       {'routes': ['/depgraph/:hname/:desc'], 'view': 'depgraph', 'static': True},
+    get_depgraph_widget:    {'routes': ['/widget/depgraph'], 'view': 'widget_depgraph', 'static': True, 'widget': ['dashboard'], 'widget_desc': widget_desc, 'widget_name': 'depgraph', 'widget_picture': '/static/depgraph/img/widget_depgraph.png'},
+    get_depgraph_inner:     {'routes': ['/inner/depgraph/:name#.+#'], 'view': 'inner_depgraph', 'static': True},
+}
