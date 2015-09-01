@@ -35,9 +35,9 @@ class LogsMetaModule(MetaModule):
     def is_available(self):
         return self.module is not None
 
-    def get_ui_logs(self, elt, logs_type=None, default=None, range_start=None, range_end=None):
+    def get_ui_logs(self, elt, logs_type=None, default=None, range_start=None, range_end=None, limit=200):
         if self.is_available():
-            return self.module.get_ui_logs(elt, logs_type, range_start, range_end) or default
+            return self.module.get_ui_logs(elt, logs_type, range_start, range_end, limit) or default
         return default
 
     def get_ui_availability(self, elt, range_start=None, range_end=None, default=None):
@@ -128,7 +128,7 @@ class MongoDBLogs():
         self.conn.disconnect()
 
     # We will get in the mongodb database the logs
-    def get_ui_logs(self, elt, logs_type=None, range_start=None, range_end=None):
+    def get_ui_logs(self, elt, logs_type=None, range_start=None, range_end=None, limit=200):
         import pymongo
         if not self.db:
             logger.error("[mongo-logs] error Problem during init phase, no database connection")
@@ -154,7 +154,7 @@ class MongoDBLogs():
         records = []
         try:
             for log in self.db[self.logs_collection].find(query).sort(
-                    [("time", pymongo.DESCENDING)]).limit(200):
+                    [("time", pymongo.DESCENDING)]).limit(limit):
                 message = log['message']
                 m = re.search(r"\[(\d+)\] (.*)", message)
                 if m and m.group(2):
