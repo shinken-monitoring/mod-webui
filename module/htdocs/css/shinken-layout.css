@@ -113,6 +113,12 @@ html, body {
     }
 }
 
+@media(max-height:600px) {
+    .sidebar li  a {
+        height: 30px;
+    }
+}
+
 /*
  * Actions bar
  */
