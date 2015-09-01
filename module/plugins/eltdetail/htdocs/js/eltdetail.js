@@ -297,4 +297,16 @@ function toggleBusinessElt(e) {
 }
 
 
+/* Not very nice ... should be better to request smaller/bigger image to Graphite!
+ @TODO: request adapted size images to Graphite.
+// On window resize ... resizes graphs.
+$(window).bind('resize', function () {
+   var img_width = $("#real_graphs").width();
+
+   $.each($('#real_graphs img'), function (index, value) {
+      $(this).css("width", img_width);
+   });
+});
+*/
+
 on_page_refresh();
