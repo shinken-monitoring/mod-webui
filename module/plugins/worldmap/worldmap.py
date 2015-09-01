@@ -137,7 +137,9 @@ def show_worldmap_widget():
     if refine_search:
         title = 'Worldmap (%s)' % refine_search
 
-    return {'wid': wid, 'mapId': "map_%d" % random.randint(1, 10), 
+    mapId = "map_%d" % random.randint(1, 9999)
+
+    return {'wid': wid, 'mapId': mapId, 
             'collapsed': collapsed, 'options': options,
             'base_url': '/widget/worldmap', 'title': title,
             'params': params, 'hosts' : items
