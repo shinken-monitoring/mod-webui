@@ -12,7 +12,7 @@
          %end
       </center>
    %else:
-      <div id="map">
+      <div id="{{mapId}}" class="gMap">
          <div class="alert alert-info">
             <a href="#" class="alert-link">Loading map ...</a>
          </div>

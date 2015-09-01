@@ -26,6 +26,7 @@ from shinken.log import logger
 
 import time
 import re
+import random
 
 try:
     import json
@@ -102,6 +103,7 @@ def show_worldmap():
 
     # So now we can just send the valid hosts to the template
     return {'search_string': search, 'params': params,
+            'mapId': 'hostsMap', 
             'hosts': search_hosts_with_coordinates(search, user)}
 
 
@@ -127,9 +129,6 @@ def show_worldmap_widget():
 
     items = items[:nb_elements]
 
-    wid = app.request.GET.get('wid', 'widget_problems_' + str(int(time.time())))
-    collapsed = (app.request.GET.get('collapsed', 'False') == 'True')
-
     options = {'search': {'value': refine_search, 'type': 'text', 'label': 'Filter by name'},
                'nb_elements': {'value': nb_elements, 'type': 'int', 'label': 'Max number of elements to show'},
                }
@@ -138,7 +137,7 @@ def show_worldmap_widget():
     if refine_search:
         title = 'Worldmap (%s)' % refine_search
 
-    return {'wid': wid,
+    return {'wid': wid, 'mapId': "map_%d" % random.randint(1, 10), 
             'collapsed': collapsed, 'options': options,
             'base_url': '/widget/worldmap', 'title': title,
             'params': params, 'hosts' : items
