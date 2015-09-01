@@ -211,7 +211,7 @@
                   %#end
                   '<li>',
                   '{{!app.helper.get_fa_icon_state(s)}}',
-                  '<a href="/service/{{h.get_name()}}/{{s.get_name()}}">{{s.get_name()}} {{s.get_name()}}</a> {{!app.helper.get_business_impact_text(s.business_impact)}} is {{s.state}}.',
+                  '<a href="/service/{{h.get_name()}}/{{s.get_name()}}">{{s.get_name()}}</a> {{!app.helper.get_business_impact_text(s.business_impact)}} is {{s.state}}.',
                   '</li>',
                %end
                '</ul>',
