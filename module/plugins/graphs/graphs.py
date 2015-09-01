@@ -24,6 +24,7 @@
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 import time
 import requests
+import random
 
 
 ### Will be populated by the UI with it's own value
@@ -81,9 +82,12 @@ def get_graphs_widget():
 
     title = 'Element graphs for %s' % search
 
+    graphsId = "graphs_%d" % random.randint(1, 9999)
+    
     return {
         'elt': elt,
         'wid': wid,
+        'graphsId': graphsId,
         'collapsed': collapsed,
         'options': options,
         'base_url': '/widget/graphs',
