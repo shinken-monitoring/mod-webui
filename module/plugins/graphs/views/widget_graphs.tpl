@@ -20,14 +20,20 @@
          %for g in uris:
             %#(img_src, link) = app.get_graph_img_src(g['img_src'], g['link'])
             
-           // Adjust image width / height parameter ... width is sized to container, and height is 1/3
-            var img_width = $('.widget-content').width() - 5
+            var img_width = $('#{{graphsId}}').width();
             var img_src = "{{g['img_src']}}".replace("'","\'")
-            img_src = img_src.replace(/(width=).*?(&)/,'$1' + img_width + '$2');
-            img_src = img_src.replace(/(height=).*?(&)/,'$1' + (img_width / 3) + '$2');
             
             $('#{{graphsId}}').append('<p class="widget-graph"><a href="{{g['link']}}" target="_blank"><img width="'+img_width+'" src="'+img_src+'"></a></p>');
          %end
+         
+         // On window resize ... resizes graphs.
+         $(window).bind('resize', function () {
+            var img_width = $('#{{graphsId}}').width();
+
+            $.each($('#{{graphsId}} img'), function (index, value) {
+               $(this).css("width", img_width);
+            });
+         });
       </script>
    %end
 %end
