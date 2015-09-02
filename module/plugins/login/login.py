@@ -93,12 +93,11 @@ def get_root():
         elif app.remote_user_variable in app.request.environ and app.remote_user_enable == '2':
             user_name = app.request.environ[app.remote_user_variable]
         if not user_name:
-            print "Warning: You need to have a contact having the same name as your user %s"
+            logger.warning("[WebUI] remote user enabled but no user name found")
             app.bottle.redirect("/user/login")
         c = app.datamgr.get_contact(user_name)
-        print "Got", c
         if not c:
-            print "Warning: You need to have a contact having the same name as your user %s" % user_name
+            logger.warning("Warning: You need to have a contact having the same name as your user %s", user_name)
             app.bottle.redirect("/user/login")
         else:
             app.response.set_cookie('user', user_name, secret=app.auth_secret, path='/')
