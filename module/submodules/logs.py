@@ -125,7 +125,7 @@ class MongoDBLogs():
 
     def close(self):
         self.is_connected = False
-        self.conn.disconnect()
+        self.conn.close()
 
     # We will get in the mongodb database the logs
     def get_ui_logs(self, elt, logs_type=None, range_start=None, range_end=None, limit=200):
