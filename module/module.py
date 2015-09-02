@@ -622,6 +622,14 @@ class Webui_broker(BaseModule, Daemon):
         def give_about():
             return template('modal_about')
 
+        @route('/modal/newbookmark')
+        def give_newbookmark():
+            return template('modal_newbookmark')
+
+        @route('/modal/managebookmarks')
+        def give_managebookmarks():
+            return template('modal_managebookmarks')
+
     ##
     # Check if provided username/password is accepted for login the Web UI
     #
