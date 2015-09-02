@@ -124,7 +124,9 @@
                <th></th>
                %for c in columns:
                   <th class="vertical">
-                  <div class="rotated-text"><span class="rotated-text__inner">{{c}}</span></div>
+                  <div class="rotated-text"><span class="rotated-text__inner">
+                     <a href="/all?search=type:service {{c}}">{{c}}</a>
+                  </span></div>
                   </th>
                %end
             </tr>

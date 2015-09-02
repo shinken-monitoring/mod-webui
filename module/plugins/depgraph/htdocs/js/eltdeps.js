@@ -43,15 +43,6 @@ var labelType, useGradients, nativeTextSupport, animate;
    animate = !(iStuff || !nativeCanvasSupport);
 })();
 
-var Log = {
-   elem: false,
-   write: function(text){
-      if (!this.elem)
-      this.elem = document.getElementById('log');
-      this.elem.innerHTML = text;
-   }
-};
-
 
 
 function dump(arr, level) {
@@ -92,6 +83,8 @@ function change_rgraph_root(root){
 }
 
 function init_graph(root, jsgraph, width, height, inject) {
+   if (depgraph_logs) console.log('depgraph - init_graph ...');
+   
    if (typeof $jit === "undefined") {
       if (depgraph_logs) console.log('depgraph - Warning : there is no $jit, I postpone my init for 1s');
       // Still not load $jit? racing problems are a nightmare :)
@@ -110,20 +103,20 @@ function init_graph(root, jsgraph, width, height, inject) {
    //RGraph constructor.
 
     
-   /* Ok, for the circles, w need a particules system, and not recreate them too
-   much, but only once by iem, enven when it move! */
+   /* Ok, for the circles, we need a particles system, and not recreate them too
+   much, but only once by item, even when it moves! */
    var particles;
    var context;
    var particles = [];
    var particules_by_name = {};//new Hash();
 
-   // Main printing loop for particules, graph is print only when need, 
-   // but particules are print each loop
+   // Main printing loop for particles, graph is print only when need, 
+   // but particles are printed at each loop
    function loop() {
       for (i = 0, len = particles.length; i < len; i++) {
          var particle = particles[i];
 
-         // If the particule is disabled, bail out
+         // If the particle is disabled, bail out
          if (!particle.active) {
             continue;
          }
@@ -175,7 +168,7 @@ function init_graph(root, jsgraph, width, height, inject) {
                context.fillStyle = particle.fillColor;
                context.arc(pos_x, pos_y, local_size/2, 0, Math.PI*2, true);
                context.fill();
-            } else { // print a cleaning particule
+            } else { // print a cleaning particle
                context.beginPath();
                context.fillStyle = 'rgba(255,255,255,0.8)';
                context.arc(pos_x, pos_y, 4,  0, Math.PI*(2), true);
@@ -195,8 +188,8 @@ function init_graph(root, jsgraph, width, height, inject) {
    }
 
 
-   // We should NOT create 1000 particules again and again
-   // but remeber them to "transalte" them if need (graph rewrite)
+   // We should NOT create 1000 particles again and again
+   // but remember them to "translate" them if need (graph rewrite)
    function create_or_update_particule(name, x, y, color, size) {
       //alert(particules_by_name['name']);
       if (particules_by_name[name] != undefined){
@@ -234,7 +227,7 @@ function init_graph(root, jsgraph, width, height, inject) {
    }
 
 
-   // A node shouldbe print if it's a important one
+   // A node should be printed if it's a important one
    // like an host, or a service near or with a huge business
    // impact, or a root problem.
    function should_be_print(node){
@@ -339,10 +332,11 @@ function init_graph(root, jsgraph, width, height, inject) {
    });
 
    // init RGraph
+   if (depgraph_logs) console.log('depgraph - init graph', inject, width, height);
    rgraph = new $jit.RGraph({
       'injectInto': /*'infovis'*/'infovis-'+inject,
-      'width'     : /*700*/width,
-      'height'    : /*700*/height,
+      'width'     : width,
+      'height'    : height,
       //Optional: Add a background canvas
       //that draws some concentric circles.
       'background': false,
@@ -373,8 +367,7 @@ function init_graph(root, jsgraph, width, height, inject) {
       Tips: {
          enable: true,
          onShow: function(tip, node) {
-            var html = "<div class=\"tip-title border\">" + node.data.infos + "</div>";
-            tip.innerHTML = html;
+            tip.innerHTML = "<div class=\"tip-title border\">" + node.data.infos + "</div>";
          }
       },
       
@@ -398,7 +391,7 @@ function init_graph(root, jsgraph, width, height, inject) {
 
          // If one of the line border is a no print node
          // print this line in very few pixels
-         if(!should_be_print(src) || !should_be_print(dst)){
+         if (!should_be_print(src) || !should_be_print(dst)){
             adj.data.$lineWidth = 0.3;
          } else {
             adj.data.$lineWidth = 2;
@@ -406,12 +399,10 @@ function init_graph(root, jsgraph, width, height, inject) {
       },
 
       onBeforeCompute: function(node){
-         Log.write("Focusing on " + node.name + "...");
-
-         // Make right column relations list.
-         var html = node.data.infos;
-
-         $jit.id('inner-details-'+inject).innerHTML = html;
+         if (document.getElementById('log-'+inject))
+            document.getElementById('log-'+inject).innerHTML = "Focusing on " + node.name + "...";
+         
+         $jit.id('inner-details-'+inject).innerHTML = node.data.infos;
       },
       
       //Add node click handler and some styles.
@@ -422,7 +413,7 @@ function init_graph(root, jsgraph, width, height, inject) {
             rgraph.onClick(node.id, {
                hideLabels: false,
                onComplete: function() {
-                  Log.write(" ");
+                  document.getElementById('log-'+inject).innerHTML = "";
                }
             });
          };
@@ -453,13 +444,9 @@ function init_graph(root, jsgraph, width, height, inject) {
    rgraph.loadJSON(jsgraph, 1);
    rgraph.root = root;
 
-
    //compute positions and plot
    rgraph.refresh();
    rgraph.controller.onBeforeCompute(rgraph.graph.getNode(rgraph.root));
 
-   setInterval( loop, 1000 / 60 );
+   setInterval(loop, 1000 / 60);
 };
-
-
-

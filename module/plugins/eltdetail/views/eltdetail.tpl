@@ -1195,12 +1195,14 @@ Invalid element name
                         
                         html_graphes['{{period}}'] = '<p>';
                         %for g in uris[period]:
+                        /* Feature removed because of URL encoding in graphs submodule.
                         // Adjust image width / height parameter ... width is sized to container, and height is 1/3
                         var img_src = "{{g['img_src']}}".replace("'","\'")
                         img_src = img_src.replace(/(width=).*?(&)/,'$1' + $('#real_graphs').width() + '$2');
                         img_src = img_src.replace(/(height=).*?(&)/,'$1' + ($('#real_graphs').width() / 3) + '$2');
+                        */
                         
-                        html_graphes['{{period}}'] +=  '<img src="'+ img_src +'" class="jcropelt"/> <p></p>';
+                        html_graphes['{{period}}'] +=  '<img src="{{g['img_src']}}" class="jcropelt"/> <p></p>';
                         %end
                         html_graphes['{{period}}'] += '</p>';
 
