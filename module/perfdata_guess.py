@@ -176,8 +176,12 @@ def manage_unknown_command(elt, metric=None):
 
     
     pct = 0
+    # If metric UOM is %
+    if metric.uom and metric.uom == '%':
+        # Return value
+        pct = value
     # Look if min/max are defined
-    if metric.min and metric.max and (metric.max - metric.min != 0):
+    elif metric.min and metric.max and (metric.max - metric.min != 0):
         pct = 100 * (value / (metric.max - metric.min))
     else:
         # Assume value is 100%
@@ -189,10 +193,9 @@ def manage_unknown_command(elt, metric=None):
     
     # Title
     try:
-        uom = '' or m.uom
-        title = '%s=%s%s' % (name, value, uom)
+        title = '%s%s' % (value, metric.uom)
     except:
-        title = '%s=%s' % (name, value)
+        title = '%s' % (value)
 
     # Link
     lnk = '#'
