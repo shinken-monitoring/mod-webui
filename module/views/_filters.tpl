@@ -34,19 +34,15 @@
   <div class="dropdown form-group text-left">
     <button class="btn btn-default dropdown-toggle" type="button" id="bookmarks_menu" data-toggle="dropdown" aria-expanded="true"><i class="fa fa-bookmark"></i><span class="hidden-sm hidden-xs hidden-md"> Bookmarks</span> <span class="caret"></span></button>
     <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="bookmarks_menu">
-      <li role="presentation" class="dropdown-header">User bookmarks</li>
-      %for b in user_bookmarks:
-      <li role="presentation"><a role="menuitem" tabindex="-1" href="{{!b['uri']}}">{{!b['name']}}</a></li>
-      %end
-      <li role="presentation" class="dropdown-header">Global bookmarks</li>
-      %for b in common_bookmarks:
-      <li role="presentation"><a role="menuitem" tabindex="-1" href="{{!b['uri']}}">{{!b['name']}}</a></li>
-      %end
-      %if search_string:
-      <li role="presentation" class="divider"></li>
-      <li role="presentation"><a role="menuitem" onclick="display_modal('/modal/newbookmark')"><i class="fa fa-plus"></i> Bookmark the current filter</a></li>
-      <li role="presentation"><a role="menuitem" onclick="display_modal('/modal/managebookmarks')"><i class="fa fa-tags"></i> Manage bookmarks</a></li>
-      %end
+      <script type="text/javascript">
+         %for b in user_bookmarks:
+            declare_bookmark("{{!b['name']}}","{{!b['uri']}}");
+         %end
+         %for b in common_bookmarks:
+            declare_bookmarksro("{{!b['name']}}","{{!b['uri']}}");
+         %end
+         refresh_bookmarks('{{search_string}}');
+      </script>
     </ul>
   </div>
 </form>
