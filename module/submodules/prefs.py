@@ -72,7 +72,7 @@ except ImportError:
                  'Your pymongo lib is too old. '
                  'Please install it with a 3.x+ version from '
                  'https://pypi.python.org/pypi/pymongo')
-    raise
+    # raise
 
 class MongoDBPreferences():
     '''
