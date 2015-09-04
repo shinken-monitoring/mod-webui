@@ -233,7 +233,7 @@
    <EMBED src="/static/sound/alert.wav" autostart=true loop=false volume=100 >
 </audio>
 
-<script>
+<script type="text/javascript">
    // Play alerting sound ...
    function playAlertSound() {
       var audio = document.getElementById('alert-sound');
@@ -275,7 +275,10 @@
          playAlertSound();
       }
    });
-   
+</script>
+%end
+
+<script type="text/javascript">
    // Activate the popover ...
    $('#hosts-states-popover').popover({ 
       placement: 'bottom', 
@@ -296,5 +299,3 @@
       }
    });
 </script>
-%end
-
