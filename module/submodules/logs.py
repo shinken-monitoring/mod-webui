@@ -56,10 +56,10 @@ class MongoDBLogs():
             import pymongo
         except ImportError:
             logger.error('[WebUI-mongo-logs] Can not import pymongo'
-                         'Your pymongo lib is too old. '
                          'Please install it with a 3.x+ version from '
                          'https://pypi.python.org/pypi/pymongo')
             raise
+            
         self.uri = getattr(mod_conf, 'uri', 'mongodb://localhost')
         logger.info('[WebUI-mongo-logs] mongo uri: %s' % self.uri)
 

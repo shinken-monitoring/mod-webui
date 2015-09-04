@@ -64,22 +64,20 @@ class PrefsMetaModule(MetaModule):
 
 
 
-try:
-    import pymongo
-    from pymongo import MongoClient
-except ImportError:
-    logger.error('[WebUI-MongoDBPreferences] Can not import pymongo and/or MongoClient'
-                 'Your pymongo lib is too old. '
-                 'Please install it with a 3.x+ version from '
-                 'https://pypi.python.org/pypi/pymongo')
-    # raise
-
 class MongoDBPreferences():
     '''
     This module job is to get webui configuration data from a mongodb database:
     '''
 
     def __init__(self, mod_conf):
+        try:
+            import pymongo
+        except ImportError:
+            logger.error('[WebUI-MongoDBPreferences] Can not import pymongo'
+                         'Please install it with a 3.x+ version from '
+                         'https://pypi.python.org/pypi/pymongo')
+            raise
+            
         self.uri = getattr(mod_conf, 'uri', 'mongodb://localhost')
         logger.info('[WebUI-MongoDBPreferences] mongo uri: %s' % self.uri)
         
@@ -106,6 +104,12 @@ class MongoDBPreferences():
         self.open()
 
     def open(self):
+        try:
+            from pymongo import MongoClient
+        except ImportError:
+            logger.error('[WebUI-MongoDBPreferences] Can not import pymongo.MongoClient')
+            raise
+            
         try:
             if self.replica_set:
                 self.con = MongoClient(self.uri, replicaSet=self.replica_set, fsync=self.mongodb_fsync)
