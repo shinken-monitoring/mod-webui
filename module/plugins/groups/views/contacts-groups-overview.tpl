@@ -13,7 +13,7 @@
            %even=''
          %end
 
-         <li class="group list-group-item clearfix {{even}}">
+         <li class="group list-group-item clearfix">
             <section class="left">
                <h3>
                   <a role="menuitem" href="/all?search=cg:{{group.get_name()}}"><i class="fa fa-angle-double-down"></i>
@@ -21,8 +21,9 @@
                   </a>
                </h3>
                <div>
+                  %groupcontacts=app.datamgr.get_contactgroup_contacts(group.get_name(), user)
                   %contacts=[]
-                  %[contacts.append('<a href="/contact/'+item.contact_name+'">'+item.alias+'</a>' if item.alias else item.get_name()) for item in group.members if item not in contacts]
+                  %[contacts.append('<a href="/contact/'+item.contact_name+'">'+item.alias+'</a>' if item.alias else item.get_name()) for item in groupcontacts]
                   <div>{{!', '.join(contacts)}}</div>
                </div>
             </section>

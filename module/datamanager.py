@@ -490,15 +490,41 @@ class WebUIDataManager(DataManager):
     # Contacts groups
     ##
     def get_contactgroups(self, user):
+        """ Get a list of known contacts groups 
+
+            :param user: concerned user
+            :returns: List of contacts groups related to the user
+        """
         items = self.rg.contactgroups
         return self._only_related_to(items, user)
 
     def get_contactgroup(self, name, user):
+        """ Get a specific contacts group
+
+            :param name: searched contacts group name
+            :param user: concerned user
+            :returns: List of contacts groups related to the user
+        """
         name = name.decode('utf8', 'ignore')
         item = self.rg.contactgroups.find_by_name(name)
         if self._is_related_to(item, user):
             return item
         return None
+        
+    def get_contactgroup_contacts(self, name, user):
+        """ Get the contacts in a contacts group
+
+            :param name: searched contacts group name
+            :param user: concerned user
+            :returns: List of contacts in the group only related to the user
+        """
+        name = name.decode('utf8', 'ignore')
+        item = self.rg.contactgroups.find_by_name(name)
+        if self._is_related_to(item, user):
+            contacts = [c for c in self.get_contacts(user) if c in item.members]
+            return contacts
+        return None
+
 
     ##
     # Hosts groups

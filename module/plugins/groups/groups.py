@@ -33,7 +33,8 @@ def show_contactgroups():
     cgroups = sorted(app.datamgr.get_contactgroups(user), key=lambda cg: cg.contactgroup_name)
 
     return {
-        'contactgroups': cgroups
+        'contactgroups': cgroups,
+        'user': user
         }
 
 
