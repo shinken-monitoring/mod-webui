@@ -143,6 +143,14 @@ class Webui_broker(BaseModule, Daemon):
         if bindAddress:
             self.serveropts['bindAddress'] = str(bindAddress)
 
+        # Apache htpasswd file for authentication
+        self.htpasswd_file = getattr(modconf, 'htpasswd_file', '/etc/shinken/htpasswd.users')
+        logger.info("[WebUI] htpasswd file: %s", self.htpasswd_file)
+        if self.htpasswd_file:
+            if not os.path.exists(self.htpasswd_file):
+                logger.warning("[WebUI] htpasswd file '%s' does not exist.", self.htpasswd_file)
+                self.htpasswd_file = None
+
         # Load the config dir and make it an absolute path
         self.config_dir = getattr(modconf, 'config_dir', 'share')
         self.config_dir = os.path.abspath(self.config_dir)
@@ -169,6 +177,7 @@ class Webui_broker(BaseModule, Daemon):
             self.additional_plugins_dir = os.path.abspath(self.additional_plugins_dir)
         logger.info("[WebUI] Additional plugins dir: %s", self.additional_plugins_dir)
 
+        # Web UI timezone
         self.timezone = getattr(modconf, 'timezone', 'Europe/Paris')
         if self.timezone:
             logger.info("[WebUI] Setting our timezone to %s", self.timezone)
@@ -648,6 +657,7 @@ class Webui_broker(BaseModule, Daemon):
             logger.error("[WebUI] You need to have a contact having the same name as your user: %s", username)
             return False
 
+        logger.info("[WebUI] Requesting authentication for user: %s", username)
         r = self.auth_module.check_auth(username, password)
         if r:
             # :TODO:maethor:150724: Remove this, nothing to do here
@@ -660,6 +670,7 @@ class Webui_broker(BaseModule, Daemon):
             logger.info("[WebUI] User picture: %s", self.user_picture)
             return c is not None
 
+        logger.warning("[WebUI] The user '%s' has not been authenticated.", username)
         return False
 
     ##
