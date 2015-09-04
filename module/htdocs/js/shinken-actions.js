@@ -157,7 +157,12 @@ check, along with optional performance data.
 */
 function submit_check(name, return_code, output){
    var elts = get_elements(name);
-   var url = '/action/PROCESS_'+elts.type+'_CHECK_RESULT/'+elts.nameslash+'/'+return_code+'/'+output;
+   var url = '/action/PROCESS_';
+   if (elts.type == 'HOST'){
+      url += 'HOST_CHECK_RESULT/'+elts.nameslash+'/'+return_code+'/'+output;
+   } else {
+      url += 'SERVICE_CHECK_RESULT/'+elts.nameslash+'/'+return_code+'/'+output;
+   }
    // We can launch it :)
    launch(url, capitalize(elts.type)+': '+name+', check result submitted');
 }
