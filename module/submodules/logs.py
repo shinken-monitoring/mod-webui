@@ -101,9 +101,9 @@ class MongoDBLogs():
             raise
         try:
             if self.replica_set:
-                self.con = MongoClient(self.uri, replicaSet=self.replica_set, fsync=self.mongodb_fsync)
+                self.con = MongoClient(self.uri, replicaSet=self.replica_set, fsync=self.mongodb_fsync, connect=True)
             else:
-                self.con = MongoClient(self.uri, fsync=self.mongodb_fsync)
+                self.con = MongoClient(self.uri, fsync=self.mongodb_fsync, connect=True)
             logger.info("[WebUI-mongo-logs] connected to mongodb: %s", self.uri)
 
             self.db = getattr(self.con, self.database)

@@ -112,9 +112,9 @@ class MongoDBPreferences():
             
         try:
             if self.replica_set:
-                self.con = MongoClient(self.uri, replicaSet=self.replica_set, fsync=self.mongodb_fsync)
+                self.con = MongoClient(self.uri, replicaSet=self.replica_set, fsync=self.mongodb_fsync, connect=True)
             else:
-                self.con = MongoClient(self.uri, fsync=self.mongodb_fsync)
+                self.con = MongoClient(self.uri, fsync=self.mongodb_fsync, connect=True)
             logger.info("[WebUI-MongoDBPreferences] connected to mongodb: %s", self.uri)
 
             self.db = getattr(self.con, self.database)
@@ -146,7 +146,12 @@ class MongoDBPreferences():
                 logger.error("[WebUI-MongoDBPreferences] error during initialization, no database connection!")
                 return None
 
-        e = self.db.ui_user_preferences.find_one({'_id': 'shinken-global'})
+        try:
+            e = self.db.ui_user_preferences.find_one({'_id': 'shinken-global'})
+        except Exception, e:
+            logger.warning("[WebUI-MongoDBPreferences] Exception: %s", str(e))
+            self.is_connected = False
+            return None
 
         # Maybe it's a new entry or missing this parameter, bail out
         if not e or key not in e:
@@ -167,7 +172,12 @@ class MongoDBPreferences():
             print '[WebUI-MongoDBPreferences]: error get_ui_user_preference, no defined user'
             return None
 
-        e = self.db.ui_user_preferences.find_one({'_id': user.get_name()})
+        try:
+            e = self.db.ui_user_preferences.find_one({'_id': user.get_name()})
+        except Exception, e:
+            logger.warning("[WebUI-MongoDBPreferences] Exception: %s", str(e))
+            self.is_connected = False
+            return None
 
         # If no specific key is required, returns all user parameters ...
         if key is None:
@@ -191,24 +201,29 @@ class MongoDBPreferences():
             logger.warning("[WebUI-MongoDBPreferences] error set_ui_user_preference, no user!")
             return None
 
-        # check a collection exist for this user
-        u = self.db.ui_user_preferences.find_one({'_id': user.get_name()})
-        if not u:
-            # no collection for this user? create a new one
-            self.db.ui_user_preferences.save({'_id': user.get_name(), key: value})
-
-        r = self.db.ui_user_preferences.update({'_id': user.get_name()}, {'$set': {key: value}})
-        # Maybe there was no doc there, if so, create an empty one
-        if not r:
-            # Maybe the user exist, if so, get the whole user entry
+        try:
+            # check a collection exist for this user
             u = self.db.ui_user_preferences.find_one({'_id': user.get_name()})
             if not u:
-                logger.debug ("[WebUI-MongoDBPreferences] No user entry for %s, I create a new one", user.get_name())
+                # no collection for this user? create a new one
                 self.db.ui_user_preferences.save({'_id': user.get_name(), key: value})
-            else:  # ok, it was just the key that was missing, just update it and save it
-                u[key] = value
-                logger.debug ("[WebUI-MongoDBPreferences] Just saving the new key in the user pref")
-                self.db.ui_user_preferences.save(u)
+
+            r = self.db.ui_user_preferences.update({'_id': user.get_name()}, {'$set': {key: value}})
+            # Maybe there was no doc there, if so, create an empty one
+            if not r:
+                # Maybe the user exist, if so, get the whole user entry
+                u = self.db.ui_user_preferences.find_one({'_id': user.get_name()})
+                if not u:
+                    logger.debug ("[WebUI-MongoDBPreferences] No user entry for %s, I create a new one", user.get_name())
+                    self.db.ui_user_preferences.save({'_id': user.get_name(), key: value})
+                else:  # ok, it was just the key that was missing, just update it and save it
+                    u[key] = value
+                    logger.debug ("[WebUI-MongoDBPreferences] Just saving the new key in the user pref")
+                    self.db.ui_user_preferences.save(u)
+        except Exception, e:
+            logger.warning("[WebUI-MongoDBPreferences] Exception: %s", str(e))
+            self.is_connected = False
+            return None
 
     def set_ui_common_preference(self, key, value):
         if not self.is_connected:
@@ -216,15 +231,20 @@ class MongoDBPreferences():
                 logger.error("[WebUI-MongoDBPreferences] error during initialization, no database connection!")
                 return None
 
-        # check a collection exist for this user
-        u = self.db.ui_user_preferences.find_one({'_id': 'shinken-global'})
+        try:
+            # check a collection exist for this user
+            u = self.db.ui_user_preferences.find_one({'_id': 'shinken-global'})
 
-        if not u:
-            # no collection for this user? create a new one
-            r = self.db.ui_user_preferences.save({'_id': 'shinken-global', key: value})
-        else:
-            # found a collection for this user
-            r = self.db.ui_user_preferences.update({'_id': 'shinken-global'}, {'$set': {key: value}})
+            if not u:
+                # no collection for this user? create a new one
+                r = self.db.ui_user_preferences.save({'_id': 'shinken-global', key: value})
+            else:
+                # found a collection for this user
+                r = self.db.ui_user_preferences.update({'_id': 'shinken-global'}, {'$set': {key: value}})
+        except Exception, e:
+            logger.warning("[WebUI-MongoDBPreferences] Exception: %s", str(e))
+            self.is_connected = False
+            return None
 
         if not r:
             return None
