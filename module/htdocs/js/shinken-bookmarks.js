@@ -30,13 +30,13 @@ var bookmarksro = [];
 // Save bookmarks lists
 function save_bookmarks(){
    save_user_preference('bookmarks', JSON.stringify(bookmarks), function () {
-      refresh_bookmarks();
+      refresh_bookmarks(search_string);
    });
 }
 
 function save_bookmarksro(){
    save_common_preference('bookmarks', JSON.stringify(bookmarksro), function () {
-      refresh_bookmarks();
+      refresh_bookmarks(search_string);
    });
 }
 
@@ -74,13 +74,12 @@ function declare_bookmarksro(name, uri){
 }
 
 // Refresh bookmarks in HTML
-function refresh_bookmarks(search_string){
+function refresh_bookmarks(_search_string){
+   $('ul [aria-labelledby="bookmarks_menu"]').empty();
    if (bookmarks.length == 0 && bookmarksro.length == 0) {
-      $('ul [aria-labelledby="bookmarks_menu"]').html('<ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="bookmarks_menu"><li role="presentation" class="dropdown-header">No defined bookmarks</li></ul>');
-      return;
+      $('ul [aria-labelledby="bookmarks_menu"]').append('<li role="presentation" class="dropdown-header">No defined bookmarks</li>');
    }
 
-   $('ul [aria-labelledby="bookmarks_menu"]').empty();
    if (bookmarks.length) {
       $('ul [aria-labelledby="bookmarks_menu"]').append('<li role="presentation" class="dropdown-header"><strong>User bookmarks:</strong></li>');
       $.each(bookmarks, function(idx, bkm){
@@ -96,13 +95,13 @@ function refresh_bookmarks(search_string){
       });
    }
 
-   if (search_string) {
+   if (_search_string) {
       $('ul [aria-labelledby="bookmarks_menu"]').append('<li role="presentation" class="divider"></li>');
-      $('ul [aria-labelledby="bookmarks_menu"]').append('<li role="presentation"><a role="menuitem" href="#" action="display-add-bookmark" data-filter="{{search_string}}"><i class="fa fa-plus"></i> Bookmark the current filter</a></li>');
+      $('ul [aria-labelledby="bookmarks_menu"]').append('<li role="presentation"><a role="menuitem" href="#" action="display-add-bookmark" data-filter="'+_search_string+'"><i class="fa fa-plus"></i> Bookmark the current filter</a></li>');
    }
    if (bookmarks.length || bookmarksro.length) {
       $('ul [aria-labelledby="bookmarks_menu"]').append('<li role="presentation" class="divider"></li>');
-      $('ul [aria-labelledby="bookmarks_menu"]').append('<li role="presentation"><a role="menuitem" href="#" action="manage-bookmarks" data-filter="{{search_string}}"><i class="fa fa-tags"></i> Manage bookmarks</a></li>');
+      $('ul [aria-labelledby="bookmarks_menu"]').append('<li role="presentation"><a role="menuitem" href="#" action="manage-bookmarks" data-filter="'+_search_string+'"><i class="fa fa-tags"></i> Manage bookmarks</a></li>');
    }
 }
 
@@ -133,6 +132,9 @@ function delete_bookmarkro(name){
 
 var search_string='';
 $(document).ready(function(){
+   search_string = $('#search').val();
+   refresh_bookmarks(search_string);
+   
    // Display modal to add a new bookmark ...
    $('body').on("click", '[action="display-add-bookmark"]', function (e, data) {
       search_string = $(this).data('filter');

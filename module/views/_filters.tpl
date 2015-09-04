@@ -41,7 +41,6 @@
          %for b in common_bookmarks:
             declare_bookmarksro("{{!b['name']}}","{{!b['uri']}}");
          %end
-         refresh_bookmarks('{{search_string}}');
       </script>
     </ul>
   </div>
