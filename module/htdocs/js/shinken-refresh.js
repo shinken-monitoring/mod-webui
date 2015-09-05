@@ -89,10 +89,17 @@ function do_refresh(){
        * what we are interested in ... not really efficient and quite buggy !
        */
       var $response = $('<div />').html(html);
+      // Refresh current page content ...
       $('#page-content').html($response.find('#page-content').html());
+      
+      // Refresh header bar hosts/services state ...
       $('#overall-hosts-states').html($response.find('#overall-hosts-states').html());
       $('#overall-services-states').html($response.find('#overall-services-states').html());
 
+      // Refresh Dashboard currently ...
+      $('#one-eye-overall').html($response.find('#one-eye-overall').html());
+      $('#one-eye-icons').html($response.find('#one-eye-icons').html());
+      
       /* Because of what is explained in the previous comment ... we must use this 
        * awful hack ! 
        * Hoping this is a temporary solution ... :/P

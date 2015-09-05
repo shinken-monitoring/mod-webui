@@ -63,7 +63,7 @@
 %h = synthesis['hosts']
 %search_string=""
 
-<div id="overall-state">
+<div id="one-eye-overall">
    <div class="panel panel-default panel-darkgrey">
       <div class="panel-body">
          <table class="table table-invisible table-condensed">
@@ -72,8 +72,10 @@
                <tr>
                   %for state in 'up', 'unreachable', 'down', 'pending', 'unknown', 'ack', 'downtime':
                   <td>
-                    %label = "%s <i>(%s%%)</i>" % (h['nb_' + state], h['pct_' + state])
-                    {{!helper.get_fa_icon_state_and_label(cls='host', state=state, label=label, disabled=(not h['nb_' + state]))}}
+                     %label = "%s <i>(%s%%)</i>" % (h['nb_' + state], h['pct_' + state])
+                     <a href="/all?search=type:host is:{{state}}">
+                        {{!helper.get_fa_icon_state_and_label(cls='host', state=state, label=label, disabled=(not h['nb_' + state]))}}
+                     </a>
                   </td>
                   %end
                </tr>
@@ -82,8 +84,10 @@
                <tr>
                   %for state in 'ok', 'warning', 'critical', 'pending', 'unknown', 'ack', 'downtime':
                   <td>
-                    %label = "%s <i>(%s%%)</i>" % (s['nb_' + state], s['pct_' + state])
-                    {{!helper.get_fa_icon_state_and_label(cls='service', state=state, label=label, disabled=(not s['nb_' + state]))}}
+                     %label = "%s <i>(%s%%)</i>" % (s['nb_' + state], s['pct_' + state])
+                     <a href="/all?search=type:service is:{{state}}">
+                        {{!helper.get_fa_icon_state_and_label(cls='service', state=state, label=label, disabled=(not s['nb_' + state]))}}
+                     </a>
                   </td>
                   %end
                </tr>
@@ -94,7 +98,7 @@
    </div>
 </div>
 
-<div id="state-icons">
+<div id="one-eye-icons">
    <div class="panel panel-default panel-darkgrey">
       <div class="panel-body">
          <!-- Hosts -->
@@ -105,12 +109,12 @@
                <div>
                   %state = h['pct_up']
                   %font='ok' if state >= app.hosts_states_critical else 'warning' if state >= app.hosts_states_warning  else 'critical'
-                  <span class="badger-big badger-left">{{h['nb_up']}} / {{h['nb_elts']}}</span>
-                  <span class="badger-big badger-right alert-{{font}}">{{h['pct_up']}}%</span>
+                  <span class="badger-big badger-left font-{{font}}">{{h['nb_up']}} / {{h['nb_elts']}}</span>
+                  <span class="badger-big badger-right font-{{font}}">{{h['pct_up']}}%</span>
                </div>
                
-               <i class="fa fa-5x fa-server"></i>
-               <p class="icon_title font-{{font}}">&nbsp;Hosts up</p>
+               <i class="fa fa-5x fa-server font-{{font}}"></i>
+               <p class="badger-title font-{{font}}">&nbsp;Hosts up</p>
                
             %if username != 'anonymous':
             </a>
@@ -124,12 +128,12 @@
                <div>
                   %state = 100.0-h['pct_unreachable']
                   %font='ok' if state >= app.hosts_states_critical else 'warning' if state >= app.hosts_states_warning else 'critical'
-                  <span class="badger-big badger-left">{{h['nb_unreachable']}} / {{h['nb_elts']}}</span>
-                  <span class="badger-big badger-right alert-{{font}}">{{h['pct_unreachable']}}%</span>
+                  <span class="badger-big badger-left font-{{font}}">{{h['nb_unreachable']}} / {{h['nb_elts']}}</span>
+                  <span class="badger-big badger-right font-{{font}}">{{h['pct_unreachable']}}%</span>
                </div>
                
-               <i class="fa fa-5x fa-server"></i>
-               <p class="icon_title font-{{font}}">&nbsp;Hosts unreachable</p>
+               <i class="fa fa-5x fa-server font-{{font}}"></i>
+               <p class="badger-title font-{{font}}">&nbsp;Hosts unreachable</p>
                
             %if username != 'anonymous':
             </a>
@@ -143,12 +147,12 @@
                <div>
                   %state = 100.0-h['pct_down']
                   %font='ok' if state >= app.hosts_states_critical else 'warning' if state >= app.hosts_states_warning else 'critical'
-                  <span class="badger-big badger-left">{{h['nb_down']}} / {{h['nb_elts']}}</span>
-                  <span class="badger-big badger-right alert-{{font}}">{{h['pct_down']}}%</span>
+                  <span class="badger-big badger-left font-{{font}}">{{h['nb_down']}} / {{h['nb_elts']}}</span>
+                  <span class="badger-big badger-right font-{{font}}">{{h['pct_down']}}%</span>
                </div>
                
-               <i class="fa fa-5x fa-server"></i>
-               <p class="icon_title font-{{font}}">&nbsp;Hosts down</p>
+               <i class="fa fa-5x fa-server font-{{font}}"></i>
+               <p class="badger-title font-{{font}}">&nbsp;Hosts down</p>
                
             %if username != 'anonymous':
             </a>
@@ -162,12 +166,12 @@
                <div>
                   %state = 100.0-h['pct_unknown']
                   %font='ok' if state >= app.hosts_states_critical else 'warning' if state >= app.hosts_states_warning else 'critical'
-                  <span class="badger-big badger-left">{{h['nb_unknown']}} / {{h['nb_elts']}}</span>
-                  <span class="badger-big badger-right alert-{{font}}">{{h['pct_unknown']}}%</span>
+                  <span class="badger-big badger-left font-{{font}}">{{h['nb_unknown']}} / {{h['nb_elts']}}</span>
+                  <span class="badger-big badger-right font-{{font}}">{{h['pct_unknown']}}%</span>
                </div>
                
-               <i class="fa fa-5x fa-server"></i>
-               <p class="icon_title font-{{font}}">&nbsp;Hosts unknown</p>
+               <i class="fa fa-5x fa-server font-{{font}}"></i>
+               <p class="badger-title font-{{font}}">&nbsp;Hosts unknown</p>
                
             %if username != 'anonymous':
             </a>
@@ -182,12 +186,12 @@
                <div>
                   %state = s['pct_ok']
                   %font='ok' if state >= app.services_states_critical else 'warning' if state >= app.services_states_warning else 'critical'
-                  <span class="badger-big badger-left">{{s['nb_ok']}} / {{s['nb_elts']}}</span>
-                  <span class="badger-big badger-right alert-{{font}}">{{s['pct_ok']}}%</span>
+                  <span class="badger-big badger-left font-{{font}}">{{s['nb_ok']}} / {{s['nb_elts']}}</span>
+                  <span class="badger-big badger-right font-{{font}}">{{s['pct_ok']}}%</span>
                </div>
                
-               <i class="fa fa-5x fa-bars"></i>
-               <p class="icon_title font-{{font}}">&nbsp;Services ok</p>
+               <i class="fa fa-5x fa-bars font-{{font}}"></i>
+               <p class="badger-title font-{{font}}">&nbsp;Services ok</p>
                
             %if username != 'anonymous':
             </a>
@@ -201,12 +205,12 @@
                <div>
                   %state = 100.0-s['pct_warning']
                   %font='ok' if state >= app.services_states_critical else 'warning' if state >= app.services_states_warning else 'critical'
-                  <span class="badger-big badger-left">{{s['nb_warning']}} / {{s['nb_elts']}}</span>
-                  <span class="badger-big badger-right alert-{{font}}">{{s['pct_warning']}}%</span>
+                  <span class="badger-big badger-left font-{{font}}">{{s['nb_warning']}} / {{s['nb_elts']}}</span>
+                  <span class="badger-big badger-right font-{{font}}">{{s['pct_warning']}}%</span>
                </div>
                
-               <i class="fa fa-5x fa-bars"></i>
-               <p class="icon_title font-{{font}}">&nbsp;Services warning</p>
+               <i class="fa fa-5x fa-bars font-{{font}}"></i>
+               <p class="badger-title font-{{font}}">&nbsp;Services warning</p>
                
             %if username != 'anonymous':
             </a>
@@ -220,12 +224,12 @@
                <div>
                   %state = 100.0-s['pct_critical']
                   %font='ok' if state >= app.services_states_critical else 'warning' if state >= app.services_states_warning else 'critical'
-                  <span class="badger-big badger-left">{{s['nb_critical']}} / {{s['nb_elts']}}</span>
-                  <span class="badger-big badger-right alert-{{font}}">{{s['pct_critical']}}%</span>
+                  <span class="badger-big badger-left font-{{font}}">{{s['nb_critical']}} / {{s['nb_elts']}}</span>
+                  <span class="badger-big badger-right font-{{font}}">{{s['pct_critical']}}%</span>
                </div>
                
-               <i class="fa fa-5x fa-bars"></i>
-               <p class="icon_title font-{{font}}">&nbsp;Services critical</p>
+               <i class="fa fa-5x fa-bars font-{{font}}"></i>
+               <p class="badger-title font-{{font}}">&nbsp;Services critical</p>
                
             %if username != 'anonymous':
             </a>
@@ -239,12 +243,12 @@
                <div>
                   %state = 100.0-s['pct_unknown']
                   %font='ok' if state >= app.services_states_critical else 'warning' if state >= app.services_states_warning else 'critical'
-                  <span class="badger-big badger-left">{{s['nb_unknown']}} / {{s['nb_elts']}}</span>
-                  <span class="badger-big badger-right alert-{{font}}">{{s['pct_unknown']}}%</span>
+                  <span class="badger-big badger-left font-{{font}}">{{s['nb_unknown']}} / {{s['nb_elts']}}</span>
+                  <span class="badger-big badger-right font-{{font}}">{{s['pct_unknown']}}%</span>
                </div>
                
-               <i class="fa fa-5x fa-bars"></i>
-               <p class="icon_title font-{{font}}">&nbsp;Services unknown</p>
+               <i class="fa fa-5x fa-bars font-{{font}}"></i>
+               <p class="badger-title font-{{font}}">&nbsp;Services unknown</p>
                
             %if username != 'anonymous':
             </a>
@@ -263,7 +267,8 @@
                <div>
                   %h_state, s_state = app.datamgr.get_overall_it_state(user)
                   %h_problems = len(app.datamgr.get_important_problems(user, type='host', sorter=None))
-                  <span class="badger-big badger-left alert-{{'critical' if h_state == 2 else 'warning' if h_state == 1 else 'ok'}}">{{h_problems}}</span>
+                  %font='unknown' if h_state >= 3 else 'critical' if h_state >= 2 else 'warning' if h_state >= 1 else 'ok'
+                  <span class="badger-big badger-left font-{{font}}">{{h_problems}}</span>
                   {{!helper.get_fa_icon_state(cls='host', state='down') if h_state == 2 else ''}}
                   {{!helper.get_fa_icon_state(cls='host', state='unreachable') if h_state == 1 else ''}}
                   {{!helper.get_fa_icon_state(cls='host', state='up') if h_state == 0 else ''}}
@@ -271,11 +276,11 @@
                   {{!helper.get_fa_icon_state(cls='service', state='warning') if s_state == 1 else ''}}
                   {{!helper.get_fa_icon_state(cls='service', state='ok') if s_state == 0 else ''}}
                   %s_problems = len(app.datamgr.get_important_problems(user, type='service', sorter=None))
-                  <span class="badger-big badger-left alert-{{'critical' if s_state == 2 else 'warning' if s_state == 1 else 'ok'}}">{{s_problems}}</span>
+                  <span class="badger-big badger-right font-{{font}}">{{s_problems}}</span>
                </div>
 
                <i class="fa fa-5x fa-exclamation-triangle"></i>
-               <p class="icon_title itproblem">&nbsp;IT Problems</p>
+               <p class="badger-title itproblem">&nbsp;IT Problems</p>
                
             %if username != 'anonymous':
             </a>
@@ -288,11 +293,12 @@
             %end
                <div>
                   %overall_state = app.datamgr.get_overall_state(user)
-                  <span title="Number of not acknownledged IT problems." class="badger-big alert-{{'ok' if overall_state == 0 else 'warning' if overall_state == 1 else 'critical'}}">{{len(app.datamgr.get_important_impacts(user, sorter=None))}}</span>
+                  %font='unknown' if overall_state >= 3 else 'critical' if overall_state >= 2 else 'warning' if overall_state >= 1 else 'ok'
+                  <span title="Number of not acknownledged IT problems." class="badger-big font-{{font}}">{{len(app.datamgr.get_important_impacts(user, sorter=None))}}</span>
                </div>
                
                <i class="fa fa-5x fa-flash"></i>
-               <p class="icon_title impacts">&nbsp;Impacts</p>
+               <p class="badger-title impacts">&nbsp;Impacts</p>
                
             %if username != 'anonymous':
             </a>

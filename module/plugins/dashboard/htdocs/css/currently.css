@@ -76,7 +76,7 @@ body, section.content {
 /*
  * Overall state
  */
-#overall-state div.panel-darkgrey {
+#one-eye-overall div.panel-darkgrey {
    background-color: #444;
    border: 0;
 }
@@ -85,33 +85,22 @@ body, section.content {
 /*
  * Icons bar
  */
-#state-icons div.panel-darkgrey {
+#one-eye-icons {
+   text-align: center;
+}
+
+#one-eye-icons div.panel-darkgrey {
    background-color: #444;
    border: 0;
-}
-
-#state-icons {
-   text-align: center;
-/*
-   margin-top: 100px;
-*/
-}
-
-#state-icons div {
-}
-
-.icon_title {
-   bottom: 3.3em;
-   letter-spacing: 2px;
-   right: 2.6em !important;
-   color: white;
 }
 
 /* 
  * Badger styles
  */
 .badger-big {
-  background-color: #999999;
+  /*
+  background-color: #999999;*/
+  
   border-radius: 3px;
   color: #FFFFFF;
   font-size: 2em;
@@ -120,34 +109,10 @@ body, section.content {
   text-transform: uppercase;
 }
 
-.badger-critical {
-   background-color: rgb(255,0,0); opacity: 0.85;
-   border-radius: 3px 3px 3px 3px;
-   color: #FFFFFF;
-}
-
-.badger-warning {
-   background-color: rgb(255,153,0); opacity: 0.85;
-   border-radius: 3px 3px 3px 3px;
-   color: #FFFFFF;
-}
-
-.badger-ok {
-   background-color: #7AB317;
-   background-image: -moz-linear-gradient(center top , #7AB317, #669900);
-   border-radius: 3px 3px 3px 3px;
-   color: #FFFFFF;
-}
-
 .badger-title {
-   display: block;
-   position: relative;
-   right: 3.4em;
-
-   color: #FFFFFF;
-   text-align: center;
-   font-family: Century Gothic, sans-serif;
-   font-size: 1.5em;
-
-   z-index: 666;
+   bottom: 3.3em;
+   letter-spacing: 2px;
+   right: 2.6em !important;
+   color: white;
 }
+
