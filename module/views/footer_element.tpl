@@ -10,6 +10,7 @@
    <div id="actions" class="navbar-default actionbar" role="navigation" style="display:none;">
       <div class="actionbar-nav navbar-collapse">
          <ul class="nav" id="actions-menu">
+         %if app.can_action():
          %if elt:
          %elt_type = elt.__class__.my_type
             <li> <a href="#" action="add-comment" title="Add a comment for this {{elt_type}}"
@@ -71,6 +72,7 @@
             <li> <a href="#" action="ignore-checks" title="Remove the selected problems from the problems list">
                <i class="fa fa-eraser"></i> Uncheck
             </a> </li>
+         %end
          %end
          </ul>
       </div>
