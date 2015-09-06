@@ -723,7 +723,7 @@ Invalid element name
                         <div class="services-tree">
                           {{!helper.print_aggregation_tree(helper.get_host_service_aggregation_tree(elt, app), helper.get_html_id(elt), expanded=False, max_sons=3)}}
                         </div>
-                        %else:
+                        %elif not elt.parent_dependencies:
                         <h4>No services!</h4>
                         %end
                         %end #of the only host part
@@ -1130,10 +1130,6 @@ Invalid element name
                      %# Set source as '' or module ui-graphite will try to fetch templates from default 'detail'
                      %uris = app.graphs_module.get_graph_uris(elt, graphstart, graphend)
                      %if uris:
-                     <div class="alert alert-info">
-                         <div class="font-blue"><strong>No graphs available for this {{elt_type}}!</strong></div>
-                     </div>
-                     %else:
                      <div class='well'>
                         <!-- 5 standard time ranges to display ...  -->
                         <ul id="graph_periods" class="nav nav-pills nav-justified">
@@ -1183,6 +1179,10 @@ Invalid element name
                         $('a[data-type="graph"][data-period="'+current_graph+'"]').trigger('click');
                      });
                      </script>
+                     %else:
+                     <div class="alert alert-info">
+                         <div class="font-blue"><strong>No graphs available for this {{elt_type}}!</strong></div>
+                     </div>
                      %end
                   </div>
                </div>
