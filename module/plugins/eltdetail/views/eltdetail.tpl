@@ -261,7 +261,6 @@ Invalid element name
       <!-- Detail info box start -->
          <ul class="nav nav-tabs">
             %_go_active = 'active'
-            %if 'custom_views' in params['tabs']:
             %for cvname in elt.custom_views:
                %cvconf = 'default'
                %if '/' in cvname:
@@ -271,54 +270,36 @@ Invalid element name
                <li class="{{_go_active}} cv_pane" data-name="{{cvname}}" data-conf="{{cvconf}}" data-element='{{elt.get_full_name()}}' id='tab-cv-{{cvname}}-{{cvconf}}'><a href="#cv{{cvname}}_{{cvconf}}" data-toggle="tab">{{cvname.capitalize()}}{{'/'+cvconf.capitalize() if cvconf!='default' else ''}}</a></li>
                %_go_active = ''
             %end
-            %end
 
-            %if 'information' in params['tabs']:
             <li class="{{_go_active}}"><a href="#information" data-toggle="tab">Information</a></li>
-            %end
-            %if 'impacts' in params['tabs']:
             <li><a href="#impacts" data-toggle="tab">{{'Services' if elt_type == 'host' else 'Impacts'}}</a></li>
-            %end
-            %if 'configuration' in params['tabs'] and elt.customs:
+            %if elt.customs:
             <li><a href="#configuration" data-toggle="tab">Configuration</a></li>
             %end
-            %if 'commands' in params['tabs'] and app.can_action():
+            %if app.can_action():
             <li><a href="#commands" data-toggle="tab">Commands</a></li>
             %end
-            
-            %if 'comments' in params['tabs']:
             <li><a href="#comments" data-toggle="tab">Comments</a></li>
-            %end
-            %if 'downtimes' in params['tabs']:
             <li><a href="#downtimes" data-toggle="tab">Downtimes</a></li>
-            %end
-            
-            %if 'timeline' in params['tabs']:
-            <li class="timeline_pane"><a href="#timeline" data-toggle="tab">Timeline</a></li>
-            %end
-            %if 'metrics' in params['tabs']:
+            <!--<li class="timeline_pane"><a href="#timeline" data-toggle="tab">Timeline</a></li>-->
             <li><a href="#metrics" data-toggle="tab">Metrics</a></li>
-            %end
-            %if 'graphs' in params['tabs'] and app.graphs_module.is_available():
+            %if app.graphs_module.is_available():
             <li><a href="#graphs" data-toggle="tab">Graphs</a></li>
             %end
-            %if 'depgraph' in params['tabs']:
             <li><a href="#depgraph" data-toggle="tab">Impact graph</a></li>
-            %end
-            %if 'history' in params['tabs'] and app.logs_module.is_available():
+            %if app.logs_module.is_available():
             <li><a href="#history" data-toggle="tab">History</a></li>
             %end
-            %if 'availability' in params['tabs'] and app.logs_module.is_available():
+            %if app.logs_module.is_available():
             <li><a href="#availability" data-toggle="tab">Availability</a></li>
             %end
-            %if 'helpdesk' in params['tabs'] and app.helpdesk_module.is_available():
+            %if app.helpdesk_module.is_available():
             <li><a href="#helpdesk" data-toggle="tab">Helpdesk</a></li>
             %end
          </ul>
          
          <div class="tab-content">
             <!-- Tab custom views -->
-            %if 'custom_views' in params['tabs']:
             %_go_active = 'active'
             %_go_fadein = 'in'
             %cvs = []
@@ -339,11 +320,9 @@ Invalid element name
                %_go_active = ''
                %_go_fadein = ''
             %end
-            %end
             <!-- Tab custom views end -->
 
             <!-- Tab Information start-->
-            %if 'information' in params['tabs']:
             <div class="tab-pane fade {{_go_active}} {{_go_fadein}}" id="information">
                <div class="panel panel-default">
                   <div class="panel-body">
@@ -722,11 +701,9 @@ Invalid element name
                   </div>
                </div>
             </div>
-            %end
             <!-- Tab Information end -->
 
              <!-- Tab Impacts start -->
-            %if 'impacts' in params['tabs']:
             <div class="tab-pane fade" id="impacts">
                <div class="panel panel-default">
                   <div class="panel-body">
@@ -786,11 +763,10 @@ Invalid element name
                   </div>
                </div>
             </div>
-            %end
             <!-- Tab Impacts end -->
 
            <!-- Tab Configuration start -->
-            %if 'configuration' in params['tabs'] and elt.customs:
+            %if elt.customs:
             <div class="tab-pane fade" id="configuration">
                <div class="panel panel-default">
                   <div class="panel-body">
@@ -837,7 +813,7 @@ Invalid element name
             <!-- Tab Configuration end -->
             
             <!-- Tab Commands start -->
-            %if 'commands' in params['tabs'] and app.can_action():
+            %if app.can_action():
             <div class="tab-pane fade" id="commands">
                <div class="panel panel-default">
                   <div class="panel-body">
@@ -909,7 +885,6 @@ Invalid element name
             <!-- Tab Commands end -->
 
             <!-- Tab Comments start -->
-            %if 'comments' in params['tabs']:
             <div class="tab-pane fade" id="comments">
                <div class="panel panel-default">
                   <div class="panel-body">
@@ -969,11 +944,9 @@ Invalid element name
                   
                </div>
             </div>
-            %end
             <!-- Tab Comments end -->
 
             <!-- Tab Downtimes start -->
-            %if 'downtimes' in params['tabs']:
             <div class="tab-pane fade" id="downtimes">
                <div class="panel panel-default">
                   <div class="panel-body">
@@ -1029,14 +1002,13 @@ Invalid element name
                      </button>
                      %end
 
-                     </div>
                   </div>
                </div>
-            %end
+            </div>
             <!-- Tab Downtimes end -->
 
             <!-- Tab Timeline start -->
-            %if 'timeline' in params['tabs']:
+            <!--
             <div class="tab-pane fade" id="timeline">
                <div class="panel panel-default">
                   <div class="panel-body">
@@ -1046,11 +1018,10 @@ Invalid element name
                   </div>
                </div>
             </div>
-            %end
+            -->
             <!-- Tab Timeline end -->
 
             <!-- Tab Metrics start -->
-            %if 'metrics' in params['tabs']:
             %from shinken.misc.perfdata import PerfDatas
             <div class="tab-pane fade" id="metrics">
                <div class="panel panel-default">
@@ -1143,11 +1114,10 @@ Invalid element name
                   </div>
                </div>
             </div>
-            %end
             <!-- Tab Metrics end -->
 
             <!-- Tab Graph start -->
-            %if 'graphs' in params['tabs'] and app.graphs_module.is_available():
+            %if app.graphs_module.is_available():
             <script>
             var html_graphes = [];
             var current_graph = '';
@@ -1221,7 +1191,6 @@ Invalid element name
             <!-- Tab Graph end -->
 
             <!-- Tab Dependency graph Start -->
-            %if 'depgraph' in params['tabs']:
             <div class="tab-pane fade" id="depgraph">
                <div class="panel panel-default">
                   <div class="panel-body">
@@ -1233,11 +1202,10 @@ Invalid element name
                   </div>
                </div>
             </div>
-            %end
             <!-- Tab Dependency graph End -->
 
             <!-- Tab History start -->
-            %if 'history' in params['tabs'] and app.logs_module.is_available():
+            %if app.logs_module.is_available():
             <div class="tab-pane fade" id="history">
                <div class="panel panel-default">
                   <div class="panel-body">
@@ -1250,7 +1218,7 @@ Invalid element name
             <!-- Tab History end -->
 
             <!-- Tab Availability start -->
-            %if 'availability' in params['tabs'] and app.logs_module.is_available():
+            %if app.logs_module.is_available():
             <div class="tab-pane fade" id="availability">
                <div class="panel panel-default">
                   <div class="panel-body">
@@ -1263,7 +1231,7 @@ Invalid element name
             <!-- Tab Availability end -->
 
             <!-- Tab Helpdesk start -->
-            %if 'helpdesk' in params['tabs'] and app.helpdesk_module.is_available():
+            %if app.helpdesk_module.is_available():
             <div class="tab-pane fade" id="helpdesk">
                <div class="panel panel-default">
                   <div class="panel-body">

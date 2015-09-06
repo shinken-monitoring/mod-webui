@@ -22,25 +22,11 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
-### Will be populated by the UI with it's own value
+
+# Will be populated by the UI with it's own value
 app = None
 
 import time
-
-# Get plugin's parameters from configuration file
-params = {}
-# Standard tabs to be displayed for an element ...
-params['tabs'] = ['information', 'additional', 'configuration', 'custom_views', 'impacts', 'comments', 'downtimes', 'metrics', 'depgraph']
-
-# Update configuration depending upon installed modules
-def load_config(app):
-    if app.graphs_module.is_available():
-        params['tabs'].append('graphs')
-    if app.helpdesk_module.is_available():
-        params['tabs'].append('helpdesk')
-    if app.logs_module.is_available():
-        params['tabs'].append('history')
-        params['tabs'].append('availability')
 
 
 # Main impacts view
@@ -51,9 +37,9 @@ def show_host(host_name):
 
     # Get graph data. By default, show last 4 hours
     now = int(time.time())
-    graphstart = int(app.request.GET.get('graphstart', str(now - 4*3600)))
+    graphstart = int(app.request.GET.get('graphstart', str(now - 4 * 3600)))
     graphend = int(app.request.GET.get('graphend', str(now)))
-    return {'elt': h, 'params': params, 'graphstart': graphstart,
+    return {'elt': h, 'graphstart': graphstart,
             'graphend': graphend}
 
 
@@ -63,15 +49,14 @@ def show_service(host_name, service):
 
     # Get graph data. By default, show last 4 hours
     now = int(time.time())
-    graphstart = int(app.request.GET.get('graphstart', str(now - 4*3600)))
+    graphstart = int(app.request.GET.get('graphstart', str(now - 4 * 3600)))
     graphend = int(app.request.GET.get('graphend', str(now)))
 
-    return {'elt': s, 'params': params, 'graphstart': graphstart,
+    return {'elt': s, 'graphstart': graphstart,
             'graphend': graphend}
 
-pages = {
-        # reload_cfg: {'routes': ['/reload/eltdetail'], 'view': 'groups', 'static': True},
-        show_host: {'routes': ['/host/:host_name'], 'view': 'eltdetail', 'static': True},
-        show_service: {'routes': ['/service/:host_name/:service#.+#'], 'view': 'eltdetail', 'static': True},
-        }
 
+pages = {
+    show_host: {'routes': ['/host/:host_name'], 'view': 'eltdetail', 'static': True},
+    show_service: {'routes': ['/service/:host_name/:service#.+#'], 'view': 'eltdetail', 'static': True},
+}
