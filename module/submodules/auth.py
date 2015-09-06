@@ -4,7 +4,7 @@
 
 import traceback
 import crypt
-from lib.md5crypt import apache_md5_crypt, unix_md5_crypt
+from ..lib.md5crypt import apache_md5_crypt, unix_md5_crypt
 
 from shinken.log import logger
 
