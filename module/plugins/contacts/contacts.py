@@ -36,9 +36,10 @@ def show_contact(name):
 # All contacts
 def show_contacts():
     user = app.request.environ['USER']
-    contacts = sorted(app.datamgr.get_contacts(user), key=lambda c: c.contact_name)
+    user.is_admin or app.redirect_403()
 
-    return {'contacts': contacts}
+    return {'contacts': sorted(app.datamgr.get_contacts(user),
+                               key=lambda c: c.contact_name)}
 
 pages = {
         show_contact: {'routes': ['/contact/:name'], 'view': 'contact', 'static': True},

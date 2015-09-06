@@ -28,9 +28,11 @@ app = None
 
 # All commands
 def show_commands():
-    return {
-        'commands': sorted(app.datamgr.get_commands(), key=lambda command: command.command_name)
-        }
+    user = app.request.environ['USER']
+    user.is_admin or app.redirect403()
+
+    return {'commands': sorted(app.datamgr.get_commands(),
+                           key=lambda c: c.command_name)}
 
 pages = {
         show_commands: {'routes': ['/commands'], 'view': 'commands', 'static': True},

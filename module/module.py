@@ -720,6 +720,10 @@ class Webui_broker(BaseModule, Daemon):
         raise self.bottle.HTTPError(404, msg)
 
 
+    def redirect403(self, msg="Forbidden"):
+        raise self.bottle.HTTPError(403, msg)
+
+
 @bottle.hook('before_request')
 def login_required():
     # :COMMENT:maethor:150718: This hack is crazy, but I don't know how to do it properly

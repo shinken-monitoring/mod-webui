@@ -1,11 +1,7 @@
-%timeperiods = app.datamgr.get_timeperiods()
 %rebase("layout", title='All timeperiods (%d time periods)' % len(timeperiods))
 
 %import time
 %import operator
-
-
-%display_all = True if params['display']=='all' else False
 
 <div id="timeperiods">
    <table class="table table-condensed">
