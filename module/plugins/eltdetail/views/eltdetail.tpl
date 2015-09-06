@@ -43,9 +43,9 @@ Invalid element name
 
 
    <!-- First row : tags and actions ... -->
-   %if elt.action_url != '' or len(tags)>0 or len(groups) > 0:
+   %if elt.action_url or tags or groups:
    <div>
-      %if len(groups) > 0:
+      %if groups:
       <div class="btn-group pull-right">
          <button class="btn btn-primary btn-xs"><i class="fa fa-sitemap"></i> Groups</button>
          <button class="btn btn-primary btn-xs dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>
@@ -73,7 +73,7 @@ Invalid element name
       </div>
       <div class="pull-right">&nbsp;&nbsp;</div>
       %end
-      %if len(tags)>0:
+      %if tags:
       %tag=elt_type[0]+'tag'
       <div class="btn-group pull-right">
          %for t in sorted(tags):
@@ -111,7 +111,7 @@ Invalid element name
         
          <dl class="col-sm-6 dl-horizontal">
             <dt>Parents:</dt>
-            %if len(elt_host.parents) > 0:
+            %if elt_host.parents:
             <dd>
             %parents=['<a href="/host/'+parent.host_name+'" class="link">'+parent.display_name+'</a>' for parent in sorted(elt_host.parents,key=lambda x:x.display_name)]
             {{!','.join(parents)}}
@@ -121,7 +121,7 @@ Invalid element name
             %end
 
             <dt>Children:</dt>
-            %if len(elt_host.childs) > 0:
+            %if elt_host.childs:
             <dd>
             %children=['<a href="/host/'+child.host_name+'" class="link">'+child.display_name+'</a>' for child in sorted(elt_host.childs,key=lambda x:x.display_name)]
             {{!','.join(children)}}
@@ -133,7 +133,7 @@ Invalid element name
 
          <dl class="col-sm-6 dl-horizontal">
             <dt>Member of:</dt>
-            %if len(elt_host.hostgroups) > 0:
+            %if elt_host.hostgroups:
             <dd>
             %for hg in elt_host.hostgroups:
             <a href="/hosts-group/{{hg.get_name()}}" class="link">{{hg.alias if hg.alias else hg.get_name()}}</a>
@@ -163,7 +163,7 @@ Invalid element name
         
          <dl class="col-sm-6 dl-horizontal">
             <dt>Member of:</dt>
-            %if len(elt_service.servicegroups) > 0:
+            %if elt_service.servicegroups:
             <dd>
             %for sg in elt_service.servicegroups:
             <a href="/services-group/{{sg.get_name()}}" class="link">{{sg.alias}} ({{sg.get_name()}})</a>
@@ -404,9 +404,9 @@ Invalid element name
                                  <td class="popover-dismiss ellipsis" 
                                        data-html="true" data-toggle="popover" data-trigger="hover" data-placement="bottom" 
                                        data-title="{{elt.get_full_name()}} performance data" 
-                                       data-content=" {{elt.perf_data if len(elt.perf_data) > 0 else '(none)'}}"
+                                       data-content=" {{elt.perf_data if elt.perf_data else '(none)'}}"
                                        >
-                                  {{elt.perf_data if len(elt.perf_data) > 0 else '(none)'}}
+                                  {{elt.perf_data if elt.perf_data else '(none)'}}
                                  </td>
                               </tr>
                               <tr>
@@ -611,7 +611,7 @@ Invalid element name
                            </tbody>
                         </table>
 
-                        %if len(elt.stalking_options) > 0 and elt.stalking_options[0]:
+                        %if elt.stalking_options and elt.stalking_options[0]:
                         <table class="table table-condensed">
                            <colgroup>
                               <col style="width: 40%" />
@@ -733,26 +733,26 @@ Invalid element name
                      <div class="{{'col-lg-6'}} if elt_type =='host' else 'col-lg-12'">
                         %displayed_services=False
                         <!-- Show our father dependencies if we got some -->
-                        %if len(elt.parent_dependencies) > 0:
+                        %if elt.parent_dependencies:
                         <h4>Root cause:</h4>
                         {{!helper.print_business_rules(app.datamgr.get_business_parents(elt), source_problems=elt.source_problems)}}
                         %end
 
                         <!-- If we are an host and not a problem, show our services -->
                         %if elt_type=='host' and not elt.is_problem:
-                        %if len(elt.services) > 0:
+                        %if elt.services:
                         %displayed_services=True
                         <h4>My services:</h4>
                         <div class="services-tree">
                           {{!helper.print_aggregation_tree(helper.get_host_service_aggregation_tree(elt, app), helper.get_html_id(elt), expanded=False, max_sons=3)}}
                         </div>
-                        %elif len(elt.parent_dependencies) == 0:
+                        %else:
                         <h4>No services!</h4>
                         %end
                         %end #of the only host part
 
                         <!-- If we are a root problem and got real impacts, show them! -->
-                        %if elt.is_problem and len(elt.impacts) != 0:
+                        %if elt.is_problem and elt.impacts:
                         <h4>My impacts:</h4>
                         <div class='host-services'>
                            %s = ""
@@ -913,7 +913,7 @@ Invalid element name
             <div class="tab-pane fade" id="comments">
                <div class="panel panel-default">
                   <div class="panel-body">
-                     %if len(elt.comments) > 0:
+                     %if elt.comments:
                      <table class="table table-condensed table-hover">
                         <thead>
                            <tr>
@@ -924,7 +924,7 @@ Invalid element name
                            </tr>
                         </thead>
                         <tbody>
-                        %for c in elt.comments:
+                        %for c in sorted(elt.comments, key=lambda x: x.entry_time, reverse=True):
                            <tr>
                               <td>{{c.author}}</td>
                               <td>{{c.comment}}</td>
@@ -956,7 +956,7 @@ Invalid element name
                            >
                         <i class="fa fa-plus"></i> Add a comment
                      </button>
-                     %if len(elt.comments) > 0:
+                     %if elt.comments:
                      <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm" 
                            data-type="action" action="delete-comments"
                            data-toggle="tooltip" data-placement="bottom" title="Delete all the comments of this {{elt_type}}"
@@ -977,7 +977,7 @@ Invalid element name
             <div class="tab-pane fade" id="downtimes">
                <div class="panel panel-default">
                   <div class="panel-body">
-                     %if len(elt.downtimes) > 0:
+                     %if elt.downtimes:
                      <table class="table table-condensed table-hover">
                         <thead>
                            <tr>
@@ -988,7 +988,7 @@ Invalid element name
                            </tr>
                         </thead>
                         <tbody>
-                        %for dt in elt.downtimes:
+                        %for dt in sorted(elt.downtimes, key=lambda dt: dt.entry_time, reverse=True):
                            <tr>
                               <td>{{dt.author}}</td>
                               <td>{{dt.comment}}</td>
@@ -1019,7 +1019,7 @@ Invalid element name
                            >
                         <i class="fa fa-plus"></i> Schedule a downtime
                      </button>
-                     %if len(elt.downtimes) > 0:
+                     %if elt.downtimes:
                      <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm" 
                            data-type="action" action="delete-downtimes"
                            data-toggle="tooltip" data-placement="bottom" title="Delete all the downtimes of this {{elt_type}}"
@@ -1159,7 +1159,7 @@ Invalid element name
                   <div class="panel-body">
                      %# Set source as '' or module ui-graphite will try to fetch templates from default 'detail'
                      %uris = app.graphs_module.get_graph_uris(elt, graphstart, graphend)
-                     %if len(uris) == 0:
+                     %if uris:
                      <div class="alert alert-info">
                          <div class="font-blue"><strong>No graphs available for this {{elt_type}}!</strong></div>
                      </div>

@@ -682,7 +682,7 @@ class Webui_broker(BaseModule, Daemon):
         if username:
             user = User.from_contact(self.datamgr.get_contact(username), self.gravatar)
         else:
-            user = request.environ['USER']
+            user = request.environ.get('USER', None)
         return user and ((not self.manage_acl) or user.is_admin or user.can_submit_commands)
 
 
