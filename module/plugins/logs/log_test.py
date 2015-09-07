@@ -8,7 +8,7 @@ import time, datetime
 import os,sys
 currentdir = os.path.dirname(os.path.realpath(__file__))
 sys.path.insert(0,currentdir+"/../..")
-from config_parser import config_parser
+from webui2.config_parser import config_parser
 
 scp = config_parser('#', '=')
 params = scp.parse_config('plugin.cfg')
