@@ -1,5 +1,15 @@
 %from shinken.bin import VERSION
 %setdefault('elt', None)
+%setdefault('user', None)
+
+%username = 'anonymous'
+%if user is not None:
+%if hasattr(user, 'alias') and user.alias != 'none':
+%username = user.alias
+%else:
+%username = user.get_name()
+%end
+%end
 
 <!-- Footer -->
 <nav class="footer navbar navbar-default navbar-fixed-bottom">
@@ -127,7 +137,7 @@
    // Schedule a downtime ...
    $('body').on("click", '[action="schedule-downtime"]', function () {
       var elt = $(this).data('element');
-      var user = $(this).data('user');
+      var user = '{{username}}';
       if (! elt) {
          // Initial start/stop for downtime, do not consider seconds ...
          var downtime_start = moment().seconds(0);
@@ -173,7 +183,7 @@
    // Add an acknowledge
    $('body').on("click", '[action="add-acknowledge"]', function () {
       var elt = $(this).data('element');
-      var user = $(this).data('user');
+      var user = '{{username}}';
       if (! elt) {
          $.each(selected_elements, function(idx, name){
             if (eltdetail_logs) console.debug("Add acknowledge for: ", name)
@@ -217,7 +227,7 @@
    // Check result
    $('body').on("click", '[action="check-result"]', function () {
       var elt = $(this).data('element');
-      var user = $(this).data('user');
+      var user = '{{username}}';
       if (! elt) {
          $.each(selected_elements, function(idx, name){
             if (eltdetail_logs) console.debug("Submit check for: ", name)
@@ -250,7 +260,7 @@
    // Ignore checks
    $('body').on("click", '[action="ignore-checks"]', function () {
       var elt = $(this).data('element');
-      var user = $(this).data('user');
+      var user = '{{username}}';
       if (! elt) {
          $.each(selected_elements, function(idx, name){
             if (eltdetail_logs) console.debug("Remove for: ", name)
@@ -267,7 +277,7 @@
    // Create a ticket ...
    $('body').on("click", '[action="create-ticket"]', function () {
       var elt = $(this).data('element');
-      var user = $(this).data('user');
+      var user = '{{username}}';
       if (elt) {
          if (eltdetail_logs) console.debug("Create a ticket for: ", elt)
          
