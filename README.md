@@ -1,4 +1,4 @@
-#mod-webui
+Shinken Web User Interface
 
 ## Description
 Shinken Web User Interface
