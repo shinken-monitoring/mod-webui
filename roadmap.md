@@ -1,7 +1,7 @@
 Shinken WebUI - roadmap
 =======================
 
-The version current major version (2.x) of the Shinken Web User Interface aimed at improving (or developing) the following features: 
+The current major version (2.x) of the Shinken Web User Interface aimed at improving (or developing) the following features: 
 
 ## Layout:
 - clean UI layout
