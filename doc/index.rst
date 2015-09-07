@@ -7,8 +7,6 @@ Shinken provides a self sufficient Web User Interface, which includes its own we
 
 It has been tested successfully with the last Shinken framework versions. As of today, it has been tested with Shinken 2.4.0 and 2.4.1 versions.
 
-![Screenshots](https://github.com/shinken-monitoring/mod-webui/blob/master/doc/images/animation.gif)
-
 The Shinken WebUI is started at the same time as the Shinken broker. It is configured by setting a few basic parameters in several modules.
 
 WebUI is built upon a main application and it uses several modules to delegate some actions:
