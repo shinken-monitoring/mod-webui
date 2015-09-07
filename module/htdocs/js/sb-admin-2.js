@@ -27,8 +27,11 @@ $(function() {
     });
 
     var url = window.location;
-    var element = $('ul.nav a').filter(function() {
-        return this.href == url || url.href.indexOf(this.href) == 0;
+    var element = $('#sidebar-menu a').filter(function() {
+        if (this.href.indexOf('#', this.href.length - '#'.length) !== -1) {
+            return false;
+        }
+        return this.href == url || url.href.indexOf(this.href + '?') == 0;
     }).addClass('active').parent().parent().addClass('in').parent();
     if (element.is('li')) {
         element.addClass('active');
