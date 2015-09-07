@@ -1,5 +1,5 @@
 {
-  "name": "webui",
+  "name": "webui2",
   "types": ["module"],
   "version": "2.0",
   "homepage": "https://github.com/shinken-monitoring/mod-webui/wiki",
