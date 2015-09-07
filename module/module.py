@@ -41,7 +41,6 @@ import os
 import time
 import threading
 import imp
-import json
 
 from shinken.basemodule import BaseModule
 from shinken.message import Message
@@ -53,8 +52,8 @@ from shinken.daemon import Daemon
 from shinken.util import to_bool
 
 # Local import
-from lib.bottle import run, static_file, view, route, request, response, template
-import lib.bottle as bottle
+from bottle import run, static_file, view, route, request, response, template
+import bottle
 from datamanager import WebUIDataManager
 from user import User
 from helper import helper
