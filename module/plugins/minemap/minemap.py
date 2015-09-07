@@ -32,7 +32,7 @@ from shinken.log import logger
     # global params
     
     # import os,sys
-    # from webui.config_parser import config_parser
+    # from webui2.config_parser import config_parser
     # plugin_name = os.path.splitext(os.path.basename(__file__))[0]
     # try:
         # currentdir = os.path.dirname(os.path.realpath(__file__))

@@ -25,8 +25,6 @@
 
 from shinken.misc.sorter import hst_srv_sort, last_state_change_earlier
 
-#from lib.bottle import request
-
 # Will be populated by the UI with it's own value
 app = None
 

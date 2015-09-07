@@ -51,7 +51,7 @@ def load_config(app):
     global params
     
     import os
-    from webui.config_parser import config_parser
+    from webui2.config_parser import config_parser
     try:
         currentdir = os.path.dirname(os.path.realpath(__file__))
         configuration_file = "%s/%s" % (currentdir, 'plugin.cfg')

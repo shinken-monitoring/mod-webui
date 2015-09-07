@@ -142,7 +142,7 @@
                   <div class="panel-footer">
                      <!-- User actions -->
                      <div class="btn-group" role="group">
-                        <a href="https://shinken.readthedocs.org/en/latest/" target="_blank" class="btn btn-default btn-flat"><i class="fa fa-book"></i> </a>
+                        <a href="https://github.com/shinken-monitoring/mod-webui/wiki" target="_blank" class="btn btn-default btn-flat"><i class="fa fa-book"></i> </a>
                      </div>
                      <div class="btn-group" role="group">
                         <a href="#actions" data-toggle="modal" class="btn btn-default btn-flat disabled"><span class="fa fa-gear"></span> </a>

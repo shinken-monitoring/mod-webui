@@ -1,77 +1,36 @@
-#mod-webui
+# Shinken Web User Interface
 
-###Description
+## Description
 Shinken Web User Interface
 
-###Installation
+## Installation
 
-####BS3 branch
+ View installation procedure in the project Wiki: https://github.com/shinken-monitoring/mod-webui/wiki/Installation
 
-If you want to test this branch (assuming you already have the WebUI installed):
+## Screenshots
 
-```
-$ git clone -b bs3 https://github.com/shinken-monitoring/mod-webui
-$ sudo shinken install --local mod-webui
-```
+![Host Detail](doc/animation.gif)
 
-To update, just `git pull` the repository, and reinstall it with the same command.
+## Dependencies
 
-####Master branch
+Dependencies are listed in the `requirements.txt` file.
 
-* Install the webui module from shinken.io
-```
-$ shinken install webui
-```
-* Add it into the modules of the broker configuration :
-```
-$ cat /etc/shinken/brokers/broker-master.cfg
-[...]
-modules     webui
-[...]
-```
-* Install an authentication module. For instance
-```
-$ shinken install auth-cfg-password
-```
+## Report a bug
 
-* Declare it on the WebUI configuration :
-```
-$ cat /etc/shinken/modules/webui.cfg
-[...]
-modules             auth-cfg-password
-[...]
-```
+* First check if the problem is not yet referenced in the project issues (https://github.com/shinken-monitoring/mod-webui/issues)
+* Create an issue with: 
 
-* Configure WebUI parameters :
-```
-$ vi /etc/shinken/modules/webui.cfg
-```
- This file is commented and self explanatory ...
+   - an helpful title - use descriptive keywords in the title and body so others can find your bug (avoiding duplicates).
+   - a precise description - steps to reproduce the problem, with actual vs. expected results
+   - specifify : WebUI Version, OS version, Web browser and version
 
-
-* Restart shinken and connect to the WebUI that will be available on the 7767 port.
-```
-root@system# /etc/init.d/shinken restart
-```
-
-###Screenshots
-
-![Host Detail](doc/images/animation.gif)
-
-###Dependencies
-
-
-###Report a bug
-* A helpful title - use descriptive keywords in the title and body so others can find your bug (avoiding duplicates).
-* WebUI Version and branch
-* Steps to reproduce the problem, with actual vs. expected results
-* OS version
-* Browser and Version
 * If the problem happens with specific code, link to test files (gist.github.com is a great place to upload code).
-* Screenshots are very helpful if you're seeing an error message or a UI display problem. (Just drag an image into the issue description field to include it).
 
-###Contributing
-1. Fork it.
+> Screenshots are very helpful if you're seeing an error message or a UI display problem. (Just drag an image into the issue description field to include it).
+
+## Contributing
+
+1. Fork this repo.
 2. Create a branch (`git checkout -b my_branch`)
 3. Commit your changes (`git commit -am "Major fixup."`)
 4. Push to the develop branch (`git push develop my_branch`)

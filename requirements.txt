@@ -1,4 +1,4 @@
-pymongo
+bottle==0.12.8
+pymongo>=3.0.3
 requests
 arrow
--e git+https://github.com/naparuba/shinken.git#egg=shinken

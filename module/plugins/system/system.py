@@ -94,11 +94,10 @@ def system_widget():
 
 
 
-if user.is_admin:
-    widget_desc = '''
-    <h4>System state</h4>
-    Show an aggregated view of all Shinken daemons (admins only).
-    '''
+widget_desc = '''
+<h4>System state</h4>
+Show an aggregated view of all Shinken daemons (admins only).
+'''
 
 pages = {
     system_parameters: {'routes': ['/parameters'], 'view': 'parameters', 'static': True},

@@ -27,7 +27,7 @@
 import os,sys,re
 from shinken.misc.perfdata import PerfDatas
 from shinken.log import logger
-from webui.config_parser import config_parser
+from webui2.config_parser import config_parser
 plugin_name = os.path.splitext(os.path.basename(__file__))[0]
 
 ### Will be populated by the UI with it's own value

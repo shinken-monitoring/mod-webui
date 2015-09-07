@@ -25,9 +25,9 @@
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 
 
-WEBUI_VERSION = "2.0 alpha"
+WEBUI_VERSION = "2.0"
 WEBUI_COPYRIGHT = "(c) 2009-2015 - License GNU AGPL as published by the FSF, minimum version 3 of the License."
-WEBUI_RELEASENOTES = "Bootstrap 3 User Interface"
+WEBUI_RELEASENOTES = """Bootstrap 3 User Interface - complete User Interface refactoring"""
 
 
 """
@@ -41,7 +41,6 @@ import os
 import time
 import threading
 import imp
-import json
 
 from shinken.basemodule import BaseModule
 from shinken.message import Message
@@ -53,8 +52,8 @@ from shinken.daemon import Daemon
 from shinken.util import to_bool
 
 # Local import
-from lib.bottle import run, static_file, view, route, request, response, template
-import lib.bottle as bottle
+from bottle import run, static_file, view, route, request, response, template
+import bottle
 from datamanager import WebUIDataManager
 from user import User
 from helper import helper
