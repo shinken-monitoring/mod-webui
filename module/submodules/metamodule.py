@@ -31,7 +31,7 @@ class MetaModule(object):
         self.modules = modules
         self.app = app
         if not modules:
-            logger.warning("[WebUI] No module for %s. %s" % (self.__class__.__name__, self._custom_log))
+            logger.info("[WebUI] No module for %s. %s" % (self.__class__.__name__, self._custom_log))
 
     def is_available(self):
         ''' Is the MetaModule available? Checks if the MetaModule have at least one module. '''
