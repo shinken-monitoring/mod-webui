@@ -25,9 +25,9 @@
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 
 
-WEBUI_VERSION = "2.0 alpha"
+WEBUI_VERSION = "2.0"
 WEBUI_COPYRIGHT = "(c) 2009-2015 - License GNU AGPL as published by the FSF, minimum version 3 of the License."
-WEBUI_RELEASENOTES = "Bootstrap 3 User Interface"
+WEBUI_RELEASENOTES = """Bootstrap 3 User Interface - complete User Interface refactoring"""
 
 
 """
