@@ -9,7 +9,7 @@ Shinken Web User Interface
 
 ## Screenshots
 
-![Host Detail](doc/images/animation.gif)
+![Host Detail](doc/animation.gif)
 
 ## Dependencies
 
