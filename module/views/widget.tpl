@@ -1,6 +1,7 @@
 %# Load all css stuff we need
 %setdefault('css', [])
 %setdefault('js', [])
+%setdefault('title', 'Untitled ...')
 
 <script type="text/javascript">
 %for p in css:
@@ -11,8 +12,6 @@
   loadjscssfile('/static/{{p}}', 'js');
 %end
 </script>
-
-%helper = app.helper
 
 %collapsed_s = ''
 %collapsed_j = 'false'
@@ -25,7 +24,6 @@
    // For Typeahead: builds suggestion engine ... use same as defined in layout.tpl.
    var w = {'id': '{{wid}}', 'base_url': '{{base_url}}', 'collapsed': {{collapsed_j}}, 'position': 'widget-place-1',
           'options': {'key': 'value'}};
-
    %for (k, v) in options.iteritems():
       %value = v.get('value', '')
       w.options['{{k}}'] = '{{value}}';
@@ -33,7 +31,7 @@
 
    // save into widgets
    widgets.push(w);
-   if( new_widget) {
+   if (new_widget) {
       new_widget = false;
       saveWidgets();
    }
@@ -161,4 +159,3 @@
       %include
    </div>
 </div>
-
