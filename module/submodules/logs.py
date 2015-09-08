@@ -4,6 +4,7 @@
 
 import traceback
 import re
+import time
 
 from shinken.log import logger
 
@@ -59,7 +60,7 @@ class MongoDBLogs():
                          'Please install it with a 3.x+ version from '
                          'https://pypi.python.org/pypi/pymongo')
             raise
-            
+
         self.uri = getattr(mod_conf, 'uri', 'mongodb://localhost')
         logger.info('[WebUI-mongo-logs] mongo uri: %s' % self.uri)
 
@@ -99,6 +100,7 @@ class MongoDBLogs():
         except ImportError:
             logger.error('[WebUI-mongo-logs] Can not import pymongo.MongoClient')
             raise
+
         try:
             if self.replica_set:
                 self.con = MongoClient(self.uri, replicaSet=self.replica_set, fsync=self.mongodb_fsync, connect=True)
@@ -113,13 +115,29 @@ class MongoDBLogs():
                 self.db.authenticate(self.username, self.password)
                 logger.info("[WebUI-mongo-logs] user authenticated: %s", self.username)
 
+            # Check if a document exists in the logs collection ...
+            logger.info('[WebUI-mongo-logs] searching connection test item in the collection ...')
+            u = self.db[self.logs_collection].find_one({'_id': 'shinken-test'})
+            if not u:
+                # No document ... create a new one!
+                logger.debug('[WebUI-mongo-logs] not found connection test item in the collection')
+                r = self.db[self.logs_collection].save({'_id': 'shinken-test', 'last_test': time.time()})
+                logger.info('[WebUI-mongo-logs] updated connection test item')
+            else:
+                # Found document ... update!
+                logger.debug('[WebUI-mongo-logs] found connection test item in the collection')
+                r = self.db[self.logs_collection].update({'_id': 'shinken-test'}, {'$set': {'last_test': time.time()}})
+                logger.info('[WebUI-mongo-logs] updated connection test item')
+
             self.is_connected = True
             logger.info('[WebUI-mongo-logs] database connection established')
         except Exception, e:
-            logger.warning("[WebUI-mongo-logs] Exception type: %s", type(e))
-            logger.warning("[WebUI-mongo-logs] Back trace of this kill: %s", traceback.format_exc())
+            logger.error("[WebUI-mongo-logs] Exception: %s", str(e))
+            logger.debug("[WebUI-mongo-logs] Exception type: %s", type(e))
+            logger.debug("[WebUI-mongo-logs] Back trace of this kill: %s", traceback.format_exc())
             # Depending on exception type, should raise ...
             self.is_connected = False
+            raise
 
         return self.is_connected
 
@@ -159,7 +177,7 @@ class MongoDBLogs():
                 m = re.search(r"\[(\d+)\] (.*)", message)
                 if m and m.group(2):
                     message = m.group(2)
-                    
+
                 records.append({
                     "timestamp":    int(log["time"]),
                     "host":         log['host_name'],
