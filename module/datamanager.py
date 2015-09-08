@@ -668,7 +668,7 @@ class WebUIDataManager(DataManager):
         hosts = self.get_important_elements(user, type='host', sorter=worse_first)
         services = self.get_important_elements(user, type='service', sorter=worse_first)
         hosts_state = hosts[0].state_id if hosts else 0
-        services_state = services[0].state_id if hosts else 0
+        services_state = services[0].state_id if services else 0
         return hosts_state, services_state
 
     def get_important_elements(self, user, type='all', sorter=worse_first):
