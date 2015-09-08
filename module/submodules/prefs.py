@@ -4,6 +4,7 @@
 
 import traceback
 import json
+import time
 
 from shinken.log import logger
 
@@ -18,7 +19,7 @@ class PrefsMetaModule(MetaModule):
 
     def __init__(self, modules, app):
         ''' Because it wouldn't make sense to use many submodules in this
-            MetaModule, we only use the first one in the list of modules. 
+            MetaModule, we only use the first one in the list of modules.
             If there is no module in the list, we try to init a default module.
         '''
         self.app = app
@@ -77,10 +78,10 @@ class MongoDBPreferences():
                          'Please install it with a 3.x+ version from '
                          'https://pypi.python.org/pypi/pymongo')
             raise
-            
+
         self.uri = getattr(mod_conf, 'uri', 'mongodb://localhost')
         logger.info('[WebUI-MongoDBPreferences] mongo uri: %s' % self.uri)
-        
+
         self.replica_set = getattr(mod_conf, 'replica_set', None)
         if self.replica_set and int(pymongo.version[0]) < 3:
             logger.error('[WebUI-MongoDBPreferences] Can not initialize module with '
@@ -88,14 +89,14 @@ class MongoDBPreferences():
                          'Please install it with a 3.x+ version from '
                          'https://pypi.python.org/pypi/pymongo')
             return None
-            
+
         self.database = getattr(mod_conf, 'database', 'shinken')
         self.username = getattr(mod_conf, 'username', None)
         self.password = getattr(mod_conf, 'password', None)
         logger.info('[WebUI-MongoDBPreferences] database: %s' % self.database)
 
         self.mongodb_fsync = getattr(mod_conf, 'mongodb_fsync', "True") == "True"
-        
+
         self.is_connected = False
         self.con = None
         self.db = None
@@ -109,34 +110,50 @@ class MongoDBPreferences():
         except ImportError:
             logger.error('[WebUI-MongoDBPreferences] Can not import pymongo.MongoClient')
             raise
-            
+
         try:
             if self.replica_set:
-                self.con = MongoClient(self.uri, replicaSet=self.replica_set, fsync=self.mongodb_fsync, connect=True)
+                self.con = MongoClient(self.uri, replicaSet=self.replica_set, fsync=self.mongodb_fsync)
             else:
-                self.con = MongoClient(self.uri, fsync=self.mongodb_fsync, connect=True)
+                self.con = MongoClient(self.uri, fsync=self.mongodb_fsync)
             logger.info("[WebUI-MongoDBPreferences] connected to mongodb: %s", self.uri)
 
             self.db = getattr(self.con, self.database)
             logger.info("[WebUI-MongoDBPreferences] connected to the database: %s", self.database)
-            
+
             if self.username and self.password:
                 self.db.authenticate(self.username, self.password)
                 logger.info("[WebUI-MongoDBPreferences] user authenticated: %s", self.username)
-                
+
+            # Check if a document exists in the preferences collection ...
+            logger.info('[WebUI-MongoDBPreferences] searching connection test item in the collection ...')
+            u = self.db.ui_user_preferences.find_one({'_id': 'shinken-test'})
+            if not u:
+                # No document ... create a new one!
+                logger.debug('[WebUI-MongoDBPreferences] not found connection test item in the collection')
+                r = self.db.ui_user_preferences.save({'_id': 'shinken-test', 'last_test': time.time()})
+                logger.info('[WebUI-MongoDBPreferences] updated connection test item')
+            else:
+                # Found document ... update!
+                logger.debug('[WebUI-MongoDBPreferences] found connection test item in the collection')
+                r = self.db.ui_user_preferences.update({'_id': 'shinken-test'}, {'$set': {'last_test': time.time()}})
+                logger.info('[WebUI-MongoDBPreferences] updated connection test item')
+
             self.is_connected = True
             logger.info('[WebUI-MongoDBPreferences] database connection established')
         except Exception, e:
-            logger.warning("[WebUI-MongoDBPreferences] Exception type: %s", type(e))
-            logger.warning("[WebUI-MongoDBPreferences] Back trace of this kill: %s", traceback.format_exc())
+            logger.error("[WebUI-MongoDBPreferences] Exception: %s", str(e))
+            logger.debug("[WebUI-MongoDBPreferences] Exception type: %s", type(e))
+            logger.debug("[WebUI-MongoDBPreferences] Back trace of this kill: %s", traceback.format_exc())
             # Depending on exception type, should raise ...
             self.is_connected = False
-            
+            raise
+
         return self.is_connected
 
     def close(self):
         self.is_connected = False
-        self.conn.disconnect()
+        self.conn.close()
 
     # We will get in the mongodb database the user preference entry, for the 'shinken-global' user
     # and get the key they are asking us
