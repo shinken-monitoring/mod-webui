@@ -13,7 +13,7 @@ Shinken Web User Interface
 
 ## Dependencies
 
-Dependencies are listed in the `requirements.txt` file.
+Dependencies are listed in the [`requirements.txt`](https://github.com/shinken-monitoring/mod-webui/blob/develop/requirements.txt)  file.
 
 ## Report a bug
 
