@@ -234,18 +234,6 @@
 </audio>
 
 <script type="text/javascript">
-   // Play alerting sound ...
-   function playAlertSound() {
-      var audio = document.getElementById('alert-sound');
-      var canPlay = !!audio.canPlayType && audio.canPlayType('audio/wav') != "";
-      if (canPlay) {
-         audio.play();
-         sessionStorage.setItem("sound_play", "1");
-         $('#sound_alerting i.fa-ban').addClass('hidden');
-         console.debug("Sound play session storage is now on");
-      }
-   }
-   
    // Set alerting sound icon ...
    if (! sessionStorage.getItem("sound_play")) {
       // Default is to play ...
