@@ -58,18 +58,57 @@
    <h3 id="date"></h3>
 </div>
 
+%how_many_problems_actually = len(app.datamgr.get_all_problems())
+%if app.play_sound:
+<audio id="alert-sound" volume="1.0">
+   <source src="/static/sound/alert.wav" type="audio/wav">
+   Your browser does not support the <code>HTML5 Audio</code> element.
+   <EMBED src="/static/sound/alert.wav" autostart=true loop=false volume=100 >
+</audio>
+
+<script type="text/javascript">
+   // Set alerting sound icon ...
+   if (! sessionStorage.getItem("sound_play")) {
+      // Default is to play ...
+      sessionStorage.setItem("sound_play", {{'1' if app.play_sound else '0'}});
+   }
+   if (! sessionStorage.getItem("how_many_problems_actually")) {
+      // Default is current value ...
+      sessionStorage.setItem("how_many_problems_actually", {{how_many_problems_actually}});
+   }
+   
+   if (sessionStorage.getItem("sound_play") == '1') {
+      $('#sound_alerting i.fa-ban').addClass('hidden');
+      if (Number(sessionStorage.getItem("how_many_problems_actually")) < {{how_many_problems_actually}}) {
+         playAlertSound();
+      }
+   } else {
+      $('#sound_alerting i.fa-ban').removeClass('hidden');
+   }
+   sessionStorage.setItem("how_many_problems_actually", {{how_many_problems_actually}});
+
+   // Toggle sound ...
+   $('[action="toggle-sound-alert"]').on('click', function (e, data) {
+      if (sessionStorage.getItem("sound_play") == '1') {
+         sessionStorage.setItem("sound_play", "0");
+         $('#sound_alerting i.fa-ban').removeClass('hidden');
+      } else {
+         playAlertSound();
+      }
+   });
+</script>
+%end
+
 %synthesis = helper.get_synthesis(app.datamgr.search_hosts_and_services("", user))
 %s = synthesis['services']
 %h = synthesis['hosts']
-%search_string=""
 
 <div id="one-eye-overall">
    <div class="panel panel-default panel-darkgrey">
       <div class="panel-body">
          <table class="table table-invisible table-condensed">
             <tbody>
-              %if 'type:service' not in search_string:
-               <tr>
+               <tr id="one-eye-overall-hosts" data-hosts-problems="{{ len(app.datamgr.get_problems(user=user, type='host')) }}">
                   %for state in 'up', 'unreachable', 'down', 'pending', 'unknown', 'ack', 'downtime':
                   <td>
                      %label = "%s <i>(%s%%)</i>" % (h['nb_' + state], h['pct_' + state])
@@ -79,9 +118,7 @@
                   </td>
                   %end
                </tr>
-               %end
-               %if 'type:host' not in search_string:
-               <tr>
+               <tr id="one-eye-overall-services" data-services-problems="{{ len(app.datamgr.get_problems(user=user, type='service')) }}">
                   %for state in 'ok', 'warning', 'critical', 'pending', 'unknown', 'ack', 'downtime':
                   <td>
                      %label = "%s <i>(%s%%)</i>" % (s['nb_' + state], s['pct_' + state])
@@ -91,7 +128,6 @@
                   </td>
                   %end
                </tr>
-               %end
             </tbody>
          </table>
       </div>
