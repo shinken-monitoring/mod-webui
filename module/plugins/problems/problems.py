@@ -33,7 +33,7 @@ import re
 
 
 def get_page():
-    app.bottle.redirect("/all?search=isnot:UP isnot:OK isnot:PENDING isnot:ACK isnot:DOWNTIME")
+    app.bottle.redirect("/all?search=isnot:UP isnot:OK isnot:PENDING isnot:ACK isnot:DOWNTIME bp:>0")
 
 
 def get_all():
