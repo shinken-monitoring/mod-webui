@@ -12,47 +12,51 @@
    <tbody>
       <tr>
          <td>
-            <a href="/all?search=type:host isnot:OK" class="btn btn-sm">
+            <center><a href="/all?search=type:host isnot:OK" class="btn btn-sm">
                <i class="fa fa-4x fa-server font-darkgrey"></i>
                <span class="badger-title hosts"><i class="fa fa-plus" style="color: #ccc"></i>&nbsp;Hosts</span>
                %host_state = app.datamgr.get_percentage_hosts_state(user, False)
                <span class="badger-big badger-left">{{len(app.datamgr.get_hosts(user))}}</span>
                <span class="badger-big badger-right background-{{'critical' if host_state <= app.hosts_states_warning else 'warning' if host_state <= app.hosts_states_critical else 'ok'}}">{{host_state}}%</span>
-            </a>
+            </a></center>
          </td>
 
          <td>
-            <a href="/all?search=type:service isnot:OK" class="btn btn-sm">
+            <center><a href="/all?search=type:service isnot:OK" class="btn btn-sm">
                <i class="fa fa-4x fa-bars font-darkgrey"></i>
                <span class="badger-title services"><i class="fa fa-plus" style="color: #ccc"></i>&nbsp;Services</span>
                %service_state = app.datamgr.get_percentage_service_state(user, False)
                <span class="badger-big badger-left">{{len(app.datamgr.get_services(user))}}</span>
                <span class="badger-big badger-right background-{{'critical' if service_state <= app.services_states_warning else 'warning' if service_state <= app.services_states_critical else 'ok'}}">{{service_state}}%</span>
-            </a>
+            </a></center>
          </td>
 
-         <td>
+         %if app.prefs_module.is_available():
          %if len(widgets) > 0:
+         <td>
+         <center>
          <a id="widgets_show_panel" href="#widgets" class="btn btn-sm btn-success"><i class="fa fa-plus"></i> Add a new widget</a>
-         %end
+         </center>
          </td>
+         %end
+         %end
        
          <td>
-            <a href="/problems" class="btn btn-sm">
+            <center><a href="/problems" class="btn btn-sm">
                <i class="fa fa-4x fa-exclamation-triangle font-darkgrey"></i>
                <span class="badger-title itproblem"><i class="fa fa-plus" style="color: #ccc"></i>&nbsp;IT Problems</span>
                %overall_itproblem = app.datamgr.get_overall_it_state(user)
                <span title="Number of not acknowledged IT problems." class="badger-big background-{{'ok' if overall_itproblem == 0 else 'warning' if overall_itproblem == 1 else 'critical'}}">{{len(app.datamgr.get_important_problems(user, sorter=None))}}</span>
-            </a>
+            </a></center>
          </td>
 
          <td>
-            <a href="/impacts" class="btn btn-sm">
+            <center><a href="/impacts" class="btn btn-sm">
                <i class="fa fa-4x fa-flash font-darkgrey"></i>
                <span class="badger-title impacts"><i class="fa fa-plus" style="color: #ccc"></i>&nbsp;Impacts</span>
                %overall_state = app.datamgr.get_overall_state(user)
                <span title="Number of not acknownledged IT problems." class="badger-big background-{{'ok' if overall_state == 0 else 'warning' if overall_state == 1 else 'critical'}}">{{len(app.datamgr.get_important_impacts(user, sorter=None))}}</span>
-            </a>
+            </a></center>
          </td>
       </tr>
    </tbody>
@@ -61,13 +65,25 @@
 <!-- Widgets loading indicator -->
 <div id="widgets_loading"></div>
 
-%# Go in the center of the page!
-%if len(widgets) == 0:
-<span id="center-button" class="col-sm-4 col-sm-offset-4 page-center" >
-   <h3>You don't have any widget yet ...</h3>
-   <!-- Button trigger widgets modal -->
-   <a id="widgets_show_panel" href="#widgets" class="btn btn-block btn-success"><i class="fa fa-plus"></i>... add a new widget</a>
-</span>
+%if app.prefs_module.is_available():
+   %if len(widgets) == 0:
+   <span id="center-button" class="col-sm-4 col-sm-offset-4 page-center" >
+      <h3>You don't have any widget yet ...</h3>
+      <!-- Button trigger widgets modal -->
+      <a id="widgets_show_panel" href="#widgets" class="btn btn-block btn-success"><i class="fa fa-plus"></i>... add a new widget</a>
+   </span>
+   %end
+%else:
+   <div class="panel panel-default">
+      <div class="panel-heading" style="padding-bottom: -10">
+         <center>
+            <h3>You do not have any user's preferences storage module installed.</h3>
+            <h4 class="alert alert-danger">The Web UI dashboard and user's preferences will not be saved.</h4>
+         </center>
+         <hr/>
+         <p>Installing and using a storage module is really easy, follow instructions in this documentation: <a href="https://github.com/shinken-monitoring/mod-webui/wiki/Installing-WebUI-storage-modules" target="_blank"> installing WebUI storage module</a></p>
+      </div>
+   </div>
 %end
 
 <!-- Widgets selection popover content -->
