@@ -77,7 +77,7 @@ htdocs_dir = os.path.join(webuimod_dir, 'htdocs')
 
 properties = {
     'daemons': ['broker', 'scheduler'],
-    'type': 'webui',
+    'type': 'webui2',
     'phases': ['running'],
     'external': True}
 
