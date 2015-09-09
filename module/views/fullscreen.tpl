@@ -48,6 +48,7 @@
       <link href="/static/css/font-awesome.min.css" rel="stylesheet">
 
       <link href="/static/css/shinken-layout.css" rel="stylesheet">
+      <link href="/static/css/alertify.css" rel="stylesheet">
 
       %# And now for css files
       %for p in css:
@@ -63,6 +64,7 @@
       <script src="/static/js/moment.min.js"></script>
 
       <script src="/static/js/jquery.jclock.js"></script>
+      <script src="/static/js/alertify.js"></script>
 
       <!--Shinken ones : refresh pages -->
       %if refresh:

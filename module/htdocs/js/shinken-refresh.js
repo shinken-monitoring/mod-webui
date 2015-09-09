@@ -52,6 +52,17 @@ function postpone_refresh(){
    reinit_refresh();
 }
 
+// Play alerting sound ...
+function playAlertSound() {
+   var audio = document.getElementById('alert-sound');
+   var canPlay = audio && !!audio.canPlayType && audio.canPlayType('audio/wav') != "";
+   if (canPlay) {
+      audio.play();
+      sessionStorage.setItem("sound_play", "1");
+      $('#sound_alerting i.fa-ban').addClass('hidden');
+   }
+}
+
 /*
  * This function is called on each refresh of the current page.
  * ----------------------------------------------------------------------------
@@ -93,12 +104,56 @@ function do_refresh(){
       $('#page-content').html($response.find('#page-content').html());
       
       // Refresh header bar hosts/services state ...
-      $('#overall-hosts-states').html($response.find('#overall-hosts-states').html());
-      $('#overall-services-states').html($response.find('#overall-services-states').html());
+      if ($('#overall-hosts-states').length > 0) {
+         $('#overall-hosts-states').html($response.find('#overall-hosts-states').html());
+         $('#hosts-states-popover-content').html($response.find('#hosts-states-popover-content').html());
+         $('#overall-services-states').html($response.find('#overall-services-states').html());
+         $('#services-states-popover-content').html($response.find('#services-states-popover-content').html());
 
+         var nb_problems=0;
+         nb_problems += parseInt($('#overall-hosts-states a span').html());
+         nb_problems += parseInt($('#overall-services-states a span').html());
+         if (refresh_logs) console.debug("Hosts/Services problems", nb_problems);
+         
+         // Sound alerting
+         if (sessionStorage.getItem("sound_play") == '1') {
+            if (Number(sessionStorage.getItem("how_many_problems_actually")) < nb_problems) {
+               playAlertSound();
+            }
+         }
+         sessionStorage.setItem("how_many_problems_actually", nb_problems);
+      }
+      
       // Refresh Dashboard currently ...
-      $('#one-eye-overall').html($response.find('#one-eye-overall').html());
-      $('#one-eye-icons').html($response.find('#one-eye-icons').html());
+      if ($('#one-eye-overall').length > 0) {
+         $('#one-eye-overall').html($response.find('#one-eye-overall').html());
+         $('#one-eye-icons').html($response.find('#one-eye-icons').html());
+
+         var nb_problems=0;
+         nb_problems += parseInt($('#one-eye-overall-hosts').data("hosts-problems"));
+         nb_problems += parseInt($('#one-eye-overall-services').data("services-problems"));
+         if (refresh_logs) console.debug("Dashboard currently - Hosts/Services problems", nb_problems);
+         
+         var old_problems = Number(sessionStorage.getItem("how_many_problems_actually"));
+         // Sound alerting
+         if (sessionStorage.getItem("sound_play") == '1') {
+            if (! sessionStorage.getItem("how_many_problems_actually")) {
+               // Default is current value ...
+               sessionStorage.setItem("how_many_problems_actually", nb_problems);
+            }
+            if (refresh_logs) console.debug("Dashboard currently - stored problems number:", old_problems);
+            if (old_problems < nb_problems) {
+               if (refresh_logs) console.debug("Dashboard currently - play sound!");
+               playAlertSound();
+            }
+         }
+         if (old_problems < nb_problems) {
+            var message = (nb_problems - old_problems) + " new " + ((nb_problems - old_problems)==1 ? "problem" : "problems") + " since last "+refresh_timeout+" seconds."
+            alertify.log((nb_problems - old_problems) + " new problems since last "+refresh_timeout+" seconds.", "warning", 5000);
+         }
+         sessionStorage.setItem("how_many_problems_actually", nb_problems);
+         if (refresh_logs) console.debug("Dashboard currently - updated stored problems number:", Number(sessionStorage.getItem("how_many_problems_actually")));
+      }
       
       /* Because of what is explained in the previous comment ... we must use this 
        * awful hack ! 

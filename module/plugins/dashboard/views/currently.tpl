@@ -1,3 +1,4 @@
+%setdefault('refresh', True)
 %rebase("fullscreen", css=['dashboard/css/currently.css'], title='Shinken currently')
 
 %helper = app.helper
@@ -47,10 +48,22 @@
 
 %if username != 'anonymous':
 <div id="back-home">
-   <ul class="nav nav-pills">
-      <li> <a href="/dashboard" class="font-darkgrey"><i class="fa fa-home"></i></a> </li>
-      <li> <a href="#" action="fullscreen-request" class="font-darkgrey"><i class="fa fa-desktop"></i></a> </li>
+   <ul class="nav nav-pills navbar-left">
+      <li> <a class="font-darkgrey" href="/dashboard"><i class="fa fa-home"></i></a> </li>
+      <li> <a class="font-darkgrey" href="#" action="fullscreen-request" class="font-darkgrey"><i class="fa fa-desktop"></i></a> </li>
    </ul>
+   %if app.play_sound:
+   <ul class="nav nav-pills navbar-right">
+      <li>
+         <a class="font-darkgrey" action="toggle-sound-alert" data-original-title='Sound alerting' href="#">
+            <span id="sound_alerting" class="fa-stack">
+              <i class="fa fa-music fa-stack-1x"></i>
+              <i class="fa fa-ban fa-stack-2x text-danger"></i>
+            </span>
+         </a>
+      </li>
+   </ul>
+   %end
 </div>
 %end
 <div id="date-time">
@@ -58,18 +71,52 @@
    <h3 id="date"></h3>
 </div>
 
+%how_many_problems_actually = len(app.datamgr.get_all_problems())
+%if app.play_sound:
+<audio id="alert-sound" volume="1.0">
+   <source src="/static/sound/alert.wav" type="audio/wav">
+   Your browser does not support the <code>HTML5 Audio</code> element.
+   <EMBED src="/static/sound/alert.wav" autostart=true loop=false volume=100 >
+</audio>
+
+<script type="text/javascript">
+   // Set alerting sound icon ...
+   if (! sessionStorage.getItem("sound_play")) {
+      // Default is to play ...
+      sessionStorage.setItem("sound_play", {{'1' if app.play_sound else '0'}});
+   }
+
+   // Toggle sound ...
+   if (sessionStorage.getItem("sound_play") == '1') {
+      $('#sound_alerting i.fa-ban').addClass('hidden');
+   } else {
+      $('#sound_alerting i.fa-ban').removeClass('hidden');
+   }
+   $('[action="toggle-sound-alert"]').on('click', function (e, data) {
+      if (sessionStorage.getItem("sound_play") == '1') {
+         sessionStorage.setItem("sound_play", "0");
+         $('#sound_alerting i.fa-ban').removeClass('hidden');
+      } else {
+         playAlertSound();
+         $('#sound_alerting i.fa-ban').addClass('hidden');
+      }
+   });
+</script>
+%end
+
 %synthesis = helper.get_synthesis(app.datamgr.search_hosts_and_services("", user))
 %s = synthesis['services']
 %h = synthesis['hosts']
-%search_string=""
 
 <div id="one-eye-overall">
    <div class="panel panel-default panel-darkgrey">
       <div class="panel-body">
          <table class="table table-invisible table-condensed">
             <tbody>
-              %if 'type:service' not in search_string:
-               <tr>
+               <tr id="one-eye-overall-hosts" data-hosts-problems="{{ len(app.datamgr.get_problems(user=user, type='host')) }}">
+                  <td class="font-white"><center>
+                  <b>{{h['nb_elts']}} hosts</b>
+                  </center></td>
                   %for state in 'up', 'unreachable', 'down', 'pending', 'unknown', 'ack', 'downtime':
                   <td>
                      %label = "%s <i>(%s%%)</i>" % (h['nb_' + state], h['pct_' + state])
@@ -79,9 +126,10 @@
                   </td>
                   %end
                </tr>
-               %end
-               %if 'type:host' not in search_string:
-               <tr>
+               <tr id="one-eye-overall-services" data-services-problems="{{ len(app.datamgr.get_problems(user=user, type='service')) }}">
+                  <td class="font-white"><center>
+                  <b>{{s['nb_elts']}} services</b>
+                  </center></td>
                   %for state in 'ok', 'warning', 'critical', 'pending', 'unknown', 'ack', 'downtime':
                   <td>
                      %label = "%s <i>(%s%%)</i>" % (s['nb_' + state], s['pct_' + state])
@@ -91,7 +139,6 @@
                   </td>
                   %end
                </tr>
-               %end
             </tbody>
          </table>
       </div>
@@ -109,7 +156,7 @@
                <div>
                   %state = h['pct_up']
                   %font='ok' if state >= app.hosts_states_critical else 'warning' if state >= app.hosts_states_warning  else 'critical'
-                  <span class="badger-big badger-left font-{{font}}">{{h['nb_up']}} / {{h['nb_elts']}}</span>
+                  <!--<span class="badger-big badger-left font-{{font}}">{{h['nb_up']}} / {{h['nb_elts']}}</span>-->
                   <span class="badger-big badger-right font-{{font}}">{{h['pct_up']}}%</span>
                </div>
                
@@ -128,7 +175,7 @@
                <div>
                   %state = 100.0-h['pct_unreachable']
                   %font='ok' if state >= app.hosts_states_critical else 'warning' if state >= app.hosts_states_warning else 'critical'
-                  <span class="badger-big badger-left font-{{font}}">{{h['nb_unreachable']}} / {{h['nb_elts']}}</span>
+                  <!--<span class="badger-big badger-left font-{{font}}">{{h['nb_unreachable']}} / {{h['nb_elts']}}</span>-->
                   <span class="badger-big badger-right font-{{font}}">{{h['pct_unreachable']}}%</span>
                </div>
                
@@ -147,7 +194,7 @@
                <div>
                   %state = 100.0-h['pct_down']
                   %font='ok' if state >= app.hosts_states_critical else 'warning' if state >= app.hosts_states_warning else 'critical'
-                  <span class="badger-big badger-left font-{{font}}">{{h['nb_down']}} / {{h['nb_elts']}}</span>
+                  <!--<span class="badger-big badger-left font-{{font}}">{{h['nb_down']}} / {{h['nb_elts']}}</span>-->
                   <span class="badger-big badger-right font-{{font}}">{{h['pct_down']}}%</span>
                </div>
                
@@ -166,7 +213,7 @@
                <div>
                   %state = 100.0-h['pct_unknown']
                   %font='ok' if state >= app.hosts_states_critical else 'warning' if state >= app.hosts_states_warning else 'critical'
-                  <span class="badger-big badger-left font-{{font}}">{{h['nb_unknown']}} / {{h['nb_elts']}}</span>
+                  <!--<span class="badger-big badger-left font-{{font}}">{{h['nb_unknown']}} / {{h['nb_elts']}}</span>-->
                   <span class="badger-big badger-right font-{{font}}">{{h['pct_unknown']}}%</span>
                </div>
                
@@ -186,7 +233,7 @@
                <div>
                   %state = s['pct_ok']
                   %font='ok' if state >= app.services_states_critical else 'warning' if state >= app.services_states_warning else 'critical'
-                  <span class="badger-big badger-left font-{{font}}">{{s['nb_ok']}} / {{s['nb_elts']}}</span>
+                  <!--<span class="badger-big badger-left font-{{font}}">{{s['nb_ok']}} / {{s['nb_elts']}}</span>-->
                   <span class="badger-big badger-right font-{{font}}">{{s['pct_ok']}}%</span>
                </div>
                
@@ -205,7 +252,7 @@
                <div>
                   %state = 100.0-s['pct_warning']
                   %font='ok' if state >= app.services_states_critical else 'warning' if state >= app.services_states_warning else 'critical'
-                  <span class="badger-big badger-left font-{{font}}">{{s['nb_warning']}} / {{s['nb_elts']}}</span>
+                  <!--<span class="badger-big badger-left font-{{font}}">{{s['nb_warning']}} / {{s['nb_elts']}}</span>-->
                   <span class="badger-big badger-right font-{{font}}">{{s['pct_warning']}}%</span>
                </div>
                
@@ -224,7 +271,7 @@
                <div>
                   %state = 100.0-s['pct_critical']
                   %font='ok' if state >= app.services_states_critical else 'warning' if state >= app.services_states_warning else 'critical'
-                  <span class="badger-big badger-left font-{{font}}">{{s['nb_critical']}} / {{s['nb_elts']}}</span>
+                  <!--<span class="badger-big badger-left font-{{font}}">{{s['nb_critical']}} / {{s['nb_elts']}}</span>-->
                   <span class="badger-big badger-right font-{{font}}">{{s['pct_critical']}}%</span>
                </div>
                
@@ -243,7 +290,7 @@
                <div>
                   %state = 100.0-s['pct_unknown']
                   %font='ok' if state >= app.services_states_critical else 'warning' if state >= app.services_states_warning else 'critical'
-                  <span class="badger-big badger-left font-{{font}}">{{s['nb_unknown']}} / {{s['nb_elts']}}</span>
+                  <!--<span class="badger-big badger-left font-{{font}}">{{s['nb_unknown']}} / {{s['nb_elts']}}</span>-->
                   <span class="badger-big badger-right font-{{font}}">{{s['pct_unknown']}}%</span>
                </div>
                
