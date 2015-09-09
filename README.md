@@ -17,8 +17,8 @@ Dependencies are listed in the [`requirements.txt`](https://github.com/shinken-m
 
 ## Report a bug
 
-See the [`contributing.md`] doc.(https://github.com/shinken-monitoring/mod-webui/blob/develop/contributing.md)  file.
+See the [`contributing.md`](https://github.com/shinken-monitoring/mod-webui/blob/develop/contributing.md) file.
 
 ## Contributing
 
-See the [`contributing.md`] doc.(https://github.com/shinken-monitoring/mod-webui/blob/develop/contributing.md)  file.
+See the [`contributing.md`](https://github.com/shinken-monitoring/mod-webui/blob/develop/contributing.md) file.
