@@ -346,7 +346,11 @@ Invalid element name
                               </tr>
                               <tr>
                                  <td><strong>Since:</strong></td>
-                                 <td>
+                                 <td class="popover-dismiss" 
+                                       data-html="true" data-toggle="popover" data-trigger="hover" data-placement="bottom" 
+                                       data-title="{{elt.get_full_name()}} last state change date" 
+                                       data-content=" {{time.strftime("%d %b %Y %H:%M:%S", time.localtime(elt.last_state_change))}} "
+                                       >   
                                     {{! helper.print_duration(elt.last_state_change, just_duration=True, x_elts=2)}}
                                  </td>
                               </tr>
