@@ -75,7 +75,7 @@ class MongoDBLogs():
         self.database = getattr(mod_conf, 'database', 'shinken')
         self.username = getattr(mod_conf, 'username', None)
         self.password = getattr(mod_conf, 'password', None)
-        logger.info('[WebUI-mongo-logs] database: %s' % self.database)
+        logger.info('[WebUI-mongo-logs] database: %s, user: %s', self.database, self.username)
 
         self.logs_collection = getattr(mod_conf, 'logs_collection', 'logs')
         logger.info('[WebUI-mongo-logs] shinken logs collection: %s', self.logs_collection)
