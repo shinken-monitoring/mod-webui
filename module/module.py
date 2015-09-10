@@ -294,7 +294,7 @@ class Webui_broker(BaseModule, Daemon):
     # A plugin send us en external command. We just put it
     # in the good queue
     def push_external_command(self, e):
-        logger.info("[WebUI] Got an external command: %s", e.__dict__)
+        logger.debug("[WebUI] Got an external command: %s", e.__dict__)
         try:
             self.from_q.put(e)
         except Exception, exp:
