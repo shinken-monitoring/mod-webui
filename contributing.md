@@ -7,15 +7,13 @@
 
    - an helpful title - use descriptive keywords in the title and body so others can find your bug (avoiding duplicates).
    - a precise description - steps to reproduce the problem, with actual vs. expected results
-   - specifify : WebUI Version, OS version, Web browser and version
+   - specify : WebUI Version, OS version, Web browser and version
 
-* If the problem happens with specific code, link to test files (gist.github.com is a great place to upload code).
-
-> Screenshots are very helpful if you're seeing an error message or a UI display problem. (Just drag an image into the issue description field to include it).
+> Screen shots are very helpful if you're seeing an error message or a UI display problem. (Just drag an image into the issue description field to include it).
 
 ## Contributing
 
-Largely inspired by this model: http://nvie.com/posts/a-successful-git-branching-model/
+Mainly inspired by this model: http://nvie.com/posts/a-successful-git-branching-model/
 
 ### Main development rules
 
@@ -32,16 +30,21 @@ Feature branches are used to develop new features. When starting development of 
 When the feature is tested and ready for delivery, the feature branch may be merged back into the develop branch to definitely add the feature to the upcoming release.
 
 
+### Simple modifications
+
+Very simple modifications such as typos, comments, ... may be committed directly in the develop branch. This should be strictly limited to modifications that do not impact application behaviour.
+
+
 ### Fixing an issue
 
-Fixing an issue uses the same workflow as developing a new feature. An issue branch is created and then merged back into develop, so that future releases also contain these bug fixes.
+Fixing an issue uses the same work-flow as developing a new feature. An issue branch is created and then merged back into develop, so that future releases also contain these bug fixes.
 
 
-### Hotfixes
+### Hot-fixes
 
-When a critical bug in a production version must be resolved immediately, a hotfix branch may be branched off from the corresponding tag on the master branch that marks the production version.
+When a critical bug in a production version must be resolved immediately, a hot-fix branch may be branched off from the corresponding tag on the master branch that marks the production version.
 
-When finished, the bugfix needs to be merged back into master, but also needs to be merged back into develop, in order to safeguard that the bugfix is included in the next release as well.
+When finished, the hot-fix branch needs to be merged back into master, but also needs to be merged back into develop, in order to safeguard that the bug fix is included in the next release as well.
 
 
 ### Releasing a version
