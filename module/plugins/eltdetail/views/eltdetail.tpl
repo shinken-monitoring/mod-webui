@@ -1029,7 +1029,7 @@ Invalid element name
                      <table class="table table-condensed">
                         <thead>
                            <tr>
-                              %if elt_type=='host' and elt.services:
+                              %if elt_type=='host':
                               <th>Service</th>
                               %end
                               <th>Metric</th>
@@ -1039,12 +1039,50 @@ Invalid element name
                               <th>Min</th>
                               <th>Max</th>
                               <th>UOM</th>
-                              %if app.graphs_module.is_available():
                               <th></th>
-                              %end
                            </tr>
                         </thead>
                         <tbody style="font-size:x-small;">
+                        %# Host check metrics ...
+                        %if elt_type=='host' or elt_type=='service':
+                           %host_line = True
+                           %perfdatas = PerfDatas(elt.perf_data)
+                           %if perfdatas:
+                           %for metric in sorted(perfdatas, key=lambda metric: metric.name):
+                           %if metric.name:
+                           <tr>
+                              %if elt_type=='host':
+                              <td><strong>{{'Host check' if host_line else ''}}</strong></td>
+                              %host_line = False
+                              %end
+                              <td><strong>{{metric.name}}</strong></td>
+                              <td>{{metric.value}}</td>
+                              <td>{{metric.warning if metric.warning else ''}}</td>
+                              <td>{{metric.critical if metric.critical else ''}}</td>
+                              <td>{{metric.min if metric.min else ''}}</td>
+                              <td>{{metric.max if metric.max else ''}}</td>
+                              <td>{{metric.uom if metric.uom else ''}}</td>
+                              
+                              %if app.graphs_module.is_available():
+                              <td>
+                                 %graphs = app.graphs_module.get_graph_uris(elt, duration=12*3600)
+                                 %for graph in graphs:
+                                    %if re.findall('\\b'+metric.name+'\\b', graph['img_src']):
+                                       <a role="button" tabindex="0" data-toggle="popover" title="{{ elt.get_full_name() }}" data-html="true" data-content="<img src='{{ graph['img_src'] }}' width='600px' height='200px'>" data-trigger="hover" data-placement="left">{{!helper.get_perfometer(elt, metric.name)}}</a>
+                                    %end
+                                 %end
+                              </td>
+                              %else:
+                              <td>
+                                 <a role="button" tabindex="0" >{{!helper.get_perfometer(elt, metric.name)}}</a>
+                              </td>
+                              %end
+                           </tr>
+                           %end
+                           %end
+                           %end
+                        %end
+                        %# Host services metrics ...
                         %if elt_type=='host' and elt.services:
                         %for s in elt.services:
                            %service_line = True
@@ -1053,7 +1091,7 @@ Invalid element name
                            %for metric in sorted(perfdatas, key=lambda metric: metric.name):
                            %if metric.name and metric.value:
                            <tr>
-                              <td><strong>{{s.get_name() if service_line else ''}}</strong></td>
+                              <td>{{!helper.get_link(s, short=True) if service_line else ''}}</td>
                               %service_line = False
                               <td><strong>{{metric.name}}</strong></td>
                               <td>{{metric.value}}</td>
@@ -1072,42 +1110,16 @@ Invalid element name
                                     %end
                                  %end
                               </td>
-                              %end
-                           </tr>
-                           %end
-                           %end
-                           %end
-                        %end
-                        %end
-                        %if elt_type=='service':
-                           %perfdatas = PerfDatas(elt.perf_data)
-                           %if perfdatas:
-                           %for metric in sorted(perfdatas, key=lambda metric: metric.name):
-                           %if metric.name and metric.value:
-                           <tr>
-                              <td><strong>{{metric.name}}</strong></td>
-                              <td>{{metric.value}}</td>
-                              <td>{{metric.warning if metric.warning else ''}}</td>
-                              <td>{{metric.critical if metric.critical else ''}}</td>
-                              <td>{{metric.min if metric.min else ''}}</td>
-                              <td>{{metric.max if metric.max else ''}}</td>
-                              <td>{{metric.uom if metric.uom else ''}}</td>
-                              
-                              %if app.graphs_module.is_available():
+                              %else:
                               <td>
-                                 %# Graphs
-                                 %graphs = app.graphs_module.get_graph_uris(elt, duration=12*3600)
-                                 %for graph in graphs:
-                                    %if re.findall('\\b'+metric.name+'\\b', graph['img_src']):
-                                       <a role="button" tabindex="0" data-toggle="popover" title="{{ elt.get_full_name() }}" data-html="true" data-content="<img src='{{ graph['img_src'] }}' width='600px' height='200px'>" data-trigger="hover" data-placement="left">{{!helper.get_perfometer(elt, metric.name)}}</a>
-                                    %end
-                                 %end
+                                 <a role="button" tabindex="0" >{{!helper.get_perfometer(s, metric.name)}}</a>
                               </td>
                               %end
                            </tr>
                            %end
                            %end
                            %end
+                        %end
                         %end
                         </tbody>
                      </table>
