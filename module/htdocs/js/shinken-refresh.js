@@ -115,9 +115,16 @@ function do_refresh(){
          nb_problems += parseInt($('#overall-services-states a span').html());
          if (refresh_logs) console.debug("Hosts/Services problems", nb_problems);
          
+         var old_problems = Number(sessionStorage.getItem("how_many_problems_actually"));
          // Sound alerting
          if (sessionStorage.getItem("sound_play") == '1') {
-            if (Number(sessionStorage.getItem("how_many_problems_actually")) < nb_problems) {
+            if (! sessionStorage.getItem("how_many_problems_actually")) {
+               // Default is current value ...
+               sessionStorage.setItem("how_many_problems_actually", nb_problems);
+            }
+            if (refresh_logs) console.debug("Dashboard currently - stored problems number:", old_problems);
+            if (old_problems < nb_problems) {
+               if (refresh_logs) console.debug("Dashboard - play sound!");
                playAlertSound();
             }
          }

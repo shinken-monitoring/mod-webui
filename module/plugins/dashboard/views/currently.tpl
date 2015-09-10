@@ -71,7 +71,6 @@
    <h3 id="date"></h3>
 </div>
 
-%how_many_problems_actually = len(app.datamgr.get_all_problems())
 %if app.play_sound:
 <audio id="alert-sound" volume="1.0">
    <source src="/static/sound/alert.wav" type="audio/wav">

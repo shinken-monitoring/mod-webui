@@ -225,7 +225,6 @@
   <!-- /.navbar-static-side -->
 </nav>
 
-%how_many_problems_actually = len(app.datamgr.get_all_problems())
 %if app.play_sound:
 <audio id="alert-sound" volume="1.0">
    <source src="/static/sound/alert.wav" type="audio/wav">
@@ -239,28 +238,20 @@
       // Default is to play ...
       sessionStorage.setItem("sound_play", {{'1' if app.play_sound else '0'}});
    }
-   if (! sessionStorage.getItem("how_many_problems_actually")) {
-      // Default is current value ...
-      sessionStorage.setItem("how_many_problems_actually", {{how_many_problems_actually}});
-   }
    
+   // Toggle sound ...
    if (sessionStorage.getItem("sound_play") == '1') {
       $('#sound_alerting i.fa-ban').addClass('hidden');
-      if (Number(sessionStorage.getItem("how_many_problems_actually")) < {{how_many_problems_actually}}) {
-         playAlertSound();
-      }
    } else {
       $('#sound_alerting i.fa-ban').removeClass('hidden');
    }
-   sessionStorage.setItem("how_many_problems_actually", {{how_many_problems_actually}});
-
-   // Toggle sound ...
    $('[action="toggle-sound-alert"]').on('click', function (e, data) {
       if (sessionStorage.getItem("sound_play") == '1') {
          sessionStorage.setItem("sound_play", "0");
          $('#sound_alerting i.fa-ban').removeClass('hidden');
       } else {
          playAlertSound();
+         $('#sound_alerting i.fa-ban').addClass('hidden');
       }
    });
 </script>
