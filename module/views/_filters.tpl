@@ -1,8 +1,17 @@
-%setdefault("search_string", "")
 %setdefault("common_bookmarks", app.prefs_module.get_common_bookmarks())
 %setdefault("user_bookmarks", app.prefs_module.get_user_bookmarks(user))
 
-<form class="navbar-form navbar-left hidden-xs" method="get" action="/all">
+%if 'search_engine' in app.request.route.config and app.request.route.config['search_engine']:
+%search_action = app.request.fullpath
+%search_name = app.request.route.name
+%else:
+%search_action = '/all'
+%search_name = ''
+%end
+
+%search_string = app.get_search_string()
+
+<form class="navbar-form navbar-left hidden-xs" method="get" action="{{ search_action }}">
   <div class="dropdown form-group text-left">
     <button class="btn btn-default dropdown-toggle" type="button" id="filters_menu" data-toggle="dropdown" aria-expanded="true"><i class="fa fa-filter"></i><span class="hidden-sm hidden-xs hidden-md"> Filters</span> <span class="caret"></span></button>
     <ul class="dropdown-menu" role="menu" aria-labelledby="filters_menu">
@@ -27,7 +36,7 @@
   <div class="form-group">
     <label class="sr-only" for="search">Filter</label>
     <div class="input-group">
-      <span class="input-group-addon hidden-xs hidden-sm"><i class="fa fa-search"></i></span>
+      <span class="input-group-addon hidden-xs hidden-sm"><i class="fa fa-search"></i> {{ search_name }}</span>
       <input class="form-control" type="search" id="search" name="search" value="{{ search_string }}">
     </div>
   </div>
