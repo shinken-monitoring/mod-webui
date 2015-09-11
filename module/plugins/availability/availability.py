@@ -27,6 +27,7 @@
 import time
 import datetime
 import arrow
+import urllib
 
 from collections import OrderedDict
 
@@ -46,6 +47,7 @@ def _get_availability(*args, **kwargs):
 
 def get_element(name):
     user = app.bottle.request.environ['USER']
+    name = urllib.unquote(name)
     elt = app.datamgr.get_element(name, user) or app.redirect404()
 
     records = []
