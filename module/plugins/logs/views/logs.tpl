@@ -40,11 +40,6 @@
 <!-- Logs parameters -->
 <ul class="sliding-navigation drop-shadow" id="parameters">
   <li class="sliding-element"><h3>Parameters</h3></li>
-  <!--
-  <li class="sliding-element">
-    <a><i class="fa fa-gear"></i> Logs limit: {{params['max_records']}}</a>
-  </li>
-  -->
   %if len(params['logs_hosts']) > 0:
   <li class="sliding-element">
     <a href="/logs/hosts_list" data-toggle="modal" data-target="#modal"><i class="fa fa-gear"></i> Hosts filter: {{len(params['logs_hosts'])}}
