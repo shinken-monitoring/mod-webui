@@ -276,9 +276,6 @@ Invalid element name
             %if elt.customs:
             <li><a href="#configuration" data-toggle="tab">Configuration</a></li>
             %end
-            %if app.can_action():
-            <li><a href="#commands" data-toggle="tab">Commands</a></li>
-            %end
             <li><a href="#comments" data-toggle="tab">Comments</a></li>
             <li><a href="#downtimes" data-toggle="tab">Downtimes</a></li>
             <!--<li class="timeline_pane"><a href="#timeline" data-toggle="tab">Timeline</a></li>-->
@@ -816,78 +813,6 @@ Invalid element name
             %end
             <!-- Tab Configuration end -->
             
-            <!-- Tab Commands start -->
-            %if app.can_action():
-            <div class="tab-pane fade" id="commands">
-               <div class="panel panel-default">
-                  <div class="panel-body">
-
-                     <div class="col-sm-6">
-                        <table class="table table-condensed">
-                           <colgroup>
-                              <col style="width: 60%" />
-                              <col style="width: 40%" />
-                           </colgroup>
-                           <thead>
-                              <tr>
-                                 <th colspan="2">Toggle current:</th>
-                              </tr>
-                           </thead>
-                           <tbody>
-                              <tr>
-                                 <td><strong>Active checks enabled:</strong></td>
-                                 <td>
-                                    <input type="checkbox" class="switch" {{'checked' if elt.active_checks_enabled else ''}} 
-                                          data-type="action" action="toggle-active-checks" 
-                                          data-element="{{helper.get_uri_name(elt)}}" data-value="{{elt.active_checks_enabled}}"
-                                          >
-                                 </td>
-                              </tr>
-                              <tr>
-                                 <td><strong>Passive checks enabled:</strong></td>
-                                 <td>
-                                    <input type="checkbox" class="switch" {{'checked' if elt.passive_checks_enabled else ''}} 
-                                          data-type="action" action="toggle-passive-checks"
-                                          data-element="{{helper.get_uri_name(elt)}}" data-value="{{elt.passive_checks_enabled}}"
-                                          >
-                                 </td>
-                              </tr>
-                              <tr>
-                                 <td><strong>Notifications enabled:</strong></td>
-                                 <td>
-                                    <input type="checkbox" class="switch" {{'checked' if elt.notifications_enabled else ''}} 
-                                          data-type="action" action="toggle-notifications"
-                                          data-element="{{helper.get_uri_name(elt)}}" data-value="{{elt.notifications_enabled}}"
-                                          >
-                                 </td>
-                              </tr>
-                              <tr>
-                                 <td><strong>Event handler enabled:</strong></td>
-                                 <td>
-                                    <input type="checkbox" class="switch" {{'checked' if elt.event_handler_enabled else ''}}
-                                          data-type="action" action="toggle-event-handler"
-                                          data-element="{{helper.get_uri_name(elt)}}" data-value="{{elt.event_handler_enabled}}"
-                                          >
-                                 </td>
-                              </tr>
-                              <tr>
-                                 <td><strong>Flapping detection enabled:</strong></td>
-                                 <td>
-                                    <input type="checkbox" class="switch" {{'checked' if elt.flap_detection_enabled else ''}} 
-                                          data-type="action" action="toggle-flap-detection"
-                                          data-element="{{helper.get_uri_name(elt)}}" data-value="{{elt.flap_detection_enabled}}"
-                                          >
-                                 </td>
-                              </tr>
-                           </tbody>
-                        </table>
-                     </div>
-                  </div>
-               </div>
-            </div>
-            %end
-            <!-- Tab Commands end -->
-
             <!-- Tab Comments start -->
             <div class="tab-pane fade" id="comments">
                <div class="panel panel-default">
