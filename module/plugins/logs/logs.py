@@ -26,6 +26,7 @@
 
 import time
 import datetime
+import urllib
 
 from shinken.log import logger
 
@@ -136,6 +137,7 @@ def set_logs_type_list():
 
 def get_host_history(name):
     user = app.request.environ['USER']
+    name = urllib.unquote(name)
     elt = app.datamgr.get_element(name, user) or app.redirect404()
     logs = _get_logs(elt=elt)
     return {'records': logs, 'elt': elt}
