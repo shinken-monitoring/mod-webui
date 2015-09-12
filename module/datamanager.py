@@ -657,7 +657,7 @@ class WebUIDataManager(DataManager):
     ##
     def get_overall_state(self, user):
         ''' Get the worst state of all business impacting elements. '''
-        impacts = self.get_important_impacts(user, sorter=worse_first)
+        impacts = self.get_impacts(user, sorter=worse_first)
         if impacts:
             return impacts[0].state_id
         else:
@@ -674,11 +674,10 @@ class WebUIDataManager(DataManager):
     def get_important_elements(self, user, type='all', sorter=worse_first):
         return self.search_hosts_and_services('bi:>2 ack:false type:%s' % type, user=user, sorter=sorter)
 
-    def get_impacts(self, user, bi='>=0', type='all', sorter=worse_first):
-        return self.search_hosts_and_services('is:impact bi:%s type:%s' % (bi, type), user=user, get_impacts=True, sorter=sorter)
-
-    def get_important_impacts(self, user, type='all', sorter=worse_first):
-        return self.get_impacts(user=user, type=type, bi='>2', sorter=sorter)
+    def get_impacts(self, user, search='is:impact bi:>=0 type:all', sorter=worse_first):
+        if not "is:impact" in search:
+            search = "is:impact "+search
+        return self.search_hosts_and_services(search, user=user, get_impacts=True, sorter=sorter)
 
     def get_problems(self, user, get_acknowledged=False, get_downtimed=False, bi='>=0', type='all', sorter=worse_first):
         return self.search_hosts_and_services('isnot:UP isnot:OK isnot:PENDING ack:%s downtime:%s bi:%s type:%s' % (str(get_acknowledged), str(get_downtimed), bi, type), user=user, sorter=sorter)
