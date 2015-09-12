@@ -679,11 +679,14 @@ class WebUIDataManager(DataManager):
             search = "is:impact "+search
         return self.search_hosts_and_services(search, user=user, get_impacts=True, sorter=sorter)
 
-    def get_problems(self, user, get_acknowledged=False, get_downtimed=False, bi='>=0', type='all', sorter=worse_first):
-        return self.search_hosts_and_services('isnot:UP isnot:OK isnot:PENDING ack:%s downtime:%s bi:%s type:%s' % (str(get_acknowledged), str(get_downtimed), bi, type), user=user, sorter=sorter)
-
-    def get_important_problems(self, user, type='all', sorter=worse_first):
-        return self.get_problems(user, bi=">2", type=type, sorter=sorter)
+    def get_problems(self, user, search='isnot:UP isnot:OK isnot:PENDING bi:>=0 type:all', get_acknowledged=False, get_downtimed=False, sorter=worse_first):
+        if not "isnot:UP" in search:
+            search = "isnot:UP "+search
+        if not "isnot:OK" in search:
+            search = "isnot:OK "+search
+        if not "isnot:PENDING" in search:
+            search = "isnot:PENDING "+search
+        return self.search_hosts_and_services('%s ack:%s downtime:%s' % (search, str(get_acknowledged), str(get_downtimed)), user=user, sorter=sorter)
 
     def guess_root_problems(self, user, obj):
         ''' Returns the root problems for a service. '''
