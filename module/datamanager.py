@@ -686,28 +686,5 @@ class WebUIDataManager(DataManager):
     def get_important_problems(self, user, type='all', sorter=worse_first):
         return self.get_problems(user, bi=">2", type=type, sorter=sorter)
 
-    def guess_root_problems(self, user, obj):
-        ''' Returns the root problems for a service. '''
-        if obj.__class__.my_type != 'service':
-            return []
-            
-        items = obj.host.services
-        r = [s for s in self._only_related_to(items, user) if s.state_id != 0 and s != obj]
-        return r
-    
-    # Return a tree of {'elt': Host, 'fathers': [{}, {}]}
-    def get_business_parents(self, user, obj, levels=3):
-        res = {'node': obj, 'fathers': []}
-        # if levels == 0:
-        #     return res
-
-        for i in obj.parent_dependencies:
-            # We want to get the levels deep for all elements, but
-            # go as far as we should for bad elements
-            if levels != 0 or i.state_id != 0:
-                par_elts = self.get_business_parents(user, i, levels=levels - 1)
-                res['fathers'].append(par_elts)
-
-        return res
 
 datamgr = WebUIDataManager()
