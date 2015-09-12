@@ -1,6 +1,8 @@
 %helper = app.helper
 %datamgr = app.datamgr
 
+%search_string = app.get_search_string()
+
 %rebase("layout", css=['impacts/css/impacts.css'], js=['impacts/js/impacts.js'], title='All critical impacts for your business', refresh=True)
 
 %import time
@@ -85,7 +87,7 @@
             %if len(impact.parent_dependencies) > 0:
             <hr/>
             Dependencies:
-            {{!helper.print_business_rules(datamgr.get_business_parents(impact), source_problems=impact.source_problems)}}
+            {{!helper.print_business_rules(datamgr.get_business_parents(user, impact), source_problems=impact.source_problems)}}
             %end
 
             <hr/>
