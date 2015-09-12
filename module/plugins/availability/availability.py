@@ -103,5 +103,5 @@ def get_page():
 
 pages = {
     get_element: {'routes': ['/availability/inner/<name:path>'], 'view': 'availability-elt', 'static': True},
-    get_page: {'routes': ['/availability'], 'view': 'availability-all', 'static': True},
+    get_page: {'routes': ['/availability'], 'view': 'availability-all', 'name': 'Availabilities', 'static': True, 'search_engine': True},
 }

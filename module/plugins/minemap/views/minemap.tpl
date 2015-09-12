@@ -4,6 +4,8 @@
 
 %helper = app.helper
 
+%search_string = app.get_search_string()
+
 %# Specific content for breadrumb
 %rebase("layout", title='Minemap for hosts/services', css=['minemap/css/minemap.css'], breadcrumb=[ ['All hosts', '/minemap'] ])
 

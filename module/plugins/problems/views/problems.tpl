@@ -1,5 +1,6 @@
 %helper = app.helper
 %datamgr = app.datamgr
+%search_string = app.get_search_string()
 
 %rebase("layout", title=title, js=['problems/js/problems.js'], css=['problems/css/problems.css'], navi=navi, page="/all", elts_per_page=elts_per_page)
 
