@@ -713,7 +713,7 @@ Invalid element name
                         <!-- Show our father dependencies if we got some -->
                         %if elt.parent_dependencies:
                         <h4>Root cause:</h4>
-                        {{!helper.print_business_rules(app.datamgr.get_business_parents(elt), source_problems=elt.source_problems)}}
+                        {{!helper.print_business_rules(app.datamgr.get_business_parents(user, elt), source_problems=elt.source_problems)}}
                         %end
 
                         <!-- If we are an host and not a problem, show our services -->
