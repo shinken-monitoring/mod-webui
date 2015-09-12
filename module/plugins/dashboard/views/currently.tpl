@@ -340,7 +340,7 @@
                <div>
                   %overall_state = app.datamgr.get_overall_state(user)
                   %font='unknown' if overall_state >= 3 else 'critical' if overall_state >= 2 else 'warning' if overall_state >= 1 else 'ok'
-                  <span title="Number of not acknownledged IT problems." class="badger-big font-{{font}}">{{len(app.datamgr.get_important_impacts(user, sorter=None))}}</span>
+                  <span title="Number of not acknownledged IT problems." class="badger-big font-{{font}}">{{len(app.datamgr.get_impacts(user))}}</span>
                </div>
                
                <i class="fa fa-5x fa-flash"></i>
