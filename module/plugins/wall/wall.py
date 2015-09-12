@@ -37,7 +37,7 @@ def get_page():
     user = app.request.environ['USER']
 
     # Most important impacts
-    impacts = app.datamgr.get_important_impacts(user=user)
+    impacts = app.datamgr.get_impacts(user=user)
 
     # Last problems
     problems =  app.datamgr.get_problems(user=user, get_acknowledged=False, get_downtimed=False)
