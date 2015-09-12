@@ -657,7 +657,7 @@ class WebUIDataManager(DataManager):
     ##
     def get_overall_state(self, user):
         ''' Get the worst state of all business impacting elements. '''
-        impacts = self.get_important_impacts(user, sorter=worse_first)
+        impacts = self.get_impacts(user, sorter=worse_first)
         if impacts:
             return impacts[0].state_id
         else:
@@ -674,17 +674,42 @@ class WebUIDataManager(DataManager):
     def get_important_elements(self, user, type='all', sorter=worse_first):
         return self.search_hosts_and_services('bi:>2 ack:false type:%s' % type, user=user, sorter=sorter)
 
-    def get_impacts(self, user, bi='>=0', type='all', sorter=worse_first):
-        return self.search_hosts_and_services('is:impact bi:%s type:%s' % (bi, type), user=user, get_impacts=True, sorter=sorter)
+    def get_impacts(self, user, search='is:impact bi:>=0 type:all', sorter=worse_first):
+        if not "is:impact" in search:
+            search = "is:impact "+search
+        return self.search_hosts_and_services(search, user=user, get_impacts=True, sorter=sorter)
 
-    def get_important_impacts(self, user, type='all', sorter=worse_first):
-        return self.get_impacts(user=user, type=type, bi='>2', sorter=sorter)
+    def get_problems(self, user, search='isnot:UP isnot:OK isnot:PENDING bi:>=0 type:all', get_acknowledged=False, get_downtimed=False, sorter=worse_first):
+        if not "isnot:UP" in search:
+            search = "isnot:UP "+search
+        if not "isnot:OK" in search:
+            search = "isnot:OK "+search
+        if not "isnot:PENDING" in search:
+            search = "isnot:PENDING "+search
+        return self.search_hosts_and_services('%s ack:%s downtime:%s' % (search, str(get_acknowledged), str(get_downtimed)), user=user, sorter=sorter)
 
-    def get_problems(self, user, get_acknowledged=False, get_downtimed=False, bi='>=0', type='all', sorter=worse_first):
-        return self.search_hosts_and_services('isnot:UP isnot:OK isnot:PENDING ack:%s downtime:%s bi:%s type:%s' % (str(get_acknowledged), str(get_downtimed), bi, type), user=user, sorter=sorter)
+    def guess_root_problems(self, user, obj):
+        ''' Returns the root problems for a service. '''
+        if obj.__class__.my_type != 'service':
+            return []
+            
+        items = obj.host.services
+        r = [s for s in self._only_related_to(items, user) if s.state_id != 0 and s != obj]
+        return r
+    
+    # Return a tree of {'elt': Host, 'fathers': [{}, {}]}
+    def get_business_parents(self, user, obj, levels=3):
+        res = {'node': obj, 'fathers': []}
+        # if levels == 0:
+        #     return res
 
-    def get_important_problems(self, user, type='all', sorter=worse_first):
-        return self.get_problems(user, bi=">2", type=type, sorter=sorter)
+        for i in obj.parent_dependencies:
+            # We want to get the levels deep for all elements, but
+            # go as far as we should for bad elements
+            if levels != 0 or i.state_id != 0:
+                par_elts = self.get_business_parents(user, i, levels=levels - 1)
+                res['fathers'].append(par_elts)
 
+        return res
 
 datamgr = WebUIDataManager()

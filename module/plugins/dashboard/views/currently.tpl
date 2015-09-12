@@ -112,7 +112,7 @@
       <div class="panel-body">
          <table class="table table-invisible table-condensed">
             <tbody>
-               <tr id="one-eye-overall-hosts" data-hosts-problems="{{ len(app.datamgr.get_problems(user=user, type='host')) }}">
+               <tr id="one-eye-overall-hosts" data-hosts-problems="{{ len(app.datamgr.get_problems(user=user, search='type:host')) }}">
                   <td class="font-white"><center>
                   <b>{{h['nb_elts']}} hosts</b>
                   </center></td>
@@ -125,7 +125,7 @@
                   </td>
                   %end
                </tr>
-               <tr id="one-eye-overall-services" data-services-problems="{{ len(app.datamgr.get_problems(user=user, type='service')) }}">
+               <tr id="one-eye-overall-services" data-services-problems="{{ len(app.datamgr.get_problems(user=user, search='type:service')) }}">
                   <td class="font-white"><center>
                   <b>{{s['nb_elts']}} services</b>
                   </center></td>
@@ -308,21 +308,21 @@
          <!-- Problems / impacts -->
          <div class="col-xs-6 col-sm-3 col-md-6">
             %if username != 'anonymous':
-            <a href="/problems" class="btn btn-sm" title="Left">
+            <a href="/problems" class="btn btn-sm">
             %end
                <div>
                   %h_state, s_state = app.datamgr.get_overall_it_state(user)
-                  %h_problems = len(app.datamgr.get_important_problems(user, type='host', sorter=None))
+                  %h_problems = len(app.datamgr.get_problems(user, search='type:host', sorter=None))
                   %font='unknown' if h_state >= 3 else 'critical' if h_state >= 2 else 'warning' if h_state >= 1 else 'ok'
-                  <span class="badger-big badger-left font-{{font}}">{{h_problems}}</span>
+                  <span title="Number of hosts problems." class="badger-big badger-left font-{{font}}">{{h_problems}}</span>
                   {{!helper.get_fa_icon_state(cls='host', state='down') if h_state == 2 else ''}}
                   {{!helper.get_fa_icon_state(cls='host', state='unreachable') if h_state == 1 else ''}}
                   {{!helper.get_fa_icon_state(cls='host', state='up') if h_state == 0 else ''}}
                   {{!helper.get_fa_icon_state(cls='service', state='critical') if s_state == 2 else ''}}
                   {{!helper.get_fa_icon_state(cls='service', state='warning') if s_state == 1 else ''}}
                   {{!helper.get_fa_icon_state(cls='service', state='ok') if s_state == 0 else ''}}
-                  %s_problems = len(app.datamgr.get_important_problems(user, type='service', sorter=None))
-                  <span class="badger-big badger-right font-{{font}}">{{s_problems}}</span>
+                  %s_problems = len(app.datamgr.get_problems(user, search='type:service', sorter=None))
+                  <span title="Number of services problems." class="badger-big badger-right font-{{font}}">{{s_problems}}</span>
                </div>
 
                <i class="fa fa-5x fa-exclamation-triangle"></i>
@@ -335,12 +335,12 @@
 
          <div class="col-xs-6 col-sm-3 col-md-6">
             %if username != 'anonymous':
-            <a href="/impacts" class="slidelink btn btn-sm">
+            <a href="/impacts" class="btn btn-sm">
             %end
                <div>
                   %overall_state = app.datamgr.get_overall_state(user)
                   %font='unknown' if overall_state >= 3 else 'critical' if overall_state >= 2 else 'warning' if overall_state >= 1 else 'ok'
-                  <span title="Number of not acknownledged IT problems." class="badger-big font-{{font}}">{{len(app.datamgr.get_important_impacts(user, sorter=None))}}</span>
+                  <span title="Number of impacts." class="badger-big font-{{font}}">{{len(app.datamgr.get_impacts(user))}}</span>
                </div>
                
                <i class="fa fa-5x fa-flash"></i>
