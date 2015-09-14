@@ -342,7 +342,7 @@ Invalid element name
                                  </td>
                               </tr>
                               <tr>
-                                 <td><strong>Since:</strong></td>
+                                 <td><strong>Duration:</strong></td>
                                  <td class="popover-dismiss" 
                                        data-html="true" data-toggle="popover" data-trigger="hover" data-placement="bottom" 
                                        data-title="{{elt.get_full_name()}} last state change date" 
