@@ -12,7 +12,7 @@
    <tbody>
       <tr>
          <td>
-            <center><a href="/all?search=type:host isnot:OK" class="btn btn-sm">
+            <center><a href="/all?search=type:host isnot:UP" class="btn btn-sm">
                <i class="fa fa-4x fa-server font-darkgrey"></i>
                <span class="badger-title hosts"><i class="fa fa-plus" style="color: #ccc"></i>&nbsp;Hosts</span>
                %host_state = app.datamgr.get_percentage_hosts_state(user, False)
