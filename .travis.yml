@@ -3,14 +3,14 @@ sudo: true
 python:
   - "2.7"
   # - "2.6"
-  
+
 services:
   - mongodb
 
+# command to install dependencies
+# some are only used for travis/coveralls so we are installing them here only
 install:
-  - "pip install shinken"
-  - "pip install -r requirements.txt"
-  - "pip install coveralls"
+  - ./test/setup_test.sh
 
 script:
   - cd test
