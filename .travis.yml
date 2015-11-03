@@ -15,9 +15,9 @@ install:
 script:
   - cd test
   - pip freeze
-  - nosetests -xv --process-restartworker --processes=1 --process-timeout=300 --with-coverage --cover-package=module test*.py
-  - coverage combine
-  - coverage report -m
+  # - nosetests -xv --process-restartworker --processes=1 --process-timeout=300 --with-coverage --cover-package=module test*.py
+  # - coverage combine
+  # - coverage report -m
   - cd ..
 
 after_success:
