@@ -10,7 +10,7 @@ services:
 # command to install dependencies
 # some are only used for travis/coveralls so we are installing them here only
 install:
-  - ./test/setup_test.sh
+  - bash test/setup_test.sh
 
 script:
   - cd test
