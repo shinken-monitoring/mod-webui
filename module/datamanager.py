@@ -194,7 +194,10 @@ class WebUIDataManager(DataManager):
 
     def get_host(self, hname, user):
         """ Get a host by its hostname. """
-        hname = hname.decode('utf8', 'ignore')
+        try:
+            hname = hname.decode('utf8', 'ignore')
+        except UnicodeEncodeError:
+            pass
         host = self.rg.hosts.find_by_name(hname)
         if host and self._is_related_to(host, user):
             return host
@@ -238,8 +241,15 @@ class WebUIDataManager(DataManager):
 
     def get_service(self, hname, sdesc, user):
         """ Get a service by its hostname and service description. """
-        hname = hname.decode('utf8', 'ignore')
-        sdesc = sdesc.decode('utf8', 'ignore')
+        try:
+            hname = hname.decode('utf8', 'ignore')
+        except UnicodeEncodeError:
+            pass
+        try:
+            sdesc = sdesc.decode('utf8', 'ignore')
+        except UnicodeEncodeError:
+            pass
+
         service = self.rg.services.find_srv_by_name_and_hostname(hname, sdesc)
         if service and self._is_related_to(service, user):
             return service
@@ -469,7 +479,10 @@ class WebUIDataManager(DataManager):
         return self.rg.commands
 
     def get_command(self, name):
-        name = name.decode('utf8', 'ignore')
+        try:
+            name = name.decode('utf8', 'ignore')
+        except UnicodeEncodeError:
+            pass
         return self.rg.commands.find_by_name(name)
 
     ##
@@ -480,7 +493,10 @@ class WebUIDataManager(DataManager):
         return self._only_related_to(items, user)
 
     def get_contact(self, name, user=None):
-        name = name.decode('utf8', 'ignore')
+        try:
+            name = name.decode('utf8', 'ignore')
+        except UnicodeEncodeError:
+            pass
         item = self.rg.contacts.find_by_name(name)
         if self._is_related_to(item, user):
             return item
@@ -490,7 +506,7 @@ class WebUIDataManager(DataManager):
     # Contacts groups
     ##
     def get_contactgroups(self, user):
-        """ Get a list of known contacts groups 
+        """ Get a list of known contacts groups
 
             :param user: concerned user
             :returns: List of contacts groups related to the user
@@ -505,12 +521,15 @@ class WebUIDataManager(DataManager):
             :param user: concerned user
             :returns: List of contacts groups related to the user
         """
-        name = name.decode('utf8', 'ignore')
+        try:
+            name = name.decode('utf8', 'ignore')
+        except UnicodeEncodeError:
+            pass
         item = self.rg.contactgroups.find_by_name(name)
         if self._is_related_to(item, user):
             return item
         return None
-        
+
     def get_contactgroup_contacts(self, name, user):
         """ Get the contacts in a contacts group
 
@@ -518,7 +537,10 @@ class WebUIDataManager(DataManager):
             :param user: concerned user
             :returns: List of contacts in the group only related to the user
         """
-        name = name.decode('utf8', 'ignore')
+        try:
+            name = name.decode('utf8', 'ignore')
+        except UnicodeEncodeError:
+            pass
         item = self.rg.contactgroups.find_by_name(name)
         if self._is_related_to(item, user):
             contacts = [c for c in self.get_contacts(user) if c in item.members]
@@ -595,7 +617,7 @@ class WebUIDataManager(DataManager):
         for name in names:
             r.append((name, self.rg.tags[name]))
         return r
-        
+
         # return sorted(self.rg.tags)
 
     def get_hosts_tagged_with(self, tag, user):
@@ -613,7 +635,7 @@ class WebUIDataManager(DataManager):
         for name in names:
             r.append((name, self.rg.services_tags[name]))
         return r
-        
+
         # return sorted(self.rg.services_tags)
 
     def get_services_tagged_with(self, tag, user):
@@ -692,11 +714,11 @@ class WebUIDataManager(DataManager):
         ''' Returns the root problems for a service. '''
         if obj.__class__.my_type != 'service':
             return []
-            
+
         items = obj.host.services
         r = [s for s in self._only_related_to(items, user) if s.state_id != 0 and s != obj]
         return r
-    
+
     # Return a tree of {'elt': Host, 'fathers': [{}, {}]}
     def get_business_parents(self, user, obj, levels=3):
         res = {'node': obj, 'fathers': []}
