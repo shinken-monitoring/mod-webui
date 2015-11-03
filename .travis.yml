@@ -8,7 +8,6 @@ services:
   - mongodb
 
 install:
-  - "useradd shinken"
   - "pip install shinken"
   - "pip install -r requirements.txt"
   - "pip install coveralls"
