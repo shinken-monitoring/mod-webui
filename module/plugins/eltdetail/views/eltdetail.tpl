@@ -21,6 +21,11 @@ Invalid element name
 %elt_name = elt.host_name if elt_type=='host' else elt.host.host_name+'/'+elt.service_description
 %elt_display_name = elt_host.display_name if elt_type=='host' else elt_service.display_name+' on '+elt_host.display_name
 
+# Replace MACROS in display name ...
+%if hasattr(elt, 'get_data_for_checks'):
+    %elt_display_name = MacroResolver().resolve_simple_macros_in_string(elt_display_name, elt.get_data_for_checks())
+%end
+
 %business_rule = False
 %if elt.get_check_command().startswith('bp_rule'):
 %business_rule = True
@@ -64,7 +69,6 @@ Invalid element name
          %action_urls = elt.action_url.split('|')
          <button class="btn btn-info btn-xs"><i class="fa fa-external-link"></i> {{'Action' if len(action_urls) == 1 else 'Actions'}}</button>
          <button class="btn btn-info btn-xs dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>
-         <!-- Do not know why but MacroResolver sometimes throws an exception !!! -->
          <ul class="dropdown-menu pull-right">
             %for action_url in helper.get_element_actions_url(elt, default_title="Url", default_icon="globe", popover=True):
             <li>{{!action_url}}</li>
