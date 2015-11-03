@@ -734,4 +734,4 @@ class WebUIDataManager(DataManager):
 
         return res
 
-datamgr = WebUIDataManager()
+# datamgr = WebUIDataManager()
