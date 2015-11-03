@@ -1,14 +1,44 @@
 Shinken WebUI - roadmap
 =======================
 
-The version current major version (2.x) of the Shinken Web User Interface aimed at improving (or developing) the following features: 
+Next version (2.1) features of the Shinken Web User Interface (**to be discussed**): 
+## Version 2.1: 
 
-## Layout:
+
+### Layout:
+- improve mobile devices user experience (touch enabled devices, GPS aware devices, ...)
+
+### Backend:
+- use Alignak backend
+
+### Dashboard:
+- refactor widget grid ... some ideas to develop
+
+### All resources view:
+- more filtering options
+
+### Groups:
+- 
+
+### Host / service view:
+- 
+
+### Tactical overviews:
+- filtering Worldmap, Minemap, Logs, ...
+
+### System:
+- 
+
+## Version 2.0: 
+
+The current major version (2.0) of the Shinken Web User Interface aimed at improving (or developing) the following features: 
+
+### Layout:
 - clean UI layout
 - design rules for hosts/services state
 - boostrap themable layout
 
-## All / Problems view:
+### All / Problems view:
 - simple and compact user interface
 - Github like filtering system
 
@@ -21,7 +51,7 @@ The version current major version (2.x) of the Shinken Web User Interface aimed 
 
 - bookmark filters
 
-## Host / service view:
+### Host / service view:
 - clean element view
 - launch commands
 - enrich element view information: 
@@ -30,7 +60,7 @@ The version current major version (2.x) of the Shinken Web User Interface aimed 
    - history (logs)
    - availability
 
-## Tactical overviews:
+### Tactical overviews:
 - Minemap
 - Hosts/services groups
 - Hosts/services tags
