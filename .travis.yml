@@ -7,8 +7,10 @@ python:
 services:
   - mongodb
 
-install:
+before_install:
   - "useradd shinken"
+
+install:
   - "pip install shinken"
   - "pip install -r requirements.txt"
   - "pip install coveralls"
