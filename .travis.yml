@@ -1,20 +1,23 @@
 language: python
+sudo: true
 python:
   - "2.7"
   # - "2.6"
 
+services:
+  - mongodb
+
+# command to install dependencies
+# some are only used for travis/coveralls so we are installing them here only
 install:
-  - "pip install pycurl"
-  - "sudo useradd shinken"
-  - "pip install -r requirements.txt"
-  - "pip install coveralls"
+  - bash test/setup_test.sh
 
 script:
   - cd test
   - pip freeze
-  - nosetests -xv --process-restartworker --processes=1 --process-timeout=300 --with-coverage --cover-package=module test*.py
-  - coverage combine
-  - coverage report -m
+  # - nosetests -xv --process-restartworker --processes=1 --process-timeout=300 --with-coverage --cover-package=module test*.py
+  # - coverage combine
+  # - coverage report -m
   - cd ..
 
 after_success:
