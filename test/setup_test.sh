@@ -30,8 +30,8 @@ pip install --upgrade pip
 # install prog AND tests requirements :
 echo 'Installing application requirements ...'
 pip install -r requirements.txt
-echo 'Installing application in development mode ...'
-pip install -e .
+# echo 'Installing application in development mode ...'
+# pip install -e .
 echo 'Installing tests requirements ...'
 pip install --upgrade -r test/requirements.txt
 
