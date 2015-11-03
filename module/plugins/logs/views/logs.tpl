@@ -120,6 +120,7 @@
      </div>
    </div>
 
+  %if hasattr(records,"__iter__"):
       <table class="table table-condensed">
          <colgroup>
             <col style="width: 10%" />
@@ -139,6 +140,10 @@
             %end
          </tbody>
       </table>
+   %else:
+      No logs found
+  %end
+
 
    <script type="text/javascript">
       $("#dtr_downtime").daterangepicker({
