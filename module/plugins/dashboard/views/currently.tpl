@@ -31,7 +31,8 @@
          height = ((this.window.innerHeight > 0) ? this.window.innerHeight : this.screen.height) - 1;
 
          if (height < 1) height = 1;
-         $("#page-wrapper").css("min-height", (height-5) + "px");
+         //$("#page-wrapper").css("min-height", (height-5) + "px");
+         $("#page-wrapper").css("min-height", (height-39) + "px");
       });
    });
 </script>
@@ -158,10 +159,10 @@
                   <!--<span class="badger-big badger-left font-{{font}}">{{h['nb_up']}} / {{h['nb_elts']}}</span>-->
                   <span class="badger-big badger-right font-{{font}}">{{h['pct_up']}}%</span>
                </div>
-               
+
                <i class="fa fa-5x fa-server font-{{font}}"></i>
                <p class="badger-title font-{{font}}">&nbsp;Hosts up</p>
-               
+
             %if username != 'anonymous':
             </a>
             %end
@@ -177,10 +178,10 @@
                   <!--<span class="badger-big badger-left font-{{font}}">{{h['nb_unreachable']}} / {{h['nb_elts']}}</span>-->
                   <span class="badger-big badger-right font-{{font}}">{{h['pct_unreachable']}}%</span>
                </div>
-               
+
                <i class="fa fa-5x fa-server font-{{font}}"></i>
                <p class="badger-title font-{{font}}">&nbsp;Hosts unreachable</p>
-               
+
             %if username != 'anonymous':
             </a>
             %end
@@ -196,10 +197,10 @@
                   <!--<span class="badger-big badger-left font-{{font}}">{{h['nb_down']}} / {{h['nb_elts']}}</span>-->
                   <span class="badger-big badger-right font-{{font}}">{{h['pct_down']}}%</span>
                </div>
-               
+
                <i class="fa fa-5x fa-server font-{{font}}"></i>
                <p class="badger-title font-{{font}}">&nbsp;Hosts down</p>
-               
+
             %if username != 'anonymous':
             </a>
             %end
@@ -215,10 +216,10 @@
                   <!--<span class="badger-big badger-left font-{{font}}">{{h['nb_unknown']}} / {{h['nb_elts']}}</span>-->
                   <span class="badger-big badger-right font-{{font}}">{{h['pct_unknown']}}%</span>
                </div>
-               
+
                <i class="fa fa-5x fa-server font-{{font}}"></i>
                <p class="badger-title font-{{font}}">&nbsp;Hosts unknown</p>
-               
+
             %if username != 'anonymous':
             </a>
             %end
@@ -235,10 +236,10 @@
                   <!--<span class="badger-big badger-left font-{{font}}">{{s['nb_ok']}} / {{s['nb_elts']}}</span>-->
                   <span class="badger-big badger-right font-{{font}}">{{s['pct_ok']}}%</span>
                </div>
-               
+
                <i class="fa fa-5x fa-bars font-{{font}}"></i>
                <p class="badger-title font-{{font}}">&nbsp;Services ok</p>
-               
+
             %if username != 'anonymous':
             </a>
             %end
@@ -254,10 +255,10 @@
                   <!--<span class="badger-big badger-left font-{{font}}">{{s['nb_warning']}} / {{s['nb_elts']}}</span>-->
                   <span class="badger-big badger-right font-{{font}}">{{s['pct_warning']}}%</span>
                </div>
-               
+
                <i class="fa fa-5x fa-bars font-{{font}}"></i>
                <p class="badger-title font-{{font}}">&nbsp;Services warning</p>
-               
+
             %if username != 'anonymous':
             </a>
             %end
@@ -273,10 +274,10 @@
                   <!--<span class="badger-big badger-left font-{{font}}">{{s['nb_critical']}} / {{s['nb_elts']}}</span>-->
                   <span class="badger-big badger-right font-{{font}}">{{s['pct_critical']}}%</span>
                </div>
-               
+
                <i class="fa fa-5x fa-bars font-{{font}}"></i>
                <p class="badger-title font-{{font}}">&nbsp;Services critical</p>
-               
+
             %if username != 'anonymous':
             </a>
             %end
@@ -292,10 +293,10 @@
                   <!--<span class="badger-big badger-left font-{{font}}">{{s['nb_unknown']}} / {{s['nb_elts']}}</span>-->
                   <span class="badger-big badger-right font-{{font}}">{{s['pct_unknown']}}%</span>
                </div>
-               
+
                <i class="fa fa-5x fa-bars font-{{font}}"></i>
                <p class="badger-title font-{{font}}">&nbsp;Services unknown</p>
-               
+
             %if username != 'anonymous':
             </a>
             %end
@@ -327,7 +328,7 @@
 
                <i class="fa fa-5x fa-exclamation-triangle"></i>
                <p class="badger-title itproblem">&nbsp;IT Problems</p>
-               
+
             %if username != 'anonymous':
             </a>
             %end
@@ -342,10 +343,10 @@
                   %font='unknown' if overall_state >= 3 else 'critical' if overall_state >= 2 else 'warning' if overall_state >= 1 else 'ok'
                   <span title="Number of impacts." class="badger-big font-{{font}}">{{len(app.datamgr.get_impacts(user))}}</span>
                </div>
-               
+
                <i class="fa fa-5x fa-flash"></i>
                <p class="badger-title impacts">&nbsp;Impacts</p>
-               
+
             %if username != 'anonymous':
             </a>
             %end
