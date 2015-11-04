@@ -428,8 +428,8 @@ class Webui_broker(BaseModule, Daemon):
                 try:
                     self.rg.manage_brok(b)
 
-                    # Question: 
-                    # Do not send broks to internal modules ... 
+                    # Question:
+                    # Do not send broks to internal modules ...
                     # No internal WebUI modules have something to do with broks!
                     for mod in self.modules_manager.get_internal_instances():
                         try:

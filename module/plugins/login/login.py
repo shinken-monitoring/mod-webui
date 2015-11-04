@@ -36,6 +36,19 @@ def get_page():
 def user_login():
     if app.request.get_cookie("user", secret=app.auth_secret):
         app.bottle.redirect("/")
+    elif app.remote_user_enable in ['1', '2']:
+        user_name=None
+        if app.remote_user_variable in app.request.headers and app.remote_user_enable == '1':
+            user_name = app.request.headers[app.remote_user_variable]
+        elif app.remote_user_variable in app.request.environ and app.remote_user_enable == '2':
+            user_name = app.request.environ[app.remote_user_variable]
+        if not user_name:
+            logger.warning("[WebUI] remote user enabled but no user name found")
+            app.bottle.redirect("/user/login")
+        c = app.datamgr.get_contact(user_name)
+        if c:
+            app.response.set_cookie('user', user_name, secret=app.auth_secret, path='/')
+            app.bottle.redirect("/")
 
     err = app.request.GET.get('error', None)
     login_text = app.login_text
@@ -56,7 +69,7 @@ def user_logout():
         app.response.set_cookie('user', False, secret=app.auth_secret, path='/')
     else:
         app.response.set_cookie('user', '', secret=app.auth_secret, path='/')
-        
+
     logger.info("[WebUI]  user '%s' signed out", user_name)
     app.bottle.redirect("/user/login")
     return {}
@@ -66,7 +79,7 @@ def user_auth():
     login = app.request.forms.get('login', '')
     password = app.request.forms.get('password', '')
     logger.info("[WebUI]  user '%s' is signing in ...", login)
-    
+
     # Tries to authenticate user
     is_authenticated = app.check_authentication(login, password)
     if is_authenticated:
@@ -106,7 +119,7 @@ def get_root():
         app.bottle.redirect("/user/login")
 
 
-pages = { 
+pages = {
     user_login: {'routes': ['/user/login', '/user/login/'], 'view': 'login', 'static': True},
     user_login_redirect: {'routes': ['/login'], 'static': True},
     user_auth: {'routes': ['/user/auth'], 'method': 'POST', 'static': True},

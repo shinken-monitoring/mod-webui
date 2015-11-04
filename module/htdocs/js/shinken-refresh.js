@@ -47,8 +47,8 @@ function postpone_refresh(){
       alertify.log("The Web UI backend is not available", "info", 5000);
    }
    nb_refresh_try += 1;
-   
-   // Start a new loop before retrying... 
+
+   // Start a new loop before retrying...
    reinit_refresh();
 }
 
@@ -67,27 +67,27 @@ function playAlertSound() {
  * This function is called on each refresh of the current page.
  * ----------------------------------------------------------------------------
  *  It is to be noted that this function makes an Ajax call on the current URL
- * to get the new version of the current page. This is the most interesting 
- * strategy for refreshing ... but the drawbacks are that it gets an entire 
- * Html page including <head>, <body> and ... <script> 
- * 
+ * to get the new version of the current page. This is the most interesting
+ * strategy for refreshing ... but the drawbacks are that it gets an entire
+ * Html page including <head>, <body> and ... <script>
+ *
  *  The only elements that are replaced in the current page are :
  * - #page-content
  * - #overall-hosts-states
  * - #overall-services-states
  * => These elements are the real "dynamic" elements in the page ...
  *
- *  Because of the new received Html inclusion method, the embedded scripts  
- * are not executed ... this implies that the necessary scripts for refresh 
+ *  Because of the new received Html inclusion method, the embedded scripts
+ * are not executed ... this implies that the necessary scripts for refresh
  * management are to be included in this function in the always Ajax promise!
  * ---------------------------------------------------------------------------
  */
 function do_refresh(){
    if (refresh_logs) console.debug("Refreshing: ", document.URL);
-   
+
    // Refresh starting indicator ...
    $('#header_loading').addClass('fa-spin');
-   
+
    $.ajax({
      url: document.URL,
      method: "get",
@@ -96,13 +96,13 @@ function do_refresh(){
    .done(function( html, textStatus, jqXHR ) {
       /* This var declaration includes the response in the document body ... bad luck!
        * ------------------------------------------------------------------------------
-       * In fact, each refresh do include all the received Html and then we filter 
+       * In fact, each refresh do include all the received Html and then we filter
        * what we are interested in ... not really efficient and quite buggy !
        */
       var $response = $('<div />').html(html);
       // Refresh current page content ...
       $('#page-content').html($response.find('#page-content').html());
-      
+
       // Refresh header bar hosts/services state ...
       if ($('#overall-hosts-states').length > 0) {
          $('#overall-hosts-states').html($response.find('#overall-hosts-states').html());
@@ -114,7 +114,7 @@ function do_refresh(){
          nb_problems += parseInt($('#overall-hosts-states a span').html());
          nb_problems += parseInt($('#overall-services-states a span').html());
          if (refresh_logs) console.debug("Hosts/Services problems", nb_problems);
-         
+
          var old_problems = Number(sessionStorage.getItem("how_many_problems_actually"));
          // Sound alerting
          if (sessionStorage.getItem("sound_play") == '1') {
@@ -130,7 +130,7 @@ function do_refresh(){
          }
          sessionStorage.setItem("how_many_problems_actually", nb_problems);
       }
-      
+
       // Refresh Dashboard currently ...
       if ($('#one-eye-overall').length > 0) {
          $('#one-eye-overall').html($response.find('#one-eye-overall').html());
@@ -140,7 +140,7 @@ function do_refresh(){
          nb_problems += parseInt($('#one-eye-overall-hosts').data("hosts-problems"));
          nb_problems += parseInt($('#one-eye-overall-services').data("services-problems"));
          if (refresh_logs) console.debug("Dashboard currently - Hosts/Services problems", nb_problems);
-         
+
          var old_problems = Number(sessionStorage.getItem("how_many_problems_actually"));
          // Sound alerting
          if (sessionStorage.getItem("sound_play") == '1') {
@@ -161,17 +161,17 @@ function do_refresh(){
          sessionStorage.setItem("how_many_problems_actually", nb_problems);
          if (refresh_logs) console.debug("Dashboard currently - updated stored problems number:", Number(sessionStorage.getItem("how_many_problems_actually")));
       }
-      
-      /* Because of what is explained in the previous comment ... we must use this 
-       * awful hack ! 
+
+      /* Because of what is explained in the previous comment ... we must use this
+       * awful hack !
        * Hoping this is a temporary solution ... :/P
-       * 
+       *
        * An idea : only refreshing the values in the popover would be enough!
        */
       // Activate the popover ...
-      $('#hosts-states-popover').popover({ 
-         placement: 'bottom', 
-         animation: true, 
+      $('#hosts-states-popover').popover({
+         placement: 'bottom',
+         animation: true,
          template: '<div class="popover img-popover"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
          content: function() {
             return $('#hosts-states-popover-content').html();
@@ -179,18 +179,18 @@ function do_refresh(){
       });
 
       // Activate the popover ...
-      $('#services-states-popover').popover({ 
-         placement: 'bottom', 
-         animation: true, 
+      $('#services-states-popover').popover({
+         placement: 'bottom',
+         animation: true,
          template: '<div class="popover img-popover"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
          content: function() {
             return $('#services-states-popover-content').html();
          }
       });
-      
+
       // Clean the DOM after refresh update ...
       $response.remove();
-      
+
 /*
       @mohierf: for future refresh implementation ...
       -----------------------------------------------
@@ -202,14 +202,14 @@ function do_refresh(){
       script = script ? script[1] : 'Refresh for hosts states failed!';
       var $response = $('<div />').html(content);
       $('#page-content').html($response.find('#page-content').html()).append('<script>'+script+'</script>');
-      
+
       var content = html.match(/<!--begin-hosts-states--[^>]*>((\r|\n|.)*)<!--end-hosts-states--/m);
       content = content ? content[1] : 'Refresh for hosts states failed!';
       var script = content.match(/<script[^>]*>((\r|\n|.)*)<\/script/m);
       script = script ? script[1] : 'Refresh for hosts states failed!';
       var $response = $('<div />').html(content);
       $('#overall-hosts-states').html($response.find('#overall-hosts-states').html()).append('<script>'+script+'</script>');
-      
+
       var content = html.match(/<!--begin-services-states--[^>]*>((\r|\n|.)*)<!--end-services-states--/m);
       content = content ? content[1] : 'Refresh for services states failed!';
       var script = content.match(/<script[^>]*>((\r|\n|.)*)<\/script/m);
@@ -231,7 +231,7 @@ function do_refresh(){
          bind_actions();
       }
       */
-      
+
       // Look at the hash part of the URI. If it match a nav name, go for it
       if (location.hash.length > 0) {
          if (refresh_logs) console.debug('Displaying tab: ', location.hash)
@@ -240,7 +240,7 @@ function do_refresh(){
          if (refresh_logs) console.debug('Displaying first tab')
          $('.nav-tabs li a:first').trigger('click');
       }
-      
+
       $('#header_loading').removeClass('fa-spin');
    })
    .fail(function( jqXHR, textStatus, errorThrown ) {
@@ -254,7 +254,7 @@ function do_refresh(){
          $('#header_loading').addClass('font-greyed');
       }
       if (refresh_logs) console.debug("Refresh active is ", sessionStorage.getItem("refresh_active"));
-      
+
       // Refresh is finished
       $('#header_loading').removeClass('fa-spin');
    });
@@ -319,7 +319,7 @@ function start_refresh() {
 $(document).ready(function(){
    // Start refresh periodical check ...
    setInterval("check_refresh();", 1000);
-   
+
    if (sessionStorage.getItem("refresh_active") == '1') {
       $('#header_loading').removeClass('font-greyed');
    } else {
