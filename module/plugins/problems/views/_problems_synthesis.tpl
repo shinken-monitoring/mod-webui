@@ -1,5 +1,6 @@
 <!-- Problems synthesis -->
 
+%search_string = app.get_search_string()
 %synthesis = helper.get_synthesis(all_pbs)
 %s = synthesis['services']
 %h = synthesis['hosts']

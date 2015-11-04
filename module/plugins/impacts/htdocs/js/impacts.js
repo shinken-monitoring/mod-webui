@@ -110,7 +110,7 @@ function on_page_refresh() {
    // This values is filled by the /impact page. By default it's -1
    // and so it do not ask for a default expand. But it will ask for the first value if
    // it's an bad state
-   if (impact_to_expand != -1){
+   if (impact_to_expand && impact_to_expand != -1){
       $('.impact[id="'+impact_to_expand+'"]').trigger('click');
    }
 }

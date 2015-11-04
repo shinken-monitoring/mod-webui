@@ -1,5 +1,7 @@
+%import time
 %helper = app.helper
 %datamgr = app.datamgr
+%search_string = app.get_search_string()
 
 %rebase("layout", title=title, js=['problems/js/problems.js'], css=['problems/css/problems.css'], navi=navi, page="/all", elts_per_page=elts_per_page)
 
@@ -73,7 +75,9 @@
                   %end
                </td>
                <td align="center" class="font-{{pb.state.lower()}}"><strong>{{ pb.state }}</strong></td>
-               <td align="center">{{!helper.print_duration(pb.last_state_change, just_duration=True, x_elts=2)}}</td>
+               <td align="center" title="Since {{time.strftime("%d %b %Y %H:%M:%S", time.localtime(pb.last_state_change))}}">
+                 {{!helper.print_duration(pb.last_state_change, just_duration=True, x_elts=2)}}
+               </td>
                <td class="row hidden-sm hidden-xs">
                   %if app.graphs_module.is_available():
                   <div class="pull-right">

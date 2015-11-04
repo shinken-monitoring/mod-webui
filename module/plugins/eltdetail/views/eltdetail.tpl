@@ -21,6 +21,11 @@ Invalid element name
 %elt_name = elt.host_name if elt_type=='host' else elt.host.host_name+'/'+elt.service_description
 %elt_display_name = elt_host.display_name if elt_type=='host' else elt_service.display_name+' on '+elt_host.display_name
 
+# Replace MACROS in display name ...
+%if hasattr(elt, 'get_data_for_checks'):
+    %elt_display_name = MacroResolver().resolve_simple_macros_in_string(elt_display_name, elt.get_data_for_checks())
+%end
+
 %business_rule = False
 %if elt.get_check_command().startswith('bp_rule'):
 %business_rule = True
@@ -64,7 +69,6 @@ Invalid element name
          %action_urls = elt.action_url.split('|')
          <button class="btn btn-info btn-xs"><i class="fa fa-external-link"></i> {{'Action' if len(action_urls) == 1 else 'Actions'}}</button>
          <button class="btn btn-info btn-xs dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>
-         <!-- Do not know why but MacroResolver sometimes throws an exception !!! -->
          <ul class="dropdown-menu pull-right">
             %for action_url in helper.get_element_actions_url(elt, default_title="Url", default_icon="globe", popover=True):
             <li>{{!action_url}}</li>
@@ -95,7 +99,7 @@ Invalid element name
       <div class="panel-heading fitted-header cursor" data-toggle="collapse" data-parent="#Overview" href="#collapseOverview">
          <h4 class="panel-title"><span class="caret"></span>&nbsp;Overview {{elt_display_name}} {{!helper.get_business_impact_text(elt.business_impact)}}</h4>
       </div>
-  
+
       <div id="collapseOverview" class="panel-body panel-collapse collapse">
          %if elt_type=='host':
          <dl class="col-sm-6 dl-horizontal">
@@ -108,7 +112,7 @@ Invalid element name
             <dt>Importance:</dt>
             <dd>{{!helper.get_business_impact_text(elt.business_impact, True)}}</dd>
          </dl>
-        
+
          <dl class="col-sm-6 dl-horizontal">
             <dt>Parents:</dt>
             %if elt_host.parents:
@@ -160,7 +164,7 @@ Invalid element name
             <dt>Importance:</dt>
             <dd>{{!helper.get_business_impact_text(elt.business_impact, True)}}</dd>
          </dl>
-        
+
          <dl class="col-sm-6 dl-horizontal">
             <dt>Member of:</dt>
             %if elt_service.servicegroups:
@@ -199,15 +203,15 @@ Invalid element name
          <div style="margin-left: 60px;">
          %disabled_ack = '' if elt.is_problem and not elt.problem_has_been_acknowledged else 'disabled'
          %disabled_fix = '' if elt.is_problem and elt.event_handler_enabled and elt.event_handler else 'disabled'
-         <p class="alert alert-danger" style="margin-bottom:0">This element has an important impact on your business, you may 
+         <p class="alert alert-danger" style="margin-bottom:0">This element has an important impact on your business, you may
          <a href="#" action="add-acknowledge" class="{{disabled_ack}} btn btn-primary btn-xs" title="Acknowledge this {{elt_type}} problem" data-element="{{helper.get_uri_name(elt)}}"><i class="fa fa-check"></i> acknowledge it</a>
-         or 
+         or
          <a href="#" action="event-handler" class="{{disabled_fix}} btn btn-primary btn-xs" title="Launch the event handler for this {{elt_type}}" data-element="{{helper.get_uri_name(elt)}}"><i class="fa fa-magic"></i> try to fix it</a>.</p>
          </div>
       </div>
    </div>
    %end
-  
+
    <!-- Third row (bis) : business rule ... -->
    %if business_rule:
    <div class="panel panel-default">
@@ -222,7 +226,7 @@ Invalid element name
       </div>
    </div>
    %end
-  
+
    %if elt_type=='host':
    %synthesis = helper.get_synthesis(elt.services)
    %s = synthesis['services']
@@ -233,7 +237,7 @@ Invalid element name
            <tr>
              <td>
                <a role="menuitem" href="/all?search=type:service {{elt_name}}">
-                  <b>{{s['nb_elts']}} services:&nbsp;</b> 
+                  <b>{{s['nb_elts']}} services:&nbsp;</b>
                </a>
              </td>
 
@@ -276,9 +280,6 @@ Invalid element name
             %if elt.customs:
             <li><a href="#configuration" data-toggle="tab">Configuration</a></li>
             %end
-            %if app.can_action():
-            <li><a href="#commands" data-toggle="tab">Commands</a></li>
-            %end
             <li><a href="#comments" data-toggle="tab">Comments</a></li>
             <li><a href="#downtimes" data-toggle="tab">Downtimes</a></li>
             <!--<li class="timeline_pane"><a href="#timeline" data-toggle="tab">Timeline</a></li>-->
@@ -297,7 +298,7 @@ Invalid element name
             <li><a href="#helpdesk" data-toggle="tab">Helpdesk</a></li>
             %end
          </ul>
-         
+
          <div class="tab-content">
             <!-- Tab custom views -->
             %_go_active = 'active'
@@ -346,13 +347,17 @@ Invalid element name
                               </tr>
                               <tr>
                                  <td><strong>Since:</strong></td>
-                                 <td>
+                                 <td class="popover-dismiss"
+                                       data-html="true" data-toggle="popover" data-trigger="hover" data-placement="bottom"
+                                       data-title="{{elt.get_full_name()}} last state change date"
+                                       data-content=" {{time.strftime("%d %b %Y %H:%M:%S", time.localtime(elt.last_state_change))}} "
+                                       >
                                     {{! helper.print_duration(elt.last_state_change, just_duration=True, x_elts=2)}}
                                  </td>
                               </tr>
                            </tbody>
                         </table>
-                   
+
                         <table class="table table-condensed table-nowrap">
                            <colgroup>
                               <col style="width: 40%" />
@@ -370,9 +375,9 @@ Invalid element name
                               </tr>
                               <tr>
                                  <td><strong>Output:</strong></td>
-                                 <td class="popover-dismiss" 
-                                       data-html="true" data-toggle="popover" data-trigger="hover" data-placement="bottom" 
-                                       data-title="{{elt.get_full_name()}} check output" 
+                                 <td class="popover-dismiss"
+                                       data-html="true" data-toggle="popover" data-trigger="hover" data-placement="bottom"
+                                       data-title="{{elt.get_full_name()}} check output"
                                        data-content=" {{elt.output}}{{'<br/>'+elt.long_output.replace('\n', '<br/>') if elt.long_output else ''}}"
                                        >
                                   {{!helper.strip_html_output(elt.output) if app.allow_html_output else elt.output}}
@@ -380,9 +385,9 @@ Invalid element name
                               </tr>
                               <tr>
                                  <td><strong>Performance data:</strong></td>
-                                 <td class="popover-dismiss ellipsis" 
-                                       data-html="true" data-toggle="popover" data-trigger="hover" data-placement="bottom" 
-                                       data-title="{{elt.get_full_name()}} performance data" 
+                                 <td class="popover-dismiss ellipsis"
+                                       data-html="true" data-toggle="popover" data-trigger="hover" data-placement="bottom"
+                                       data-title="{{elt.get_full_name()}} performance data"
                                        data-content=" {{elt.perf_data if elt.perf_data else '(none)'}}"
                                        >
                                   {{elt.perf_data if elt.perf_data else '(none)'}}
@@ -394,22 +399,22 @@ Invalid element name
                                     {{'%.2f' % elt.latency}} / {{'%.2f' % elt.execution_time}} seconds
                                  </td>
                               </tr>
-                              
+
                               <tr>
                                  <td><strong>Last State Change:</strong></td>
                                  <td><span class="popover-dismiss" data-html="true" data-toggle="popover" data-trigger="hover" data-placement="bottom" data-content="Last state change at {{time.asctime(time.localtime(elt.last_state_change))}}">{{helper.print_duration(elt.last_state_change)}}</span></td>
                               </tr>
-                              <tr>                             
+                              <tr>
                                  <td><strong>Current Attempt:</strong></td>
                                  <td>{{elt.attempt}}/{{elt.max_check_attempts}} ({{elt.state_type}} state)</td>
                               </tr>
-                              <tr>     
+                              <tr>
                                  <td><strong>Next Active Check:</strong></td>
                                  <td><span class="popover-dismiss" data-html="true" data-toggle="popover" data-trigger="hover" data-placement="bottom" data-content="Next active check at {{time.asctime(time.localtime(elt.next_chk))}}">{{helper.print_duration(elt.next_chk)}}</span></td>
                               </tr>
                            </tbody>
                         </table>
-                              
+
                         <table class="table table-condensed">
                            <colgroup>
                               <col style="width: 40%" />
@@ -425,9 +430,9 @@ Invalid element name
                               <tr>
                                  <td><strong>Check period:</strong></td>
                                  %tp=app.datamgr.get_timeperiod(elt.check_period.get_name())
-                                 <td name="check_period" class="popover-dismiss" 
-                                       data-html="true" data-toggle="popover" data-trigger="hover" data-placement="left" 
-                                       data-title='{{tp.alias if hasattr(tp, "alias") else tp.timeperiod_name}}' 
+                                 <td name="check_period" class="popover-dismiss"
+                                       data-html="true" data-toggle="popover" data-trigger="hover" data-placement="left"
+                                       data-title='{{tp.alias if hasattr(tp, "alias") else tp.timeperiod_name}}'
                                        data-content='{{!helper.get_timeperiod_html(tp)}}'
                                        >
                                  {{! helper.get_on_off(elt.check_period.is_time_valid(now), 'Is element check period currently active?')}}
@@ -443,8 +448,8 @@ Invalid element name
                               %if elt.maintenance_period is not None:
                               <tr>
                                  <td><strong>Maintenance period:</strong></td>
-                                 <td name="maintenance_period" class="popover-dismiss" 
-                                       data-html="true" data-toggle="popover" data-trigger="hover" data-placement="left" 
+                                 <td name="maintenance_period" class="popover-dismiss"
+                                       data-html="true" data-toggle="popover" data-trigger="hover" data-placement="left"
                                        data-title='{{tp.alias if hasattr(tp, "alias") else tp.timeperiod_name}}'
                                        data-content='{{!helper.get_timeperiod_html(tp)}}'
                                        >
@@ -464,9 +469,9 @@ Invalid element name
                               <tr>
                                  <td><strong>Active checks:</strong></td>
                                  <td>
-                                    <input type="checkbox" {{'checked' if elt.active_checks_enabled else ''}} 
+                                    <input type="checkbox" {{'checked' if elt.active_checks_enabled else ''}}
                                           class="switch" data-size="mini" data-on-color="success" data-off-color="danger"
-                                          data-type="action" action="toggle-active-checks" 
+                                          data-type="action" action="toggle-active-checks"
                                           data-element="{{helper.get_uri_name(elt)}}" data-value="{{elt.active_checks_enabled}}"
                                           >
                                  </td>
@@ -488,7 +493,7 @@ Invalid element name
                               <tr>
                                  <td><strong>Passive checks:</strong></td>
                                  <td>
-                                    <input type="checkbox" {{'checked' if elt.passive_checks_enabled else ''}} 
+                                    <input type="checkbox" {{'checked' if elt.passive_checks_enabled else ''}}
                                           class="switch" data-size="mini" data-on-color="success" data-off-color="danger"
                                           data-type="action" action="toggle-passive-checks"
                                           data-element="{{helper.get_uri_name(elt)}}" data-value="{{elt.passive_checks_enabled}}"
@@ -624,7 +629,7 @@ Invalid element name
                               <tr>
                                  <td><strong>Notifications:</strong></td>
                                  <td>
-                                    <input type="checkbox" {{'checked' if elt.notifications_enabled else ''}} 
+                                    <input type="checkbox" {{'checked' if elt.notifications_enabled else ''}}
                                           class="switch" data-size="mini" data-on-color="success" data-off-color="danger"
                                           data-type="action" action="toggle-notifications"
                                           data-element="{{helper.get_uri_name(elt)}}" data-value="{{elt.notifications_enabled}}"
@@ -635,8 +640,8 @@ Invalid element name
                               <tr>
                                  <td><strong>Notification period:</strong></td>
                                  %tp=app.datamgr.get_timeperiod(elt.notification_period.get_name())
-                                 <td name="notification_period" class="popover-dismiss" data-html="true" data-toggle="popover" data-trigger="hover" data-placement="left" 
-                                       data-title='{{tp.alias if hasattr(tp, "alias") else tp.timeperiod_name}}' 
+                                 <td name="notification_period" class="popover-dismiss" data-html="true" data-toggle="popover" data-trigger="hover" data-placement="left"
+                                       data-title='{{tp.alias if hasattr(tp, "alias") else tp.timeperiod_name}}'
                                        data-content='{{!helper.get_timeperiod_html(tp)}}'>
                                     {{! helper.get_on_off(elt.notification_period.is_time_valid(now), 'Is element notification period currently active?')}}
                                     <a href="/timeperiods">{{elt.notification_period.alias}}</a>
@@ -683,7 +688,7 @@ Invalid element name
                                  <td>
                                    %contacts = [c for c in elt.contacts if app.datamgr.get_contact(c.contact_name, user)]
                                    %for c in contacts:
-                                   <a href="/contact/{{c.contact_name}}">{{ c.alias if c.alias and c.alias != 'none' else c.contact_name }}</a>, 
+                                   <a href="/contact/{{c.contact_name}}">{{ c.alias if c.alias and c.alias != 'none' else c.contact_name }}</a>,
                                    %end
                                  </td>
                               </tr>
@@ -712,7 +717,7 @@ Invalid element name
                         <!-- Show our father dependencies if we got some -->
                         %if elt.parent_dependencies:
                         <h4>Root cause:</h4>
-                        {{!helper.print_business_rules(app.datamgr.get_business_parents(elt), source_problems=elt.source_problems)}}
+                        {{!helper.print_business_rules(app.datamgr.get_business_parents(user, elt), source_problems=elt.source_problems)}}
                         %end
 
                         <!-- If we are an host and not a problem, show our services -->
@@ -793,12 +798,12 @@ Invalid element name
                               <td>{{elt.customs[var]}}</td>
                               %if app.can_action():
                               <td>
-                                 <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm" 
+                                 <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm"
                                        data-type="action" action="change-variable"
                                        data-toggle="tooltip" data-placement="bottom" title="Change a custom variable for this {{elt_type}}"
                                        data-element="{{helper.get_uri_name(elt)}}" data-variable="{{var}}" data-value="{{elt.customs[var]}}"
                                        >
-                                    <i class="fa fa-gears"></i> Change 
+                                    <i class="fa fa-gears"></i> Change
                                  </button>
                               </td>
                               %end
@@ -811,78 +816,6 @@ Invalid element name
             </div>
             %end
             <!-- Tab Configuration end -->
-            
-            <!-- Tab Commands start -->
-            %if app.can_action():
-            <div class="tab-pane fade" id="commands">
-               <div class="panel panel-default">
-                  <div class="panel-body">
-
-                     <div class="col-sm-6">
-                        <table class="table table-condensed">
-                           <colgroup>
-                              <col style="width: 60%" />
-                              <col style="width: 40%" />
-                           </colgroup>
-                           <thead>
-                              <tr>
-                                 <th colspan="2">Toggle current:</th>
-                              </tr>
-                           </thead>
-                           <tbody>
-                              <tr>
-                                 <td><strong>Active checks enabled:</strong></td>
-                                 <td>
-                                    <input type="checkbox" class="switch" {{'checked' if elt.active_checks_enabled else ''}} 
-                                          data-type="action" action="toggle-active-checks" 
-                                          data-element="{{helper.get_uri_name(elt)}}" data-value="{{elt.active_checks_enabled}}"
-                                          >
-                                 </td>
-                              </tr>
-                              <tr>
-                                 <td><strong>Passive checks enabled:</strong></td>
-                                 <td>
-                                    <input type="checkbox" class="switch" {{'checked' if elt.passive_checks_enabled else ''}} 
-                                          data-type="action" action="toggle-passive-checks"
-                                          data-element="{{helper.get_uri_name(elt)}}" data-value="{{elt.passive_checks_enabled}}"
-                                          >
-                                 </td>
-                              </tr>
-                              <tr>
-                                 <td><strong>Notifications enabled:</strong></td>
-                                 <td>
-                                    <input type="checkbox" class="switch" {{'checked' if elt.notifications_enabled else ''}} 
-                                          data-type="action" action="toggle-notifications"
-                                          data-element="{{helper.get_uri_name(elt)}}" data-value="{{elt.notifications_enabled}}"
-                                          >
-                                 </td>
-                              </tr>
-                              <tr>
-                                 <td><strong>Event handler enabled:</strong></td>
-                                 <td>
-                                    <input type="checkbox" class="switch" {{'checked' if elt.event_handler_enabled else ''}}
-                                          data-type="action" action="toggle-event-handler"
-                                          data-element="{{helper.get_uri_name(elt)}}" data-value="{{elt.event_handler_enabled}}"
-                                          >
-                                 </td>
-                              </tr>
-                              <tr>
-                                 <td><strong>Flapping detection enabled:</strong></td>
-                                 <td>
-                                    <input type="checkbox" class="switch" {{'checked' if elt.flap_detection_enabled else ''}} 
-                                          data-type="action" action="toggle-flap-detection"
-                                          data-element="{{helper.get_uri_name(elt)}}" data-value="{{elt.flap_detection_enabled}}"
-                                          >
-                                 </td>
-                              </tr>
-                           </tbody>
-                        </table>
-                     </div>
-                  </div>
-               </div>
-            </div>
-            %end
-            <!-- Tab Commands end -->
 
             <!-- Tab Comments start -->
             <div class="tab-pane fade" id="comments">
@@ -905,12 +838,12 @@ Invalid element name
                               <td>{{c.comment}}</td>
                               <td>{{helper.print_date(c.entry_time)}}</td>
                               <td>
-                                 <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm" 
+                                 <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm"
                                        data-type="action" action="delete-comment"
                                        data-toggle="tooltip" data-placement="bottom" title="Delete the comment '{{c.id}}' for this {{elt_type}}"
                                        data-element="{{helper.get_uri_name(elt)}}" data-comment="{{c.id}}"
                                        >
-                                    <i class="fa fa-trash-o"></i> 
+                                    <i class="fa fa-trash-o"></i>
                                  </button>
                               </td>
                            </tr>
@@ -923,25 +856,25 @@ Invalid element name
                         <p class="font-blue">No comments available.</p>
                      </div>
                      %end
-                     
-                     <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm" 
+
+                     <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm"
                            data-type="action" action="add-comment"
                            data-toggle="tooltip" data-placement="bottom" title="Add a comment for this {{elt_type}}"
-                           data-element="{{helper.get_uri_name(elt)}}" 
+                           data-element="{{helper.get_uri_name(elt)}}"
                            >
                         <i class="fa fa-plus"></i> Add a comment
                      </button>
                      %if elt.comments:
-                     <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm" 
+                     <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm"
                            data-type="action" action="delete-comments"
                            data-toggle="tooltip" data-placement="bottom" title="Delete all the comments of this {{elt_type}}"
-                           data-element="{{helper.get_uri_name(elt)}}" 
+                           data-element="{{helper.get_uri_name(elt)}}"
                            >
                         <i class="fa fa-minus"></i> Delete all comments
                      </button>
                      %end
                   </div>
-                  
+
                </div>
             </div>
             <!-- Tab Comments end -->
@@ -967,12 +900,12 @@ Invalid element name
                               <td>{{dt.comment}}</td>
                               <td>{{helper.print_date(dt.start_time)}} - {{helper.print_date(dt.end_time)}}</td>
                               <td>
-                                 <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm" 
+                                 <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm"
                                        data-type="action" action="delete-downtime"
                                        data-toggle="tooltip" data-placement="bottom" title="Delete the downtime '{{dt.id}}' for this {{elt_type}}"
                                        data-element="{{helper.get_uri_name(elt)}}" data-downtime="{{dt.id}}"
                                        >
-                                    <i class="fa fa-trash-o"></i> 
+                                    <i class="fa fa-trash-o"></i>
                                  </button>
                               </td>
                            </tr>
@@ -984,19 +917,19 @@ Invalid element name
                         <p class="font-blue">No downtimes available.</p>
                      </div>
                      %end
-                  
-                     <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm" 
+
+                     <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm"
                            data-type="action" action="schedule-downtime"
                            data-toggle="tooltip" data-placement="bottom" title="Schedule a downtime for this {{elt_type}}"
-                           data-element="{{helper.get_uri_name(elt)}}" 
+                           data-element="{{helper.get_uri_name(elt)}}"
                            >
                         <i class="fa fa-plus"></i> Schedule a downtime
                      </button>
                      %if elt.downtimes:
-                     <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm" 
+                     <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm"
                            data-type="action" action="delete-downtimes"
                            data-toggle="tooltip" data-placement="bottom" title="Delete all the downtimes of this {{elt_type}}"
-                           data-element="{{helper.get_uri_name(elt)}}" 
+                           data-element="{{helper.get_uri_name(elt)}}"
                            >
                         <i class="fa fa-minus"></i> Delete all downtimes
                      </button>
@@ -1029,7 +962,7 @@ Invalid element name
                      <table class="table table-condensed">
                         <thead>
                            <tr>
-                              %if elt_type=='host' and elt.services:
+                              %if elt_type=='host':
                               <th>Service</th>
                               %end
                               <th>Metric</th>
@@ -1039,12 +972,50 @@ Invalid element name
                               <th>Min</th>
                               <th>Max</th>
                               <th>UOM</th>
-                              %if app.graphs_module.is_available():
                               <th></th>
-                              %end
                            </tr>
                         </thead>
                         <tbody style="font-size:x-small;">
+                        %# Host check metrics ...
+                        %if elt_type=='host' or elt_type=='service':
+                           %host_line = True
+                           %perfdatas = PerfDatas(elt.perf_data)
+                           %if perfdatas:
+                           %for metric in sorted(perfdatas, key=lambda metric: metric.name):
+                           %if metric.name:
+                           <tr>
+                              %if elt_type=='host':
+                              <td><strong>{{'Host check' if host_line else ''}}</strong></td>
+                              %host_line = False
+                              %end
+                              <td><strong>{{metric.name}}</strong></td>
+                              <td>{{metric.value}}</td>
+                              <td>{{metric.warning if metric.warning else ''}}</td>
+                              <td>{{metric.critical if metric.critical else ''}}</td>
+                              <td>{{metric.min if metric.min else ''}}</td>
+                              <td>{{metric.max if metric.max else ''}}</td>
+                              <td>{{metric.uom if metric.uom else ''}}</td>
+
+                              %if app.graphs_module.is_available():
+                              <td>
+                                 %graphs = app.graphs_module.get_graph_uris(elt, duration=12*3600)
+                                 %for graph in graphs:
+                                    %if re.findall('\\b'+metric.name+'\\b', graph['img_src']):
+                                       <a role="button" tabindex="0" data-toggle="popover" title="{{ elt.get_full_name() }}" data-html="true" data-content="<img src='{{ graph['img_src'] }}' width='600px' height='200px'>" data-trigger="hover" data-placement="left">{{!helper.get_perfometer(elt, metric.name)}}</a>
+                                    %end
+                                 %end
+                              </td>
+                              %else:
+                              <td>
+                                 <a role="button" tabindex="0" >{{!helper.get_perfometer(elt, metric.name)}}</a>
+                              </td>
+                              %end
+                           </tr>
+                           %end
+                           %end
+                           %end
+                        %end
+                        %# Host services metrics ...
                         %if elt_type=='host' and elt.services:
                         %for s in elt.services:
                            %service_line = True
@@ -1053,7 +1024,7 @@ Invalid element name
                            %for metric in sorted(perfdatas, key=lambda metric: metric.name):
                            %if metric.name and metric.value:
                            <tr>
-                              <td><strong>{{s.get_name() if service_line else ''}}</strong></td>
+                              <td>{{!helper.get_link(s, short=True) if service_line else ''}}</td>
                               %service_line = False
                               <td><strong>{{metric.name}}</strong></td>
                               <td>{{metric.value}}</td>
@@ -1062,7 +1033,7 @@ Invalid element name
                               <td>{{metric.min if metric.min else ''}}</td>
                               <td>{{metric.max if metric.max else ''}}</td>
                               <td>{{metric.uom if metric.uom else ''}}</td>
-                              
+
                               %if app.graphs_module.is_available():
                               <td>
                                  %graphs = app.graphs_module.get_graph_uris(s, duration=12*3600)
@@ -1072,42 +1043,16 @@ Invalid element name
                                     %end
                                  %end
                               </td>
-                              %end
-                           </tr>
-                           %end
-                           %end
-                           %end
-                        %end
-                        %end
-                        %if elt_type=='service':
-                           %perfdatas = PerfDatas(elt.perf_data)
-                           %if perfdatas:
-                           %for metric in sorted(perfdatas, key=lambda metric: metric.name):
-                           %if metric.name and metric.value:
-                           <tr>
-                              <td><strong>{{metric.name}}</strong></td>
-                              <td>{{metric.value}}</td>
-                              <td>{{metric.warning if metric.warning else ''}}</td>
-                              <td>{{metric.critical if metric.critical else ''}}</td>
-                              <td>{{metric.min if metric.min else ''}}</td>
-                              <td>{{metric.max if metric.max else ''}}</td>
-                              <td>{{metric.uom if metric.uom else ''}}</td>
-                              
-                              %if app.graphs_module.is_available():
+                              %else:
                               <td>
-                                 %# Graphs
-                                 %graphs = app.graphs_module.get_graph_uris(elt, duration=12*3600)
-                                 %for graph in graphs:
-                                    %if re.findall('\\b'+metric.name+'\\b', graph['img_src']):
-                                       <a role="button" tabindex="0" data-toggle="popover" title="{{ elt.get_full_name() }}" data-html="true" data-content="<img src='{{ graph['img_src'] }}' width='600px' height='200px'>" data-trigger="hover" data-placement="left">{{!helper.get_perfometer(elt, metric.name)}}</a>
-                                    %end
-                                 %end
+                                 <a role="button" tabindex="0" >{{!helper.get_perfometer(s, metric.name)}}</a>
                               </td>
                               %end
                            </tr>
                            %end
                            %end
                            %end
+                        %end
                         %end
                         </tbody>
                      </table>
@@ -1145,7 +1090,7 @@ Invalid element name
                         <div id='real_graphs'>
                         </div>
                      </div>
-                     
+
                      <script>
                      $('a[href="#graphs"]').on('shown.bs.tab', function (e) {
                         %uris = dict()
@@ -1158,7 +1103,7 @@ Invalid element name
                         // let's create the html content for each time range
                         var element='/{{elt_type}}/{{elt.get_full_name()}}';
                         %for period in ['4h', '1d', '1w', '1m', '1y']:
-                        
+
                         html_graphes['{{period}}'] = '<p>';
                         %for g in uris[period]:
                         /* Feature removed because of URL encoding in graphs submodule.
@@ -1167,13 +1112,13 @@ Invalid element name
                         img_src = img_src.replace(/(width=).*?(&)/,'$1' + $('#real_graphs').width() + '$2');
                         img_src = img_src.replace(/(height=).*?(&)/,'$1' + ($('#real_graphs').width() / 3) + '$2');
                         */
-                        
+
                         html_graphes['{{period}}'] +=  '<img src="{{g['img_src']}}" class="jcropelt"/> <p></p>';
                         %end
                         html_graphes['{{period}}'] += '</p>';
 
                         %end
-                        
+
                         // Set first graph
                         current_graph = '4h';
                         $('a[data-type="graph"][data-period="'+current_graph+'"]').trigger('click');
@@ -1237,11 +1182,11 @@ Invalid element name
                   <div class="panel-body">
                      <div id="inner_helpdesk" data-element='{{elt.get_full_name()}}'>
                      </div>
-                  
-                     <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm" 
+
+                     <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm"
                            data-type="action" action="create-ticket"
                            data-toggle="tooltip" data-placement="bottom" title="Create a ticket for this {{elt_type}}"
-                           data-element="{{helper.get_uri_name(elt)}}" 
+                           data-element="{{helper.get_uri_name(elt)}}"
                            >
                         <i class="fa fa-medkit"></i> Create a ticket
                      </button>

@@ -294,7 +294,7 @@ class Webui_broker(BaseModule, Daemon):
     # A plugin send us en external command. We just put it
     # in the good queue
     def push_external_command(self, e):
-        logger.info("[WebUI] Got an external command: %s", e.__dict__)
+        logger.debug("[WebUI] Got an external command: %s", e.__dict__)
         try:
             self.from_q.put(e)
         except Exception, exp:
@@ -428,8 +428,8 @@ class Webui_broker(BaseModule, Daemon):
                 try:
                     self.rg.manage_brok(b)
 
-                    # Question: 
-                    # Do not send broks to internal modules ... 
+                    # Question:
+                    # Do not send broks to internal modules ...
                     # No internal WebUI modules have something to do with broks!
                     for mod in self.modules_manager.get_internal_instances():
                         try:
@@ -496,11 +496,13 @@ class Webui_broker(BaseModule, Daemon):
             for (f, entry) in pages.items():
                 routes = entry.get('routes', None)
                 v = entry.get('view', None)
+                name = entry.get('name', None)
                 static = entry.get('static', False)
                 widget_lst = entry.get('widget', [])
                 widget_desc = entry.get('widget_desc', None)
                 widget_name = entry.get('widget_name', None)
                 widget_picture = entry.get('widget_picture', None)
+                search_engine = entry.get('search_engine', False)
 
                 # IMPORTANT: apply VIEW BEFORE route!
                 if v:
@@ -515,7 +517,7 @@ class Webui_broker(BaseModule, Daemon):
                         # plugin page, but not for static objects
                         # so we set the lock at the function level.
                         lock_version = self.lockable_function(f)
-                        f = route(r, callback=lock_version, method=method)
+                        f = route(r, callback=lock_version, method=method, name=name, search_engine=search_engine)
 
                 # If the plugin declare a static entry, register it
                 # and remember: really static! because there is no lock
@@ -713,6 +715,10 @@ class Webui_broker(BaseModule, Daemon):
                 self.modules_manager.set_to_restart(mod)
 
         return lst
+
+
+    def get_search_string(self, default=""):
+        return self.request.query.get('search', default)
 
 
     def redirect404(self, msg="Not found"):

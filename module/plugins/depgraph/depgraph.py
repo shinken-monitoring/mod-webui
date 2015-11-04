@@ -25,6 +25,7 @@
 
 import time
 import random
+import urllib
 
 ### Will be populated by the UI with it's own value
 app = None
@@ -108,6 +109,7 @@ def get_depgraph_widget():
 
 def get_depgraph_inner(name):
     user = app.request.environ['USER']
+    name = urllib.unquote(name)
     elt = app.datamgr.get_element(name, user) or app.redirect404()
     
     graphId = "graph_%d" % random.randint(1, 9999)

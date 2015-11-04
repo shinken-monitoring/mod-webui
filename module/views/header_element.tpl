@@ -74,7 +74,7 @@
          %label = 'danger' if state <= app.hosts_states_warning else 'warning' if state <= app.hosts_states_critical else 'success'
          <a id="hosts-states-popover" href="/all?search=type:host" data-original-title="Hosts states" data-toggle="popover" title="Overall hosts states, {{h['nb_elts']}} hosts, {{h["nb_down"]+h["nb_unreachable"]}} problems" data-html="true" data-trigger="hover">
             <i class="fa fa-server"></i>
-            <span class="label label-as-badge label-{{label}}">{{ len(app.datamgr.get_problems(user=user, type='host')) }}</span>
+            <span class="label label-as-badge label-{{label}}">{{ len(app.datamgr.get_problems(user=user, search='type:host')) }}</span>
          </a>
       </li>
       <!--end-hosts-states-->
@@ -89,7 +89,7 @@
          %label = 'danger' if state <= app.services_states_warning else 'warning' if state <= app.services_states_critical else 'success'
          <a id="services-states-popover" href="/all?search=type:service" data-original-title="Services states" data-toggle="popover popover-services" title="Overall services states, {{s['nb_elts']}} services, {{s["nb_critical"]+s["nb_warning"]}} problems" data-html="true" data-trigger="hover">
             <i class="fa fa-bars"></i>
-            <span class="label label-as-badge label-{{label}}">{{ len(app.datamgr.get_problems(user=user, type='service')) }}</span>
+            <span class="label label-as-badge label-{{label}}">{{ len(app.datamgr.get_problems(user=user, search='type:service')) }}</span>
          </a>
       </li>
       <!--end-services-states-->
@@ -225,7 +225,6 @@
   <!-- /.navbar-static-side -->
 </nav>
 
-%how_many_problems_actually = len(app.datamgr.get_all_problems())
 %if app.play_sound:
 <audio id="alert-sound" volume="1.0">
    <source src="/static/sound/alert.wav" type="audio/wav">
@@ -239,28 +238,20 @@
       // Default is to play ...
       sessionStorage.setItem("sound_play", {{'1' if app.play_sound else '0'}});
    }
-   if (! sessionStorage.getItem("how_many_problems_actually")) {
-      // Default is current value ...
-      sessionStorage.setItem("how_many_problems_actually", {{how_many_problems_actually}});
-   }
    
+   // Toggle sound ...
    if (sessionStorage.getItem("sound_play") == '1') {
       $('#sound_alerting i.fa-ban').addClass('hidden');
-      if (Number(sessionStorage.getItem("how_many_problems_actually")) < {{how_many_problems_actually}}) {
-         playAlertSound();
-      }
    } else {
       $('#sound_alerting i.fa-ban').removeClass('hidden');
    }
-   sessionStorage.setItem("how_many_problems_actually", {{how_many_problems_actually}});
-
-   // Toggle sound ...
    $('[action="toggle-sound-alert"]').on('click', function (e, data) {
       if (sessionStorage.getItem("sound_play") == '1') {
          sessionStorage.setItem("sound_play", "0");
          $('#sound_alerting i.fa-ban').removeClass('hidden');
       } else {
          playAlertSound();
+         $('#sound_alerting i.fa-ban').addClass('hidden');
       }
    });
 </script>

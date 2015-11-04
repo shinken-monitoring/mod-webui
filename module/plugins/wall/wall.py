@@ -36,11 +36,15 @@ import time
 def get_page():
     user = app.request.environ['USER']
 
-    # Most important impacts
-    impacts = app.datamgr.get_important_impacts(user=user)
+    # Apply search filter if exists ...
+    search = app.request.query.get('search', "isnot:UP isnot:OK isnot:PENDING isnot:ACK isnot:DOWNTIME bi:>=0 type:all")
+    logger.debug("[WebUI-wall] search parameters '%s'", search)
+
+    # Impacts
+    impacts = app.datamgr.get_impacts(user, search)
 
     # Last problems
-    problems =  app.datamgr.get_problems(user=user, get_acknowledged=False, get_downtimed=False)
+    problems =  app.datamgr.get_problems(user, search, get_acknowledged=False, get_downtimed=False)
     
     # Get only the last hour problems
     now = time.time()
@@ -49,5 +53,5 @@ def get_page():
     return {'app': app, 'user': user, 'impacts': impacts, 'problems': problems, 'last_problems': last_problems}
 
 pages = {
-        get_page: {'routes': ['/wall/', '/wall'], 'view': 'wall', 'static': True}
+    get_page: {'routes': ['/wall/', '/wall'], 'view': 'wall', 'name': 'Wall', 'static': True, 'search_engine': True}
 }
