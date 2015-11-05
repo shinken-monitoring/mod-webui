@@ -91,7 +91,7 @@ def show_minemap():
 
     navi = app.helper.get_navi(total, start, step=step)
 
-    return {'navi': navi, 'search_string': search, 'items': items[start:end], 'page': "minemap"}
+    return {'navi': navi, 'items': items[start:end], 'page': "minemap"}
 
 def show_minemaps():
     app.bottle.redirect("/minemap/all")
@@ -103,6 +103,6 @@ def show_minemaps():
 pages = {
     # reload_cfg: {'routes': ['/reload/minemap']},
 
-    show_minemap: {'routes': ['/minemap'], 'view': 'minemap', 'static': True},
+    show_minemap: {'routes': ['/minemap'], 'view': 'minemap', 'name': 'Minemap', 'static': True, 'search_engine': True},
     show_minemaps: {'routes': ['/minemaps'], 'view': 'minemap', 'static': True}
 }

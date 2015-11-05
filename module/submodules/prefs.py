@@ -93,7 +93,7 @@ class MongoDBPreferences():
         self.database = getattr(mod_conf, 'database', 'shinken')
         self.username = getattr(mod_conf, 'username', None)
         self.password = getattr(mod_conf, 'password', None)
-        logger.info('[WebUI-MongoDBPreferences] database: %s' % self.database)
+        logger.info('[WebUI-MongoDBPreferences] database: %s, user: %s', self.database, self.username)
 
         self.mongodb_fsync = getattr(mod_conf, 'mongodb_fsync', "True") == "True"
 

@@ -27,6 +27,7 @@
 import time
 import datetime
 import arrow
+import urllib
 
 from collections import OrderedDict
 
@@ -46,6 +47,7 @@ def _get_availability(*args, **kwargs):
 
 def get_element(name):
     user = app.bottle.request.environ['USER']
+    name = urllib.unquote(name)
     elt = app.datamgr.get_element(name, user) or app.redirect404()
 
     records = []
@@ -101,5 +103,5 @@ def get_page():
 
 pages = {
     get_element: {'routes': ['/availability/inner/<name:path>'], 'view': 'availability-elt', 'static': True},
-    get_page: {'routes': ['/availability'], 'view': 'availability-all', 'static': True},
+    get_page: {'routes': ['/availability'], 'view': 'availability-all', 'name': 'Availabilities', 'static': True, 'search_engine': True},
 }

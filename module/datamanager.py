@@ -159,6 +159,11 @@ class WebUIDataManager(DataManager):
                 if contact in s.contacts:
                     return True
 
+        # May be it's a contact on service host
+        if item.__class__.my_type == 'service':
+            if contact in item.host.contacts:
+                return True
+
         # Now impacts related maybe?
         if hasattr(item, 'impacts'):
             for imp in item.impacts:
@@ -194,7 +199,10 @@ class WebUIDataManager(DataManager):
 
     def get_host(self, hname, user):
         """ Get a host by its hostname. """
-        hname = hname.decode('utf8', 'ignore')
+        try:
+            hname = hname.decode('utf8', 'ignore')
+        except UnicodeEncodeError:
+            pass
         host = self.rg.hosts.find_by_name(hname)
         if host and self._is_related_to(host, user):
             return host
@@ -238,8 +246,15 @@ class WebUIDataManager(DataManager):
 
     def get_service(self, hname, sdesc, user):
         """ Get a service by its hostname and service description. """
-        hname = hname.decode('utf8', 'ignore')
-        sdesc = sdesc.decode('utf8', 'ignore')
+        try:
+            hname = hname.decode('utf8', 'ignore')
+        except UnicodeEncodeError:
+            pass
+        try:
+            sdesc = sdesc.decode('utf8', 'ignore')
+        except UnicodeEncodeError:
+            pass
+
         service = self.rg.services.find_srv_by_name_and_hostname(hname, sdesc)
         if service and self._is_related_to(service, user):
             return service
@@ -469,7 +484,10 @@ class WebUIDataManager(DataManager):
         return self.rg.commands
 
     def get_command(self, name):
-        name = name.decode('utf8', 'ignore')
+        try:
+            name = name.decode('utf8', 'ignore')
+        except UnicodeEncodeError:
+            pass
         return self.rg.commands.find_by_name(name)
 
     ##
@@ -480,7 +498,10 @@ class WebUIDataManager(DataManager):
         return self._only_related_to(items, user)
 
     def get_contact(self, name, user=None):
-        name = name.decode('utf8', 'ignore')
+        try:
+            name = name.decode('utf8', 'ignore')
+        except UnicodeEncodeError:
+            pass
         item = self.rg.contacts.find_by_name(name)
         if self._is_related_to(item, user):
             return item
@@ -490,7 +511,7 @@ class WebUIDataManager(DataManager):
     # Contacts groups
     ##
     def get_contactgroups(self, user):
-        """ Get a list of known contacts groups 
+        """ Get a list of known contacts groups
 
             :param user: concerned user
             :returns: List of contacts groups related to the user
@@ -505,12 +526,15 @@ class WebUIDataManager(DataManager):
             :param user: concerned user
             :returns: List of contacts groups related to the user
         """
-        name = name.decode('utf8', 'ignore')
+        try:
+            name = name.decode('utf8', 'ignore')
+        except UnicodeEncodeError:
+            pass
         item = self.rg.contactgroups.find_by_name(name)
         if self._is_related_to(item, user):
             return item
         return None
-        
+
     def get_contactgroup_contacts(self, name, user):
         """ Get the contacts in a contacts group
 
@@ -518,7 +542,10 @@ class WebUIDataManager(DataManager):
             :param user: concerned user
             :returns: List of contacts in the group only related to the user
         """
-        name = name.decode('utf8', 'ignore')
+        try:
+            name = name.decode('utf8', 'ignore')
+        except UnicodeEncodeError:
+            pass
         item = self.rg.contactgroups.find_by_name(name)
         if self._is_related_to(item, user):
             contacts = [c for c in self.get_contacts(user) if c in item.members]
@@ -595,7 +622,7 @@ class WebUIDataManager(DataManager):
         for name in names:
             r.append((name, self.rg.tags[name]))
         return r
-        
+
         # return sorted(self.rg.tags)
 
     def get_hosts_tagged_with(self, tag, user):
@@ -613,7 +640,7 @@ class WebUIDataManager(DataManager):
         for name in names:
             r.append((name, self.rg.services_tags[name]))
         return r
-        
+
         # return sorted(self.rg.services_tags)
 
     def get_services_tagged_with(self, tag, user):
@@ -657,7 +684,7 @@ class WebUIDataManager(DataManager):
     ##
     def get_overall_state(self, user):
         ''' Get the worst state of all business impacting elements. '''
-        impacts = self.get_important_impacts(user, sorter=worse_first)
+        impacts = self.get_impacts(user, sorter=worse_first)
         if impacts:
             return impacts[0].state_id
         else:
@@ -674,17 +701,42 @@ class WebUIDataManager(DataManager):
     def get_important_elements(self, user, type='all', sorter=worse_first):
         return self.search_hosts_and_services('bi:>2 ack:false type:%s' % type, user=user, sorter=sorter)
 
-    def get_impacts(self, user, bi='>=0', type='all', sorter=worse_first):
-        return self.search_hosts_and_services('is:impact bi:%s type:%s' % (bi, type), user=user, get_impacts=True, sorter=sorter)
+    def get_impacts(self, user, search='is:impact bi:>=0 type:all', sorter=worse_first):
+        if not "is:impact" in search:
+            search = "is:impact "+search
+        return self.search_hosts_and_services(search, user=user, get_impacts=True, sorter=sorter)
 
-    def get_important_impacts(self, user, type='all', sorter=worse_first):
-        return self.get_impacts(user=user, type=type, bi='>2', sorter=sorter)
+    def get_problems(self, user, search='isnot:UP isnot:OK isnot:PENDING bi:>=0 type:all', get_acknowledged=False, get_downtimed=False, sorter=worse_first):
+        if not "isnot:UP" in search:
+            search = "isnot:UP "+search
+        if not "isnot:OK" in search:
+            search = "isnot:OK "+search
+        if not "isnot:PENDING" in search:
+            search = "isnot:PENDING "+search
+        return self.search_hosts_and_services('%s ack:%s downtime:%s' % (search, str(get_acknowledged), str(get_downtimed)), user=user, sorter=sorter)
 
-    def get_problems(self, user, get_acknowledged=False, get_downtimed=False, bi='>=0', type='all', sorter=worse_first):
-        return self.search_hosts_and_services('isnot:UP isnot:OK isnot:PENDING ack:%s downtime:%s bi:%s type:%s' % (str(get_acknowledged), str(get_downtimed), bi, type), user=user, sorter=sorter)
+    def guess_root_problems(self, user, obj):
+        ''' Returns the root problems for a service. '''
+        if obj.__class__.my_type != 'service':
+            return []
 
-    def get_important_problems(self, user, type='all', sorter=worse_first):
-        return self.get_problems(user, bi=">2", type=type, sorter=sorter)
+        items = obj.host.services
+        r = [s for s in self._only_related_to(items, user) if s.state_id != 0 and s != obj]
+        return r
 
+    # Return a tree of {'elt': Host, 'fathers': [{}, {}]}
+    def get_business_parents(self, user, obj, levels=3):
+        res = {'node': obj, 'fathers': []}
+        # if levels == 0:
+        #     return res
 
-datamgr = WebUIDataManager()
+        for i in obj.parent_dependencies:
+            # We want to get the levels deep for all elements, but
+            # go as far as we should for bad elements
+            if levels != 0 or i.state_id != 0:
+                par_elts = self.get_business_parents(user, i, levels=levels - 1)
+                res['fathers'].append(par_elts)
+
+        return res
+
+# datamgr = WebUIDataManager()

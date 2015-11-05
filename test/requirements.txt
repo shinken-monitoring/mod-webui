@@ -1,0 +1,13 @@
+# Python requirements for unit tests
+-r ../requirements.txt
+unittest2
+mock
+coveralls
+nose-cov
+coverage
+nose
+pylint
+pep8
+pep257
+# alignak
+-e git+https://github.com/naparuba/shinken.git#egg=shinken

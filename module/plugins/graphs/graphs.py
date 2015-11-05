@@ -25,6 +25,7 @@
 import time
 import requests
 import random
+from shinken.log import logger
 
 
 ### Will be populated by the UI with it's own value
@@ -41,6 +42,7 @@ def proxy_graph():
     try:
         r = requests.get(url)
         if r.status_code != 200:
+            logger.error("[WebUI-graph] Image URL not found: %s", url)
             raise Exception("Image not found")
     except Exception as e:
         app.redirect404(e)
@@ -83,7 +85,7 @@ def get_graphs_widget():
     title = 'Element graphs for %s' % search
 
     graphsId = "graphs_%d" % random.randint(1, 9999)
-    
+
     return {
         'elt': elt,
         'wid': wid,

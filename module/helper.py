@@ -970,8 +970,8 @@ class Helper(object):
             if node.business_impact > 2:
                 s += "(" + self.get_business_impact_text(node.business_impact) + ")"
             s += """ is <span class="font-%s"><strong>%s</strong></span>""" % (node.state.lower(), node.state)
-            s += " since %s" % self.print_duration(node.last_state_change, just_duration=True, x_elts=2)
-
+            s += """ since <span title="%s">%s""" % (time.strftime("%d %b %Y %H:%M:%S", time.localtime(node.last_state_change)), self.print_duration(node.last_state_change, just_duration=True, x_elts=2))
+            
         # If we got no parents, no need to print the expand icon
         if len(fathers) > 0:
             # We look if the below tree is good or not

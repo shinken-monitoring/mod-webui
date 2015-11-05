@@ -102,7 +102,7 @@ def show_worldmap():
     search = app.request.query.get('search', "type:host")
 
     # So now we can just send the valid hosts to the template
-    return {'search_string': search, 'params': params,
+    return {'params': params,
             'mapId': 'hostsMap', 
             'hosts': search_hosts_with_coordinates(search, user)}
 
@@ -152,6 +152,6 @@ Show a map of all monitored hosts.
 
 # We export our properties to the webui
 pages = {
-    show_worldmap: {'routes': ['/worldmap'], 'view': 'worldmap', 'static': True},
+        show_worldmap: {'routes': ['/worldmap'], 'view': 'worldmap', 'name': 'Worldmap', 'static': True, 'search_engine': True},
     show_worldmap_widget: {'routes': ['/widget/worldmap'], 'view': 'worldmap_widget', 'static': True, 'widget': ['dashboard'], 'widget_desc': widget_desc, 'widget_name': 'worldmap', 'widget_picture': '/static/worldmap/img/widget_worldmap.png'},
 }

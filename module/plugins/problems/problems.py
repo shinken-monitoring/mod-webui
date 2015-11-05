@@ -71,7 +71,7 @@ def get_all():
     navi = app.helper.get_navi(total, start, step=step)
     pbs = items[start:end]
 
-    return {'pbs': pbs, 'all_pbs': items, 'navi': navi, 'title': title, 'search_string': search, 'bookmarks': app.prefs_module.get_user_bookmarks(user), 'bookmarksro': app.prefs_module.get_common_bookmarks(), 'sound': sound_pref, 'elts_per_page': elts_per_page}
+    return {'pbs': pbs, 'all_pbs': items, 'navi': navi, 'title': title, 'bookmarks': app.prefs_module.get_user_bookmarks(user), 'bookmarksro': app.prefs_module.get_common_bookmarks(), 'sound': sound_pref, 'elts_per_page': elts_per_page}
 
 
 def get_pbs_widget():
@@ -131,7 +131,11 @@ def get_last_errors_widget():
     # We want to limit the number of elements, The user will be able to increase it
     nb_elements = max(0, int(app.request.GET.get('nb_elements', '10')))
 
-    pbs = app.datamgr.get_problems(user, sorter=last_state_change_earlier)
+    # Apply search filter if exists ...
+    search = app.request.query.get('search', "isnot:UP isnot:OK isnot:PENDING isnot:ACK isnot:DOWNTIME bi:>=0 type:all")
+    logger.debug("[WebUI-wall] search parameters '%s'", search)
+
+    pbs = app.datamgr.get_problems(user, search, sorter=last_state_change_earlier)
 
     # Keep only nb_elements
     pbs = pbs[:nb_elements]
@@ -158,7 +162,7 @@ Show the IT problems sorted by time
 
 pages = {
     get_page: {'routes': ['/problems'], 'view': 'problems', 'static': True},
-    get_all: {'routes': ['/all'], 'view': 'problems', 'static': True},
+    get_all: {'routes': ['/all'], 'view': 'problems', 'static': True, 'name': 'All', 'search_engine': True},
     get_pbs_widget: {'routes': ['/widget/problems'], 'view': 'widget_problems', 'static': True, 'widget': ['dashboard'], 'widget_desc': widget_desc, 'widget_name': 'problems', 'widget_picture': '/static/problems/img/widget_problems.png'},
     get_last_errors_widget: {'routes': ['/widget/last_problems'], 'view': 'widget_last_problems', 'static': True, 'widget': ['dashboard'], 'widget_desc': last_widget_desc, 'widget_name': 'last_problems', 'widget_picture': '/static/problems/img/widget_problems.png'},
 }

@@ -1,8 +1,11 @@
 %helper = app.helper
 %datamgr = app.datamgr
 
+%search_string = app.get_search_string()
+
 %rebase("layout", css=['impacts/css/impacts.css'], js=['impacts/js/impacts.js'], title='All critical impacts for your business', refresh=True)
 
+%import time
 
 <div id="impacts-container">
    %if not impacts:
@@ -84,7 +87,7 @@
             %if len(impact.parent_dependencies) > 0:
             <hr/>
             Dependencies:
-            {{!helper.print_business_rules(datamgr.get_business_parents(impact), source_problems=impact.source_problems)}}
+            {{!helper.print_business_rules(datamgr.get_business_parents(user, impact), source_problems=impact.source_problems)}}
             %end
 
             <hr/>
@@ -103,6 +106,8 @@
             %guessed = datamgr.guess_root_problems(impact)
             %end
 
+            <ul class="list-group">
+
             %for pb in unack_pbs+ack_pbs+guessed:
             %   pb_id += 1
             % l_pb_id += 1
@@ -114,15 +119,13 @@
             %if len(guessed) != 0 and l_pb_id == nb_unack_pbs + nb_ack_pbs + 1:
             Pure guessed root problems:
             %end
-
-            <div class="row problem" id="{{pb_id}}">
-               <span>
-                  {{! helper.get_fa_icon_state(obj=pb)}} {{pb.get_name()}}
-                  %if pb.business_impact > 2:
-                     {{!helper.get_business_impact_text(pb.business_impact)}}
-                  %end
-               </span> is <span class="font-{{pb.state.lower()}}">{{pb.state}}</span>
-               <span>since {{helper.print_duration(pb.last_state_change, just_duration=True, x_elts=2)}}</span>
+            <li class="list-group-item">
+               {{! helper.get_fa_icon_state(obj=pb)}} {{!helper.get_link(pb)}}
+               %if pb.business_impact > 2:
+                  ({{!helper.get_business_impact_text(pb.business_impact)}})
+               %end
+               is <span class="font-{{pb.state.lower()}}"><strong>{{pb.state}}</strong></span>
+               since <span title="{{time.strftime("%d %b %Y %H:%M:%S", time.localtime(pb.last_state_change))}}">{{helper.print_duration(pb.last_state_change, just_duration=True, x_elts=2)}}</span>
 
                <div class="btn-group" role="group" aria-label="Actions">
                   %disabled='' if pb.event_handler_enabled and pb.event_handler else 'disabled'
@@ -174,9 +177,10 @@
                      <i class="fa fa-eraser"></i><span class="hidden-sm hidden-xs"> Remove</span>
                   </button>
                </div>
-            </div>
+            </li>
             %# end for pb in impact.source_problems:
             %end
+            </ul>
          </div>
       </div>
       %# end for imp_id in impacts:

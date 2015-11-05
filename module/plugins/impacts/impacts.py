@@ -27,37 +27,25 @@ import time
 # Global value that will be changed by the main app
 app = None
 
-
-# Sort hosts and services by impact, states and co
-def hst_srv_sort(s1, s2):
-    if s1.business_impact > s2.business_impact:
-        return -1
-    if s2.business_impact > s1.business_impact:
-        return 1
-    # ok, here, same business_impact
-    # Compare warn and crit state
-    if s1.state_id > s2.state_id:
-        return -1
-    if s2.state_id > s1.state_id:
-        return 1
-    # Ok, so by name...
-    return s1.get_full_name() > s2.get_full_name()
-
+from shinken.log import logger
 
 def show_impacts():
     user = app.request.environ['USER']
 
-    all_imp_impacts = app.datamgr.get_impacts(user)
+    # Apply search filter if exists ...
+    search = app.request.query.get('search', "bi:>=0 type:all isnot:ACK isnot:DOWNTIME")
+    logger.debug("[WebUI-impacts] search parameters '%s'", search)
+
+    items = app.datamgr.get_impacts(user, search)
 
     impacts = {}
 
     imp_id = 0
-    for imp in all_imp_impacts:
-        #safe_print("FIND A BAD SERVICE IN IMPACTS", imp.get_dbg_name())
+    for imp in items:
         imp_id += 1
         impacts[imp_id] = imp
 
-    return {'impacts': impacts}
+    return {'impacts': impacts, 'page': "Impacts"}
 
 
 def impacts_widget():
@@ -88,6 +76,6 @@ Show an aggregated view of the most important business impacts!
 """
 
 pages = {
-    show_impacts: {'routes': ['/impacts'], 'view': 'impacts', 'static': True},
+    show_impacts: {'routes': ['/impacts'], 'view': 'impacts', 'name': 'Impacts', 'static': True, 'search_engine': True},
     impacts_widget: {'routes': ['/widget/impacts'], 'view': 'widget_impacts', 'static': True, 'widget': ['dashboard'], 'widget_desc': widget_desc, 'widget_name': 'impacts', 'widget_picture': '/static/impacts/img/widget_impacts.png'},
 }
