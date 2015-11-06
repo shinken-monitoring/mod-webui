@@ -114,11 +114,31 @@ Invalid element name
          </dl>
 
          <dl class="col-sm-6 dl-horizontal">
+            <dt>Depends upon:</dt>
+            %if elt_host.parent_dependencies:
+            <dd>
+            %parents=['<a href="/host/'+parent.host_name+'" class="link">'+parent.display_name+'</a>' for parent in sorted(elt_host.parent_dependencies,key=lambda x:x.display_name)]
+            {{!','.join(parents)}}
+            </dd>
+            %else:
+            <dd>(none)</dd>
+            %end
+
             <dt>Parents:</dt>
             %if elt_host.parents:
             <dd>
             %parents=['<a href="/host/'+parent.host_name+'" class="link">'+parent.display_name+'</a>' for parent in sorted(elt_host.parents,key=lambda x:x.display_name)]
             {{!','.join(parents)}}
+            </dd>
+            %else:
+            <dd>(none)</dd>
+            %end
+
+            <dt>Depends upon me:</dt>
+            %if elt_host.child_dependencies:
+            <dd>
+            %children=['<a href="/host/'+child.host_name+'" class="link">'+child.display_name+'</a>' for child in sorted(elt_host.child_dependencies,key=lambda x:x.display_name) if child.__class__.my_type=='host']
+            {{!','.join(children)}}
             </dd>
             %else:
             <dd>(none)</dd>
