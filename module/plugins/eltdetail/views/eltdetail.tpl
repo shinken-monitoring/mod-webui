@@ -21,7 +21,7 @@ Invalid element name
 %elt_name = elt.host_name if elt_type=='host' else elt.host.host_name+'/'+elt.service_description
 %elt_display_name = elt_host.display_name if elt_type=='host' else elt_service.display_name+' on '+elt_host.display_name
 
-# Replace MACROS in display name ...
+%# Replace MACROS in display name ...
 %if hasattr(elt, 'get_data_for_checks'):
     %elt_display_name = MacroResolver().resolve_simple_macros_in_string(elt_display_name, elt.get_data_for_checks())
 %end
