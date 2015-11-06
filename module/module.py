@@ -684,7 +684,12 @@ class Webui_broker(BaseModule, Daemon):
             user = User.from_contact(self.datamgr.get_contact(username), self.gravatar)
         else:
             user = request.environ.get('USER', None)
-        return user and ((not self.manage_acl) or user.is_admin or user.can_submit_commands)
+
+        try:
+            retval = user and ((not self.manage_acl) or user.is_admin or user.can_submit_commands)
+        except:
+            retval = False
+        return retval
 
 
     # TODO : move this function to dashboard plugin
