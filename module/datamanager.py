@@ -159,6 +159,11 @@ class WebUIDataManager(DataManager):
                 if contact in s.contacts:
                     return True
 
+        # May be it's a contact on service host
+        if item.__class__.my_type == 'service':
+            if contact in item.host.contacts:
+                return True
+
         # Now impacts related maybe?
         if hasattr(item, 'impacts'):
             for imp in item.impacts:
