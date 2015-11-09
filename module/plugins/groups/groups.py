@@ -51,9 +51,9 @@ def show_hostgroups():
 
     level = int(app.request.GET.get('level', 0))
     parent = app.request.GET.get('parent', None)
-    
+
     return {
-        'level': level, 
+        'level': level,
         'hostgroups': sorted(app.datamgr.get_hostgroups(parent=parent, user=user), key=lambda hostgroup: hostgroup.hostgroup_name)
         }
 
@@ -66,15 +66,15 @@ def show_hostgroups_dashboard():
 
     level = int(app.request.GET.get('level', 0))
     parent = app.request.GET.get('parent', None)
-    
+
     return {
-        'level': level, 
+        'level': level,
         'hostgroups': sorted(app.datamgr.get_hostgroups(parent=parent, user=user), key=lambda hostgroup: hostgroup.hostgroup_name)
         }
 
 
 def show_servicegroup(name):
-    app.bottle.redirect("/all?search=type:service hg:" + name)
+    app.bottle.redirect("/all?search=type:service sg:" + name)
 
 
 def show_servicegroups():
@@ -86,9 +86,9 @@ def show_servicegroups():
 
     level = int(app.request.GET.get('level', 0))
     parent = app.request.GET.get('parent', None)
-    
+
     return {
-        'level': level, 
+        'level': level,
         'servicegroups': sorted(app.datamgr.get_servicegroups(parent=parent, user=user), key=lambda servicegroup: servicegroup.servicegroup_name)
         }
 
