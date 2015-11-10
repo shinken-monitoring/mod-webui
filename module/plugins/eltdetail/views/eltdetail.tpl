@@ -21,7 +21,7 @@ Invalid element name
 %elt_name = elt.host_name if elt_type=='host' else elt.host.host_name+'/'+elt.service_description
 %elt_display_name = elt_host.display_name if elt_type=='host' else elt_service.display_name+' on '+elt_host.display_name
 
-# Replace MACROS in display name ...
+%# Replace MACROS in display name ...
 %if hasattr(elt, 'get_data_for_checks'):
     %elt_display_name = MacroResolver().resolve_simple_macros_in_string(elt_display_name, elt.get_data_for_checks())
 %end
@@ -114,11 +114,31 @@ Invalid element name
          </dl>
 
          <dl class="col-sm-6 dl-horizontal">
+            <dt>Depends upon:</dt>
+            %if elt_host.parent_dependencies:
+            <dd>
+            %parents=['<a href="/host/'+parent.host_name+'" class="link">'+parent.display_name+'</a>' for parent in sorted(elt_host.parent_dependencies,key=lambda x:x.display_name)]
+            {{!','.join(parents)}}
+            </dd>
+            %else:
+            <dd>(none)</dd>
+            %end
+
             <dt>Parents:</dt>
             %if elt_host.parents:
             <dd>
             %parents=['<a href="/host/'+parent.host_name+'" class="link">'+parent.display_name+'</a>' for parent in sorted(elt_host.parents,key=lambda x:x.display_name)]
             {{!','.join(parents)}}
+            </dd>
+            %else:
+            <dd>(none)</dd>
+            %end
+
+            <dt>Depends upon me:</dt>
+            %if elt_host.child_dependencies:
+            <dd>
+            %children=['<a href="/host/'+child.host_name+'" class="link">'+child.display_name+'</a>' for child in sorted(elt_host.child_dependencies,key=lambda x:x.display_name) if child.__class__.my_type=='host']
+            {{!','.join(children)}}
             </dd>
             %else:
             <dd>(none)</dd>
@@ -314,7 +334,7 @@ Invalid element name
                <div class="tab-pane fade {{_go_active}} {{_go_fadein}}" data-name="{{cvname}}" data-conf="{{cvconf}}" data-element="{{elt.get_full_name()}}" id="cv{{cvname}}_{{cvconf}}">
                   <div class="panel panel-default">
                      <div class="panel-body">
-                        <span class="alert alert-error">Sorry, I cannot load the {{cvname}}/{{cvconf}} view!</span>
+                        <!--<span class="alert alert-error">Sorry, I cannot load the {{cvname}}/{{cvconf}} view!</span>-->
                      </div>
                   </div>
                </div>

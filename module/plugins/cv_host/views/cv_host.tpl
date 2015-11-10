@@ -6,7 +6,7 @@
 <script>
    // Load specific CSS
    loadjscssfile('/static/cv_host/css/cv_host.css', 'css');
-   
+
    function draw_arc(ctx, x, y, radius, startAngle, endAngle, clockwise, color, lineWidth){
       var savec_lineWidth = ctx.lineWidth;
       var saved_color = ctx.strokeStyle;
@@ -61,11 +61,11 @@
          // Middle one
          draw_arc(ctx, 80, 80, 60, Math.PI, 0.4*Math.PI, false, main_color, 2, 0.5);
          draw_arc(ctx, 80, 80, 61, Math.PI, 0.4*Math.PI, false, main_color, 2, 0.5);
-         // The left part of the before last 
+         // The left part of the before last
          draw_arc(ctx, 80, 80, 59, Math.PI, 1.7*Math.PI, false, huge_color, 5);
          //Top rigth art of the middle
          draw_arc(ctx, 80, 80, 59, 0, 0.4*Math.PI, false, huge_color, 5);
-         
+
          var linePos = 200;
       </script>
       <div class="col-sm-10 pull-right" name="host_tags">
@@ -92,8 +92,18 @@
             <dt>Importance:</dt>
             <dd>{{!app.helper.get_business_impact_text(elt.business_impact, True)}}</dd>
          </dl>
-        
+
          <dl class="dl-horizontal">
+            <dt>Depends upon:</dt>
+            %if elt.parent_dependencies:
+            <dd>
+            %parents=['<a href="/host/'+parent.host_name+'" class="link">'+parent.display_name+'</a>' for parent in sorted(elt.parent_dependencies,key=lambda x:x.display_name)]
+            {{!','.join(parents)}}
+            </dd>
+            %else:
+            <dd>(none)</dd>
+            %end
+
             <dt>Parents:</dt>
             %if len(elt.parents) > 0:
             <dd>
@@ -105,7 +115,28 @@
             <dd>(none)</dd>
             %end
 
+            <dt>Depends upon me:</dt>
+            %if elt.child_dependencies:
+            <dd>
+            %children=['<a href="/host/'+child.host_name+'" class="link">'+child.display_name+'</a>' for child in sorted(elt.child_dependencies,key=lambda x:x.display_name) if child.__class__.my_type=='host']
+            {{!','.join(children)}}
+            </dd>
+            %else:
+            <dd>(none)</dd>
+            %end
 
+            <dt>Children:</dt>
+            %if elt.childs:
+            <dd>
+            %children=['<a href="/host/'+child.host_name+'" class="link">'+child.display_name+'</a>' for child in sorted(elt.childs,key=lambda x:x.display_name)]
+            {{!','.join(children)}}
+            </dd>
+            %else:
+            <dd>(none)</dd>
+            %end
+         </dl>
+
+         <dl class="dl-horizontal">
             <dt>Member of:</dt>
             %if len(elt.hostgroups) > 0:
             <dd>
@@ -155,7 +186,7 @@
 
                $.plot($('#{{config}}-load-{{app.helper.make_html_id(load)}}'), data, {
                   series: {
-                     pie: { 
+                     pie: {
                         show: true,
                         radius: 1,
                         innerRadius: 0.7,
@@ -198,7 +229,7 @@
 
                $.plot($('#{{config}}-cpu-{{app.helper.make_html_id(cpu)}}'), data, {
                   series: {
-                     pie: { 
+                     pie: {
                         show: true,
                         radius: 1,
                         innerRadius: 0.7,
@@ -239,7 +270,7 @@
                            return (+v).toFixed(0);
                         },
                      },
-                     bars: { 
+                     bars: {
                         show: true, align: "center", lineWidth: 2, barWidth: 0.5
                      }
                   },
@@ -264,13 +295,13 @@
                      show: true,
                      position: "bottom",
                      tickSize: 1,
-                     rotateTicks: {{0 if len(all_perfs['memory']) < 5 else 60}}, 
+                     rotateTicks: {{0 if len(all_perfs['memory']) < 5 else 60}},
                      tickFormatter: function(val, axis) {
                         var values=[];
                         %for mem in all_perfs['memory']:
                            values.push('{{mem}}');
                         %end
-                        
+
                         if (val==-1) return ('');
                         return (values[val]);
                      }
@@ -302,7 +333,7 @@
                         },
                         //valign: 'top', align: 'center', font: "8pt 'Arial'", fontcolor: '#666'
                      },
-                     bars: { 
+                     bars: {
                         show: true, align: "center", lineWidth: 2, barWidth: 0.5
                      }
                   },
@@ -327,13 +358,13 @@
                      show: true,
                      position: "bottom",
                      tickSize: 1,
-                     rotateTicks: {{0 if len(all_perfs['disks']) < 5 else 60}}, 
+                     rotateTicks: {{0 if len(all_perfs['disks']) < 5 else 60}},
                      tickFormatter: function(val, axis) {
                         var values=[];
                         %for disk in all_perfs['disks']:
                            values.push('{{disk}}');
                         %end
-                        
+
                         if (val==-1) return ('');
                         return (values[val]);
                      }
@@ -342,7 +373,7 @@
             );
          </script>
          %end
-         
+
          %if 'network' in all_states and all_perfs['network']:
          <div class="well well-sm" name="network_container">
             <span class="pull-right">{{!app.helper.get_fa_icon_state_and_label(cls='service', state=all_states['network'])}}</span>
@@ -365,7 +396,7 @@
                         },
                         //valign: 'top', align: 'center', font: "8pt 'Arial'", fontcolor: '#666'
                      },
-                     bars: { 
+                     bars: {
                         show: true, align: "center", lineWidth: 2, barWidth: 0.5
                      }
                   },
@@ -390,13 +421,13 @@
                      show: true,
                      position: "bottom",
                      tickSize: 1,
-                     rotateTicks: {{0 if len(all_perfs['network']) < 5 else 60}}, 
+                     rotateTicks: {{0 if len(all_perfs['network']) < 5 else 60}},
                      tickFormatter: function(val, axis) {
                         var values=[];
                         %for net in all_perfs['network']:
                            values.push('{{net}}');
                         %end
-                        
+
                         if (val==-1) return ('');
                         return (values[val]);
                      }
@@ -406,11 +437,11 @@
          </script>
          %end
       </div>
-   
+
       <div class="col-sm-6" name="right_metrics">
          %if 'services' in all_states:
          <div class="well well-sm services-tree" name="services_container">
-           {{!app.helper.print_aggregation_tree(app.helper.get_host_service_aggregation_tree(elt, app), app.helper.get_html_id(elt), expanded=False, max_sons=3)}}
+           {{!app.helper.print_aggregation_tree(app.helper.get_host_service_aggregation_tree(elt, app), app.helper.get_html_id(elt), expanded=True, max_sons=3)}}
          </div>
          %end
       </div>
@@ -422,15 +453,15 @@
    // Elements popover
    $('[data-toggle="popover"]').popover();
 
-   $('[data-toggle="popover medium"]').popover({ 
-      trigger: "hover", 
+   $('[data-toggle="popover medium"]').popover({
+      trigger: "hover",
       placement: 'bottom',
       toggle : "popover",
       viewport: {
          selector: 'body',
          padding: 10
       },
-      
+
       template: '<div class="popover popover-medium"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
    });
 
@@ -438,7 +469,7 @@
    $('[name="services_container"] a.toggle-list').on('click', function () {
       var state = $(this).data('state');
       var target = $(this).data('target');
-      
+
       if (state=='expanded') {
          $('[name="services_container"] ul[name="'+target+'"]').hide();
          $(this).data('state', 'collapsed')

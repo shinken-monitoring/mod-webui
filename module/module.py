@@ -25,7 +25,7 @@
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 
 
-WEBUI_VERSION = "2.0.1"
+WEBUI_VERSION = "2.1.0"
 WEBUI_COPYRIGHT = "(c) 2009-2015 - License GNU AGPL as published by the FSF, minimum version 3 of the License."
 WEBUI_RELEASENOTES = """Bootstrap 3 User Interface - complete User Interface refactoring"""
 
@@ -684,7 +684,12 @@ class Webui_broker(BaseModule, Daemon):
             user = User.from_contact(self.datamgr.get_contact(username), self.gravatar)
         else:
             user = request.environ.get('USER', None)
-        return user and ((not self.manage_acl) or user.is_admin or user.can_submit_commands)
+
+        try:
+            retval = user and ((not self.manage_acl) or user.is_admin or user.can_submit_commands)
+        except:
+            retval = False
+        return retval
 
 
     # TODO : move this function to dashboard plugin
