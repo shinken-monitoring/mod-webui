@@ -395,7 +395,7 @@ Invalid element name
                               </tr>
                               <tr>
                                  <td><strong>Output:</strong></td>
-                                 <td class="popover-dismiss"
+                                 <td class="popover-dismiss popover-large"
                                        data-html="true" data-toggle="popover" data-trigger="hover" data-placement="bottom"
                                        data-title="{{elt.get_full_name()}} check output"
                                        data-content=" {{elt.output}}{{'<br/>'+elt.long_output.replace('\n', '<br/>') if elt.long_output else ''}}"
@@ -405,7 +405,7 @@ Invalid element name
                               </tr>
                               <tr>
                                  <td><strong>Performance data:</strong></td>
-                                 <td class="popover-dismiss ellipsis"
+                                 <td class="popover-dismiss popover-large ellipsis"
                                        data-html="true" data-toggle="popover" data-trigger="hover" data-placement="bottom"
                                        data-title="{{elt.get_full_name()}} performance data"
                                        data-content=" {{elt.perf_data if elt.perf_data else '(none)'}}"

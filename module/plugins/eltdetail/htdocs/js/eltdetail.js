@@ -34,7 +34,7 @@ var elt_name = '{{elt.get_full_name()}}';
 function on_page_refresh() {
    // Show actions bar
    show_actions();
-   
+
    // Buttons tooltips
    $('button').tooltip();
 
@@ -42,28 +42,25 @@ function on_page_refresh() {
    $('input.switch').bootstrapSwitch();
 
    // Elements popover
-   $('[data-toggle="popover"]').popover();
+//   $('[data-toggle="popover"]').popover();
 
-   $('[data-toggle="popover medium"]').popover({ 
-      trigger: "hover", 
+   $('[data-toggle="popover"]').popover({
+      trigger: "hover",
+      container: "body",
       placement: 'bottom',
       toggle : "popover",
-      viewport: {
-         selector: 'body',
-         padding: 10
-      },
-      
-      template: '<div class="popover popover-medium"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
+
+      template: '<div class="popover popover-large"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>'
    });
 
    /*
-    * Impacts view 
+    * Impacts view
     */
    // When toggle list is activated ...
    $('#impacts a.toggle-list').on('click', function () {
       var state = $(this).data('state');
       var target = $(this).data('target');
-      
+
       if (state=='expanded') {
          $('#impacts ul[name="'+target+'"]').hide();
          $(this).data('state', 'collapsed')
@@ -74,9 +71,9 @@ function on_page_refresh() {
          $(this).children('i').removeClass('fa-plus').addClass('fa-minus');
       }
    });
-   
+
    /*
-    * Custom views 
+    * Custom views
     */
    $('.cv_pane').on('shown.bs.tab', function (e) {
       show_custom_view($(this));
@@ -86,7 +83,7 @@ function on_page_refresh() {
    $('.cv_pane.active').each(function(index, elt) {
       show_custom_view($(elt));
    });
-   
+
    /*
     * Dependency graph
     */
@@ -98,14 +95,14 @@ function on_page_refresh() {
       // Then we load the inner depgraph page. Easy isn't it? :)
       $('#inner_depgraph').load('/inner/depgraph/'+encodeURIComponent(element));
    });
-   
+
    // Fullscreen management
    $('button[action="fullscreen-request"]').click(function() {
       var elt = $(this).data('element');
       screenfull.request($('#'+elt)[0]);
    });
 
-   
+
    /*
     * Commands buttons
     */
@@ -115,10 +112,10 @@ function on_page_refresh() {
       var variable = $(this).data('variable');
       var value = $(this).data('value');
       if (eltdetail_logs) console.debug("Button - set custom variable '"+variable+"'="+value+" for: ", elt)
-      
+
       display_modal("/forms/change_var/"+elt+"?variable="+variable+"&value="+value);
    });
-   
+
    // Toggles ...
    $('input[action="toggle-active-checks"]').on('switchChange.bootstrapSwitch', function (e, data) {
       var elt = $(this).data('element');
@@ -127,37 +124,37 @@ function on_page_refresh() {
       toggle_active_checks(elt, value);
    });
    $('input[action="toggle-passive-checks"]').on('switchChange.bootstrapSwitch', function (e, data) {
-      var elt = $(this).data('element');  
+      var elt = $(this).data('element');
       var value = $(this).data('value')=='False' ? false : true;
       if (eltdetail_logs) console.debug("Toggle passive checks for: ", elt, ", currently: ", value)
       toggle_passive_checks(elt, value);
    });
    $('input[action="toggle-check-freshness"]').on('switchChange.bootstrapSwitch', function (e, data) {
-      var elt = $(this).data('element');  
+      var elt = $(this).data('element');
       var value = $(this).data('value')=='False' ? false : true;
       if (eltdetail_logs) console.debug("Toggle freshness checks for: ", elt, ", currently: ", value)
       toggle_freshness_check(elt, value);
    });
    $('input[action="toggle-notifications"]').on('switchChange.bootstrapSwitch', function (e, data) {
-      var elt = $(this).data('element');  
+      var elt = $(this).data('element');
       var value = $(this).data('value')=='False' ? false : true;
       if (eltdetail_logs) console.debug("Toggle notifications for: ", elt, ", currently: ", value)
       toggle_notifications(elt, value);
    });
    $('input[action="toggle-event-handler"]').on('switchChange.bootstrapSwitch', function (e, data) {
-      var elt = $(this).data('element');  
+      var elt = $(this).data('element');
       var value = $(this).data('value')=='False' ? false : true;
       if (eltdetail_logs) console.debug("Toggle event handler for: ", elt, ", currently: ", value)
       toggle_event_handlers(elt, value);
    });
    $('input[action="toggle-process-perfdata"]').on('switchChange.bootstrapSwitch', function (e, data) {
-      var elt = $(this).data('element');  
+      var elt = $(this).data('element');
       var value = $(this).data('value')=='False' ? false : true;
       if (eltdetail_logs) console.debug("Toggle perfdata processing for: ", elt, ", currently: ", value)
       toggle_process_perfdata(elt, value);
    });
    $('input[action="toggle-flap-detection"]').on('switchChange.bootstrapSwitch', function (e, data) {
-      var elt = $(this).data('element');  
+      var elt = $(this).data('element');
       var value = $(this).data('value')=='False' ? false : true;
       if (eltdetail_logs) console.debug("Toggle flap detection for: ", elt, ", currently: ", value)
       toggle_flap_detection(elt, value);
@@ -170,7 +167,7 @@ function on_page_refresh() {
    $('a[data-toggle="tab"][href="#history"]').on('shown.bs.tab', function (e) {
       // First we get the full name of the object from div data
       var element = $('#inner_history').data('element');
-      
+
       // Loading indicator ...
       $("#inner_history").html('<i class="fa fa-spinner fa-spin fa-3x"></i> Loading history data ...');
       $("#inner_history").load('/logs/inner/'+encodeURIComponent(element), function(response, status, xhr) {
@@ -187,10 +184,10 @@ function on_page_refresh() {
    $('a[data-toggle="tab"][href="#availability"]').on('shown.bs.tab', function (e) {
       // First we get the full name of the object from div data
       var element = $('#inner_availability').data('element');
-      
+
       // Loading indicator ...
       $("#inner_availability").html('<i class="fa fa-spinner fa-spin fa-3x"></i> Loading availability data ...');
-      
+
       $("#inner_availability").load('/availability/inner/'+encodeURIComponent(element), function(response, status, xhr) {
          if (status == "error") {
             $('#inner_availability').html('<div class="alert alert-danger">Sorry but there was an error: ' + xhr.status + ' ' + xhr.statusText+'</div>');
@@ -205,10 +202,10 @@ function on_page_refresh() {
    $('a[data-toggle="tab"][href="#helpdesk"]').on('shown.bs.tab', function (e) {
       // First we get the full name of the object from div data
       var element = $('#inner_helpdesk').data('element');
-      
+
       // Loading indicator ...
       $("#inner_helpdesk").html('<i class="fa fa-spinner fa-spin fa-3x"></i> Loading helpdesk data ...');
-      
+
       $("#inner_helpdesk").load('/helpdesk/tickets/'+encodeURIComponent(element), function(response, status, xhr) {
          if (status == "error") {
             $('#inner_helpdesk').html('<div class="alert alert-danger">Sorry but there was an error: ' + xhr.status + ' ' + xhr.statusText+'</div>');
@@ -225,10 +222,10 @@ function on_page_refresh() {
       var element = $('#inner_timeline').data('element');
       // Get timeline tab content ...
       $('#inner_timeline').load('/timeline/inner/'+encodeURIComponent(element));
-      
+
    })
-   
-   
+
+
    /*
     * Graphs
     */
@@ -243,17 +240,17 @@ function on_page_refresh() {
       $('#graph_periods li').removeClass('active');
       $(this).parent('li').addClass('active');
    });
-   
+
    // Restore previously selected tab
    bootstrap_tab_bookmark();
-   
+
    // Show actions bar
    show_actions();
 }
 
 
-/* 
- * Host/service aggregation toggle image button action 
+/*
+ * Host/service aggregation toggle image button action
  */
 function toggleAggregationElt(e) {
     var toc = document.getElementById('aggregation-node-'+e);
