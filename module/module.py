@@ -25,7 +25,7 @@
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 
 
-WEBUI_VERSION = "2.0.1"
+WEBUI_VERSION = "2.2.0"
 WEBUI_COPYRIGHT = "(c) 2009-2015 - License GNU AGPL as published by the FSF, minimum version 3 of the License."
 WEBUI_RELEASENOTES = """Bootstrap 3 User Interface - complete User Interface refactoring"""
 
@@ -661,18 +661,31 @@ class Webui_broker(BaseModule, Daemon):
         logger.info("[WebUI] Requesting authentication for user: %s", username)
         r = self.auth_module.check_auth(username, password)
         if r:
-            # :TODO:maethor:150724: Remove this, nothing to do here
-            # Define user picture
-            self.user_picture = '/static/photos/%s' % username
-            if self.gravatar:
-                gravatar = self.get_gravatar(c.email, 32)
-                if gravatar is not None:
-                    self.user_picture = gravatar
+            user = User.from_contact(c, picture=self.user_picture, use_gravatar=self.gravatar)
+            self.user_picture = user.picture
             logger.info("[WebUI] User picture: %s", self.user_picture)
-            return c is not None
+            return True
 
         logger.warning("[WebUI] The user '%s' has not been authenticated.", username)
         return False
+
+    ##
+    # For compatibility with previous defined views ...
+    ##
+    def get_user_auth(self):
+        logger.warning("[WebUI] Deprecated - Getting authenticated user ...")
+        self.user_picture = None
+
+        username = bottle.request.get_cookie("user", secret=self.auth_secret)
+        if not username and not self.allow_anonymous:
+            return None
+        contact = self.datamgr.get_contact(username or 'anonymous')
+        if not contact:
+            return None
+
+        user = User.from_contact(contact, self.user_picture, self.gravatar)
+        self.user_picture = user.picture
+        return user
 
     ##
     # Current user can launch commands ?
@@ -684,7 +697,12 @@ class Webui_broker(BaseModule, Daemon):
             user = User.from_contact(self.datamgr.get_contact(username), self.gravatar)
         else:
             user = request.environ.get('USER', None)
-        return user and ((not self.manage_acl) or user.is_admin or user.can_submit_commands)
+
+        try:
+            retval = user and ((not self.manage_acl) or user.is_admin or user.can_submit_commands)
+        except:
+            retval = False
+        return retval
 
 
     # TODO : move this function to dashboard plugin
@@ -749,5 +767,6 @@ def login_required():
     if not contact:
         app.bottle.redirect("/user/login")
 
-    request.environ['USER'] = User.from_contact(contact, app.gravatar)
+    request.environ['USER'] = User.from_contact(contact, app.user_picture, app.gravatar)
+    app.user_picture = request.environ['USER'].picture
     bottle.BaseTemplate.defaults['user'] = request.environ['USER']

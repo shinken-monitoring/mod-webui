@@ -101,6 +101,24 @@ Invalid element name
       </div>
 
       <div id="collapseOverview" class="panel-body panel-collapse collapse">
+         %if elt.customs:
+         <div class="row">
+         <dl class="col-sm-6 dl-horizontal">
+            %if '_DETAILLEDESC' in elt.customs:
+            <dt>Description:</dt>
+            <dd>{{elt.customs['_DETAILLEDESC']}}</dd>
+            %end
+            %if '_IMPACT' in elt.customs:
+            <dt>Impact:</dt>
+            <dd>{{elt.customs['_IMPACT']}}</dd>
+            %end
+            %if '_FIXACTIONS' in elt.customs:
+            <dt>Fix actions:</dt>
+            <dd>{{elt.customs['_FIXACTIONS']}}</dd>
+            %end
+         </dl>
+         </div>
+         %end
          %if elt_type=='host':
          <dl class="col-sm-6 dl-horizontal">
             <dt>Alias:</dt>
@@ -114,11 +132,31 @@ Invalid element name
          </dl>
 
          <dl class="col-sm-6 dl-horizontal">
+            <dt>Depends upon:</dt>
+            %if elt_host.parent_dependencies:
+            <dd>
+            %parents=['<a href="/host/'+parent.host_name+'" class="link">'+parent.display_name+'</a>' for parent in sorted(elt_host.parent_dependencies,key=lambda x:x.display_name)]
+            {{!','.join(parents)}}
+            </dd>
+            %else:
+            <dd>(none)</dd>
+            %end
+
             <dt>Parents:</dt>
             %if elt_host.parents:
             <dd>
             %parents=['<a href="/host/'+parent.host_name+'" class="link">'+parent.display_name+'</a>' for parent in sorted(elt_host.parents,key=lambda x:x.display_name)]
             {{!','.join(parents)}}
+            </dd>
+            %else:
+            <dd>(none)</dd>
+            %end
+
+            <dt>Depends upon me:</dt>
+            %if elt_host.child_dependencies:
+            <dd>
+            %children=['<a href="/host/'+child.host_name+'" class="link">'+child.display_name+'</a>' for child in sorted(elt_host.child_dependencies,key=lambda x:x.display_name) if child.__class__.my_type=='host']
+            {{!','.join(children)}}
             </dd>
             %else:
             <dd>(none)</dd>
@@ -314,7 +352,7 @@ Invalid element name
                <div class="tab-pane fade {{_go_active}} {{_go_fadein}}" data-name="{{cvname}}" data-conf="{{cvconf}}" data-element="{{elt.get_full_name()}}" id="cv{{cvname}}_{{cvconf}}">
                   <div class="panel panel-default">
                      <div class="panel-body">
-                        <span class="alert alert-error">Sorry, I cannot load the {{cvname}}/{{cvconf}} view!</span>
+                        <!--<span class="alert alert-error">Sorry, I cannot load the {{cvname}}/{{cvconf}} view!</span>-->
                      </div>
                   </div>
                </div>
@@ -375,7 +413,7 @@ Invalid element name
                               </tr>
                               <tr>
                                  <td><strong>Output:</strong></td>
-                                 <td class="popover-dismiss"
+                                 <td class="popover-dismiss popover-large"
                                        data-html="true" data-toggle="popover" data-trigger="hover" data-placement="bottom"
                                        data-title="{{elt.get_full_name()}} check output"
                                        data-content=" {{elt.output}}{{'<br/>'+elt.long_output.replace('\n', '<br/>') if elt.long_output else ''}}"
@@ -385,7 +423,7 @@ Invalid element name
                               </tr>
                               <tr>
                                  <td><strong>Performance data:</strong></td>
-                                 <td class="popover-dismiss ellipsis"
+                                 <td class="popover-dismiss popover-large ellipsis"
                                        data-html="true" data-toggle="popover" data-trigger="hover" data-placement="bottom"
                                        data-title="{{elt.get_full_name()}} performance data"
                                        data-content=" {{elt.perf_data if elt.perf_data else '(none)'}}"

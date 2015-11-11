@@ -321,7 +321,7 @@ class WebUIDataManager(DataManager):
                 t = elts[0]
                 s = elts[1]
 
-            s = s.lower()
+            # s = s.lower()
             t = t.lower()
 
             if t == 'hst_srv':
@@ -346,19 +346,19 @@ class WebUIDataManager(DataManager):
 
                 items = new_items
 
-            if (t == 'hg' or t == 'hgroup') and s != 'all':
+            if (t == 'hg' or t == 'hgroup') and s.lower() != 'all':
                 group = self.get_hostgroup(s)
                 if not group:
                     return []  # :TODO:maethor:150716: raise an error
                 items = [i for i in items if group in i.get_hostgroups()]
 
-            if (t == 'sg' or t == 'sgroup') and s != 'all':
+            if (t == 'sg' or t == 'sgroup') and s.lower() != 'all':
                 group = self.get_servicegroup(s)
                 if not group:
                     return []  # :TODO:maethor:150716: raise an error
                 items = [i for i in items if group in i.servicegroups]
 
-            if (t == 'cg' or t == 'cgroup') and s != 'all':
+            if (t == 'cg' or t == 'cgroup') and s.lower() != 'all':
                 group = self.get_contactgroup(s, user)
                 if not group:
                     return []  # :TODO:maethor:150716: raise an error
@@ -371,17 +371,17 @@ class WebUIDataManager(DataManager):
                     return []  # :TODO:maethor:150716: raise an error
                 items = [i for i in items if i.get_realm() == r]
 
-            if t == 'htag' and s != 'all':
+            if t == 'htag' and s.lower() != 'all':
                 items = [i for i in items if s in i.get_host_tags()]
 
-            if t == 'stag' and s != 'all':
+            if t == 'stag' and s.lower() != 'all':
                 items = [i for i in items if i.__class__.my_type == 'service' and s in i.get_service_tags()]
 
-            if t == 'ctag' and s != 'all':
+            if t == 'ctag' and s.lower() != 'all':
                 contacts = [c for c in self.get_contacts(user) if s in c.tags]
                 items = list(set(itertools.chain(*[self._only_related_to(items, c) for c in contacts])))
 
-            if t == 'type' and s != 'all':
+            if t == 'type' and s.lower() != 'all':
                 items = [i for i in items if i.__class__.my_type == s]
 
             if t == 'bp' or t == 'bi':
@@ -429,10 +429,18 @@ class WebUIDataManager(DataManager):
                 elif s.lower() == 'impact':
                     items = [i for i in items if i.is_impact]
                 else:
-                    if len(s) == 1:
-                        items = [i for i in items if i.state_id == int(s)]
+                    # Manage SOFT state
+                    if s.startswith('s'):
+                        s = s[1:]
+                        if len(s) == 1:
+                            items = [i for i in items if i.state_id == int(s) and i.state_type != 'HARD']
+                        else:
+                            items = [i for i in items if i.state == s.upper() and i.state_type != 'HARD']
                     else:
-                        items = [i for i in items if i.state == s.upper()]
+                        if len(s) == 1:
+                            items = [i for i in items if i.state_id == int(s) and i.state_type == 'HARD']
+                        else:
+                            items = [i for i in items if i.state == s.upper() and i.state_type == 'HARD']
 
             if t == 'isnot':
                 if s.lower() == 'ack':
@@ -444,21 +452,29 @@ class WebUIDataManager(DataManager):
                 elif s.lower() == 'impact':
                     items = [i for i in items if not i.is_impact]
                 else:
-                    if len(s) == 1:
-                        items = [i for i in items if i.state_id != int(s)]
+                    # Manage soft state
+                    if s.startswith('s'):
+                        s = s[1:]
+                        if len(s) == 1:
+                            items = [i for i in items if i.state_id != int(s) and i.state_type != 'HARD']
+                        else:
+                            items = [i for i in items if i.state != s.upper() and i.state_type != 'HARD']
                     else:
-                        items = [i for i in items if i.state != s.upper()]
+                        if len(s) == 1:
+                            items = [i for i in items if i.state_id != int(s) and i.state_type == 'HARD']
+                        else:
+                            items = [i for i in items if i.state != s.upper() and i.state_type == 'HARD']
 
             # :COMMENT:maethor:150616: Legacy filters, kept for bookmarks compatibility
             if t == 'ack':
-                if s == 'false' or s == 'no':
+                if s.lower() == 'false' or s.lower() == 'no':
                     search.append("isnot:ack")
-                if s == 'true' or s == 'yes':
+                if s.lower() == 'true' or s.lower() == 'yes':
                     search.append("is:ack")
             if t == 'downtime':
-                if s == 'false' or s == 'no':
+                if s.lower() == 'false' or s.lower() == 'no':
                     search.append("isnot:downtime")
-                if s == 'true' or s == 'yes':
+                if s.lower() == 'true' or s.lower() == 'yes':
                     search.append("is:downtime")
             if t == 'crit':
                 search.append("is:critical")
