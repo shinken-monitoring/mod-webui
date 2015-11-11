@@ -23,7 +23,7 @@
     "webui",
     "ui",
     "web",
-    "interface"
+    "user interface"
   ],
   "dependencies": {
     "shinken": ">=2.0"
