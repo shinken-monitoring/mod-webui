@@ -101,6 +101,24 @@ Invalid element name
       </div>
 
       <div id="collapseOverview" class="panel-body panel-collapse collapse">
+         %if elt.customs:
+         <div class="row">
+         <dl class="col-sm-6 dl-horizontal">
+            %if '_DETAILLEDESC' in elt.customs:
+            <dt>Description:</dt>
+            <dd>{{elt.customs['_DETAILLEDESC']}}</dd>
+            %end
+            %if '_IMPACT' in elt.customs:
+            <dt>Impact:</dt>
+            <dd>{{elt.customs['_IMPACT']}}</dd>
+            %end
+            %if '_FIXACTIONS' in elt.customs:
+            <dt>Fix actions:</dt>
+            <dd>{{elt.customs['_FIXACTIONS']}}</dd>
+            %end
+         </dl>
+         </div>
+         %end
          %if elt_type=='host':
          <dl class="col-sm-6 dl-horizontal">
             <dt>Alias:</dt>
