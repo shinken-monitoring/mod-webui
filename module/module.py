@@ -673,7 +673,7 @@ class Webui_broker(BaseModule, Daemon):
     # For compatibility with previous defined views ...
     ##
     def get_user_auth(self):
-        logger.info("[WebUI] Getting authenticated user ...")
+        logger.warning("[WebUI] Deprecated - Getting authenticated user ...")
         self.user_picture = None
 
         username = bottle.request.get_cookie("user", secret=self.auth_secret)
