@@ -661,18 +661,31 @@ class Webui_broker(BaseModule, Daemon):
         logger.info("[WebUI] Requesting authentication for user: %s", username)
         r = self.auth_module.check_auth(username, password)
         if r:
-            # :TODO:maethor:150724: Remove this, nothing to do here
-            # Define user picture
-            self.user_picture = '/static/photos/%s' % username
-            if self.gravatar:
-                gravatar = self.get_gravatar(c.email, 32)
-                if gravatar is not None:
-                    self.user_picture = gravatar
+            user = User.from_contact(c, picture=self.user_picture, use_gravatar=self.gravatar)
+            self.user_picture = user.picture
             logger.info("[WebUI] User picture: %s", self.user_picture)
-            return c is not None
+            return True
 
         logger.warning("[WebUI] The user '%s' has not been authenticated.", username)
         return False
+
+    ##
+    # For compatibility with previous defined views ...
+    ##
+    def get_user_auth(self):
+        logger.warning("[WebUI] Deprecated - Getting authenticated user ...")
+        self.user_picture = None
+
+        username = bottle.request.get_cookie("user", secret=self.auth_secret)
+        if not username and not self.allow_anonymous:
+            return None
+        contact = self.datamgr.get_contact(username or 'anonymous')
+        if not contact:
+            return None
+
+        user = User.from_contact(contact, self.user_picture, self.gravatar)
+        self.user_picture = user.picture
+        return user
 
     ##
     # Current user can launch commands ?
@@ -754,5 +767,6 @@ def login_required():
     if not contact:
         app.bottle.redirect("/user/login")
 
-    request.environ['USER'] = User.from_contact(contact, app.gravatar)
+    request.environ['USER'] = User.from_contact(contact, app.user_picture, app.gravatar)
+    app.user_picture = request.environ['USER'].picture
     bottle.BaseTemplate.defaults['user'] = request.environ['USER']

@@ -101,6 +101,24 @@ Invalid element name
       </div>
 
       <div id="collapseOverview" class="panel-body panel-collapse collapse">
+         %if elt.customs:
+         <div class="row">
+         <dl class="col-sm-6 dl-horizontal">
+            %if '_DETAILLEDESC' in elt.customs:
+            <dt>Description:</dt>
+            <dd>{{elt.customs['_DETAILLEDESC']}}</dd>
+            %end
+            %if '_IMPACT' in elt.customs:
+            <dt>Impact:</dt>
+            <dd>{{elt.customs['_IMPACT']}}</dd>
+            %end
+            %if '_FIXACTIONS' in elt.customs:
+            <dt>Fix actions:</dt>
+            <dd>{{elt.customs['_FIXACTIONS']}}</dd>
+            %end
+         </dl>
+         </div>
+         %end
          %if elt_type=='host':
          <dl class="col-sm-6 dl-horizontal">
             <dt>Alias:</dt>
@@ -395,7 +413,7 @@ Invalid element name
                               </tr>
                               <tr>
                                  <td><strong>Output:</strong></td>
-                                 <td class="popover-dismiss"
+                                 <td class="popover-dismiss popover-large"
                                        data-html="true" data-toggle="popover" data-trigger="hover" data-placement="bottom"
                                        data-title="{{elt.get_full_name()}} check output"
                                        data-content=" {{elt.output}}{{'<br/>'+elt.long_output.replace('\n', '<br/>') if elt.long_output else ''}}"
@@ -405,7 +423,7 @@ Invalid element name
                               </tr>
                               <tr>
                                  <td><strong>Performance data:</strong></td>
-                                 <td class="popover-dismiss ellipsis"
+                                 <td class="popover-dismiss popover-large ellipsis"
                                        data-html="true" data-toggle="popover" data-trigger="hover" data-placement="bottom"
                                        data-title="{{elt.get_full_name()}} performance data"
                                        data-content=" {{elt.perf_data if elt.perf_data else '(none)'}}"

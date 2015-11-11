@@ -245,23 +245,23 @@ def get_page(name, type):
 
     # user = app.check_user_authentication()
 
-    logger.info("[WebUI-cvhost], get_page for %s, type: '%s'", name, type)
+    logger.debug("[WebUI-cvhost], get_page for %s, type: '%s'", name, type)
 
     try:
         currentdir = os.path.dirname(os.path.realpath(__file__))
         configuration_file = "%s/%s.cfg" % (currentdir, type)
-        logger.info("Plugin configuration file: %s", configuration_file)
+        logger.debug("Plugin configuration file: %s", configuration_file)
         scp = config_parser('#', '=')
         z = params.copy()
         z.update(scp.parse_config(configuration_file))
         params = z
 
-        logger.info("[WebUI-cvhost] configuration loaded.")
-        logger.info("[WebUI-cvhost] configuration, load: %s (%s)", params['svc_load_name'], params['svc_load_used'])
-        logger.info("[WebUI-cvhost] configuration, cpu: %s (%s)", params['svc_cpu_name'], params['svc_cpu_used'])
-        logger.info("[WebUI-cvhost] configuration, disk: %s (%s)", params['svc_dsk_name'], params['svc_dsk_used'])
-        logger.info("[WebUI-cvhost] configuration, memory: %s (%s)", params['svc_mem_name'], params['svc_mem_used'])
-        logger.info("[WebUI-cvhost] configuration, network: %s (%s)", params['svc_net_name'], params['svc_net_used'])
+        logger.debug("[WebUI-cvhost] configuration loaded.")
+        logger.debug("[WebUI-cvhost] configuration, load: %s (%s)", params['svc_load_name'], params['svc_load_used'])
+        logger.debug("[WebUI-cvhost] configuration, cpu: %s (%s)", params['svc_cpu_name'], params['svc_cpu_used'])
+        logger.debug("[WebUI-cvhost] configuration, disk: %s (%s)", params['svc_dsk_name'], params['svc_dsk_used'])
+        logger.debug("[WebUI-cvhost] configuration, memory: %s (%s)", params['svc_mem_name'], params['svc_mem_used'])
+        logger.debug("[WebUI-cvhost] configuration, network: %s (%s)", params['svc_net_name'], params['svc_net_used'])
         # logger.info("[WebUI-cvhost] configuration, printer: %s (%s)", params['svc_prn_name'], params['svc_prn_used'])
     except Exception, exp:
         logger.warning("[WebUI-cvhost] configuration file (%s) not available or bad formed: %s", configuration_file, str(exp))
@@ -300,7 +300,7 @@ def get_page(name, type):
     # Then global
     all_states["global"] = compute_worst_state(all_states)
 
-    logger.info("[WebUI-cvhost], overall state: %s", all_states)
+    logger.debug("[WebUI-cvhost] overall state: %s", all_states)
 
     return {'app': app, 'elt': host, 'config': type, 'all_perfs':all_perfs, 'all_states':all_states}
 

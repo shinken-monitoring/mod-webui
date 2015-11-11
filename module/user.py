@@ -32,6 +32,7 @@ from shinken.log import logger
 
 
 class User(Contact):
+    picture = None
 
     @classmethod
     def from_contact(cls, contact, picture="", use_gravatar=False):
@@ -43,7 +44,7 @@ class User(Contact):
         if not picture:
             user.picture = '/static/photos/%s' % user.contact_name
             if use_gravatar:
-                gravatar = cls.get_gravatar(user.email, 32)
+                gravatar = cls.get_gravatar(user.email)
                 if gravatar:
                     user.picture = gravatar
 
@@ -51,7 +52,7 @@ class User(Contact):
 
     @staticmethod
     def get_gravatar(email, size=64, default='404'):
-        logger.debug("[WebUI], get Gravatar, email: %s, size: %d, default: %s",
+        logger.debug("[WebUI] get Gravatar, email: %s, size: %d, default: %s",
                      email, size, default)
 
         try:
@@ -59,7 +60,9 @@ class User(Contact):
             import urllib
 
             parameters = {'s': size, 'd': default}
-            url = "https://secure.gravatar.com/avatar/%s?%s" % (hashlib.md5(email.lower()).hexdigest(), urllib.urlencode(parameters))
+            url = "https://secure.gravatar.com/avatar/%s?%s" % (
+                hashlib.md5(email.lower()).hexdigest(), urllib.urlencode(parameters)
+            )
             ret = urllib2.urlopen(url)
             if ret.code == 200:
                 return url

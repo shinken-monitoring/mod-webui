@@ -22,7 +22,7 @@
          <ul class="nav" id="actions-menu">
          %if app.can_action():
          %if elt:
-         %elt_type = elt.__class__.my_type
+            %elt_type = elt.__class__.my_type
             <li> <a href="#" action="add-comment" title="Add a comment for this {{elt_type}}"
                data-element="{{helper.get_uri_name(elt)}}" >
                <i class="fa fa-plus"></i> Add a comment
@@ -37,10 +37,12 @@
                data-element="{{helper.get_uri_name(elt)}}" >
                <i class="fa fa-refresh"></i> Recheck
             </a> </li>
+            %if (elt.passive_checks_enabled):
             <li> <a href="#" action="check-result" title="Set this {{elt_type}} as ok"
                data-element="{{helper.get_uri_name(elt)}}" >
                <i class="fa fa-share"></i> Submit check result
             </a> </li>
+            %end
             %if elt.state != elt.ok_up and not elt.problem_has_been_acknowledged:
             <li> <a href="#" action="add-acknowledge" title="Acknowledge this {{elt_type}} problem"
                data-element="{{helper.get_uri_name(elt)}}" >
@@ -87,7 +89,7 @@
          </ul>
       </div>
    </div>
-   
+
    <div class="container-fluid">
       <img src="/static/images/default_company_xxs.png" alt="Shinken Logo"/>
       <i class="col-lg-10 text-muted">Shinken {{VERSION}} &mdash; Web User Interface {{app.app_version}}, &copy;2011-2015</i>
@@ -108,7 +110,7 @@
          display_modal("/forms/comment/add/"+elt);
       }
    });
-   
+
    // Delete a comment
    $('body').on("click", '[action="delete-comment"]', function () {
       var elt = $(this).data('element');
@@ -117,11 +119,11 @@
          if (eltdetail_logs) console.error("Unavailable delete a comment for a list of problems!")
       } else {
          if (eltdetail_logs) console.debug("Delete comment '"+comment+"' for: ", elt)
-         
+
          display_modal("/forms/comment/delete/"+elt+"?comment="+comment);
       }
    });
-   
+
    // Delete all comments
    $('body').on("click", '[action="delete-comments"]', function () {
       var elt = $(this).data('element');
@@ -129,11 +131,11 @@
          if (eltdetail_logs) console.error("Unavailable delete all comments for a list of problems!")
       } else {
          if (eltdetail_logs) console.debug("Delete all comments for: ", elt)
-         
+
          display_modal("/forms/comment/delete_all/"+elt);
       }
    });
-   
+
    // Schedule a downtime ...
    $('body').on("click", '[action="schedule-downtime"]', function () {
       var elt = $(this).data('element');
@@ -150,11 +152,11 @@
          flush_selected_elements();
       } else {
          if (eltdetail_logs) console.debug("Schedule a downtime for: ", elt)
-         
+
          display_modal("/forms/downtime/add/"+$(this).data('element'));
       }
    });
-   
+
    // Delete a downtime
    $('body').on("click", '[action="delete-downtime"]', function () {
       var elt = $(this).data('element');
@@ -163,11 +165,11 @@
          if (eltdetail_logs) console.error("Unavailable delete a downtime for a list of problems!")
       } else {
          if (eltdetail_logs) console.debug("Delete downtime '"+downtime+"' for: ", elt)
-         
+
          display_modal("/forms/downtime/delete/"+elt+"?downtime="+downtime);
       }
    });
-   
+
    // Delete all downtimes
    $('body').on("click", '[action="delete-downtimes"]', function () {
       var elt = $(this).data('element');
@@ -175,11 +177,11 @@
          if (eltdetail_logs) console.error("Unavailable delete all downtimes for a list of problems!")
       } else {
          if (eltdetail_logs) console.debug("Delete all downtimes for: ", elt)
-         
+
          display_modal("/forms/downtime/delete_all/"+$(this).data('element'));
       }
    });
-   
+
    // Add an acknowledge
    $('body').on("click", '[action="add-acknowledge"]', function () {
       var elt = $(this).data('element');
@@ -192,7 +194,7 @@
          flush_selected_elements();
       } else {
          if (eltdetail_logs) console.debug("Button - add an acknowledge for: ", elt)
-         
+
          display_modal("/forms/acknowledge/add/"+elt);
       }
    });
@@ -204,11 +206,11 @@
          if (eltdetail_logs) console.error("Unavailable delete acknowledge for a list of problems!")
       } else {
          if (eltdetail_logs) console.debug("Delete an acknowledge for: ", elt)
-         
+
          display_modal("/forms/acknowledge/remove/"+elt);
       }
    });
-   
+
    // Recheck
    $('body').on("click", '[action="recheck"]', function () {
       var elt = $(this).data('element');
@@ -236,7 +238,7 @@
          flush_selected_elements();
       } else {
          if (eltdetail_logs) console.debug("Submit a check result for: ", elt)
-         
+
          display_modal("/forms/submit_check/"+elt);
       }
    });
@@ -252,7 +254,7 @@
          flush_selected_elements();
       } else {
          if (eltdetail_logs) console.debug("Try to fix: ", elt)
-         
+
          try_to_fix(elt);
       }
    });
@@ -269,7 +271,7 @@
          flush_selected_elements();
       } else {
          if (problems_logs) console.debug("Remove for: ", elt)
-         
+
          do_remove(elt, 'Removed by '+user, user);
       }
    });
@@ -280,7 +282,7 @@
       var user = '{{username}}';
       if (elt) {
          if (eltdetail_logs) console.debug("Create a ticket for: ", elt)
-         
+
          display_modal("/helpdesk/ticket/add/"+$(this).data('element'));
       }
    });

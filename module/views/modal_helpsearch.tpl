@@ -24,6 +24,12 @@
     <li><code>is:ack</code> Matches elements that are acknownledged.</li>
     <li><code>is:downtime</code> Matches elements that are in a scheduled downtime.</li>
   </ul>
+  <p><strong>Note:</strong> default search on state is made only against HARD states.</p>
+  <p>Preceding the state with the letter <code>s</code> makes the search only consider SOFT states. For example:</p>
+  <ul>
+    <li><code>is:sDOWN</code> Matches hosts that are SOFT state DOWN.</li>
+    <li><code>isnot:s0</code> Matches services and hosts that are SOFT state not OK neither UP (all the not yet confirmed problems)</li>
+  </ul>
 
   <h4>Search by the business impact of an element</h4>
   <p>The <code>bp</code> qualifier finds elements by it's business priority. For example:</p>

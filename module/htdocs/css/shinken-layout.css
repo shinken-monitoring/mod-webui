@@ -77,6 +77,10 @@ html, body {
    max-width: 480px;
 }
 
+.popover-large {
+   max-width: 1024px;
+}
+
 /*
  * Table with ellipsis for text too large in columns
  */
@@ -260,7 +264,7 @@ html, body {
   display: block;
 }
 
-/* 
+/*
  * Breadcrumb
  */
 .breadcrumb {
@@ -270,7 +274,7 @@ html, body {
 /*
  * Shinken basics
  */
- 
+
 .font-ok, .font-up {
   color: #5bb75b !important;
 }
@@ -372,7 +376,7 @@ html, body {
 
 .bg-blue {background-color: #3A87AD;}
 
-/* 
+/*
  * States
 .background-down, .background-critical{
  background-color: #FF858B !important;
@@ -470,20 +474,20 @@ html, body {
 
 
 /*  Special Shinken Box
-    ------------------------------------------------------- 
+    -------------------------------------------------------
 .fitted-header {
   background: #F7F7F7 !important;
 }
 */
 /*  Special Shinken snap.js & BS3 (modal) workaround
-    ------------------------------------------------------- 
+    -------------------------------------------------------
 .modal-backdrop {
   z-index: 0 !important;
 }
 */
 
 /*  Special Shinken styles
-    ------------------------------------------------------- 
+    -------------------------------------------------------
 
 .cursor { cursor:pointer; }
 
@@ -621,7 +625,7 @@ html, body {
 }
 */
 /*  Alert styles => BTN Color
-    ------------------------------------------------------- 
+    -------------------------------------------------------
 .alert {
   color: #FFFFFF;
   text-align: center;
@@ -716,7 +720,7 @@ html, body {
 */
 
 /*  Check output
-    ------------------------------------------------------- 
+    -------------------------------------------------------
 .check-output {
   display: block;
   padding-top: 7px;
@@ -728,7 +732,7 @@ html, body {
 .check-output-critical, .check-output-down {
   color: #da4f49;
 }
-.check-output-critical:hover, .check-output-down:hover { 
+.check-output-critical:hover, .check-output-down:hover {
   color: #FFFFFF; background-color: #bd362f;
 }
 
@@ -739,19 +743,19 @@ html, body {
 
 .check-output-good, .check-output-up, .check-output-ok {
 }
-.check-output-good:hover, .check-output-up:hover, .check-output-ok:hover { 
+.check-output-good:hover, .check-output-up:hover, .check-output-ok:hover {
 }
 
 .check-output-unknown, .check-output-unreachable, .check-output-pending {
   color: #49afcd;
 }
-.check-output-unknown:hover, .check-output-unreachable:hover, .check-output-pending:hover { 
-  color: #FFFFFF ;background-color: #2f96b4; 
+.check-output-unknown:hover, .check-output-unreachable:hover, .check-output-pending:hover {
+  color: #FFFFFF ;background-color: #2f96b4;
 }
 */
-    
+
 /*  Badger styles
-    ------------------------------------------------------- 
+    -------------------------------------------------------
 
 .badger {
   background-color: #999999;
@@ -838,13 +842,13 @@ a.disabled-link:hover {
 }
 */
 
-/* With the SORTER javascript plugin 
+/* With the SORTER javascript plugin
 th[data-sort]{
   cursor:pointer;
 }
 */
 
-/* For list where we do not want a style 
+/* For list where we do not want a style
 .no_list_style{
     list-style-type: none;
 }
