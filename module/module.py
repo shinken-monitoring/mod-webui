@@ -670,6 +670,24 @@ class Webui_broker(BaseModule, Daemon):
         return False
 
     ##
+    # For compatibility with previous defined views ...
+    ##
+    def get_user_auth(self):
+        logger.info("[WebUI] Getting authenticated user ...")
+        self.user_picture = None
+
+        username = bottle.request.get_cookie("user", secret=self.auth_secret)
+        if not username and not self.allow_anonymous:
+            return None
+        contact = self.datamgr.get_contact(username or 'anonymous')
+        if not contact:
+            return None
+
+        user = User.from_contact(contact, self.user_picture, self.gravatar)
+        self.user_picture = user.picture
+        return user
+
+    ##
     # Current user can launch commands ?
     # If username is provided, check for the specified user ...
     ##
