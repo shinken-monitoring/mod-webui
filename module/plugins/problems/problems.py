@@ -54,7 +54,7 @@ def get_all():
     end = int(app.request.GET.get('end', start + step))
 
     title = app.request.GET.get('title', 'All problems')
-    
+
     search = ' '.join(app.request.GET.getall('search')) or ""
     items = app.datamgr.search_hosts_and_services(search, user)
 
@@ -161,8 +161,16 @@ Show the IT problems sorted by time
 '''
 
 pages = {
-    get_page: {'routes': ['/problems'], 'view': 'problems', 'static': True},
-    get_all: {'routes': ['/all'], 'view': 'problems', 'static': True, 'name': 'All', 'search_engine': True},
-    get_pbs_widget: {'routes': ['/widget/problems'], 'view': 'widget_problems', 'static': True, 'widget': ['dashboard'], 'widget_desc': widget_desc, 'widget_name': 'problems', 'widget_picture': '/static/problems/img/widget_problems.png'},
-    get_last_errors_widget: {'routes': ['/widget/last_problems'], 'view': 'widget_last_problems', 'static': True, 'widget': ['dashboard'], 'widget_desc': last_widget_desc, 'widget_name': 'last_problems', 'widget_picture': '/static/problems/img/widget_problems.png'},
+    get_page: {
+        'name': 'Problems', 'route': '/problems', 'view': 'problems', 'static': True
+    },
+    get_all: {
+        'name': 'All', 'route': '/all', 'view': 'problems', 'static': True, 'search_engine': True
+    },
+    get_pbs_widget: {
+        'name': 'wid_Problems', 'route': '/widget/problems', 'view': 'widget_problems', 'static': True, 'widget': ['dashboard'], 'widget_desc': widget_desc, 'widget_name': 'problems', 'widget_picture': '/static/problems/img/widget_problems.png'
+    },
+    get_last_errors_widget: {
+        'name': 'wid_LastProblems', 'route': '/widget/last_problems', 'view': 'widget_last_problems', 'static': True, 'widget': ['dashboard'], 'widget_desc': last_widget_desc, 'widget_name': 'last_problems', 'widget_picture': '/static/problems/img/widget_problems.png'
+    }
 }

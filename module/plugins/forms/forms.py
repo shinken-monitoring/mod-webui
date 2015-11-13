@@ -39,7 +39,7 @@ def form_submit_check(name):
 def form_change_var(name):
     variable = app.request.GET.get('variable', '')
     value = app.request.GET.get('value', '')
-    
+
     user = app.request.environ['USER']
     elt = app.datamgr.get_element(name, user) or app.redirect404()
 
@@ -94,18 +94,18 @@ def form_downtime_delete_all(name):
 
 
 pages = {
-        form_submit_check:          {'routes': ['/forms/submit_check/<name:path>'],             'view': 'form_submit_check'},
-        
-        form_change_var:            {'routes': ['/forms/change_var/<name:path>'],               'view': 'form_change_var'},
-        
-        form_comment_add:           {'routes': ['/forms/comment/add/<name:path>'],              'view': 'form_comment_add'},
-        form_comment_delete:        {'routes': ['/forms/comment/delete/<name:path>'],           'view': 'form_comment_delete'},
-        form_comment_delete_all:    {'routes': ['/forms/comment/delete_all/<name:path>'],       'view': 'form_comment_delete_all'},
-        
-        form_downtime_add:          {'routes': ['/forms/downtime/add/<name:path>'],             'view': 'form_downtime_add'},
-        form_downtime_delete:       {'routes': ['/forms/downtime/delete/<name:path>'],          'view': 'form_downtime_delete'},
-        form_downtime_delete_all:   {'routes': ['/forms/downtime/delete_all/<name:path>'],      'view': 'form_downtime_delete_all'},
-        
-        form_ack_add:               {'routes': ['/forms/acknowledge/add/<name:path>'],          'view': 'form_ack_add'},
-        form_ack_remove:            {'routes': ['/forms/acknowledge/remove/<name:path>'],       'view': 'form_ack_remove'},
-        }
+    form_submit_check:          {'name': 'SubmitCheck', 'route': '/forms/submit_check/<name:path>',             'view': 'form_submit_check'},
+
+    form_change_var:            {'name': 'ChangeVar', 'route': '/forms/change_var/<name:path>',               'view': 'form_change_var'},
+
+    form_comment_add:           {'name': 'CommentAdd', 'route': '/forms/comment/add/<name:path>',              'view': 'form_comment_add'},
+    form_comment_delete:        {'name': 'CommentDelete', 'route': '/forms/comment/delete/<name:path>',           'view': 'form_comment_delete'},
+    form_comment_delete_all:    {'name': 'CommentDeleteAll', 'route': '/forms/comment/delete_all/<name:path>',       'view': 'form_comment_delete_all'},
+
+    form_downtime_add:          {'name': 'DowntimeAdd', 'route': '/forms/downtime/add/<name:path>',             'view': 'form_downtime_add'},
+    form_downtime_delete:       {'name': 'DowntimeDelete', 'route': '/forms/downtime/delete/<name:path>',          'view': 'form_downtime_delete'},
+    form_downtime_delete_all:   {'name': 'DowntimeDeleteAll', 'route': '/forms/downtime/delete_all/<name:path>',      'view': 'form_downtime_delete_all'},
+
+    form_ack_add:               {'name': 'AckAdd', 'route': '/forms/acknowledge/add/<name:path>',          'view': 'form_ack_add'},
+    form_ack_remove:            {'name': 'AckDelete', 'route': '/forms/acknowledge/remove/<name:path>',       'view': 'form_ack_remove'},
+}

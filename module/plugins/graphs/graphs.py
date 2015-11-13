@@ -102,6 +102,10 @@ Show the perfdata graph
 '''
 
 pages = {
-    proxy_graph: {'routes': ['/graph'], 'view': 'graph', 'static': True},
-    get_graphs_widget: {'routes': ['/widget/graphs'], 'view': 'widget_graphs', 'static': True, 'widget': ['dashboard'], 'widget_desc': widget_desc, 'widget_name': 'graphs', 'widget_picture': '/static/graphs/img/widget_graphs.png'},
+    proxy_graph: {
+        'name': 'Graph', 'route': '/graph', 'view': 'graph', 'static': True
+    },
+    get_graphs_widget: {
+        'name': 'wid_Graph', 'route': '/widget/graphs', 'view': 'widget_graphs', 'static': True, 'widget': ['dashboard'], 'widget_desc': widget_desc, 'widget_name': 'graphs', 'widget_picture': '/static/graphs/img/widget_graphs.png'
     }
+}

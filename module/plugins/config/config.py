@@ -44,7 +44,7 @@ try:
 
     # mongo_host = params['mongo_host']
     params['fake'] = params['fake']
-    
+
     logger.debug("WebUI plugin '%s', configuration loaded." % (plugin_name))
     # logger.debug("Plugin %s configuration, database: %s (%s)", plugin_name, params['mongo_host'], params['mongo_port'])
 except Exception, exp:
@@ -57,5 +57,7 @@ def config_page():
 
 
 pages = {
-        config_page: {'routes': ['/config'], 'view': 'config', 'static': True},
-        }
+    config_page: {
+        'name': 'Config', 'route': '/config', 'view': 'config', 'static': True
+    }
+}

@@ -37,5 +37,7 @@ def show_timeperiods():
 
 
 pages = {
-        show_timeperiods: {'routes': ['/timeperiods'], 'view': 'timeperiods', 'static': True},
-        }
+    show_timeperiods: {
+        'name': 'TimePeriods', 'route': '/timeperiods', 'view': 'timeperiods', 'static': True
+    }
+}

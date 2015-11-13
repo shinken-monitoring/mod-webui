@@ -305,5 +305,8 @@ def get_page(name, type):
     return {'app': app, 'elt': host, 'config': type, 'all_perfs':all_perfs, 'all_states':all_states}
 
 
-# Void plugin
-pages = {get_page: {'routes': ['/cv/<name:path>/<type:path>'], 'view': 'cv_host', 'static': True}}
+pages = {
+    get_page: {
+        'name': 'CustomView', 'route': '/cv/<name:path>/<type:path>', 'view': 'cv_host', 'static': True
+    }
+}

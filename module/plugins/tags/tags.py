@@ -60,8 +60,16 @@ def show_stags():
 
 
 pages = {
-    show_htag: {'routes': ['/hosts-tag/:name'], 'view': 'hosts-tag', 'static': True},
-    show_stag: {'routes': ['/services-tag/:name'], 'view': 'services-tag', 'static': True},
-    show_htags: {'routes': ['/hosts-tags'], 'view': 'hosts-tags-overview', 'static': True},
-    show_stags: {'routes': ['/services-tags'], 'view': 'services-tags-overview', 'static': True},
+    show_htag: {
+        'name': 'HostsTag', 'route': '/hosts-tag/:name', 'view': 'hosts-tag', 'static': True
+    },
+    show_stag: {
+        'name': 'ServicesTag', 'route': '/services-tag/:name', 'view': 'services-tag', 'static': True
+    },
+    show_htags: {
+        'name': 'HostsTags', 'route': '/hosts-tags', 'view': 'hosts-tags-overview', 'static': True
+    },
+    show_stags: {
+        'name': 'ServicesTags', 'route': '/services-tags', 'view': 'services-tags-overview', 'static': True
+    }
 }

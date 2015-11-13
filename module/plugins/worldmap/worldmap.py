@@ -67,7 +67,7 @@ def load_config(app):
 def search_hosts_with_coordinates(search, user):
     logger.debug("[WebUI-worldmap] search parameters '%s'", search)
     items = app.datamgr.search_hosts_and_services(search, user, get_impacts=True)
-    
+
     # We are looking for hosts with valid GPS coordinates,
     # and we just give them to the template to print them.
     # :COMMENT:maethor:150810: If you want default coordinates, just put them
@@ -75,7 +75,7 @@ def search_hosts_with_coordinates(search, user):
     valid_hosts = []
     for h in items:
         logger.debug("[WebUI-worldmap] found host '%s'", h.get_name())
-        
+
         if h.business_impact not in params['hosts_level']:
             continue
 
@@ -88,7 +88,7 @@ def search_hosts_with_coordinates(search, user):
         except Exception:
             logger.debug("[WebUI-worldmap] host '%s' has invalid GPS coordinates", h.get_name())
             continue
-            
+
         logger.debug("[WebUI-worldmap] host '%s' located on worldmap: %f - %f", h.get_name(), _lat, _lng)
         valid_hosts.append(h)
 
@@ -103,7 +103,7 @@ def show_worldmap():
 
     # So now we can just send the valid hosts to the template
     return {'params': params,
-            'mapId': 'hostsMap', 
+            'mapId': 'hostsMap',
             'hosts': search_hosts_with_coordinates(search, user)}
 
 
@@ -116,12 +116,12 @@ def show_worldmap_widget():
     # We want to limit the number of elements, The user will be able to increase it
     nb_elements = max(0, int(app.request.GET.get('nb_elements', '10')))
     refine_search = app.request.GET.get('search', '')
-    
+
     # Apply search filter if exists ...
     search = app.request.query.get('search', "type:host")
 
     items = search_hosts_with_coordinates(search, user)
-    
+
     # Ok, if needed, apply the widget refine search filter
     if refine_search:
         pat = re.compile(refine_search, re.IGNORECASE)
@@ -139,7 +139,7 @@ def show_worldmap_widget():
 
     mapId = "map_%d" % random.randint(1, 9999)
 
-    return {'wid': wid, 'mapId': mapId, 
+    return {'wid': wid, 'mapId': mapId,
             'collapsed': collapsed, 'options': options,
             'base_url': '/widget/worldmap', 'title': title,
             'params': params, 'hosts' : items
@@ -152,6 +152,10 @@ Show a map of all monitored hosts.
 
 # We export our properties to the webui
 pages = {
-        show_worldmap: {'routes': ['/worldmap'], 'view': 'worldmap', 'name': 'Worldmap', 'static': True, 'search_engine': True},
-    show_worldmap_widget: {'routes': ['/widget/worldmap'], 'view': 'worldmap_widget', 'static': True, 'widget': ['dashboard'], 'widget_desc': widget_desc, 'widget_name': 'worldmap', 'widget_picture': '/static/worldmap/img/widget_worldmap.png'},
+    show_worldmap: {
+        'name': 'Worldmap', 'route': '/worldmap', 'view': 'worldmap', 'static': True, 'search_engine': True
+    },
+    show_worldmap_widget: {
+        'name': 'wid_Worldmap', 'route': '/widget/worldmap', 'view': 'worldmap_widget', 'static': True, 'widget': ['dashboard'], 'widget_desc': widget_desc, 'widget_name': 'worldmap', 'widget_picture': '/static/worldmap/img/widget_worldmap.png'
+    }
 }

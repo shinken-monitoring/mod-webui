@@ -76,6 +76,10 @@ Show an aggregated view of the most important business impacts!
 """
 
 pages = {
-    show_impacts: {'routes': ['/impacts'], 'view': 'impacts', 'name': 'Impacts', 'static': True, 'search_engine': True},
-    impacts_widget: {'routes': ['/widget/impacts'], 'view': 'widget_impacts', 'static': True, 'widget': ['dashboard'], 'widget_desc': widget_desc, 'widget_name': 'impacts', 'widget_picture': '/static/impacts/img/widget_impacts.png'},
+    show_impacts: {
+        'name': 'Impacts', 'route': '/impacts', 'view': 'impacts', 'static': True, 'search_engine': True
+    },
+    impacts_widget: {
+        'name': 'wid_Impacts', 'route': '/widget/impacts', 'view': 'widget_impacts', 'static': True, 'widget': ['dashboard'], 'widget_desc': widget_desc, 'widget_name': 'impacts', 'widget_picture': '/static/impacts/img/widget_impacts.png'
+    }
 }

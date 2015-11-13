@@ -67,6 +67,11 @@ def lookup_post():
 
     return json.dumps(r)
 
-pages = {lookup: {'routes': ['/lookup/:name']},
-         lookup_post: {'routes': ['/lookup'], 'method': 'POST'}
-         }
+pages = {
+    lookup: {
+        'name': 'GetLookup', 'route': '/lookup/:name'
+    },
+    lookup_post: {
+        'name': 'SetLookup', 'route': '/lookup', 'method': 'POST'
+    }
+ }

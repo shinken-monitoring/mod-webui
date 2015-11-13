@@ -46,11 +46,11 @@ def _get_logs(*args, **kwargs):
     else:
         logger.warning("[WebUI-logs] no get history external module defined!")
         return None
-        
+
 
 def load_config(app):
     global params
-    
+
     import os
     from webui2.config_parser import config_parser
     try:
@@ -67,7 +67,7 @@ def load_config(app):
             params['logs_hosts'] = [item.strip() for item in params['logs_hosts'].split(',')]
         if len(params['logs_services']) > 0:
             params['logs_services'] = [item.strip() for item in params['logs_services'].split(',')]
-        
+
         logger.info("[WebUI-logs] configuration loaded.")
         logger.info("[WebUI-logs] configuration, fetching types: %s", params['logs_type'])
         logger.info("[WebUI-logs] configuration, hosts: %s", params['logs_hosts'])
@@ -83,11 +83,11 @@ def form_hosts_list():
 
 def set_hosts_list():
     # Form cancel
-    if app.request.forms.get('cancel'): 
+    if app.request.forms.get('cancel'):
         app.bottle.redirect("/logs")
 
     params['logs_hosts'] = []
-    
+
     hostsList = app.request.forms.getall('hostsList[]')
     logger.debug("[WebUI-logs] Selected hosts : ")
     for host in hostsList:
@@ -102,11 +102,11 @@ def form_services_list():
 
 def set_services_list():
     # Form cancel
-    if app.request.forms.get('cancel'): 
+    if app.request.forms.get('cancel'):
         app.bottle.redirect("/logs")
 
     params['logs_services'] = []
-    
+
     servicesList = app.request.forms.getall('servicesList[]')
     logger.debug("[WebUI-logs] Selected services : ")
     for service in servicesList:
@@ -121,11 +121,11 @@ def form_logs_type_list():
 
 def set_logs_type_list():
     # Form cancel
-    if app.request.forms.get('cancel'): 
+    if app.request.forms.get('cancel'):
         app.bottle.redirect("/logs")
 
     params['logs_type'] = []
-    
+
     logs_typeList = app.request.forms.getall('logs_typeList[]')
     logger.debug("[WebUI-logs] Selected logs types : ")
     for log_type in logs_typeList:
@@ -160,18 +160,32 @@ def get_global_history():
         message = "%s records fetched from database" % len(logs)
 
     return {'records': logs, 'params': params, 'message': message, 'range_start': range_start, 'range_end': range_end}
-    
 
 
-pages = {   
-        get_global_history: {'routes': ['/logs'], 'view': 'logs', 'static': True},
-        
-        get_host_history: {'routes': ['/logs/inner/<name:path>'], 'view': 'history'},
-    
-        form_hosts_list: {'routes': ['/logs/hosts_list'], 'view': 'form_hosts_list'},
-        set_hosts_list: {'routes': ['/logs/set_hosts_list'], 'view': 'logs', 'method': 'POST'},
-        form_services_list: {'routes': ['/logs/services_list'], 'view': 'form_services_list'},
-        set_services_list: {'routes': ['/logs/set_services_list'], 'view': 'logs', 'method': 'POST'},
-        form_logs_type_list: {'routes': ['/logs/logs_type_list'], 'view': 'form_logs_type_list'},
-        set_logs_type_list: {'routes': ['/logs/set_logs_type_list'], 'view': 'logs', 'method': 'POST'},
+
+pages = {
+    get_global_history: {
+        'name': 'History', 'route': '/logs', 'view': 'logs', 'static': True
+    },
+    get_host_history: {
+        'name': 'HistoryHost', 'route': '/logs/inner/<name:path>', 'view': 'history'
+    },
+    form_hosts_list: {
+        'name': 'GetHostsList', 'route': '/logs/hosts_list', 'view': 'form_hosts_list'
+    },
+    set_hosts_list: {
+        'name': 'SetHostsList', 'route': '/logs/set_hosts_list', 'view': 'logs', 'method': 'POST'
+    },
+    form_services_list: {
+        'name': 'GetServicesList', 'route': '/logs/services_list', 'view': 'form_services_list'
+    },
+    set_services_list: {
+        'name': 'SetServicesList', 'route': '/logs/set_services_list', 'view': 'logs', 'method': 'POST'
+    },
+    form_logs_type_list: {
+        'name': 'GetLogsTypeList', 'route': '/logs/logs_type_list', 'view': 'form_logs_type_list'
+    },
+    set_logs_type_list: {
+        'name': 'SetLogsTypeList', 'route': '/logs/set_logs_type_list', 'view': 'logs', 'method': 'POST'
+    }
 }
