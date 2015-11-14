@@ -109,8 +109,8 @@ def get_pbs_widget():
 
     pbs = items[:nb_elements]
 
-    wid = app.request.GET.get('wid', 'widget_problems_' + str(int(time.time())))
-    collapsed = (app.request.GET.get('collapsed', 'False') == 'True')
+    wid = app.request.query.get('wid', 'widget_problems_' + str(int(time.time())))
+    collapsed = (app.request.query.get('collapsed', 'False') == 'True')
 
     options = {'search': {'value': refine_search, 'type': 'text', 'label': 'Filter by name'},
                'nb_elements': {'value': nb_elements, 'type': 'int', 'label': 'Max number of elements to show'},
@@ -140,8 +140,8 @@ def get_last_errors_widget():
     # Keep only nb_elements
     pbs = pbs[:nb_elements]
 
-    wid = app.request.GET.get('wid', 'widget_last_problems_' + str(int(time.time())))
-    collapsed = (app.request.GET.get('collapsed', 'False') == 'True')
+    wid = app.request.query.get('wid', 'widget_last_problems_' + str(int(time.time())))
+    collapsed = (app.request.query.get('collapsed', 'False') == 'True')
 
     options = {'nb_elements': {'value': nb_elements, 'type': 'int', 'label': 'Max number of elements to show'},
                }

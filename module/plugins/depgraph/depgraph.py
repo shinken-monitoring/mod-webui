@@ -92,8 +92,8 @@ def get_depgraph_widget():
 
     elt = app.datamgr.get_element(search, user) or app.redirect404()
 
-    wid = app.request.GET.get('wid', 'widget_depgraph_' + str(int(time.time())))
-    collapsed = (app.request.GET.get('collapsed', 'False') == 'True')
+    wid = app.request.query.get('wid', 'widget_depgraph_' + str(int(time.time())))
+    collapsed = (app.request.query.get('collapsed', 'False') == 'True')
 
     options = {'search': {'value': search, 'type': 'hst_srv', 'label': 'Search an element'},
                }

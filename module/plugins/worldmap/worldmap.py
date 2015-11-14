@@ -110,12 +110,12 @@ def show_worldmap():
 def show_worldmap_widget():
     user = app.request.environ['USER']
 
-    wid = app.request.GET.get('wid', 'widget_worldmap_' + str(int(time.time())))
-    collapsed = (app.request.GET.get('collapsed', 'False') == 'True')
+    wid = app.request.query.get('wid', 'widget_worldmap_' + str(int(time.time())))
+    collapsed = (app.request.query.get('collapsed', 'False') == 'True')
 
     # We want to limit the number of elements, The user will be able to increase it
-    nb_elements = max(0, int(app.request.GET.get('nb_elements', '10')))
-    refine_search = app.request.GET.get('search', '')
+    nb_elements = max(0, int(app.request.query.get('nb_elements', '10')))
+    refine_search = app.request.query.get('search', '')
 
     # Apply search filter if exists ...
     search = app.request.query.get('search', "type:host")
