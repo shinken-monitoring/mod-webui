@@ -8,11 +8,11 @@ Current version is 2.2.0, available on [`shinken.io`](http://shinken.io/package/
 ## Installation
 
  Installing/upgrading the Shinken WebUI is an easy process:
- - install the module dependencies
- - install the module
+ - install the module dependencies ([`requirements.txt`](https://github.com/shinken-monitoring/mod-webui/blob/develop/requirements.txt)).
+ - install the module (`shinken install webui2`)
  - restart Shinken
 
- View installation/upgrade procedure in the project Wiki: https://github.com/shinken-monitoring/mod-webui/wiki/Installation
+ View installation/upgrade procedure in [this article](https://github.com/shinken-monitoring/mod-webui/wiki/Installation).
 
 ## Screenshots
 
@@ -20,7 +20,7 @@ Current version is 2.2.0, available on [`shinken.io`](http://shinken.io/package/
 
 ## Dependencies
 
-Dependencies are listed in the [`requirements.txt`](https://github.com/shinken-monitoring/mod-webui/blob/develop/requirements.txt)  file.
+Dependencies are listed in the [`requirements.txt`](https://github.com/shinken-monitoring/mod-webui/blob/develop/requirements.txt) file.
 
 ## Report a bug
 
