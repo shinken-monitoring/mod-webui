@@ -172,7 +172,6 @@
             <li> <a href="{{ app.get_url('ServicesGroups') }}"> <span class="fa fa-sitemap"></span> Services groups </a> </li>
             <li> <a href="{{ app.get_url('HostsTags') }}"> <span class="fa fa-tags"></span> Hosts tags </a> </li>
             <li> <a href="{{ app.get_url('ServicesTags') }}"> <span class="fa fa-tags"></span> Services tags </a> </li>
-            <li> <a href="{{ app.get_url('ContactsGroups') }}"> <span class="fa fa-users"></span> Contacts groups </a> </li>
           </ul>
         </li>
         <li> <a href="#"><i class="fa fa-bar-chart"></i> Tactical views <i class="fa arrow"></i></a>
