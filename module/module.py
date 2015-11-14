@@ -52,8 +52,9 @@ from shinken.daemon import Daemon
 from shinken.util import to_bool
 
 # Local import
-from bottle import run, static_file, view, route, request, response, template
+from bottle import route, request, response, template
 import bottle
+from urlparse import urljoin
 from datamanager import WebUIDataManager
 from user import User
 from helper import helper
@@ -64,12 +65,13 @@ from submodules.logs import LogsMetaModule
 from submodules.graphs import GraphsMetaModule
 from submodules.helpdesk import HelpdeskMetaModule
 
+# Default bottle app
+root_app = bottle.default_app()
+# WebUI application
+webui_app = bottle.Bottle()
+
 # Debug
 bottle.debug(True)
-
-# Import bottle lib to make bottle happy
-bottle_dir = os.path.abspath(os.path.dirname(bottle.__file__))
-sys.path.insert(0, bottle_dir)
 
 # Look at the webui module root dir too
 webuimod_dir = os.path.abspath(os.path.dirname(__file__))
@@ -104,6 +106,15 @@ class Webui_broker(BaseModule, Daemon):
         # Web server configuration
         self.host = getattr(modconf, 'host', '0.0.0.0')
         self.port = int(getattr(modconf, 'port', '7767'))
+        logger.info("[WebUI] server: %s:%d", self.host, self.port)
+        self.endpoint = getattr(modconf, 'endpoint', None)
+        if self.endpoint:
+            if self.endpoint.endswith('/'):
+                self.endpoint = self.endpoint[:-1]
+            logger.info("[WebUI] configured endpoint: %s", self.endpoint)
+            logger.warning("[WebUI] endpoint feature is not implemented! WebUI is served from root URL: http://%s:%d/", self.host, self.port)
+            self.endpoint = None
+
         self.auth_secret = getattr(modconf, 'auth_secret', 'secret').encode('utf8', 'replace')
 
         # TODO : common preferences
@@ -143,8 +154,7 @@ class Webui_broker(BaseModule, Daemon):
             self.serveropts['bindAddress'] = str(bindAddress)
 
         # Apache htpasswd file for authentication
-        self.htpasswd_file = getattr(modconf, 'htpasswd_file', '/etc/shinken/htpasswd.users')
-        logger.info("[WebUI] htpasswd file: %s", self.htpasswd_file)
+        self.htpasswd_file = getattr(modconf, 'htpasswd_file', None)
         if self.htpasswd_file:
             if not os.path.exists(self.htpasswd_file):
                 logger.warning("[WebUI] htpasswd file '%s' does not exist.", self.htpasswd_file)
@@ -271,9 +281,8 @@ class Webui_broker(BaseModule, Daemon):
         self.datamgr = WebUIDataManager(self.rg)
         self.helper = helper
 
-        self.request = request
-        self.response = response
-        self.template_call = template
+        self.request = bottle.request
+        self.response = bottle.response
 
         # :TODO:maethor:150717: Doesn't work
         #username = self.request.get_cookie("user", secret=self.auth_secret)
@@ -314,8 +323,7 @@ class Webui_broker(BaseModule, Daemon):
 
         self.data_thread = None
 
-        # First load the additional plugins so they will have the lead on
-        # URI routes
+        # First load the additional plugins so they will have the lead on URI routes
         if self.additional_plugins_dir:
             self.load_plugins(self.additional_plugins_dir)
 
@@ -333,6 +341,15 @@ class Webui_broker(BaseModule, Daemon):
         # Declare the whole app static files AFTER the plugin ones
         self.declare_common_static()
 
+        # Mount Web UI application
+        # if self.endpoint:
+            # root_app.mount(self.endpoint, webui_app)
+            # logger.info("[WebUI] root routes: %s", root_app.routes)
+            # for route in webui_app.routes:
+                # logger.info("[WebUI] route: %s", route)
+
+        for route in webui_app.routes:
+            logger.debug("[WebUI] route: %s", route)
         # Launch the data thread"
         self.data_thread = threading.Thread(None, self.manage_brok_thread, 'datathread')
         self.data_thread.start()
@@ -342,8 +359,9 @@ class Webui_broker(BaseModule, Daemon):
         # just call for a select with q._reader, the underlying file
         # handle of the Queue()? That's just because under Windows, select
         # only manage winsock (so network) file descriptor! What a shame!
-        logger.info("[WebUI] starting Web UI server ...")
-        run(host=self.host, port=self.port, server=self.http_backend, **self.serveropts)
+
+        logger.info("[WebUI] starting Web UI server on %s:%d ...", self.host, self.port)
+        webui_app.run(host=self.host, port=self.port, server=self.http_backend, **self.serveropts)
 
         # ^ IMPORTANT ^
         # We are not managing the lock at this
@@ -492,48 +510,47 @@ class Webui_broker(BaseModule, Daemon):
             m_dir = os.path.abspath(os.path.dirname(m.__file__))
             sys.path.append(m_dir)
 
-            pages = m.pages
-            for (f, entry) in pages.items():
-                routes = entry.get('routes', None)
-                v = entry.get('view', None)
-                name = entry.get('name', None)
-                static = entry.get('static', False)
-                widget_lst = entry.get('widget', [])
-                widget_desc = entry.get('widget_desc', None)
-                widget_name = entry.get('widget_name', None)
-                widget_picture = entry.get('widget_picture', None)
-                search_engine = entry.get('search_engine', False)
-
+            for (f, entry) in m.pages.items():
                 # IMPORTANT: apply VIEW BEFORE route!
-                if v:
-                    f = view(v)(f)
+                view = entry.get('view', None)
+                if view:
+                    f = bottle.view(view)(f)
 
                 # Maybe there is no route to link, so pass
-                if routes:
-                    for r in routes:
-                        method = entry.get('method', 'GET')
+                route = entry.get('route', None)
+                name = entry.get('name', None)
+                search_engine = entry.get('search_engine', False)
+                if route:
+                    method = entry.get('method', 'GET')
 
-                        # Ok, we will just use the lock for all
-                        # plugin page, but not for static objects
-                        # so we set the lock at the function level.
-                        lock_version = self.lockable_function(f)
-                        f = route(r, callback=lock_version, method=method, name=name, search_engine=search_engine)
+                    # Ok, we will just use the lock for all
+                    # plugin page, but not for static objects
+                    # so we set the lock at the function level.
+                    f = webui_app.route(route, callback=self.lockable_function(f), method=method, name=name, search_engine=search_engine)
 
                 # If the plugin declare a static entry, register it
                 # and remember: really static! because there is no lock
                 # for them!
+                static = entry.get('static', False)
                 if static:
                     self.add_static_route(fdir, m_dir)
 
                 # It's a valid widget entry if it got all data, and at least one route
                 # ONLY the first route will be used for Add!
-                if widget_name and widget_desc and widget_lst != [] and routes:
+                widget_lst = entry.get('widget', [])
+                widget_desc = entry.get('widget_desc', None)
+                widget_name = entry.get('widget_name', None)
+                widget_picture = entry.get('widget_picture', None)
+                if widget_name and widget_desc and widget_lst != [] and route:
                     for place in widget_lst:
                         if place not in self.widgets:
                             self.widgets[place] = []
-                        w = {'widget_name': widget_name, 'widget_desc': widget_desc, 'base_uri': routes[0],
-                             'widget_picture': widget_picture}
-                        self.widgets[place].append(w)
+                        self.widgets[place].append({
+                            'widget_name': widget_name,
+                            'widget_desc': widget_desc,
+                            'base_uri': route,
+                            'widget_picture': widget_picture
+                        })
 
             # And we add the views dir of this plugin in our TEMPLATE
             # PATH
@@ -554,33 +571,47 @@ class Webui_broker(BaseModule, Daemon):
         except Exception, exp:
             logger.error("[WebUI] loading plugin %s, exception: %s", fdir, str(exp))
 
+    # Get URL for a named route
+    def get_url(self, name):
+        logger.debug("[WebUI] get_url for '%s'", name)
+
+        try:
+            if self.endpoint:
+                # logger.info("[WebUI] get_url, url name: %s, route: %s -> %s", name, webui_app.get_url(name), ''.join([self.endpoint, webui_app.get_url(name)]))
+                return ''.join([self.endpoint, webui_app.get_url(name)])
+            return webui_app.get_url(name)
+        except Exception as e:
+            logger.error("[WebUI] get_url, exception: %s", str(e))
+
+        return '/'
+
     # Add static route in the Web server
     def add_static_route(self, fdir, m_dir):
         logger.debug("[WebUI] add static route: %s", fdir)
         static_route = '/static/' + fdir + '/:path#.+#'
 
         def plugin_static(path):
-            return static_file(path, root=os.path.join(m_dir, 'htdocs'))
-        route(static_route, callback=plugin_static)
+            return bottle.static_file(path, root=os.path.join(m_dir, 'htdocs'))
+        webui_app.route(static_route, callback=plugin_static)
 
     def declare_common_static(self):
-        @route('/static/photos/:path#.+#')
+        @webui_app.route('/static/photos/:path#.+#')
         def give_photo(path):
             # If the file really exist, give it. If not, give a dummy image.
             if os.path.exists(os.path.join(self.photo_dir, path + '.png')):
-                return static_file(path + '.png', root=self.photo_dir)
+                return bottle.static_file(path + '.png', root=self.photo_dir)
             else:
-                return static_file('images/default_user.png', root=htdocs_dir)
+                return bottle.static_file('images/default_user.png', root=htdocs_dir)
 
-        @route('/static/logo/:path#.+#')
+        @webui_app.route('/static/logo/:path#.+#')
         def give_logo(path):
             # If the file really exist, give it. If not, give a dummy image.
             if os.path.exists(os.path.join(self.photo_dir, path + '.png')):
-                return static_file(path + '.png', root=self.photo_dir)
+                return bottle.static_file(path + '.png', root=self.photo_dir)
             else:
-                return static_file('images/default_company.png', root=htdocs_dir)
+                return bottle.static_file('images/default_company.png', root=htdocs_dir)
 
-        @route('/tag/:path#.+#')
+        @webui_app.route('/tag/:path#.+#')
         def give_tag(path):
             # TODO: Should be more logical to locate tags images in tags directory !
             # tag_path = "/images/tags/%s" % path
@@ -590,18 +621,18 @@ class Webui_broker(BaseModule, Daemon):
             tag_path = "%s/images/sets/%s" % (self.share_dir, path)
             logger.debug("[WebUI] searching tag: %s", os.path.join(tag_path, 'tag.png'))
             if os.path.exists(os.path.join(tag_path, 'tag.png')):
-                return static_file('tag.png', root=tag_path)
+                return bottle.static_file('tag.png', root=tag_path)
             else:
                 # Default tags icons are located in images/tags directory ...
                 tag_path = "%s/images/tags/%s" % (htdocs_dir, path)
                 logger.debug("[WebUI] searching for: %s", os.path.join(tag_path, 'tag.png'))
                 if os.path.exists(os.path.join(tag_path, 'tag.png')):
-                    return static_file('tag.png', root=tag_path)
+                    return bottle.static_file('tag.png', root=tag_path)
                 else:
-                    return static_file('images/default_tag.png', root=htdocs_dir)
+                    return bottle.static_file('images/default_tag.png', root=htdocs_dir)
 
         # Route static files css files
-        @route('/static/:path#.+#')
+        @webui_app.route('/static/:path#.+#')
         def server_static(path):
             # By default give from the root in bottle_dir/htdocs. If the file is missing,
             # search in the share dir
@@ -610,35 +641,24 @@ class Webui_broker(BaseModule, Daemon):
             p = os.path.join(root, path)
             if not os.path.exists(p):
                 root = self.share_dir
-            return static_file(path, root=root)
+            return bottle.static_file(path, root=root)
 
         # And add the favicon ico too
-        @route('/favicon.ico')
+        @webui_app.route('/favicon.ico')
         def give_favicon():
-            return static_file('favicon.ico', root=os.path.join(htdocs_dir, 'images'))
+            return bottle.static_file('favicon.ico', root=os.path.join(htdocs_dir, 'images'))
 
         # And add the opensearch xml
-        @route('/opensearch.xml')
+        @webui_app.route('/opensearch.xml')
         def give_opensearch():
             base_url = self.request.url.replace('opensearch.xml', '')
             response.headers['Content-Type'] = 'text/xml'
-            return template('opensearch', base_url=base_url)
+            return bottle.template('opensearch', base_url=base_url)
 
-        @route('/modal/helpsearch')
-        def give_helpsearch():
-            return template('modal_helpsearch')
-
-        @route('/modal/about')
-        def give_about():
-            return template('modal_about')
-
-        @route('/modal/newbookmark')
-        def give_newbookmark():
-            return template('modal_newbookmark')
-
-        @route('/modal/managebookmarks')
-        def give_managebookmarks():
-            return template('modal_managebookmarks')
+        @webui_app.route('/modal/:path#.+#')
+        def give_modal(path):
+            logger.debug("[WebUI] get modal window content: %s", path)
+            return bottle.template('modal_' + path)
 
     ##
     # Check if provided username/password is accepted for login the Web UI
@@ -676,7 +696,7 @@ class Webui_broker(BaseModule, Daemon):
         logger.warning("[WebUI] Deprecated - Getting authenticated user ...")
         self.user_picture = None
 
-        username = bottle.request.get_cookie("user", secret=self.auth_secret)
+        username = webui_app.request.get_cookie("user", secret=self.auth_secret)
         if not username and not self.allow_anonymous:
             return None
         contact = self.datamgr.get_contact(username or 'anonymous')
@@ -747,26 +767,31 @@ class Webui_broker(BaseModule, Daemon):
         raise self.bottle.HTTPError(403, msg)
 
 
-@bottle.hook('before_request')
+@webui_app.hook('before_request')
 def login_required():
     # :COMMENT:maethor:150718: This hack is crazy, but I don't know how to do it properly
     app = bottle.BaseTemplate.defaults['app']
-    request.environ['APP'] = app
 
-    if request.urlparts.path == '/user/login':
+    logger.debug("[WebUI] login_required, requested URL: %s", request.urlparts.path)
+    if request.urlparts.path == "/user/login" or request.urlparts.path == app.get_url("GetLogin"):
         return
-    if request.urlparts.path == '/user/auth':
+    if request.urlparts.path == "/user/auth" or request.urlparts.path == app.get_url("SetLogin"):
         return
     if request.urlparts.path.startswith('/static'):
         return
 
+    logger.debug("[WebUI] login_required, getting user cookie ...")
     username = bottle.request.get_cookie("user", secret=app.auth_secret)
     if not username and not app.allow_anonymous:
-        app.bottle.redirect("/user/login")
+        # bottle.redirect(app.get_url("GetLogin"))
+        bottle.redirect("/user/login")
     contact = app.datamgr.get_contact(username or 'anonymous')
     if not contact:
-        app.bottle.redirect("/user/login")
+        # bottle.redirect(app.get_url("GetLogin"))
+        bottle.redirect("/user/login")
 
-    request.environ['USER'] = User.from_contact(contact, app.user_picture, app.gravatar)
-    app.user_picture = request.environ['USER'].picture
-    bottle.BaseTemplate.defaults['user'] = request.environ['USER']
+    user = User.from_contact(contact, app.user_picture, app.gravatar)
+    app.user_picture = user.picture
+    request.environ['USER'] = user
+    bottle.BaseTemplate.defaults['user'] = user
+    logger.debug("[WebUI] login_required: user: %s", user)

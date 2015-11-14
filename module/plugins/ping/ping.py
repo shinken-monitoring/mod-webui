@@ -56,6 +56,11 @@ def get_gotfirstdata():
     else:
         return forge_response(callback, 200, '0')
 
-pages = {get_ping: {'routes': ['/ping']},
-         get_gotfirstdata: {'routes': ['/gotfirstdata']},
-         }
+pages = {
+    get_ping: {
+        'name': 'Ping', 'route': '/ping'
+    },
+    get_gotfirstdata: {
+        'name': 'FirstData', 'route': '/gotfirstdata'
+    }
+}

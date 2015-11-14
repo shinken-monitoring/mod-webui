@@ -80,6 +80,10 @@ def get_currently():
     return {}
 
 pages = {
-    get_page: {'routes': ['/dashboard'], 'view': 'dashboard', 'static': True},
-    get_currently: { 'routes': ['/dashboard/currently'], 'view': 'currently', 'static': True},
+    get_page: {
+        'name': 'Dashboard', 'route': '/dashboard', 'view': 'dashboard', 'static': True
+    },
+    get_currently: {
+        'name': 'Currently', 'routes': '/dashboard/currently', 'view': 'currently', 'static': True
     }
+}

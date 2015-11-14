@@ -35,5 +35,7 @@ def show_commands():
                            key=lambda c: c.command_name)}
 
 pages = {
-        show_commands: {'routes': ['/commands'], 'view': 'commands', 'static': True},
+    show_commands: {
+        'name': 'Commands', 'route': '/commands', 'view': 'commands', 'static': True
+    }
 }

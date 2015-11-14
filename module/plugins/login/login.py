@@ -27,39 +27,33 @@
 app = None
 
 from shinken.log import logger
-
-# Our page
-def get_page():
-    return user_login()
+import bottle
 
 
 def user_login():
-    if app.request.get_cookie("user", secret=app.auth_secret):
-        app.bottle.redirect("/")
-    elif app.remote_user_enable in ['1', '2']:
-        user_name=None
-        if app.remote_user_variable in app.request.headers and app.remote_user_enable == '1':
-            user_name = app.request.headers[app.remote_user_variable]
-        elif app.remote_user_variable in app.request.environ and app.remote_user_enable == '2':
-            user_name = app.request.environ[app.remote_user_variable]
-        if not user_name:
-            logger.warning("[WebUI] remote user enabled but no user name found")
-            app.bottle.redirect("/user/login")
-        c = app.datamgr.get_contact(user_name)
-        if c:
-            app.response.set_cookie('user', user_name, secret=app.auth_secret, path='/')
-            app.bottle.redirect("/")
-
     err = app.request.GET.get('error', None)
-    login_text = app.login_text
-    company_logo = app.company_logo
+    if err:
+        logger.warning("[WebUI] login page with error message: %s", err)
 
-    return {'error': err, 'login_text': login_text, 'company_logo': company_logo}
+    if app.request.get_cookie("user", secret=app.auth_secret):
+        bottle.redirect(app.get_url("Dashboard"))
+    elif app.remote_user_enable in ['1', '2']:
+        if not err:
+            user_name=None
+            if app.remote_user_variable in app.request.headers and app.remote_user_enable == '1':
+                user_name = app.request.headers[app.remote_user_variable]
+            elif app.remote_user_variable in app.request.environ and app.remote_user_enable == '2':
+                user_name = app.request.environ[app.remote_user_variable]
+            if not user_name:
+                logger.warning("[WebUI] remote user enabled but no user name found")
+                bottle.redirect(app.get_url("GetLogin"))
+            c = app.datamgr.get_contact(user_name)
+            if c:
+                app.response.set_cookie('user', user_name, secret=app.auth_secret, path='/')
+                bottle.redirect(app.get_url("Dashboard"))
 
-
-def user_login_redirect():
-    app.bottle.redirect("/user/login")
-    return {}
+    return {'msg_text': err, 'login_text': app.login_text, 'company_logo': app.company_logo}
+    # return bottle.template('login', msg_text=err, login_text=app.login_text, company_logo=app.company_logo)
 
 
 def user_logout():
@@ -71,7 +65,7 @@ def user_logout():
         app.response.set_cookie('user', '', secret=app.auth_secret, path='/')
 
     logger.info("[WebUI]  user '%s' signed out", user_name)
-    app.bottle.redirect("/user/login")
+    bottle.redirect(app.get_url("GetLogin"))
     return {}
 
 
@@ -85,10 +79,10 @@ def user_auth():
     if is_authenticated:
         app.response.set_cookie('user', login, secret=app.auth_secret, path='/')
         logger.info("[WebUI]  user '%s' signed in", login)
-        app.bottle.redirect("/dashboard")
+        bottle.redirect(app.get_url("Dashboard"))
     else:
-        logger.warning("[WebUI]  user '%s' access denied", login)
-        app.bottle.redirect("/user/login?error=Invalid user or Password")
+        logger.warning("[WebUI]  user '%s' access denied, redirection to: %s", login, app.get_url("GetLogin") + "?error=Invalid user or Password")
+        bottle.redirect(app.get_url("GetLogin") + "?error=Invalid user or Password")
 
     return {'is_auth': is_authenticated}
 
@@ -96,33 +90,20 @@ def user_auth():
 # manage the /. If the user is known, go to home page.
 # Should be /dashboard in the future. If not, go login :)
 def get_root():
-    user = app.request.get_cookie("user", secret=app.auth_secret)
-    if user:
-        app.bottle.redirect("/dashboard")
-    elif app.remote_user_enable in ['1', '2']:
-        user_name=None
-        if app.remote_user_variable in app.request.headers and app.remote_user_enable == '1':
-            user_name = app.request.headers[app.remote_user_variable]
-        elif app.remote_user_variable in app.request.environ and app.remote_user_enable == '2':
-            user_name = app.request.environ[app.remote_user_variable]
-        if not user_name:
-            logger.warning("[WebUI] remote user enabled but no user name found")
-            app.bottle.redirect("/user/login")
-        c = app.datamgr.get_contact(user_name)
-        if not c:
-            logger.warning("Warning: You need to have a contact having the same name as your user %s", user_name)
-            app.bottle.redirect("/user/login")
-        else:
-            app.response.set_cookie('user', user_name, secret=app.auth_secret, path='/')
-            app.bottle.redirect("/")
-    else:
-        app.bottle.redirect("/user/login")
+    bottle.redirect(app.get_url("Dashboard"))
 
 
 pages = {
-    user_login: {'routes': ['/user/login', '/user/login/'], 'view': 'login', 'static': True},
-    user_login_redirect: {'routes': ['/login'], 'static': True},
-    user_auth: {'routes': ['/user/auth'], 'method': 'POST', 'static': True},
-    user_logout: {'routes': ['/user/logout', '/logout'], 'static': True},
-    get_root: {'routes': ['/'], 'static': True},
+    user_login: {
+        'name': 'GetLogin', 'route': '/user/login', 'view': 'login', 'static': True
+    },
+    user_auth: {
+        'name': 'SetLogin', 'route': '/user/auth', 'method': 'POST', 'static': True
+    },
+    user_logout: {
+        'name': 'Logout', 'route': '/user/logout', 'static': True
+    },
+    get_root: {
+        'name': 'Root', 'route': '/', 'static': True
+    }
 }

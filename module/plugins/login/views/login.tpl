@@ -7,7 +7,7 @@
       <meta charset="utf-8">
       <title>Shinken WebUI Login page</title>
 
-      <!-- 
+      <!--
          This file is a part of Shinken.
 
          Shinken is free software: you can redistribute it and/or modify it under the terms of the
@@ -18,7 +18,7 @@
          Shinken Framework Version: {{VERSION}}
       -->
 
-      <!-- Stylesheets 
+      <!-- Stylesheets
       ================================================== -->
       <link href="/static/css/bootstrap.min.css" rel="stylesheet">
       <link href="/static/css/bootstrap-theme.min.css" rel="stylesheet">
@@ -50,23 +50,16 @@
                         <div class="form-group">
                            <input class="form-control" placeholder="Password" name="password" type="password" value="">
                         </div>
-                        <!--
-                        <div class="checkbox">
-                           <label>
-                              <input name="remember" type="checkbox" value="Remember Me">Remember Me
-                           </label>
-                        </div>
-                        -->
-                        
+
                         <button class="btn btn-lg btn-success btn-block" type="submit"><i class="fa fa-sign-in"></i> Login</button>
                      </fieldset>
                   </form>
                </div>
                <div class="panel-footer">
-                  %if error:
+                  %if msg_text:
                   <div class="alert alert-danger" role="alert">
                      <strong>Warning!</strong>
-                     {{error}}
+                     {{msg_text}}
                   </div>
                   %end
                   <div style="min-height: 100px;">
@@ -79,7 +72,7 @@
             </div>
          </div>
       </div>
-      
+
       %include("footer_element")
    </body>
 </html>

@@ -5,7 +5,7 @@
 %else:
 <script>
    // Load specific CSS
-   loadjscssfile('/static/cv_host/css/cv_host.css', 'css');
+   //loadjscssfile('/static/cv_host/css/cv_host.css', 'css');
 
    function draw_arc(ctx, x, y, radius, startAngle, endAngle, clockwise, color, lineWidth){
       var savec_lineWidth = ctx.lineWidth;

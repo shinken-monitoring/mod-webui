@@ -58,16 +58,16 @@ function loadjscssfile(filename, filetype){
 
 
 /**
- * Save current user preference value: 
+ * Save current user preference value:
  * - key / value
  * - callback function called after data are posted
 **/
 function save_user_preference(key, value, callback) {
 
-   $.post("/user/save_pref", { 'key' : key, 'value' : value}, function() {
+   $.get("/user/save_pref", { 'key' : key, 'value' : value}, function() {
       if (layout_logs) console.debug('User preference saved: ', key, value);
       raise_message_ok("User parameter saved");
-      
+
       if (typeof callback !== 'undefined' && $.isFunction(callback)) {
          if (layout_logs) console.debug('Calling callback function ...', callback);
          callback();
@@ -82,10 +82,10 @@ function save_user_preference(key, value, callback) {
 **/
 function save_common_preference(key, value, callback) {
 
-   $.post("/user/save_common_pref", { 'key' : key, 'value' : value}, function() {
+   $.get("/user/save_common_pref", { 'key' : key, 'value' : value}, function() {
       if (layout_logs) console.debug('Common preference saved: ', key, value);
       raise_message_ok("Common parameter saved");
-      
+
       if (typeof callback !== 'undefined' && $.isFunction(callback)) {
          if (layout_logs) console.debug('Calling callback function ...', callback);
          callback();
@@ -93,7 +93,7 @@ function save_common_preference(key, value, callback) {
    });
 }
 
-   
+
 /**
  *  Actions bar related code
  */
@@ -130,11 +130,11 @@ $(document).ready(function(){
       $('.sidebar').show();
       // Show actions bar ...
       $('.actionbar').show();
-      
+
       // Clean modal box content ...
       $(this).removeData('bs.modal');
    });
-   
+
    // When modal box is displayed ...
    $('#modal').on('shown.bs.modal', function () {
       // Hide sidebar menu ...
@@ -142,7 +142,7 @@ $(document).ready(function(){
       // Hide actions bar ...
       $('.actionbar').hide();
    });
-   
+
    // Sidebar menu
    $('#sidebar-menu').metisMenu();
 

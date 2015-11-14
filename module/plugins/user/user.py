@@ -47,8 +47,8 @@ def show_pref():
 
 def save_pref():
     user = app.request.environ['USER']
-    key = app.request.forms.get('key', None)
-    value = app.request.forms.get('value', None)
+    key = app.request.query.get('key', None)
+    value = app.request.query.get('value', None)
 
     if key is None or value is None:
         return
@@ -62,8 +62,8 @@ def save_pref():
 
 def save_common_pref():
     user = app.request.environ['USER']
-    key = app.request.forms.get('key', None)
-    value = app.request.forms.get('value', None)
+    key = app.request.query.get('key', None)
+    value = app.request.query.get('value', None)
 
     if key is None or value is None:
         return
@@ -80,9 +80,13 @@ def save_common_pref():
 
 
 pages = {
-        show_pref: {'routes': ['/user/pref'], 'view': 'user_pref', 'static': True},
-        
-        save_pref: {'routes': ['/user/save_pref'], 'method': 'POST'}, 
-        save_common_pref: {'routes': ['/user/save_common_pref'], 'method': 'POST'}
-        }
-
+    show_pref: {
+        'name': 'GetPref', 'route': '/user/pref', 'view': 'user_pref', 'static': True
+    },
+    save_pref: {
+        'name': 'SetPref', 'route': '/user/save_pref'
+    },
+    save_common_pref: {
+        'name': 'SetCommonPref', 'route': '/user/save_common_pref'
+    }
+}

@@ -42,6 +42,10 @@ def show_contacts():
                                key=lambda c: c.contact_name)}
 
 pages = {
-        show_contact: {'routes': ['/contact/:name'], 'view': 'contact', 'static': True},
-        show_contacts: {'routes': ['/contacts'], 'view': 'contacts', 'static': True},
+    show_contact: {
+        'name': 'Contact', 'route': '/contact/:name', 'view': 'contact', 'static': True
+    },
+    show_contacts: {
+        'name': 'Contacts', 'route': '/contacts', 'view': 'contacts', 'static': True
+    }
 }

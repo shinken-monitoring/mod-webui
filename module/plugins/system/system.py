@@ -55,7 +55,7 @@ def system_page():
     logger.debug("[WebUI-system] reactionners: %s", reactionners)
     logger.debug("[WebUI-system] receivers: %s", receivers)
     logger.debug("[WebUI-system] pollers: %s", pollers)
-    
+
     return {'schedulers': schedulers,
             'brokers': brokers, 'reactionners': reactionners,
             'receivers': receivers, 'pollers': pollers,
@@ -77,9 +77,9 @@ def system_widget():
     logger.debug("[WebUI-system] reactionners: %s", reactionners)
     logger.debug("[WebUI-system] receivers: %s", receivers)
     logger.debug("[WebUI-system] pollers: %s", pollers)
-    
-    wid = app.request.GET.get('wid', 'widget_system_' + str(int(time.time())))
-    collapsed = (app.request.GET.get('collapsed', 'False') == 'True')
+
+    wid = app.request.query.get('wid', 'widget_system_' + str(int(time.time())))
+    collapsed = (app.request.query.get('collapsed', 'False') == 'True')
     print "SYSTEM COLLAPSED?", collapsed, type(collapsed)
 
     options = {}
@@ -100,7 +100,13 @@ Show an aggregated view of all Shinken daemons (admins only).
 '''
 
 pages = {
-    system_parameters: {'routes': ['/parameters'], 'view': 'parameters', 'static': True},
-    system_page: {'routes': ['/system'], 'view': 'system', 'static': True},
-    system_widget: {'routes': ['/widget/system'], 'view': 'system_widget', 'static': True, 'widget': ['dashboard'], 'widget_desc': widget_desc, 'widget_name': 'system', 'widget_picture': '/static/system/img/widget_system.png'},
+    system_parameters: {
+        'name': 'Parameters', 'route': '/parameters', 'view': 'parameters', 'static': True
+    },
+    system_page: {
+        'name': 'System', 'route': '/system', 'view': 'system', 'static': True
+    },
+    system_widget: {
+        'name': 'wid_System', 'route': '/widget/system', 'view': 'system_widget', 'static': True, 'widget': ['dashboard'], 'widget_desc': widget_desc, 'widget_name': 'system', 'widget_picture': '/static/system/img/widget_system.png'
+    }
 }

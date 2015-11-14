@@ -45,7 +45,7 @@ def get_page():
 
     # Last problems
     problems =  app.datamgr.get_problems(user, search, get_acknowledged=False, get_downtimed=False)
-    
+
     # Get only the last hour problems
     now = time.time()
     last_problems = [pb for pb in problems if pb.last_state_change > now - 3600]
@@ -53,5 +53,7 @@ def get_page():
     return {'app': app, 'user': user, 'impacts': impacts, 'problems': problems, 'last_problems': last_problems}
 
 pages = {
-    get_page: {'routes': ['/wall/', '/wall'], 'view': 'wall', 'name': 'Wall', 'static': True, 'search_engine': True}
+    get_page: {
+        'name': 'Wall', 'route': '/wall', 'view': 'wall', 'static': True, 'search_engine': True
+    }
 }
