@@ -348,6 +348,8 @@ class Webui_broker(BaseModule, Daemon):
             # for route in webui_app.routes:
                 # logger.info("[WebUI] route: %s", route)
 
+        for route in webui_app.routes:
+            logger.debug("[WebUI] route: %s", route)
         # Launch the data thread"
         self.data_thread = threading.Thread(None, self.manage_brok_thread, 'datathread')
         self.data_thread.start()
@@ -653,21 +655,10 @@ class Webui_broker(BaseModule, Daemon):
             response.headers['Content-Type'] = 'text/xml'
             return bottle.template('opensearch', base_url=base_url)
 
-        @webui_app.route('/modal/helpsearch')
-        def give_helpsearch():
-            return bottle.template('modal_helpsearch')
-
-        @webui_app.route('/modal/about')
-        def give_about():
-            return bottle.template('modal_about')
-
-        @webui_app.route('/modal/newbookmark')
-        def give_newbookmark():
-            return bottle.template('modal_newbookmark')
-
-        @webui_app.route('/modal/managebookmarks')
-        def give_managebookmarks():
-            return bottle.template('modal_managebookmarks')
+        @webui_app.route('/modal/:path#.+#')
+        def give_modal(path):
+            logger.debug("[WebUI] get modal window content: %s", path)
+            return bottle.template('modal_' + path)
 
     ##
     # Check if provided username/password is accepted for login the Web UI
