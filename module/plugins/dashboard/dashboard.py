@@ -84,6 +84,6 @@ pages = {
         'name': 'Dashboard', 'route': '/dashboard', 'view': 'dashboard', 'static': True
     },
     get_currently: {
-        'name': 'Currently', 'routes': '/dashboard/currently', 'view': 'currently', 'static': True
+        'name': 'Currently', 'route': '/dashboard/currently', 'view': 'currently', 'static': True
     }
 }
