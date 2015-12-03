@@ -100,7 +100,7 @@
                            datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
                            queryTokenizer: Bloodhound.tokenizers.whitespace,
                            remote: {
-                              url: '/lookup/%QUERY',
+                              url: '/lookup?q=%QUERY',
                               filter: function (hosts) {
                                  return $.map(hosts, function (host) { return { value: host }; });
                               }
@@ -112,7 +112,7 @@
                         var typeahead = $('#input-{{wid}}-{{k}}').typeahead({
                            hint: true,
                            highlight: true,
-                           minLength: 1
+                           minLength: 3
                         },
                         {
                            name: 'hosts',
