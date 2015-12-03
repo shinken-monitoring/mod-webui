@@ -42,7 +42,7 @@
       var widget = search_widget('{{wid}}');
       // If we can't find the widget, bail out
       if (widget == -1) {
-         console.error('Cannot find the widget : {{wid}} for saving options!'); 
+         console.error('Cannot find the widget : {{wid}} for saving options!');
          return;
       }
 
@@ -83,14 +83,15 @@
             %label = v.get('label', k)
             %t = v.get('type', 'text')
             %if t != 'hidden':
-               <label></label>
-               <span class="help-inline">{{label}}</span>
+               <label>
+               <span class="help-inline">{{label}}:</span>
+               </label>
             %end
 
             %# """ Manage the different types of values"""
             %if t in ['text', 'int', 'hst_srv']:
-               <input type="text" class="form-control typeahead" placeholder="Search hosts ..." name="{{k}}" value="{{value}}" id="input-{{wid}}-{{k}}">
                %if t == 'hst_srv':
+                  <input type="text" class="form-control typeahead" placeholder="Search hosts ..." name="{{k}}" value="{{value}}" id="input-{{wid}}-{{k}}">
                   <script>
                      // On page loaded ...
                      $(function() {
@@ -106,7 +107,7 @@
                            }
                         });
                         hosts.initialize();
-                        
+
                         // Typeahead: activation
                         var typeahead = $('#input-{{wid}}-{{k}}').typeahead({
                            hint: true,
@@ -125,6 +126,8 @@
                         });
                      });
                   </script>
+               %else:
+                  <input type="text" class="form-control" placeholder="{{ value }} ..." name="{{k}}" value="{{value}}" id="input-{{wid}}-{{k}}">
                %end
             %end
             %if t == 'hidden':
@@ -142,6 +145,7 @@
                   <option value="{{sub_val}}" {{selected}}>{{sub_name}}</option>
                %end
                </select>
+               <br/>
             %end
             %if t == 'bool':
                %checked = ''
