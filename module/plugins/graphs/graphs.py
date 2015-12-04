@@ -53,7 +53,10 @@ def proxy_graph():
 # Our page
 def get_graphs_widget():
     user = app.request.environ['USER']
+    # Graph URL may be: http://192.168.0.42/render/?width=320&height=240&fontSize=8&lineMode=connected&from=04:57_20151203&until=04:57_20151204&tz=Europe/Paris&title=Outlook_Web_Access/ - rta&target=alias(color(Outlook_Web_Access.rta,"green"),"rta")&target=alias(color(constantLine(1000),"orange"),"Warning")&target=alias(color(constantLine(3000),"red"),"Critical")
     url = app.request.GET.get('url', '')
+    logger.debug("[WebUI-graph] graph URL: %s", url)
+
     if not url:
         search = app.request.GET.get('search', '') or app.datamgr.get_hosts(user)[0].host_name
         elt = app.datamgr.get_element(search, user) or app.redirect(404)

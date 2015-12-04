@@ -40,7 +40,7 @@
          </td>
          %end
          %end
-       
+
          <td>
             <center><a href="/problems" class="btn btn-sm">
                <i class="fa fa-4x fa-exclamation-triangle font-darkgrey"></i>
@@ -100,7 +100,7 @@
             </span>
             <span>{{!w['widget_desc']}}</span>
          </div>
-         <p class="add_button"><a class="btn btn-sm btn-success" href="javascript:AddNewWidget('{{w['base_uri']}}', 'widget-place-1');"> <i class="fa fa-chevron-left"></i> Add {{w['widget_name']}} widget</a></p>
+         <p class="add_button"><a class="btn btn-sm btn-success" href="javascript:AddNewWidget('{{w['base_uri']}}', null, 'widget-place-1');"> <i class="fa fa-chevron-left"></i> Add {{w['widget_name']}} widget</a></p>
       </div>
    %end
 </div>
@@ -117,11 +117,11 @@
 <script type="text/javascript">
    $(function () {
       // Activate the popover ...
-      $('#widgets_show_panel').popover({ 
+      $('#widgets_show_panel').popover({
          html : true,
-         placement: 'bottom', 
-         title: 'Available widgets' + '<a class="close">×</a>', 
-         animation: true, 
+         placement: 'bottom',
+         title: 'Available widgets' + '<a class="close">×</a>',
+         animation: true,
          content: function() {
             return $('#widgets').html();
          }
@@ -131,12 +131,11 @@
             $('#widgets_show_panel').popover('hide');
          });
       })
-      
+
       // ... and load all widgets.
       %for w in widgets:
          %if 'base_url' in w and 'position' in w:
-            %uri = w['base_url'] + "?" + w['options_uri']
-            AddWidget("{{!uri}}", "{{w['position']}}");
+            AddWidget("{{!w['base_url']}}", {{!w['options_json']}}, "{{w['position']}}");
          %end
       %end
    });

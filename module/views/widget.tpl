@@ -23,7 +23,7 @@
 <script type="text/javascript">
    // For Typeahead: builds suggestion engine ... use same as defined in layout.tpl.
    var w = {'id': '{{wid}}', 'base_url': '{{base_url}}', 'collapsed': {{collapsed_j}}, 'position': 'widget-place-1',
-          'options': {'key': 'value'}};
+          'options': {}};
    %for (k, v) in options.iteritems():
       %value = v.get('value', '')
       w.options['{{k}}'] = '{{value}}';
