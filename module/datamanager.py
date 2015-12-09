@@ -209,6 +209,10 @@ class WebUIDataManager(DataManager):
         else:
             return None
 
+    def get_host_services(self, hname, user):
+        """ Get host services by its hostname. """
+        return self.search_hosts_and_services('type:service %s' % (hname), user=user)
+
     def get_percentage_hosts_state(self, user, problem=False):
         """ Get percentage of hosts not in (or in) problems.
 

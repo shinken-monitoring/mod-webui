@@ -53,8 +53,16 @@ def proxy_graph():
 # Our page
 def get_graphs_widget():
     user = app.request.environ['USER']
-    search = app.request.GET.get('search', '') or app.datamgr.get_hosts(user)[0].host_name
-    elt = app.datamgr.get_element(search, user) or app.redirect(404)
+    # Graph URL may be: http://192.168.0.42/render/?width=320&height=240&fontSize=8&lineMode=connected&from=04:57_20151203&until=04:57_20151204&tz=Europe/Paris&title=Outlook_Web_Access/ - rta&target=alias(color(Outlook_Web_Access.rta,"green"),"rta")&target=alias(color(constantLine(1000),"orange"),"Warning")&target=alias(color(constantLine(3000),"red"),"Critical")
+    url = app.request.GET.get('url', '')
+    logger.debug("[WebUI-graph] graph URL: %s", url)
+
+    if not url:
+        search = app.request.GET.get('search', '') or app.datamgr.get_hosts(user)[0].host_name
+        elt = app.datamgr.get_element(search, user) or app.redirect(404)
+    else:
+        search = app.request.GET.get('search', '')
+        elt = None
 
     duration = app.request.GET.get('duration', '86400')
     duration_list = {
@@ -73,6 +81,11 @@ def get_graphs_widget():
             'value': search,
             'type': 'hst_srv',
             'label': 'Element name'
+        },
+        'url': {
+            'value': url,
+            'type': 'text',
+            'label': 'Graph URL'
         },
         'duration': {
             'value': duration,
@@ -93,6 +106,7 @@ def get_graphs_widget():
         'collapsed': collapsed,
         'options': options,
         'base_url': '/widget/graphs',
+        'url': url,
         'title': title,
         'duration': int(duration),
     }

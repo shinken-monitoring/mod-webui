@@ -31,9 +31,9 @@ var nb_widgets_loading = 0;
 var new_widget = false;
 
 // Now try to load widgets in a dynamic way
-function AddWidget(url, placeId, replace){
-   if (widgets_logs) console.debug('Loading widget: ', url, placeId, replace);
-   
+function AddWidget(url, options, placeId, replace){
+   if (widgets_logs) console.debug('Loading widget: ', url, options, placeId, replace);
+
    var widgetId = '';
    var parameters = url.split('&');
    for (var i = 0; i < parameters.length; i++) {
@@ -41,6 +41,9 @@ function AddWidget(url, placeId, replace){
       if (sParameterName[0] == "wid") {
          widgetId = sParameterName[1];
       }
+   }
+   if (options) {
+      widgetId = options['wid'];
    }
 
    // We are saying to the user that we are loading a widget with
@@ -66,14 +69,16 @@ function AddWidget(url, placeId, replace){
 
    $.ajax({
       url: url,
+      data: options,
       method: "GET",
       context: container_object
    })
    .done(function( data, textStatus, jqXHR ) {
+      if (widgets_logs) console.debug('Widget loaded: ', url, options);
       $.fn.AddEasyWidget(data, this.attr('id'), {});
    })
    .fail(function( jqXHR, textStatus, errorThrown ) {
-      $(this).html('Error loading this widget: ', widgetId, url);
+      $(this).html('Error loading this widget: ', url, options);
       jQuery('#' + widgetId).remove();
       saveWidgets();
    })
@@ -89,42 +94,37 @@ function AddWidget(url, placeId, replace){
 
 // when we add a new widget, we also save the current widgets
 // configuration for this user
-function AddNewWidget(url, placeId){
-   if (widgets_logs) console.debug("Adding a new widget: ", placeId, url);
-   
-   AddWidget(url, placeId);
+function AddNewWidget(url, options, placeId){
+   if (widgets_logs) console.debug("Adding a new widget: ", placeId, url, options);
+
+   AddWidget(url, options, placeId);
    new_widget = true;
 }
 
 // Reload only widget
 function reloadWidget(name){
    if (widgets_logs) console.debug("Reloading a widget: ", name);
-   
+
    var widget = search_widget(name);
    if (widget == -1) {
       console.error("Widget not found: ", name);
       return;
    }
-   
-   //Recreate uri with widget info.
-   var wuri = widget.base_url + "?";
-   var args = [];
-   args.push("collapsed=" + (widget.collapsed ? "True": "False"));
-   args.push("wid=" + widget.id);
-   for (var option in widget.options) {
-      args.push( option + "=" + widget.options[option]);
-   }
-   wuri += args.join("&");
-   // console.log("Reload widget: " + widget.id + ", " + wuri);
+
+   // Update widget options for reloading
+   widget.options['wid'] = widget.id;
+   widget.options['collapsed'] = widget.collapsed ? "True": "False";
+
    container = jQuery('#' + widget.id).parent();
    //Do not delete the container to keep the correct widget order.
    jQuery('#' + widget.id).remove();
-   AddWidget(wuri, container, true);
+
+   AddWidget(widget.base_url, widget.options, container, true);
 }
 
 function search_widget(name){
    if (widgets_logs) console.debug("Searching a widget: ", name);
-   
+
    res = -1;
    w = $.each(widgets, function(idx, w){
       if (name == w.id){
@@ -138,7 +138,7 @@ function search_widget(name){
 // We will look if we need to save the current state and options or not
 function saveWidgets(callback){
    if (widgets_logs) console.debug("Saving all widgets ...");
-   
+
    // First we reupdate the widget-position, to be sure the js objects got the good value
    var pos = $.fn.GetEasyWidgetPositions();
    update_widgets_positions(pos);
@@ -146,7 +146,7 @@ function saveWidgets(callback){
    var widgets_ids = [];
    $('.widget').each(function(idx, w){
       // If the widget is closed, don't save it
-      if ($(this).data('deleted') === 1) { 
+      if ($(this).data('deleted') === 1) {
          return;
       }
 
@@ -161,7 +161,7 @@ function saveWidgets(callback){
       }
    });
 
-   if (widgets_logs) console.debug("Saving user preference: ", widgets_ids, callback);
+   if (widgets_logs) console.debug("Saving user preference: ", widgets_ids);
    save_user_preference('widgets', JSON.stringify(widgets_ids), callback);
 }
 
@@ -226,7 +226,7 @@ $(function(){
       callbacks : {
          onCollapse : function(link, widget){
             if (widgets_logs) console.debug("Collapse widget: ", widget);
-            
+
             var w = search_widget(widget.attr('id'));
             if(w != -1){
                // We finally save the new position
@@ -236,7 +236,7 @@ $(function(){
          },
          onExtend : function(link, widget){
             if (widgets_logs) console.debug("Extend widget: ", widget);
-            
+
             var w = search_widget(widget.attr('id'));
             if(w != -1){
                // We finally save the new position
@@ -246,7 +246,7 @@ $(function(){
          },
          onClose : function(link, widget){
             if (widgets_logs) console.debug("Close widget: ", widget);
-            
+
             // On close, save all
             saveWidgets();
 
@@ -259,20 +259,20 @@ $(function(){
             }
          },
          onChangePositions : function(positions){
-            if (widgets_logs) console.debug("Change widget position: ", widget);
-            
+            if (widgets_logs) console.debug("Changed widgets position");
+
             saveWidgets();
          },
          onEditQuery : function(link, widget){
             if (widgets_logs) console.debug("Edit widget: ", widget);
-            
+
             // Stop page refresh
             stop_refresh();
             return true;
          },
          onCancelEditQuery : function(link, widget){
             if (widgets_logs) console.debug("Cancelled widget edition: ", widget);
-            
+
             // Start page refresh
             start_refresh();
             return true;

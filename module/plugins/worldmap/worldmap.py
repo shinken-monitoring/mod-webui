@@ -129,9 +129,18 @@ def show_worldmap_widget():
 
     items = items[:nb_elements]
 
-    options = {'search': {'value': refine_search, 'type': 'text', 'label': 'Filter by name'},
-               'nb_elements': {'value': nb_elements, 'type': 'int', 'label': 'Max number of elements to show'},
-               }
+    options = {
+        'search': {
+            'value': refine_search,
+            'type': 'hst_srv',
+            'label': 'Filter by name'
+        },
+        'nb_elements': {
+            'value': nb_elements,
+            'type': 'int',
+            'label': 'Max number of elements to show'
+        },
+    }
 
     title = 'Worldmap'
     if refine_search:

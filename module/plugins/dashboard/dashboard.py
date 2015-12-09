@@ -68,7 +68,10 @@ def get_page():
         options = w.get('options', {})
         collapsed = w.get('collapsed', '0')
 
-        w['options'] = json.dumps(options)
+        options["wid"] = w["id"]
+        options["collapsed"] = collapsed
+        w['options'] = options
+        w['options_json'] = json.dumps(options)
         args = {'wid': w['id'], 'collapsed': collapsed}
         args.update(options)
         w['options_uri'] = '&'.join('%s=%s' % (k, v) for (k, v) in args.iteritems())
@@ -84,6 +87,6 @@ pages = {
         'name': 'Dashboard', 'route': '/dashboard', 'view': 'dashboard', 'static': True
     },
     get_currently: {
-        'name': 'Currently', 'routes': '/dashboard/currently', 'view': 'currently', 'static': True
+        'name': 'Currently', 'route': '/dashboard/currently', 'view': 'currently', 'static': True
     }
 }

@@ -43,14 +43,19 @@
          %end
       %end
       %rows.sort()
+      %try:
+      %# For Python < 2.7 ...
       %import collections
       %columns = collections.Counter(columns)
       %columns = [c for c, i in columns.most_common()]
+      %except:
+      %pass
+      %end
 
       %synthesis = helper.get_synthesis(items)
       %s = synthesis['services']
       %h = synthesis['hosts']
-      
+
       <!-- Problems synthesis -->
       <div class="panel panel-default">
          <div class="panel-heading">
@@ -62,9 +67,9 @@
                  %if 'type:service' not in search_string:
                   <tr>
                      <td>
-                     <b>{{h['nb_elts']}} hosts:&nbsp;</b> 
+                     <b>{{h['nb_elts']}} hosts:&nbsp;</b>
                      </td>
-                   
+
                      %for state in 'up', 'unreachable', 'down', 'pending', 'unknown', 'ack', 'downtime':
                      <td>
                        %label = "%s <i>(%s%%)</i>" % (h['nb_' + state], h['pct_' + state])
@@ -76,9 +81,9 @@
                   %if 'type:host' not in search_string:
                   <tr>
                      <td>
-                        <b>{{s['nb_elts']}} services:&nbsp;</b> 
+                        <b>{{s['nb_elts']}} services:&nbsp;</b>
                      </td>
-                
+
                      %for state in 'ok', 'warning', 'critical', 'pending', 'unknown', 'ack', 'downtime':
                      <td>
                        %label = "%s <i>(%s%%)</i>" % (s['nb_' + state], s['pct_' + state])
@@ -103,16 +108,16 @@
                <span>{{h['nb_elts']}} hosts</span>
             </div>
             <div class="pull-right progress col-lg-6 no-bottommargin no-leftpadding no-rightpadding" style="height: 45px;">
-               <div title="{{h['nb_up']}} hosts Up" class="progress-bar progress-bar-success quickinfo" role="progressbar" 
+               <div title="{{h['nb_up']}} hosts Up" class="progress-bar progress-bar-success quickinfo" role="progressbar"
                   data-original-title="{{h['nb_up']}} Up"
                   style="width: {{h['pct_up']}}%; vertical-align:midddle; line-height: 45px;">{{h['pct_up']}}% Up</div>
-               <div title="{{h['nb_down']}} hosts Down" class="progress-bar progress-bar-danger quickinfo" 
+               <div title="{{h['nb_down']}} hosts Down" class="progress-bar progress-bar-danger quickinfo"
                   data-original-title="{{h['pct_down']}} Down"
                   style="width: {{h['pct_down']}}%; vertical-align:midddle; line-height: 45px;">{{h['pct_down']}}% Down</div>
-               <div title="{{h['nb_unreachable']}} hosts Unreachable" class="progress-bar progress-bar-warning quickinfo" 
-                  data-original-title="{{h['nb_unreachable']}} Unreachable" 
+               <div title="{{h['nb_unreachable']}} hosts Unreachable" class="progress-bar progress-bar-warning quickinfo"
+                  data-original-title="{{h['nb_unreachable']}} Unreachable"
                   style="width: {{h['pct_unreachable']}}%; vertical-align:midddle; line-height: 45px;">{{h['pct_unreachable']}}% Unreachable</div>
-               <div title="{{h['nb_pending'] + h['nb_unknown']}} hosts Pending/Unknown" class="progress-bar progress-bar-info quickinfo" 
+               <div title="{{h['nb_pending'] + h['nb_unknown']}} hosts Pending/Unknown" class="progress-bar progress-bar-info quickinfo"
                   data-original-title="{{h['nb_pending'] + h['nb_unknown']}} Pending / Unknown"
                   style="width: {{h['pct_pending'] + h['pct_unknown']}}%; vertical-align:midddle; line-height: 45px;">{{h['pct_pending'] + h['pct_unknown']}}% Pending or Unknown</div>
             </div>
