@@ -57,6 +57,10 @@ def show_service(host_name, service):
 
 
 pages = {
-    show_host: {'routes': ['/host/:host_name'], 'view': 'eltdetail', 'static': True},
-    show_service: {'routes': ['/service/:host_name/:service#.+#'], 'view': 'eltdetail', 'static': True},
+    show_host: {
+        'name': 'Host', 'route': '/host/:host_name', 'view': 'eltdetail', 'static': True
+    },
+    show_service: {
+        'name': 'Service', 'route': '/service/:host_name/:service#.+#', 'view': 'eltdetail', 'static': True
+    }
 }

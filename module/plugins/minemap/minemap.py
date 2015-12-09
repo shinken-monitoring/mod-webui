@@ -30,7 +30,7 @@ from shinken.log import logger
 
 # def load_cfg():
     # global params
-    
+
     # import os,sys
     # from webui2.config_parser import config_parser
     # plugin_name = os.path.splitext(os.path.basename(__file__))[0]
@@ -42,13 +42,13 @@ from shinken.log import logger
         # params = scp.parse_config(configuration_file)
 
         # params['elts_per_page'] = int(params['elts_per_page'])
-        
+
         # params['minemap_hostsLevel'] = [int(item) for item in params['minemap_hostsLevel'].split(',')]
         # params['minemap_hostsShow'] = [item for item in params['minemap_hostsShow'].split(',')]
         # params['minemap_hostsHide'] = [item for item in params['minemap_hostsHide'].split(',')]
         # params['minemap_servicesLevel'] = [int(item) for item in params['minemap_servicesLevel'].split(',')]
         # params['minemap_servicesHide'] = [item for item in params['minemap_servicesHide'].split(',')]
-        
+
         # logger.info("[webui-minemap] configuration loaded.")
         # logger.debug("[webui-minemap] configuration, elts_per_page: %d", params['elts_per_page'])
         # logger.debug("[webui-minemap] configuration, minemap hosts level: %s", params['minemap_hostsLevel'])
@@ -74,7 +74,7 @@ def show_minemap():
         search = "type:host "+search
     logger.debug("[WebUI-worldmap] search parameters '%s'", search)
     items = app.datamgr.search_hosts_and_services(search, user, get_impacts=False)
-    
+
     # Fetch elements per page preference for user, default is 25
     elts_per_page = app.prefs_module.get_ui_user_preference(user, 'elts_per_page', 25)
 
@@ -82,7 +82,7 @@ def show_minemap():
     step = int(app.request.GET.get('step', elts_per_page))
     start = int(app.request.GET.get('start', '0'))
     end = int(app.request.GET.get('end', start + step))
-        
+
     # If we overflow, came back as normal
     total = len(items)
     if start > total:
@@ -101,8 +101,10 @@ def show_minemaps():
 # load_cfg()
 
 pages = {
-    # reload_cfg: {'routes': ['/reload/minemap']},
-
-    show_minemap: {'routes': ['/minemap'], 'view': 'minemap', 'name': 'Minemap', 'static': True, 'search_engine': True},
-    show_minemaps: {'routes': ['/minemaps'], 'view': 'minemap', 'static': True}
+    show_minemap: {
+        'name': 'Minemap', 'route': '/minemap', 'view': 'minemap', 'static': True, 'search_engine': True
+    },
+    show_minemaps: {
+        'name': 'Minemaps', 'route': '/minemaps', 'view': 'minemap', 'static': True
+    }
 }

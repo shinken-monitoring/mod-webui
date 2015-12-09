@@ -94,7 +94,7 @@ def get_page(cmd=None):
         extcmd = u"[%s] %s" % (now, ';'.join(elts))
     except UnicodeDecodeError as e:
         extcmd = "[%s] %s" % (now, ';'.join(elts))
-    
+
     # Expand macros
     extcmd = expand_macros(extcmd)
 
@@ -109,4 +109,8 @@ def get_page(cmd=None):
 
     return forge_response(callback, 200, response_text)
 
-pages = {get_page: {'routes': ['/action/:cmd#.+#']}}
+pages = {
+    get_page: {
+        'name': 'Action', 'route': '/action/:cmd#.+#'
+    }
+}

@@ -51,10 +51,10 @@ def show_impacts():
 def impacts_widget():
     d = show_impacts()
 
-    wid = app.request.GET.get('wid', 'widget_impacts_' + str(int(time.time())))
-    collapsed = (app.request.GET.get('collapsed', 'False') == 'True')
+    wid = app.request.query.get('wid', 'widget_impacts_' + str(int(time.time())))
+    collapsed = (app.request.query.get('collapsed', 'False') == 'True')
 
-    nb_elements = max(1, int(app.request.GET.get('nb_elements', '5')))
+    nb_elements = max(1, int(app.request.query.get('nb_elements', '5')))
     # Now filter for the good number of impacts to show
     new_impacts = {}
     for (k, v) in d['impacts'].iteritems():
@@ -76,6 +76,10 @@ Show an aggregated view of the most important business impacts!
 """
 
 pages = {
-    show_impacts: {'routes': ['/impacts'], 'view': 'impacts', 'name': 'Impacts', 'static': True, 'search_engine': True},
-    impacts_widget: {'routes': ['/widget/impacts'], 'view': 'widget_impacts', 'static': True, 'widget': ['dashboard'], 'widget_desc': widget_desc, 'widget_name': 'impacts', 'widget_picture': '/static/impacts/img/widget_impacts.png'},
+    show_impacts: {
+        'name': 'Impacts', 'route': '/impacts', 'view': 'impacts', 'static': True, 'search_engine': True
+    },
+    impacts_widget: {
+        'name': 'wid_Impacts', 'route': '/widget/impacts', 'view': 'widget_impacts', 'static': True, 'widget': ['dashboard'], 'widget_desc': widget_desc, 'widget_name': 'impacts', 'widget_picture': '/static/impacts/img/widget_impacts.png'
+    }
 }

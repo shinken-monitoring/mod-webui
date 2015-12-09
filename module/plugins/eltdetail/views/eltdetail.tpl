@@ -38,7 +38,7 @@ Invalid element name
 %end
 
 %js=['availability/js/justgage.js', 'availability/js/raphael.2.1.0.min.js', 'cv_host/js/flot/jquery.flot.min.js', 'cv_host/js/flot/jquery.flot.tickrotor.js', 'cv_host/js/flot/jquery.flot.resize.min.js', 'cv_host/js/flot/jquery.flot.pie.min.js', 'cv_host/js/flot/jquery.flot.categories.min.js', 'cv_host/js/flot/jquery.flot.time.min.js', 'cv_host/js/flot/jquery.flot.stack.min.js', 'cv_host/js/flot/jquery.flot.valuelabels.js',  'eltdetail/js/jquery.color.js', 'eltdetail/js/bootstrap-switch.min.js', 'eltdetail/js/custom_views.js', 'eltdetail/js/eltdetail.js']
-%css=['eltdetail/css/bootstrap-switch.min.css', 'eltdetail/css/eltdetail.css']
+%css=['eltdetail/css/bootstrap-switch.min.css', 'eltdetail/css/eltdetail.css', 'cv_host/css/cv_host.css']
 %rebase("layout", js=js, css=css, breadcrumb=breadcrumb, title=title)
 
 <div id="element" class="row container-fluid">

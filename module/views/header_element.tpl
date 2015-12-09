@@ -65,7 +65,7 @@
 
    <ul class="nav navbar-top-links navbar-right">
       <!-- Do not remove the next comment!
-         Everything between 'begin-hosts-states' comment and 'end-hosts-states' comment 
+         Everything between 'begin-hosts-states' comment and 'end-hosts-states' comment
          may be used by the layout page refresh.
       -->
       <!--begin-hosts-states-->
@@ -78,9 +78,9 @@
          </a>
       </li>
       <!--end-hosts-states-->
-   
+
       <!-- Do not remove the next comment!
-         Everything between 'begin-services-states' comment and 'end-services-states' comment 
+         Everything between 'begin-services-states' comment and 'end-services-states' comment
          may be used by the layout page refresh.
       -->
       <!--begin-services-states-->
@@ -93,7 +93,7 @@
          </a>
       </li>
       <!--end-services-states-->
-    
+
       <li>
          <a class="quickinfo" data-original-title='Currently' href="/dashboard/currently" title="Dashboard currently">
             <i class="fa fa-eye"></i>
@@ -107,7 +107,7 @@
          </a>
       </li>
       %end
-   
+
       %if app.play_sound:
       <li>
          <a class="quickinfo" action="toggle-sound-alert" data-original-title='Sound alerting' href="#">
@@ -118,7 +118,7 @@
          </a>
       </li>
       %end
-   
+
       <!-- User info -->
       <li class="dropdown user user-menu">
          <a href="#" class="dropdown-toggle" data-original-title='User menu' data-toggle="dropdown">
@@ -164,43 +164,42 @@
     <div class="sidebar-nav navbar-collapse">
       <ul class="nav" id="sidebar-menu">
         %if app:
-        <li> <a href="/dashboard"> <span class="fa fa-dashboard"></span> Dashboard </a> </li>
-        <li> <a href="/problems"> <span class="fa fa-ambulance"></span> Problems </a> </li>
+        <li> <a href="{{ app.get_url('Dashboard') }}"> <span class="fa fa-dashboard"></span> Dashboard </a> </li>
+        <li> <a href="{{ app.get_url('Problems') }}"> <span class="fa fa-ambulance"></span> Problems </a> </li>
         <li> <a href="#"><i class="fa fa-sitemap"></i> Groups and tags <i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
-            <li> <a href="/hosts-groups"> <span class="fa fa-sitemap"></span> Hosts groups </a> </li>
-            <li> <a href="/services-groups"> <span class="fa fa-sitemap"></span> Services groups </a> </li>
-            <li> <a href="/hosts-tags"> <span class="fa fa-tags"></span> Hosts tags </a> </li>
-            <li> <a href="/services-tags"> <span class="fa fa-tags"></span> Services tags </a> </li>
-            <li> <a href="/contacts-groups"> <span class="fa fa-users"></span> Contacts groups </a> </li>
+            <li> <a href="{{ app.get_url('HostsGroups') }}"> <span class="fa fa-sitemap"></span> Hosts groups </a> </li>
+            <li> <a href="{{ app.get_url('ServicesGroups') }}"> <span class="fa fa-sitemap"></span> Services groups </a> </li>
+            <li> <a href="{{ app.get_url('HostsTags') }}"> <span class="fa fa-tags"></span> Hosts tags </a> </li>
+            <li> <a href="{{ app.get_url('ServicesTags') }}"> <span class="fa fa-tags"></span> Services tags </a> </li>
           </ul>
         </li>
         <li> <a href="#"><i class="fa fa-bar-chart"></i> Tactical views <i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
-            <li> <a href="/impacts"> <span class="fa fa-bolt"></span> Impacts </a> </li>
-            <li> <a href="/minemap"> <span class="fa fa-table"></span> Minemap </a> </li>
-            <li> <a href="/worldmap"> <span class="fa fa-globe"></span> World map </a> </li>
-            <li> <a href="/wall"> <span class="fa fa-th-large"></span> Wall </a> </li>
+            <li> <a href="{{ app.get_url('Impacts') }}"> <span class="fa fa-bolt"></span> Impacts </a> </li>
+            <li> <a href="{{ app.get_url('Minemap') }}"> <span class="fa fa-table"></span> Minemap </a> </li>
+            <li> <a href="{{ app.get_url('Worldmap') }}"> <span class="fa fa-globe"></span> World map </a> </li>
+            <li> <a href="{{ app.get_url('Wall') }}"> <span class="fa fa-th-large"></span> Wall </a> </li>
             %if app.logs_module.is_available():
-            <li> <a href="/availability"> <span class="fa fa-bar-chart"></span> Availability </a> </li>
+            <li> <a href="{{ app.get_url('Availability') }}"> <span class="fa fa-bar-chart"></span> Availability </a> </li>
             %end
           </ul>
         </li>
         %if user.is_admin:
         <li> <a href="#"><i class="fa fa-gears"></i> System <i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
-            <li> <a href="/system"> <span class="fa fa-heartbeat"></span> Status </a> </li>
+            <li> <a href="{{ app.get_url('System') }}"> <span class="fa fa-heartbeat"></span> Status </a> </li>
             %if app.logs_module.is_available():
-            <li> <a href="/logs"> <span class="fa fa-th-list"></span> Logs </a> </li>
+            <li> <a href="{{ app.get_url('History') }}"> <span class="fa fa-th-list"></span> Logs </a> </li>
             %end
           </ul>
         </li>
         <li> <a href="#"><i class="fa fa-wrench"></i> Configuration <i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
-            <li> <a href="/parameters"> <span class="fa fa-gears"></span> Parameters </a> </li>
-            <li> <a href="/contacts"> <span class="fa fa-users"></span> Contacts </a> </li>
-            <li> <a href="/commands"> <span class="fa fa-terminal"></span> Commands </a> </li>
-            <li> <a href="/timeperiods"> <span class="fa fa-calendar"></span> Time periods </a> </li>
+            <li> <a href="{{ app.get_url('Parameters') }}"> <span class="fa fa-gears"></span> Parameters </a> </li>
+            <li> <a href="{{ app.get_url('ContactsGroups') }}"> <span class="fa fa-users"></span> Contacts </a> </li>
+            <li> <a href="{{ app.get_url('Commands') }}"> <span class="fa fa-terminal"></span> Commands </a> </li>
+            <li> <a href="{{ app.get_url('TimePeriods') }}"> <span class="fa fa-calendar"></span> Time periods </a> </li>
           </ul>
         </li>
         %end
@@ -238,7 +237,7 @@
       // Default is to play ...
       sessionStorage.setItem("sound_play", {{'1' if app.play_sound else '0'}});
    }
-   
+
    // Toggle sound ...
    if (sessionStorage.getItem("sound_play") == '1') {
       $('#sound_alerting i.fa-ban').addClass('hidden');
@@ -259,9 +258,9 @@
 
 <script type="text/javascript">
    // Activate the popover ...
-   $('#hosts-states-popover').popover({ 
-      placement: 'bottom', 
-      animation: true, 
+   $('#hosts-states-popover').popover({
+      placement: 'bottom',
+      animation: true,
       template: '<div class="popover img-popover"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
       content: function() {
          return $('#hosts-states-popover-content').html();
@@ -269,9 +268,9 @@
    });
 
    // Activate the popover ...
-   $('#services-states-popover').popover({ 
-      placement: 'bottom', 
-      animation: true, 
+   $('#services-states-popover').popover({
+      placement: 'bottom',
+      animation: true,
       template: '<div class="popover img-popover"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
       content: function() {
          return $('#services-states-popover-content').html();
