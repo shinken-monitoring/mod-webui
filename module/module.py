@@ -94,6 +94,24 @@ def get_instance(plugin):
     logger.info("[WebUI] got an instance of Webui_broker for module: %s", plugin.get_name())
     return instance
 
+# Read auth_secret from conf or file, if one exists, or autogenerate one
+def resolve_auth_secret(modconf):
+    candidate = getattr(modconf, 'auth_secret', None)
+    if not candidate:
+        # Look for file
+        auth_secret_file = getattr(modconf, 'auth_secret_file', '/var/lib/shinken/auth_secret')
+        if os.path.exists(auth_secret_file):
+            with open(auth_secret_file) as secret:
+                candidate = secret.read()
+        else:
+            # Autogenerate a secret
+            import string, random
+            chars = string.ascii_letters + string.digits
+            candidate = ''.join([random.choice(chars) for _ in range(32)])
+            print auth_secret_file
+            with os.fdopen(os.open(auth_secret_file, os.O_WRONLY | os.O_CREAT, 0o600), 'w') as secret:
+                secret.write(candidate)
+    return candidate
 
 # Class for the WebUI Broker
 class Webui_broker(BaseModule, Daemon):
@@ -115,8 +133,7 @@ class Webui_broker(BaseModule, Daemon):
             logger.warning("[WebUI] endpoint feature is not implemented! WebUI is served from root URL: http://%s:%d/", self.host, self.port)
             self.endpoint = None
 
-        self.auth_secret = getattr(modconf, 'auth_secret', 'secret').encode('utf8', 'replace')
-
+        self.auth_secret = resolve_auth_secret(modconf)
         # TODO : common preferences
         self.play_sound = to_bool(getattr(modconf, 'play_sound', '0'))
         # TODO : common preferences
