@@ -1028,10 +1028,10 @@ Invalid element name
                               %end
                               <td><strong>{{metric.name}}</strong></td>
                               <td>{{metric.value}}</td>
-                              <td>{{metric.warning if metric.warning else ''}}</td>
-                              <td>{{metric.critical if metric.critical else ''}}</td>
-                              <td>{{metric.min if metric.min else ''}}</td>
-                              <td>{{metric.max if metric.max else ''}}</td>
+                              <td>{{metric.warning if metric.warning!=None else ''}}</td>
+                              <td>{{metric.critical if metric.critical!=None else ''}}</td>
+                              <td>{{metric.min if metric.min!=None else ''}}</td>
+                              <td>{{metric.max if metric.max!=None else ''}}</td>
                               <td>{{metric.uom if metric.uom else ''}}</td>
 
                               %if app.graphs_module.is_available():
@@ -1066,10 +1066,10 @@ Invalid element name
                               %service_line = False
                               <td><strong>{{metric.name}}</strong></td>
                               <td>{{metric.value}}</td>
-                              <td>{{metric.warning if metric.warning else ''}}</td>
-                              <td>{{metric.critical if metric.critical else ''}}</td>
-                              <td>{{metric.min if metric.min else ''}}</td>
-                              <td>{{metric.max if metric.max else ''}}</td>
+                              <td>{{metric.warning if metric.warning!=None else ''}}</td>
+                              <td>{{metric.critical if metric.critical!=None else ''}}</td>
+                              <td>{{metric.min if metric.min!=None else ''}}</td>
+                              <td>{{metric.max if metric.max!=None else ''}}</td>
                               <td>{{metric.uom if metric.uom else ''}}</td>
 
                               %if app.graphs_module.is_available():
