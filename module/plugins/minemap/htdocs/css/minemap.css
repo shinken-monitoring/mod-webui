@@ -10,7 +10,7 @@ th.vertical {
    padding-right: 2px;
 }
 
-/** 
+/**
 * Works everywere ( IE7+, FF, Chrome, Safari, Opera )
 * Example: http://jsbin.com/afAQAWA/2/
 */
@@ -49,4 +49,14 @@ th.vertical {
    content: "";
    float: left;
    margin-top: 100%;
+}
+
+
+/*
+ Fixed table header jQuery plugin when used with bootstrap requires this declaration ...
+ */
+table.floatThead-table {
+    border-top: none;
+    border-bottom: none;
+    background-color: #FFF;
 }

@@ -7,7 +7,7 @@
 %search_string = app.get_search_string()
 
 %# Specific content for breadrumb
-%rebase("layout", title='Minemap for hosts/services', css=['minemap/css/minemap.css'], breadcrumb=[ ['All hosts', '/minemap'] ])
+%rebase("layout", title='Minemap for hosts/services', css=['minemap/css/minemap.css'], js=['minemap/js/jquery.floatThead.min.js'], breadcrumb=[ ['All hosts', '/minemap'] ])
 
 
 <div id="minemap">
@@ -97,35 +97,7 @@
          </div>
       </div>
 
-<!--
-      <div class="panel panel-default">
-         <div class="panel-heading">
-            <h3 class="panel-title">Current filtered hosts</h3>
-         </div>
-         <div class="panel-body">
-            <div class="pull-left col-lg-2" style="height: 45px;">
-               <span>Members:</span>
-               <span>{{h['nb_elts']}} hosts</span>
-            </div>
-            <div class="pull-right progress col-lg-6 no-bottommargin no-leftpadding no-rightpadding" style="height: 45px;">
-               <div title="{{h['nb_up']}} hosts Up" class="progress-bar progress-bar-success quickinfo" role="progressbar"
-                  data-original-title="{{h['nb_up']}} Up"
-                  style="width: {{h['pct_up']}}%; vertical-align:midddle; line-height: 45px;">{{h['pct_up']}}% Up</div>
-               <div title="{{h['nb_down']}} hosts Down" class="progress-bar progress-bar-danger quickinfo"
-                  data-original-title="{{h['pct_down']}} Down"
-                  style="width: {{h['pct_down']}}%; vertical-align:midddle; line-height: 45px;">{{h['pct_down']}}% Down</div>
-               <div title="{{h['nb_unreachable']}} hosts Unreachable" class="progress-bar progress-bar-warning quickinfo"
-                  data-original-title="{{h['nb_unreachable']}} Unreachable"
-                  style="width: {{h['pct_unreachable']}}%; vertical-align:midddle; line-height: 45px;">{{h['pct_unreachable']}}% Unreachable</div>
-               <div title="{{h['nb_pending'] + h['nb_unknown']}} hosts Pending/Unknown" class="progress-bar progress-bar-info quickinfo"
-                  data-original-title="{{h['nb_pending'] + h['nb_unknown']}} Pending / Unknown"
-                  style="width: {{h['pct_pending'] + h['pct_unknown']}}%; vertical-align:midddle; line-height: 45px;">{{h['pct_pending'] + h['pct_unknown']}}% Pending or Unknown</div>
-            </div>
-         </div>
-      </div>
--->
-
-      <table class="table table-hover minemap">
+      <table class="table table-hover table-condensed table-fixed-header">
          <thead>
             <tr>
                <th></th>
@@ -166,5 +138,11 @@
             %end
          </tbody>
       </table>
+
+     <script language="javascript" type="text/javascript" >
+       $(document).ready(function(){
+         $('table.table-fixed-header').floatThead({});
+       });
+     </script>
    %end
 </div>
