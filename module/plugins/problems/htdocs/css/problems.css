@@ -40,9 +40,15 @@ td .ellipsis > .long-output {
     .service-column, .host-column {
         width: 100%;
     }
+    .state-column, .duration-column {
+        width: 100%;
+    }
 }
 @media (min-width: 992px) {
     .service-column, .host-column {
+        width: 60%;
+    }
+    .state-column, .duration-column {
         width: 60%;
     }
 }
@@ -50,9 +56,15 @@ td .ellipsis > .long-output {
     .service-column, .host-column {
         width: 40%;
     }
+    .state-column, .duration-column {
+        width: 40%;
+    }
 }
 @media (min-width: 1400px) {
     .service-column, .host-column {
+        width: 30%;
+    }
+    .state-column, .duration-column {
         width: 30%;
     }
 }

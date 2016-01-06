@@ -36,22 +36,22 @@
 
       <i class="pull-right small">{{len(list(bi_pbs))}} elements</i>
       <h3 class="text-center">Business impact: {{!helper.get_business_impact_text(business_impact, text=True)}}</h3>
-    
-      <table class="table table-condensed" style="table-layout:fixed;width:100%;">
+
+      <table class="table table-condensed" style="table-layout:fixed; width:100%;">
          <thead><tr>
             <th width="20px"></th>
             <th width="40px"></th>
             <th class="host-column">Host</th>
             <th class="service-column">Service</th>
-            <th width="90px">State</th>
-            <th width="90px">Duration</th>
+            <th class="state-column">State</th>
+            <th class="duration-column">Duration</th>
             <th class="hidden-sm hidden-xs" width="100%">Output</th>
          </tr></thead>
 
          <tbody>
          %for host_name, host_pbs in hosts:
          %for i, pb in enumerate(host_pbs):
-          
+
             %# Host information ...
             <tr data-toggle="collapse" data-target="#details-{{helper.get_html_id(pb)}}" class="accordion-toggle">
                <td>
@@ -74,8 +74,8 @@
                   <button class="btn btn-danger btn-xs"><i class="fa fa-plus"></i> {{ len(pb.impacts) }} impacts</button>
                   %end
                </td>
-               <td align="center" class="font-{{pb.state.lower()}}"><strong>{{ pb.state }}</strong></td>
-               <td align="center" title="Since {{time.strftime("%d %b %Y %H:%M:%S", time.localtime(pb.last_state_change))}}">
+               <td class="font-{{pb.state.lower()}}"><strong><small>{{ pb.state }}</small></strong></td>
+               <td title="Since {{time.strftime("%d %b %Y %H:%M:%S", time.localtime(pb.last_state_change))}}">
                  {{!helper.print_duration(pb.last_state_change, just_duration=True, x_elts=2)}}
                </td>
                <td class="row hidden-sm hidden-xs">
@@ -124,50 +124,50 @@
                            <td align="right">
                               <div class="btn-group" role="group" data-type="actions" aria-label="Actions">
                                  %if pb.event_handler_enabled and pb.event_handler:
-                                 <button class="btn btn-default btn-xs" 
+                                 <button class="btn btn-default btn-xs"
                                        data-type="action" action="event-handler"
                                        data-toggle="tooltip" data-placement="bottom" title="Try to fix (launch event handler)"
-                                       data-element="{{helper.get_uri_name(pb)}}" 
+                                       data-element="{{helper.get_uri_name(pb)}}"
                                        >
                                     <i class="fa fa-magic"></i><span class="hidden-sm hidden-xs"> Try to fix</span>
                                  </button>
                                  %end
-                                 <button class="btn btn-default btn-xs" 
+                                 <button class="btn btn-default btn-xs"
                                        data-type="action" action="recheck"
                                        data-toggle="tooltip" data-placement="bottom" title="Launch the check command"
-                                       data-element="{{helper.get_uri_name(pb)}}" 
+                                       data-element="{{helper.get_uri_name(pb)}}"
                                        >
                                     <i class="fa fa-refresh"></i><span class="hidden-sm hidden-xs"> Refresh</span>
                                  </button>
-                                 <button class="btn btn-default btn-xs" 
+                                 <button class="btn btn-default btn-xs"
                                        data-type="action" action="check-result"
                                        data-toggle="tooltip" data-placement="bottom" title="Submit a check result"
-                                       data-element="{{helper.get_uri_name(pb)}}" 
-                                       data-user="{{user}}" 
+                                       data-element="{{helper.get_uri_name(pb)}}"
+                                       data-user="{{user}}"
                                        >
                                     <i class="fa fa-share"></i><span class="hidden-sm hidden-xs"> Submit check result</span>
                                  </button>
                                  %if pb.state != pb.ok_up and not pb.problem_has_been_acknowledged:
-                                 <button class="btn btn-default btn-xs" 
+                                 <button class="btn btn-default btn-xs"
                                        data-type="action" action="add-acknowledge"
                                        data-toggle="tooltip" data-placement="bottom" title="Acknowledge this problem"
-                                       data-element="{{helper.get_uri_name(pb)}}" 
+                                       data-element="{{helper.get_uri_name(pb)}}"
                                        >
                                     <i class="fa fa-check"></i><span class="hidden-sm hidden-xs"> Acknowledge</span>
                                  </button>
                                  %end
-                                 <button class="btn btn-default btn-xs" 
+                                 <button class="btn btn-default btn-xs"
                                        data-type="action" action="schedule-downtime"
                                        data-toggle="tooltip" data-placement="bottom" title="Schedule a downtime for this problem"
-                                       data-element="{{helper.get_uri_name(pb)}}" 
+                                       data-element="{{helper.get_uri_name(pb)}}"
                                        >
                                   <i class="fa fa-ambulance"></i><span class="hidden-sm hidden-xs"> Downtime</span>
                                  </button>
-                                 <button class="btn btn-default btn-xs" 
+                                 <button class="btn btn-default btn-xs"
                                        data-type="action" action="ignore-checks"
                                        data-toggle="tooltip" data-placement="bottom" title="Ignore checks for the service (disable checks, notifications, event handlers and force Ok)"
-                                       data-element="{{helper.get_uri_name(pb)}}" 
-                                       data-user="{{user}}" 
+                                       data-element="{{helper.get_uri_name(pb)}}"
+                                       data-user="{{user}}"
                                        >
                                     <i class="fa fa-eraser"></i><span class="hidden-sm hidden-xs"> Remove</span>
                                  </button>
@@ -223,7 +223,7 @@
    %#end panel-body
    </div>
    </div>
-         
+
    %# Close problems div ...
    %end
  </div>

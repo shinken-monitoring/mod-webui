@@ -610,14 +610,18 @@ class WebUIDataManager(DataManager):
     def set_servicegroups_level(self, user):
         # All known hostgroups are level 0 groups ...
         for group in self.get_servicegroups(user=user):
-            self.set_servicegroup_level(group, 0, user)
+            if not hasattr(group, 'level'):
+                self.set_servicegroup_level(group, 0, user)
 
     def set_servicegroup_level(self, group, level, user):
         setattr(group, 'level', level)
 
         for g in sorted(group.get_servicegroup_members()):
-            child_group = self.get_servicegroup(g)
-            self.set_servicegroup_level(child_group, level + 1, user)
+            try:
+                child_group = self.get_servicegroup(g)
+                self.set_servicegroup_level(child_group, level + 1, user)
+            except AttributeError:
+                pass
 
     def get_servicegroups(self, user, parent=None):
         if parent:
