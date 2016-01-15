@@ -8,7 +8,7 @@
 %else:
 
 %username = 'anonymous'
-%if user is not None: 
+%if user is not None:
 %if hasattr(contact, 'alias'):
 %username = contact.alias
 %else:
@@ -63,7 +63,7 @@
             <!-- User image / user name / user category -->
             <div class="user-header bg-light-blue">
                <img src="{{app.user_picture}}" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}">
-            
+
                <p class="username">
                  {{username}}
                </p>
@@ -73,7 +73,7 @@
                </p>
                %end
             </div>
-          
+
             <div class="user-body">
                <table class="table table-condensed col-sm-12" style="table-layout: fixed; word-wrap: break-word;">
                   <colgroup>
@@ -144,7 +144,7 @@
                      %end
                   </tbody>
                </table>
-            
+
                <table class="table table-condensed col-sm-12" style="table-layout: fixed; word-wrap: break-word;">
                   <colgroup>
                      <col style="width: 30%" />
@@ -164,7 +164,7 @@
                               <script>
                               %j=0
                               %for t in sorted(contact.tags):
-                              var b{{j}} = $('<a href="/all?search=stag:{{t}}"/>').appendTo($('#contact_tags'));
+                              var b{{j}} = $('<a href="/all?search=ctag:{{t}}"/>').appendTo($('#contact_tags'));
                               $('<img />')
                                  .attr({ 'src': '/static/images/tags/{{t.lower()}}.png', 'alt': '{{t.lower()}}', 'title': 'Tag: {{t.lower()}}' })
                                  .css({height: "24px"})
@@ -193,7 +193,7 @@
                         <td><strong>&raquo;&nbsp;Minimum business impact:</strong></td>
                         <td>{{nw.min_business_impact}} - {{app.helper.get_business_impact_text(nw.min_business_impact, True)}}</td>
                      </tr>
-                  
+
                      <tr>
                         <td colspan="2"><strong>&raquo;&nbsp;Hosts notifications:</strong>&nbsp;{{! app.helper.get_on_off(not in_scheduled_downtime, "Are hosts notifications sent to this contact?")}}</td>
                      </tr>
@@ -211,7 +211,7 @@
                            </script>
                         </td>
                      </tr>
-                  
+
                      %if nw.host_notification_options != '':
                      %options = nw.host_notification_options
                      %message = {}
@@ -231,7 +231,7 @@
                         </td>
                      </tr>
                      %end
-                  
+
                      %i=0
                      %for command in nw.host_notification_commands:
                        %i += 1
@@ -250,8 +250,8 @@
                      %end
                      %end
                      %# If host notifications enabled ...
-                  
-                
+
+
                      <tr>
                         <td colspan="2"><strong>&raquo;&nbsp;Services notifications:</strong>&nbsp;{{! app.helper.get_on_off(nw.service_notifications_enabled, "Are services notifications sent to this contact?")}}</td>
                      </tr>
@@ -269,7 +269,7 @@
                            </script>
                         </td>
                      </tr>
-                  
+
                      %if nw.service_notification_options != '':
                      %options = nw.service_notification_options
                      %message = {}
@@ -290,7 +290,7 @@
                         </td>
                      </tr>
                      %end
-                  
+
                      %i=0
                      %for command in nw.service_notification_commands:
                         %i += 1
@@ -309,8 +309,8 @@
                      %end
                      %end
                      %# If service notifications enabled ...
-                  
-                
+
+
                   %i+=1
                   %end
                   %# For notificationways ...
