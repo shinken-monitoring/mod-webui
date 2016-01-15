@@ -3,11 +3,15 @@
    var downtime_start = moment().seconds(0);
    // Set default downtime period as two days
    var downtime_stop = moment().seconds(0).add('days', 2);
-  
+
    function submit_local_form(){
       // Launch downtime request and bailout this modal view
-      do_schedule_downtime("{{name}}", downtime_start.format('X'), downtime_stop.format('X'), '{{user.get_name()}}', $('#reason').val());
-      
+      %if elt.__class__.my_type=='contact':
+        do_schedule_downtime("{{name}}", downtime_start.format('X'), downtime_stop.format('X'), '{{user.get_name()}}', $('#reason').val(), 'contact');
+      %else:
+        do_schedule_downtime("{{name}}", downtime_start.format('X'), downtime_stop.format('X'), '{{user.get_name()}}', $('#reason').val());
+      %end
+
       %if elt.__class__.my_type=='host':
       if ($('#dwn_services').is(":checked")) {
       %for service in elt.services:
@@ -44,15 +48,15 @@
          showWeekNumbers: false,
          opens: 'right',
          },
-         
+
          function(start, end, label) {
             downtime_start = start; downtime_stop = end;
          }
       );
-    
+
       // Default date range is one hour from now ...
       $('#dtr_downtime').val(downtime_start.format('YYYY-MM-DD HH:mm') + '   to   ' +  downtime_stop.format('YYYY-MM-DD HH:mm'));
-    
+
       // Update dates on apply button ...
       $('#dtr_downtime').on('apply.daterangepicker', function(ev, picker) {
          downtime_start = picker.startDate; downtime_stop = picker.endDate;
@@ -72,7 +76,7 @@
          <input name="dwn_services" id="dwn_services" type="checkbox" checked="checked">Same downtime period for all services of the host?</input>
       </div>
       %end
-      
+
       <div class="form-group">
          <label for="dtr_downtime">Downtime date range</label>
          <div class="input-group">

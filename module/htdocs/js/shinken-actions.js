@@ -35,7 +35,7 @@ function capitalize (text) {
  */
 function launch(url, response_message){
    if (actions_logs) console.debug('Launch external command: ', url);
-   
+
    $.ajax({
       url: url,
       dataType: "jsonp",
@@ -59,8 +59,8 @@ function launch(url, response_message){
 }
 
 
-/* 
- * Message raise part 
+/*
+ * Message raise part
  */
 function raise_message_ok(text){
    alertify.log(text, "success", 5000);
@@ -71,26 +71,34 @@ function raise_message_ko(text){
 }
 
 
-/* 
+/*
  * Get element information
  */
-function get_elements(name){
+function get_elements(name, contact) {
    var elts = name.split('/');
    var elt = {
       type : 'UNKNOWN',
       namevalue : 'NOVALUE'
    };
+   // Specific for contact
+   if (contact !== undefined) {
+      elt.type = 'CONTACT';
+      elt.namevalue = elts[0];
+      elt.nameslash = elts[0];
+
+      return elt;
+   }
    if (elts.length == 1){
       // 1 element means HOST
       elt.type = 'HOST';
       elt.namevalue = elts[0];
       elt.nameslash = elts[0];
-   } else { 
+   } else {
       // 2 means Service
       elt.type = 'SVC';
       elt.namevalue = elts[0]+';'+elts[1];
       elt.nameslash = elts[0]+'/'+elts[1];
-    
+
       // And now for all elements, change the / into a $SLASH$ macro
       for (var i=2; i<elts.length; i++){
          elt.namevalue = elt.namevalue+ '$SLASH$'+ elts[i];
@@ -118,7 +126,7 @@ function try_to_fix(name) {
  */
 function do_remove(name, text, user){
   var elts = get_elements(name);
-  
+
   /* A Remove is in fact some several commands :
      DISABLE_SVC_NOTIFICATIONS
      DISABLE_SVC_EVENT_HANDLER
@@ -131,7 +139,7 @@ function do_remove(name, text, user){
    disable_event_handlers(elts);
    add_comment(name, user, text);
    submit_check(name, 0, text);
-   // WARNING : Disable passive checks make the set not push, 
+   // WARNING : Disable passive checks make the set not push,
    // so we only disable active checks
    disable_checks(elts, false);
 
@@ -143,16 +151,16 @@ function do_remove(name, text, user){
 
 
 /*
-This is used to submit a passive check result for a particular host. 
-The "status_code" indicates the state of the host check and should 
+This is used to submit a passive check result for a particular host.
+The "status_code" indicates the state of the host check and should
 be one of the following: 0=UP, 1=UNREACHABLE, 2=DOWN.
-The "plugin_output" argument contains the text returned from the 
+The "plugin_output" argument contains the text returned from the
 host check, along with optional performance data.
 
-This is used to submit a passive check result for a particular service. 
-The "return_code" field should be one of the following: 0=OK, 
-1=WARNING, 2=CRITICAL, 3=UNKNOWN. 
-The "plugin_output" field contains text output from the service 
+This is used to submit a passive check result for a particular service.
+The "return_code" field should be one of the following: 0=OK,
+1=WARNING, 2=CRITICAL, 3=UNKNOWN.
+The "plugin_output" field contains text output from the service
 check, along with optional performance data.
 */
 function submit_check(name, return_code, output){
@@ -184,7 +192,7 @@ function change_custom_var(name, custom_var, value){
 }
 
 
-/* 
+/*
  * Launch the check_command
  */
 function recheck_now(name) {
@@ -314,9 +322,9 @@ function toggle_flap_detection(name, b){
  * Comments
  */
 /*
- Adds a comment to a particular host. 
- If the "persistent" field is set to zero (0), the comment will be deleted 
- the next time Nagios is restarted. Otherwise, the comment will persist 
+ Adds a comment to a particular host.
+ If the "persistent" field is set to zero (0), the comment will be deleted
+ the next time Nagios is restarted. Otherwise, the comment will persist
  across program restarts until it is deleted manually.
 */
 var shinken_comment_persistent = '1';
@@ -352,38 +360,38 @@ function delete_all_comments(name) {
  * Downtimes
  */
 /*
- Schedules downtime for a specified host. 
- If the "fixed" argument is set to one (1), downtime will start and end 
- at the times specified by the "start" and "end" arguments. 
- Otherwise, downtime will begin between the "start" and "end" times and 
- last for "duration" seconds. 
- The "start" and "end" arguments are specified in time_t format (seconds 
- since the UNIX epoch). 
- The specified host downtime can be triggered by another downtime entry 
- if the "trigger_id" is set to the ID of another scheduled downtime entry. 
- Set the "trigger_id" argument to zero (0) if the downtime for the 
+ Schedules downtime for a specified host.
+ If the "fixed" argument is set to one (1), downtime will start and end
+ at the times specified by the "start" and "end" arguments.
+ Otherwise, downtime will begin between the "start" and "end" times and
+ last for "duration" seconds.
+ The "start" and "end" arguments are specified in time_t format (seconds
+ since the UNIX epoch).
+ The specified host downtime can be triggered by another downtime entry
+ if the "trigger_id" is set to the ID of another scheduled downtime entry.
+ Set the "trigger_id" argument to zero (0) if the downtime for the
  specified host should not be triggered by another downtime entry.
 */
 var shinken_downtime_fixed='1';
 var shinken_downtime_trigger='0';
 var shinken_downtime_duration='0';
-function do_schedule_downtime(name, start_time, end_time, user, comment){
-   var elts = get_elements(name);
+function do_schedule_downtime(name, start_time, end_time, user, comment, contact){
+   var elts = get_elements(name, contact);
    var url = '/action/SCHEDULE_'+elts.type+'_DOWNTIME/'+elts.nameslash+'/'+start_time+'/'+end_time+'/'+shinken_downtime_fixed+'/'+shinken_downtime_trigger+'/'+shinken_downtime_duration+'/'+user+'/'+comment;
    launch(url, capitalize(elts.type)+': '+name+', downtime scheduled');
 }
 
 /* The command that will delete a downtime */
-function delete_downtime(name, i) {
-   var elts = get_elements(name);
+function delete_downtime(name, i, contact) {
+   var elts = get_elements(name, contact);
    var url = '/action/DEL_'+elts.type+'_DOWNTIME/'+i;
    // We can launch it :)
    launch(url, capitalize(elts.type)+': '+name+', downtime deleted');
 }
 
 /* The command that will delete all downtimes */
-function delete_all_downtimes(name) {
-   var elts = get_elements(name);
+function delete_all_downtimes(name, contact) {
+   var elts = get_elements(name, contact);
    var url = '/action/DEL_ALL_'+elts.type+'_DOWNTIMES/'+elts.nameslash;
    // We can launch it :)
    launch(url, capitalize(elts.type)+': '+name+', all downtimes deleted');
@@ -395,17 +403,17 @@ function delete_all_downtimes(name) {
  * Acknowledges
  */
 /*
-Allows you to acknowledge the current problem for the specified host/service. 
-By acknowledging the current problem, future notifications (for the same host state) 
-are disabled. 
+Allows you to acknowledge the current problem for the specified host/service.
+By acknowledging the current problem, future notifications (for the same host state)
+are disabled.
 
- If the "sticky" option is set to two (2), the acknowledgement will remain until 
- the host returns to an UP state. Otherwise the acknowledgement will 
- automatically be removed when the host changes state. 
- If the "notify" option is set to one (1), a notification will be sent out to 
- contacts indicating that the current host problem has been acknowledged. 
- If the "persistent" option is set to one (1), the comment associated with the 
- acknowledgement will survive across restarts of the Nagios process. 
+ If the "sticky" option is set to two (2), the acknowledgement will remain until
+ the host returns to an UP state. Otherwise the acknowledgement will
+ automatically be removed when the host changes state.
+ If the "notify" option is set to one (1), a notification will be sent out to
+ contacts indicating that the current host problem has been acknowledged.
+ If the "persistent" option is set to one (1), the comment associated with the
+ acknowledgement will survive across restarts of the Nagios process.
  If not, the comment will be deleted the next time Nagios restarts.
 */
 var shinken_acknowledge_sticky='2';
