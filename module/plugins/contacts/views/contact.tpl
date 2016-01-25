@@ -351,7 +351,7 @@
                         <tr>
                            <td><strong>&nbsp;&ndash;command:</strong></td>
                            <td name="service_command{{i}}" class="popover-dismiss" data-html="true" data-toggle="popover" data-trigger="hover" title="Service notification command" data-placement="top" data-content="...">
-                              {{command.get_name()}}
+                              <a href="/commands#{{command.get_name()}}">{{command.get_name()}}</a>
                               <script>
                                  $('td[name="service_command{{i}}"]')
                                    .attr('title', '{{command.get_name()}}')
