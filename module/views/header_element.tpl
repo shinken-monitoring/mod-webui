@@ -109,7 +109,7 @@
       %end
 
       %if app.play_sound:
-      <li>
+      <li class="hidden-sm hidden-xs hidden-md">
          <a class="quickinfo" action="toggle-sound-alert" data-original-title='Sound alerting' href="#">
             <span id="sound_alerting" class="fa-stack">
               <i class="fa fa-music fa-stack-1x"></i>
