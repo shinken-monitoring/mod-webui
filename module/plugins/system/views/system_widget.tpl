@@ -8,6 +8,7 @@
    <thead>
       <tr>
          <th>Name</th>
+         <th>Main</th>
          <th>State</th>
          <th>Last Check</th>
          <th>Realm</th>
@@ -19,6 +20,12 @@
       %for s in sats:
       <tr>
          <td>{{s.get_name()}}</td>
+         %if not s.spare:
+         <td><i title="Is not a spare daemon" class="glyphicon glyphicon-ok font-green"></i></td>
+         %else:
+         <td></td>
+         <!--<td>{{!helper.get_on_off(status=s.spare)}}</td>-->
+         %end
          <td>
             %if not s.alive:
                {{!helper.get_fa_icon_state(cls='service', state='warning')}}

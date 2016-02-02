@@ -13,14 +13,12 @@
                   <col style="width: 70%" />
                </colgroup>
                <tbody style="font-size:x-small;">
-               %for config in configs:
                   %for key, value in configs:
                   <tr>
                      <td>{{key}}</td>
                      <td>{{value}}</td>
                   </tr>
                   %end
-               %end
                </tbody>
             </table>
          </div>

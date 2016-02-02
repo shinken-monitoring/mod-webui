@@ -48,28 +48,43 @@
 %end
 
 %if username != 'anonymous':
-<div id="back-home">
-   <ul class="nav nav-pills navbar-left">
-      <li> <a class="font-darkgrey" href="/dashboard"><i class="fa fa-home"></i></a> </li>
-      <li> <a class="font-darkgrey" href="#" action="fullscreen-request" class="font-darkgrey"><i class="fa fa-desktop"></i></a> </li>
-   </ul>
-   %if app.play_sound:
-   <ul class="nav nav-pills navbar-right">
-      <li>
-         <a class="font-darkgrey" action="toggle-sound-alert" data-original-title='Sound alerting' href="#">
-            <span id="sound_alerting" class="fa-stack">
-              <i class="fa fa-music fa-stack-1x"></i>
-              <i class="fa fa-ban fa-stack-2x text-danger"></i>
-            </span>
-         </a>
-      </li>
-   </ul>
-   %end
+<div class="hidden-sm hidden-xs">
+    <div class="text-center">
+        <ul class="nav navbar-nav navbar-left">
+            <li>
+                <a tabindex="0" class="font-darkgrey" role="button" title="Back to UI" href="/dashboard">
+                    <span id="back-dashboard" class="fa-stack">
+                        <i class="fa fa-home"></i>
+                        <i class="fa fa-ban fa-stack-2x text-danger hidden"></i>
+                    </span>
+                </a>
+            </li>
+            <li>
+                <a tabindex="0" class="font-darkgrey" role="button" title="Got to fullscreen" href="#" action="fullscreen-request">
+                    <span id="go-fullscreen" class="fa-stack">
+                        <i class="fa fa-desktop"></i>
+                        <i class="fa fa-ban fa-stack-2x text-danger hidden"></i>
+                    </span>
+                </a>
+            </li>
+            %if app.play_sound:
+            <li>
+                <a tabindex="0" class="font-darkgrey" role="button" title="Sound alerting" href="#" action="toggle-sound-alert">
+                    <span id="sound_alerting" class="fa-stack">
+                        <i class="fa fa-music"></i>
+                        <i class="fa fa-ban fa-stack-2x text-danger hidden"></i>
+                    </span>
+                </a>
+            </li>
+            %end
+        </ul>
+    </div>
+    <div class="clearfix"></div>
 </div>
 %end
 <div id="date-time">
    <h1 id="clock"></h1>
-   <h3 id="date"></h3>
+   <h3 id="date" class="hidden-sm hidden-xs"></h3>
 </div>
 
 %if app.play_sound:
@@ -108,7 +123,8 @@
 %s = synthesis['services']
 %h = synthesis['hosts']
 
-<div id="one-eye-overall">
+<div id="one-eye-overall" class="row">
+   <!--
    <div class="panel panel-default panel-darkgrey">
       <div class="panel-body">
          <table class="table table-invisible table-condensed">
@@ -143,6 +159,63 @@
          </table>
       </div>
    </div>
+   -->
+  <div class="col-md-6 col-lg-6">
+   <div class="panel panel-default panel-darkgrey">
+      <div class="panel-heading">
+         <div class="center-block">
+           <div class="pull-left">
+              <b>{{h['nb_elts']}} hosts.</b>
+           </div>
+           %h_problems = len(app.datamgr.get_problems(user, search='type:host', sorter=None))
+           %if h_problems:
+           <div class="pull-right">
+             <em>{{h_problems}} hosts problems.</em>
+           </div>
+           %end
+         </div>
+         <div class="clearfix"></div>
+      </div>
+      <div class="panel-body">
+         %for state in 'up', 'unreachable', 'down', 'unknown', 'ack', 'downtime':
+         <div class="col-xs-6 col-sm-4 col-md-2 text-center">
+             %label = "%s <i><small>(%s%%)</small></i>" % (h['nb_' + state], h['pct_' + state])
+             <a href="/all?search=type:host is:{{state}}">
+                {{!helper.get_fa_icon_state_and_label(cls='host', state=state, label=label)}}
+             </a>
+         </div>
+         %end
+      </div>
+   </div>
+  </div>
+  <div class="col-md-6 col-lg-6">
+   <div class="panel panel-default panel-darkgrey">
+      <div class="panel-heading">
+         <div class="center-block">
+           <div class="pull-left">
+              <b>{{s['nb_elts']}} services.</b>
+           </div>
+           %s_problems = len(app.datamgr.get_problems(user, search='type:service', sorter=None))
+           %if s_problems:
+           <div class="pull-right">
+             <em>{{s_problems}} services problems.</em>
+           </div>
+           %end
+         </div>
+         <div class="clearfix"></div>
+      </div>
+      <div class="panel-body">
+         %for state in 'ok', 'warning', 'critical', 'unknown', 'ack', 'downtime':
+         <div class="col-xs-6 col-sm-4 col-md-2 text-center">
+             %label = "%s <i>(%s%%)</i>" % (s['nb_' + state], s['pct_' + state])
+             <a href="/all?search=type:host is:{{state}}">
+                {{!helper.get_fa_icon_state_and_label(cls='service', state=state, label=label, disabled=(not s['nb_' + state]))}}
+             </a>
+         </div>
+         %end
+      </div>
+   </div>
+  </div>
 </div>
 
 <div id="one-eye-icons">
@@ -303,11 +376,13 @@
          </div>
       </div>
    </div>
+</div>
 
+<div id="one-eye-problems">
    <div class="panel panel-default panel-darkgrey">
       <div class="panel-body">
          <!-- Problems / impacts -->
-         <div class="col-xs-6 col-sm-3 col-md-6">
+         <div class="col-xs-6 col-md-6 text-center">
             %if username != 'anonymous':
             <a href="/problems" class="btn btn-sm">
             %end
@@ -316,9 +391,11 @@
                   %h_problems = len(app.datamgr.get_problems(user, search='type:host', sorter=None))
                   %font='unknown' if h_state >= 3 else 'critical' if h_state >= 2 else 'warning' if h_state >= 1 else 'ok'
                   <span title="Number of hosts problems." class="badger-big badger-left font-{{font}}">{{h_problems}}</span>
+                  {{!helper.get_fa_icon_state(cls='host', state='unknown') if h_state == 3 else ''}}
                   {{!helper.get_fa_icon_state(cls='host', state='down') if h_state == 2 else ''}}
                   {{!helper.get_fa_icon_state(cls='host', state='unreachable') if h_state == 1 else ''}}
                   {{!helper.get_fa_icon_state(cls='host', state='up') if h_state == 0 else ''}}
+                  {{!helper.get_fa_icon_state(cls='service', state='unknown') if s_state == 3 else ''}}
                   {{!helper.get_fa_icon_state(cls='service', state='critical') if s_state == 2 else ''}}
                   {{!helper.get_fa_icon_state(cls='service', state='warning') if s_state == 1 else ''}}
                   {{!helper.get_fa_icon_state(cls='service', state='ok') if s_state == 0 else ''}}
@@ -334,7 +411,7 @@
             %end
          </div>
 
-         <div class="col-xs-6 col-sm-3 col-md-6">
+         <div class="col-xs-6 col-md-6 text-center">
             %if username != 'anonymous':
             <a href="/impacts" class="btn btn-sm">
             %end

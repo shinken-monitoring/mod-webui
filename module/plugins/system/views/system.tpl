@@ -24,7 +24,7 @@
             <th>Port</th>
             <th>State</th>
             <th>Alive</th>
-            <th>Spare</th>
+            <th>Main</th>
             <th>Attempts</th>
             <th>Last Check</th>
             <th>Realm</th>
@@ -43,12 +43,17 @@
                %end
             </td>
             <td>{{!helper.get_on_off(status=s.alive, title=None, message='')}}</td>
-            <td>{{!helper.get_on_off(status=s.spare)}}</td>
+            %if not s.spare:
+            <td><i title="Is not a spare daemon" class="glyphicon glyphicon-ok font-green"></i></td>
+            %else:
+            <td></td>
+            <!--<td>{{!helper.get_on_off(status=s.spare)}}</td>-->
+            %end
             <td>{{s.attempt}}/{{s.max_check_attempts}}</td>
             <td title='{{helper.print_date(s.last_check)}}'>{{helper.print_duration(s.last_check, just_duration=True, x_elts=2)}}</td>
             <td>{{s.realm}}</td>
          </tr>
-         %end  
+         %end
       </tbody>
    </table>
    %end

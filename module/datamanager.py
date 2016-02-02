@@ -295,7 +295,10 @@ class WebUIDataManager(DataManager):
         if '/' in name:
             return self.get_service(name.split('/')[0], name.split('/')[1], user)
         else:
-            return self.get_host(name, user)
+            host = self.get_host(name, user)
+            if not host:
+                return self.get_contact(name, user)
+            return host
 
     def search_hosts_and_services(self, search, user, get_impacts=True, sorter=None):
         """ Search hosts and services.

@@ -80,7 +80,6 @@ def system_widget():
 
     wid = app.request.query.get('wid', 'widget_system_' + str(int(time.time())))
     collapsed = (app.request.query.get('collapsed', 'False') == 'True')
-    print "SYSTEM COLLAPSED?", collapsed, type(collapsed)
 
     options = {}
 
