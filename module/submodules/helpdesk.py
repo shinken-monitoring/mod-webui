@@ -46,17 +46,20 @@ class HelpdeskMetaModule(MetaModule):
     def get_ui_types(self, default=None):
         if self.is_available():
             hd_configuration = self.module.get_ui_helpdesk_configuration()
-            return hd_configuration['types'] or default
+            if 'types' in hd_configuration:
+                return hd_configuration['types'] or default
         return default
 
     def get_ui_categories(self, default=None):
         if self.is_available():
             hd_configuration = self.module.get_ui_helpdesk_configuration()
-            return hd_configuration['categories'] or default
+            if 'categories' in hd_configuration:
+                return hd_configuration['categories'] or default
         return default
 
     def get_ui_templates(self, default=None):
         if self.is_available():
             hd_configuration = self.module.get_ui_helpdesk_configuration()
-            return hd_configuration['templates'] or default
+            if 'templates' in hd_configuration:
+                return hd_configuration['templates'] or default
         return default
