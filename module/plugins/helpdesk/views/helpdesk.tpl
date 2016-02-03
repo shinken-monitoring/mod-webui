@@ -16,10 +16,14 @@
       <thead>
          %# List all possible keys
          <!-- Ticket fields:
-         {'waiting_duration': '0', 'tasks': [], 'solutiontypes_id': '0', 'slalevels_name': '', 'impact_name': 'Medium', 'slalevels_next_name': '', 'slas_id': '1', 'date_mod': '2015-06-03 07:32:13', 'satisfaction': [], 'slalevels_next_id': 0, 'locations_id': '0', 'closedate': '', 'id': '11', 'impact': '3', 'priority': '3', 'followups': [], 'documents': [], 'slalevels_next_date': '', 'global_validation': '1', 'type_name': 'Incident', 'validation_percent': '0', 'priority_name': 'Medium', 'content': 'test ticket', 'close_delay_stat': '0', 'solutiontypes_name': '', 'users_name_lastupdater': 'glpi', 'ticketcategories_name': 'Communication borne', 'type': '1', 'events': [{'display_history': True, 'datatype': 'dropdown', 'date_mod': '2015-06-03 07:32', 'field': 'Last edit by', 'user_name': 'glpi (2)', 'id': '21337', 'change': 'Change shinken (9) by glpi (2)'}, {'display_history': True, 'datatype': 'dropdown', 'date_mod': '2015-06-03 07:32', 'field': 'SLA', 'user_name': 'glpi (2)', 'id': '21336', 'change': 'Change (0) by Test de Fred (1)'}, {'display_history': True, 'datatype': 'datetime', 'date_mod': '2015-06-03 07:32', 'field': 'Due date', 'user_name': 'glpi (2)', 'id': '21335', 'change': 'Change by 2015-06-05 06:50'}, {'display_history': True, 'datatype': '', 'date_mod': '2015-06-03 06:50', 'field': '', 'user_name': 'shinken (9)', 'id': '21300', 'change': 'Add the item'}, {'display_history': True, 'datatype': '', 'date_mod': '2015-06-03 06:50', 'field': 'User', 'user_name': 'shinken (9)', 'id': '21299', 'change': 'Add a link with an item: shinken (9)'}, {'display_history': True, 'datatype': '', 'date_mod': '2015-06-03 06:50', 'field': 'Computer', 'user_name': 'shinken (9)', 'id': '21297', 'change': 'Add a link with an item: kiosk-0001 (9)'}], 'status': '1', 'due_date': '2015-06-05 06:50:21', 'solve_delay_stat': '0', 'actiontime': '0', 'solvedate': '', 'users': {'assign': [], 'observer': [], 'requester': [{'users_id': '9', 'use_notification': '1', 'users_name': 'Administrateur Shinken', 'id': '11', 'alternative_email': ''}]}, 'entities_name': 'Root entity &gt; AJ Consulting &gt; Dubai Airport 1 &gt; Desk 1', 'begin_waiting_date': '', 'users_id_recipient': '9', 'sla_waiting_duration': '0', 'users_id_lastupdater': '2', 'slalevels_id': '0', 'itemtype_name': '', 'itilcategories_id': '1', 'items_name': 'General', 'date': '2015-06-03 06:50:21', 'requesttypes_name': 'Monitoring', 'slas_name': 'Test de Fred', 'validations': [], 'requesttypes_id': '8', 'groups': {'assign': [], 'observer': [], 'requester': []}, 'is_deleted': '0', 'name': 'test ticket', 'status_name': 'New', 'suppliers': {'assign': []}, 'global_validation_name': 'Not subject to approval', 'urgency_name': 'Medium', 'solution': '', 'entities_id': '6', 'locations_name': '', 'users_name_recipient': 'Administrateur Shinken', 'takeintoaccount_delay_stat': '0', 'urgency': '3'}
+         {'waiting_duration': '0', 'tasks': [{'users_name': u'Fr\xe9d\xe9ric MOHIER', 'users_id': '115', 'begin': '', 'actiontime': '1800', 'end': '', 'users_id_tech': '0', 'taskcategories_id': '0', 'tickets_id': '2569', 'content': u'Test de t\xe2che', 'state': '2', 'taskcategories_name': '', 'date': '2016-01-27 17:00:20', 'id': '2158', 'is_private': '0'}],
+         'solutiontypes_id': '21',
+         'slalevels_name': '', 'impact_name': 'Moyen', 'slalevels_next_name': '', 'slas_id': '4', 'date_mod': '2016-01-27 17:01:30', 'satisfaction': [], 'slalevels_next_id': 0, 'locations_id': '227', 'closedate': '2016-01-27 17:01:30', 'id': '2569', 'impact': '3', 'priority': '3', 'followups': [{'users_name': u'Fr\xe9d\xe9ric MOHIER', 'content': u'Approuv\xe9 par Fred.', 'requesttypes_id': '1', 'tickets_id': '2569', 'users_id': '115', 'date': '2016-01-27 17:01:30', 'requesttypes_name': 'Helpdesk', 'id': '1502', 'is_private': '0'}, {'users_name': u'Fr\xe9d\xe9ric MOHIER', 'content': 'Test de Fred pour un suivi', 'requesttypes_id': '1', 'tickets_id': '2569', 'users_id': '115', 'date': '2016-01-27 16:49:27', 'requesttypes_name': 'Helpdesk', 'id': '1501', 'is_private': '1'}], 'documents': [], 'itemtype': 'Computer', 'slalevels_next_date': '', 'global_validation': 'none', 'type_name': 'Incident', 'priority_name': 'Moyenne', 'content': u'Gros probl\xe8me ...\n ', 'close_delay_stat': '78270',
+         'solutiontypes_name': u"D\xe9bourrage de l'imprimante",
+         'users_name_lastupdater': u'Fr\xe9d\xe9ric MOHIER', 'ticketcategories_name': "Ticket d'incident > Borne injoignable", 'items_id': '572', 'type': '1', 'events': [{'display_history': True, 'datatype': '', 'date_mod': '27-01-2016 17:01', 'field': 'Suivi', 'user_name': u'Fr\xe9d\xe9ric MOHIER (115)', 'id': '5465242', 'change': u"Ajout de l'\xe9l\xe9ment : Suivi (1502)"}, {'display_history': True, 'datatype': 'datetime', 'date_mod': '27-01-2016 17:01', 'field': u'Date de cl\xf4ture', 'user_name': u'Fr\xe9d\xe9ric MOHIER (115)', 'id': '5465241', 'change': 'Changement de 27-01-2016 17:01 par 27-01-2016 17:01'}, {'display_history': True, 'datatype': 'specific', 'date_mod': '27-01-2016 17:01', 'field': 'Statut', 'user_name': u'Fr\xe9d\xe9ric MOHIER (115)', 'id': '5465240', 'change': u'Changement de R\xe9solu par Clos'}, {'display_history': True, 'datatype': 'datetime', 'date_mod': '27-01-2016 17:01', 'field': u'Date de r\xe9solution', 'user_name': u'Fr\xe9d\xe9ric MOHIER (115)', 'id': '5465239', 'change': 'Changement de -- par 27-01-2016 17:01'}, {'display_history': True, 'datatype': 'specific', 'date_mod': '27-01-2016 17:01', 'field': 'Statut', 'user_name': u'Fr\xe9d\xe9ric MOHIER (115)', 'id': '5465238', 'change': u'Changement de En cours (Attribu\xe9) par R\xe9solu'}, {'display_history': True, 'datatype': 'text', 'date_mod': '27-01-2016 17:01', 'field': 'Solution', 'user_name': u'Fr\xe9d\xe9ric MOHIER (115)', 'id': '5465237', 'change': 'Modification du champ'}, {'display_history': True, 'datatype': 'dropdown', 'date_mod': '27-01-2016 17:01', 'field': 'Type de solution', 'user_name': u'Fr\xe9d\xe9ric MOHIER (115)', 'id': '5465236', 'change': u"Changement de (0) par D\xe9bourrage de l'imprimante (21)"}, {'display_history': True, 'datatype': '', 'date_mod': '27-01-2016 17:00', 'field': u"T\xe2che d'un ticket", 'user_name': u'Fr\xe9d\xe9ric MOHIER (115)', 'id': '5465231', 'change': u"Ajout de l'\xe9l\xe9ment : T\xe2che d'un ticket (2158)"}, {'display_history': True, 'datatype': '', 'date_mod': '27-01-2016 16:49', 'field': 'Suivi', 'user_name': u'Fr\xe9d\xe9ric MOHIER (115)', 'id': '5465169', 'change': u"Ajout de l'\xe9l\xe9ment : Suivi (1501)"}, {'display_history': True, 'datatype': '', 'date_mod': '26-01-2016 19:19', 'field': '', 'user_name': u'Fr\xe9d\xe9ric MOHIER (115)', 'id': '5464180', 'change': u"Ajout de l'\xe9l\xe9ment"}, {'display_history': True, 'datatype': '', 'date_mod': '26-01-2016 19:19', 'field': 'Utilisateur', 'user_name': u'Fr\xe9d\xe9ric MOHIER (115)', 'id': '5464179', 'change': u"Ajout d'un lien avec un \xe9l\xe9ment : Fr\xe9d\xe9ric MOHIER (115)"}, {'display_history': True, 'datatype': 'timestamp', 'date_mod': '26-01-2016 19:19', 'field': u'D\xe9lai de prise en compte', 'user_name': u'Fr\xe9d\xe9ric MOHIER (115)', 'id': '5464178', 'change': 'Changement de 0 seconde par 2 minutes'}, {'display_history': True, 'datatype': '', 'date_mod': '26-01-2016 19:19', 'field': 'Utilisateur', 'user_name': u'Fr\xe9d\xe9ric MOHIER (115)', 'id': '5464177', 'change': u"Ajout d'un lien avec un \xe9l\xe9ment : Fr\xe9d\xe9ric MOHIER (99)"}], 'status': '6', 'due_date': '2016-01-28 17:00:00', 'solve_delay_stat': '78256', 'actiontime': '1800', 'solvedate': '2016-01-27 17:01:16', 'users': {'assign': [{'users_id': '115', 'use_notification': '1', 'users_name': u'Fr\xe9d\xe9ric MOHIER', 'id': '5464', 'alternative_email': ''}], 'observer': [], 'requester': [{'users_id': '99', 'use_notification': '1', 'users_name': u'Fr\xe9d\xe9ric MOHIER', 'id': '5463', 'alternative_email': ''}]}, 'entities_name': u'Entit\xe9 racine > IPM > R&D', 'begin_waiting_date': '2016-01-27 17:01:16', 'users_id_recipient': '115', 'sla_waiting_duration': '0', 'users_id_lastupdater': '115', 'slalevels_id': '0', 'itemtype_name': 'Ordinateur', 'itilcategories_id': '16', 'items_name': 'sim-0001', 'date': '2016-01-26 19:17:00', 'requesttypes_name': 'Helpdesk', 'slas_name': 'Maintenance curative', 'validations': [], 'requesttypes_id': '1', 'groups': {'assign': [], 'observer': [], 'requester': []}, 'is_deleted': '0', 'name': 'Incident', 'status_name': 'Clos', 'suppliers': {'assign': []}, 'global_validation_name': u'Non soumis \xe0 validation', 'urgency_name': 'Moyenne', 'solution': u'Ca y est ... \xe7a marche !', 'entities_id': '10', 'locations_name': 'Stock', 'users_name_recipient': u'Fr\xe9d\xe9ric MOHIER', 'takeintoaccount_delay_stat': '129', 'urgency': '3'}
          -->
          %#my_keys = ['id', 'date', 'due_date', 'solvedate', 'closedate', 'date_mod', 'name', 'content', 'priority_name', 'urgency_name', 'impact_name', 'solutiontypes_name', 'ticketcategories_name', 'slas_name', 'requesttypes_name', 'status_name', 'users_name_recipient', 'global_validation_name']
-         %my_keys = [ 
+         %my_keys = [
          %     {'id':'id',                      'active': True,  'title': '#'},
          %     {'id':'type_name',               'active': True,  'title': 'Type'},
          %     {'id':'status_name',             'active': True,  'title': 'Status'},
@@ -34,39 +38,39 @@
          %     {'id':'priority_name',           'active': False, 'title': 'Priority'},
          %     {'id':'urgency_name',            'active': False, 'title': 'Emergency'},
          %     {'id':'impact_name',             'active': False, 'title': 'Impact'},
-         %     {'id':'solutiontypes_name',      'active': False, 'title': 'Solution'},
+         %     {'id':'solutiontypes_name',      'active': True,  'title': 'Solution'},
          %     {'id':'ticketcategories_name',   'active': True,  'title': 'Category'},
          %     {'id':'slas_name',               'active': False, 'title': 'SLA'},
          %     {'id':'requesttypes_name',       'active': True,  'title': 'Source'},
          %     {'id':'global_validation_name',  'active': False, 'title': 'Validation'}
          %  ]
-         %my_arrays = [ 
+         %my_arrays = [
          %     {'id':'tasks',          'active': True,  'title': 'Tasks',  'fields': [
-         %           { 'id': 'id',                  'active': False, 'width': 'col-md-1', 'title': '#' }, 
-         %           { 'id': 'is_private',          'active': False, 'width': 'col-md-1', 'title': 'Private' }, 
+         %           { 'id': 'id',                  'active': False, 'width': 'col-md-1', 'title': '#' },
+         %           { 'id': 'is_private',          'active': False, 'width': 'col-md-1', 'title': 'Private' },
          %           { 'id': 'date',                'active': True,  'width': 'col-md-1', 'title': 'Date' },
-         %           { 'id': 'users_name',          'active': True,  'width': 'col-md-1', 'title': 'User' }, 
-         %           { 'id': 'content',             'active': True,  'width': 'col-md-1', 'title': 'Content' }, 
-         %           { 'id': 'state',               'active': True,  'width': 'col-md-1', 'title': 'State' }, 
-         %           { 'id': 'taskcategories_name', 'active': True,  'width': 'col-md-1', 'title': 'Category' }, 
-         %           { 'id': 'begin',               'active': True,  'width': 'col-md-1', 'title': 'Begin' }, 
-         %           { 'id': 'end',                 'active': True,  'width': 'col-md-1', 'title': 'End' }, 
+         %           { 'id': 'users_name',          'active': True,  'width': 'col-md-1', 'title': 'User' },
+         %           { 'id': 'content',             'active': True,  'width': 'col-md-1', 'title': 'Content' },
+         %           { 'id': 'state',               'active': True,  'width': 'col-md-1', 'title': 'State' },
+         %           { 'id': 'taskcategories_name', 'active': True,  'width': 'col-md-1', 'title': 'Category' },
+         %           { 'id': 'begin',               'active': True,  'width': 'col-md-1', 'title': 'Begin' },
+         %           { 'id': 'end',                 'active': True,  'width': 'col-md-1', 'title': 'End' },
          %           { 'id': 'actiontime',          'active': True,  'width': 'col-md-1', 'title': 'Duration' }
          %           ],
          %     },
          %     {'id':'followups',      'active': True, 'width': 'col-md-1', 'title': 'Follow ups',  'fields': [
-         %           { 'id': 'id',                  'active': False, 'width': 'col-md-1', 'title': '#' }, 
-         %           { 'id': 'is_private',          'active': False, 'width': 'col-md-1', 'title': 'Private' }, 
+         %           { 'id': 'id',                  'active': False, 'width': 'col-md-1', 'title': '#' },
+         %           { 'id': 'is_private',          'active': False, 'width': 'col-md-1', 'title': 'Private' },
          %           { 'id': 'date',                'active': True,  'width': 'col-md-1', 'title': 'Date' },
-         %           { 'id': 'content',             'active': True,  'width': 'col-md-1', 'title': 'Content' }, 
+         %           { 'id': 'content',             'active': True,  'width': 'col-md-1', 'title': 'Content' },
          %           { 'id': 'requesttypes_name',   'active': True,  'width': 'col-md-1', 'title': 'Source' }
          %           ],
          %     },
          %     {'id':'events',         'active': True, 'width': 'col-md-1', 'title': 'Events',  'fields': [
-         %           { 'id': 'id',                  'active': False, 'width': 'col-md-1', 'title': '#' }, 
-         %           { 'id': 'date_mod',            'active': True,  'width': 'col-md-1', 'title': 'Date' }, 
-         %           { 'id': 'user_name',           'active': True,  'width': 'col-md-1', 'title': 'User' }, 
-         %           { 'id': 'field',               'active': True,  'width': 'col-md-1', 'title': 'Field' }, 
+         %           { 'id': 'id',                  'active': False, 'width': 'col-md-1', 'title': '#' },
+         %           { 'id': 'date_mod',            'active': True,  'width': 'col-md-1', 'title': 'Date' },
+         %           { 'id': 'user_name',           'active': True,  'width': 'col-md-1', 'title': 'User' },
+         %           { 'id': 'field',               'active': True,  'width': 'col-md-1', 'title': 'Field' },
          %           { 'id': 'change',              'active': True,  'width': 'col-md-1', 'title': 'Change' }
          %           ],
          %     }
@@ -98,10 +102,10 @@
          %for ticket in tickets:
             %# Is ticket correct ?
             %ticket_class='active'
-            
+
             %if ticket[date_end]:
                %#Solved ticket
-               
+
                %if ticket[date_due]:
                   %ts_date_due=time.mktime(time.strptime(ticket[date_due], "%Y-%m-%d %H:%M:%S"))
                   %ts_date_end=time.mktime(time.strptime(ticket[date_end], "%Y-%m-%d %H:%M:%S"))
@@ -140,7 +144,7 @@
                %end
                %end
             </tr>
-            
+
             %#One table for all arrays in the ticket ...
             <tr class="collapse" id="arrays-{{idx}}">
                <td colspan="{{columns}}" class="hiddenRow">

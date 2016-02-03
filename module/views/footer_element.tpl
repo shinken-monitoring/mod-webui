@@ -59,7 +59,7 @@
                data-element="{{helper.get_uri_name(elt)}}" >
                <i class="fa fa-ambulance"></i> Schedule a downtime
             </a> </li>
-            %if app.helpdesk_module.is_available():
+            %if elt_type=='host' and app.helpdesk_module.is_available():
             <li> <a href="#" action="create-ticket" title="Create a ticket for this {{elt_type}}"
                data-element="{{helper.get_uri_name(elt)}}" >
                <i class="fa fa-medkit"></i> Create a ticket
@@ -282,8 +282,7 @@
       var user = '{{username}}';
       if (elt) {
          if (eltdetail_logs) console.debug("Create a ticket for: ", elt)
-
-         display_modal("/helpdesk/ticket/add/"+$(this).data('element'));
+         display_modal("/helpdesk/ticket/add/"+elt);
       }
    });
 </script>

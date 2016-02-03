@@ -33,6 +33,9 @@ from shinken.log import logger
 app = None
 
 def create_ticket(name):
+    if not app.helpdesk_module.is_available():
+        app.redirect404()
+
     logger.info("[WebUI-helpdesk] request to create a ticket for %s", name)
 
     app.response.content_type = 'application/json'
@@ -70,8 +73,12 @@ def create_ticket(name):
         return json.dumps(result)
 
 def add_ticket(name):
+    if not app.helpdesk_module.is_available():
+        app.redirect404()
+
     user = app.request.environ['USER']
     elt = app.datamgr.get_element(name, user) or app.redirect404()
+    logger.info("[WebUI-helpdesk] adding a ticket for %s from %s", name, user)
 
     try:
         itemtype = elt.customs['_ITEMTYPE']
@@ -80,18 +87,23 @@ def add_ticket(name):
 
         # helpdesk_configuration = app.helpdesk_module.get_ui_helpdesk_configuration()
         session = app.helpdesk_module.get_ui_session()
+        logger.info("[WebUI-helpdesk] session: %s", session)
         types = app.helpdesk_module.get_ui_types()
+        logger.info("[WebUI-helpdesk] types: %s", types)
         categories = app.helpdesk_module.get_ui_categories()
+        logger.info("[WebUI-helpdesk] categories: %s", categories)
         templates = app.helpdesk_module.get_ui_templates()
+        logger.info("[WebUI-helpdesk] templates: %s", templates)
 
         return {'name': name, 'itemtype': itemtype, 'items_id': items_id, 'entities_id': entities_id, 'types': types, 'categories': categories, 'templates': templates}
-    except Exception:
-        logger.info("[WebUI-helpdesk] ticket creation is not possible for %s", name)
+    except Exception as e:
+        logger.info("[WebUI-helpdesk] ticket creation is not possible for %s, exception: %s", name, e)
         return {'name': None}
 
 def get_element_tickets(name):
-    # If exists an external module ...
     if app.helpdesk_module.is_available():
+        logger.info("[WebUI-helpdesk] requesting tickets for %s", name)
+
         tickets = app.helpdesk_module.get_ui_tickets(name)
         return {'app': app, 'tickets': tickets}
 
@@ -99,12 +111,17 @@ def get_element_tickets(name):
 
 pages = {
     create_ticket:{
-        'name': 'TicketCreate', 'routes': ['/helpdesk/ticket/create/<name:path>']
+        'name': 'TicketCreate',
+        'route': '/helpdesk/ticket/create/:name'
     },
     add_ticket:{
-        'name': 'TicketAdd', 'routes': ['/helpdesk/ticket/add/<name:path>'],    'view': 'add_ticket'
+        'name': 'TicketAdd',
+        'route': '/helpdesk/ticket/add/:name',
+        'view': 'add_ticket'
     },
     get_element_tickets:{
-        'name': 'TicketList', 'routes': ['/helpdesk/tickets/<name:path>'],       'view': 'helpdesk', 'static': True
+        'name': 'TicketList',
+        'route': '/helpdesk/tickets/:name',
+        'view': 'helpdesk'
     }
 }
