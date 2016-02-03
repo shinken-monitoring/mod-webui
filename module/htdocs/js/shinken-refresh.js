@@ -82,11 +82,17 @@ function playAlertSound() {
  * management are to be included in this function in the always Ajax promise!
  * ---------------------------------------------------------------------------
  */
+var processing_refresh = false;
 function do_refresh(){
+   if (processing_refresh) {
+      if (refresh_logs) console.debug("Avoid simultaneous refreshes ...");
+      return;
+   }
    if (refresh_logs) console.debug("Refreshing: ", document.URL);
 
    // Refresh starting indicator ...
    $('#header_loading').addClass('fa-spin');
+   processing_refresh = true;
 
    $.ajax({
      url: document.URL,
@@ -257,6 +263,7 @@ function do_refresh(){
 
       // Refresh is finished
       $('#header_loading').removeClass('fa-spin');
+      processing_refresh = false;
    });
 }
 
