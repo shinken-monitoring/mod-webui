@@ -66,11 +66,12 @@ def get_graphs_widget():
 
     duration = app.request.GET.get('duration', '86400')
     duration_list = {
-        '1h'   : '3600',
-        '1d'   : '86400',
-        '7d'   : '604800',
-        '30d'  : '2592000',
-        '365d' : '31536000' ,
+        '3600': '1h',
+        '86400': '1d',
+        '172800': '2d',
+        '604800': '7d',
+        '2592000': '30d',
+        '31536000': '365d'
     }
 
     wid = app.request.query.get('wid', 'widget_graphs_' + str(int(time.time())))
@@ -95,7 +96,9 @@ def get_graphs_widget():
         },
     }
 
-    title = 'Element graphs for %s' % search
+    title = 'Element graphs'
+    if search:
+        title = 'Element graphs for %s (%s)' % (search, duration_list[str(duration)])
 
     graphsId = "graphs_%d" % random.randint(1, 9999)
 

@@ -137,7 +137,7 @@
                %values = v.get('values', {})
                %value = v.get('value', '')
                <select name='{{k}}'>
-               %for sub_name,sub_val in values.iteritems():
+               %for sub_val,sub_name in values.iteritems():
                   %selected = ''
                   %if value == sub_val:
                      %selected = 'selected'
