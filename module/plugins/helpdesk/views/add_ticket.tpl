@@ -8,18 +8,15 @@
 
    var helpdesk_configuration = {{! json.dumps(app.helpdesk_module.get_ui_helpdesk_configuration())}};
    var types = {{! json.dumps(types)}};
-   console.debug("Types: ", types)
    var categories = {{! json.dumps(categories)}};
-   console.debug("Categories: ", categories)
    var templates = {{! json.dumps(templates)}};
-   console.debug("Templates: ", templates)
 
    // Form submission ...
    $( 'form' ).submit(function(event) {
       event.preventDefault();
 
       var parameters = {
-           'method':          'kiosks.createTicket'
+           'method':          'createTicket'
          , 'itemtype':        '{{itemtype}}'
          , 'item':            {{items_id}}
          , 'entity':          {{entities_id}}
@@ -31,25 +28,23 @@
       $('#ticket_hidden_fields input').each(function(index, field) {
          parameters[$(field).attr('name')] = $(field).val();
       });
-      console.debug('Ticket creation parameters: ', parameters);
 
       $.ajax({
          url: '/helpdesk/ticket/create/{{name}}',
-         dataType: "jsonp",
+         dataType: "json",
          method: "GET",
          data: parameters
       })
       .done(function( data, textStatus, jqXHR ) {
-         console.debug('Done: ', url, data, textStatus, jqXHR);
          if (data.status==200) {
             raise_message_ok(data.message);
-            console.log('Ticket: ', data.ticket)
+            //console.log('Ticket: ', data.ticket)
          } else {
             raise_message_ko(data.message);
          }
       })
       .fail(function( jqXHR, textStatus, errorThrown ) {
-         console.error('Done: ', url, jqXHR, textStatus, errorThrown);
+         console.error('Fail: ', url, jqXHR, textStatus, errorThrown);
          raise_message_ko(textStatus);
       });
 
@@ -57,6 +52,11 @@
       if ($('#ticket_downtime').prop("checked")) {
          // Launch downtime request
          do_schedule_downtime("{{name}}", downtime_start.format('X'), downtime_stop.format('X'), '{{user.get_name()}}', $('#ticket_title').val());
+         if ($('#dwn_services').is(":checked")) {
+         %for service in elt.services:
+            do_schedule_downtime("{{name}}/{{service.get_name()}}", downtime_start.format('X'), downtime_stop.format('X'), '{{user.get_name()}}', $('#reason').val());
+         %end
+         }
       }
 
       start_refresh();
@@ -107,7 +107,7 @@
       var counter=0;
       $.each(categories, function(key,value) {
          if (value['is_incident']=='1') {
-            $('#ticket_category').append($("<option />").attr('template_id', value.id_template_incident).val(value.id).text(value.name));
+            $('#ticket_category').append($("<option />").attr('template_id', value.id_template_incident).val(value.id).text(value.completename));
             counter++;
          }
       });
@@ -149,7 +149,8 @@
 
    $('#modal').on('shown.bs.modal', function () {
       // Set up date range picker ...
-      $("#dtr_downtime").daterangepicker({
+      $("#dtr_downtime").daterangepicker(
+         {
             ranges: {
                '2 hours':       [moment(), moment().add('hours', 2)],
                '8 hours':       [moment(), moment().add('hours', 8)],
@@ -185,83 +186,82 @@
       });
 
       // Ticket type
-      $( "#ticket_type_request" ).trigger('change');
+      $( "#ticket_type_incident" ).trigger('change');
 
       // Schedule downtime
       $( "#ticket_downtime" ).trigger('change');
    });
 </script>
 
-<div class="modal-dialog">
-   <div class="modal-content">
-      <div class="modal-header">
-         <a class="close" data-dismiss="modal">×</a>
-         <h3>Create a ticket for {{name}}</h3>
-      </div>
-
-      <div class="modal-body">
-         <form name="input_form" role="form">
-            <!-- Hidden fields -->
-            <input type="hidden" name="element_name" value="{{name}}">
-            <input type="hidden" name="entities_id" value="{{entities_id}}">
-            <input type="hidden" name="itemtype" value="{{itemtype}}">
-            <input type="hidden" name="items_id" value="{{items_id}}">
-
-            <div class="form-group">
-               <label>Downtime</label>
-               <div class="input-group">
-                  <label class="radio-inline" for="ticket_downtime">
-                     <input type="checkbox" name="ticket_downtime" id="ticket_downtime" checked> Schedule a downtime?
-                  </label>
-               </div>
-
-               <label class="sr-only" for="dtr_downtime">Downtime date range</label>
-               <div class="input-group">
-                  <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                  <input type="text" name="dtr_downtime" id="dtr_downtime" class="form-control" />
-               </div>
-            </div>
-
-            <hr/>
-            <div class="form-group">
-               <!-- Ticket type -->
-               <label for="ticket_type">Ticket type</label>
-               <div class="input-group">
-                  <label class="radio-inline">
-                     <input type="radio" name="ticket_type" id="ticket_type_request" value="1"> Request
-                  </label>
-                  <label class="radio-inline">
-                     <input type="radio" name="ticket_type" id="ticket_type_incident" value="2"> Incident
-                  </label>
-               </div>
-            </div>
-
-            <div class="form-group">
-               <!-- Ticket category -->
-               <label for="ticket_category">Ticket category</label>
-               <select id="ticket_category" name="ticket_category" class="form-control">
-                  <option>1</option>
-                  <option>2</option>
-                  <option>3</option>
-                  <option>4</option>
-                  <option>5</option>
-               </select>
-            </div>
-
-            <div class="form-group">
-               <label for="ticket_title">Ticket title</label>
-               <input id="ticket_title" name="ticket_title" type="text" required class="form-control" placeholder="Title">
-            </div>
-
-            <div class="form-group">
-               <label for="ticket_content">Ticket description</label>
-               <textarea id="ticket_content" name="ticket_content" class="form-control" rows="5" placeholder="Ticket description">Problem/demand detailed description made by {{user.get_name()}}</textarea>
-            </div>
-
-            <input type="submit" class="btn btn-primary btn-lg btn-block" value="Submit" />
-         </form>
-      </div>
-   </div>
+<div class="modal-header">
+   <a class="close" data-dismiss="modal">×</a>
+   <h3>Create a ticket for {{name}}</h3>
 </div>
 
+<div class="modal-body">
+  <form name="input_form" role="form">
+    <!-- Hidden fields -->
+    <input type="hidden" name="element_name" value="{{name}}">
+    <input type="hidden" name="entities_id" value="{{entities_id}}">
+    <input type="hidden" name="itemtype" value="{{itemtype}}">
+    <input type="hidden" name="items_id" value="{{items_id}}">
 
+    <div class="form-group">
+       <label>Downtime</label>
+       <div class="input-group">
+          <label class="radio-inline" for="ticket_downtime">
+             <input type="checkbox" name="ticket_downtime" id="ticket_downtime" checked="checked"> Schedule a downtime?
+          </label>
+       </div>
+       <div class="input-group">
+          <label class="radio-inline" for="dwn_services">
+             <input type="checkbox" name="dwn_services" id="dwn_services" checked="checked">Same downtime period for all services of the host?</input>
+          </label>
+       </div>
+
+       <label class="sr-only" for="dtr_downtime">Downtime date range</label>
+       <div class="input-group">
+          <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+          <input type="text" name="dtr_downtime" id="dtr_downtime" class="form-control" />
+       </div>
+    </div>
+
+    <hr/>
+    <div class="form-group">
+       <!-- Ticket type -->
+       <label for="ticket_type">Ticket type</label>
+       <div class="input-group">
+          <label class="radio-inline">
+             <input type="radio" name="ticket_type" id="ticket_type_incident" value="1"> Incident
+          </label>
+          <label class="radio-inline">
+             <input type="radio" name="ticket_type" id="ticket_type_request" value="2"> Request
+          </label>
+       </div>
+    </div>
+
+    <div class="form-group">
+       <!-- Ticket category -->
+       <label for="ticket_category">Ticket category</label>
+       <select id="ticket_category" name="ticket_category" class="form-control">
+          <option>1</option>
+          <option>2</option>
+          <option>3</option>
+          <option>4</option>
+          <option>5</option>
+       </select>
+    </div>
+
+    <div class="form-group">
+       <label for="ticket_title">Ticket title</label>
+       <input id="ticket_title" name="ticket_title" type="text" required class="form-control" placeholder="Title">
+    </div>
+
+    <div class="form-group">
+       <label for="ticket_content">Ticket description</label>
+       <textarea id="ticket_content" name="ticket_content" class="form-control" rows="5" placeholder="Ticket description">Problem/demand detailed description made by {{user.get_name()}}</textarea>
+    </div>
+
+    <input type="submit" class="btn btn-primary btn-lg btn-block" value="Submit" />
+  </form>
+</div>

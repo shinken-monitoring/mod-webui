@@ -285,4 +285,16 @@
          display_modal("/helpdesk/ticket/add/"+elt);
       }
    });
+
+   // Create a ticket follow-up...
+   $('body').on("click", '[action="create-ticket-followup"]', function () {
+      var elt = $(this).data('element');
+      var user = '{{username}}';
+      var ticket = $(this).data('ticket');
+      var status = $(this).data('status');
+      if (elt) {
+         if (eltdetail_logs) console.debug("Create a ticket follow-up for: ", elt, 'ticket #', ticket)
+         display_modal("/helpdesk/ticket_followup/add/"+elt+'?ticket='+ticket+'&status='+status);
+      }
+   });
 </script>

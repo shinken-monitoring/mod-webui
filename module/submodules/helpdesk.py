@@ -33,9 +33,14 @@ class HelpdeskMetaModule(MetaModule):
             return self.module.get_ui_session() or default
         return default
 
-    def get_ui_tickets(self, name, default=None):
+    def get_ui_ticket(self, id, default=None):
         if self.is_available():
-            return self.module.get_ui_tickets(name) or default
+            return self.module.get_ui_ticket(id) or default
+        return default
+
+    def get_ui_tickets(self, name=None, status=None, count=50, list_only=True, default=None):
+        if self.is_available():
+            return self.module.get_ui_tickets(name, status, count, list_only) or default
         return default
 
     def get_ui_helpdesk_configuration(self, default=None):
@@ -62,4 +67,20 @@ class HelpdeskMetaModule(MetaModule):
             hd_configuration = self.module.get_ui_helpdesk_configuration()
             if 'templates' in hd_configuration:
                 return hd_configuration['templates'] or default
+        return default
+
+    def set_ui_ticket(self, parameters, default=None):
+        """
+        Request to create a new ticket
+        """
+        if self.is_available():
+            return self.module.set_ui_ticket(parameters) or default
+        return default
+
+    def set_ui_ticket_followup(self, parameters, default=None):
+        """
+        Request to create a new follow-up for a ticket
+        """
+        if self.is_available():
+            return self.module.set_ui_ticket_followup(parameters) or default
         return default
