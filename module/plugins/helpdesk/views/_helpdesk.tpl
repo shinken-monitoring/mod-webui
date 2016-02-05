@@ -125,6 +125,8 @@
             %if key['id'] in ticket:
             %if 'items_name' in key['id']:
             <td><a href="/host/{{ticket[key['id']]}}#helpdesk">{{ticket[key['id']]}}</a></td>
+            %elif 'id' in key['id']:
+            <td><a href="{{ticket_page_uri['uri']}}{{ticket[key['id']]}}" target="_blank">{{ticket[key['id']]}}</a></td>
             %else:
             <td>{{ticket[key['id']]}} {{!'<span class="caret"></span>' if first and not narrow else ''}}</td>
             %end

@@ -204,7 +204,8 @@ def get_element_tickets(name):
         'app': app,
         'elt': elt,
         'name': name,
-        'tickets': tickets
+        'tickets': tickets,
+        'ticket_page_uri': app.helpdesk_module.get_external_ui_link(ticket_page=True)
     }
 
 def get_widget_tickets():
@@ -278,7 +279,8 @@ def get_widget_tickets():
         'base_url': '/widget/helpdesk', 'title': title,
         'app': app,
         'elt': None,
-        'tickets': tickets
+        'tickets': tickets,
+        'ticket_page_uri': app.helpdesk_module.get_external_ui_link(ticket_page=True)
     }
 
 widget_desc = '''
