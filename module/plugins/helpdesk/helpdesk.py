@@ -199,7 +199,7 @@ def get_element_tickets(name):
     elt = app.datamgr.get_element(name, user) or app.redirect404()
     logger.info("[WebUI-helpdesk] requesting tickets for %s", name)
 
-    tickets = app.helpdesk_module.get_ui_tickets(name)
+    tickets = app.helpdesk_module.get_ui_tickets(name, list_only=False)
     return {
         'app': app,
         'elt': elt,
@@ -251,7 +251,7 @@ def get_widget_tickets():
 
     logger.info("[WebUI-helpdesk] requesting tickets with status %s", search)
 
-    tickets = app.helpdesk_module.get_ui_tickets(status=search, count=nb_elements, )
+    tickets = app.helpdesk_module.get_ui_tickets(status=search, count=nb_elements, list_only=True)
 
     options = {
         'search': {
