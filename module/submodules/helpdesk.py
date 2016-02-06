@@ -28,6 +28,11 @@ class HelpdeskMetaModule(MetaModule):
     def is_available(self):
         return self.module is not None
 
+    def get_external_ui_link(self, ticket_page=False, default=None):
+        if self.is_available():
+            return self.module.get_external_ui_link(ticket_page) or default
+        return default
+
     def get_ui_session(self, default=None):
         if self.is_available():
             return self.module.get_ui_session() or default
