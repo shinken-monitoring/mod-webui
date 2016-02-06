@@ -5,6 +5,13 @@
 import traceback
 import crypt
 from ..lib.md5crypt import apache_md5_crypt, unix_md5_crypt
+try:
+    from passlib.hash import bcrypt
+    brcypt_available = True
+except ImportError:
+    logger.error('[WebUI-auth-htpasswd] Can not import bcrypt password authentication. '
+                 'You should \'pip install passlib\' to use it.')
+    brcypt_available = False
 
 from shinken.log import logger
 
@@ -51,7 +58,7 @@ class AuthMetaModule(MetaModule):
             Function imported from auth-cfg-password module.
         '''
         logger.info("[WebUI-auth-cfg-password] Authenticating user '%s'", user)
-        
+
         c = self.app.datamgr.get_contact(user)
         if not c:
             logger.error("[WebUI-auth-cfg-password] You need to have a contact having the same name as your user: %s", user)
@@ -65,22 +72,22 @@ class AuthMetaModule(MetaModule):
         if p == password:
             logger.info("[WebUI-auth-cfg-password] Authenticated")
             return True
-            
+
         logger.warning("[WebUI-auth-cfg-password] Authentication failed")
         return False
-        
-        
+
+
     def check_apache_htpasswd_auth(self, user, password):
         ''' Embedded authentication with password in Apache htpasswd file.
             Function imported from auth-htpasswd module.
         '''
         logger.info("[WebUI-auth-htpasswd] Authenticating user '%s'", user)
-        
+
         try:
             f = open(self.app.htpasswd_file, 'r')
             for line in f.readlines():
                 line = line.strip()
-                # By pass bad lines
+                # Bypass bad lines
                 if not ':' in line:
                     continue
                 if line.startswith('#'):
@@ -92,6 +99,9 @@ class AuthMetaModule(MetaModule):
                     h = hash.split('$')
                     magic = h[1]
                     salt = h[2]
+                elif brcypt_available and hash[:4] == '$2y$':
+                    h = hash.split('$')
+                    magic = h[1]
                 else:
                     magic = None
                     salt = hash[:2]
@@ -102,6 +112,8 @@ class AuthMetaModule(MetaModule):
                         compute_hash = apache_md5_crypt(password, salt)
                     elif magic == '1':
                         compute_hash = unix_md5_crypt(password, salt)
+                    elif brcypt_available and magic == '2y':
+                        compute_hash = bcrypt.verify(password, hash) and hash
                     else:
                         compute_hash = crypt.crypt(password, salt)
                     if compute_hash == hash:
