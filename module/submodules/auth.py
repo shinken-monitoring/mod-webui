@@ -20,12 +20,17 @@ from .metamodule import MetaModule
 class AuthMetaModule(MetaModule):
 
     _functions = ['check_auth']
+    _authenticator = None
+    _session = None
+    _user_login = None
+    _user_info = None
 
     def check_auth(self, user, password):
         ''' Check user/password. If there is submodules, this methods call them
             one by one until one of them returns True. If no submodule can
             check user/password, then we return False.
             If not, the method calls a default check_auth method. '''
+        self._authenticator = None
         logger.info("[WebUI] Authenticating user '%s'", user)
         if self.modules:
             for mod in self.modules:
@@ -33,25 +38,62 @@ class AuthMetaModule(MetaModule):
                     logger.info("[WebUI] Authenticating user '%s' with %s", user, mod.get_name())
                     if mod.check_auth(user, password):
                         logger.info("[WebUI] User '%s' is authenticated by %s", user, mod.get_name())
+                        self._authenticator = mod.get_name()
+                        self._user_login = user
+
+                        # Session identifier ?
+                        self._session = None
+                        f = getattr(mod, 'get_session', None)
+                        if f and callable(f):
+                            self._session = mod.get_session()
+                            logger.info("[WebUI] User session: %s", self._session)
+
+                        # User information ?
+                        self._user_info = None
+                        f = getattr(mod, 'get_user_info', None)
+                        if f and callable(f):
+                            self._user_info = mod.get_user_info()
+                            logger.info("[WebUI] User info: %s", self._user_info)
+
                         return True
                 except Exception as exp:
-                    logger.warning("[WebUI] The mod %s raised an exception: %s, I'm tagging it to restart later", mod.get_name(), str(exp))
+                    logger.warning("[WebUI] The mod %s raised an exception: %s", str(exp))
                     logger.warning("[WebUI] Exception type: %s", type(exp))
-                    logger.warning("Back trace of this kill: %s" % (traceback.format_exc()))
-                    self.app.modules_manager.set_to_restart(mod)
+                    logger.warning("[WebUI] Back trace: %s" % (traceback.format_exc()))
 
-        logger.info("[WebUI] Embedded authentication for '%s'", user)
-        if self.check_cfg_password_auth(user, password):
-            logger.info("[WebUI] User '%s' is authenticated by internal contact password", user)
+        logger.info("[WebUI] Internal htpasswd authentication for '%s'", user)
+        if self.app.htpasswd_file and self.check_apache_htpasswd_auth(user, password):
+            self._authenticator = 'htpasswd'
+            _user_login = user
             return True
 
-        if self.app.htpasswd_file and self.check_apache_htpasswd_auth(user, password):
-            logger.info("[WebUI] User '%s' is authenticated by htpasswd password", user)
+        logger.info("[WebUI] Internal contact authentication for '%s'", user)
+        if self.check_cfg_password_auth(user, password):
+            self._authenticator = 'contact'
+            _user_login = user
             return True
 
     def is_available(self):
         ''' Always returns True because this MetaModule have a default behavior. '''
         return True
+
+    def get_session(self):
+        '''
+        Get the session identifier
+        '''
+        return self._session
+
+    def get_user_login(self):
+        '''
+        Get the user login
+        '''
+        return self._user_login
+
+    def get_user_info(self):
+        '''
+        Get the user information
+        '''
+        return self._user_info
 
     def check_cfg_password_auth(self, user, password):
         ''' Embedded authentication with password stored in contact definition.
@@ -75,7 +117,6 @@ class AuthMetaModule(MetaModule):
 
         logger.warning("[WebUI-auth-cfg-password] Authentication failed")
         return False
-
 
     def check_apache_htpasswd_auth(self, user, password):
         ''' Embedded authentication with password in Apache htpasswd file.

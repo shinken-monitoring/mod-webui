@@ -33,6 +33,31 @@ from shinken.log import logger
 
 class User(Contact):
     picture = None
+    session = None
+
+    def set_information(self, session, *information):
+        """
+        Set user attributes from provided information
+        """
+        self.session = session
+        for dictionary in information:
+            for key in dictionary:
+                logger.info("[WebUI] user information: %s = %s", key, dictionary[key])
+                setattr(self, key, dictionary[key])
+
+    def get_picture(self):
+        return self.picture
+
+    def get_name(self):
+        name = self.contact_name
+        logger.info("[WebUI] get name: %s", name)
+        if getattr(self, 'realname', None):
+            name = "%s %s" % (getattr(self, 'firstname'), getattr(self, 'realname'))
+            logger.info("[WebUI] get realname: %s", name)
+        elif getattr(self, 'alias', None) and getattr(self, 'alias', None) != 'none':
+            name = getattr(self, 'alias', name)
+            logger.info("[WebUI] get alias: '%s'", getattr(self, 'alias', None))
+        return name
 
     @classmethod
     def from_contact(cls, contact, picture="", use_gravatar=False):

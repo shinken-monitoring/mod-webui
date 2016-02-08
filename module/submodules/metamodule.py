@@ -50,7 +50,6 @@ class MetaModule(object):
                 f = getattr(mod, name, None)
                 if not f or not callable(f):
                     found = False
-                    continue
             if found:
                 logger.info("[WebUI] Module found: %s", mod.get_name())
                 mods.append(mod)
