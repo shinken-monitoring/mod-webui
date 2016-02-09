@@ -252,7 +252,8 @@ def get_widget_tickets():
 
     logger.info("[WebUI-helpdesk] requesting tickets with status %s", search)
 
-    tickets = app.helpdesk_module.get_ui_tickets(status=search, count=nb_elements, list_only=True)
+    # Get tickets
+    tickets = app.helpdesk_module.get_ui_tickets(status=search, count=nb_elements, list_only=True, session=user.get_session())
 
     options = {
         'search': {

@@ -43,9 +43,9 @@ class HelpdeskMetaModule(MetaModule):
             return self.module.get_ui_ticket(id) or default
         return default
 
-    def get_ui_tickets(self, name=None, status=None, count=50, list_only=True, default=None):
+    def get_ui_tickets(self, name=None, status=None, count=50, list_only=True, session=None, default=None):
         if self.is_available():
-            return self.module.get_ui_tickets(name, status, count, list_only) or default
+            return self.module.get_ui_tickets(name, status, count, list_only, session) or default
         return default
 
     def get_ui_helpdesk_configuration(self, default=None):
