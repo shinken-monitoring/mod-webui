@@ -108,9 +108,14 @@ def resolve_auth_secret(modconf):
             import string, random
             chars = string.ascii_letters + string.digits
             candidate = ''.join([random.choice(chars) for _ in range(32)])
-            print auth_secret_file
-            with os.fdopen(os.open(auth_secret_file, os.O_WRONLY | os.O_CREAT, 0o600), 'w') as secret:
-                secret.write(candidate)
+            try:
+                with os.fdopen(os.open(auth_secret_file, os.O_WRONLY | os.O_CREAT, 0o600), 'w') as secret:
+                    secret.write(candidate)
+            except Exception as e:
+                logger.error(
+                    "[WebUI] Authentication secret file creation failed: %s, error: %s",
+                    auth_secret_file, str(e)
+                )
     return candidate
 
 # Class for the WebUI Broker
