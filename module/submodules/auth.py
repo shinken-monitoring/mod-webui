@@ -31,6 +31,8 @@ class AuthMetaModule(MetaModule):
             check user/password, then we return False.
             If not, the method calls a default check_auth method. '''
         self._authenticator = None
+        self._session = None
+        self._user_info = None
         logger.info("[WebUI] Authenticating user '%s'", user)
         if self.modules:
             for mod in self.modules:
@@ -42,14 +44,12 @@ class AuthMetaModule(MetaModule):
                         self._user_login = user
 
                         # Session identifier ?
-                        self._session = None
                         f = getattr(mod, 'get_session', None)
                         if f and callable(f):
                             self._session = mod.get_session()
                             logger.info("[WebUI] User session: %s", self._session)
 
                         # User information ?
-                        self._user_info = None
                         f = getattr(mod, 'get_user_info', None)
                         if f and callable(f):
                             self._user_info = mod.get_user_info()
@@ -64,13 +64,13 @@ class AuthMetaModule(MetaModule):
         logger.info("[WebUI] Internal htpasswd authentication for '%s'", user)
         if self.app.htpasswd_file and self.check_apache_htpasswd_auth(user, password):
             self._authenticator = 'htpasswd'
-            _user_login = user
+            self._user_login = user
             return True
 
         logger.info("[WebUI] Internal contact authentication for '%s'", user)
         if self.check_cfg_password_auth(user, password):
             self._authenticator = 'contact'
-            _user_login = user
+            self._user_login = user
             return True
 
     def is_available(self):
@@ -115,7 +115,7 @@ class AuthMetaModule(MetaModule):
             logger.info("[WebUI-auth-cfg-password] Authenticated")
             return True
 
-        logger.warning("[WebUI-auth-cfg-password] Authentication failed")
+        logger.warning("[WebUI-auth-cfg-password] Authentication failed %s != %s", p, password)
         return False
 
     def check_apache_htpasswd_auth(self, user, password):
