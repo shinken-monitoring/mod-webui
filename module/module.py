@@ -840,7 +840,7 @@ def login_required():
     user = User.from_contact(contact, app.user_picture, app.gravatar)
     if app.user_session and app.user_info:
         user.set_information(app.user_session, app.user_info)
-    app.user_picture = user.picture
+    app.user_picture = user.get_picture()
     request.environ['USER'] = user
     bottle.BaseTemplate.defaults['user'] = user
     logger.debug("[WebUI] login_required: user: %s", user)
