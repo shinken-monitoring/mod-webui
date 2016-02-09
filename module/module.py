@@ -284,19 +284,22 @@ class Webui_broker(BaseModule, Daemon):
 
         # Check if the Bottle view dir really exist
         if not os.path.exists(bottle.TEMPLATE_PATH[0]):
-            logger.error("[WebUI] The view path do not exist at %s" % bottle.TEMPLATE_PATH)
+            logger.error("[WebUI] The view path do not exist at %s", bottle.TEMPLATE_PATH)
             sys.exit(2)
 
         # Check directories
         # We check if the photo directory exists. If not, try to create it
-        for d in [self.photo_dir, self.share_dir, self.config_dir]:
-            logger.debug("[WebUI] Checking dir: %s", d)
-            if not os.path.exists(d):
+        for dir in [self.share_dir, self.photo_dir, self.config_dir]:
+            logger.debug("[WebUI] Checking dir: %s", dir)
+            if not os.path.exists(dir):
                 try:
-                    os.mkdir(d)
-                    logger.info("[WebUI] Created dir: %s", d)
-                except Exception, exp:
-                    logger.error("[WebUI] Dir creation failed: %s", exp)
+                    # os.mkdir(dir)
+                    os.makedirs(dir, mode=0o777)
+                    logger.info("[WebUI] Created directory: %s", dir)
+                except Exception as e:
+                    logger.error("[WebUI] Directory creation failed: %s, error: %s", directory, str(e))
+            else:
+                logger.debug("[WebUI] Still existing directory: %s", dir)
 
         # :TODO:maethor:150724: Complete with other function names
         self.auth_module = AuthMetaModule(AuthMetaModule.find_modules(self.modules_manager.get_internal_instances()), self)
