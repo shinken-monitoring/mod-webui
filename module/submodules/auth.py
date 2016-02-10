@@ -4,18 +4,20 @@
 
 import traceback
 import crypt
-from ..lib.md5crypt import apache_md5_crypt, unix_md5_crypt
-try:
-    from passlib.hash import bcrypt
-    brcypt_available = True
-except ImportError:
-    logger.error('[WebUI-auth-htpasswd] Can not import bcrypt password authentication. '
-                 'You should \'pip install passlib\' to use it.')
-    brcypt_available = False
 
 from shinken.log import logger
 
 from .metamodule import MetaModule
+
+from ..lib.md5crypt import apache_md5_crypt, unix_md5_crypt
+
+try:
+    from passlib.hash import bcrypt
+    brcypt_available = True
+except ImportError:
+    logger.warning('[WebUI-auth-htpasswd] Can not import bcrypt password authentication. '
+                 'You should \'pip install passlib\' if you intend to use it.')
+    brcypt_available = False
 
 class AuthMetaModule(MetaModule):
 
