@@ -220,7 +220,7 @@ def get_widget_tickets():
         """
 
     user = app.request.environ['USER']
-    user.is_admin or app.redirect_403()
+    user.is_admin or app.redirect403()
 
     wid = app.request.query.get('wid', 'widget_helpdesk_' + str(int(time.time())))
     collapsed = (app.request.query.get('collapsed', 'False') == 'True')
