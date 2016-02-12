@@ -73,7 +73,7 @@
 
 <div class="widget movable collapsable removable {{editable}} closeconfirm {{collapsed_s}}" id="{{wid}}">
    <div class="widget-header">
-      <span class="icon"><i class="fa fa-camera"></i> </span>
+      <span class="icon"><i class="fa fa-leaf"></i> </span>
       <strong>{{title}}</strong>
    </div>
    <div class="widget-editbox">
