@@ -64,7 +64,6 @@ def system_page():
 
 def system_widget():
     user = app.request.environ['USER']
-    user.is_admin or app.redirect403()
 
     schedulers = app.datamgr.get_schedulers()
     brokers = app.datamgr.get_brokers()
