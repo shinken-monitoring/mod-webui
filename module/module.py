@@ -297,7 +297,7 @@ class Webui_broker(BaseModule, Daemon):
                     os.makedirs(dir, mode=0o777)
                     logger.info("[WebUI] Created directory: %s", dir)
                 except Exception as e:
-                    logger.error("[WebUI] Directory creation failed: %s, error: %s", directory, str(e))
+                    logger.error("[WebUI] Directory creation failed: %s, error: %s", dir, str(e))
             else:
                 logger.debug("[WebUI] Still existing directory: %s", dir)
 
