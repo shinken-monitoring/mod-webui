@@ -19,7 +19,7 @@
    -->
    <div id="actions" class="navbar-default actionbar" role="navigation" style="display:none;">
       <div class="actionbar-nav navbar-collapse">
-         <ul class="nav" id="actions-menu">
+         <ul class="nav actions-menu">
          %if app.can_action():
          %if elt:
             %elt_type = elt.__class__.my_type
@@ -86,6 +86,41 @@
             </a> </li>
          %end
          %end
+         </ul>
+      </div>
+   </div>
+
+   <!-- Dashboard actions bar:
+   - enabled when elt is defined ...
+   - enabled when problems are selected
+   -->
+   <div id="dashboard-actions" class="navbar-default actionbar" role="navigation" style="display:none;">
+      <div class="actionbar-nav navbar-collapse">
+         <ul class="nav actions-menu">
+            <li> <a href="#"><i class="fa fa-leaf"></i> Add a new widget <i class="fa arrow"></i></a>
+              <ul class="nav nav-second-level">
+                %for w in app.get_widgets_for('dashboard'):
+                   <li>
+                      <a href="#"
+                         class="dashboard-widget"
+                         title="
+                            <button href='#' role='button'
+                                action='add-widget'
+                                data-widget='{{w['widget_name']}}'
+                                data-wuri='{{w['base_uri']}}'
+                                class='btn btn-sm btn-success'>
+                                <span class='fa fa-plus'></span>
+                                Add this widget to your dashboard
+                            </button>"
+                         data-toggle="popover" data-trigger="focus" data-html="true"
+                         data-content='{{!w['widget_desc']}} <hr/> <div class="center-block"><img class="text-center" style="width: 80%" src="{{w['widget_picture']}}"/></div>'
+                         >
+                         <span class="fa fa-plus"></span> {{w['widget_name']}}
+                      </a>
+                   </li>
+                %end
+              </ul>
+            </li>
          </ul>
       </div>
    </div>
@@ -296,5 +331,12 @@
          if (eltdetail_logs) console.debug("Create a ticket follow-up for: ", elt, 'ticket #', ticket)
          display_modal("/helpdesk/ticket_followup/add/"+elt+'?ticket='+ticket+'&status='+status);
       }
+   });
+
+   // Add a widget
+   $('body').on("click", '[action="add-widget"]', function () {
+      var widget = $(this).data('widget');
+      var wuri = $(this).data('wuri');
+      AddNewWidget(wuri, null, 'widget-place-1');
    });
 </script>

@@ -97,14 +97,24 @@ function save_common_preference(key, value, callback) {
 /**
  *  Actions bar related code
  */
-function hide_actions(){
+function hide_actions(part){
    if (layout_logs) console.debug('Hiding actions bar');
-   $('#actions').hide();
+
+   if (part !== undefined) {
+      $('#'+part).hide();
+   } else {
+      $('#actions').hide();
+   }
 }
 
-function show_actions(){
+function show_actions(part){
    if (layout_logs) console.debug('Showing actions bar');
-   $('#actions').show();
+
+   if (part !== undefined) {
+      $('#'+part).show();
+   } else {
+      $('#actions').show();
+   }
 }
 
 
@@ -147,6 +157,6 @@ $(document).ready(function(){
    $('#sidebar-menu').metisMenu();
 
    // Actions bar menu
-   $('#actions-menu').metisMenu();
+   $('.actions-menu').metisMenu();
 
 });
