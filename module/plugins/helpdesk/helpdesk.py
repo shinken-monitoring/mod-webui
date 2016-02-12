@@ -286,7 +286,7 @@ def get_widget_tickets():
 
 widget_desc = '''
 <h4>Helpdesk</h4>
-Show an aggregated view of helpdesk tickets.
+Show a list of selected helpdesk tickets.
 '''
 
 pages = {

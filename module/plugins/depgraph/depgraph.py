@@ -117,7 +117,7 @@ def get_depgraph_inner(name):
     return {'elt': elt, 'graphId': graphId}
 
 widget_desc = '''<h4>Relation graph</h4>
-Show a graph of an object relations
+Displays a dependeny graph for the selected object
 '''
 
 pages = {

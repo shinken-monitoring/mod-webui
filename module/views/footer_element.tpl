@@ -112,8 +112,8 @@
                                 <span class='fa fa-plus'></span>
                                 Add this widget to your dashboard
                             </button>"
-                         data-toggle="popover" data-trigger="focus" data-html="true"
-                         data-content='{{!w['widget_desc']}} <hr/> <div class="center-block"><img class="text-center" style="width: 80%" src="{{w['widget_picture']}}"/></div>'
+                         data-toggle="popover" data-trigger="focus" data-html="true" data-placement="right" data-viewport="section.content"
+                         data-content='{{!w['widget_desc']}} <hr/> <div class="center-block"><img class="text-center" src="{{w['widget_picture']}}"/></div>'
                          >
                          <span class="fa fa-plus"></span> {{w['widget_name']}}
                       </a>
@@ -125,6 +125,7 @@
       </div>
    </div>
 
+   <!-- Page footer -->
    <div class="container-fluid">
       <img src="/static/images/default_company_xxs.png" alt="Shinken Logo"/>
       <i class="col-lg-10 text-muted">Shinken {{VERSION}} &mdash; Web User Interface {{app.app_version}}, &copy;2011-2016</i>

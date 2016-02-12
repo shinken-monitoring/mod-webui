@@ -94,7 +94,7 @@ def system_widget():
 
 widget_desc = '''
 <h4>System state</h4>
-Show an aggregated view of all Shinken daemons (admins only).
+Show an aggregated view of all Shinken daemons.
 '''
 
 pages = {
