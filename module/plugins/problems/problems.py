@@ -156,7 +156,7 @@ Show the most impacting IT problems
 '''
 
 last_widget_desc = '''<h4>Last IT problems</h4>
-Show the IT problems sorted by time
+Show the most recent IT problems
 '''
 
 pages = {
@@ -170,6 +170,6 @@ pages = {
         'name': 'wid_Problems', 'route': '/widget/problems', 'view': 'widget_problems', 'static': True, 'widget': ['dashboard'], 'widget_desc': widget_desc, 'widget_name': 'problems', 'widget_picture': '/static/problems/img/widget_problems.png'
     },
     get_last_errors_widget: {
-        'name': 'wid_LastProblems', 'route': '/widget/last_problems', 'view': 'widget_last_problems', 'static': True, 'widget': ['dashboard'], 'widget_desc': last_widget_desc, 'widget_name': 'last_problems', 'widget_picture': '/static/problems/img/widget_problems.png'
+        'name': 'wid_LastProblems', 'route': '/widget/last_problems', 'view': 'widget_last_problems', 'static': True, 'widget': ['dashboard'], 'widget_desc': last_widget_desc, 'widget_name': 'last_problems', 'widget_picture': '/static/problems/img/widget_last_problems.png'
     }
 }

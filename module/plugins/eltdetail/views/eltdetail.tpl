@@ -388,7 +388,7 @@ Invalid element name
                                  <td class="popover-dismiss"
                                        data-html="true" data-toggle="popover" data-trigger="hover" data-placement="bottom"
                                        data-title="{{elt.get_full_name()}} last state change date"
-                                       data-content=" {{time.strftime("%d %b %Y %H:%M:%S", time.localtime(elt.last_state_change))}} "
+                                       data-content=" {{time.strftime('%d %b %Y %H:%M:%S', time.localtime(elt.last_state_change))}} "
                                        >
                                     {{! helper.print_duration(elt.last_state_change, just_duration=True, x_elts=2)}}
                                  </td>
@@ -878,7 +878,7 @@ Invalid element name
                               <td>
                                  <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm"
                                        data-type="action" action="delete-comment"
-                                       data-toggle="tooltip" data-placement="bottom" title="Delete the comment '{{c.id}}' for this {{elt_type}}"
+                                       data-toggle="tooltip" data-placement="bottom" title="Delete this comment"
                                        data-element="{{helper.get_uri_name(elt)}}" data-comment="{{c.id}}"
                                        >
                                     <i class="fa fa-trash-o"></i>
@@ -911,6 +911,42 @@ Invalid element name
                         <i class="fa fa-minus"></i> Delete all comments
                      </button>
                      %end
+                     %if elt_type=='host' and elt.services:
+                         <br/><br/>
+                         <h4>Current host services comments:</h4>
+                         <table class="table table-condensed table-hover">
+                            <thead>
+                               <tr>
+                                  <th>Service</th>
+                                  <th>Author</th>
+                                  <th>Comment</th>
+                                  <th>Date</th>
+                                  <th></th>
+                               </tr>
+                            </thead>
+                            <tbody>
+                            %for s in elt.services:
+                            %for c in sorted(s.comments, key=lambda x: x.entry_time, reverse=True):
+                               <tr>
+                                  <td>{{s.get_name()}}</td>
+                                  <td>{{c.author}}</td>
+                                  <td>{{c.comment}}</td>
+                                  <td>{{helper.print_date(c.entry_time)}}</td>
+                                  <td>
+                                     <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm"
+                                           data-type="action" action="delete-comment"
+                                           data-toggle="tooltip" data-placement="bottom" title="Delete this comment"
+                                           data-element="{{helper.get_uri_name(elt)}}" data-comment="{{c.id}}"
+                                           >
+                                        <i class="fa fa-trash-o"></i>
+                                     </button>
+                                  </td>
+                               </tr>
+                            %end
+                            %end
+                            </tbody>
+                         </table>
+                     %end
                   </div>
 
                </div>
@@ -941,7 +977,7 @@ Invalid element name
                                  <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm"
                                        data-type="action" action="delete-downtime"
                                        data-toggle="tooltip" data-placement="bottom" title="Delete the downtime '{{dt.id}}' for this {{elt_type}}"
-                                       data-element="{{helper.get_uri_name(elt)}}" data-downtime="{{dt.id}}"
+                                       data-element="{{helper.get_uri_name(s)}}" data-downtime="{{dt.id}}"
                                        >
                                     <i class="fa fa-trash-o"></i>
                                  </button>
@@ -973,6 +1009,42 @@ Invalid element name
                      </button>
                      %end
 
+                     %if elt_type=='host' and elt.services:
+                         <br/><br/>
+                         <h4>Current host services downtimes:</h4>
+                         <table class="table table-condensed table-hover">
+                            <thead>
+                               <tr>
+                                  <th>Service</th>
+                                  <th>Author</th>
+                                  <th>Reason</th>
+                                  <th>Period</th>
+                                  <th></th>
+                               </tr>
+                            </thead>
+                            <tbody>
+                            %for s in elt.services:
+                            %for dt in sorted(s.downtimes, key=lambda dt: dt.entry_time, reverse=True):
+                               <tr>
+                                  <td>{{s.get_name()}}</td>
+                                  <td>{{dt.author}}</td>
+                                  <td>{{dt.comment}}</td>
+                                  <td>{{helper.print_date(dt.start_time)}} - {{helper.print_date(dt.end_time)}}</td>
+                                  <td>
+                                     <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm"
+                                           data-type="action" action="delete-downtime"
+                                           data-toggle="tooltip" data-placement="bottom" title="Delete this downtime"
+                                           data-element="{{helper.get_uri_name(s)}}" data-downtime="{{dt.id}}"
+                                           >
+                                        <i class="fa fa-trash-o"></i>
+                                     </button>
+                                  </td>
+                               </tr>
+                            %end
+                            %end
+                            </tbody>
+                         </table>
+                     %end
                   </div>
                </div>
             </div>

@@ -108,9 +108,14 @@ def resolve_auth_secret(modconf):
             import string, random
             chars = string.ascii_letters + string.digits
             candidate = ''.join([random.choice(chars) for _ in range(32)])
-            print auth_secret_file
-            with os.fdopen(os.open(auth_secret_file, os.O_WRONLY | os.O_CREAT, 0o600), 'w') as secret:
-                secret.write(candidate)
+            try:
+                with os.fdopen(os.open(auth_secret_file, os.O_WRONLY | os.O_CREAT, 0o600), 'w') as secret:
+                    secret.write(candidate)
+            except Exception as e:
+                logger.error(
+                    "[WebUI] Authentication secret file creation failed: %s, error: %s",
+                    auth_secret_file, str(e)
+                )
     return candidate
 
 # Class for the WebUI Broker
@@ -133,7 +138,10 @@ class Webui_broker(BaseModule, Daemon):
             logger.warning("[WebUI] endpoint feature is not implemented! WebUI is served from root URL: http://%s:%d/", self.host, self.port)
             self.endpoint = None
 
+        # Build session cookie
+        self.session_cookie = getattr(modconf, 'cookie_name', 'user')
         self.auth_secret = resolve_auth_secret(modconf)
+        logger.info("[WebUI] cookie: %s", self.session_cookie)
         # TODO : common preferences
         self.play_sound = to_bool(getattr(modconf, 'play_sound', '0'))
         # TODO : common preferences
@@ -192,7 +200,10 @@ class Webui_broker(BaseModule, Daemon):
         self.photo_dir = os.path.abspath(self.photo_dir)
         logger.info("[WebUI] Photo dir: %s", self.photo_dir)
 
+        # User information
         self.user_picture = ''
+        self.user_session = None
+        self.user_info = None
 
         # @mohierf: still useful ? No value in webui.cfg, so always False ...
         # self.embeded_graph = to_bool(getattr(modconf, 'embeded_graph', '0'))
@@ -273,19 +284,22 @@ class Webui_broker(BaseModule, Daemon):
 
         # Check if the Bottle view dir really exist
         if not os.path.exists(bottle.TEMPLATE_PATH[0]):
-            logger.error("[WebUI] The view path do not exist at %s" % bottle.TEMPLATE_PATH)
+            logger.error("[WebUI] The view path do not exist at %s", bottle.TEMPLATE_PATH)
             sys.exit(2)
 
         # Check directories
         # We check if the photo directory exists. If not, try to create it
-        for d in [self.photo_dir, self.share_dir, self.config_dir]:
-            logger.debug("[WebUI] Checking dir: %s", d)
-            if not os.path.exists(d):
+        for dir in [self.share_dir, self.photo_dir, self.config_dir]:
+            logger.debug("[WebUI] Checking dir: %s", dir)
+            if not os.path.exists(dir):
                 try:
-                    os.mkdir(d)
-                    logger.info("[WebUI] Created dir: %s", d)
-                except Exception, exp:
-                    logger.error("[WebUI] Dir creation failed: %s", exp)
+                    # os.mkdir(dir)
+                    os.makedirs(dir, mode=0o777)
+                    logger.info("[WebUI] Created directory: %s", dir)
+                except Exception as e:
+                    logger.error("[WebUI] Directory creation failed: %s, error: %s", dir, str(e))
+            else:
+                logger.debug("[WebUI] Still existing directory: %s", dir)
 
         # :TODO:maethor:150724: Complete with other function names
         self.auth_module = AuthMetaModule(AuthMetaModule.find_modules(self.modules_manager.get_internal_instances()), self)
@@ -300,13 +314,6 @@ class Webui_broker(BaseModule, Daemon):
 
         self.request = bottle.request
         self.response = bottle.response
-
-        # :TODO:maethor:150717: Doesn't work
-        #username = self.request.get_cookie("user", secret=self.auth_secret)
-        #if username:
-            #self.user = User.from_contact(self.datamgr.get_contact(username), self.gravatar)
-        #else:
-            #self.user = None
 
         try:
             self.do_main()
@@ -689,6 +696,8 @@ class Webui_broker(BaseModule, Daemon):
     def check_authentication(self, username, password):
         logger.info("[WebUI] Checking authentication for user: %s", username)
         self.user_picture = None
+        self.user_session = None
+        self.user_info = None
 
         c = self.datamgr.get_contact(username)
         if not c:
@@ -701,6 +710,11 @@ class Webui_broker(BaseModule, Daemon):
             user = User.from_contact(c, picture=self.user_picture, use_gravatar=self.gravatar)
             self.user_picture = user.picture
             logger.info("[WebUI] User picture: %s", self.user_picture)
+            self.user_session = self.auth_module.get_session()
+            logger.info("[WebUI] User session: %s", self.user_session)
+            self.user_info = self.auth_module.get_user_info()
+            logger.info("[WebUI] User information: %s", self.user_info)
+
             return True
 
         logger.warning("[WebUI] The user '%s' has not been authenticated.", username)
@@ -712,11 +726,24 @@ class Webui_broker(BaseModule, Daemon):
     def get_user_auth(self):
         logger.warning("[WebUI] Deprecated - Getting authenticated user ...")
         self.user_picture = None
+        self.user_session = None
+        self.user_info = None
 
-        username = webui_app.request.get_cookie("user", secret=self.auth_secret)
-        if not username and not self.allow_anonymous:
-            return None
-        contact = self.datamgr.get_contact(username or 'anonymous')
+        cookie_value = webui_app.request.get_cookie(str(app.session_cookie), secret=app.auth_secret)
+        if cookie_value:
+            if 'session' in cookie_value:
+                self.user_session = cookie_value['session']
+                logger.debug("[WebUI] user session: %s", cookie_value['session'])
+            if 'info' in cookie_value:
+                self.user_info = cookie_value['info']
+                logger.debug("[WebUI] user info: %s", cookie_value['info'])
+            if 'login' in cookie_value:
+                logger.debug("[WebUI] user login: %s", cookie_value['login'])
+                contact = app.datamgr.get_contact(cookie_value['login'])
+            else:
+                contact = app.datamgr.get_contact(cookie_value)
+        else:
+            contact = app.datamgr.get_contact('anonymous')
         if not contact:
             return None
 
@@ -798,17 +825,30 @@ def login_required():
         return
 
     logger.debug("[WebUI] login_required, getting user cookie ...")
-    username = bottle.request.get_cookie("user", secret=app.auth_secret)
-    if not username and not app.allow_anonymous:
-        # bottle.redirect(app.get_url("GetLogin"))
+    cookie_value = bottle.request.get_cookie(str(app.session_cookie), secret=app.auth_secret)
+    if not cookie_value and not app.allow_anonymous:
         bottle.redirect("/user/login")
-    contact = app.datamgr.get_contact(username or 'anonymous')
+    if cookie_value:
+        if 'session' in cookie_value:
+            app.user_session = cookie_value['session']
+            logger.debug("[WebUI] user session: %s", cookie_value['session'])
+        if 'info' in cookie_value:
+            app.user_info = cookie_value['info']
+            logger.debug("[WebUI] user info: %s", cookie_value['info'])
+        if 'login' in cookie_value:
+            logger.debug("[WebUI] user login: %s", cookie_value['login'])
+            contact = app.datamgr.get_contact(cookie_value['login'])
+        else:
+            contact = app.datamgr.get_contact(cookie_value)
+    else:
+        contact = app.datamgr.get_contact('anonymous')
     if not contact:
-        # bottle.redirect(app.get_url("GetLogin"))
         bottle.redirect("/user/login")
 
     user = User.from_contact(contact, app.user_picture, app.gravatar)
-    app.user_picture = user.picture
+    if app.user_session and app.user_info:
+        user.set_information(app.user_session, app.user_info)
+    app.user_picture = user.get_picture()
     request.environ['USER'] = user
     bottle.BaseTemplate.defaults['user'] = user
     logger.debug("[WebUI] login_required: user: %s", user)

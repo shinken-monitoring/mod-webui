@@ -54,8 +54,7 @@ function AddWidget(url, options, placeId, replace){
 
    // We also hide the central span with the big button
    // And show the little one
-   $('#center-button').hide();
-   $('#small_show_panel').show();
+   $('#propose-widgets').hide();
 
    //If we replace the widget like in reload,
    //the container already exists and is passed as a parameter.

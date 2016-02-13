@@ -3,11 +3,7 @@
 
 %username = 'anonymous'
 %if user is not None:
-%if hasattr(user, 'alias') and user.alias != 'none':
-%username = user.alias
-%else:
 %username = user.get_name()
-%end
 %end
 
 
@@ -137,7 +133,7 @@
                         <small>{{'Administrator' if user.is_admin else 'User'}}</small>
                      </p>
                      %end
-                     <img src="{{app.user_picture}}" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}">
+                     <img src="{{user.get_picture()}}" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}">
                   </div>
                   <div class="panel-footer">
                      <!-- User actions -->

@@ -33,7 +33,7 @@ app = None
 
 def system_parameters():
     user = app.request.environ['USER']
-    user.is_admin or app.redirect_403()
+    user.is_admin or app.redirect403()
 
     configs = app.datamgr.get_configs()
     configs = sorted(vars(configs[0]).iteritems())
@@ -42,7 +42,7 @@ def system_parameters():
 
 def system_page():
     user = app.request.environ['USER']
-    user.is_admin or app.redirect_403()
+    user.is_admin or app.redirect403()
 
     schedulers = app.datamgr.get_schedulers()
     brokers = app.datamgr.get_brokers()
@@ -64,7 +64,6 @@ def system_page():
 
 def system_widget():
     user = app.request.environ['USER']
-    user.is_admin or app.redirect_403()
 
     schedulers = app.datamgr.get_schedulers()
     brokers = app.datamgr.get_brokers()
@@ -95,7 +94,7 @@ def system_widget():
 
 widget_desc = '''
 <h4>System state</h4>
-Show an aggregated view of all Shinken daemons (admins only).
+Show an aggregated view of all Shinken daemons.
 '''
 
 pages = {

@@ -31,16 +31,6 @@
             </a></center>
          </td>
 
-         %if app.prefs_module.is_available():
-         %if len(widgets) > 0:
-         <td>
-         <center>
-         <a id="widgets_show_panel" href="#widgets" class="btn btn-sm btn-success"><i class="fa fa-plus"></i> Add a new widget</a>
-         </center>
-         </td>
-         %end
-         %end
-
          <td>
             <center><a href="/problems" class="btn btn-sm">
                <i class="fa fa-4x fa-exclamation-triangle font-darkgrey"></i>
@@ -62,16 +52,19 @@
    </tbody>
 </table>
 
-<!-- Widgets loading indicator -->
-<div id="widgets_loading"></div>
-
 %if app.prefs_module.is_available():
    %if len(widgets) == 0:
-   <span id="center-button" class="col-sm-4 col-sm-offset-4 page-center" >
-      <h3>You don't have any widget yet ...</h3>
-      <!-- Button trigger widgets modal -->
-      <a id="widgets_show_panel" href="#widgets" class="btn btn-block btn-success"><i class="fa fa-plus"></i>... add a new widget</a>
-   </span>
+   <div class="panel panel-default" id="propose-widgets">
+      <div class="panel-heading" style="padding-bottom: -10">
+         <center>
+            <h3>You don't have any widget yet ...</h3>
+         </center>
+         <hr/>
+         <p>In the sidebar menu, click on <strong>Add a new widget</strong> to list all the available widgets.</p>
+         <p>Select a proposed widget to view the widget description.</p>
+         <p>Click the <strong>Add widget</strong> button on top of the description to include the widget in your dashboard.</p>
+      </div>
+   </div>
    %end
 %else:
    <div class="panel panel-default">
@@ -86,24 +79,8 @@
    </div>
 %end
 
-<!-- Widgets selection popover content -->
-<div id="widgets" class="hidden">
-   %for w in app.get_widgets_for('dashboard'):
-      <button type="button" class="btn btn-block" style="margin-bottom: 2px;" data-toggle="collapse" data-target="#desc_{{w['widget_name']}}">
-        {{w['widget_name']}}
-      </button>
-
-      <div id="desc_{{w['widget_name']}}" class='widget_desc collapse' >
-         <div class="row">
-            <span class="col-sm-6 hidden-sm hidden-xs">
-               <img class="img-rounded" style="width:100%" src="{{w['widget_picture']}}" id="widget_desc_{{w['widget_name']}}"/>
-            </span>
-            <span>{{!w['widget_desc']}}</span>
-         </div>
-         <p class="add_button"><a class="btn btn-sm btn-success" href="javascript:AddNewWidget('{{w['base_uri']}}', null, 'widget-place-1');"> <i class="fa fa-chevron-left"></i> Add {{w['widget_name']}} widget</a></p>
-      </div>
-   %end
-</div>
+<!-- Widgets loading indicator -->
+<div id="widgets_loading"></div>
 
 <div class="widget-place col-sm-12" id="widget-place-1"> </div>
 <!-- /place-1 -->
@@ -115,22 +92,18 @@
 <!-- /place-3 -->
 
 <script type="text/javascript">
+   /*
+    * Function called when the page is loaded and on each page refresh ...
+    */
+   function on_page_refresh() {
+      // Show actions bar
+      show_actions('dashboard-actions');
+   }
+
    $(function () {
-      // Activate the popover ...
-      $('#widgets_show_panel').popover({
-         html : true,
-         placement: 'bottom',
-         title: 'Available widgets' + '<a class="close">×</a>',
-         animation: true,
-         content: function() {
-            return $('#widgets').html();
-         }
-      });
-      $('#widgets_show_panel').on('shown.bs.popover', function () {
-         $('a.close').on('click', function () {
-            $('#widgets_show_panel').popover('hide');
-         });
-      })
+      on_page_refresh();
+
+      $('.dashboard-widget').popover();
 
       // ... and load all widgets.
       %for w in widgets:

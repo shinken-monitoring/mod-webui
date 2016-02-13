@@ -73,7 +73,7 @@
 
 <div class="widget movable collapsable removable {{editable}} closeconfirm {{collapsed_s}}" id="{{wid}}">
    <div class="widget-header">
-      <span class="icon"><i class="fa fa-camera"></i> </span>
+      <span class="icon"><i class="fa fa-leaf"></i> </span>
       <strong>{{title}}</strong>
    </div>
    <div class="widget-editbox">
@@ -137,7 +137,7 @@
                %values = v.get('values', {})
                %value = v.get('value', '')
                <select name='{{k}}'>
-               %for sub_name,sub_val in values.iteritems():
+               %for sub_val,sub_name in values.iteritems():
                   %selected = ''
                   %if value == sub_val:
                      %selected = 'selected'

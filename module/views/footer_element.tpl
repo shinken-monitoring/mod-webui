@@ -19,7 +19,7 @@
    -->
    <div id="actions" class="navbar-default actionbar" role="navigation" style="display:none;">
       <div class="actionbar-nav navbar-collapse">
-         <ul class="nav" id="actions-menu">
+         <ul class="nav actions-menu">
          %if app.can_action():
          %if elt:
             %elt_type = elt.__class__.my_type
@@ -59,7 +59,7 @@
                data-element="{{helper.get_uri_name(elt)}}" >
                <i class="fa fa-ambulance"></i> Schedule a downtime
             </a> </li>
-            %if app.helpdesk_module.is_available():
+            %if elt_type=='host' and app.helpdesk_module.is_available():
             <li> <a href="#" action="create-ticket" title="Create a ticket for this {{elt_type}}"
                data-element="{{helper.get_uri_name(elt)}}" >
                <i class="fa fa-medkit"></i> Create a ticket
@@ -90,6 +90,42 @@
       </div>
    </div>
 
+   <!-- Dashboard actions bar:
+   - enabled when elt is defined ...
+   - enabled when problems are selected
+   -->
+   <div id="dashboard-actions" class="navbar-default actionbar" role="navigation" style="display:none;">
+      <div class="actionbar-nav navbar-collapse">
+         <ul class="nav actions-menu">
+            <li> <a href="#"><i class="fa fa-leaf"></i> Add a new widget <i class="fa arrow"></i></a>
+              <ul class="nav nav-second-level">
+                %for w in app.get_widgets_for('dashboard'):
+                   <li>
+                      <a href="#"
+                         class="dashboard-widget"
+                         title="
+                            <button href='#' role='button'
+                                action='add-widget'
+                                data-widget='{{w['widget_name']}}'
+                                data-wuri='{{w['base_uri']}}'
+                                class='btn btn-sm btn-success'>
+                                <span class='fa fa-plus'></span>
+                                Add this widget to your dashboard
+                            </button>"
+                         data-toggle="popover" data-trigger="focus" data-html="true" data-placement="right" data-viewport="section.content"
+                         data-content='{{!w['widget_desc']}} <hr/> <div class="center-block"><img class="text-center" src="{{w['widget_picture']}}"/></div>'
+                         >
+                         <span class="fa fa-plus"></span> {{w['widget_name']}}
+                      </a>
+                   </li>
+                %end
+              </ul>
+            </li>
+         </ul>
+      </div>
+   </div>
+
+   <!-- Page footer -->
    <div class="container-fluid">
       <img src="/static/images/default_company_xxs.png" alt="Shinken Logo"/>
       <i class="col-lg-10 text-muted">Shinken {{VERSION}} &mdash; Web User Interface {{app.app_version}}, &copy;2011-2016</i>
@@ -282,8 +318,26 @@
       var user = '{{username}}';
       if (elt) {
          if (eltdetail_logs) console.debug("Create a ticket for: ", elt)
-
-         display_modal("/helpdesk/ticket/add/"+$(this).data('element'));
+         display_modal("/helpdesk/ticket/add/"+elt);
       }
+   });
+
+   // Create a ticket follow-up...
+   $('body').on("click", '[action="create-ticket-followup"]', function () {
+      var elt = $(this).data('element');
+      var user = '{{username}}';
+      var ticket = $(this).data('ticket');
+      var status = $(this).data('status');
+      if (elt) {
+         if (eltdetail_logs) console.debug("Create a ticket follow-up for: ", elt, 'ticket #', ticket)
+         display_modal("/helpdesk/ticket_followup/add/"+elt+'?ticket='+ticket+'&status='+status);
+      }
+   });
+
+   // Add a widget
+   $('body').on("click", '[action="add-widget"]', function () {
+      var widget = $(this).data('widget');
+      var wuri = $(this).data('wuri');
+      AddNewWidget(wuri, null, 'widget-place-1');
    });
 </script>
