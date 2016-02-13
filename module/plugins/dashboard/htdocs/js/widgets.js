@@ -22,6 +22,7 @@
 
 
 var widgets_logs=false;
+var widgets_error_remove=false;
 
 // where we stock all current widgets loaded, and their options
 var widgets = [];
@@ -78,8 +79,10 @@ function AddWidget(url, options, placeId, replace){
    })
    .fail(function( jqXHR, textStatus, errorThrown ) {
       $(this).html('Error loading this widget: ', url, options);
-      jQuery('#' + widgetId).remove();
-      saveWidgets();
+      if (widgets_error_remove) {
+         $('#' + widgetId).remove();
+         saveWidgets();
+      }
    })
    .always(function( ) {
       nb_widgets_loading -= 1;
@@ -114,9 +117,10 @@ function reloadWidget(name){
    widget.options['wid'] = widget.id;
    widget.options['collapsed'] = widget.collapsed ? "True": "False";
 
-   container = jQuery('#' + widget.id).parent();
+   container = $('#' + widget.id).parent();
+
    //Do not delete the container to keep the correct widget order.
-   jQuery('#' + widget.id).remove();
+   $('#' + widget.id).remove();
 
    AddWidget(widget.base_url, widget.options, container, true);
 }
