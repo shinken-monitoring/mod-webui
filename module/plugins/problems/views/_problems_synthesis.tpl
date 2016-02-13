@@ -12,10 +12,18 @@
             %if 'type:service' not in search_string:
             <tr>
                <td>
-               <b>{{h['nb_elts']}} hosts:&nbsp;</b> 
+               <b>{{h['nb_elts']}} hosts:&nbsp;</b>
                </td>
-             
-               %for state in 'up', 'unreachable', 'down', 'pending', 'unknown', 'ack', 'downtime':
+
+               %for state in 'up', 'unreachable', 'down', 'pending', 'unknown':
+               <td>
+                 %label = "%s <i>(%s%%)</i>" % (h['nb_' + state], h['pct_' + state])
+                 <a href="/all?search=type:host is:{{state}} isnot:ack isnot:downtime">
+                 {{!helper.get_fa_icon_state_and_label(cls='host', state=state, label=label, disabled=(not h['nb_' + state]))}}
+                 </a>
+               </td>
+               %end
+               %for state in 'ack', 'downtime':
                <td>
                  %label = "%s <i>(%s%%)</i>" % (h['nb_' + state], h['pct_' + state])
                  <a href="/all?search=type:host is:{{state}}">
@@ -28,10 +36,18 @@
             %if 'type:host' not in search_string:
             <tr>
                <td>
-                  <b>{{s['nb_elts']}} services:&nbsp;</b> 
+                  <b>{{s['nb_elts']}} services:&nbsp;</b>
                </td>
-          
-               %for state in 'ok', 'warning', 'critical', 'pending', 'unknown', 'ack', 'downtime':
+
+               %for state in 'ok', 'warning', 'critical', 'pending', 'unknown':
+               <td>
+                 %label = "%s <i>(%s%%)</i>" % (s['nb_' + state], s['pct_' + state])
+                 <a href="/all?search=type:service is:{{state}} isnot:ack isnot:downtime">
+                 {{!helper.get_fa_icon_state_and_label(cls='service', state=state, label=label, disabled=(not s['nb_' + state]))}}
+                 </a>
+               </td>
+               %end
+               %for state in 'ack', 'downtime':
                <td>
                  %label = "%s <i>(%s%%)</i>" % (s['nb_' + state], s['pct_' + state])
                  <a href="/all?search=type:service is:{{state}}">
