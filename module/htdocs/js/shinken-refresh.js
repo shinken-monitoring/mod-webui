@@ -39,7 +39,6 @@ if (sessionStorage.getItem("refresh_active") == '1') {
 } else {
    $('#header_loading').addClass('font-greyed');
 }
-if (refresh_logs) console.debug("Refresh active is ", sessionStorage.getItem("refresh_active"));
 
 function postpone_refresh(){
    // If we are not in our first try, warn the user
@@ -138,13 +137,14 @@ function do_refresh(){
       }
 
       // Refresh Dashboard currently ...
-      if ($('#one-eye-overall').length > 0) {
+      if (dashboard_currently) {
          $('#one-eye-overall').html($response.find('#one-eye-overall').html());
          $('#one-eye-icons').html($response.find('#one-eye-icons').html());
+         $('#livestate-graphs').html($response.find('#livestate-graphs').html());
 
          var nb_problems=0;
-         nb_problems += parseInt($('#one-eye-overall-hosts').data("hosts-problems"));
-         nb_problems += parseInt($('#one-eye-overall-services').data("services-problems"));
+         nb_problems += parseInt($('#one-eye-overall span.hosts-all').data("problems"));
+         nb_problems += parseInt($('#one-eye-overall span.services-all').data("problems"));
          if (refresh_logs) console.debug("Dashboard currently - Hosts/Services problems", nb_problems);
 
          var old_problems = Number(sessionStorage.getItem("how_many_problems_actually"));
@@ -311,12 +311,14 @@ function reinit_refresh(){
 
 
 function stop_refresh() {
+   if (refresh_logs) console.debug("Stop refresh");
    $('#header_loading').addClass('font-greyed');
    sessionStorage.setItem("refresh_active", '0');
 }
 
 
 function start_refresh() {
+   if (refresh_logs) console.debug("Stop refresh");
    $('#header_loading').removeClass('font-greyed');
    sessionStorage.setItem("refresh_active", '1');
 }
