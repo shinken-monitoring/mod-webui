@@ -12,7 +12,7 @@
 %# - side menu: left sidebar menu
 %# - content: including current page layout with title
 %# - page footer: copyright
-%# For breadcrumb, declare as is when rebasing layout: 
+%# For breadcrumb, declare as is when rebasing layout:
 %# - breadcrumb=[ ['Groups', '/servicegroups'], [groupalias, '/servicegroup/'+groupname] ]
 %setdefault('breadcrumb', '')
 
@@ -35,7 +35,7 @@
       <meta charset="utf-8">
       <title>{{title or 'No title'}}</title>
 
-      <!-- 
+      <!--
          This file is a part of Shinken.
 
          Shinken is free software: you can redistribute it and/or modify it under the terms of the
@@ -52,7 +52,7 @@
       <script src="/static/js/ie9/json2.js"></script>
       <![endif]-->
 
-      <!-- Stylesheets 
+      <!-- Stylesheets
       ================================================== -->
       <link href="/static/css/bootstrap.min.css" rel="stylesheet">
       <link href="/static/css/bootstrap-theme.min.css" rel="stylesheet">
@@ -92,8 +92,15 @@
       <script src="/static/js/alertify.js"></script>
       <script src="/static/js/typeahead.bundle.min.js"></script>
       <script src="/static/js/screenfull.js"></script>
-      
-      <!-- 
+
+      <!--
+       Shinken globals ...
+      -->
+      <script>
+      var dashboard_currently = false;
+      </script>
+
+      <!--
        Shinken scripts ...
       -->
       %if refresh:
@@ -114,7 +121,7 @@
          <div id="page-wrapper">
 
             <!-- Do not remove the next comment!
-               Everything between 'begin-page-content' comment and 'end-page-content' comment 
+               Everything between 'begin-page-content' comment and 'end-page-content' comment
                is used by the layout page refresh.
                @mohierf: for future refresh implementation ... not used currently!
             -->
@@ -146,7 +153,7 @@
                      </h3>
 
                   </section>
-                  
+
                   <!-- Page content -->
                   <section class="content">
                    %include
@@ -185,7 +192,7 @@
          </div>
       </div>
 
-      <!-- 
+      <!--
        Shinken scripts ...
       -->
       %# Include specific Js files ...

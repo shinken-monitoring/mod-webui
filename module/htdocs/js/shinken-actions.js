@@ -30,6 +30,60 @@ function capitalize (text) {
 }
 
 
+/**
+ * Get current user preference value:
+ * - key
+ * - callback function called after data are posted
+**/
+function get_user_preference(key, callback) {
+
+   $.get("/user/get_pref", { 'key' : key }, function( data, textStatus, jqXHR ) {
+      if (actions_logs) console.debug('Got: '+key, data, textStatus);
+
+      if (typeof callback !== 'undefined' && $.isFunction(callback)) {
+         if (actions_logs) console.debug('Calling callback function ...', callback);
+         callback(JSON.parse(data));
+      }
+   });
+}
+
+/**
+ * Save current user preference value:
+ * - key / value
+ * - callback function called after data are posted
+**/
+function save_user_preference(key, value, callback) {
+
+   $.get("/user/save_pref", { 'key' : key, 'value' : value }, function() {
+      if (actions_logs) console.debug('User preference saved: ', key, value);
+      // raise_message_ok("User parameter saved");
+
+      if (typeof callback !== 'undefined' && $.isFunction(callback)) {
+         if (actions_logs) console.debug('Calling callback function ...', callback);
+         callback(JSON.parse(value));
+      }
+   });
+}
+
+/**
+ * Save common preference value
+ * - key / value
+ * - callback function called after data are posted
+**/
+function save_common_preference(key, value, callback) {
+
+   $.get("/user/save_common_pref", { 'key' : key, 'value' : value}, function() {
+      if (actions_logs) console.debug('Common preference saved: ', key, value);
+      // raise_message_ok("Common parameter saved");
+
+      if (typeof callback !== 'undefined' && $.isFunction(callback)) {
+         if (actions_logs) console.debug('Calling callback function ...', callback);
+         callback(JSON.parse(value));
+      }
+   });
+}
+
+
 /*
  * Launch the request
  */
