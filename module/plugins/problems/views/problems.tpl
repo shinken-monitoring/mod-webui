@@ -86,8 +86,11 @@
                      %now = time.time()
                      %graphs = app.graphs_module.get_graph_uris(pb, duration=12*3600)
                      %num = int(pb.customs.get('_GRAPH_NUM','0'))
+                     %if num >= len(graphs):
+                     %  num = 0
+                     %end
                      %if len(graphs) > 0:
-                        <a role="button" tabindex="0" data-toggle="popover" title="{{ pb.get_full_name() }}" data-html="true" data-content="<img src='{{ graphs[num]['img_src'] }}' width='600px' height='200px'>" data-trigger="hover" data-placement="left">{{!helper.get_perfometer(pb)}}</a>
+                        <a role="button" tabindex="0" data-toggle="popover" title="{{ pb.get_full_name() }}" data-html="true" data-content="<img src='{{ graphs[num]['img_src'] }}' width='600px' height='200px'>" data-trigger="hover" data-placement="left">{{!helper.get_perfometer(pb, graph_num=num)}}</a>
                      %end
                   </div>
                   %end

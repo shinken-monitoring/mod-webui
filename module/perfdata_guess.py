@@ -33,7 +33,7 @@ from shinken.log import logger
 # lnk: link to add in this perfdata thing
 # title: text to show on it
 # metrics: list of ('html color', percent) like [('#68f', 35), ('white', 64)]
-def get_perfometer_table_values(elt, metric=None):
+def get_perfometer_table_values(elt, metric=None, graph_num=0):
     # first try to get the command name called
     cmd = elt.check_command.call.split('!')[0]
     logger.debug("[WebUI] Looking for perfometer value for element: %s, command: %s", elt.get_full_name(), cmd)
@@ -48,7 +48,7 @@ def get_perfometer_table_values(elt, metric=None):
         return f(elt, metric)
 
     try:
-        r = manage_unknown_command(elt, metric)
+        r = manage_unknown_command(elt, metric, graph_num)
     except:
         return None
     return r
@@ -146,7 +146,7 @@ def manage_check_tcp_command(elt, metric='time'):
     return {'lnk': lnk, 'metrics': metrics, 'title': title}
 
 
-def manage_unknown_command(elt, metric=None):
+def manage_unknown_command(elt, metric=None, graph_num=0):
     logger.debug("[WebUI] perfometer, manage command for: %s, metric: %s", elt.get_full_name(), metric)
     p = PerfDatas(elt.perf_data)
     if len(p) == 0:
@@ -157,16 +157,20 @@ def manage_unknown_command(elt, metric=None):
         metric = p['time']
     else:
         if metric is None:
+            metric = []
             for v in p:
                 if v.name is not None and v.value is not None:
-                    metric = v
+                    metric.append(v)
         else:
+            metric = []
             for v in p:
                 if v.name is not None and v.value is not None and v.name == metric:
-                    metric = v
+                    metric.append(v)
         
     if metric is None:
         return None
+
+    metric = metric[graph_num]
     
     name = metric.name
     value = metric.value
