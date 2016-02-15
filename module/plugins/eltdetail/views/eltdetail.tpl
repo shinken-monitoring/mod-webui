@@ -977,7 +977,7 @@ Invalid element name
                                  <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm"
                                        data-type="action" action="delete-downtime"
                                        data-toggle="tooltip" data-placement="bottom" title="Delete the downtime '{{dt.id}}' for this {{elt_type}}"
-                                       data-element="{{helper.get_uri_name(s)}}" data-downtime="{{dt.id}}"
+                                       data-element="{{helper.get_uri_name(elt)}}" data-downtime="{{dt.id}}"
                                        >
                                     <i class="fa fa-trash-o"></i>
                                  </button>
