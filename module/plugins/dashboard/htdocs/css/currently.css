@@ -24,11 +24,12 @@
 *
 **/
 
-/*  Currently basics
-    ------------------------------------------------------- */
+/*
+ * Background layout
 body, section.content {
    background: #232426 !important;
 }
+*/
 
 /*
  * Date and time
@@ -111,11 +112,7 @@ body, section.content {
 
 /*
  * Badger styles
- */
 .badger-big {
-  /*
-  background-color: #999999;*/
-
   border-radius: 3px;
   color: #FFFFFF;
   font-size: 2em;
@@ -131,3 +128,4 @@ body, section.content {
    color: white;
 }
 
+ */

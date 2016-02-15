@@ -44,10 +44,6 @@
 %end
 %setdefault('hosts_states_queue_length', 10)
 %setdefault('services_states_queue_length', 10)
-%setdefault('pie_hosts_graph_states_states', 'up,down,unreachable')
-%setdefault('pie_hosts_graph_states_states', 'down,unreachable')
-%setdefault('pie_services_graph_states_states', 'ok,warning,critical,unknown')
-%setdefault('pie_services_graph_states_states', 'warning,critical,unknown')
 
 
 %helper = app.helper
@@ -57,9 +53,7 @@
     dashboard_currently = true;
 
     panels = {{ ! json.dumps(panels) }};
-    console.log(panels);
     graphs = {{ ! json.dumps(graphs) }};
-    console.log(graphs);
 
     // Function called on each page refresh ... update graphs!
     function on_page_refresh() {
@@ -71,10 +65,14 @@
         // Refresh user's preferences
         get_user_preference('panels', function(data) {
             panels=data;
+            console.log(panels);
             get_user_preference('graphs', function(data) {
                 graphs=data;
+                console.log(graphs);
 
+                console.log('Chart !')
                 if ($("#chart-hosts").length !== 0) {
+                    console.log('Chart !')
                     var data = [];
                     %for state in graphs['pie_hosts_graph']['states']:
                         var counter_value = parseInt($('#one-eye-overall span.hosts-count[data-state="{{state}}"]').data("count"));
@@ -84,16 +82,15 @@
                         row['value'] = counter_value;
                         data.push(row)
 
-                        if (states_queue["nb_{{state}}"].length > hosts_states_queue_length) {
-                            states_queue["nb_{{state}}"].shift();
+                        if (states_queue["nb_hosts_{{state}}"].length > hosts_states_queue_length) {
+                            states_queue["nb_hosts_{{state}}"].shift();
                         }
-                        states_queue["nb_{{state}}"].push( counter_value );
+                        states_queue["nb_hosts_{{state}}"].push( counter_value );
                     %end
 
                     // Update graph
                     var ctx = $("#chart-hosts canvas").get(0).getContext("2d");
                     var myPieChart = new Chart(ctx).Doughnut(data, pie_hosts_graph_options);
-                    console.log(graphs['pie_hosts_graph'])
                     if (graphs['pie_hosts_graph']['title']) {
                         $("#chart-hosts .title").show();
                         $("#chart-hosts .title span").html(hosts_count + " hosts").show();
@@ -123,20 +120,20 @@
                     %for state in graphs['line_hosts_graph']['states']:
                         // Update table rows
                         row = line_hosts_graph_data['datasets']["{{state}}"];
-                        row['data'] = states_queue["nb_{{state}}"];
+                        row['data'] = states_queue["nb_hosts_{{state}}"];
                         data['datasets'].push(row);
                     %end
 
                     // Get the context of the canvas element we want to select
                     var ctx = $("#chart-hosts-serie canvas").get(0).getContext("2d");
                     var myLineChart = new Chart(ctx).Line(data, line_hosts_graph_options);
-                    %if graphs['line_hosts_graph']['title']:
+                    if (graphs['line_hosts_graph']['title']) {
                         $("#chart-hosts-serie .title").show();
                         $("#chart-hosts-serie .title span").html(hosts_count + " hosts");
-                    %else:
+                    } else {
                         $("#chart-hosts-serie .title").hide();
-                    %end
-                    %if graphs['line_hosts_graph']['legend']:
+                    }
+                    if (graphs['line_hosts_graph']['legend']) {
                         if (line_hosts_graph_options) {
                             $("#chart-hosts-serie .legend").show();
                             if ($("#chart-hosts-serie span.legend").length) {
@@ -146,9 +143,9 @@
                                 // TODO: Update ...
                             }
                         }
-                    %else:
+                    } else {
                         $("#chart-hosts-serie .legend").hide();
-                    %end
+                    }
                 }
 
                 // Services pie chart
@@ -162,22 +159,22 @@
                         row['value'] = counter_value;
                         data.push(row)
 
-                        if (states_queue["nb_{{state}}"].length > services_states_queue_length) {
-                        states_queue["nb_{{state}}"].shift();
+                        if (states_queue["nb_services_{{state}}"].length > services_states_queue_length) {
+                        states_queue["nb_services_{{state}}"].shift();
                         }
-                        states_queue["nb_{{state}}"].push(counter_value);
+                        states_queue["nb_services_{{state}}"].push(counter_value);
                     %end
 
                     // Get the context of the canvas element we want to select
                     var ctx = $("#chart-services canvas").get(0).getContext("2d");
                     var myPieChart = new Chart(ctx).Doughnut(data, pie_services_graph_options);
-                    %if graphs['pie_services_graph']['title']:
+                    if (graphs['pie_services_graph']['title']) {
                         $("#chart-services .title").show();
                         $("#chart-services .title span").html(services_count + " services");
-                    %else:
+                    } else {
                         $("#chart-services .title").hide();
-                    %end
-                    %if graphs['pie_services_graph']['legend']:
+                    }
+                    if (graphs['pie_services_graph']['legend']) {
                         if (pie_services_graph_options) {
                             $("#chart-services .legend").show();
                             if ($("#chart-services span.legend").length) {
@@ -186,9 +183,9 @@
                                 }
                             }
                         }
-                    %else:
+                    } else {
                         $("#chart-services .legend").hide();
-                    %end
+                    }
                 }
 
                 // Services line chart
@@ -199,20 +196,20 @@
                     %for state in graphs['line_services_graph']['states']:
                         // Update table rows
                         row = line_services_graph_data['datasets']["{{state}}"];
-                        row['data'] = states_queue["nb_{{state}}"];
+                        row['data'] = states_queue["nb_services_{{state}}"];
                         data['datasets'].push(row);
                     %end
 
                     // Get the context of the canvas element we want to select
                     var ctx = $("#chart-services-serie canvas").get(0).getContext("2d");
                     var myLineChart = new Chart(ctx).Line(data, line_services_graph_options);
-                    %if graphs['line_services_graph']['title']:
+                    if (graphs['line_services_graph']['title']) {
                         $("#chart-services-serie .title").show();
                         $("#chart-services-serie .title span").html(services_count + " services");
-                    %else:
+                    } else {
                         $("#chart-services-serie .title").hide();
-                    %end
-                    %if graphs['line_services_graph']['legend']:
+                    }
+                    if (graphs['line_services_graph']['legend']) {
                         if (line_services_graph_options) {
                             $("#chart-services-serie .legend").hide();
                             if ($("#chart-services-serie span.legend").length) {
@@ -221,9 +218,9 @@
                                 }
                             }
                         }
-                    %else:
+                    } else {
                         $("#chart-services-serie .legend").hide();
-                    %end
+                    }
                 }
             });
         });
@@ -234,7 +231,7 @@
         $('#clock').jclock({ format: '%H:%M:%S' });
         $('#date').jclock({ format: '%A, %B %d' });
 
-        //$('.collapse').collapse();
+        on_page_refresh();
 
         // Fullscreen management
         if (screenfull.enabled) {
@@ -345,9 +342,9 @@
 %s = synthesis['services']
 %h = synthesis['hosts']
 
+%if username != 'anonymous':
 <div class="container-fluid" style="position: relative; top:0; left: 0; z-index: 1000">
 <div class="row">
-    %if username != 'anonymous':
     <div id="one-eye-toolbar" class="col-xs-12">
         <div class="col-md-12 col-lg-12">
             <ul class="nav navbar-nav navbar-left">
@@ -389,12 +386,12 @@
             </ul>
         </div>
     </div>
-    %end
 </div>
 </div>
+%end
 
-<div class="container-fluid" style="position: relative; top:100; left: 0; z-index: 1000">
-<div class="row">
+<div class="container-fluid">
+<div class="row" style="position: absolute; top:30px; left: 0; z-index: 1000">
     <div id="one-eye-overall" class="col-xs-12">
         <div class="col-md-6">
             <div class="panel panel-default" id="panel_counters_hosts">
@@ -691,13 +688,13 @@
                         <div id="chart-hosts">
                             <div class="well">
                                 <canvas></canvas>
-                                <div class="row title" style="{{'display-none' if not graphs['pie_hosts_graph']['title'] else ''}}">
+                                <div class="row title" style="display:none">
                                     <div class="text-center">
-                                        <h4>Hosts states {{graphs['pie_hosts_graph']['title']}}</h4>
+                                        <h4>Hosts states</h4>
                                         <span class="text-muted">-/-</span>
                                     </div>
                                 </div>
-                                <div class="row legend" style="{{'display-none' if not graphs['pie_hosts_graph']['legend'] else ''}}">
+                                <div class="row legend" style="display-none">
                                     <div class="pull-left well well-sm" style="margin-bottom: 0px">
                                         <span class="legend hidden-sm hidden-xs"></span>
                                     </div>
@@ -744,13 +741,13 @@
                         <div id="chart-services">
                             <div class="well">
                                 <canvas></canvas>
-                                <div class="row title">
+                                <div class="row title" style="display:none">
                                     <div class="text-center">
                                         <h4 class="title">Services states</h4>
                                         <span class="subtitle text-muted">-/-</span>
                                     </div>
                                 </div>
-                                <div class="row legend">
+                                <div class="row legend" style="display:none">
                                     <div class="pull-left well well-sm" style="margin-bottom: 0px">
                                         <span class="legend hidden-sm hidden-xs"></span>
                                     </div>
@@ -797,13 +794,13 @@
                         <div id="chart-hosts-serie">
                             <div class="well">
                                 <canvas></canvas>
-                                <div class="row title">
+                                <div class="row title" style="display:none">
                                     <div class="text-center">
                                         <h4 class="title">Hosts states monitoring</h4>
                                         <span class="subtitle text-muted">-/-</span>
                                     </div>
                                 </div>
-                                <div class="row legend">
+                                <div class="row legend" style="display:none">
                                     <div class="pull-left well well-sm" style="margin-bottom: 0px">
                                         <span class="legend hidden-sm hidden-xs"></span>
                                     </div>
@@ -850,13 +847,13 @@
                         <div id="chart-services-serie">
                             <div class="well">
                                 <canvas></canvas>
-                                <div class="row title">
+                                <div class="row title" style="display:none">
                                     <div class="text-center">
                                         <h4 class="title">Services states monitoring</h4>
                                         <span class="subtitle text-muted">-/-</span>
                                     </div>
                                 </div>
-                                <div class="row legend">
+                                <div class="row legend" style="display:none">
                                     <div class="pull-left well well-sm" style="margin-bottom: 0px">
                                         <span class="legend hidden-sm hidden-xs"></span>
                                     </div>
@@ -881,14 +878,18 @@
     var hosts_states_queue_length = {{ hosts_states_queue_length }};
     var services_states_queue_length = {{ services_states_queue_length }};
     var states_queue = {
-        "nb_up": [], "nb_unreachable": [], "nb_down": [],
-
-        "nb_ok": [], "nb_warning": [], "nb_critical": [], "nb_unknown": []
+        "nb_hosts_up": [], "nb_hosts_unreachable": [], "nb_hosts_down": [], "nb_hosts_unknown": [],
+        "nb_services_ok": [], "nb_services_warning": [], "nb_services_critical": [], "nb_services_unknown": []
     };
 
     %for state in graphs['pie_hosts_graph']['states']:
         for (var i=0; i<hosts_states_queue_length; i++) {
-            states_queue["nb_{{state}}"].push(0);
+            states_queue["nb_hosts_{{state}}"].push(0);
+        }
+    %end
+    %for state in graphs['pie_services_graph']['states']:
+        for (var i=0; i<services_states_queue_length; i++) {
+            states_queue["nb_services_{{state}}"].push(0);
         }
     %end
 
@@ -932,9 +933,7 @@
         ].join('')
     };
 
-    var line_hosts_graph_states = "{{ pie_hosts_graph_states_states }}";
-    line_hosts_graph_states = line_hosts_graph_states.split(',');
-
+    var line_hosts_graph_states = {{ !json.dumps(graphs['pie_hosts_graph']['states']) }};
     var line_hosts_graph_data = {
         labels: [],
         datasets: {
@@ -1000,14 +999,6 @@
         ].join('')
     };
 
-    var pie_services_graph_states = "{{ pie_services_graph_states_states }}";
-    pie_services_graph_states = pie_services_graph_states.split(',');
-    $.each(['ok','warning','critical','unknown'], function( index, value ) {
-        for (var i=0; i<services_states_queue_length; i++) {
-            states_queue["nb_"+value].push(0);
-        }
-    });
-
     var pie_services_graph_parameters = {
         "ok": {
             color:"#5bb75b",
@@ -1048,9 +1039,7 @@
         ].join('')
     }
 
-    var line_services_graph_states = "{{ pie_services_graph_states_states }}";
-    line_services_graph_states = line_services_graph_states.split(',');
-
+    var line_services_graph_states = {{ !json.dumps(graphs['line_hosts_graph']['states']) }};
     var line_services_graph_data = {
         labels: [],
         datasets: {
