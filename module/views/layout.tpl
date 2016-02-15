@@ -46,6 +46,7 @@
          Shinken Framework Version: {{VERSION}}
       -->
 
+      <link href="/static/images/favicon.ico" rel="shortcut icon">
 
       <!--[if lt IE 9]>
       <script src="/static/js/ie9/html5.js"></script>
