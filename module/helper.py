@@ -81,7 +81,7 @@ class Helper(object):
     def print_date(self, t, format='%Y-%m-%d %H:%M:%S'):
         if t == 0 or t == None:
             return 'N/A'
-            
+
         if format:
             return time.strftime(format, time.localtime(t))
         else:
@@ -182,8 +182,8 @@ class Helper(object):
             for n in r:
                 res.append(n)
         return res
-            
-        
+
+
 
     def create_dep_graph_aggregation_node(self, elt):
         # {'path' : '/', 'sons' : [], 'services':[], 'state':'unknown', 'full_path':'/'}
@@ -220,7 +220,7 @@ class Helper(object):
             if len(agg_parts) > 1:
                 pre_path = '/'+'/'.join(agg_parts[:-1])
                 father = self.strip_html_id(elt.get_dbg_name()+pre_path)
-                
+
 
             pd = {'nodeTo': father,
                   'data': {"$type": "line", "$direction": [self.strip_html_id(d['id']), elt.get_dbg_name()]
@@ -231,11 +231,11 @@ class Helper(object):
             else:
                 pd['data']["$color"] = 'PaleGreen'
             d['adjacencies'].append(pd)
-            
+
             res.append(d)
 
         return res
-    
+
 
     def get_dep_graph_struct(self, elt):
         t = elt.__class__.my_type
@@ -258,7 +258,7 @@ class Helper(object):
             for n in nodes:
                 res.append(n)
 
-        
+
         # Set the right info panel
         d['data']['infos']  = helper.get_fa_icon_state(elt)
         d['data']['infos'] += self.get_link(elt, short=False)
@@ -279,8 +279,8 @@ class Helper(object):
             d['data']['circle'] = 'orange'
         else:
             d['data']['circle'] = 'none'
-        
-        
+
+
         # Now put in adj our parents
         for p in elt.parent_dependencies:
             # The link service-> host can be squize by aggregations if set
@@ -341,14 +341,17 @@ class Helper(object):
             h['bi'] = max(h.business_impact for h in hosts)
         else:
             h['bi'] = 0
-        for state in 'up', 'down', 'unreachable', 'pending':
+        for state in 'up', 'pending':
             h[state] = [i for i in hosts if i.state == state.upper()]
+        for state in 'down', 'unreachable', 'unknown':
+            h[state] = [i for i in hosts if i.state == state.upper() and not (i.problem_has_been_acknowledged or i.in_scheduled_downtime)]
+        h['problems'] = h['down'] + h['unreachable'] + h['unknown']
         h['unknown'] = list(set(h['elts']) - set(h['up']) - set(h['down']) - set(h['unreachable']) - set(h['pending']))
         h['ack'] = [i for i in hosts if i.problem_has_been_acknowledged]
         h['downtime'] = [i for i in hosts if i.in_scheduled_downtime]
-        for state in 'up', 'down', 'unreachable', 'pending', 'unknown', 'ack', 'downtime':
+        for state in 'up', 'down', 'unreachable', 'pending', 'unknown', 'ack', 'downtime', 'problems':
             h['nb_' + state] = len(h[state])
-            if hosts:
+            if h['nb_elts']:
                 h['pct_' + state] = round(100.0 * h['nb_' + state] / h['nb_elts'], 2)
             else:
                 h['pct_' + state] = 0
@@ -361,13 +364,19 @@ class Helper(object):
             s['bi'] = max(s.business_impact for s in services)
         else:
             s['bi'] = 0
-        for state in 'ok', 'critical', 'warning', 'pending', 'unknown':
+        for state in 'ok', 'pending':
             s[state] = [i for i in services if i.state == state.upper()]
+        for state in 'critical', 'warning', 'unknown':
+            s[state] = [i for i in services if i.state == state.upper() and not (
+                i.problem_has_been_acknowledged or i.host.problem_has_been_acknowledged
+                or i.in_scheduled_downtime or i.host.in_scheduled_downtime)
+                ]
+        s['problems'] = s['warning'] + s['critical'] + s['unknown']
         s['ack'] = [i for i in services if i.problem_has_been_acknowledged]
         s['downtime'] = [i for i in services if i.in_scheduled_downtime]
-        for state in 'ok', 'critical', 'warning', 'unknown', 'pending', 'ack', 'downtime':
+        for state in 'ok', 'critical', 'warning', 'unknown', 'pending', 'ack', 'downtime', 'problems':
             s['nb_' + state] = len(s[state])
-            if services:
+            if s['nb_elts']:
                 s['pct_' + state] = round(100.0 * s['nb_' + state] / s['nb_elts'], 2)
             else:
                 s['pct_' + state] = 0
@@ -547,23 +556,23 @@ class Helper(object):
     def get_urls(self, obj, url, default_title="Url", default_icon="globe", popover=False):
         '''
         Returns formatted HTML for an element URL
-        
+
         url string may contain a list of urls separated by |
-        
+
         Each url may be formatted as:
             - url,,description
             - title::description,,url
             - title,,icon::description,,url
-            
+
         description is optional
-            
+
         If title is not specified, default_title is used as title
         If icon is not specified, default_icon is used as icon
-        
+
         If popover is true, a bootstrap popover is built, else a standard link ...
         '''
         logger.debug("[WebUI] get_urls: %s / %s / %s / %d", url, default_title, default_icon, popover)
-        
+
         result = []
         for item in url.split('|'):
             try:
@@ -571,26 +580,26 @@ class Helper(object):
             except:
                 title = "%s,,%s" %(default_title, default_icon)
                 url = item
-            
+
             try:
                 (title, icon) = title.split(',,')
             except:
                 icon = default_icon
-            
-            
+
+
             try:
                 (description, real_url) = url.split(',,')
             except:
                 description = 'No description provided'
                 real_url = url
-            
+
             # Replace MACROS in url and description
             if hasattr(obj, 'get_data_for_checks'):
                 url = MacroResolver().resolve_simple_macros_in_string(real_url, obj.get_data_for_checks())
                 description = MacroResolver().resolve_simple_macros_in_string(description, obj.get_data_for_checks())
-            
+
             logger.debug("[WebUI] get_urls, found: %s / %s / %s / %s", title, icon, url, description)
-            
+
             if popover:
                 if url != '':
                     result.append('''<a href="%s" target="_blank" role="button" data-toggle="popover medium" data-html="true" data-content="%s" data-trigger="hover focus" data-placement="bottom"><i class="fa fa-%s"></i>&nbsp;%s</a>''' % (url, description, icon, title))
@@ -603,12 +612,12 @@ class Helper(object):
                     result.append('''<span title="%s"><i class="fa fa-%s"></i>&nbsp;%s</span>''' % (description, icon, title))
 
         return result
-                    
+
     def get_element_actions_url(self, obj, default_title="Url", default_icon="globe", popover=False):
         '''
         Return list of element action urls
         '''
-        
+
         if obj is not None:
             return self.get_urls(obj, obj.action_url, default_title=default_title, default_icon=default_icon, popover=popover)
 
@@ -618,7 +627,7 @@ class Helper(object):
         '''
         Return list of element notes urls
         '''
-        
+
         if obj is not None and obj.notes:
             notes = []
             i=0
@@ -633,7 +642,7 @@ class Helper(object):
                         notes.append("%s,," % (item))
                 i=i+1
                 logger.debug("[WebUI] get_element_notes_url, note: %s", notes)
-                
+
             return self.get_urls(obj, '|'.join(notes), default_title=default_title, default_icon=default_icon, popover=popover)
 
         return []
@@ -641,41 +650,41 @@ class Helper(object):
     def get_fa_icon_state(self, obj=None, cls='host', state='UP', disabled=False, label='', useTitle=True):
         '''
             Get an Html formatted string to display host/service state
-            
+
             If obj is specified, obj class and state are used.
             If obj is None, cls and state parameters are used.
-            
+
             If disabled is True, the font used is greyed
-            
+
             If label is empty, only an icon is returned
             If label is set as 'state', the icon title is used as text
             Else, the content of label is used as text near the icon.
-            
+
             If useTitle is False, do not include title attribute.
-            
-            Returns a span element containing a Font Awesome icon that depicts 
+
+            Returns a span element containing a Font Awesome icon that depicts
            consistently the host/service current state (see issue #147)
         '''
         state = obj.state.upper() if obj is not None else state.upper()
         flapping = (obj and obj.is_flapping) or state=='FLAPPING'
         ack = (obj and obj.problem_has_been_acknowledged) or state=='ACK'
         downtime = (obj and obj.in_scheduled_downtime) or state=='DOWNTIME'
-        
+
         # Icons depending upon element and real state ...
-        icons = { 'host': 
+        icons = { 'host':
                     {   'UP': 'server',
                         'DOWN': 'server',
                         'UNREACHABLE': 'server',
-                        'ACK': 'check', 
+                        'ACK': 'check',
                         'DOWNTIME': 'ambulance',
                         'FLAPPING': 'spinner fa-spin',
                         'PENDING': 'server',
                         'UNKNOWN': 'server' },
-                  'service': 
+                  'service':
                     {   'OK': 'arrow-up',
                         'CRITICAL': 'arrow-down',
                         'WARNING': 'exclamation',
-                        'ACK': 'check', 
+                        'ACK': 'check',
                         'DOWNTIME': 'ambulance',
                         'FLAPPING': 'spinner fa-spin',
                         'PENDING': 'spinner fa-circle-o-notch',
@@ -703,7 +712,7 @@ class Helper(object):
             icon = icons[cls].get(state, 'UNKNOWN')
             icon_style = ""
         front = '''<i class="fa fa-%s fa-stack-1x %s"></i>''' % (icon, icon_color)
-        
+
         if useTitle:
             icon_text = '''<span class="fa-stack" %s title="%s">%s%s</span>''' % (icon_style, title, back, front)
         else:
@@ -719,11 +728,11 @@ class Helper(object):
               <span class="font-%s">
                  %s
                  <span class="num">%s</span>
-              </span> 
+              </span>
               ''' % (color,
                      icon_text,
                      label)
-        
+
 
     def get_fa_icon_state_and_label(self, obj=None, cls='host', state='UP', label="", disabled=False, useTitle=True):
         color = state.lower() if not disabled else 'greyed'
@@ -731,7 +740,7 @@ class Helper(object):
           <span class="font-%s">
              %s
              <span class="num">%s</span>
-          </span> 
+          </span>
           ''' % (color,
                  self.get_fa_icon_state(obj=obj, cls=cls, state=state, disabled=disabled, useTitle=useTitle),
                  label)
@@ -749,7 +758,7 @@ class Helper(object):
         res = []
 
         nb_max_items = 2
-        
+
         if current_page >= nb_max_items:
             # Name, start, end, is_current
             res.append((u'«', 0, step, False))
@@ -798,15 +807,15 @@ class Helper(object):
                 #   - else 100
                 logger.debug("[WebUI] get_perfometer: %s, %s / %s", elt.get_name(), metrics[0][0], metrics[0][1])
                 s += '''<div class="progress" style="min-width:100px;">
-                            <div title="%s" class="ellipsis progress-bar progress-bar-%s" role="progressbar" aria-valuenow="%s" aria-valuemin="0" aria-valuemax="100" style="min-width: 50px; width:%s%%"> 
+                            <div title="%s" class="ellipsis progress-bar progress-bar-%s" role="progressbar" aria-valuenow="%s" aria-valuemin="0" aria-valuemax="100" style="min-width: 50px; width:%s%%">
                             %s
                             </div>
                         </div>''' % (title, metrics[0][0], metrics[0][1], metrics[0][1], title)
             if r['lnk'] != '#':
                 s += '</a>'
-                
+
             return s
-            
+
         return ''
 
     # TODO: Will look at the string s, and return a clean output without
@@ -848,17 +857,17 @@ class Helper(object):
         states = [s['state'] for s in tree['sons']]
         for s in tree['services']:
             states.append(s.state.lower())
-            
+
         # ok now look at what is worse here
         order = ['critical', 'warning', 'unknown', 'ok', 'pending']
         for o in order:
             if o in states:
                 tree['state'] = o
                 return
-                
+
         # Should be never call or we got a major problem...
         tree['state'] = 'unknown'
-        
+
     def assume_and_get_path_in_tree(self, tree, paths):
         #print "Tree on start of", paths, tree
         current_full_path = ''
@@ -928,7 +937,7 @@ class Helper(object):
         s += '<li class="list-group-item">'
         if path == '/' and len(services) > 0:
             s += """<span class="alert-small"> Others </span>"""
-            
+
         if len(services):
             s += '<ul class="list-group">'
             # Sort our services before print them
@@ -946,11 +955,11 @@ class Helper(object):
         else:
             s += "</li>"
 
-                
+
         s += "</ul>"
 
         return s
- 
+
     def print_business_rules(self, tree, level=0, source_problems=[]):
         node = tree['node']
         name = node.get_full_name()
@@ -962,7 +971,7 @@ class Helper(object):
         root_str = ''
         if node in source_problems:
             root_str = ' <span class="alert-small alert-critical"> Root problem</span>'
-            
+
         # Do not print the node if it's the root one, we already know its state!
         if level != 0:
             s += helper.get_fa_icon_state(node)
@@ -971,7 +980,7 @@ class Helper(object):
                 s += "(" + self.get_business_impact_text(node.business_impact) + ")"
             s += """ is <span class="font-%s"><strong>%s</strong></span>""" % (node.state.lower(), node.state)
             s += """ since <span title="%s">%s""" % (time.strftime("%d %b %Y %H:%M:%S", time.localtime(node.last_state_change)), self.print_duration(node.last_state_change, just_duration=True, x_elts=2))
-            
+
         # If we got no parents, no need to print the expand icon
         if len(fathers) > 0:
             # We look if the below tree is good or not
@@ -1001,11 +1010,11 @@ class Helper(object):
             s += "</ul>"
 
         return s
-   
+
     def get_timeperiod_html(self, tp):
         if len(tp.dateranges) == 0:
             return ''
-            
+
         # Build a definition list ...
         content = '''<dl>'''
         for dr in sorted(tp.dateranges, key=operator.methodcaller("get_start_and_end_time")):
@@ -1016,7 +1025,7 @@ class Helper(object):
                 content += '''<dd>%s:</dd>''' % (dr_start)
             else:
                 content += '''<dd>From: %s, to: %s</dd>''' % (dr_start, dr_end)
-                
+
             if len(dr.timeranges) > 0:
                 content += '''<dt>'''
                 idx=1
@@ -1025,14 +1034,14 @@ class Helper(object):
                     idx += 1
                 content += '''</dt>'''
         content += '''</dl>'''
-            
+
         # Build a definition list ...
         if tp.exclude:
             content += '''<dl> Excluded: '''
             for excl in tp.exclude:
                 content += self.get_timeperiod_html(excl)
             content += '''</dl>'''
-    
+
         return content
 
     def state_to_class(self, state):
