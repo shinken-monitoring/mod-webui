@@ -4,42 +4,26 @@
 %import json
 
 %setdefault('panels', None)
+%create_panels_preferences = False
 %if not 'panel_counters_hosts' in panels:
+%create_panels_preferences = True
 %panels['panel_counters_hosts'] = {'collapsed': False}
-%end
-%if not 'panel_counters_services' in panels:
 %panels['panel_counters_services'] = {'collapsed': False}
-%end
-%if not 'panel_percentage_hosts' in panels:
 %panels['panel_percentage_hosts'] = {'collapsed': False}
-%end
-%if not 'panel_percentage_services' in panels:
 %panels['panel_percentage_services'] = {'collapsed': False}
-%end
-%if not 'panel_piecharts_hosts' in panels:
 %panels['panel_piecharts_hosts'] = {'collapsed': False}
-%end
-%if not 'panel_piecharts_services' in panels:
 %panels['panel_piecharts_services'] = {'collapsed': False}
-%end
-%if not 'panel_barcharts_hosts' in panels:
 %panels['panel_barcharts_hosts'] = {'collapsed': False}
-%end
-%if not 'panel_barcharts_services' in panels:
 %panels['panel_barcharts_services'] = {'collapsed': False}
 %end
 
 %setdefault('graphs', None)
+%create_graphs_preferences = False
 %if not 'pie_hosts_graph' in graphs:
+%create_graphs_preferences = True
 %graphs['pie_hosts_graph'] = {'legend': True, 'title': True, 'states': ['up','down','unreachable','unknown']}
-%end
-%if not 'pie_services_graph' in graphs:
 %graphs['pie_services_graph'] = {'legend': True, 'title': True, 'states': ['ok','warning','critical','unknown']}
-%end
-%if not 'line_hosts_graph' in graphs:
 %graphs['line_hosts_graph'] = {'legend': True, 'title': True, 'states': ['up','down','unreachable','unknown']}
-%end
-%if not 'line_services_graph' in graphs:
 %graphs['line_services_graph'] = {'legend': True, 'title': True, 'states': ['ok','warning','critical','unknown']}
 %end
 %setdefault('hosts_states_queue_length', 10)
@@ -54,6 +38,13 @@
 
     panels = {{ ! json.dumps(panels) }};
     graphs = {{ ! json.dumps(graphs) }};
+
+    %if create_panels_preferences:
+    save_user_preference('panels', JSON.stringify(panels));
+    %end
+    %if create_graphs_preferences:
+    save_user_preference('graphs', JSON.stringify(graphs));
+    %end
 
     // Function called on each page refresh ... update graphs!
     function on_page_refresh() {
@@ -70,9 +61,7 @@
                 graphs=data;
                 console.log(graphs);
 
-                console.log('Chart !')
                 if ($("#chart-hosts").length !== 0) {
-                    console.log('Chart !')
                     var data = [];
                     %for state in graphs['pie_hosts_graph']['states']:
                         var counter_value = parseInt($('#one-eye-overall span.hosts-count[data-state="{{state}}"]').data("count"));
@@ -91,7 +80,8 @@
                     // Update graph
                     var ctx = $("#chart-hosts canvas").get(0).getContext("2d");
                     var myPieChart = new Chart(ctx).Doughnut(data, pie_hosts_graph_options);
-                    if (graphs['pie_hosts_graph']['title']) {
+                    console.log(graphs['pie_hosts_graph'])
+                    if (graphs['pie_hosts_graph'].title) {
                         $("#chart-hosts .title").show();
                         $("#chart-hosts .title span").html(hosts_count + " hosts").show();
                     } else {

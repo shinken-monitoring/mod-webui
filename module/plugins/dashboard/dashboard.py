@@ -87,7 +87,7 @@ def get_currently():
     # If void, create an empty one
     if not s:
         app.prefs_module.set_ui_user_preference(user, 'panels', '{}')
-        s = '[]'
+        s = '{}'
     panels = json.loads(s)
 
     # Search graphs preferences
@@ -95,7 +95,7 @@ def get_currently():
     # If void, create an empty one
     if not s:
         app.prefs_module.set_ui_user_preference(user, 'graphs', '{}')
-        s = '[]'
+        s = '{}'
     graphs = json.loads(s)
 
     return {'panels': panels, 'graphs': graphs}
