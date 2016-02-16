@@ -346,7 +346,7 @@ class Helper(object):
         for state in 'down', 'unreachable', 'unknown':
             h[state] = [i for i in hosts if i.state == state.upper() and not (i.problem_has_been_acknowledged or i.in_scheduled_downtime)]
         h['problems'] = h['down'] + h['unreachable'] + h['unknown']
-        h['unknown'] = list(set(h['elts']) - set(h['up']) - set(h['down']) - set(h['unreachable']) - set(h['pending']))
+        # h['unknown'] = list(set(h['elts']) - set(h['up']) - set(h['down']) - set(h['unreachable']) - set(h['pending']))
         h['ack'] = [i for i in hosts if i.problem_has_been_acknowledged]
         h['downtime'] = [i for i in hosts if i.in_scheduled_downtime]
         for state in 'up', 'down', 'unreachable', 'pending', 'unknown', 'ack', 'downtime', 'problems':
