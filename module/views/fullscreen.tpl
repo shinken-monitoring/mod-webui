@@ -35,6 +35,7 @@
          Shinken Framework Version: {{VERSION}}
       -->
 
+      <link href="/static/images/favicon.ico" rel="shortcut icon">
 
       <!--[if lt IE 9]>
       <script src="/static/js/ie9/html5.js"></script>
@@ -57,8 +58,8 @@
 
       <!-- Scripts
       ================================================== -->
-      <script src="/static/js/jquery-1.11.1.min.js"></script>
-      <script src="/static/js/jquery-ui-1.10.3.min.js"></script>
+      <script src="/static/js/jquery-1.12.0.min.js"></script>
+      <script src="/static/js/jquery-ui-1.11.4.min.js"></script>
       <script src="/static/js/bootstrap.min.js"></script>
 
       <script src="/static/js/moment.min.js"></script>
