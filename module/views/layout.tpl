@@ -81,7 +81,7 @@
 
       <!-- Scripts
       ================================================== -->
-      <script src="/static/js/jquery-1.11.1.min.js"></script>
+      <script src="/static/js/jquery-1.12.0.min.js"></script>
       <script src="/static/js/bootstrap.min.js"></script>
       <script src="/static/js/bootstrap-tab-bookmark.js"></script>
       <script src="/static/js/metisMenu.min.js"></script>
