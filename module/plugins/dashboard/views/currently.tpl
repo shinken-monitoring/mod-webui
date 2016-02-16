@@ -6,7 +6,6 @@
 %setdefault('panels', None)
 %create_panels_preferences = False
 %if not 'panel_counters_hosts' in panels:
-%create_panels_preferences = True
 %panels['panel_counters_hosts'] = {'collapsed': False}
 %panels['panel_counters_services'] = {'collapsed': False}
 %panels['panel_percentage_hosts'] = {'collapsed': False}
@@ -15,19 +14,24 @@
 %panels['panel_piecharts_services'] = {'collapsed': False}
 %panels['panel_barcharts_hosts'] = {'collapsed': False}
 %panels['panel_barcharts_services'] = {'collapsed': False}
+%create_panels_preferences = True
 %end
 
 %setdefault('graphs', None)
+%setdefault('hosts_states', ['up','down','unreachable','unknown'])
+%setdefault('services_states', ['ok','warning','critical','unknown'])
+
 %create_graphs_preferences = False
 %if not 'pie_hosts_graph' in graphs:
+%graphs['pie_hosts_graph'] = {'legend': True, 'title': True, 'states': hosts_states}
+%graphs['pie_services_graph'] = {'legend': True, 'title': True, 'states': services_states}
+%graphs['line_hosts_graph'] = {'legend': True, 'title': True, 'states': hosts_states}
+%graphs['line_services_graph'] = {'legend': True, 'title': True, 'states': services_states}
 %create_graphs_preferences = True
-%graphs['pie_hosts_graph'] = {'legend': True, 'title': True, 'states': ['up','down','unreachable','unknown']}
-%graphs['pie_services_graph'] = {'legend': True, 'title': True, 'states': ['ok','warning','critical','unknown']}
-%graphs['line_hosts_graph'] = {'legend': True, 'title': True, 'states': ['up','down','unreachable','unknown']}
-%graphs['line_services_graph'] = {'legend': True, 'title': True, 'states': ['ok','warning','critical','unknown']}
 %end
-%setdefault('hosts_states_queue_length', 10)
-%setdefault('services_states_queue_length', 10)
+
+%setdefault('hosts_states_queue_length', 50)
+%setdefault('services_states_queue_length', 50)
 
 
 %helper = app.helper
@@ -56,10 +60,8 @@
         // Refresh user's preferences
         get_user_preference('panels', function(data) {
             panels=data;
-            console.log(panels);
             get_user_preference('graphs', function(data) {
                 graphs=data;
-                console.log(graphs);
 
                 if ($("#chart-hosts").length !== 0) {
                     var data = [];
@@ -70,17 +72,11 @@
                         row = pie_hosts_graph_parameters["{{state}}"];
                         row['value'] = counter_value;
                         data.push(row)
-
-                        if (states_queue["nb_hosts_{{state}}"].length > hosts_states_queue_length) {
-                            states_queue["nb_hosts_{{state}}"].shift();
-                        }
-                        states_queue["nb_hosts_{{state}}"].push( counter_value );
                     %end
 
                     // Update graph
                     var ctx = $("#chart-hosts canvas").get(0).getContext("2d");
                     var myPieChart = new Chart(ctx).Doughnut(data, pie_hosts_graph_options);
-                    console.log(graphs['pie_hosts_graph'])
                     if (graphs['pie_hosts_graph'].title) {
                         $("#chart-hosts .title").show();
                         $("#chart-hosts .title span").html(hosts_count + " hosts").show();
@@ -108,10 +104,17 @@
                     data['labels'] = line_hosts_graph_data['labels'];
                     data['datasets'] = [];
                     %for state in graphs['line_hosts_graph']['states']:
+                        var counter_value = parseInt($('#one-eye-overall span.hosts-count[data-state="{{state}}"]').data("count"));
+
                         // Update table rows
                         row = line_hosts_graph_data['datasets']["{{state}}"];
                         row['data'] = states_queue["nb_hosts_{{state}}"];
                         data['datasets'].push(row);
+
+                        if (states_queue["nb_hosts_{{state}}"].length > hosts_states_queue_length) {
+                            states_queue["nb_hosts_{{state}}"].shift();
+                        }
+                        states_queue["nb_hosts_{{state}}"].push( counter_value );
                     %end
 
                     // Get the context of the canvas element we want to select
@@ -148,11 +151,6 @@
                         row = pie_services_graph_parameters["{{state}}"];
                         row['value'] = counter_value;
                         data.push(row)
-
-                        if (states_queue["nb_services_{{state}}"].length > services_states_queue_length) {
-                        states_queue["nb_services_{{state}}"].shift();
-                        }
-                        states_queue["nb_services_{{state}}"].push(counter_value);
                     %end
 
                     // Get the context of the canvas element we want to select
@@ -184,10 +182,17 @@
                     data['labels'] = line_services_graph_data['labels'];
                     data['datasets'] = [];
                     %for state in graphs['line_services_graph']['states']:
+                        var counter_value = parseInt($('#one-eye-overall span.services-count[data-state="{{state}}"]').data("count"));
+
                         // Update table rows
                         row = line_services_graph_data['datasets']["{{state}}"];
                         row['data'] = states_queue["nb_services_{{state}}"];
                         data['datasets'].push(row);
+
+                        if (states_queue["nb_services_{{state}}"].length > services_states_queue_length) {
+                            states_queue["nb_services_{{state}}"].shift();
+                        }
+                        states_queue["nb_services_{{state}}"].push(counter_value);
                     %end
 
                     // Get the context of the canvas element we want to select
@@ -239,9 +244,11 @@
             });
         }
 
+        /*
         setTimeout(function() {
             $('#one-eye-toolbar').hide();
         }, 2000);
+        */
 
         // Toggle sound ...
         if (sessionStorage.getItem("sound_play") == '1') {
@@ -254,15 +261,19 @@
         $('body').on('hidden.bs.collapse', '.panel', function () {
             stop_refresh();
             panels[$(this).attr('id')].collapsed = true;
+            $(this).find('.fa-minus-square').removeClass('fa-minus-square').addClass('fa-plus-square');
             save_user_preference('panels', JSON.stringify(panels), function() {
                 start_refresh();
+                do_refresh();
             });
         });
         $('body').on('shown.bs.collapse', '.panel', function () {
             stop_refresh();
             panels[$(this).attr('id')].collapsed = false;
+            $(this).find('.fa-plus-square').removeClass('fa-plus-square').addClass('fa-minus-square');
             save_user_preference('panels', JSON.stringify(panels), function() {
                 start_refresh();
+                do_refresh();
             });
         });
 
@@ -316,7 +327,7 @@
    } else {
       $('#sound_alerting i.fa-ban').removeClass('hidden');
    }
-   $('[action="toggle-sound-alert"]').on('click', function (e, data) {
+   $('body').on('click', '[action="toggle-sound-alert"]', function (e, data) {
       if (sessionStorage.getItem("sound_play") == '1') {
          sessionStorage.setItem("sound_play", "0");
          $('#sound_alerting i.fa-ban').removeClass('hidden');
@@ -339,18 +350,18 @@
         <div class="col-md-12 col-lg-12">
             <ul class="nav navbar-nav navbar-left">
                 <li>
-                    <a tabindex="0" class="font-darkgrey" role="button" title="Back to UI" href="/dashboard">
+                    <a tabindex="0" class="font-darkgrey" role="button" title="Close" href="/dashboard">
                         <span id="back-dashboard" class="fa-stack">
-                            <i class="fa fa-home"></i>
-                            <i class="fa fa-ban fa-stack-2x text-danger hidden"></i>
+                            <i class="fa fa-home fa-stack-1x"></i>
+                            <i class="fa fa-ban fa-stack-2x hidden"></i>
                         </span>
                     </a>
                 </li>
                 <li>
                     <a tabindex="0" class="font-darkgrey" role="button" title="Got to fullscreen" href="#" action="fullscreen-request">
                         <span id="go-fullscreen" class="fa-stack">
-                            <i class="fa fa-desktop"></i>
-                            <i class="fa fa-ban fa-stack-2x text-danger hidden"></i>
+                            <i class="fa fa-desktop fa-stack-1x"></i>
+                            <i class="fa fa-ban fa-stack-2x hidden"></i>
                         </span>
                     </a>
                 </li>
@@ -358,7 +369,7 @@
                 <li>
                     <a tabindex="0" class="font-darkgrey" role="button" title="Sound alerting" href="#" action="toggle-sound-alert">
                         <span id="sound_alerting" class="fa-stack">
-                            <i class="fa fa-music"></i>
+                            <i class="fa fa-music fa-stack-1x"></i>
                             <i class="fa fa-ban fa-stack-2x text-danger hidden"></i>
                         </span>
                     </a>
@@ -368,10 +379,10 @@
 
             <ul class="nav navbar-nav navbar-right">
                 <li>
-                    <a tabindex="0" class="font-darkgrey" role="button" title="Back to UI" href="/dashboard">
+                    <p class="navbar-text font-darkgrey">
                        <span id="date"></span>
                        <span id="clock"></span>
-                    </a>
+                    </p>
                 </li>
             </ul>
         </div>
@@ -391,7 +402,7 @@
                         {{h['nb_elts']}} hosts{{! "<em class='font-down'> (%d problems).</em>" % (h['nb_problems']) if h['nb_problems'] else '.'}}
                     </span>
                     <div class="pull-right">
-                        <a href="#p_panel_counters_hosts" data-toggle="collapse" type="button" class="btn btn-xs"><i class="fa fa-minus-square fa-fw"></i></a>
+                        <a href="#p_panel_counters_hosts" data-toggle="collapse" type="button" class="btn btn-xs"><i class="fa {{'fa-minus-square' if not panels['panel_counters_hosts']['collapsed'] else 'fa-plus-square'}} fa-fw"></i></a>
                     </div>
                 </div>
                 <div id="p_panel_counters_hosts" class="panel-collapse collapse {{'in' if not panels['panel_counters_hosts']['collapsed'] else ''}}">
@@ -425,7 +436,7 @@
                         {{s['nb_elts']}} services{{! "<em class='font-down'> (%d problems).</em>" % (s['nb_problems']) if s['nb_problems'] else '.'}}
                     </span>
                     <div class="pull-right">
-                        <a href="#p_panel_counters_services" data-toggle="collapse" type="button" class="btn btn-xs"><i class="fa fa-minus-square fa-fw"></i></a>
+                        <a href="#p_panel_counters_services" data-toggle="collapse" type="button" class="btn btn-xs"><i class="fa {{'fa-minus-square' if not panels['panel_counters_services']['collapsed'] else 'fa-plus-square'}} fa-fw"></i></a>
                     </div>
                 </div>
                 <div id="p_panel_counters_services" class="panel-collapse collapse {{'in' if not panels['panel_counters_services']['collapsed'] else ''}}">
@@ -461,7 +472,7 @@
                         {{h['nb_elts']}} hosts{{! "<em class='font-down'> (%d problems).</em>" % (h['nb_problems']) if h['nb_problems'] else '.'}}
                     </span>
                     <div class="pull-right">
-                        <a href="#p_panel_percentage_hosts" data-toggle="collapse" type="button" class="btn btn-xs"><i class="fa fa-minus-square fa-fw"></i></a>
+                        <a href="#p_panel_percentage_hosts" data-toggle="collapse" type="button" class="btn btn-xs"><i class="fa {{'fa-minus-square' if not panels['panel_percentage_hosts']['collapsed'] else 'fa-plus-square'}} fa-fw"></i></a>
                     </div>
                 </div>
                 <div id="p_panel_percentage_hosts" class="panel-collapse collapse {{'in' if not panels['panel_percentage_hosts']['collapsed'] else ''}}">
@@ -554,7 +565,7 @@
                         {{s['nb_elts']}} services{{! "<em class='font-down'> (%d problems).</em>" % (s['nb_problems']) if s['nb_problems'] else '.'}}
                     </span>
                     <div class="pull-right">
-                        <a href="#p_panel_percentage_services" data-toggle="collapse" type="button" class="btn btn-xs"><i class="fa fa-minus-square fa-fw"></i></a>
+                        <a href="#p_panel_percentage_services" data-toggle="collapse" type="button" class="btn btn-xs"><i class="fa {{'fa-minus-square' if not panels['panel_percentage_services']['collapsed'] else 'fa-plus-square'}} fa-fw"></i></a>
                     </div>
                 </div>
                 <div id="p_panel_percentage_services" class="panel-collapse collapse {{'in' if not panels['panel_percentage_services']['collapsed'] else ''}}">
@@ -658,18 +669,18 @@
                             <ul class="dropdown-menu pull-right" role="menu">
                                 <li>
                                     <a href="#" data-action="toggle-legend" data-graph="pie_hosts_graph" class="{{'active' if graphs['pie_hosts_graph']['legend'] else ''}}">
-                                        {{! helper.get_on_off(graphs['pie_hosts_graph']['legend'], 'Display graph legend?')}}&nbsp;legend
+                                        {{! helper.get_on_off(graphs['pie_hosts_graph']['legend'], 'Display graph legend?')}}&nbsp;display legend
                                     </a>
                                 </li>
                                 <li class="divider"></li>
                                 <li>
                                     <a href="#" data-action="toggle-title" data-graph="pie_hosts_graph" class="{{'active' if graphs['pie_hosts_graph']['title'] else ''}}">
-                                        {{! helper.get_on_off(graphs['pie_hosts_graph']['title'], 'Display graph title?')}}&nbsp;title
+                                        {{! helper.get_on_off(graphs['pie_hosts_graph']['title'], 'Display graph title?')}}&nbsp;display title
                                     </a>
                                 </li>
                             </ul>
                         </div>
-                        <a href="#p_panel_piecharts_hosts" data-toggle="collapse" type="button" class="btn btn-xs"><i class="fa fa-minus-square fa-fw"></i></a>
+                        <a href="#p_panel_piecharts_hosts" data-toggle="collapse" type="button" class="btn btn-xs"><i class="fa {{'fa-minus-square' if not panels['panel_piecharts_hosts']['collapsed'] else 'fa-plus-square'}} fa-fw"></i></a>
                     </div>
                 </div>
                 <div id="p_panel_piecharts_hosts" class="panel-collapse collapse {{'in' if not panels['panel_piecharts_hosts']['collapsed'] else ''}}">
@@ -711,18 +722,18 @@
                             <ul class="dropdown-menu pull-right" role="menu">
                                 <li>
                                     <a href="#" data-action="toggle-legend" data-graph="pie_services_graph" class="{{'active' if graphs['pie_services_graph']['legend'] else ''}}">
-                                        {{! helper.get_on_off(graphs['pie_services_graph']['legend'], 'Display graph legend?')}}&nbsp;legend
+                                        {{! helper.get_on_off(graphs['pie_services_graph']['legend'], 'Display graph legend?')}}&nbsp;display legend
                                     </a>
                                 </li>
                                 <li class="divider"></li>
                                 <li>
                                     <a href="#" data-action="toggle-title" data-graph="pie_services_graph" class="{{'active' if graphs['pie_services_graph']['title'] else ''}}">
-                                        {{! helper.get_on_off(graphs['pie_services_graph']['title'], 'Display graph title?')}}&nbsp;title
+                                        {{! helper.get_on_off(graphs['pie_services_graph']['title'], 'Display graph title?')}}&nbsp;display title
                                     </a>
                                 </li>
                             </ul>
                         </div>
-                        <a href="#p_panel_piecharts_services" data-toggle="collapse" type="button" class="btn btn-xs"><i class="fa fa-minus-square fa-fw"></i></a>
+                        <a href="#p_panel_piecharts_services" data-toggle="collapse" type="button" class="btn btn-xs"><i class="fa {{'fa-minus-square' if not panels['panel_piecharts_services']['collapsed'] else 'fa-plus-square'}} fa-fw"></i></a>
                     </div>
                 </div>
                 <div id="p_panel_piecharts_services" class="panel-collapse collapse {{'in' if not panels['panel_piecharts_services']['collapsed'] else ''}}">
@@ -764,18 +775,18 @@
                             <ul class="dropdown-menu pull-right" role="menu">
                                 <li>
                                     <a href="#" data-action="toggle-legend" data-graph="line_hosts_graph" class="{{'active' if graphs['line_hosts_graph']['legend'] else ''}}">
-                                        {{! helper.get_on_off(graphs['line_hosts_graph']['legend'], 'Display graph legend?')}}&nbsp;legend
+                                        {{! helper.get_on_off(graphs['line_hosts_graph']['legend'], 'Display graph legend?')}}&nbsp;display legend
                                     </a>
                                 </li>
                                 <li class="divider"></li>
                                 <li>
                                     <a href="#" data-action="toggle-title" data-graph="line_hosts_graph" class="{{'active' if graphs['line_hosts_graph']['title'] else ''}}">
-                                        {{! helper.get_on_off(graphs['line_hosts_graph']['title'], 'Display graph title?')}}&nbsp;title
+                                        {{! helper.get_on_off(graphs['line_hosts_graph']['title'], 'Display graph title?')}}&nbsp;display title
                                     </a>
                                 </li>
                             </ul>
                         </div>
-                        <a href="#p_panel_barcharts_hosts" data-toggle="collapse" type="button" class="btn btn-xs"><i class="fa fa-minus-square fa-fw"></i></a>
+                        <a href="#p_panel_barcharts_hosts" data-toggle="collapse" type="button" class="btn btn-xs"><i class="fa {{'fa-minus-square' if not panels['panel_barcharts_hosts']['collapsed'] else 'fa-plus-square'}} fa-fw"></i></a>
                     </div>
                 </div>
                 <div id="p_panel_barcharts_hosts" class="panel-collapse collapse {{'in' if not panels['panel_barcharts_hosts']['collapsed'] else ''}}">
@@ -817,18 +828,18 @@
                             <ul class="dropdown-menu pull-right" role="menu">
                                 <li>
                                     <a href="#" data-action="toggle-legend" data-graph="line_services_graph" class="{{'active' if graphs['line_services_graph']['legend'] else ''}}">
-                                        {{! helper.get_on_off(graphs['line_services_graph']['legend'], 'Display graph legend?')}}&nbsp;legend
+                                        {{! helper.get_on_off(graphs['line_services_graph']['legend'], 'Display graph legend?')}}&nbsp;display legend
                                     </a>
                                 </li>
                                 <li class="divider"></li>
                                 <li>
                                     <a href="#" data-action="toggle-title" data-graph="line_services_graph" class="{{'active' if graphs['line_services_graph']['title'] else ''}}">
-                                        {{! helper.get_on_off(graphs['line_services_graph']['title'], 'Display graph title?')}}&nbsp;title
+                                        {{! helper.get_on_off(graphs['line_services_graph']['title'], 'Display graph title?')}}&nbsp;display title
                                     </a>
                                 </li>
                             </ul>
                         </div>
-                        <a href="#p_panel_barcharts_services" data-toggle="collapse" type="button" class="btn btn-xs"><i class="fa fa-minus-square fa-fw"></i></a>
+                        <a href="#p_panel_barcharts_services" data-toggle="collapse" type="button" class="btn btn-xs"><i class="fa {{'fa-minus-square' if not panels['panel_barcharts_services']['collapsed'] else 'fa-plus-square'}} fa-fw"></i></a>
                     </div>
                 </div>
                 <div id="p_panel_barcharts_services" class="panel-collapse collapse {{'in' if not panels['panel_barcharts_services']['collapsed'] else ''}}">
