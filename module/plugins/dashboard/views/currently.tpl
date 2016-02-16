@@ -333,7 +333,7 @@
 %h = synthesis['hosts']
 
 %if username != 'anonymous':
-<div class="container-fluid" style="position: relative; top:0; left: 0; z-index: 1000">
+<div class="container-fluid">
 <div class="row">
     <div id="one-eye-toolbar" class="col-xs-12">
         <div class="col-md-12 col-lg-12">
@@ -381,7 +381,7 @@
 %end
 
 <div class="container-fluid">
-<div class="row" style="position: absolute; top:30px; left: 0; z-index: 1000">
+<div class="row" style="position: absolute; top:60px; left: 0; z-index: 1000">
     <div id="one-eye-overall" class="col-xs-12">
         <div class="col-md-6">
             <div class="panel panel-default" id="panel_counters_hosts">
