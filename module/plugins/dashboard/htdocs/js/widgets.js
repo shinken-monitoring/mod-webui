@@ -53,8 +53,7 @@ function AddWidget(url, options, placeId, replace){
    // Loading indicator ...
    $("#widgets_loading").html('<i class="fa fa-spinner fa-spin fa-3x"></i> <span class="lead">Loading widgets ... </span>').show();
 
-   // We also hide the central span with the big button
-   // And show the little one
+   // We also hide the widgets proposal area ...
    $('#propose-widgets').hide();
 
    //If we replace the widget like in reload,
@@ -109,7 +108,7 @@ function reloadWidget(name){
 
    var widget = search_widget(name);
    if (widget == -1) {
-      console.error("Widget not found: ", name);
+      if (widgets_logs) console.error("Widget not found: ", name);
       return;
    }
 
@@ -119,7 +118,7 @@ function reloadWidget(name){
 
    container = $('#' + widget.id).parent();
 
-   //Do not delete the container to keep the correct widget order.
+   // Do not delete the container to keep the correct widget order.
    $('#' + widget.id).remove();
 
    AddWidget(widget.base_url, widget.options, container, true);
@@ -153,7 +152,6 @@ function saveWidgets(callback){
          return;
       }
 
-      //id = w.id;
       var widget = search_widget(w.id);
       // Find the widget and check if it was not closed
       // RMQ : widget_context came from a global value set by the page.
@@ -209,7 +207,7 @@ $(function(){
    // Very basic usage
    var easy_widget_mgr = $.fn.EasyWidgets({
       i18n : {
-            editText : '<i class="fa fa-edit font-grey"></i>',/*<img src="./edit.png" alt="Edit" width="16" height="16" />',*/
+            editText : '<i class="fa fa-edit font-grey"></i>',
             closeText : '<i class="fa fa-trash-o font-grey"></i>',
             collapseText : '<i class="fa fa-chevron-up font-grey"></i>',
             cancelEditText : '<i class="fa fa-edit font-grey"></i>',
@@ -231,21 +229,19 @@ $(function(){
             if (widgets_logs) console.debug("Collapse widget: ", widget);
 
             var w = search_widget(widget.attr('id'));
-            if(w != -1){
-               // We finally save the new position
+            if (w != -1){
                w.collapsed = true;
+               saveWidgets();
             }
-            saveWidgets();
          },
          onExtend : function(link, widget){
             if (widgets_logs) console.debug("Extend widget: ", widget);
 
             var w = search_widget(widget.attr('id'));
-            if(w != -1){
-               // We finally save the new position
+            if (w != -1){
                w.collapsed = false;
+               saveWidgets();
             }
-            saveWidgets();
          },
          onClose : function(link, widget){
             if (widgets_logs) console.debug("Close widget: ", widget);
@@ -253,12 +249,10 @@ $(function(){
             // On close, save all
             saveWidgets();
 
-            // If we got not more widget, we get back the center button,
-            // and hide the little one.
-            // WARNING : we are before the real DEL, so we remove if it's the last one
+            // If we have no more widget, ...
             if (widgets.length == 1){
-               $('#center-button').show();
-               $('#small_show_panel').hide();
+               // ... so we display the widgets proposal area.
+               $('#propose-widgets').show();
             }
          },
          onChangePositions : function(positions){
