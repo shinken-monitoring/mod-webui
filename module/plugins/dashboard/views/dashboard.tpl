@@ -53,7 +53,7 @@
 </table>
 
 %if app.prefs_module.is_available():
-   <div class="panel panel-default" id="propose-widgets" style="'display:none' if len(widgets) == 0 else 'display:block'">
+   <div class="panel panel-default" id="propose-widgets" style="display:none">
       <div class="panel-heading" style="padding-bottom: -10">
          <center>
             <h3>You don't have any widget yet ...</h3>
@@ -95,6 +95,11 @@
 
 <script type="text/javascript">
    $(function () {
+      %if not len(widgets):
+         // display the widgets proposal area.
+         $('#propose-widgets').show();
+      %end
+
       // Show actions bar ...
       show_actions('dashboard-actions');
 
