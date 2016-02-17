@@ -82,7 +82,7 @@ function playAlertSound() {
  * ---------------------------------------------------------------------------
  */
 var processing_refresh = false;
-function do_refresh(){
+function do_refresh(forced){
    if (processing_refresh) {
       if (refresh_logs) console.debug("Avoid simultaneous refreshes ...");
       return;
@@ -114,26 +114,6 @@ function do_refresh(){
          $('#hosts-states-popover-content').html($response.find('#hosts-states-popover-content').html());
          $('#overall-services-states').html($response.find('#overall-services-states').html());
          $('#services-states-popover-content').html($response.find('#services-states-popover-content').html());
-
-         var nb_problems=0;
-         nb_problems += parseInt($('#overall-hosts-states a span').html());
-         nb_problems += parseInt($('#overall-services-states a span').html());
-         if (refresh_logs) console.debug("Hosts/Services problems", nb_problems);
-
-         var old_problems = Number(sessionStorage.getItem("how_many_problems_actually"));
-         // Sound alerting
-         if (sessionStorage.getItem("sound_play") == '1') {
-            if (! sessionStorage.getItem("how_many_problems_actually")) {
-               // Default is current value ...
-               sessionStorage.setItem("how_many_problems_actually", nb_problems);
-            }
-            if (refresh_logs) console.debug("Dashboard currently - stored problems number:", old_problems);
-            if (old_problems < nb_problems) {
-               if (refresh_logs) console.debug("Dashboard - play sound!");
-               playAlertSound();
-            }
-         }
-         sessionStorage.setItem("how_many_problems_actually", nb_problems);
       }
 
       // Refresh Dashboard currently ...
@@ -141,31 +121,6 @@ function do_refresh(){
          $('#one-eye-overall').html($response.find('#one-eye-overall').html());
          $('#one-eye-icons').html($response.find('#one-eye-icons').html());
          $('#livestate-graphs').html($response.find('#livestate-graphs').html());
-
-         var nb_problems=0;
-         nb_problems += parseInt($('#one-eye-overall span.hosts-all').data("problems"));
-         nb_problems += parseInt($('#one-eye-overall span.services-all').data("problems"));
-         if (refresh_logs) console.debug("Dashboard currently - Hosts/Services problems", nb_problems);
-
-         var old_problems = Number(sessionStorage.getItem("how_many_problems_actually"));
-         // Sound alerting
-         if (sessionStorage.getItem("sound_play") == '1') {
-            if (! sessionStorage.getItem("how_many_problems_actually")) {
-               // Default is current value ...
-               sessionStorage.setItem("how_many_problems_actually", nb_problems);
-            }
-            if (refresh_logs) console.debug("Dashboard currently - stored problems number:", old_problems);
-            if (old_problems < nb_problems) {
-               if (refresh_logs) console.debug("Dashboard currently - play sound!");
-               playAlertSound();
-            }
-         }
-         if (old_problems < nb_problems) {
-            var message = (nb_problems - old_problems) + " new " + ((nb_problems - old_problems)==1 ? "problem" : "problems") + " since last "+refresh_timeout+" seconds."
-            alertify.log((nb_problems - old_problems) + " new problems since last "+refresh_timeout+" seconds.", "warning", 5000);
-         }
-         sessionStorage.setItem("how_many_problems_actually", nb_problems);
-         if (refresh_logs) console.debug("Dashboard currently - updated stored problems number:", Number(sessionStorage.getItem("how_many_problems_actually")));
       }
 
       /* Because of what is explained in the previous comment ... we must use this
@@ -227,7 +182,7 @@ function do_refresh(){
       // Each plugin may provide its on_page_refresh function that will be called here ...
       if (typeof on_page_refresh !== 'undefined' && $.isFunction(on_page_refresh)) {
          if (refresh_logs) console.debug('Calling page refresh function ...');
-         on_page_refresh();
+         on_page_refresh(forced);
       }
 
       /*

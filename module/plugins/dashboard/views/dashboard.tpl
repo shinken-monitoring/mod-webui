@@ -94,7 +94,61 @@
 </div>
 
 <script type="text/javascript">
+    var dashboard_logs = true;
+
+    // Function called on each page refresh ... update graphs!
+    function on_page_refresh(forced) {
+        // Hosts data
+        var hosts_count = parseInt($('#overall-hosts-states .hosts-all').data("count"));
+        var hosts_problems = parseInt($('#overall-hosts-states .hosts-all').data("problems"));
+        if (! sessionStorage.getItem("hosts_problems")) {
+           sessionStorage.setItem("hosts_problems", hosts_problems);
+        }
+        var old_hosts_problems = Number(sessionStorage.getItem("hosts_problems"));
+        if (dashboard_logs) console.debug("Hosts: ", hosts_count, hosts_problems, old_hosts_problems);
+
+        // Services data
+        var services_count = parseInt($('#overall-services-states .services-all').data("count"));
+        var services_problems = parseInt($('#overall-services-states .services-all').data("problems"));
+        if (! sessionStorage.getItem("services_problems")) {
+           sessionStorage.setItem("services_problems", services_problems);
+        }
+        var old_services_problems = Number(sessionStorage.getItem("services_problems"));
+        if (dashboard_logs) console.debug("services: ", services_count, services_problems, old_services_problems);
+
+        // Sound alerting
+        if (sessionStorage.getItem("sound_play") == '1') {
+            if ((old_hosts_problems < hosts_problems) || (old_services_problems < services_problems)) {
+               playAlertSound();
+            }
+        }
+        if (old_hosts_problems < hosts_problems) {
+            var message = (hosts_problems - old_hosts_problems) + " more " + ((hosts_problems - old_hosts_problems)==1 ? "hosts problem" : "hosts problems") + " since last "+app_refresh_period+" seconds."
+            alertify.log(message, "error", 5000);
+            if (dashboard_logs) console.debug(message);
+        }
+        if (hosts_problems < old_hosts_problems) {
+            var message = (old_hosts_problems - hosts_problems) + " less " + ((old_hosts_problems - hosts_problems)==1 ? "hosts problem" : "hosts problems") + " since last "+app_refresh_period+" seconds."
+            alertify.log(message, "success", 5000);
+            if (dashboard_logs) console.debug(message);
+        }
+        sessionStorage.setItem("hosts_problems", hosts_problems);
+        if (old_services_problems < services_problems) {
+            var message = (services_problems - old_services_problems) + " more " + ((services_problems - old_services_problems)==1 ? "services problem" : "services problems") + " since last "+app_refresh_period+" seconds."
+            alertify.log(message, "error", 5000);
+            if (dashboard_logs) console.debug(message);
+        }
+        if (services_problems < old_services_problems) {
+            var message = (old_services_problems - services_problems) + " less " + ((old_services_problems - services_problems)==1 ? "services problem" : "services problems") + " since last "+app_refresh_period+" seconds."
+            alertify.log(message, "success", 5000);
+            if (dashboard_logs) console.debug(message);
+        }
+        sessionStorage.setItem("services_problems", services_problems);
+    }
+
    $(function () {
+      on_page_refresh();
+
       %if not len(widgets):
          // display the widgets proposal area.
          $('#propose-widgets').show();
