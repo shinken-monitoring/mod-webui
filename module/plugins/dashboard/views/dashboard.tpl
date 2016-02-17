@@ -94,7 +94,7 @@
 </div>
 
 <script type="text/javascript">
-    var dashboard_logs = true;
+    var dashboard_logs = false;
 
     // Function called on each page refresh ... update graphs!
     function on_page_refresh(forced) {
