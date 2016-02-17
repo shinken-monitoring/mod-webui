@@ -1,5 +1,5 @@
 %setdefault('refresh', True)
-%rebase("fullscreen", css=['dashboard/css/currently.css'], js=['dashboard/js/Chart.Core.js', 'dashboard/js/Chart.Doughnut.js', 'dashboard/js/Chart.Line.js'], title='Shinken currently')
+%rebase("fullscreen", css=['dashboard/css/currently.css'], js=['dashboard/js/Chart.js'], title='Shinken currently')
 
 %import json
 
@@ -10,10 +10,10 @@
 %panels['panel_counters_services'] = {'collapsed': False}
 %panels['panel_percentage_hosts'] = {'collapsed': False}
 %panels['panel_percentage_services'] = {'collapsed': False}
-%panels['panel_piecharts_hosts'] = {'collapsed': False}
-%panels['panel_piecharts_services'] = {'collapsed': False}
-%panels['panel_barcharts_hosts'] = {'collapsed': False}
-%panels['panel_barcharts_services'] = {'collapsed': False}
+%panels['panel_pie_graph_hosts'] = {'collapsed': False}
+%panels['panel_pie_graph_services'] = {'collapsed': False}
+%panels['panel_line_graph_hosts'] = {'collapsed': False}
+%panels['panel_line_graph_services'] = {'collapsed': False}
 %create_panels_preferences = True
 %end
 
@@ -22,26 +22,46 @@
 %setdefault('services_states', ['ok','warning','critical','unknown'])
 
 %create_graphs_preferences = False
-%if not 'pie_hosts_graph' in graphs:
-%graphs['pie_hosts_graph'] = {'legend': True, 'title': True, 'states': hosts_states}
-%graphs['pie_services_graph'] = {'legend': True, 'title': True, 'states': services_states}
-%graphs['line_hosts_graph'] = {'legend': True, 'title': True, 'states': hosts_states}
-%graphs['line_services_graph'] = {'legend': True, 'title': True, 'states': services_states}
+%if not 'pie_graph_hosts' in graphs:
+%graphs['pie_graph_hosts'] = {'legend': True, 'title': True, 'states': hosts_states}
+%graphs['pie_graph_services'] = {'legend': True, 'title': True, 'states': services_states}
+%graphs['line_graph_hosts'] = {'legend': True, 'title': True, 'states': hosts_states}
+%graphs['line_graph_services'] = {'legend': True, 'title': True, 'states': services_states}
 %create_graphs_preferences = True
 %end
 
-%setdefault('hosts_states_queue_length', 50)
-%setdefault('services_states_queue_length', 50)
+%create_graphs_preferences = False
+%if not 'display_states' in graphs['pie_graph_hosts']:
+%graphs['pie_graph_hosts']['display_states'] = {}
+%graphs['line_graph_hosts']['display_states'] = {}
+%for state in hosts_states:
+%graphs['pie_graph_hosts']['display_states'][state] = False if state in ['unknown'] else True
+%graphs['line_graph_hosts']['display_states'][state] = False if state in ['unknown','up'] else True
+%end
+%graphs['pie_graph_services']['display_states'] = {}
+%graphs['line_graph_services']['display_states'] = {}
+%for state in services_states:
+%graphs['pie_graph_services']['display_states'][state] = False if state in ['unknown'] else True
+%graphs['line_graph_services']['display_states'][state] = False if state in ['unknown','ok'] else True
+%end
+%create_graphs_preferences = True
+%end
+
+%setdefault('hosts_states_queue_length', 30)
+%setdefault('services_states_queue_length', 30)
 
 
 %helper = app.helper
 
 <script type="text/javascript">
+    var dashboard_logs = true;
+
     // Shinken globals
     dashboard_currently = true;
 
     panels = {{ ! json.dumps(panels) }};
     graphs = {{ ! json.dumps(graphs) }};
+    console.log(graphs);
 
     %if create_panels_preferences:
     save_user_preference('panels', JSON.stringify(panels));
@@ -51,11 +71,24 @@
     %end
 
     // Function called on each page refresh ... update graphs!
-    function on_page_refresh() {
+    function on_page_refresh(forced) {
+        // Hosts data
         var hosts_count = parseInt($('#one-eye-overall .hosts-all').data("count"));
         var hosts_problems = parseInt($('#one-eye-overall .hosts-all').data("problems"));
+        if (! sessionStorage.getItem("hosts_problems")) {
+           sessionStorage.setItem("hosts_problems", hosts_problems);
+        }
+        var old_hosts_problems = Number(sessionStorage.getItem("hosts_problems"));
+        if (dashboard_logs) console.debug("Hosts: ", hosts_count, hosts_problems, old_hosts_problems);
+
+        // Services data
         var services_count = parseInt($('#one-eye-overall .services-all').data("count"));
         var services_problems = parseInt($('#one-eye-overall .services-all').data("problems"));
+        if (! sessionStorage.getItem("services_problems")) {
+           sessionStorage.setItem("services_problems", services_problems);
+        }
+        var old_services_problems = Number(sessionStorage.getItem("services_problems"));
+        if (dashboard_logs) console.debug("services: ", services_count, services_problems, old_services_problems);
 
         // Refresh user's preferences
         get_user_preference('panels', function(data) {
@@ -63,158 +96,200 @@
             get_user_preference('graphs', function(data) {
                 graphs=data;
 
-                if ($("#chart-hosts").length !== 0) {
+                // Sound alerting
+                if (sessionStorage.getItem("sound_play") == '1') {
+                    if ((old_hosts_problems < hosts_problems) || (old_services_problems < services_problems)) {
+                       playAlertSound();
+                    }
+                }
+                if (old_hosts_problems < hosts_problems) {
+                    var message = (hosts_problems - old_hosts_problems) + " more " + ((hosts_problems - old_hosts_problems)==1 ? "hosts problem" : "hosts problems") + " since last "+app_refresh_period+" seconds."
+                    alertify.log(message, "error", 5000);
+                    if (dashboard_logs) console.debug(message);
+                }
+                if (hosts_problems < old_hosts_problems) {
+                    var message = (old_hosts_problems - hosts_problems) + " less " + ((old_hosts_problems - hosts_problems)==1 ? "hosts problem" : "hosts problems") + " since last "+app_refresh_period+" seconds."
+                    alertify.log(message, "success", 5000);
+                    if (dashboard_logs) console.debug(message);
+                }
+                sessionStorage.setItem("hosts_problems", hosts_problems);
+                if (old_services_problems < services_problems) {
+                    var message = (services_problems - old_services_problems) + " more " + ((services_problems - old_services_problems)==1 ? "services problem" : "services problems") + " since last "+app_refresh_period+" seconds."
+                    alertify.log(message, "error", 5000);
+                    if (dashboard_logs) console.debug(message);
+                }
+                if (services_problems < old_services_problems) {
+                    var message = (old_services_problems - services_problems) + " less " + ((old_services_problems - services_problems)==1 ? "services problem" : "services problems") + " since last "+app_refresh_period+" seconds."
+                    alertify.log(message, "success", 5000);
+                    if (dashboard_logs) console.debug(message);
+                }
+                sessionStorage.setItem("services_problems", services_problems);
+
+                // Hosts pie chart
+                if ($("#panel_pie_graph_hosts").is(":visible") && ! panels["panel_pie_graph_hosts"].collapsed) {
+                    if (dashboard_logs) console.debug('Refresh: panel_pie_graph_hosts');
                     var data = [];
-                    %for state in graphs['pie_hosts_graph']['states']:
-                        var counter_value = parseInt($('#one-eye-overall span.hosts-count[data-state="{{state}}"]').data("count"));
+                    $.each(graphs['pie_graph_hosts']['display_states'], function(state, active) {
+                        if (! active) return;
+                        var counter_value = parseInt($('#one-eye-overall span.hosts-count[data-state="'+state+'"]').data("count"));
 
                         // Update table rows
-                        row = pie_hosts_graph_parameters["{{state}}"];
+                        row = pie_graph_hosts_parameters[state];
                         row['value'] = counter_value;
                         data.push(row)
-                    %end
+                    });
 
                     // Update graph
-                    var ctx = $("#chart-hosts canvas").get(0).getContext("2d");
-                    var myPieChart = new Chart(ctx).Doughnut(data, pie_hosts_graph_options);
-                    if (graphs['pie_hosts_graph'].title) {
-                        $("#chart-hosts .title").show();
-                        $("#chart-hosts .title span").html(hosts_count + " hosts").show();
+                    var ctx = $("#pie-graph-hosts canvas").get(0).getContext("2d");
+                    var myPieChart = new Chart(ctx).Doughnut(data, pie_graph_hosts_options);
+                    if (graphs['pie_graph_hosts'].title) {
+                        $("#pie-graph-hosts .title").show();
+                        $("#pie-graph-hosts .title span").html(hosts_count + " hosts").show();
                     } else {
-                        $("#chart-hosts .title").hide();
+                        $("#pie-graph-hosts .title").hide();
                     }
-                    if (graphs['pie_hosts_graph']['legend']) {
-                        if (line_hosts_graph_options) {
-                            $("#chart-hosts .legend").show();
-                            if ($("#chart-hosts span.legend").length) {
-                                if (! $("#pie_hosts_graph_options-legend").length) {
-                                    $("#chart-hosts .legend span").append(myPieChart.generateLegend());
+                    if (graphs['pie_graph_hosts']['legend']) {
+                        if (line_graph_hosts_options) {
+                            $("#pie-graph-hosts .legend").show();
+                            if ($("#pie-graph-hosts span.legend").length) {
+                                if (! $("#pie_graph_hosts_legend").length) {
+                                    $("#pie-graph-hosts .legend span").append(myPieChart.generateLegend());
                                 }
                                 // TODO: Update ...
                             }
                         }
                     } else {
-                        $("#chart-hosts .legend").hide();
+                        $("#pie-graph-hosts .legend").hide();
                     }
                 }
 
                 // Hosts line chart
-                if ($("#chart-hosts-serie").length !== 0) {
+                if ($("#panel_line_graph_hosts").is(":visible") && ! panels["panel_line_graph_hosts"].collapsed) {
+                    if (dashboard_logs) console.debug('Refresh: panel_line_graph_hosts');
                     var data = [];
-                    data['labels'] = line_hosts_graph_data['labels'];
+                    data['labels'] = line_graph_hosts_data['labels'];
                     data['datasets'] = [];
-                    %for state in graphs['line_hosts_graph']['states']:
-                        var counter_value = parseInt($('#one-eye-overall span.hosts-count[data-state="{{state}}"]').data("count"));
+                    $.each(graphs['line_graph_hosts']['display_states'], function(state, active) {
+                        if (! active) return;
+                        var counter_value = parseInt($('#one-eye-overall span.hosts-count[data-state="'+state+'"]').data("count"));
 
                         // Update table rows
-                        row = line_hosts_graph_data['datasets']["{{state}}"];
-                        row['data'] = states_queue["nb_hosts_{{state}}"];
+                        row = line_graph_hosts_data['datasets'][state];
+                        row['data'] = states_queue["nb_hosts_"+state];
                         data['datasets'].push(row);
 
-                        if (states_queue["nb_hosts_{{state}}"].length > hosts_states_queue_length) {
-                            states_queue["nb_hosts_{{state}}"].shift();
+                        if (! forced) {
+                            if (states_queue["nb_hosts_"+state].length > hosts_states_queue_length) {
+                                states_queue["nb_hosts_"+state].shift();
+                            }
+                            states_queue["nb_hosts_"+state].push( counter_value );
                         }
-                        states_queue["nb_hosts_{{state}}"].push( counter_value );
-                    %end
+                    });
 
                     // Get the context of the canvas element we want to select
-                    var ctx = $("#chart-hosts-serie canvas").get(0).getContext("2d");
-                    var myLineChart = new Chart(ctx).Line(data, line_hosts_graph_options);
-                    if (graphs['line_hosts_graph']['title']) {
-                        $("#chart-hosts-serie .title").show();
-                        $("#chart-hosts-serie .title span").html(hosts_count + " hosts");
+                    var ctx = $("#line-graph-hosts canvas").get(0).getContext("2d");
+                    var myLineChart = new Chart(ctx).Line(data, line_graph_hosts_options);
+                    if (graphs['line_graph_hosts']['title']) {
+                        $("#line-graph-hosts .title").show();
+                        $("#line-graph-hosts .title span").html(hosts_count + " hosts");
                     } else {
-                        $("#chart-hosts-serie .title").hide();
+                        $("#line-graph-hosts .title").hide();
                     }
-                    if (graphs['line_hosts_graph']['legend']) {
-                        if (line_hosts_graph_options) {
-                            $("#chart-hosts-serie .legend").show();
-                            if ($("#chart-hosts-serie span.legend").length) {
-                                if (! $("#line_hosts_graph_options-legend").length) {
-                                    $("#chart-hosts-serie span.legend").append(myLineChart.generateLegend());
+                    if (graphs['line_graph_hosts']['legend']) {
+                        if (line_graph_hosts_options) {
+                            $("#line-graph-hosts .legend").show();
+                            if ($("#line-graph-hosts span.legend").length) {
+                                if (! $("#line_graph_hosts_legend").length) {
+                                    $("#line-graph-hosts span.legend").append(myLineChart.generateLegend());
                                 }
-                                // TODO: Update ...
                             }
                         }
                     } else {
-                        $("#chart-hosts-serie .legend").hide();
+                        $("#line-graph-hosts .legend").hide();
                     }
                 }
 
                 // Services pie chart
-                if ($("#chart-services").length !== 0) {
+                if ($("#panel_pie_graph_services").is(":visible") && ! panels["panel_pie_graph_services"].collapsed) {
+                    if (dashboard_logs) console.debug('Refresh: panel_pie_graph_services');
                     var data = [];
-                    %for state in graphs['pie_services_graph']['states']:
-                        var counter_value = parseInt($('#one-eye-overall span.services-count[data-state="{{state}}"]').data("count"));
+                    $.each(graphs['pie_graph_services']['display_states'], function(state, active) {
+                        if (! active) return;
+                        var counter_value = parseInt($('#one-eye-overall span.services-count[data-state="'+state+'"]').data("count"));
 
                         // Update table rows
-                        row = pie_services_graph_parameters["{{state}}"];
+                        row = pie_graph_services_parameters[state];
                         row['value'] = counter_value;
                         data.push(row)
-                    %end
+                    });
 
                     // Get the context of the canvas element we want to select
-                    var ctx = $("#chart-services canvas").get(0).getContext("2d");
-                    var myPieChart = new Chart(ctx).Doughnut(data, pie_services_graph_options);
-                    if (graphs['pie_services_graph']['title']) {
-                        $("#chart-services .title").show();
-                        $("#chart-services .title span").html(services_count + " services");
+                    var ctx = $("#pie-graph-services canvas").get(0).getContext("2d");
+                    var myPieChart = new Chart(ctx).Doughnut(data, pie_graph_services_options);
+                    if (graphs['pie_graph_services']['title']) {
+                        $("#pie-graph-services .title").show();
+                        $("#pie-graph-services .title span").html(services_count + " services");
                     } else {
-                        $("#chart-services .title").hide();
+                        $("#pie-graph-services .title").hide();
                     }
-                    if (graphs['pie_services_graph']['legend']) {
-                        if (pie_services_graph_options) {
-                            $("#chart-services .legend").show();
-                            if ($("#chart-services span.legend").length) {
-                                if (! $("#pie_services_graph_options-legend").length) {
-                                    $("#chart-services span.legend").append(myPieChart.generateLegend());
+                    if (graphs['pie_graph_services']['legend']) {
+                        if (pie_graph_services_options) {
+                            $("#pie-graph-services .legend").show();
+                            if ($("#pie-graph-services span.legend").length) {
+                                if (! $("#pie_graph_services_legend").length) {
+                                    $("#pie-graph-services span.legend").append(myPieChart.generateLegend());
                                 }
                             }
                         }
                     } else {
-                        $("#chart-services .legend").hide();
+                        $("#pie-graph-services .legend").hide();
                     }
                 }
 
                 // Services line chart
-                if ($("#chart-services-serie").length !== 0) {
+                if ($("#panel_line_graph_services").is(":visible") && ! panels["panel_line_graph_services"].collapsed) {
+                    if (dashboard_logs) console.debug('Refresh: panel_line_graph_services');
                     var data = [];
-                    data['labels'] = line_services_graph_data['labels'];
+                    data['labels'] = line_graph_services_data['labels'];
                     data['datasets'] = [];
-                    %for state in graphs['line_services_graph']['states']:
-                        var counter_value = parseInt($('#one-eye-overall span.services-count[data-state="{{state}}"]').data("count"));
+
+                    $.each(graphs['line_graph_services']['display_states'], function(state, active) {
+                        if (! active) return;
+                        var counter_value = parseInt($('#one-eye-overall span.services-count[data-state="'+state+'"]').data("count"));
 
                         // Update table rows
-                        row = line_services_graph_data['datasets']["{{state}}"];
-                        row['data'] = states_queue["nb_services_{{state}}"];
+                        row = line_graph_services_data['datasets'][state];
+                        row['data'] = states_queue["nb_services_"+state];
                         data['datasets'].push(row);
 
-                        if (states_queue["nb_services_{{state}}"].length > services_states_queue_length) {
-                            states_queue["nb_services_{{state}}"].shift();
+                        if (! forced) {
+                            if (states_queue["nb_services_"+state].length > services_states_queue_length) {
+                                states_queue["nb_services_"+state].shift();
+                            }
+                            states_queue["nb_services_"+state].push(counter_value);
                         }
-                        states_queue["nb_services_{{state}}"].push(counter_value);
-                    %end
+                    });
 
                     // Get the context of the canvas element we want to select
-                    var ctx = $("#chart-services-serie canvas").get(0).getContext("2d");
-                    var myLineChart = new Chart(ctx).Line(data, line_services_graph_options);
-                    if (graphs['line_services_graph']['title']) {
-                        $("#chart-services-serie .title").show();
-                        $("#chart-services-serie .title span").html(services_count + " services");
+                    var ctx = $("#line-graph-services canvas").get(0).getContext("2d");
+                    var myLineChart = new Chart(ctx).Line(data, line_graph_services_options);
+                    if (graphs['line_graph_services']['title']) {
+                        $("#line-graph-services .title").show();
+                        $("#line-graph-services .title span").html(services_count + " services");
                     } else {
-                        $("#chart-services-serie .title").hide();
+                        $("#line-graph-services .title").hide();
                     }
-                    if (graphs['line_services_graph']['legend']) {
-                        if (line_services_graph_options) {
-                            $("#chart-services-serie .legend").hide();
-                            if ($("#chart-services-serie span.legend").length) {
-                                if (! $("#line_services_graph_options-legend").length) {
-                                    $("#chart-services-serie span.legend").append(myLineChart.generateLegend());
+                    if (graphs['line_graph_services']['legend']) {
+                        if (line_graph_services_options) {
+                            $("#line-graph-services .legend").show();
+                            if ($("#line-graph-services span.legend").length) {
+                                if (! $("#line_graph_services_legend").length) {
+                                    $("#line-graph-services span.legend").append(myLineChart.generateLegend());
                                 }
                             }
                         }
                     } else {
-                        $("#chart-services-serie .legend").hide();
+                        $("#line-graph-services .legend").hide();
                     }
                 }
             });
@@ -244,12 +319,6 @@
             });
         }
 
-        /*
-        setTimeout(function() {
-            $('#one-eye-toolbar').hide();
-        }, 2000);
-        */
-
         // Toggle sound ...
         if (sessionStorage.getItem("sound_play") == '1') {
             $('#sound_alerting i.fa-ban').addClass('hidden');
@@ -260,16 +329,16 @@
         // Panels collapse state
         $('body').on('hidden.bs.collapse', '.panel', function () {
             stop_refresh();
-            panels[$(this).attr('id')].collapsed = true;
+            panels[$(this).parent().attr('id')].collapsed = true;
             $(this).find('.fa-minus-square').removeClass('fa-minus-square').addClass('fa-plus-square');
             save_user_preference('panels', JSON.stringify(panels), function() {
                 start_refresh();
-                do_refresh();
+                do_refresh(true);
             });
         });
         $('body').on('shown.bs.collapse', '.panel', function () {
             stop_refresh();
-            panels[$(this).attr('id')].collapsed = false;
+            panels[$(this).parent().attr('id')].collapsed = false;
             $(this).find('.fa-plus-square').removeClass('fa-plus-square').addClass('fa-minus-square');
             save_user_preference('panels', JSON.stringify(panels), function() {
                 start_refresh();
@@ -283,7 +352,7 @@
             graphs[$(this).data('graph')].title = ! graphs[$(this).data('graph')].title;
             save_user_preference('graphs', JSON.stringify(graphs), function() {
                 start_refresh();
-                do_refresh();
+                do_refresh(true);
             });
         });
         $('body').on('click', '[data-action="toggle-legend"]', function () {
@@ -291,7 +360,15 @@
             graphs[$(this).data('graph')].legend = ! graphs[$(this).data('graph')].legend;
             save_user_preference('graphs', JSON.stringify(graphs), function() {
                 start_refresh();
-                do_refresh();
+                do_refresh(true);
+            });
+        });
+        $('body').on('click', '[data-action="toggle-state"]', function () {
+            stop_refresh();
+            graphs[$(this).data('graph')]['display_states'][$(this).data('state')] = ! graphs[$(this).data('graph')]['display_states'][$(this).data('state')];
+            save_user_preference('graphs', JSON.stringify(graphs), function() {
+                start_refresh();
+                do_refresh(true);
             });
         });
     });
@@ -380,8 +457,7 @@
             <ul class="nav navbar-nav navbar-right">
                 <li>
                     <p class="navbar-text font-darkgrey">
-                       <span id="date"></span>
-                       <span id="clock"></span>
+                       <span id="date"></span>&nbsp;&hyphen;&nbsp;<span id="clock"></span>
                     </p>
                 </li>
             </ul>
@@ -392,10 +468,10 @@
 %end
 
 <div class="container-fluid">
-<div class="row" style="position: absolute; top:60px; left: 0; z-index: 1000">
+<div class="row" style="top:60px; ">
     <div id="one-eye-overall" class="col-xs-12">
-        <div class="col-md-6">
-            <div class="panel panel-default" id="panel_counters_hosts">
+        <div class="col-md-6" id="panel_counters_hosts">
+            <div class="panel panel-default">
                 <div class="panel-heading">
                     <i class="fa fa-server"></i>
                     <span class="hosts-all" data-count="{{ h['nb_elts'] }}" data-problems="{{ h['nb_problems'] }}">
@@ -409,13 +485,6 @@
                     <div class="panel-body">
                         %for state in 'up', 'unreachable', 'down', 'unknown':
                         <div class="col-xs-6 col-md-3 text-center">
-                            <!--
-                            %label = "%s <em><small>(%s%%)</small></em>" % (h['nb_' + state], h['pct_' + state])
-                            %label = "<br/>%s<br/><em>(%s)</em>" % (state, h['nb_' + state])
-                            <a href="/all?search=type:host is:{{state}} isnot:ack isnot:downtime">
-                                {{!helper.get_fa_icon_state_and_label(cls='host', state=state, label=label)}}
-                            </a>
-                            -->
                             %label = "%d<br/><em>(%s)</em>" % (h['nb_' + state], state)
                             <a role="button" href="/all?search=type:host is:{{state}} isnot:ack isnot:downtime" class="font-{{state.lower()}}">
                                 <span class="hosts-count" data-count="{{ h['nb_' + state] }}" data-state="{{ state }}" style="font-size: 3em;">{{ h['nb_' + state] }}</span>
@@ -428,8 +497,8 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="panel panel-default" id="panel_counters_services">
+        <div class="col-md-6" id="panel_counters_services">
+            <div class="panel panel-default">
                 <div class="panel-heading">
                     <i class="fa fa-cubes"></i>
                     <span class="services-all" data-count="{{ s['nb_elts'] }}" data-problems="{{ s['nb_problems'] }}">
@@ -443,12 +512,6 @@
                     <div class="panel-body">
                         %for state in 'ok', 'warning', 'critical', 'unknown':
                         <div class="col-xs-6 col-md-3 text-center">
-                            <!--
-                            %label = "%s <i>(%s%%)</i>" % (s['nb_' + state], s['pct_' + state])
-                            <a href="/all?search=type:host is:{{state}}">
-                                {{!helper.get_fa_icon_state_and_label(cls='service', state=state, label=label, disabled=(not s['nb_' + state]))}}
-                            </a>
-                            -->
                             %label = "%d<br/><em>(%s)</em>" % (s['nb_' + state], state)
                             <a role="button" href="/all?search=type:service is:{{state}} isnot:ack isnot:downtime" class="font-{{state.lower()}}">
                                 <span class="services-count" data-count="{{ s['nb_' + state] }}" data-state="{{ state }}" style="font-size: 3em;">{{ s['nb_' + state] }}</span>
@@ -464,8 +527,8 @@
     </div>
 
     <div id="one-eye-icons" class="col-xs-12">
-        <div class="col-md-6">
-            <div class="panel panel-default" id="panel_percentage_hosts">
+        <div class="col-md-6" id="panel_percentage_hosts">
+            <div class="panel panel-default">
                 <div class="panel-heading">
                     <i class="fa fa-server"></i>
                     <span class="hosts-all" data-count="{{ h['nb_elts'] }}" data-problems="{{ h['nb_problems'] }}">
@@ -485,7 +548,6 @@
                                <div>
                                   %state = h['pct_up']
                                   %font='ok' if state >= app.hosts_states_critical else 'warning' if state >= app.hosts_states_warning  else 'critical'
-                                  <!--<span class="badger-big badger-left font-{{font}}">{{h['nb_up']}} / {{h['nb_elts']}}</span>-->
                                   <span class="badger-big badger-right font-{{font}}">{{h['pct_up']}}%</span>
                                </div>
 
@@ -504,7 +566,6 @@
                                <div>
                                   %state = 100.0-h['pct_unreachable']
                                   %font='ok' if state >= app.hosts_states_critical else 'warning' if state >= app.hosts_states_warning else 'critical'
-                                  <!--<span class="badger-big badger-left font-{{font}}">{{h['nb_unreachable']}} / {{h['nb_elts']}}</span>-->
                                   <span class="badger-big badger-right font-{{font}}">{{h['pct_unreachable']}}%</span>
                                </div>
 
@@ -523,7 +584,6 @@
                                <div>
                                   %state = 100.0-h['pct_down']
                                   %font='ok' if state >= app.hosts_states_critical else 'warning' if state >= app.hosts_states_warning else 'critical'
-                                  <!--<span class="badger-big badger-left font-{{font}}">{{h['nb_down']}} / {{h['nb_elts']}}</span>-->
                                   <span class="badger-big badger-right font-{{font}}">{{h['pct_down']}}%</span>
                                </div>
 
@@ -542,7 +602,6 @@
                                <div>
                                   %state = 100.0-h['pct_unknown']
                                   %font='ok' if state >= app.hosts_states_critical else 'warning' if state >= app.hosts_states_warning else 'critical'
-                                  <!--<span class="badger-big badger-left font-{{font}}">{{h['nb_unknown']}} / {{h['nb_elts']}}</span>-->
                                   <span class="badger-big badger-right font-{{font}}">{{h['pct_unknown']}}%</span>
                                </div>
 
@@ -557,8 +616,8 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="panel panel-default" id="panel_percentage_services">
+        <div class="col-md-6" id="panel_percentage_services">
+            <div class="panel panel-default">
                 <div class="panel-heading">
                     <i class="fa fa-cubes"></i>
                     <span class="services-all" data-count="{{ s['nb_elts'] }}" data-problems="{{ s['nb_problems'] }}">
@@ -578,7 +637,6 @@
                                <div>
                                   %state = s['pct_ok']
                                   %font='ok' if state >= app.services_states_critical else 'warning' if state >= app.services_states_warning else 'critical'
-                                  <!--<span class="badger-big badger-left font-{{font}}">{{s['nb_ok']}} / {{s['nb_elts']}}</span>-->
                                   <span class="badger-big badger-right font-{{font}}">{{s['pct_ok']}}%</span>
                                </div>
 
@@ -597,7 +655,6 @@
                                <div>
                                   %state = 100.0-s['pct_warning']
                                   %font='ok' if state >= app.services_states_critical else 'warning' if state >= app.services_states_warning else 'critical'
-                                  <!--<span class="badger-big badger-left font-{{font}}">{{s['nb_warning']}} / {{s['nb_elts']}}</span>-->
                                   <span class="badger-big badger-right font-{{font}}">{{s['pct_warning']}}%</span>
                                </div>
 
@@ -616,7 +673,6 @@
                                <div>
                                   %state = 100.0-s['pct_critical']
                                   %font='ok' if state >= app.services_states_critical else 'warning' if state >= app.services_states_warning else 'critical'
-                                  <!--<span class="badger-big badger-left font-{{font}}">{{s['nb_critical']}} / {{s['nb_elts']}}</span>-->
                                   <span class="badger-big badger-right font-{{font}}">{{s['pct_critical']}}%</span>
                                </div>
 
@@ -635,7 +691,6 @@
                                <div>
                                   %state = 100.0-s['pct_unknown']
                                   %font='ok' if state >= app.services_states_critical else 'warning' if state >= app.services_states_warning else 'critical'
-                                  <!--<span class="badger-big badger-left font-{{font}}">{{s['nb_unknown']}} / {{s['nb_elts']}}</span>-->
                                   <span class="badger-big badger-right font-{{font}}">{{s['pct_unknown']}}%</span>
                                </div>
 
@@ -653,8 +708,8 @@
     </div>
 
     <div id="livestate-graphs" class="col-xs-12">
-        <div class="col-md-6">
-            <div class="panel panel-default" id="panel_piecharts_hosts">
+        <div class="col-md-6" id="panel_pie_graph_hosts">
+            <div class="panel panel-default">
                 <div class="panel-heading">
                     <i class="fa fa-pie-chart"></i>
                     <span class="hosts-all" data-count="{{ h['nb_elts'] }}" data-problems="{{ h['nb_problems'] }}">
@@ -668,25 +723,32 @@
                             </button>
                             <ul class="dropdown-menu pull-right" role="menu">
                                 <li>
-                                    <a href="#" data-action="toggle-legend" data-graph="pie_hosts_graph" class="{{'active' if graphs['pie_hosts_graph']['legend'] else ''}}">
-                                        {{! helper.get_on_off(graphs['pie_hosts_graph']['legend'], 'Display graph legend?')}}&nbsp;display legend
+                                    <a href="#" data-action="toggle-legend" data-graph="pie_graph_hosts" class="{{'active' if graphs['pie_graph_hosts']['legend'] else ''}}">
+                                        {{! helper.get_on_off(graphs['pie_graph_hosts']['legend'], 'Display graph legend?')}}&nbsp;legend
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" data-action="toggle-title" data-graph="pie_graph_hosts" class="{{'active' if graphs['pie_graph_hosts']['title'] else ''}}">
+                                        {{! helper.get_on_off(graphs['pie_graph_hosts']['title'], 'Display graph title?')}}&nbsp;title
                                     </a>
                                 </li>
                                 <li class="divider"></li>
+                                %for state in graphs['pie_graph_hosts']['states']:
                                 <li>
-                                    <a href="#" data-action="toggle-title" data-graph="pie_hosts_graph" class="{{'active' if graphs['pie_hosts_graph']['title'] else ''}}">
-                                        {{! helper.get_on_off(graphs['pie_hosts_graph']['title'], 'Display graph title?')}}&nbsp;display title
+                                    <a href="#" data-action="toggle-state" data-graph="pie_graph_hosts" data-state="{{state}}" class="{{'active' if graphs['pie_graph_hosts']['display_states'][state] else ''}}">
+                                        {{! helper.get_on_off(graphs['pie_graph_hosts']['display_states'][state], 'Display state {{state?')}}&nbsp;state {{state}}
                                     </a>
                                 </li>
+                                %end
                             </ul>
                         </div>
-                        <a href="#p_panel_piecharts_hosts" data-toggle="collapse" type="button" class="btn btn-xs"><i class="fa {{'fa-minus-square' if not panels['panel_piecharts_hosts']['collapsed'] else 'fa-plus-square'}} fa-fw"></i></a>
+                        <a href="#p_panel_pie_graph_hosts" data-toggle="collapse" type="button" class="btn btn-xs"><i class="fa {{'fa-minus-square' if not panels['panel_pie_graph_hosts']['collapsed'] else 'fa-plus-square'}} fa-fw"></i></a>
                     </div>
                 </div>
-                <div id="p_panel_piecharts_hosts" class="panel-collapse collapse {{'in' if not panels['panel_piecharts_hosts']['collapsed'] else ''}}">
+                <div id="p_panel_pie_graph_hosts" class="panel-collapse collapse {{'in' if not panels['panel_pie_graph_hosts']['collapsed'] else ''}}">
                     <div class="panel-body">
                         <!-- Chart -->
-                        <div id="chart-hosts">
+                        <div id="pie-graph-hosts">
                             <div class="well">
                                 <canvas></canvas>
                                 <div class="row title" style="display:none">
@@ -706,8 +768,8 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="panel panel-default" id="panel_piecharts_services">
+        <div class="col-md-6" id="panel_pie_graph_services">
+            <div class="panel panel-default">
                 <div class="panel-heading">
                     <i class="fa fa-pie-chart"></i>
                     <span class="services-all" data-count="{{ s['nb_elts'] }}" data-problems="{{ s['nb_problems'] }}">
@@ -721,25 +783,32 @@
                             </button>
                             <ul class="dropdown-menu pull-right" role="menu">
                                 <li>
-                                    <a href="#" data-action="toggle-legend" data-graph="pie_services_graph" class="{{'active' if graphs['pie_services_graph']['legend'] else ''}}">
-                                        {{! helper.get_on_off(graphs['pie_services_graph']['legend'], 'Display graph legend?')}}&nbsp;display legend
+                                    <a href="#" data-action="toggle-legend" data-graph="pie_graph_services" class="{{'active' if graphs['pie_graph_services']['legend'] else ''}}">
+                                        {{! helper.get_on_off(graphs['pie_graph_services']['legend'], 'Display graph legend?')}}&nbsp;legend
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" data-action="toggle-title" data-graph="pie_graph_services" class="{{'active' if graphs['pie_graph_services']['title'] else ''}}">
+                                        {{! helper.get_on_off(graphs['pie_graph_services']['title'], 'Display graph title?')}}&nbsp;title
                                     </a>
                                 </li>
                                 <li class="divider"></li>
+                                %for state in graphs['pie_graph_services']['states']:
                                 <li>
-                                    <a href="#" data-action="toggle-title" data-graph="pie_services_graph" class="{{'active' if graphs['pie_services_graph']['title'] else ''}}">
-                                        {{! helper.get_on_off(graphs['pie_services_graph']['title'], 'Display graph title?')}}&nbsp;display title
+                                    <a href="#" data-action="toggle-state" data-graph="pie_graph_services" data-state="{{state}}" class="{{'active' if graphs['pie_graph_services']['display_states'][state] else ''}}">
+                                        {{! helper.get_on_off(graphs['pie_graph_services']['display_states'][state], 'Display state {{state?')}}&nbsp;state {{state}}
                                     </a>
                                 </li>
+                                %end
                             </ul>
                         </div>
-                        <a href="#p_panel_piecharts_services" data-toggle="collapse" type="button" class="btn btn-xs"><i class="fa {{'fa-minus-square' if not panels['panel_piecharts_services']['collapsed'] else 'fa-plus-square'}} fa-fw"></i></a>
+                        <a href="#p_panel_pie_graph_services" data-toggle="collapse" type="button" class="btn btn-xs"><i class="fa {{'fa-minus-square' if not panels['panel_pie_graph_services']['collapsed'] else 'fa-plus-square'}} fa-fw"></i></a>
                     </div>
                 </div>
-                <div id="p_panel_piecharts_services" class="panel-collapse collapse {{'in' if not panels['panel_piecharts_services']['collapsed'] else ''}}">
+                <div id="p_panel_pie_graph_services" class="panel-collapse collapse {{'in' if not panels['panel_pie_graph_services']['collapsed'] else ''}}">
                     <div class="panel-body">
                         <!-- Chart -->
-                        <div id="chart-services">
+                        <div id="pie-graph-services">
                             <div class="well">
                                 <canvas></canvas>
                                 <div class="row title" style="display:none">
@@ -759,8 +828,8 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="panel panel-default" id="panel_barcharts_hosts">
+        <div class="col-md-6" id="panel_line_graph_hosts">
+            <div class="panel panel-default">
                 <div class="panel-heading">
                     <i class="fa fa-bar-chart"></i>
                     <span class="hosts-all" data-count="{{ h['nb_elts'] }}" data-problems="{{ h['nb_problems'] }}">
@@ -774,25 +843,32 @@
                             </button>
                             <ul class="dropdown-menu pull-right" role="menu">
                                 <li>
-                                    <a href="#" data-action="toggle-legend" data-graph="line_hosts_graph" class="{{'active' if graphs['line_hosts_graph']['legend'] else ''}}">
-                                        {{! helper.get_on_off(graphs['line_hosts_graph']['legend'], 'Display graph legend?')}}&nbsp;display legend
+                                    <a href="#" data-action="toggle-legend" data-graph="line_graph_hosts" class="{{'active' if graphs['line_graph_hosts']['legend'] else ''}}">
+                                        {{! helper.get_on_off(graphs['line_graph_hosts']['legend'], 'Display graph legend?')}}&nbsp;legend
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" data-action="toggle-title" data-graph="line_graph_hosts" class="{{'active' if graphs['line_graph_hosts']['title'] else ''}}">
+                                        {{! helper.get_on_off(graphs['line_graph_hosts']['title'], 'Display graph title?')}}&nbsp;title
                                     </a>
                                 </li>
                                 <li class="divider"></li>
+                                %for state in graphs['line_graph_hosts']['states']:
                                 <li>
-                                    <a href="#" data-action="toggle-title" data-graph="line_hosts_graph" class="{{'active' if graphs['line_hosts_graph']['title'] else ''}}">
-                                        {{! helper.get_on_off(graphs['line_hosts_graph']['title'], 'Display graph title?')}}&nbsp;display title
+                                    <a href="#" data-action="toggle-state" data-graph="line_graph_hosts" data-state="{{state}}" class="{{'active' if graphs['line_graph_hosts']['display_states'][state] else ''}}">
+                                        {{! helper.get_on_off(graphs['line_graph_hosts']['display_states'][state], 'Display state {{state?')}}&nbsp;state {{state}}
                                     </a>
                                 </li>
+                                %end
                             </ul>
                         </div>
-                        <a href="#p_panel_barcharts_hosts" data-toggle="collapse" type="button" class="btn btn-xs"><i class="fa {{'fa-minus-square' if not panels['panel_barcharts_hosts']['collapsed'] else 'fa-plus-square'}} fa-fw"></i></a>
+                        <a href="#p_panel_line_graph_hosts" data-toggle="collapse" type="button" class="btn btn-xs"><i class="fa {{'fa-minus-square' if not panels['panel_line_graph_hosts']['collapsed'] else 'fa-plus-square'}} fa-fw"></i></a>
                     </div>
                 </div>
-                <div id="p_panel_barcharts_hosts" class="panel-collapse collapse {{'in' if not panels['panel_barcharts_hosts']['collapsed'] else ''}}">
+                <div id="p_panel_line_graph_hosts" class="panel-collapse collapse {{'in' if not panels['panel_line_graph_hosts']['collapsed'] else ''}}">
                     <div class="panel-body">
                         <!-- Chart -->
-                        <div id="chart-hosts-serie">
+                        <div id="line-graph-hosts">
                             <div class="well">
                                 <canvas></canvas>
                                 <div class="row title" style="display:none">
@@ -812,8 +888,8 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="panel panel-default" id="panel_barcharts_services">
+        <div class="col-md-6" id="panel_line_graph_services">
+            <div class="panel panel-default">
                 <div class="panel-heading">
                     <i class="fa fa-bar-chart"></i>
                     <span class="services-all" data-count="{{ s['nb_elts'] }}" data-problems="{{ s['nb_problems'] }}">
@@ -827,25 +903,32 @@
                             </button>
                             <ul class="dropdown-menu pull-right" role="menu">
                                 <li>
-                                    <a href="#" data-action="toggle-legend" data-graph="line_services_graph" class="{{'active' if graphs['line_services_graph']['legend'] else ''}}">
-                                        {{! helper.get_on_off(graphs['line_services_graph']['legend'], 'Display graph legend?')}}&nbsp;display legend
+                                    <a href="#" data-action="toggle-legend" data-graph="line_graph_services" class="{{'active' if graphs['line_graph_services']['legend'] else ''}}">
+                                        {{! helper.get_on_off(graphs['line_graph_services']['legend'], 'Display graph legend?')}}&nbsp;legend
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" data-action="toggle-title" data-graph="line_graph_services" class="{{'active' if graphs['line_graph_services']['title'] else ''}}">
+                                        {{! helper.get_on_off(graphs['line_graph_services']['title'], 'Display graph title?')}}&nbsp;title
                                     </a>
                                 </li>
                                 <li class="divider"></li>
+                                %for state in graphs['line_graph_services']['states']:
                                 <li>
-                                    <a href="#" data-action="toggle-title" data-graph="line_services_graph" class="{{'active' if graphs['line_services_graph']['title'] else ''}}">
-                                        {{! helper.get_on_off(graphs['line_services_graph']['title'], 'Display graph title?')}}&nbsp;display title
+                                    <a href="#" data-action="toggle-state" data-graph="line_graph_services" data-state="{{state}}" class="{{'active' if graphs['line_graph_services']['display_states'][state] else ''}}">
+                                        {{! helper.get_on_off(graphs['line_graph_services']['display_states'][state], 'Display state {{state?')}}&nbsp;state {{state}}
                                     </a>
                                 </li>
+                                %end
                             </ul>
                         </div>
-                        <a href="#p_panel_barcharts_services" data-toggle="collapse" type="button" class="btn btn-xs"><i class="fa {{'fa-minus-square' if not panels['panel_barcharts_services']['collapsed'] else 'fa-plus-square'}} fa-fw"></i></a>
+                        <a href="#p_panel_line_graph_services" data-toggle="collapse" type="button" class="btn btn-xs"><i class="fa {{'fa-minus-square' if not panels['panel_line_graph_services']['collapsed'] else 'fa-plus-square'}} fa-fw"></i></a>
                     </div>
                 </div>
-                <div id="p_panel_barcharts_services" class="panel-collapse collapse {{'in' if not panels['panel_barcharts_services']['collapsed'] else ''}}">
+                <div id="p_panel_line_graph_services" class="panel-collapse collapse {{'in' if not panels['panel_line_graph_services']['collapsed'] else ''}}">
                     <div class="panel-body">
                         <!-- Chart -->
-                        <div id="chart-services-serie">
+                        <div id="line-graph-services">
                             <div class="well">
                                 <canvas></canvas>
                                 <div class="row title" style="display:none">
@@ -870,11 +953,145 @@
 </div>
 <script>
 /*
- * Expert configuration for home page graphs.
+ * Expert configuration for page graphs.
  * ------------------------------------------
+ * Based on: http://www.chartjs.org/docs/
  */
 
-    Chart.defaults.global.responsive = true;
+    Chart.defaults.global = {
+        // Boolean - Whether to animate the chart
+        animation: false,
+
+        // Number - Number of animation steps
+        animationSteps: 60,
+
+        // String - Animation easing effect
+        // Possible effects are:
+        // [easeInOutQuart, linear, easeOutBounce, easeInBack, easeInOutQuad,
+        //  easeOutQuart, easeOutQuad, easeInOutBounce, easeOutSine, easeInOutCubic,
+        //  easeInExpo, easeInOutBack, easeInCirc, easeInOutElastic, easeOutBack,
+        //  easeInQuad, easeInOutExpo, easeInQuart, easeOutQuint, easeInOutCirc,
+        //  easeInSine, easeOutExpo, easeOutCirc, easeOutCubic, easeInQuint,
+        //  easeInElastic, easeInOutSine, easeInOutQuint, easeInBounce,
+        //  easeOutElastic, easeInCubic]
+        animationEasing: "easeOutQuart",
+
+        // Boolean - If we should show the scale at all
+        showScale: true,
+
+        // Boolean - If we want to override with a hard coded scale
+        scaleOverride: false,
+
+        // ** Required if scaleOverride is true **
+        // Number - The number of steps in a hard coded scale
+        scaleSteps: null,
+        // Number - The value jump in the hard coded scale
+        scaleStepWidth: null,
+        // Number - The scale starting value
+        scaleStartValue: null,
+
+        // String - Colour of the scale line
+        scaleLineColor: "rgba(0,0,0,.1)",
+
+        // Number - Pixel width of the scale line
+        scaleLineWidth: 1,
+
+        // Boolean - Whether to show labels on the scale
+        scaleShowLabels: true,
+
+        // Interpolated JS string - can access value
+        scaleLabel: "<%=value%>",
+
+        // Boolean - Whether the scale should stick to integers, not floats even if drawing space is there
+        scaleIntegersOnly: true,
+
+        // Boolean - Whether the scale should start at zero, or an order of magnitude down from the lowest value
+        scaleBeginAtZero: false,
+
+        // String - Scale label font declaration for the scale label
+        scaleFontFamily: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
+
+        // Number - Scale label font size in pixels
+        scaleFontSize: 12,
+
+        // String - Scale label font weight style
+        scaleFontStyle: "normal",
+
+        // String - Scale label font colour
+        scaleFontColor: "#666",
+
+        // Boolean - whether or not the chart should be responsive and resize when the browser does.
+        responsive: true,
+
+        // Boolean - whether to maintain the starting aspect ratio or not when responsive, if set to false, will take up entire container
+        maintainAspectRatio: true,
+
+        // Boolean - Determines whether to draw tooltips on the canvas or not
+        showTooltips: true,
+
+        // Function - Determines whether to execute the customTooltips function instead of drawing the built in tooltips (See [Advanced - External Tooltips](#advanced-usage-custom-tooltips))
+        customTooltips: function(tooltip) {
+            if (! tooltip) return;
+            //console.log(tooltip)
+        },
+
+        // Array - Array of string names to attach tooltip events
+        tooltipEvents: ["mousemove", "touchstart", "touchmove"],
+
+        // String - Tooltip background colour
+        tooltipFillColor: "rgba(0,0,0,0.8)",
+
+        // String - Tooltip label font declaration for the scale label
+        tooltipFontFamily: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
+
+        // Number - Tooltip label font size in pixels
+        tooltipFontSize: 14,
+
+        // String - Tooltip font weight style
+        tooltipFontStyle: "normal",
+
+        // String - Tooltip label font colour
+        tooltipFontColor: "#fff",
+
+        // String - Tooltip title font declaration for the scale label
+        tooltipTitleFontFamily: "'Helvetica Neue', 'Helvetica', 'Arial', sans-serif",
+
+        // Number - Tooltip title font size in pixels
+        tooltipTitleFontSize: 14,
+
+        // String - Tooltip title font weight style
+        tooltipTitleFontStyle: "bold",
+
+        // String - Tooltip title font colour
+        tooltipTitleFontColor: "#fff",
+
+        // Number - pixel width of padding around tooltip text
+        tooltipYPadding: 6,
+
+        // Number - pixel width of padding around tooltip text
+        tooltipXPadding: 6,
+
+        // Number - Size of the caret on the tooltip
+        tooltipCaretSize: 8,
+
+        // Number - Pixel radius of the tooltip border
+        tooltipCornerRadius: 6,
+
+        // Number - Pixel offset from point x to tooltip edge
+        tooltipXOffset: 10,
+
+        // String - Template string for single tooltips
+        tooltipTemplate: "<%if (label){%><%=label%>: <%}%><%= value %>",
+
+        // String - Template string for multiple tooltips
+        multiTooltipTemplate: "<%= value %>",
+
+        // Function - Will fire on animation progression.
+        onAnimationProgress: function(){},
+
+        // Function - Will fire on animation completion.
+        onAnimationComplete: function(){}
+    };
 
     var hosts_states_queue_length = {{ hosts_states_queue_length }};
     var services_states_queue_length = {{ services_states_queue_length }};
@@ -883,18 +1100,18 @@
         "nb_services_ok": [], "nb_services_warning": [], "nb_services_critical": [], "nb_services_unknown": []
     };
 
-    %for state in graphs['pie_hosts_graph']['states']:
+    %for state in graphs['pie_graph_hosts']['states']:
         for (var i=0; i<hosts_states_queue_length; i++) {
             states_queue["nb_hosts_{{state}}"].push(0);
         }
     %end
-    %for state in graphs['pie_services_graph']['states']:
+    %for state in graphs['pie_graph_services']['states']:
         for (var i=0; i<services_states_queue_length; i++) {
             states_queue["nb_services_{{state}}"].push(0);
         }
     %end
 
-    var pie_hosts_graph_parameters = {
+    var pie_graph_hosts_parameters = {
         "up": {
             color:"#5bb75b",
             highlight: "#5AD3D1",
@@ -916,9 +1133,9 @@
             label: "Unknown"
         }
     };
-    var pie_hosts_graph_options = {
+    var pie_graph_hosts_options = {
         legendTemplate: [
-            '<div id="pie_hosts_graph_options-legend">',
+            '<div id="pie_graph_hosts_legend">',
                 '<% for (var i=0; i<segments.length; i++)\{\%>',
                     '<div>',
                         '<span style="background-color:<%=segments[i].fillColor%>; display: inline-block; width: 12px; height: 12px; margin-right: 5px;"></span>',
@@ -934,8 +1151,8 @@
         ].join('')
     };
 
-    var line_hosts_graph_states = {{ !json.dumps(graphs['pie_hosts_graph']['states']) }};
-    var line_hosts_graph_data = {
+    var line_graph_hosts_states = {{ !json.dumps(graphs['pie_graph_hosts']['states']) }};
+    var line_graph_hosts_data = {
         labels: [],
         datasets: {
             "up": {
@@ -976,15 +1193,58 @@
            }
         }
     };
-    // Labels are number of elements in queue ...
+    // Labels are refresh periods ...
     for (i=-hosts_states_queue_length; i<=0; i++) {
-        line_hosts_graph_data['labels'].push(i);
+        line_graph_hosts_data['labels'].push(moment().subtract(-i * app_refresh_period, 'seconds').fromNow());
     }
-    var line_hosts_graph_options = {
-        datasetFill: true
-        , pointDot: true
-        , legendTemplate: [
-            '<div id="line_hosts_graph_options-legend">',
+    var line_graph_hosts_options = {
+        ///Boolean - Whether grid lines are shown across the chart
+        scaleShowGridLines : true,
+
+        //String - Colour of the grid lines
+        scaleGridLineColor : "rgba(0,0,0,.05)",
+
+        //Number - Width of the grid lines
+        scaleGridLineWidth : 1,
+
+        //Boolean - Whether to show horizontal lines (except X axis)
+        scaleShowHorizontalLines: false,
+
+        //Boolean - Whether to show vertical lines (except Y axis)
+        scaleShowVerticalLines: false,
+
+        //Boolean - Whether the line is curved between points
+        bezierCurve : true,
+
+        //Number - Tension of the bezier curve between points
+        bezierCurveTension : 0.4,
+
+        //Boolean - Whether to show a dot for each point
+        pointDot : true,
+
+        //Number - Radius of each point dot in pixels
+        pointDotRadius : 4,
+
+        //Number - Pixel width of point dot stroke
+        pointDotStrokeWidth : 1,
+
+        //Number - amount extra to add to the radius to cater for hit detection outside the drawn point
+        pointHitDetectionRadius : 20,
+
+        //Boolean - Whether to show a stroke for datasets
+        datasetStroke : true,
+
+        //Number - Pixel width of dataset stroke
+        datasetStrokeWidth : 2,
+
+        //Boolean - Whether to fill the dataset with a colour
+        datasetFill : true,
+
+        pointDot: true,
+
+        //String - A legend template
+        legendTemplate: [
+            '<div id="line_graph_hosts_legend">',
                 '<% for (var i=0; i<datasets.length; i++)\{\%>',
                     '<div>',
                         '<span style="background-color:<%=datasets[i].strokeColor%>; display: inline-block; width: 12px; height: 12px; margin-right: 5px;"></span>',
@@ -1000,7 +1260,7 @@
         ].join('')
     };
 
-    var pie_services_graph_parameters = {
+    var pie_graph_services_parameters = {
         "ok": {
             color:"#5bb75b",
             highlight: "#5AD3D1",
@@ -1022,9 +1282,9 @@
             label: "Unknown"
         }
     }
-    var pie_services_graph_options = {
+    var pie_graph_services_options = {
         legendTemplate: [
-            '<div id="pie_services_graph_options-legend">',
+            '<div id="pie_graph_services_legend">',
                 '<% for (var i=0; i<segments.length; i++)\{\%>',
                     '<div>',
                         '<span style="background-color:<%=segments[i].fillColor%>; display: inline-block; width: 12px; height: 12px; margin-right: 5px;"></span>',
@@ -1040,8 +1300,8 @@
         ].join('')
     }
 
-    var line_services_graph_states = {{ !json.dumps(graphs['line_hosts_graph']['states']) }};
-    var line_services_graph_data = {
+    var line_graph_services_states = {{ !json.dumps(graphs['line_graph_services']['states']) }};
+    var line_graph_services_data = {
         labels: [],
         datasets: {
             "ok": {
@@ -1082,15 +1342,59 @@
            }
         }
     };
-    // Labels are number of elements in queue ...
+    // Labels are refresh periods ...
     for (i=-services_states_queue_length; i<=0; i++) {
-        line_services_graph_data['labels'].push(i);
+        line_graph_services_data['labels'].push(moment().subtract(-i * app_refresh_period, 'seconds').fromNow());
     }
-    var line_services_graph_options = {
-        datasetFill: true
-        , pointDot: true
-        , legendTemplate: [
-            '<div id="line_services_graph_options-legend">',
+    var line_graph_services_options = {
+        ///Boolean - Whether grid lines are shown across the chart
+        scaleShowGridLines : true,
+
+        //String - Colour of the grid lines
+        scaleGridLineColor : "rgba(0,0,0,.05)",
+
+        //Number - Width of the grid lines
+        scaleGridLineWidth : 1,
+
+        //Boolean - Whether to show horizontal lines (except X axis)
+        scaleShowHorizontalLines: false,
+
+        //Boolean - Whether to show vertical lines (except Y axis)
+        scaleShowVerticalLines: false,
+
+        //Boolean - Whether the line is curved between points
+        bezierCurve : true,
+
+        //Number - Tension of the bezier curve between points
+        bezierCurveTension : 0.4,
+
+        //Boolean - Whether to show a dot for each point
+        pointDot : true,
+
+        //Number - Radius of each point dot in pixels
+        pointDotRadius : 4,
+
+        //Number - Pixel width of point dot stroke
+        pointDotStrokeWidth : 1,
+
+        //Number - amount extra to add to the radius to cater for hit detection outside the drawn point
+        pointHitDetectionRadius : 20,
+
+        //Boolean - Whether to show a stroke for datasets
+        datasetStroke : true,
+
+        //Number - Pixel width of dataset stroke
+        datasetStrokeWidth : 2,
+
+        //Boolean - Whether to fill the dataset with a colour
+        datasetFill : true,
+
+        pointDot: true,
+
+        //String - A legend template
+        //legendTemplate : "<ul class=\"<%=name.toLowerCase()%>-legend\"><% for (var i=0; i<datasets.length; i++){%><li><span style=\"background-color:<%=datasets[i].strokeColor%>\"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>"
+        legendTemplate: [
+            '<div id="line_graph_services_legend">',
                 '<% for (var i=0; i<datasets.length; i++)\{\%>',
                     '<div>',
                         '<span style="background-color:<%=datasets[i].strokeColor%>; display: inline-block; width: 12px; height: 12px; margin-right: 5px;"></span>',
