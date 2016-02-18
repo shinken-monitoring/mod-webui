@@ -342,7 +342,7 @@ class Helper(object):
         else:
             h['bi'] = 0
         for state in 'up', 'down', 'unreachable', 'pending':
-            h[state] = [i for i in hosts if i.state == state.upper()]
+            h[state] = [i for i in hosts if i.state == state.upper() and not ((state == 'unreachable' or state == 'down') and i.in_scheduled_downtime)]
         h['unknown'] = list(set(h['elts']) - set(h['up']) - set(h['down']) - set(h['unreachable']) - set(h['pending']))
         h['ack'] = [i for i in hosts if i.problem_has_been_acknowledged]
         h['downtime'] = [i for i in hosts if i.in_scheduled_downtime]
@@ -362,7 +362,7 @@ class Helper(object):
         else:
             s['bi'] = 0
         for state in 'ok', 'critical', 'warning', 'pending', 'unknown':
-            s[state] = [i for i in services if i.state == state.upper()]
+            s[state] = [i for i in services if i.state == state.upper() and not ((state == 'critical' or state == 'warning' or state == 'unknown') and i.in_scheduled_downtime)]
         s['ack'] = [i for i in services if i.problem_has_been_acknowledged]
         s['downtime'] = [i for i in services if i.in_scheduled_downtime]
         for state in 'ok', 'critical', 'warning', 'unknown', 'pending', 'ack', 'downtime':
