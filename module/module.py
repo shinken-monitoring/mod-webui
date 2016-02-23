@@ -374,7 +374,7 @@ class Webui_broker(BaseModule, Daemon):
 
         for route in webui_app.routes:
             logger.debug("[WebUI] route: %s", route)
-        # Launch the data thread"
+        # Launch the data thread ...
         self.data_thread = threading.Thread(None, self.manage_brok_thread, 'datathread')
         self.data_thread.start()
         # TODO: look for alive and killing
@@ -431,7 +431,7 @@ class Webui_broker(BaseModule, Daemon):
             # We should warn if we cannot update broks
             # for more than 30s because it can be not good
             if time.time() - start > 30:
-                print "WARNING: we are in lock/read since more than 30s!"
+                logger.warning("[WebUI] wait_for_no_readers, we are in lock/read since more than 30s!")
                 start = time.time()
 
     # We want a lock manager version of the plugin functions
@@ -817,6 +817,8 @@ def login_required():
     app = bottle.BaseTemplate.defaults['app']
 
     logger.debug("[WebUI] login_required, requested URL: %s", request.urlparts.path)
+    if request.urlparts.path == "/user/logout" or request.urlparts.path == app.get_url("Logout"):
+        return
     if request.urlparts.path == "/user/login" or request.urlparts.path == app.get_url("GetLogin"):
         return
     if request.urlparts.path == "/user/auth" or request.urlparts.path == app.get_url("SetLogin"):
