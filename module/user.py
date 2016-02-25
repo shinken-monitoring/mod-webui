@@ -51,13 +51,29 @@ class User(Contact):
     def get_picture(self):
         return self.picture
 
+    def get_username(self):
+        if getattr(self, 'contact_name', None):
+            return self.contact_name
+        elif getattr(self, 'name', None):
+            return self.name
+
     def get_name(self):
-        name = self.contact_name
+        name = self.get_username()
         if getattr(self, 'realname', None):
             name = "%s %s" % (getattr(self, 'firstname'), getattr(self, 'realname'))
         elif getattr(self, 'alias', None) and getattr(self, 'alias', None) != 'none':
             name = getattr(self, 'alias', name)
         return name
+
+    def is_administrator(self):
+        """
+        Is contact an administrator?
+        """
+        if isinstance(self.is_admin, bool):
+            return self.is_admin
+        else:
+            return getattr(self, 'is_admin', '0') == '1'
+
 
     @classmethod
     def from_contact(cls, contact, picture="", use_gravatar=False):
@@ -67,7 +83,7 @@ class User(Contact):
         except Exception:
             raise Exception(user)
         if not picture:
-            user.picture = '/static/photos/%s' % user.contact_name
+            user.picture = '/static/photos/%s' % user.get_username()
             if use_gravatar:
                 gravatar = cls.get_gravatar(user.email)
                 if gravatar:

@@ -11,6 +11,8 @@ from .metamodule import MetaModule
 
 from ..lib.md5crypt import apache_md5_crypt, unix_md5_crypt
 
+from ..user import User
+
 try:
     from passlib.hash import bcrypt
     brcypt_available = True
@@ -27,23 +29,28 @@ class AuthMetaModule(MetaModule):
     _user_login = None
     _user_info = None
 
-    def check_auth(self, user, password):
-        ''' Check user/password. If there is submodules, this methods call them
-            one by one until one of them returns True. If no submodule can
-            check user/password, then we return False.
-            If not, the method calls a default check_auth method. '''
+    def check_auth(self, username, password):
+        """ Check username/password.
+            If there is submodules, this method calls them one by one until one of them returns
+            True. If no submodule can authenticate the user, then we try with internal
+            authentication methods: htpasswd file, then contact password.
+
+            This method returns a User object if authentication succeeded, else it returns None
+        """
+        self._user_login = None
         self._authenticator = None
         self._session = None
         self._user_info = None
-        logger.info("[WebUI] Authenticating user '%s'", user)
+        logger.info("[WebUI] Authenticating user '%s'", username)
+
         if self.modules:
             for mod in self.modules:
                 try:
-                    logger.info("[WebUI] Authenticating user '%s' with %s", user, mod.get_name())
-                    if mod.check_auth(user, password):
-                        logger.info("[WebUI] User '%s' is authenticated by %s", user, mod.get_name())
+                    logger.info("[WebUI] Authenticating user '%s' with %s", username, mod.get_name())
+                    if mod.check_auth(username, password):
+                        logger.info("[WebUI] User '%s' is authenticated by %s", username, mod.get_name())
                         self._authenticator = mod.get_name()
-                        self._user_login = user
+                        self._user_login = username
 
                         # Session identifier ?
                         f = getattr(mod, 'get_session', None)
@@ -56,24 +63,35 @@ class AuthMetaModule(MetaModule):
                         if f and callable(f):
                             self._user_info = mod.get_user_info()
                             logger.info("[WebUI] User info: %s", self._user_info)
-
-                        return True
                 except Exception as exp:
                     logger.warning("[WebUI] The mod %s raised an exception: %s", str(exp))
-                    logger.warning("[WebUI] Exception type: %s", type(exp))
                     logger.warning("[WebUI] Back trace: %s" % (traceback.format_exc()))
 
-        logger.info("[WebUI] Internal htpasswd authentication for '%s'", user)
-        if self.app.htpasswd_file and self.check_apache_htpasswd_auth(user, password):
-            self._authenticator = 'htpasswd'
-            self._user_login = user
-            return True
+        if not self._user_login:
+            logger.info("[WebUI] Internal htpasswd authentication")
+            if self.app.htpasswd_file and self.check_apache_htpasswd_auth(username, password):
+                self._authenticator = 'htpasswd'
+                self._user_login = username
 
-        logger.info("[WebUI] Internal contact authentication for '%s'", user)
-        if self.check_cfg_password_auth(user, password):
-            self._authenticator = 'contact'
-            self._user_login = user
-            return True
+
+        if not self._user_login:
+            logger.info("[WebUI] Internal contact authentication")
+            if self.check_cfg_password_auth(username, password):
+                self._authenticator = 'contact'
+                self._user_login = username
+
+        if self._user_login:
+            logger.info("[WebUI] user authenticated thanks to %s", self._authenticator)
+
+            # Check existing contact ...
+            c = self.app.datamgr.get_contact(username)
+            if not c:
+                logger.error("[WebUI] You need to have a contact having the same name as your user: %s", username)
+                return None
+
+            return User.from_contact(c)
+
+        return None
 
     def is_available(self):
         ''' Always returns True because this MetaModule have a default behavior. '''
@@ -97,15 +115,15 @@ class AuthMetaModule(MetaModule):
         '''
         return self._user_info
 
-    def check_cfg_password_auth(self, user, password):
+    def check_cfg_password_auth(self, username, password):
         ''' Embedded authentication with password stored in contact definition.
             Function imported from auth-cfg-password module.
         '''
-        logger.info("[WebUI-auth-cfg-password] Authenticating user '%s'", user)
+        logger.info("[WebUI-auth-cfg-password] Authenticating user '%s'", username)
 
-        c = self.app.datamgr.get_contact(user)
+        c = self.app.datamgr.get_contact(username)
         if not c:
-            logger.error("[WebUI-auth-cfg-password] You need to have a contact having the same name as your user: %s", user)
+            logger.error("[WebUI-auth-cfg-password] You need to have a contact having the same name as your user: %s", username)
             return False
         p = None
         if isinstance(c, dict):
@@ -120,11 +138,11 @@ class AuthMetaModule(MetaModule):
         logger.warning("[WebUI-auth-cfg-password] Authentication failed %s != %s", p, password)
         return False
 
-    def check_apache_htpasswd_auth(self, user, password):
+    def check_apache_htpasswd_auth(self, username, password):
         ''' Embedded authentication with password in Apache htpasswd file.
             Function imported from auth-htpasswd module.
         '''
-        logger.info("[WebUI-auth-htpasswd] Authenticating user '%s'", user)
+        logger.info("[WebUI-auth-htpasswd] Authenticating user '%s'", username)
 
         try:
             f = open(self.app.htpasswd_file, 'r')
@@ -149,8 +167,8 @@ class AuthMetaModule(MetaModule):
                     magic = None
                     salt = hash[:2]
 
-                # If we match the user, look at the crypt
-                if name == user:
+                # If we match the username, look at the crypt
+                if name == username:
                     if magic == 'apr1':
                         compute_hash = apache_md5_crypt(password, salt)
                     elif magic == '1':
@@ -163,7 +181,7 @@ class AuthMetaModule(MetaModule):
                         logger.info("[WebUI-auth-htpasswd] Authenticated")
                         return True
                 else:
-                    logger.debug("[WebUI-auth-htpasswd] Authentication failed, invalid name: %s / %s", name, user)
+                    logger.debug("[WebUI-auth-htpasswd] Authentication failed, invalid name: %s / %s", name, username)
         except Exception as exp:
             logger.info("[WebUI-auth-htpasswd] Authentication against apache passwd file failed, exception: %s", str(exp))
         finally:

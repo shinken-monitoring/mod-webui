@@ -699,15 +699,16 @@ class Webui_broker(BaseModule, Daemon):
         self.user_session = None
         self.user_info = None
 
-        c = self.datamgr.get_contact(username)
-        if not c:
-            logger.error("[WebUI] You need to have a contact having the same name as your user: %s", username)
-            return False
+        # c = self.datamgr.get_contact(name=username)
+        # if not c:
+            # logger.error("[WebUI] You need to have a contact having the same name as your user: %s", username)
+            # return False
 
         logger.info("[WebUI] Requesting authentication for user: %s", username)
-        r = self.auth_module.check_auth(username, password)
-        if r:
-            user = User.from_contact(c, picture=self.user_picture, use_gravatar=self.gravatar)
+        user = self.auth_module.check_auth(username, password)
+        if user:
+            # logger.info("[WebUI] user authenticated through %s", self.auth_module._authenticator)
+            # user = User.from_contact(c, picture=self.user_picture, use_gravatar=self.gravatar)
             self.user_picture = user.picture
             logger.info("[WebUI] User picture: %s", self.user_picture)
             self.user_session = self.auth_module.get_session()
@@ -739,11 +740,11 @@ class Webui_broker(BaseModule, Daemon):
                 logger.debug("[WebUI] user info: %s", cookie_value['info'])
             if 'login' in cookie_value:
                 logger.debug("[WebUI] user login: %s", cookie_value['login'])
-                contact = app.datamgr.get_contact(cookie_value['login'])
+                contact = app.datamgr.get_contact(name=cookie_value['login'])
             else:
-                contact = app.datamgr.get_contact(cookie_value)
+                contact = app.datamgr.get_contact(name=cookie_value)
         else:
-            contact = app.datamgr.get_contact('anonymous')
+            contact = app.datamgr.get_contact(name='anonymous')
         if not contact:
             return None
 
@@ -758,7 +759,7 @@ class Webui_broker(BaseModule, Daemon):
     # :TODO:maethor:150717: find a better name for this method
     def can_action(self, username=None):
         if username:
-            user = User.from_contact(self.datamgr.get_contact(username), self.gravatar)
+            user = User.from_contact(self.datamgr.get_contact(name=username), self.gravatar)
         else:
             user = request.environ.get('USER', None)
 
@@ -843,7 +844,8 @@ def login_required():
         else:
             contact = app.datamgr.get_contact(cookie_value)
     else:
-        contact = app.datamgr.get_contact('anonymous')
+        logger.debug("[WebUI] login_required, try anonymous access ...")
+        contact = app.datamgr.get_contact(name='anonymous')
     if not contact:
         bottle.redirect("/user/login")
 
