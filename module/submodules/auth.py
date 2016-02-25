@@ -84,7 +84,7 @@ class AuthMetaModule(MetaModule):
             logger.info("[WebUI] user authenticated thanks to %s", self._authenticator)
 
             # Check existing contact ...
-            c = self.app.datamgr.get_contact(username)
+            c = self.app.datamgr.get_contact(name=username)
             if not c:
                 logger.error("[WebUI] You need to have a contact having the same name as your user: %s", username)
                 return None
@@ -121,7 +121,7 @@ class AuthMetaModule(MetaModule):
         '''
         logger.info("[WebUI-auth-cfg-password] Authenticating user '%s'", username)
 
-        c = self.app.datamgr.get_contact(username)
+        c = self.app.datamgr.get_contact(name=username)
         if not c:
             logger.error("[WebUI-auth-cfg-password] You need to have a contact having the same name as your user: %s", username)
             return False
