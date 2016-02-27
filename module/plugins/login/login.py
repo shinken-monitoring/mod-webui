@@ -74,7 +74,6 @@ def user_login():
                 bottle.redirect(app.get_url("Dashboard"))
 
     return {'msg_text': err, 'login_text': app.login_text, 'company_logo': app.company_logo}
-    # return bottle.template('login', msg_text=err, login_text=app.login_text, company_logo=app.company_logo)
 
 
 def user_logout():

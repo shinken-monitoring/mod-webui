@@ -2,7 +2,7 @@
 
 %helper = app.helper
 %services = app.datamgr.get_services(user)
-%s = helper.get_synthesis(services)['services']
+%s = app.datamgr.get_services_synthesis(services)
 
 
 <div id="servicesgroups">
@@ -108,7 +108,7 @@
          %end
 
          %services = app.datamgr.search_hosts_and_services('type:service sg:'+group.get_name(), user)
-         %s = helper.get_synthesis(services)['services']
+         %s = app.datamgr.get_services_synthesis(services)
          %if even =='':
            %even='alt'
          %else:

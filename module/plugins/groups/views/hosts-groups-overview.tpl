@@ -1,8 +1,7 @@
 %rebase("layout", css=['groups/css/groups-overview.css'], title='Hosts groups overview')
 
 %helper = app.helper
-%hosts = app.datamgr.get_hosts(user)
-%h = helper.get_synthesis(hosts)['hosts']
+%h = app.datamgr.get_hosts_synthesis()
 
 
 <div id="hostsgroups">
@@ -109,7 +108,7 @@
          %end
 
          %hosts = app.datamgr.search_hosts_and_services('type:host hg:'+group.get_name(), user)
-         %h = helper.get_synthesis(hosts)['hosts']
+         %h = app.datamgr.get_hosts_synthesis(hosts)
          %if even =='':
            %even='alt'
          %else:

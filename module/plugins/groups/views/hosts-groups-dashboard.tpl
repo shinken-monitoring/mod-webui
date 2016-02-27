@@ -2,7 +2,7 @@
 
 %helper = app.helper
 %hosts = app.datamgr.get_hosts(user)
-%h = helper.get_synthesis(hosts)['hosts']
+%h = helper.get_hosts_synthesis(hosts)
 
 
 <div id="hostsgroups">
@@ -13,24 +13,24 @@
             <span class="pull-right">Total hosts: {{h['nb_elts']}}</span>
          </div>
          <div class="progress" style="margin-bottom: 0px;">
-            <div title="{{h['nb_up']}} hosts Up" class="progress-bar progress-bar-success quickinfo" role="progressbar" 
-               data-toggle="tooltip" data-placement="bottom" 
+            <div title="{{h['nb_up']}} hosts Up" class="progress-bar progress-bar-success quickinfo" role="progressbar"
+               data-toggle="tooltip" data-placement="bottom"
                style="width: {{h['pct_up']}}%;">{{h['pct_up']}}% Up</div>
 
-            <div title="{{h['nb_down']}} hosts Down" class="progress-bar progress-bar-danger quickinfo" role="progressbar" 
-               data-toggle="tooltip" data-placement="bottom" 
+            <div title="{{h['nb_down']}} hosts Down" class="progress-bar progress-bar-danger quickinfo" role="progressbar"
+               data-toggle="tooltip" data-placement="bottom"
                style="width: {{h['pct_down']}}%;">{{h['pct_down']}}% Down</div>
 
-            <div title="{{h['nb_unreachable']}} hosts Unreachable" class="progress-bar progress-bar-warning quickinfo" role="progressbar" 
-               data-toggle="tooltip" data-placement="bottom" 
+            <div title="{{h['nb_unreachable']}} hosts Unreachable" class="progress-bar progress-bar-warning quickinfo" role="progressbar"
+               data-toggle="tooltip" data-placement="bottom"
                style="width: {{h['pct_unreachable']}}%;">{{h['pct_unreachable']}}% Unreachable</div>
 
-            <div title="{{h['nb_pending']}} hosts Pending" class="progress-bar progress-bar-info quickinfo" role="progressbar" 
-               data-toggle="tooltip" data-placement="bottom" 
+            <div title="{{h['nb_pending']}} hosts Pending" class="progress-bar progress-bar-info quickinfo" role="progressbar"
+               data-toggle="tooltip" data-placement="bottom"
                style="width: {{h['pct_pending']}}%;">{{h['pct_pending']}}% Pending</div>
 
-            <div title="{{h['nb_unknown']}} hosts Unknown" class="progress-bar progress-bar-info quickinfo" role="progressbar" 
-               data-toggle="tooltip" data-placement="bottom" 
+            <div title="{{h['nb_unknown']}} hosts Unknown" class="progress-bar progress-bar-info quickinfo" role="progressbar"
+               data-toggle="tooltip" data-placement="bottom"
                style="width: {{h['pct_unknown']}}%;">{{h['pct_unknown']}}% Unknown</div>
          </div>
       </div>
@@ -61,7 +61,7 @@
          </li>
       %end
    </ul>
-   
+
    %bg_colors=['', 'danger', 'warning', 'info']
    <table class="table table-bordered">
       <colgroup>
@@ -79,7 +79,7 @@
       %i=0
       %for group in hostgroups:
          %hosts = app.datamgr.search_hosts_and_services('type:host hg:'+group.get_name(), user)
-         %h = helper.get_synthesis(hosts)['hosts']
+         %h = helper.get_hosts_synthesis(hosts)
          %nHosts=h['nb_elts']
          %nGroups=len(group.get_hostgroup_members())
          %if (i % 6)==0:
@@ -99,9 +99,9 @@
             %for state in 'down', 'unreachable', 'up', 'pending', 'unknown', 'ack', 'downtime':
               %html += helper.get_fa_icon_state_and_label(cls='host', state=state, label=h['nb_' + state])
             %end
-            <div class="col-sm-6 text-center btn popover-dismiss" 
-                  data-html="true" data-toggle="popover" data-trigger="hover" data-placement="bottom" 
-                  data-title="Hosts status" 
+            <div class="col-sm-6 text-center btn popover-dismiss"
+                  data-html="true" data-toggle="popover" data-trigger="hover" data-placement="bottom"
+                  data-title="Hosts status"
                   data-content='{{!html}}' >
                <i class="fa fa-server"></i>&nbsp;{{h['nb_elts']}}
             </div>

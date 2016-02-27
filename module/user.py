@@ -74,6 +74,71 @@ class User(Contact):
         else:
             return getattr(self, 'is_admin', '0') == '1'
 
+    def _is_related_to(self, item):
+        """ Is the item (host, service, group…) related to the user?
+
+            In other words, can the user see this item in the WebUI?
+
+            :returns: True or False
+        """
+        # logger.info("[WebUI - alignak] _is_related_to, item: %s / %s", item.__class__, item)
+
+        # if the user is an admin, always consider there is a relation
+        if self.is_administrator():
+            return True
+
+        # is it me as a Contact object ?
+        if item.__class__.my_type == 'contact':
+            return item.name == self.name
+
+        # Am I member of the contacts group?
+        if item.__class__.my_type == 'contactgroup':
+            for contact in item.members:
+                if contact.contact_name == self.contact_name:
+                    return True
+
+        # May be the user is a direct contact
+        if hasattr(item, 'contacts'):
+            for contact in item.contacts:
+                if contact.contact_name == self.contact_name:
+                    return True
+
+        # May be it's a contact of a linked item
+        if item.__class__.my_type == 'hostgroup':
+            for host in item.get_hosts():
+                for contact in host.contacts:
+                    if contact.contact_name == self.contact_name:
+                        return True
+
+        # May be it's a contact of a sub item ...
+        if item.__class__.my_type == 'servicegroup':
+            for service in item.get_services():
+                for contact in service.contacts:
+                    if contact.contact_name == self.contact_name:
+                        return True
+
+        # May be it's a contact of a linked item
+        # (source problems or impacts)
+        if hasattr(item, 'source_problems'):
+            for source_problem in item.source_problems:
+                for contact in source_problem.contacts:
+                    if contact.contact_name == self.contact_name:
+                        return True
+
+        # May be it's a contact of service's host
+        # if item.__class__.my_type == 'service':
+            # for contact in service.host.contacts:
+                # if contact.contact_name == self.contact_name:
+                    # return True
+
+        # Now impacts related maybe?
+        # if hasattr(item, 'impacts'):
+            # for impact in item.impacts:
+                # for contact in impact.contacts:
+                    # if contact.contact_name == self.contact_name:
+                        # return True
+
+        return False
 
     @classmethod
     def from_contact(cls, contact, picture="", use_gravatar=False):

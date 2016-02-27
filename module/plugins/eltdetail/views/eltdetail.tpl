@@ -266,7 +266,7 @@ Invalid element name
    %end
 
    %if elt_type=='host':
-   %synthesis = helper.get_synthesis(elt.services)
+   %synthesis = app.datamgr.get_synthesis(elt.services)
    %s = synthesis['services']
    <div class="panel panel-default">
      <div class="panel-body">

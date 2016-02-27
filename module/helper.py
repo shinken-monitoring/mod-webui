@@ -52,30 +52,6 @@ class Helper(object):
     def __init__(self):
         pass
 
-    def gogo(self):
-        return 'HELLO'
-
-    def act_inactive(self, b):
-        if b:
-            return 'Active'
-        else:
-            return 'Inactive'
-
-    def yes_no(self, b):
-        if b:
-            return 'Yes'
-        else:
-            return 'No'
-
-    def print_float(self, f):
-        return '%.2f' % f
-
-    def ena_disa(self, b):
-        if b:
-            return 'Enabled'
-        else:
-            return 'Disabled'
-
     # For a unix time return something like
     # Tue Aug 16 13:56:08 2011
     def print_date(self, t, format='%Y-%m-%d %H:%M:%S'):
@@ -183,8 +159,6 @@ class Helper(object):
                 res.append(n)
         return res
 
-
-
     def create_dep_graph_aggregation_node(self, elt):
         # {'path' : '/', 'sons' : [], 'services':[], 'state':'unknown', 'full_path':'/'}
         hname = elt.get_name()
@@ -235,7 +209,6 @@ class Helper(object):
             res.append(d)
 
         return res
-
 
     def get_dep_graph_struct(self, elt):
         t = elt.__class__.my_type
@@ -331,8 +304,10 @@ class Helper(object):
         #safe_print("get_all_linked_elts::Give elements", my)
         return my
 
-
     def get_synthesis(self, elts):
+        logger.info("Helper - get_synthesis, %d elements", len(elts))
+        return None
+
         h = dict()
         hosts = [i for i in elts if i.__class__.my_type == 'host']
         h['elts'] = hosts

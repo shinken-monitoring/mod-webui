@@ -853,6 +853,7 @@ def login_required():
     if app.user_session and app.user_info:
         user.set_information(app.user_session, app.user_info)
     app.user_picture = user.get_picture()
+    app.datamgr.set_logged_in_user(user)
     request.environ['USER'] = user
     bottle.BaseTemplate.defaults['user'] = user
     logger.debug("[WebUI] login_required: user: %s", user)

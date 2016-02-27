@@ -52,7 +52,7 @@
       %pass
       %end
 
-      %synthesis = helper.get_synthesis(items)
+      %synthesis = app.datamgr.get_synthesis(items)
       %s = synthesis['services']
       %h = synthesis['hosts']
 

@@ -73,7 +73,6 @@ class AuthMetaModule(MetaModule):
                 self._authenticator = 'htpasswd'
                 self._user_login = username
 
-
         if not self._user_login:
             logger.info("[WebUI] Internal contact authentication")
             if self.check_cfg_password_auth(username, password):

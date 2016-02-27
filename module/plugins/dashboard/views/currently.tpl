@@ -416,7 +416,7 @@
 </script>
 %end
 
-%synthesis = helper.get_synthesis(app.datamgr.search_hosts_and_services("", user))
+%synthesis = app.datamgr.get_synthesis()
 %s = synthesis['services']
 %h = synthesis['hosts']
 
