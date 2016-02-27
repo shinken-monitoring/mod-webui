@@ -198,7 +198,7 @@ class WebUIDataManager(DataManager):
             hosts = [item for item in elts if item.__class__.my_type == 'host']
         else:
             hosts = self.get_hosts(user=user)
-        logger.info("[WebUI - datamanager] get_hosts_synthesis, %d hosts", len(hosts))
+        logger.debug("[WebUI - datamanager] get_hosts_synthesis, %d hosts", len(hosts))
 
         h = dict()
         h['nb_elts'] = len(hosts)
@@ -224,7 +224,7 @@ class WebUIDataManager(DataManager):
                 h['nb_' + state] = 0
                 h['pct_' + state] = 0
 
-        logger.info("[WebUI - datamanager] get_hosts_synthesis: %s", h)
+        logger.debug("[WebUI - datamanager] get_hosts_synthesis: %s", h)
         return h
 
     ##
@@ -284,7 +284,7 @@ class WebUIDataManager(DataManager):
             services = [item for item in elts if item.__class__.my_type == 'service']
         else:
             services = self.get_services(user=user)
-        logger.info("[WebUI - datamanager] get_services_synthesis, %d services", len(services))
+        logger.debug("[WebUI - datamanager] get_services_synthesis, %d services", len(services))
 
         s = dict()
         s['nb_elts'] = len(services)
@@ -310,7 +310,7 @@ class WebUIDataManager(DataManager):
                 s['nb_' + state] = 0
                 s['pct_' + state] = 0
 
-        logger.info("[WebUI - datamanager] get_services_synthesis: %s", s)
+        logger.debug("[WebUI - datamanager] get_services_synthesis: %s", s)
         return s
 
     ##
