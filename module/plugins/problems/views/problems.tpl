@@ -22,7 +22,7 @@
    </center>
    %else:
 
-   %include("_problems_synthesis.tpl", pbs=pbs)
+   %include("_problems_synthesis.tpl", pbs=pbs, search_string=app.get_search_string())
 
    %from itertools import groupby
    %pbs = sorted(pbs, key=lambda x: x.business_impact, reverse=True)
@@ -57,8 +57,8 @@
                <td>
                   <input type="checkbox" class="input-sm" value="" id="selector-{{helper.get_html_id(pb)}}" data-type="problem" data-business-impact="{{business_impact}}" data-item="{{pb.get_full_name()}}">
                </td>
-               <td align="center">
-                  {{!helper.get_fa_icon_state(pb)}}
+               <td title="{{pb.get_name()}} - {{pb.output}} - Since {{helper.print_duration(pb.last_state_change)}} - Last check: {{helper.print_duration(pb.last_chk)}}" class="align-center">
+                  {{!helper.get_fa_icon_state(pb, useTitle=False)}}
                </td>
                <td>
                   %if i == 0:

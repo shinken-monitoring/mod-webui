@@ -1,3 +1,5 @@
+<!-- Problems table -->
+%setdefault('commands', True)
 
 %helper = app.helper
 
@@ -6,12 +8,14 @@
 %if not pbs:
    <span>No problems!</span>
 %else:
+   %include("_problems_synthesis.tpl", pbs=pbs, search_string='')
+
    <table class="table table-condensed">
       <tbody>
       %for pb in pbs:
          <tr>
-            <td class="align-center">
-               {{!helper.get_fa_icon_state(pb)}}
+            <td title="{{pb.get_name()}} - {{pb.output}} - Since {{helper.print_duration(pb.last_state_change)}} - Last check: {{helper.print_duration(pb.last_chk)}}" class="align-center">
+               {{!helper.get_fa_icon_state(pb, useTitle=False)}}
             </td>
 
             <td class="align-left">
@@ -22,7 +26,7 @@
                <small>{{!helper.get_business_impact_text(pb.business_impact)}}</small>
             </td>
 
-            %if app.can_action():
+            %if app.can_action() and commands:
             <td align="right">
                 <div class="btn-group" role="group" data-type="actions" aria-label="Actions">
                     %if pb.event_handler_enabled and pb.event_handler:
