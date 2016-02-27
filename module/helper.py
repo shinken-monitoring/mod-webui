@@ -780,12 +780,28 @@ class Helper(object):
                 # metrics[0][1] is a percentage:
                 #   - real percentage between min and max (if defined)
                 #   - else 100
+
+                # Thanks to @medismail
+                base = {'success': 'green', 'warning': 'orange', 'danger': 'red', 'info': 'blue'}
+                color = base.get(metrics[0][0], 'blue')
                 logger.debug("[WebUI] get_perfometer: %s, %s / %s", elt.get_name(), metrics[0][0], metrics[0][1])
-                s += '''<div class="progress" style="min-width:100px;">
-                            <div title="%s" class="ellipsis progress-bar progress-bar-%s" role="progressbar" aria-valuenow="%s" aria-valuemin="0" aria-valuemax="100" style="min-width: 50px; width:%s%%">
-                            %s
-                            </div>
-                        </div>''' % (title, metrics[0][0], metrics[0][1], metrics[0][1], title)
+                if metrics[0][1] > 9:
+                    s += '''<div class="progress" style="min-width:100px;">
+                    <div title="%s" class="ellipsis progress-bar progress-bar-%s" role="progressbar"
+                        aria-valuenow="%s" aria-valuemin="0" aria-valuemax="100" style="min-width: 40px; width:%s%%">
+                    %s
+                    </div>
+                    </div>''' % (title, metrics[0][0], metrics[0][1], metrics[0][1], title)
+                else:
+                    s += '''<div class="progress" style="min-width:100px;">
+                    <div title="%s" class="ellipsis progress-bar progress-bar-%s" role="progressbar"
+                        aria-valuenow="%s" aria-valuemin="0" aria-valuemax="100" style="width:%s%%">
+                    </div>
+                    <font size="2" color="%s">  %s
+                    </div>''' % (title, metrics[0][0], metrics[0][1], metrics[0][1], color, title)
+
+
+
             if r['lnk'] != '#':
                 s += '</a>'
 

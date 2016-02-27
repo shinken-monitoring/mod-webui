@@ -81,12 +81,14 @@
                <td class="row hidden-sm hidden-xs">
                   %if app.graphs_module.is_available():
                   <div class="pull-right">
-                     %# Graphs
-                     %import time
-                     %now = time.time()
                      %graphs = app.graphs_module.get_graph_uris(pb, duration=12*3600)
                      %if len(graphs) > 0:
-                        <a role="button" tabindex="0" data-toggle="popover" title="{{ pb.get_full_name() }}" data-html="true" data-content="<img src='{{ graphs[0]['img_src'] }}' width='600px' height='200px'>" data-trigger="hover" data-placement="left">{{!helper.get_perfometer(pb)}}</a>
+                        <a style="text-decoration: none;" role="button" tabindex="0" data-toggle="popover"
+                           title="{{ pb.get_full_name() }}" data-html="true"
+                           data-content="<img src='{{ graphs[0]['img_src'] }}' width='600px' height='200px'>"
+                           data-trigger="hover" data-placement="left">
+                           {{!helper.get_perfometer(pb)}}
+                        </a>
                      %end
                   </div>
                   %end
