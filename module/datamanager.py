@@ -31,6 +31,7 @@ import time
 from shinken.log import logger
 
 from shinken.misc.datamanager import DataManager
+from shinken.objects.contact import Contact
 
 
 # Sort hosts and services by impact, states and co
@@ -347,6 +348,10 @@ class WebUIDataManager(DataManager):
             :sorter: function to sort the items. default=None (means no sorting)
             :returns: list of hosts and services
         """
+        # Make user an User object ... simple protection.
+        if isinstance(user, basestring):
+            user = self.rg.contacts.find_by_name(user)
+
         items = []
         items.extend(self.get_hosts(user, get_impacts))
         items.extend(self.get_services(user, get_impacts))
@@ -438,7 +443,7 @@ class WebUIDataManager(DataManager):
                 if not group:
                     return []  # :TODO:maethor:150716: raise an error
                 contacts = [c for c in self.get_contacts(user=user) if c in group.members]
-                items = list(set(itertools.chain(*[self._only_related_to(items, c) for c in contacts])))
+                items = list(set(itertools.chain(*[self._only_related_to(items, self.rg.contacts.find_by_name(c)) for c in contacts])))
 
             if t == 'realm':
                 r = self.get_realm(s)
