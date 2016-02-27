@@ -115,10 +115,9 @@
                         %end
                   </tbody>
                </table>
-               %else:
-               <span> ... </span>
                %end
 
+               <!--
                <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm"
                        data-type="action" action="schedule-downtime"
                        data-toggle="tooltip" data-placement="bottom" title="Schedule a downtime for this contact"
@@ -135,6 +134,7 @@
                     <i class="fa fa-minus"></i> Delete all downtimes
                </button>
                %end
+               -->
 
                <table class="table table-condensed col-sm-12" style="table-layout: fixed; word-wrap: break-word;">
                   <colgroup>
