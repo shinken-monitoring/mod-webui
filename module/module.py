@@ -25,9 +25,13 @@
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 
 
-WEBUI_VERSION = "2.3.0"
+WEBUI_VERSION = "2.3.1"
 WEBUI_COPYRIGHT = "(c) 2009-2016 - License GNU AGPL as published by the FSF, minimum version 3 of the License."
-WEBUI_RELEASENOTES = """Heavy work on dashboard currently view ... use and abuse Eye icon in the header toolbar."""
+WEBUI_RELEASENOTES = """
+Heavy work on dashboard currently view ...
+... use and abuse Eye icon in the header toolbar :)
+Clean user management and data manager
+"""
 
 
 """
