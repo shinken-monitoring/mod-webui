@@ -45,7 +45,9 @@ import os
 import time
 import threading
 import imp
+from urlparse import urljoin
 
+# Shinken import
 from shinken.basemodule import BaseModule
 from shinken.message import Message
 from shinken.misc.regenerator import Regenerator
@@ -55,13 +57,16 @@ from shinken.modulesmanager import ModulesManager
 from shinken.daemon import Daemon
 from shinken.util import to_bool
 
-# Local import
+# Bottle import
 from bottle import route, request, response, template
 import bottle
-from urlparse import urljoin
+
+# Local import
 from datamanager import WebUIDataManager
 from user import User
 from helper import helper
+
+from lib.md5crypt import apache_md5_crypt, unix_md5_crypt
 
 from submodules.prefs import PrefsMetaModule
 from submodules.auth import AuthMetaModule
@@ -276,6 +281,7 @@ class Webui_broker(BaseModule, Daemon):
         self.modules_dir = modulesctx.get_modulesdir()
         self.modules_manager = ModulesManager('webui', self.find_modules_path(), [])
         self.modules_manager.set_modules(self.modules)
+
         # We can now output some previously silenced debug output
         self.do_load_modules()
         for inst in self.modules_manager.instances:
@@ -712,6 +718,14 @@ class Webui_broker(BaseModule, Daemon):
         user = self.auth_module.check_auth(username, password)
         if user:
             # logger.info("[WebUI] user authenticated through %s", self.auth_module._authenticator)
+            # Check existing contact ...
+            c = self.datamgr.get_contact(name=username)
+            if not c:
+                logger.error("[WebUI] You need to have a contact having the same name as your user: %s", username)
+                return False
+
+            user = User.from_contact(c)
+
             # user = User.from_contact(c, picture=self.user_picture, use_gravatar=self.gravatar)
             self.user_picture = user.picture
             logger.info("[WebUI] User picture: %s", self.user_picture)
@@ -861,3 +875,4 @@ def login_required():
     logger.debug("[WebUI] update current user: %s", user)
     request.environ['USER'] = user
     bottle.BaseTemplate.defaults['user'] = user
+

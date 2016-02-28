@@ -9,17 +9,25 @@ from shinken.log import logger
 
 from .metamodule import MetaModule
 
-from ..lib.md5crypt import apache_md5_crypt, unix_md5_crypt
-
-from ..user import User
+#TODO: use md5 functions from passlib library instead of this specific library ...
+try:
+    from ..lib.md5crypt import apache_md5_crypt, unix_md5_crypt
+    md5_available = True
+except ImportError:
+    logger.warning('[WebUI-auth-htpasswd] Can not import md5 password authentication.')
+    md5_available = False
+except ValueError:
+    logger.warning('[WebUI-auth-htpasswd] Can not import md5 password authentication!')
+    md5_available = False
 
 try:
     from passlib.hash import bcrypt
-    brcypt_available = True
+    bcrypt_available = True
 except ImportError:
     logger.warning('[WebUI-auth-htpasswd] Can not import bcrypt password authentication. '
                  'You should \'pip install passlib\' if you intend to use it.')
-    brcypt_available = False
+    bcrypt_available = False
+
 
 class AuthMetaModule(MetaModule):
 
@@ -81,14 +89,7 @@ class AuthMetaModule(MetaModule):
 
         if self._user_login:
             logger.info("[WebUI] user authenticated thanks to %s", self._authenticator)
-
-            # Check existing contact ...
-            c = self.app.datamgr.get_contact(name=username)
-            if not c:
-                logger.error("[WebUI] You need to have a contact having the same name as your user: %s", username)
-                return None
-
-            return User.from_contact(c)
+            return self._user_login
 
         return None
 
@@ -155,11 +156,11 @@ class AuthMetaModule(MetaModule):
                 elts = line.split(':')
                 name = elts[0]
                 hash = elts[1]
-                if hash[:5] == '$apr1' or hash[:3] == '$1$':
+                if md5_available and hash[:5] == '$apr1' or hash[:3] == '$1$':
                     h = hash.split('$')
                     magic = h[1]
                     salt = h[2]
-                elif brcypt_available and hash[:4] == '$2y$':
+                elif bcrypt_available and hash[:4] == '$2y$':
                     h = hash.split('$')
                     magic = h[1]
                 else:
@@ -168,11 +169,11 @@ class AuthMetaModule(MetaModule):
 
                 # If we match the username, look at the crypt
                 if name == username:
-                    if magic == 'apr1':
+                    if md5_available and magic == 'apr1':
                         compute_hash = apache_md5_crypt(password, salt)
-                    elif magic == '1':
+                    elif md5_available and magic == '1':
                         compute_hash = unix_md5_crypt(password, salt)
-                    elif brcypt_available and magic == '2y':
+                    elif bcrypt_available and magic == '2y':
                         compute_hash = bcrypt.verify(password, hash) and hash
                     else:
                         compute_hash = crypt.crypt(password, salt)
