@@ -5,6 +5,19 @@ Shinken Web User Interface
 
 Current version is 2.3.1, available on [`shinken.io`](http://shinken.io/package/webui2).
 
+## Release notes
+
+### Version 2.3.1
+ - Features:
+   - Update (huge) dashboard currently view
+   - Improve problems widgets (synthesis, commands bar)
+   - Problems page metrics improvements (thanks @medismail)
+
+ - Enhancements: 
+   - Clean dashboard widgets management (addition, options, removal, ...)
+   - Update JS/CSS/Fonts libraries (jQuery, Font Awesome)
+   - Update login process and user management
+
 ## Installation
 
  Installing/upgrading the Shinken WebUI is an easy process:
