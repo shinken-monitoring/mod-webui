@@ -841,6 +841,9 @@ def login_required():
         else:
             contact = app.datamgr.get_contact(cookie_value)
     else:
+     # Only the /dashboard/currently should be accessible to anonymous users
+        if request.urlparts.path != "/dashboard/currently":
+            bottle.redirect("/user/login")
         contact = app.datamgr.get_contact('anonymous')
     if not contact:
         bottle.redirect("/user/login")
