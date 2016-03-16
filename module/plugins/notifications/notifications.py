@@ -31,6 +31,8 @@ def notification_toggle():
     wid = app.request.query.get('wid', 'widget_notification_toggle')
     collapsed = (app.request.query.get('collapsed', 'False') == 'True')
 
+    user = app.request.environ['USER']
+
     return {
         'title': 'Notification Toggle',
         'wid': wid,
@@ -38,6 +40,7 @@ def notification_toggle():
         'options': {},
         'base_url': '/widget/notification_toggle',
         'is_enabled': app.datamgr.get_configs()[0].notifications_enabled,
+        'user': user,
     }
 
 notification_toggle_widget_desc = '''<h4>Notification Toggle</h4>
@@ -53,6 +56,6 @@ pages = {
         'widget': ['dashboard'],
         'widget_desc': notification_toggle_widget_desc,
         'widget_name': 'notification_toggle',
-        'widget_picture': '/static/notifications/img/widget_notification_toggle.png',
+        'widget_picture': '/static/notifications/img/widget_notification_toggle.png',  # noqa
     }
 }

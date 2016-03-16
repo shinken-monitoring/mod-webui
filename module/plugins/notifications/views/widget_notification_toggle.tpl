@@ -14,7 +14,7 @@
             Toggle Notifications:
         </td>
         <td class="text-right">
-            <input type="checkbox" {{'checked' if is_enabled else ''}}
+            <input type="checkbox" {{'checked' if is_enabled else ''}} {{'' if user.is_admin else 'disabled'}}
                 class="switch" data-size="mini" data-on-color="success" data-off-color="danger"
                 data-type="action" action="toggle-notifications" data-value="{{is_enabled}}"
                 >
