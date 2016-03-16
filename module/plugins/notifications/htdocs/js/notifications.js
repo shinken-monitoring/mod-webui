@@ -31,8 +31,8 @@ function on_page_refresh() {
    $('input.switch').bootstrapSwitch();
 
    // Toggles Notifications
-   $('input[action="toggle-notifications"]').on('switchChange.bootstrapSwitch', function (e, data) {
-      toggle_all_notifications($(this).data('value')=='False' ? false : true);
+   $('input[action="toggle-notifications"]').on('switchChange.bootstrapSwitch', function (event, state) {
+      toggle_all_notifications(state==false ? true : false);
    });
 }
 
