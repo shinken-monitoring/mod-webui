@@ -209,51 +209,44 @@ function recheck_now(name) {
  * See #226
  */
 function toggle_active_checks(name, b){
+   var elts = get_elements(name);
+
    if (actions_logs) console.debug("Toggle active checks for: ", name, ", currently: ", b)
 
-   var elts = get_elements(name);
-   // Inverse the active check or not for the element
-   if (b) { // go disable
-      disable_checks(elts, false);
-   } else { // Go enable, passive too
-      enable_checks(elts, false);
+   if (b) {
+      var url = '/action/DISABLE_' + elts.type + '_CHECK/' + elts.nameslash;
+      launch(url, 'Active checks disabled');
+   } else {
+      var url = '/action/ENABLE_' + elts.type + '_CHECK/' + elts.nameslash;
+      launch(url, 'Active checks enabled');
    }
 }
 function toggle_passive_checks(name, b){
+   var elts = get_elements(name);
+
    if (actions_logs) console.debug("Toggle passive checks for: ", name, ", currently: ", b)
 
-   var elts = get_elements(name);
-   // Inverse the passive check or not for the element
    if (b) {
-      disable_checks(elts, true);
+      var url = '/action/DISABLE_PASSIVE_' + elts.type + '_CHECKS/' + elts.nameslash;
+      launch(url, 'Passive checks disabled');
    } else {
-      enable_checks(elts, true);
-   }
-}
-function enable_checks(elts, passive_too){
-   var url = '/action/ENABLE_'+elts.type+'_CHECK/'+elts.nameslash;
-   launch(url, 'Active checks enabled');
-   if (passive_too){
-      var url = '/action/ENABLE_PASSIVE_'+elts.type+'_CHECKS/'+elts.nameslash;
+      var url = '/action/ENABLE_PASSIVE_' + elts.type + '_CHECKS/' + elts.nameslash;
       launch(url, 'Passive checks enabled');
    }
-   // Enable host services only if it's an host ;)
-   if (elts.type == 'HOST'){
-      var url = '/action/ENABLE_HOST_SVC_CHECKS/'+elts.nameslash;
-      launch(url, 'Host services checks enabled');
-   }
 }
-function disable_checks(elts, passive_too){
-   var url = '/action/DISABLE_'+elts.type+'_CHECK/'+elts.nameslash;
-   launch(url, 'Active checks disabled');
-   if (passive_too){
-      var url = '/action/DISABLE_PASSIVE_'+elts.type+'_CHECKS/'+elts.nameslash;
-      launch(url, 'Passive checks disabled');
-   }
-   // Disable host services only if it's an host ;)
-   if (elts.type == 'HOST'){
-      var url = '/action/DISABLE_HOST_SVC_CHECKS/'+elts.nameslash;
-      launch(url, 'Host services checks disabled');
+function toggle_host_checks(name, b){
+   var elts = get_elements(name);
+
+   if (elts.type == 'HOST') {
+      if (actions_logs) console.debug("Toggle host checks for: ", name, ", currently: ", b);
+
+      if (b) {
+          var url = '/action/DISABLE_HOST_SVC_CHECKS/' + elts.nameslash;
+          launch(url, 'Host services checks disabled');
+      } else {
+          var url = '/action/ENABLE_HOST_SVC_CHECKS/' + elts.nameslash;
+          launch(url, 'Host services checks enabled');
+      }
    }
 }
 
