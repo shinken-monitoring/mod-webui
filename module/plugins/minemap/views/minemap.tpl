@@ -141,7 +141,7 @@
                   <td title="{{h.get_name()}} - {{h.state}} - {{helper.print_duration(h.last_chk)}} - {{h.output}}">
                      <a href="/host/{{h.get_name()}}">
                         {{!helper.get_fa_icon_state(h, useTitle=False)}}
-                        {{h.get_name()}}
+                        {{h.display_name}}
                      </a>
                   </td>
                   %for c in columns:
