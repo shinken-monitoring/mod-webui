@@ -62,7 +62,15 @@
                </td>
                <td>
                   %if i == 0:
-                  <a href="/host/{{pb.host_name}}">{{pb.host_name}}</a>
+                     %if pb.__class__.my_type == 'service':
+                        %if pb.host:
+                        <a href="/host/{{pb.host_name}}">{{pb.host.display_name}}</a>
+                        %else:
+                        <a href="/host/{{pb.host_name}}">{{pb.host_name}}</a>
+                        %end
+                     %else:
+                     <a href="/host/{{pb.host_name}}">{{pb.display_name}}</a>
+                     %end
                   %end
                </td>
                <td>
