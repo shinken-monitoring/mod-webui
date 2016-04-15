@@ -315,7 +315,7 @@ Invalid element name
 
             <li class="{{_go_active}}"><a href="#information" data-toggle="tab">Information</a></li>
             <li><a href="#impacts" data-toggle="tab">{{'Services' if elt_type == 'host' else 'Impacts'}}</a></li>
-            %if elt.customs:
+            %if user.is_administrator() and elt.customs:
             <li><a href="#configuration" data-toggle="tab">Configuration</a></li>
             %end
             <li><a href="#comments" data-toggle="tab">Comments</a></li>
@@ -809,7 +809,7 @@ Invalid element name
             <!-- Tab Impacts end -->
 
            <!-- Tab Configuration start -->
-            %if elt.customs:
+            %if user.is_administrator() and elt.customs:
             <div class="tab-pane fade" id="configuration">
                <div class="panel panel-default">
                   <div class="panel-body">
