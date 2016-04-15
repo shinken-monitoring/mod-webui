@@ -951,8 +951,11 @@ def login_required():
             else:
                 contact = app.datamgr.get_contact(name=cookie_value)
     else:
-        logger.debug("[WebUI] login_required, try anonymous access ...")
-        contact = app.datamgr.get_contact(name='anonymous')
+        # Only the /dashboard/currently should be accessible to anonymous users
+        if request.urlparts.path != "/dashboard/currently":
+            bottle.redirect("/user/login")
+        contact = app.datamgr.get_contact('anonymous')
+
     if not contact:
         bottle.redirect(app.get_url("GetLogin"))
 
