@@ -81,7 +81,7 @@ def get_pbs_widget():
     nb_elements = max(0, int(app.request.GET.get('nb_elements', '10')))
     refine_search = app.request.GET.get('search', '')
 
-    items = app.datamgr.search_hosts_and_services("isnot:UP isnot:OK isnot:PENDING ack:false downtime:false", user, get_impacts=False)
+    items = app.datamgr.search_hosts_and_services("isnot:UP isnot:OK isnot:PENDING isnot:ACK isnot:DOWNTIME bp:>0", user, get_impacts=False)
 
     # Sort it now
     items.sort(hst_srv_sort)
@@ -95,26 +95,46 @@ def get_pbs_widget():
             if pat.search(p.get_full_name()):
                 new_pbs.append(p)
                 continue
-            to_add = False
             for imp in p.impacts:
                 if pat.search(imp.get_full_name()):
-                    to_add = True
+                    new_pbs.append(p)
+                    continue
             for src in p.source_problems:
                 if pat.search(src.get_full_name()):
-                    to_add = True
-            if to_add:
-                new_pbs.append(p)
+                    new_pbs.append(p)
+                    continue
 
         items = new_pbs[:nb_elements]
 
     pbs = items[:nb_elements]
 
     wid = app.request.query.get('wid', 'widget_problems_' + str(int(time.time())))
-    collapsed = (app.request.query.get('collapsed', 'False') == 'True')
+    collapsed = (app.request.query.get('collapsed', 'false') == 'true')
+    header = (app.request.query.get('header', 'false') == 'true')
+    commands = (app.request.query.get('commands', 'false') == 'true')
 
-    options = {'search': {'value': refine_search, 'type': 'text', 'label': 'Filter by name'},
-               'nb_elements': {'value': nb_elements, 'type': 'int', 'label': 'Max number of elements to show'},
-               }
+    options = {
+        'search': {
+            'value': refine_search,
+            'type': 'text',
+            'label': 'Filter by name'
+        },
+        'nb_elements': {
+            'value': nb_elements,
+            'type': 'int',
+            'label': 'Max number of elements to show'
+        },
+        'commands': {
+            'value': commands,
+            'type': 'bool',
+            'label': 'Commands buttons bar'
+        },
+        'header': {
+            'value': header,
+            'type': 'bool',
+            'label': 'Hosts/services problems table header'
+        }
+    }
 
     title = 'IT problems'
     if refine_search:
@@ -122,6 +142,7 @@ def get_pbs_widget():
 
     return {'pbs': pbs, 'search': refine_search, 'page': 'problems',
             'wid': wid, 'collapsed': collapsed, 'options': options, 'base_url': '/widget/problems', 'title': title,
+            'header': header, 'commands': commands
             }
 
 
@@ -130,25 +151,45 @@ def get_last_errors_widget():
 
     # We want to limit the number of elements, The user will be able to increase it
     nb_elements = max(0, int(app.request.GET.get('nb_elements', '10')))
+    refine_search = app.request.GET.get('search', '')
 
     # Apply search filter if exists ...
-    search = app.request.query.get('search', "isnot:UP isnot:OK isnot:PENDING isnot:ACK isnot:DOWNTIME bi:>=0 type:all")
+    items = app.datamgr.search_hosts_and_services("isnot:UP isnot:OK isnot:PENDING isnot:ACK isnot:DOWNTIME bp:>0", user, get_impacts=False)
 
-    pbs = app.datamgr.get_problems(user, search, sorter=last_state_change_earlier)
+    # Sort it now
+    items.sort(last_state_change_earlier)
 
     # Keep only nb_elements
-    pbs = pbs[:nb_elements]
+    pbs = items[:nb_elements]
 
     wid = app.request.query.get('wid', 'widget_last_problems_' + str(int(time.time())))
-    collapsed = (app.request.query.get('collapsed', 'False') == 'True')
+    collapsed = (app.request.query.get('collapsed', 'false') == 'true')
+    header = (app.request.query.get('header', 'false') == 'true')
+    commands = (app.request.query.get('commands', 'false') == 'true')
 
-    options = {'nb_elements': {'value': nb_elements, 'type': 'int', 'label': 'Max number of elements to show'},
-               }
+    options = {
+        'nb_elements': {
+            'value': nb_elements,
+            'type': 'int',
+            'label': 'Max number of elements to show'
+        },
+        'commands': {
+            'value': commands,
+            'type': 'bool',
+            'label': 'Commands buttons bar'
+        },
+        'header': {
+            'value': header,
+            'type': 'bool',
+            'label': 'Hosts/services problems table header'
+        }
+    }
 
     title = 'Last IT problems'
 
     return {'pbs': pbs, 'page': 'problems',
             'wid': wid, 'collapsed': collapsed, 'options': options, 'base_url': '/widget/last_problems', 'title': title,
+            'header': header, 'commands': commands
             }
 
 widget_desc = '''<h4>IT problems</h4>

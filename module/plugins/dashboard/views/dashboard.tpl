@@ -1,4 +1,4 @@
-%rebase("layout", js=['js/jquery-ui-1.10.3.min.js', 'dashboard/js/widgets.js', 'dashboard/js/jquery.easywidgets.js'], css=['dashboard/css/dashboard.css'], title='Dashboard')
+%rebase("layout", js=['js/jquery-ui-1.11.4.min.js', 'dashboard/js/widgets.js', 'dashboard/js/jquery.easywidgets.js'], css=['dashboard/css/dashboard.css'], title='Dashboard')
 
 %from shinken.bin import VERSION
 %helper = app.helper
@@ -53,8 +53,7 @@
 </table>
 
 %if app.prefs_module.is_available():
-   %if len(widgets) == 0:
-   <div class="panel panel-default" id="propose-widgets">
+   <div class="panel panel-default" id="propose-widgets" style="display:none">
       <div class="panel-heading" style="padding-bottom: -10">
          <center>
             <h3>You don't have any widget yet ...</h3>
@@ -65,7 +64,6 @@
          <p>Click the <strong>Add widget</strong> button on top of the description to include the widget in your dashboard.</p>
       </div>
    </div>
-   %end
 %else:
    <div class="panel panel-default">
       <div class="panel-heading" style="padding-bottom: -10">
@@ -82,28 +80,82 @@
 <!-- Widgets loading indicator -->
 <div id="widgets_loading"></div>
 
-<div class="widget-place col-sm-12" id="widget-place-1"> </div>
-<!-- /place-1 -->
+<div class="container-fluid">
+    <div class="row">
+        <!-- /place-1 -->
+        <div class="widget-place col-xs-12 col-sm-12 col-lg-4" id="widget-place-1"> </div>
 
-<div class="widget-place col-sm-12" id="widget-place-2"> </div>
-<!-- /place-2 -->
+        <!-- /place-2 -->
+        <div class="widget-place col-xs-12 col-sm-12 col-lg-4" id="widget-place-2"> </div>
 
-<div class="widget-place col-sm-12" id="widget-place-3"> </div>
-<!-- /place-3 -->
+        <!-- /place-3 -->
+        <div class="widget-place col-xs-12 col-sm-12 col-lg-4" id="widget-place-3"> </div>
+    </div>
+</div>
 
 <script type="text/javascript">
-   /*
-    * Function called when the page is loaded and on each page refresh ...
-    */
-   function on_page_refresh() {
-      // Show actions bar
-      show_actions('dashboard-actions');
-   }
+    var dashboard_logs = false;
+
+    // Function called on each page refresh ... update graphs!
+    function on_page_refresh(forced) {
+        // Hosts data
+        var hosts_count = parseInt($('#overall-hosts-states .hosts-all').data("count"));
+        var hosts_problems = parseInt($('#overall-hosts-states .hosts-all').data("problems"));
+        if (! sessionStorage.getItem("hosts_problems")) {
+           sessionStorage.setItem("hosts_problems", hosts_problems);
+        }
+        var old_hosts_problems = Number(sessionStorage.getItem("hosts_problems"));
+        if (dashboard_logs) console.debug("Hosts: ", hosts_count, hosts_problems, old_hosts_problems);
+
+        // Services data
+        var services_count = parseInt($('#overall-services-states .services-all').data("count"));
+        var services_problems = parseInt($('#overall-services-states .services-all').data("problems"));
+        if (! sessionStorage.getItem("services_problems")) {
+           sessionStorage.setItem("services_problems", services_problems);
+        }
+        var old_services_problems = Number(sessionStorage.getItem("services_problems"));
+        if (dashboard_logs) console.debug("services: ", services_count, services_problems, old_services_problems);
+
+        // Sound alerting
+        if (sessionStorage.getItem("sound_play") == '1') {
+            if ((old_hosts_problems < hosts_problems) || (old_services_problems < services_problems)) {
+               playAlertSound();
+            }
+        }
+        if (old_hosts_problems < hosts_problems) {
+            var message = (hosts_problems - old_hosts_problems) + " more " + ((hosts_problems - old_hosts_problems)==1 ? "hosts problem" : "hosts problems") + " since last "+app_refresh_period+" seconds."
+            alertify.log(message, "error", 5000);
+            if (dashboard_logs) console.debug(message);
+        }
+        if (hosts_problems < old_hosts_problems) {
+            var message = (old_hosts_problems - hosts_problems) + " less " + ((old_hosts_problems - hosts_problems)==1 ? "hosts problem" : "hosts problems") + " since last "+app_refresh_period+" seconds."
+            alertify.log(message, "success", 5000);
+            if (dashboard_logs) console.debug(message);
+        }
+        sessionStorage.setItem("hosts_problems", hosts_problems);
+        if (old_services_problems < services_problems) {
+            var message = (services_problems - old_services_problems) + " more " + ((services_problems - old_services_problems)==1 ? "services problem" : "services problems") + " since last "+app_refresh_period+" seconds."
+            alertify.log(message, "error", 5000);
+            if (dashboard_logs) console.debug(message);
+        }
+        if (services_problems < old_services_problems) {
+            var message = (old_services_problems - services_problems) + " less " + ((old_services_problems - services_problems)==1 ? "services problem" : "services problems") + " since last "+app_refresh_period+" seconds."
+            alertify.log(message, "success", 5000);
+            if (dashboard_logs) console.debug(message);
+        }
+        sessionStorage.setItem("services_problems", services_problems);
+    }
 
    $(function () {
       on_page_refresh();
 
-      $('.dashboard-widget').popover();
+      %if not len(widgets):
+         // display the widgets proposal area.
+         $('#propose-widgets').show();
+      %end
+
+      // Show actions bar ...
+      show_actions('dashboard-actions');
 
       // ... and load all widgets.
       %for w in widgets:

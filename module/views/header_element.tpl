@@ -27,9 +27,8 @@
    </ul>
 
    <!-- Right part ... -->
-   %synthesis = helper.get_synthesis(app.datamgr.search_hosts_and_services("", user))
-   %s = synthesis['services']
-   %h = synthesis['hosts']
+   %s = app.datamgr.get_services_synthesis()
+   %h = app.datamgr.get_hosts_synthesis()
    <div id="hosts-states-popover-content" class="hidden">
       <table class="table table-invisible table-condensed">
          <tbody>
@@ -68,9 +67,12 @@
       <li id="overall-hosts-states">
          %state = app.datamgr.get_percentage_hosts_state(user, False)
          %label = 'danger' if state <= app.hosts_states_warning else 'warning' if state <= app.hosts_states_critical else 'success'
-         <a id="hosts-states-popover" href="/all?search=type:host" data-original-title="Hosts states" data-toggle="popover" title="Overall hosts states, {{h['nb_elts']}} hosts, {{h["nb_down"]+h["nb_unreachable"]}} problems" data-html="true" data-trigger="hover">
+         <a id="hosts-states-popover"
+            class="hosts-all" data-count="{{ h['nb_elts'] }}" data-problems="{{ h['nb_problems'] }}"
+            href="/all?search=type:host"
+            data-original-title="Hosts states" data-toggle="popover popover-hosts" title="Overall hosts states: {{h['nb_elts']}} hosts, {{h["nb_problems"]}} problems" data-html="true" data-trigger="hover">
             <i class="fa fa-server"></i>
-            <span class="label label-as-badge label-{{label}}">{{ len(app.datamgr.get_problems(user=user, search='type:host')) }}</span>
+            <span class="label label-as-badge label-{{label}}">{{h["nb_problems"]}}</span>
          </a>
       </li>
       <!--end-hosts-states-->
@@ -83,9 +85,12 @@
       <li id="overall-services-states">
          %state = app.datamgr.get_percentage_service_state(user, False)
          %label = 'danger' if state <= app.services_states_warning else 'warning' if state <= app.services_states_critical else 'success'
-         <a id="services-states-popover" href="/all?search=type:service" data-original-title="Services states" data-toggle="popover popover-services" title="Overall services states, {{s['nb_elts']}} services, {{s["nb_critical"]+s["nb_warning"]}} problems" data-html="true" data-trigger="hover">
+         <a id="services-states-popover"
+            class="services-all" data-count="{{ s['nb_elts'] }}" data-problems="{{ s['nb_problems'] }}"
+            href="/all?search=type:service"
+            data-original-title="Services states" data-toggle="popover popover-services" title="Overall services states: {{s['nb_elts']}} services, {{s["nb_problems"]}} problems" data-html="true" data-trigger="hover">
             <i class="fa fa-bars"></i>
-            <span class="label label-as-badge label-{{label}}">{{ len(app.datamgr.get_problems(user=user, search='type:service')) }}</span>
+            <span class="label label-as-badge label-{{label}}">{{s["nb_problems"]}}</span>
          </a>
       </li>
       <!--end-services-states-->

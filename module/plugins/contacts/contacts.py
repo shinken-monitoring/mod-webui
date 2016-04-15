@@ -29,7 +29,7 @@ app = None
 # Contact page
 def show_contact(name):
     user = app.request.environ['USER']
-    contact = app.datamgr.get_contact(name, user) or app.redirect404()
+    contact = app.datamgr.get_contact(name=name, user=user) or app.redirect404()
 
     return {'contact': contact}
 
@@ -38,7 +38,7 @@ def show_contacts():
     user = app.request.environ['USER']
     user.is_admin or app.redirect403()
 
-    return {'contacts': sorted(app.datamgr.get_contacts(user),
+    return {'contacts': sorted(app.datamgr.get_contacts(user=user),
                                key=lambda c: c.contact_name)}
 
 pages = {

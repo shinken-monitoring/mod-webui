@@ -21,7 +21,7 @@
                   </a>
                </h3>
                <div>
-                  %groupcontacts=app.datamgr.get_contactgroup_contacts(group.get_name(), user)
+                  %groupcontacts=group.members
                   %contacts=[]
                   %[contacts.append('<a href="/contact/'+item.contact_name+'">'+item.alias+'</a>' if item.alias!='none' else '<a href="/contact/'+item.contact_name+'">'+item.contact_name+'</a>') for item in groupcontacts]
                   <div>{{!', '.join(contacts)}}</div>

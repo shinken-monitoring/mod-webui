@@ -190,7 +190,7 @@ class MongoDBPreferences():
             return None
 
         try:
-            e = self.db.ui_user_preferences.find_one({'_id': user.get_name()})
+            e = self.db.ui_user_preferences.find_one({'_id': user.contact_name})
         except Exception, e:
             logger.warning("[WebUI-MongoDBPreferences] Exception: %s", str(e))
             self.is_connected = False
@@ -220,19 +220,19 @@ class MongoDBPreferences():
 
         try:
             # check a collection exist for this user
-            u = self.db.ui_user_preferences.find_one({'_id': user.get_name()})
+            u = self.db.ui_user_preferences.find_one({'_id': user.contact_name})
             if not u:
                 # no collection for this user? create a new one
-                self.db.ui_user_preferences.save({'_id': user.get_name(), key: value})
+                self.db.ui_user_preferences.save({'_id': user.contact_name, key: value})
 
-            r = self.db.ui_user_preferences.update({'_id': user.get_name()}, {'$set': {key: value}})
+            r = self.db.ui_user_preferences.update({'_id': user.contact_name}, {'$set': {key: value}})
             # Maybe there was no doc there, if so, create an empty one
             if not r:
                 # Maybe the user exist, if so, get the whole user entry
-                u = self.db.ui_user_preferences.find_one({'_id': user.get_name()})
+                u = self.db.ui_user_preferences.find_one({'_id': user.contact_name})
                 if not u:
-                    logger.debug ("[WebUI-MongoDBPreferences] No user entry for %s, I create a new one", user.get_name())
-                    self.db.ui_user_preferences.save({'_id': user.get_name(), key: value})
+                    logger.debug ("[WebUI-MongoDBPreferences] No user entry for %s, I create a new one", user.contact_name)
+                    self.db.ui_user_preferences.save({'_id': user.contact_name, key: value})
                 else:  # ok, it was just the key that was missing, just update it and save it
                     u[key] = value
                     logger.debug ("[WebUI-MongoDBPreferences] Just saving the new key in the user pref")

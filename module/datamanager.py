@@ -28,9 +28,10 @@
 import re
 import itertools
 import time
-
+from shinken.log import logger
 
 from shinken.misc.datamanager import DataManager
+from shinken.objects.contact import Contact
 
 
 # Sort hosts and services by impact, states and co
@@ -115,72 +116,32 @@ class WebUIDataManager(DataManager):
         self.rg = rg
 
     @staticmethod
-    def _is_related_to(item, contact):
-        """ Is the item (host, service, group…) related to the contact?
-
-            In other words, can the user see this item in the WebUI?
-            .. todo:: should be a method of Item or Contact…
-                      but the shinken model is incomplete,
-                      so we have to do it here.
-
-            :returns: True or False
+    def _is_related_to(item, user):
         """
-        # if the user is an admin, show all
-        if contact is None or contact.is_admin:
-            return True
+        """
+        if not user:
+            return item
 
-        # May be the user is a direct contact
-        if hasattr(item, 'contacts') and contact in item.contacts:
-            return True
-        # TODO: add a notified_contact pass
-
-        # is it me ?
-        if item.__class__.my_type == 'contact':
-            return item.contact_name == contact.contact_name
-
-        if item.__class__.my_type == 'contactgroup':
-            return contact in item.members
-
-        # May be it's a contact of a linked items
-        # source problems or impacts)
-        if hasattr(item, 'source_problems'):
-            for s in item.source_problems:
-                if contact in s.contacts:
-                    return True
-
-        if item.__class__.my_type == 'hostgroup':
-            for h in item.get_hosts():
-                if contact in h.contacts:
-                    return True
-
-        # May be it's a contact of a sub item ...
-        if item.__class__.my_type == 'servicegroup':
-            for s in item.get_services():
-                if contact in s.contacts:
-                    return True
-
-        # May be it's a contact on service host
-        if item.__class__.my_type == 'service':
-            if contact in item.host.contacts:
-                return True
-
-        # Now impacts related maybe?
-        if hasattr(item, 'impacts'):
-            for imp in item.impacts:
-                if contact in imp.contacts:
-                    return True
-
-        return False
+        return user._is_related_to(item)
 
     @staticmethod
-    def _only_related_to(lst, contact):
-        """ This function is just a wrapper to _is_related_to.
+    def _only_related_to(items, user):
+        """ This function is just a wrapper to _is_related_to for a list.
 
-            Kept for backward compatibility reasons.
-
-            :returns: List of elements related to the contact
+            :returns: List of elements related to the user
         """
-        return [l for l in lst if WebUIDataManager._is_related_to(l, contact)]
+        if not user:
+            return items
+
+        if isinstance(items, list):
+            return [item for item in items if user._is_related_to(item)]
+        else:
+            return items if user._is_related_to(items) else None
+
+    def set_logged_in_user(self, user):
+        """ Set the logged in user
+        """
+        self.logged_in_user = user
 
     ##
     # Hosts
@@ -232,6 +193,40 @@ class WebUIDataManager(DataManager):
             return int((len(problems) * 100) / float(len(all_hosts)))
         else:
             return int(100 - (len(problems) * 100) / float(len(all_hosts)))
+
+    def get_hosts_synthesis(self, elts=None, user=None):
+        if elts != None:
+            hosts = [item for item in elts if item.__class__.my_type == 'host']
+        else:
+            hosts = self.get_hosts(user=user)
+        logger.debug("[WebUI - datamanager] get_hosts_synthesis, %d hosts", len(hosts))
+
+        h = dict()
+        h['nb_elts'] = len(hosts)
+        if hosts:
+            h['bi'] = max(h.business_impact for h in hosts)
+
+            for state in 'up', 'pending':
+                h['nb_' + state] = sum(1 for host in hosts if host.state == state.upper())
+                h['pct_' + state] = round(100.0 * h['nb_' + state] / h['nb_elts'], 2)
+            for state in 'down', 'unreachable', 'unknown':
+                h['nb_' + state] = sum(1 for host in hosts if host.state == state.upper()  and not (host.problem_has_been_acknowledged or host.in_scheduled_downtime))
+                h['pct_' + state] = round(100.0 * h['nb_' + state] / h['nb_elts'], 2)
+
+            h['nb_problems'] = sum(1 for host in hosts if host.is_problem and not host.problem_has_been_acknowledged)
+            h['pct_problems'] = round(100.0 * h['nb_problems'] / h['nb_elts'], 2)
+            h['nb_ack'] = sum(1 for host in hosts if host.is_problem and host.problem_has_been_acknowledged)
+            h['pct_ack'] = round(100.0 * h['nb_ack'] / h['nb_elts'], 2)
+            h['nb_downtime'] = sum(1 for host in hosts if host.in_scheduled_downtime)
+            h['pct_downtime'] = round(100.0 * h['nb_downtime'] / h['nb_elts'], 2)
+        else:
+            h['bi'] = 0
+            for state in 'up', 'down', 'unreachable', 'pending', 'unknown', 'ack', 'downtime', 'problems':
+                h['nb_' + state] = 0
+                h['pct_' + state] = 0
+
+        logger.debug("[WebUI - datamanager] get_hosts_synthesis: %s", h)
+        return h
 
     ##
     # Services
@@ -285,6 +280,40 @@ class WebUIDataManager(DataManager):
         else:
             return int(100 - (len(problems) * 100) / float(len(all_services)))
 
+    def get_services_synthesis(self, elts=None, user=None):
+        if elts != None:
+            services = [item for item in elts if item.__class__.my_type == 'service']
+        else:
+            services = self.get_services(user=user)
+        logger.debug("[WebUI - datamanager] get_services_synthesis, %d services", len(services))
+
+        s = dict()
+        s['nb_elts'] = len(services)
+        if services:
+            s['bi'] = max(s.business_impact for s in services)
+
+            for state in 'ok', 'pending':
+                s['nb_' + state] = sum(1 for service in services if service.state == state.upper())
+                s['pct_' + state] = round(100.0 * s['nb_' + state] / s['nb_elts'], 2)
+            for state in 'warning', 'critical', 'unknown':
+                s['nb_' + state] = sum(1 for service in services if service.state == state.upper()  and not (service.problem_has_been_acknowledged or service.in_scheduled_downtime))
+                s['pct_' + state] = round(100.0 * s['nb_' + state] / s['nb_elts'], 2)
+
+            s['nb_problems'] = sum(1 for service in services if service.is_problem and not service.problem_has_been_acknowledged)
+            s['pct_problems'] = round(100.0 * s['nb_problems'] / s['nb_elts'], 2)
+            s['nb_ack'] = sum(1 for service in services if service.is_problem and service.problem_has_been_acknowledged)
+            s['pct_ack'] = round(100.0 * s['nb_ack'] / s['nb_elts'], 2)
+            s['nb_downtime'] = sum(1 for service in services if service.in_scheduled_downtime)
+            s['pct_downtime'] = round(100.0 * s['nb_downtime'] / s['nb_elts'], 2)
+        else:
+            s['bi'] = 0
+            for state in 'ok', 'warning', 'critical', 'pending', 'unknown', 'ack', 'downtime', 'problems':
+                s['nb_' + state] = 0
+                s['pct_' + state] = 0
+
+        logger.debug("[WebUI - datamanager] get_services_synthesis: %s", s)
+        return s
+
     ##
     # Elements
     ##
@@ -297,9 +326,17 @@ class WebUIDataManager(DataManager):
         else:
             host = self.get_host(name, user)
             if not host:
-                return self.get_contact(name, user)
+                return self.get_contact(name=name, user=user)
             return host
 
+    def get_synthesis(self, elts=None):
+        logger.debug("[WebUI - datamanager] get_synthesis")
+
+        return {'hosts': self.get_hosts_synthesis(elts), 'services': self.get_services_synthesis(elts)}
+
+    ##
+    # Searching
+    ##
     def search_hosts_and_services(self, search, user, get_impacts=True, sorter=None):
         """ Search hosts and services.
 
@@ -311,6 +348,10 @@ class WebUIDataManager(DataManager):
             :sorter: function to sort the items. default=None (means no sorting)
             :returns: list of hosts and services
         """
+        # Make user an User object ... simple protection.
+        if isinstance(user, basestring):
+            user = self.rg.contacts.find_by_name(user)
+
         items = []
         items.extend(self.get_hosts(user, get_impacts))
         items.extend(self.get_services(user, get_impacts))
@@ -332,6 +373,7 @@ class WebUIDataManager(DataManager):
             t = t.lower()
 
             if t == 'hst_srv':
+                # Case insensitive
                 pat = re.compile(s, re.IGNORECASE)
                 new_items = []
                 for i in items:
@@ -353,6 +395,37 @@ class WebUIDataManager(DataManager):
 
                 items = new_items
 
+            if (t == 'h' or t == 'host') and s.lower() != 'all':
+                logger.info("[WebUI - datamanager] searching for an host %s", s)
+                # Case sensitive
+                pat = re.compile(s)
+                new_items = []
+                for i in items:
+                    if i.__class__.my_type == 'host' and pat.search(i.get_name()):
+                        new_items.append(i)
+
+                items = new_items
+
+            if (t == 's' or t == 'service') and s.lower() != 'all':
+                logger.info("[WebUI - datamanager] searching for a service %s", s)
+                pat = re.compile(s)
+                new_items = []
+                for i in items:
+                    if i.__class__.my_type == 'service' and pat.search(i.get_name()):
+                        new_items.append(i)
+
+                items = new_items
+
+            if (t == 'c' or t == 'contact') and s.lower() != 'all':
+                logger.info("[WebUI - datamanager] searching for a contact %s", s)
+                pat = re.compile(s)
+                new_items = []
+                for i in items:
+                    if i.__class__.my_type == 'contact' and pat.search(i.get_name()):
+                        new_items.append(i)
+
+                items = new_items
+
             if (t == 'hg' or t == 'hgroup') and s.lower() != 'all':
                 group = self.get_hostgroup(s)
                 if not group:
@@ -369,8 +442,8 @@ class WebUIDataManager(DataManager):
                 group = self.get_contactgroup(s, user)
                 if not group:
                     return []  # :TODO:maethor:150716: raise an error
-                contacts = [c for c in self.get_contacts(user) if c in group.members]
-                items = list(set(itertools.chain(*[self._only_related_to(items, c) for c in contacts])))
+                contacts = [c for c in self.get_contacts(user=user) if c in group.members]
+                items = list(set(itertools.chain(*[self._only_related_to(items, self.rg.contacts.find_by_name(c)) for c in contacts])))
 
             if t == 'realm':
                 r = self.get_realm(s)
@@ -385,7 +458,7 @@ class WebUIDataManager(DataManager):
                 items = [i for i in items if i.__class__.my_type == 'service' and s in i.get_service_tags()]
 
             if t == 'ctag' and s.lower() != 'all':
-                contacts = [c for c in self.get_contacts(user) if s in c.tags]
+                contacts = [c for c in self.get_contacts(user=user) if s in c.tags]
                 items = list(set(itertools.chain(*[self._only_related_to(items, c) for c in contacts])))
 
             if t == 'type' and s.lower() != 'all':
@@ -533,7 +606,25 @@ class WebUIDataManager(DataManager):
     ##
     # Contacts groups
     ##
-    def get_contactgroups(self, user):
+    def set_contactgroups_level(self, user):
+        # All known contactgroups are level 0 groups ...
+        for group in self.get_contactgroups(user=user):
+            if not hasattr(group, 'level'):
+                self.set_contactgroup_level(group, 0, user)
+
+    def set_contactgroup_level(self, group, level, user):
+        setattr(group, 'level', level)
+
+        for g in sorted(group.get_contactgroup_members()):
+            if not g:
+                continue
+            try:
+                child_group = self.get_contactgroup(g, user=user)
+                self.set_contactgroup_level(child_group, level + 1, user)
+            except AttributeError:
+                pass
+
+    def get_contactgroups(self, user=None, name=None, parent=None, members=False):
         """ Get a list of known contacts groups
 
             :param user: concerned user
@@ -558,22 +649,19 @@ class WebUIDataManager(DataManager):
             return item
         return None
 
-    def get_contactgroup_contacts(self, name, user):
-        """ Get the contacts in a contacts group
+    def get_contactgroup_members(self, name, user=None):
+        """ Get a list of contacts members of a group
 
-            :param name: searched contacts group name
+            :param name: searched group name
             :param user: concerned user
-            :returns: List of contacts in the group only related to the user
+            :returns: List of contacts groups related to the user
         """
         try:
             name = name.decode('utf8', 'ignore')
         except UnicodeEncodeError:
             pass
-        item = self.rg.contactgroups.find_by_name(name)
-        if self._is_related_to(item, user):
-            contacts = [c for c in self.get_contacts(user) if c in item.members]
-            return contacts
-        return None
+
+        return self._is_related_to(self.get_contactgroup(user=user, name=name, members=True), user)
 
 
     ##
@@ -650,8 +738,6 @@ class WebUIDataManager(DataManager):
             r.append((name, self.rg.tags[name]))
         return r
 
-        # return sorted(self.rg.tags)
-
     def get_hosts_tagged_with(self, tag, user):
         ''' Get the hosts tagged with a specific tag. '''
         return self.search_hosts_and_services('type:host htag:%s' % tag, user)
@@ -667,8 +753,6 @@ class WebUIDataManager(DataManager):
         for name in names:
             r.append((name, self.rg.services_tags[name]))
         return r
-
-        # return sorted(self.rg.services_tags)
 
     def get_services_tagged_with(self, tag, user):
         ''' Get the services tagged with a specific tag. '''
@@ -686,7 +770,7 @@ class WebUIDataManager(DataManager):
         return None
 
     ##
-    # Shinken program
+    # Shinken program and daemons
     ##
     def get_configs(self):
         return self.rg.configs.values()
@@ -765,5 +849,3 @@ class WebUIDataManager(DataManager):
                 res['fathers'].append(par_elts)
 
         return res
-
-# datamgr = WebUIDataManager()

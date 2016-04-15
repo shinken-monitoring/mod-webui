@@ -11,6 +11,7 @@
 %end
 %end
 
+
 <!-- Footer -->
 <nav class="footer navbar navbar-default navbar-fixed-bottom">
    <!-- Actions bar:
@@ -103,7 +104,7 @@
                    <li>
                       <a href="#"
                          class="dashboard-widget"
-                         title="
+                         data-widget-title="
                             <button href='#' role='button'
                                 action='add-widget'
                                 data-widget='{{w['widget_name']}}'
@@ -112,8 +113,7 @@
                                 <span class='fa fa-plus'></span>
                                 Add this widget to your dashboard
                             </button>"
-                         data-toggle="popover" data-trigger="focus" data-html="true" data-placement="right" data-viewport="section.content"
-                         data-content='{{!w['widget_desc']}} <hr/> <div class="center-block"><img class="text-center" src="{{w['widget_picture']}}"/></div>'
+                         data-widget-description='{{!w["widget_desc"]}} <hr/> <div class="center-block"><img class="text-center" src="{{w["widget_picture"]}}"/></div>'
                          >
                          <span class="fa fa-plus"></span> {{w['widget_name']}}
                       </a>
@@ -336,8 +336,18 @@
 
    // Add a widget
    $('body').on("click", '[action="add-widget"]', function () {
-      var widget = $(this).data('widget');
-      var wuri = $(this).data('wuri');
-      AddNewWidget(wuri, null, 'widget-place-1');
+      AddNewWidget($(this).data('wuri'), null, 'widget-place-1');
    });
+
+   $('body').on("click", '.dashboard-widget', function () {
+      // Display modal dialog box
+      $('#modal .modal-title').html($(this).data('widget-title'));
+      $('#modal .modal-body').html($(this).data('widget-description'));
+      $('#modal').modal({
+         keyboard: true,
+         show: true,
+         backdrop: 'static'
+      });
+   });
+
 </script>

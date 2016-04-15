@@ -80,7 +80,25 @@ def get_page():
     return {'widgets': widgets}
 
 def get_currently():
-    return {}
+    user = app.request.environ['USER']
+
+    # Search panels preferences
+    s = app.prefs_module.get_ui_user_preference(user, 'panels')
+    # If void, create an empty one
+    if not s:
+        app.prefs_module.set_ui_user_preference(user, 'panels', '{}')
+        s = '{}'
+    panels = json.loads(s)
+
+    # Search graphs preferences
+    s = app.prefs_module.get_ui_user_preference(user, 'graphs')
+    # If void, create an empty one
+    if not s:
+        app.prefs_module.set_ui_user_preference(user, 'graphs', '{}')
+        s = '{}'
+    graphs = json.loads(s)
+
+    return {'panels': panels, 'graphs': graphs}
 
 pages = {
     get_page: {

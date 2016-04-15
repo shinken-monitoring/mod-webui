@@ -25,9 +25,13 @@
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 
 
-WEBUI_VERSION = "2.2.1"
-WEBUI_COPYRIGHT = "(c) 2009-2015 - License GNU AGPL as published by the FSF, minimum version 3 of the License."
-WEBUI_RELEASENOTES = """Bootstrap 3 User Interface - complete User Interface refactoring"""
+WEBUI_VERSION = "2.3.1"
+WEBUI_COPYRIGHT = "(c) 2009-2016 - License GNU AGPL as published by the FSF, minimum version 3 of the License."
+WEBUI_RELEASENOTES = """
+Heavy work on dashboard currently view ...
+... use and abuse Eye icon in the header toolbar :)
+Clean user management and data manager
+"""
 
 
 """
@@ -41,7 +45,9 @@ import os
 import time
 import threading
 import imp
+from urlparse import urljoin
 
+# Shinken import
 from shinken.basemodule import BaseModule
 from shinken.message import Message
 from shinken.misc.regenerator import Regenerator
@@ -51,13 +57,16 @@ from shinken.modulesmanager import ModulesManager
 from shinken.daemon import Daemon
 from shinken.util import to_bool
 
-# Local import
+# Bottle import
 from bottle import route, request, response, template
 import bottle
-from urlparse import urljoin
+
+# Local import
 from datamanager import WebUIDataManager
 from user import User
 from helper import helper
+
+from lib.md5crypt import apache_md5_crypt, unix_md5_crypt
 
 from submodules.prefs import PrefsMetaModule
 from submodules.auth import AuthMetaModule
@@ -272,6 +281,7 @@ class Webui_broker(BaseModule, Daemon):
         self.modules_dir = modulesctx.get_modulesdir()
         self.modules_manager = ModulesManager('webui', self.find_modules_path(), [])
         self.modules_manager.set_modules(self.modules)
+
         # We can now output some previously silenced debug output
         self.do_load_modules()
         for inst in self.modules_manager.instances:
@@ -374,7 +384,7 @@ class Webui_broker(BaseModule, Daemon):
 
         for route in webui_app.routes:
             logger.debug("[WebUI] route: %s", route)
-        # Launch the data thread"
+        # Launch the data thread ...
         self.data_thread = threading.Thread(None, self.manage_brok_thread, 'datathread')
         self.data_thread.start()
         # TODO: look for alive and killing
@@ -431,7 +441,7 @@ class Webui_broker(BaseModule, Daemon):
             # We should warn if we cannot update broks
             # for more than 30s because it can be not good
             if time.time() - start > 30:
-                print "WARNING: we are in lock/read since more than 30s!"
+                logger.warning("[WebUI] wait_for_no_readers, we are in lock/read since more than 30s!")
                 start = time.time()
 
     # We want a lock manager version of the plugin functions
@@ -699,15 +709,24 @@ class Webui_broker(BaseModule, Daemon):
         self.user_session = None
         self.user_info = None
 
-        c = self.datamgr.get_contact(username)
-        if not c:
-            logger.error("[WebUI] You need to have a contact having the same name as your user: %s", username)
-            return False
+        # c = self.datamgr.get_contact(name=username)
+        # if not c:
+            # logger.error("[WebUI] You need to have a contact having the same name as your user: %s", username)
+            # return False
 
         logger.info("[WebUI] Requesting authentication for user: %s", username)
-        r = self.auth_module.check_auth(username, password)
-        if r:
-            user = User.from_contact(c, picture=self.user_picture, use_gravatar=self.gravatar)
+        user = self.auth_module.check_auth(username, password)
+        if user:
+            # logger.info("[WebUI] user authenticated through %s", self.auth_module._authenticator)
+            # Check existing contact ...
+            c = self.datamgr.get_contact(name=username)
+            if not c:
+                logger.error("[WebUI] You need to have a contact having the same name as your user: %s", username)
+                return False
+
+            user = User.from_contact(c)
+
+            # user = User.from_contact(c, picture=self.user_picture, use_gravatar=self.gravatar)
             self.user_picture = user.picture
             logger.info("[WebUI] User picture: %s", self.user_picture)
             self.user_session = self.auth_module.get_session()
@@ -739,11 +758,11 @@ class Webui_broker(BaseModule, Daemon):
                 logger.debug("[WebUI] user info: %s", cookie_value['info'])
             if 'login' in cookie_value:
                 logger.debug("[WebUI] user login: %s", cookie_value['login'])
-                contact = app.datamgr.get_contact(cookie_value['login'])
+                contact = app.datamgr.get_contact(name=cookie_value['login'])
             else:
-                contact = app.datamgr.get_contact(cookie_value)
+                contact = app.datamgr.get_contact(name=cookie_value)
         else:
-            contact = app.datamgr.get_contact('anonymous')
+            contact = app.datamgr.get_contact(name='anonymous')
         if not contact:
             return None
 
@@ -758,7 +777,7 @@ class Webui_broker(BaseModule, Daemon):
     # :TODO:maethor:150717: find a better name for this method
     def can_action(self, username=None):
         if username:
-            user = User.from_contact(self.datamgr.get_contact(username), self.gravatar)
+            user = User.from_contact(self.datamgr.get_contact(name=username), self.gravatar)
         else:
             user = request.environ.get('USER', None)
 
@@ -817,6 +836,8 @@ def login_required():
     app = bottle.BaseTemplate.defaults['app']
 
     logger.debug("[WebUI] login_required, requested URL: %s", request.urlparts.path)
+    if request.urlparts.path == "/user/logout" or request.urlparts.path == app.get_url("Logout"):
+        return
     if request.urlparts.path == "/user/login" or request.urlparts.path == app.get_url("GetLogin"):
         return
     if request.urlparts.path == "/user/auth" or request.urlparts.path == app.get_url("SetLogin"):
@@ -841,10 +862,11 @@ def login_required():
         else:
             contact = app.datamgr.get_contact(cookie_value)
     else:
-     # Only the /dashboard/currently should be accessible to anonymous users
+        # Only the /dashboard/currently should be accessible to anonymous users
         if request.urlparts.path != "/dashboard/currently":
             bottle.redirect("/user/login")
         contact = app.datamgr.get_contact('anonymous')
+
     if not contact:
         bottle.redirect("/user/login")
 
@@ -852,6 +874,8 @@ def login_required():
     if app.user_session and app.user_info:
         user.set_information(app.user_session, app.user_info)
     app.user_picture = user.get_picture()
+    app.datamgr.set_logged_in_user(user)
+    logger.debug("[WebUI] update current user: %s", user)
     request.environ['USER'] = user
     bottle.BaseTemplate.defaults['user'] = user
-    logger.debug("[WebUI] login_required: user: %s", user)
+

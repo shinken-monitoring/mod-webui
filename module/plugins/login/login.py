@@ -63,7 +63,7 @@ def user_login():
                 logger.warning("[WebUI] remote user is enabled but no authenticated user name was found")
                 bottle.redirect(app.get_url("GetLogin"))
 
-            c = app.datamgr.get_contact(user_name)
+            c = app.datamgr.get_contact(name=user_name)
             if c:
                 cookie_value = {
                     'login': user_name,
@@ -74,7 +74,6 @@ def user_login():
                 bottle.redirect(app.get_url("Dashboard"))
 
     return {'msg_text': err, 'login_text': app.login_text, 'company_logo': app.company_logo}
-    # return bottle.template('login', msg_text=err, login_text=app.login_text, company_logo=app.company_logo)
 
 
 def user_logout():
