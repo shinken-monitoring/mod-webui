@@ -411,10 +411,8 @@ class Webui_broker(BaseModule, Daemon):
                 # TODO: look for alive and killing
 
             logger.info("[WebUI] starting Web UI server on %s:%d ...", self.host, self.port)
-            logger.info("[WebUI] starting Web UI server on %s", bottle.TEMPLATES)
-            logger.info("[WebUI] starting Web UI server on %s", bottle.TEMPLATE_PATH)
             bottle.TEMPLATES.clear()
-            webui_app.run(host=self.host, port=self.port, server=self.http_backend, debug=True, **self.serveropts)
+            webui_app.run(host=self.host, port=self.port, server=self.http_backend, **self.serveropts)
         except Exception as e:
             if self.stand_alone:
                 logger.error("[WebUI] do_main exception: %s", str(e))
