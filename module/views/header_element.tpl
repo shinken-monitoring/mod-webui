@@ -135,7 +135,7 @@
                      <p class="username">{{username}}</p>
                      %if app.can_action():
                      <p class="usercategory">
-                        <small>{{'Administrator' if user.is_admin else 'User'}}</small>
+                        <small>{{'Administrator' if user.is_administrator() else 'User'}}</small>
                      </p>
                      %end
                      <img src="{{user.get_picture()}}" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}">
@@ -186,7 +186,7 @@
             %end
           </ul>
         </li>
-        %if user.is_admin:
+        %if user.is_administrator():
         <li> <a href="#"><i class="fa fa-gears"></i> System <i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
             <li> <a href="{{ app.get_url('System') }}"> <span class="fa fa-heartbeat"></span> Status </a> </li>

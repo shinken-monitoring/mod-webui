@@ -306,58 +306,8 @@ class Helper(object):
 
     def get_synthesis(self, elts):
         logger.info("Helper - get_synthesis, %d elements", len(elts))
+
         return None
-
-        h = dict()
-        hosts = [i for i in elts if i.__class__.my_type == 'host']
-        h['elts'] = hosts
-        h['nb_elts'] = len(hosts)
-        if hosts:
-            h['bi'] = max(h.business_impact for h in hosts)
-        else:
-            h['bi'] = 0
-        for state in 'up', 'pending':
-            h[state] = [i for i in hosts if i.state == state.upper()]
-        for state in 'down', 'unreachable', 'unknown':
-            h[state] = [i for i in hosts if i.state == state.upper() and not (i.problem_has_been_acknowledged or i.in_scheduled_downtime)]
-        h['problems'] = h['down'] + h['unreachable'] + h['unknown']
-        # h['unknown'] = list(set(h['elts']) - set(h['up']) - set(h['down']) - set(h['unreachable']) - set(h['pending']))
-        h['ack'] = [i for i in hosts if i.problem_has_been_acknowledged]
-        h['downtime'] = [i for i in hosts if i.in_scheduled_downtime]
-        for state in 'up', 'down', 'unreachable', 'pending', 'unknown', 'ack', 'downtime', 'problems':
-            h['nb_' + state] = len(h[state])
-            if h['nb_elts']:
-                h['pct_' + state] = round(100.0 * h['nb_' + state] / h['nb_elts'], 2)
-            else:
-                h['pct_' + state] = 0
-
-        s = dict()
-        services = [i for i in elts if i.__class__.my_type == 'service']
-        s['elts'] = services
-        s['nb_elts'] = len(services)
-        if services:
-            s['bi'] = max(s.business_impact for s in services)
-        else:
-            s['bi'] = 0
-        for state in 'ok', 'pending':
-            s[state] = [i for i in services if i.state == state.upper()]
-        for state in 'critical', 'warning', 'unknown':
-            s[state] = [i for i in services if i.state == state.upper() and not (
-                i.problem_has_been_acknowledged or i.host.problem_has_been_acknowledged
-                or i.in_scheduled_downtime or i.host.in_scheduled_downtime)
-                ]
-        s['problems'] = s['warning'] + s['critical'] + s['unknown']
-        s['ack'] = [i for i in services if i.problem_has_been_acknowledged]
-        s['downtime'] = [i for i in services if i.in_scheduled_downtime]
-        for state in 'ok', 'critical', 'warning', 'unknown', 'pending', 'ack', 'downtime', 'problems':
-            s['nb_' + state] = len(s[state])
-            if s['nb_elts']:
-                s['pct_' + state] = round(100.0 * s['nb_' + state] / s['nb_elts'], 2)
-            else:
-                s['pct_' + state] = 0
-
-        return {'hosts': h, 'services': s}
-
 
     # Return a button with text, image, id and class (if need)
 ###

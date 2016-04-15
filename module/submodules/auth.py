@@ -82,6 +82,15 @@ class AuthMetaModule(MetaModule):
                 self._user_login = username
 
         if not self._user_login:
+            logger.info("[WebUI] Internal alignak backend authentication")
+            if self.app.alignak_backend_endpoint:
+                if self.check_alignak_auth(username, password):
+                    self._authenticator = 'alignak'
+                    self._user_login = username
+                    self._session = self.app.frontend.get_logged_user_token()
+                    self._user_info = self.app.frontend.get_logged_user()
+
+        if not self._user_login:
             logger.info("[WebUI] Internal contact authentication")
             if self.check_cfg_password_auth(username, password):
                 self._authenticator = 'contact'
@@ -114,6 +123,23 @@ class AuthMetaModule(MetaModule):
         Get the user information
         '''
         return self._user_info
+
+    def check_alignak_auth(self, username, password):
+        ''' Embedded authentication against Alignak backend.
+        '''
+        logger.info("[WebUI-auth-alignak] Authenticating user '%s'", username)
+
+        try:
+            self.app.frontend.logout()
+            self.app.frontend.login(username, password)
+            logger.info("[WebUI-auth-alignak] Authenticated")
+            return True
+        except:
+            logger.error("[WebUI-auth-alignak] could not connect to Alignak backend")
+            return False
+
+        logger.warning("[WebUI-auth-alignak] Authentication failed %s != %s", p, password)
+        return False
 
     def check_cfg_password_auth(self, username, password):
         ''' Embedded authentication with password stored in contact definition.

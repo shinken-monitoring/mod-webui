@@ -145,7 +145,7 @@ def get_host_history(name):
 
 def get_global_history():
     user = app.request.environ['USER']
-    user.is_admin or app.redirect403()
+    user.is_administrator() or app.redirect403()
 
     midnight_timestamp = time.mktime(datetime.date.today().timetuple())
     range_start = int(app.request.GET.get('range_start', midnight_timestamp))

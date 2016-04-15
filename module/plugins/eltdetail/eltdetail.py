@@ -39,8 +39,7 @@ def show_host(host_name):
     now = int(time.time())
     graphstart = int(app.request.GET.get('graphstart', str(now - 4 * 3600)))
     graphend = int(app.request.GET.get('graphend', str(now)))
-    return {'elt': h, 'graphstart': graphstart,
-            'graphend': graphend}
+    return {'elt': h, 'graphstart': graphstart, 'graphend': graphend}
 
 
 def show_service(host_name, service):
@@ -52,8 +51,7 @@ def show_service(host_name, service):
     graphstart = int(app.request.GET.get('graphstart', str(now - 4 * 3600)))
     graphend = int(app.request.GET.get('graphend', str(now)))
 
-    return {'elt': s, 'graphstart': graphstart,
-            'graphend': graphend}
+    return {'elt': s, 'graphstart': graphstart, 'graphend': graphend}
 
 
 pages = {

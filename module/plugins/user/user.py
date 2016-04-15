@@ -92,7 +92,7 @@ def save_common_pref():
     print "We will save common pref ", key, ':', value
     print "As %s" % s
 
-    if user.is_admin:
+    if user.is_administrator():
         app.prefs_module.set_ui_common_preference( key, value)
 
     return

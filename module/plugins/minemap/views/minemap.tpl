@@ -52,9 +52,8 @@
       %pass
       %end
 
-      %synthesis = app.datamgr.get_synthesis(items)
-      %s = synthesis['services']
-      %h = synthesis['hosts']
+      %s = app.datamgr.get_services_synthesis()
+      %h = app.datamgr.get_hosts_synthesis()
 
       <!-- Problems synthesis -->
       <div class="panel panel-default">

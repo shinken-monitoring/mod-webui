@@ -42,7 +42,22 @@ def user_login():
     cookie_value = app.request.get_cookie(app.session_cookie, secret=app.auth_secret)
     if cookie_value:
         logger.info("[WebUI] user login request, existing cookie found: %s", cookie_value)
+        # For Alignak backend
+        if app.alignak_backend_endpoint:
+            if 'session' in cookie_value:
+                app.user_session = cookie_value['session']
+                # For alignak backend
+                try:
+                    if app.frontend.connect(app.user_session):
+                        bottle.redirect(app.get_url("Dashboard"))
+                except Exception:
+                    pass
+
+                app.response.set_cookie(str(app.session_cookie), '', secret=app.auth_secret, path='/')
+                bottle.redirect("/user/login")
+
         bottle.redirect(app.get_url("Dashboard"))
+
     elif app.remote_user_enable in ['1', '2']:
         logger.debug("[WebUI] user login request, no existing cookie found")
         if not err:
@@ -83,6 +98,10 @@ def user_logout():
         app.response.set_cookie(str(app.session_cookie), False, secret=app.auth_secret, path='/')
     else:
         app.response.set_cookie(str(app.session_cookie), '', secret=app.auth_secret, path='/')
+
+    # For Alignak backend
+    if app.alignak_backend_endpoint:
+        app.frontend.logout()
 
     logger.info("[WebUI]  user '%s' signed out", user_name)
     bottle.redirect(app.get_url("GetLogin"))

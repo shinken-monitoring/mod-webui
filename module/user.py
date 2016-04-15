@@ -74,14 +74,27 @@ class User(Contact):
         else:
             return getattr(self, 'is_admin', '0') == '1'
 
+    def can_submit_commands(self):
+        """
+        Is contact an administrator?
+        """
+        if self.is_administrator():
+            return True
+
+        if 'can_submit_commands' in self and isinstance(self.can_submit_commands, bool):
+            return self.can_submit_commands
+
+        return getattr(self, 'can_submit_commands', '0') == '1'
+
     def _is_related_to(self, item):
-        """ Is the item (host, service, group…) related to the user?
+        """ Is the item (host, service, group,...) related to the user?
 
             In other words, can the user see this item in the WebUI?
 
             :returns: True or False
         """
-        # logger.info("[WebUI - alignak] _is_related_to, item: %s / %s", item.__class__, item)
+        # logger.debug("[WebUI - alignak] _is_related_to, self: %s", self)
+        # logger.debug("[WebUI - alignak] _is_related_to, item: %s (class: %s)", item, item.__class__)
 
         # if the user is an admin, always consider there is a relation
         if self.is_administrator():

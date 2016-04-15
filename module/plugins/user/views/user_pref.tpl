@@ -37,7 +37,7 @@
                </p>
                %if app.manage_acl:
                <p class="usercategory">
-                  <small>{{'Administrator' if user.is_admin else 'User'}}</small>
+                  <small>{{'Administrator' if user.is_administrator() else 'User'}}</small>
                </p>
                %end
             </div>

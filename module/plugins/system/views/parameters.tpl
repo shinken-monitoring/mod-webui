@@ -7,6 +7,11 @@
             <h2 class="panel-title">Parameters:</h2>
          </div>
          <div class="panel-body">
+            %if not configs:
+            <center>
+              <h3>No system information is available.</h3>
+            </center>
+            %else:
             <table class="table table-condensed col-sm-12" style="table-layout: fixed; word-wrap: break-word;">
                <colgroup>
                   <col style="width: 30%" />
@@ -21,6 +26,7 @@
                   %end
                </tbody>
             </table>
+            %end
          </div>
       </div>
    </div>

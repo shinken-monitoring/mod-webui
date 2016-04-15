@@ -8,7 +8,7 @@
 %if not pbs:
    <span>No problems!</span>
 %else:
-   %include("_problems_synthesis.tpl", pbs=pbs, search_string='')
+   %include("_problems_synthesis.tpl", all_pbs=all_pbs, search_string='', widget=True)
 
    <table class="table table-condensed">
       <tbody>

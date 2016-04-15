@@ -95,14 +95,20 @@ def get_pbs_widget():
             if pat.search(p.get_full_name()):
                 new_pbs.append(p)
                 continue
+
+            to_add = False
             for imp in p.impacts:
                 if pat.search(imp.get_full_name()):
-                    new_pbs.append(p)
+                    to_add = True
                     continue
+
             for src in p.source_problems:
                 if pat.search(src.get_full_name()):
-                    new_pbs.append(p)
+                    to_add = True
                     continue
+
+            if to_add:
+                new_pbs.append(p)
 
         items = new_pbs[:nb_elements]
 
@@ -140,7 +146,7 @@ def get_pbs_widget():
     if refine_search:
         title = 'IT problems (%s)' % refine_search
 
-    return {'pbs': pbs, 'search': refine_search, 'page': 'problems',
+    return {'pbs': pbs, 'all_pbs': items, 'search': refine_search, 'page': 'problems',
             'wid': wid, 'collapsed': collapsed, 'options': options, 'base_url': '/widget/problems', 'title': title,
             'header': header, 'commands': commands
             }
@@ -187,7 +193,7 @@ def get_last_errors_widget():
 
     title = 'Last IT problems'
 
-    return {'pbs': pbs, 'page': 'problems',
+    return {'pbs': pbs, 'all_pbs': items, 'page': 'problems',
             'wid': wid, 'collapsed': collapsed, 'options': options, 'base_url': '/widget/last_problems', 'title': title,
             'header': header, 'commands': commands
             }

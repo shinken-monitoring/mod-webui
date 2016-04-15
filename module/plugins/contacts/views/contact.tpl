@@ -71,7 +71,7 @@
                </p>
                %if app.manage_acl:
                <p class="usercategory">
-                  <small>{{'Administrator' if contact.is_admin else 'User'}}</small>
+                  <small>{{'Administrator' if contact.is_administrator() else 'User'}}</small>
                </p>
                %end
             </div>

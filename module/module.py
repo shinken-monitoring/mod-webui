@@ -25,12 +25,11 @@
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 
 
-WEBUI_VERSION = "2.3.1"
+WEBUI_VERSION = "2.4.0"
 WEBUI_COPYRIGHT = "(c) 2009-2016 - License GNU AGPL as published by the FSF, minimum version 3 of the License."
 WEBUI_RELEASENOTES = """
-Heavy work on dashboard currently view ...
-... use and abuse Eye icon in the header toolbar :)
-Clean user management and data manager
+Stand-alone mode
+Use Alignak backend
 """
 
 
@@ -46,6 +45,11 @@ import time
 import threading
 import imp
 from urlparse import urljoin
+
+try:
+    from setproctitle import setproctitle
+except ImportError as err:
+    setproctitle = lambda s: None
 
 # Shinken import
 from shinken.basemodule import BaseModule
@@ -74,6 +78,8 @@ from submodules.logs import LogsMetaModule
 from submodules.graphs import GraphsMetaModule
 from submodules.helpdesk import HelpdeskMetaModule
 
+from frontend import FrontEnd
+
 # Default bottle app
 root_app = bottle.default_app()
 # WebUI application
@@ -96,6 +102,7 @@ properties = {
 # called by the plugin manager to get an instance
 def get_instance(plugin):
     # Only add template if we CALL webui
+    logger.info("[WebUI] Webui_broker directory: %s", webuimod_dir)
     bottle.TEMPLATE_PATH.append(os.path.join(webuimod_dir, 'views'))
     bottle.TEMPLATE_PATH.append(webuimod_dir)
 
@@ -194,6 +201,18 @@ class Webui_broker(BaseModule, Daemon):
                 logger.warning("[WebUI] htpasswd file '%s' does not exist.", self.htpasswd_file)
                 self.htpasswd_file = None
 
+        # Alignak backend for authentication
+        self.frontend = None
+        self.alignak_backend_objects = False
+        self.alignak_backend_endpoint = getattr(modconf, 'alignak_backend_endpoint', None)
+        if self.alignak_backend_endpoint:
+            self.frontend = FrontEnd()
+            if self.frontend:
+                self.frontend.configure(self.alignak_backend_endpoint)
+            logger.info("[WebUI] alignak backend: %s", self.frontend.url_endpoint_root)
+
+            self.alignak_backend_objects = to_bool(getattr(modconf, 'alignak_backend_objects', '0'))
+
         # Load the config dir and make it an absolute path
         self.config_dir = getattr(modconf, 'config_dir', 'share')
         self.config_dir = os.path.abspath(self.config_dir)
@@ -248,7 +267,9 @@ class Webui_broker(BaseModule, Daemon):
 
         # We need our regenerator now (before main) so if we are in a scheduler,
         # rg will be able to skip some broks
-        self.rg = Regenerator()
+        self.rg = None
+        if not self.alignak_backend_objects:
+            self.rg = Regenerator()
 
         # My bottle object ...
         self.bottle = bottle
@@ -258,7 +279,8 @@ class Webui_broker(BaseModule, Daemon):
     # Called by Broker so we can do init stuff
     def init(self):
         logger.info("[WebUI] Initializing ...")
-        self.rg.load_external_queue(self.from_q)
+        if not self.alignak_backend_objects:
+            self.rg.load_external_queue(self.from_q)
 
     # This is called only when we are in a scheduler
     # and just before we are started. So we can gain time, and
@@ -273,14 +295,22 @@ class Webui_broker(BaseModule, Daemon):
     def want_brok(self, b):
         return self.rg.want_brok(b)
 
-    def main(self):
-        self.set_proctitle(self.name)
+    def main(self, stand_alone=False):
+        """
+            Module main function
+        """
+        self.stand_alone = stand_alone
+        if self.stand_alone:
+            setproctitle(self.name)
+        else:
+            self.set_proctitle(self.name)
 
-        # Daemon like init
+        # Modules management
         self.debug_output = []
         self.modules_dir = modulesctx.get_modulesdir()
         self.modules_manager = ModulesManager('webui', self.find_modules_path(), [])
-        self.modules_manager.set_modules(self.modules)
+        # self.modules_manager.set_modules(self.modules)
+        logger.info("[WebUI] modules %s", self.modules)
 
         # We can now output some previously silenced debug output
         self.do_load_modules()
@@ -291,11 +321,23 @@ class Webui_broker(BaseModule, Daemon):
         for s in self.debug_output:
             print s
         del self.debug_output
+        logger.info("[WebUI] loaded modules %s", self.modules)
 
         # Check if the Bottle view dir really exist
         if not os.path.exists(bottle.TEMPLATE_PATH[0]):
             logger.error("[WebUI] The view path do not exist at %s", bottle.TEMPLATE_PATH)
             sys.exit(2)
+
+        # Load internal sub modules
+        self.auth_module = AuthMetaModule(AuthMetaModule.find_modules(self.modules_manager.get_internal_instances()), self)
+        self.prefs_module = PrefsMetaModule(PrefsMetaModule.find_modules(self.modules_manager.get_internal_instances()), self)
+        self.logs_module = LogsMetaModule(LogsMetaModule.find_modules(self.modules_manager.get_internal_instances()), self)
+        self.graphs_module = GraphsMetaModule(GraphsMetaModule.find_modules(self.modules_manager.get_internal_instances()), self)
+        self.helpdesk_module = HelpdeskMetaModule(HelpdeskMetaModule.find_modules(self.modules_manager.get_internal_instances()), self)
+
+        # Data manager
+        self.datamgr = WebUIDataManager(self.rg, self.frontend, self.alignak_backend_objects)
+        self.helper = helper
 
         # Check directories
         # We check if the photo directory exists. If not, try to create it
@@ -311,99 +353,99 @@ class Webui_broker(BaseModule, Daemon):
             else:
                 logger.debug("[WebUI] Still existing directory: %s", dir)
 
-        # :TODO:maethor:150724: Complete with other function names
-        self.auth_module = AuthMetaModule(AuthMetaModule.find_modules(self.modules_manager.get_internal_instances()), self)
-        self.prefs_module = PrefsMetaModule(PrefsMetaModule.find_modules(self.modules_manager.get_internal_instances()), self)
-        self.logs_module = LogsMetaModule(LogsMetaModule.find_modules(self.modules_manager.get_internal_instances()), self)
-        self.graphs_module = GraphsMetaModule(GraphsMetaModule.find_modules(self.modules_manager.get_internal_instances()), self)
-        self.helpdesk_module = HelpdeskMetaModule(HelpdeskMetaModule.find_modules(self.modules_manager.get_internal_instances()), self)
-
-        # Data manager
-        self.datamgr = WebUIDataManager(self.rg)
-        self.helper = helper
-
+        # Bottle objects
         self.request = bottle.request
         self.response = bottle.response
 
         try:
-            self.do_main()
-        except Exception, exp:
-            msg = Message(id=0, type='ICrash', data={'name': self.get_name(), 'exception': exp, 'trace': traceback.format_exc()})
-            self.from_q.put(msg)
-            # wait 2 sec so we know that the broker got our message, and die
-            time.sleep(2)
-            raise
+            # I register my exit function
+            self.set_exit_handler()
 
-    # A plugin send us en external command. We just put it
-    # in the good queue
+            # First load the additional plugins so they will have the lead on URI routes
+            if self.additional_plugins_dir:
+                self.load_plugins(self.additional_plugins_dir)
+
+            # Modules can also override some views if need
+            for inst in self.modules_manager.instances:
+                f = getattr(inst, 'get_webui_plugins_path', None)
+                if f and callable(f):
+                    mod_plugins_path = os.path.abspath(f(self))
+                    self.load_plugins(mod_plugins_path)
+
+            # Then look at the plugins into core and load all we can there
+            core_plugin_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'plugins')
+            self.load_plugins(core_plugin_dir)
+
+            # Declare the whole app static files AFTER the plugin ones
+            self.declare_common_static()
+
+            # Mount Web UI application
+            # if self.endpoint:
+                # root_app.mount(self.endpoint, webui_app)
+                # logger.info("[WebUI] root routes: %s", root_app.routes)
+                # for route in webui_app.routes:
+                    # logger.info("[WebUI] route: %s", route)
+
+            for route in webui_app.routes:
+                logger.info("[WebUI] route: %s", route)
+
+            # We will protect the operations on
+            # the non read+write with a lock and
+            # 2 int
+            self.global_lock = threading.RLock()
+            self.nb_readers = 0
+            self.nb_writers = 0
+
+            self.data_thread = None
+            self.ls_thread = None
+
+            # For alignak backend ...
+            if self.frontend:
+                # Launch the livestate thread ...
+                self.ls_thread = threading.Thread(None, self.manage_ls_thread, 'lsthread')
+                self.ls_thread.start()
+            else:
+                # Launch the data thread ...
+                self.data_thread = threading.Thread(None, self.manage_brok_thread, 'datathread')
+                self.data_thread.start()
+                # TODO: look for alive and killing
+
+            logger.info("[WebUI] starting Web UI server on %s:%d ...", self.host, self.port)
+            logger.info("[WebUI] starting Web UI server on %s", bottle.TEMPLATES)
+            logger.info("[WebUI] starting Web UI server on %s", bottle.TEMPLATE_PATH)
+            bottle.TEMPLATES.clear()
+            webui_app.run(host=self.host, port=self.port, server=self.http_backend, debug=True, **self.serveropts)
+        except Exception as e:
+            if self.stand_alone:
+                logger.error("[WebUI] do_main exception: %s", str(e))
+                logger.error("[WebUI] traceback: %s", traceback.format_exc())
+                exit(1)
+            else:
+                msg = Message(id=0, type='ICrash', data={'name': self.get_name(), 'exception': e, 'trace': traceback.format_exc()})
+                self.from_q.put(msg)
+                # wait 2 sec so we know that the broker got our message, and die
+                time.sleep(2)
+                raise
+
+    # External commands
+    # -----------------------------------------------------
     def push_external_command(self, e):
+        """
+            A plugin sends us an external command. Notify this command to the monitoring framework ...
+        """
         logger.debug("[WebUI] Got an external command: %s", e.__dict__)
-        try:
-            self.from_q.put(e)
-        except Exception, exp:
-            logger.error("[WebUI] External command push, exception: %s", str(exp))
+        if self.stand_alone:
+            logger.warning("[WebUI] --------------------------------------------------")
+            logger.warning("[WebUI] TODO: notify external command: %s", e.__dict__)
+            logger.warning("[WebUI] --------------------------------------------------")
+        else:
+            try:
+                self.from_q.put(e)
+            except Exception, exp:
+                logger.error("[WebUI] External command push, exception: %s", str(exp))
 
-    # Real main function
-    def do_main(self):
-        # I register my exit function
-        self.set_exit_handler()
-
-        # We will protect the operations on
-        # the non read+write with a lock and
-        # 2 int
-        self.global_lock = threading.RLock()
-        self.nb_readers = 0
-        self.nb_writers = 0
-
-        self.data_thread = None
-
-        # First load the additional plugins so they will have the lead on URI routes
-        if self.additional_plugins_dir:
-            self.load_plugins(self.additional_plugins_dir)
-
-        # Modules can also override some views if need
-        for inst in self.modules_manager.instances:
-            f = getattr(inst, 'get_webui_plugins_path', None)
-            if f and callable(f):
-                mod_plugins_path = os.path.abspath(f(self))
-                self.load_plugins(mod_plugins_path)
-
-        # Then look at the plugins into core and load all we can there
-        core_plugin_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'plugins')
-        self.load_plugins(core_plugin_dir)
-
-        # Declare the whole app static files AFTER the plugin ones
-        self.declare_common_static()
-
-        # Mount Web UI application
-        # if self.endpoint:
-            # root_app.mount(self.endpoint, webui_app)
-            # logger.info("[WebUI] root routes: %s", root_app.routes)
-            # for route in webui_app.routes:
-                # logger.info("[WebUI] route: %s", route)
-
-        for route in webui_app.routes:
-            logger.debug("[WebUI] route: %s", route)
-        # Launch the data thread ...
-        self.data_thread = threading.Thread(None, self.manage_brok_thread, 'datathread')
-        self.data_thread.start()
-        # TODO: look for alive and killing
-
-        # Ok, you want to know why we are using a data thread instead of
-        # just call for a select with q._reader, the underlying file
-        # handle of the Queue()? That's just because under Windows, select
-        # only manage winsock (so network) file descriptor! What a shame!
-
-        logger.info("[WebUI] starting Web UI server on %s:%d ...", self.host, self.port)
-        webui_app.run(host=self.host, port=self.port, server=self.http_backend, **self.serveropts)
-
-        # ^ IMPORTANT ^
-        # We are not managing the lock at this
-        # level because we got 2 types of requests:
-        # static images/css/js: no need for lock
-        # pages: need it. So it's managed at a
-        # function wrapper at loading pass
-
+    # Shinken broker module only
+    # -----------------------------------------------------
     # It will say if we can launch a page rendering or not.
     # We can only if there is no writer running from now
     def wait_for_no_writers(self):
@@ -421,6 +463,8 @@ class Webui_broker(BaseModule, Daemon):
             # like 1ms
             time.sleep(0.001)
 
+    # Shinken broker module only
+    # -----------------------------------------------------
     # It will say if we can launch a brok management or not
     # We can only if there is no readers running from now
     def wait_for_no_readers(self):
@@ -444,6 +488,8 @@ class Webui_broker(BaseModule, Daemon):
                 logger.warning("[WebUI] wait_for_no_readers, we are in lock/read since more than 30s!")
                 start = time.time()
 
+    # Shinken broker module only
+    # -----------------------------------------------------
     # We want a lock manager version of the plugin functions
     def lockable_function(self, f):
         def lock_version(**args):
@@ -460,8 +506,9 @@ class Webui_broker(BaseModule, Daemon):
 
         return lock_version
 
-    # It's the thread function that will get broks
-    # and update data. Will lock the whole thing
+    # Shinken broker module only
+    # -----------------------------------------------------
+    # It's the thread function that will get broks and update data. Will lock the whole thing
     # while updating
     def manage_brok_thread(self):
         logger.debug("[WebUI] manage_brok_thread start ...")
@@ -512,6 +559,32 @@ class Webui_broker(BaseModule, Daemon):
 
         logger.debug("[WebUI] manage_brok_thread end ...")
 
+    # Alignak backend only
+    # -----------------------------------------------------
+    # It's the thread function that will get the Alignak backend livestate
+    def manage_ls_thread(self):
+        """
+            Thread to get periodical livestate from the Alignak backend
+        """
+        logger.info("[WebUI] manage_ls_thread start ...")
+
+        while True:
+            start = time.time()
+            try:
+                # Only if Alignak backend objects have been loaded ...
+                if self.frontend.loaded:
+                    logger.debug("[WebUI] manage_ls_thread, updating livestate...")
+                    self.frontend.update_livestate()
+                    logger.debug("[WebUI] manage_ls_thread, livestate updated, duration: %s" % (time.time() - start))
+            except Exception as e:
+                logger.error("[WebUI] manage_ls_thread exception: %s", str(e))
+                logger.error("[WebUI] traceback: %s", traceback.format_exc())
+
+            # Wait for 1 second before next LS request ...
+            time.sleep(1)
+
+        logger.error("[WebUI] manage_ls_thread end ...")
+
     # Here we will load all plugins (pages) under the webui/plugins
     # directory. Each one can have a page, views and htdocs dir that we must
     # route correctly
@@ -545,6 +618,7 @@ class Webui_broker(BaseModule, Daemon):
             sys.path.append(m_dir)
 
             for (f, entry) in m.pages.items():
+                logger.debug("[WebUI] entry: %s", entry)
                 # IMPORTANT: apply VIEW BEFORE route!
                 view = entry.get('view', None)
                 if view:
@@ -588,6 +662,7 @@ class Webui_broker(BaseModule, Daemon):
 
             # And we add the views dir of this plugin in our TEMPLATE
             # PATH
+            logger.info("[WebUI] plugin views dir: %s", os.path.join(m_dir, 'views'))
             bottle.TEMPLATE_PATH.append(os.path.join(m_dir, 'views'))
 
             # And finally register me so the pages can get data and other
@@ -628,6 +703,7 @@ class Webui_broker(BaseModule, Daemon):
             return bottle.static_file(path, root=os.path.join(m_dir, 'htdocs'))
         webui_app.route(static_route, callback=plugin_static)
 
+    # Common static routes
     def declare_common_static(self):
         @webui_app.route('/static/photos/:path#.+#')
         def give_photo(path):
@@ -698,21 +774,15 @@ class Webui_broker(BaseModule, Daemon):
     # Check if provided username/password is accepted for login the Web UI
     #
     # Several steps:
-    # 1/ username must be in the known contacts of Shinken
-    # 2/ one of the WebUI modules providing a 'check_auth'
-    #   method must accept the username/password couple
+    # 1/ one of the WebUI modules providing a 'check_auth' method must authenticate the user
+    # 2/ username must be in the known contacts of Shinken
     ##
-    # :TODO:maethor:150727: Remove this method
+    # :TODO:maethor:150727: Remove this method - @mohierf: why?
     def check_authentication(self, username, password):
         logger.info("[WebUI] Checking authentication for user: %s", username)
         self.user_picture = None
         self.user_session = None
         self.user_info = None
-
-        # c = self.datamgr.get_contact(name=username)
-        # if not c:
-            # logger.error("[WebUI] You need to have a contact having the same name as your user: %s", username)
-            # return False
 
         logger.info("[WebUI] Requesting authentication for user: %s", username)
         user = self.auth_module.check_auth(username, password)
@@ -774,7 +844,6 @@ class Webui_broker(BaseModule, Daemon):
     # Current user can launch commands ?
     # If username is provided, check for the specified user ...
     ##
-    # :TODO:maethor:150717: find a better name for this method
     def can_action(self, username=None):
         if username:
             user = User.from_contact(self.datamgr.get_contact(name=username), self.gravatar)
@@ -782,7 +851,7 @@ class Webui_broker(BaseModule, Daemon):
             user = request.environ.get('USER', None)
 
         try:
-            retval = user and ((not self.manage_acl) or user.is_admin or user.can_submit_commands)
+            retval = user and ((not self.manage_acl) or user.is_administrator() or user.can_submit_commands())
         except:
             retval = False
         return retval
@@ -848,30 +917,53 @@ def login_required():
     logger.debug("[WebUI] login_required, getting user cookie ...")
     cookie_value = bottle.request.get_cookie(str(app.session_cookie), secret=app.auth_secret)
     if not cookie_value and not app.allow_anonymous:
-        bottle.redirect("/user/login")
+        bottle.redirect(app.get_url("GetLogin"))
     if cookie_value:
-        if 'session' in cookie_value:
-            app.user_session = cookie_value['session']
-            logger.debug("[WebUI] user session: %s", cookie_value['session'])
-        if 'info' in cookie_value:
-            app.user_info = cookie_value['info']
-            logger.debug("[WebUI] user info: %s", cookie_value['info'])
-        if 'login' in cookie_value:
-            logger.debug("[WebUI] user login: %s", cookie_value['login'])
-            contact = app.datamgr.get_contact(cookie_value['login'])
+        # For alignak backend
+        if app.alignak_backend_endpoint:
+            if 'session' in cookie_value:
+                app.user_session = cookie_value['session']
+                logger.debug("[WebUI] user session: %s", cookie_value['session'])
+                # For alignak backend
+                if not app.frontend.is_logged_in():
+                    try:
+                        if not app.frontend.connect(app.user_session):
+                            bottle.redirect(app.get_url("GetLogin"))
+                    except Exception:
+                        bottle.redirect(app.get_url("GetLogin"))
+
+            if 'info' in cookie_value:
+                app.user_info = cookie_value['info']
+                logger.debug("[WebUI] user info: %s", cookie_value['info'])
+            if 'login' in cookie_value:
+                logger.debug("[WebUI] user login: %s", cookie_value['login'])
+
+            contact = app.datamgr.get_contact()
+            logger.debug("[WebUI] get backend logged in contact: %s", contact)
         else:
-            contact = app.datamgr.get_contact(cookie_value)
+            if 'session' in cookie_value:
+                app.user_session = cookie_value['session']
+                logger.debug("[WebUI] user session: %s", cookie_value['session'])
+            if 'info' in cookie_value:
+                app.user_info = cookie_value['info']
+                logger.debug("[WebUI] user info: %s", cookie_value['info'])
+            if 'login' in cookie_value:
+                logger.debug("[WebUI] user login: %s", cookie_value['login'])
+                contact = app.datamgr.get_contact(name=cookie_value['login'])
+            else:
+                contact = app.datamgr.get_contact(name=cookie_value)
     else:
         logger.debug("[WebUI] login_required, try anonymous access ...")
         contact = app.datamgr.get_contact(name='anonymous')
     if not contact:
-        bottle.redirect("/user/login")
+        bottle.redirect(app.get_url("GetLogin"))
 
     user = User.from_contact(contact, app.user_picture, app.gravatar)
     if app.user_session and app.user_info:
         user.set_information(app.user_session, app.user_info)
     app.user_picture = user.get_picture()
     app.datamgr.set_logged_in_user(user)
+
     logger.debug("[WebUI] update current user: %s", user)
     request.environ['USER'] = user
     bottle.BaseTemplate.defaults['user'] = user

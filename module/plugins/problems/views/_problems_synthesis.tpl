@@ -1,8 +1,9 @@
 <!-- Problems synthesis -->
 %setdefault('header', True)
+%setdefault('widget', False)
 
 %if header:
-%synthesis = app.datamgr.get_synthesis(pbs)
+%synthesis = app.datamgr.get_synthesis(all_pbs)
 %s = synthesis['services']
 %h = synthesis['hosts']
 
@@ -13,10 +14,15 @@
             %if 'type:service' not in search_string:
             <tr>
                <td>
-               <b>{{h['nb_elts']}} hosts:&nbsp;</b>
+               <b>{{h['nb_elts']}} hosts</b>
                </td>
 
-               %for state in 'up', 'unreachable', 'down', 'pending', 'unknown':
+               %if not widget:
+               %states = ['up', 'unreachable', 'down', 'pending', 'unknown']
+               %else:
+               %states = ['unreachable', 'down', 'pending', 'unknown']
+               %end
+               %for state in states:
                <td>
                  %label = "%s hosts %s (%s%%)" % (h['nb_' + state], state, h['pct_' + state])
                  <a style="text-decoration: none;" href="/all?search=type:host is:{{state}} isnot:ack isnot:downtime" title="{{label}}">
@@ -24,6 +30,7 @@
                  </a>
                </td>
                %end
+               %if not widget:
                %for state in 'ack', 'downtime':
                <td>
                  %label = "%s hosts %s (%s%%)" % (h['nb_' + state], state, h['pct_' + state])
@@ -32,15 +39,21 @@
                  </a>
                </td>
                %end
+               %end
             </tr>
             %end
             %if 'type:host' not in search_string:
             <tr>
                <td>
-                  <b>{{s['nb_elts']}} services:&nbsp;</b>
+                  <b>{{s['nb_elts']}} services</b>
                </td>
 
-               %for state in 'ok', 'warning', 'critical', 'pending', 'unknown':
+               %if not widget:
+               %states = ['ok', 'warning', 'critical', 'pending', 'unknown']
+               %else:
+               %states = ['warning', 'critical', 'pending', 'unknown']
+               %end
+               %for state in states:
                <td>
                  %label = "%s services %s (%s%%)" % (s['nb_' + state], state, s['pct_' + state])
                  <a style="text-decoration: none;" href="/all?search=type:service is:{{state}} isnot:ack isnot:downtime" title="{{label}}">
@@ -48,6 +61,7 @@
                  </a>
                </td>
                %end
+               %if not widget:
                %for state in 'ack', 'downtime':
                <td>
                  %label = "%s services %s (%s%%)" % (s['nb_' + state], state, s['pct_' + state])
@@ -55,6 +69,7 @@
                  {{!helper.get_fa_icon_state_and_label(cls='service', state=state, label=s['nb_' + state], useTitle=False, disabled=(not s['nb_' + state]))}}
                  </a>
                </td>
+               %end
                %end
             </tr>
             %end

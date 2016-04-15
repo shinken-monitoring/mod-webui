@@ -1,5 +1,4 @@
 #!/usr/bin/python
-
 # -*- coding: utf-8 -*-
 
 # Copyright (C) 2009-2012:
@@ -36,7 +35,7 @@ def show_contact(name):
 # All contacts
 def show_contacts():
     user = app.request.environ['USER']
-    user.is_admin or app.redirect403()
+    user.is_administrator() or app.redirect403()
 
     return {'contacts': sorted(app.datamgr.get_contacts(user=user),
                                key=lambda c: c.contact_name)}
