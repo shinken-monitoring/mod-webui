@@ -37,7 +37,7 @@
             %if not h.get_name() in rows:
                %rows.append(h.get_name())
                %for s in h.services:
-                  %columns.append(s.get_name())
+                  %columns.append(s.get_name() if s.display_name == '' else s.display_name)
                %end
             %end
          %end
@@ -52,10 +52,9 @@
       %pass
       %end
 
+      <!-- Problems synthesis -->
       %s = app.datamgr.get_services_synthesis()
       %h = app.datamgr.get_hosts_synthesis()
-
-      <!-- Problems synthesis -->
       <div class="panel panel-default">
          <div class="panel-heading">
             <h3 class="panel-title">Current filtered hosts/services:</h3>
@@ -117,7 +116,7 @@
                   <td title="{{h.get_name()}} - {{h.state}} - {{helper.print_duration(h.last_chk)}} - {{h.output}}">
                      <a href="/host/{{h.get_name()}}">
                         {{!helper.get_fa_icon_state(h, useTitle=False)}}
-                        {{h.get_name()}}
+                        {{h.get_name() if h.display_name == '' else h.display_name}}
                      </a>
                   </td>
                   %for c in columns:
