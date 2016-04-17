@@ -417,7 +417,7 @@ class WebUIDataManager(DataManager):
                 )
             )
 
-        logger.info("[WebUI - datamanager] search_hosts_and_services, search for %s", search)
+        logger.debug("[WebUI - datamanager] search_hosts_and_services, search for %s in %d items", search, len(items))
 
         search = [s for s in search.split(' ')]
 
@@ -679,7 +679,6 @@ class WebUIDataManager(DataManager):
             name = name.decode('utf8', 'ignore')
         except UnicodeEncodeError:
             pass
-        logger.info("[WebUI - datamanager] get_timeperiod, name: %s", name)
 
         return self.get_timeperiods(name=name)
 
@@ -790,7 +789,7 @@ class WebUIDataManager(DataManager):
             :param name: only this element
             :returns: List of elements related to the user
         """
-        logger.info("[WebUI - datamanager] get_contactgroups, name: %s, members: %s", name, members)
+        logger.debug("[WebUI - datamanager] get_contactgroups, name: %s, members: %s", name, members)
         items = []
         if parent:
             group = self.get_contactgroups(user=user, name=parent)
@@ -803,7 +802,7 @@ class WebUIDataManager(DataManager):
                 items = self.fe.contactgroups
             else:
                 items = self.rg.contactgroups
-        logger.info("[WebUI - datamanager] got %d contactgroups", len(items))
+        logger.debug("[WebUI - datamanager] got %d contactgroups", len(items))
 
         if name:
             return items.find_by_name(name)
@@ -821,7 +820,7 @@ class WebUIDataManager(DataManager):
             name = name.decode('utf8', 'ignore')
         except UnicodeEncodeError:
             pass
-        logger.info("[WebUI - datamanager] get_contactgroup, name: %s", name)
+        logger.debug("[WebUI - datamanager] get_contactgroup, name: %s", name)
 
         return self._is_related_to(self.get_contactgroups(user=user, name=name, members=members), user)
 
@@ -872,7 +871,7 @@ class WebUIDataManager(DataManager):
             :param name: only this element
             :returns: List of elements related to the user
         """
-        logger.info("[WebUI - datamanager] get_hostgroups, name: %s", name)
+        logger.debug("[WebUI - datamanager] get_hostgroups, name: %s", name)
         items = []
         if parent:
             group = self.get_hostgroups(user=user, name=parent)
@@ -885,7 +884,7 @@ class WebUIDataManager(DataManager):
                 items = self.fe.hostgroups
             else:
                 items = self.rg.hostgroups
-        logger.info("[WebUI - datamanager] got %d hostgroups", len(items))
+        logger.debug("[WebUI - datamanager] got %d hostgroups", len(items))
 
         if name:
             return items.find_by_name(name)
@@ -946,7 +945,7 @@ class WebUIDataManager(DataManager):
             :param name: only this element
             :returns: List of elements related to the user
         """
-        logger.info("[WebUI - datamanager] get_servicegroups, name: %s", user)
+        logger.debug("[WebUI - datamanager] get_servicegroups, name: %s", user)
         items = []
         if parent:
             group = self.get_servicegroups(user=user, name=parent)
@@ -959,7 +958,7 @@ class WebUIDataManager(DataManager):
                 items = self.fe.servicegroups
             else:
                 items = self.rg.servicegroups
-        logger.info("[WebUI - datamanager] got %d servicegroups", len(items))
+        logger.debug("[WebUI - datamanager] got %d servicegroups", len(items))
 
         if name:
             return items.find_by_name(name)
@@ -1010,7 +1009,7 @@ class WebUIDataManager(DataManager):
         for name in names:
             items.append((name, self.rg.tags[name]))
 
-        logger.warning("[WebUI - datamanager] got %d hosts tags", len(items))
+        logger.debug("[WebUI - datamanager] got %d hosts tags", len(items))
         return items
 
     def get_hosts_tagged_with(self, tag, user):
@@ -1032,7 +1031,7 @@ class WebUIDataManager(DataManager):
         for name in names:
             items.append((name, self.rg.tags[name]))
 
-        logger.warning("[WebUI - datamanager] got %d services tags", len(items))
+        logger.debug("[WebUI - datamanager] got %d services tags", len(items))
         return items
 
     def get_services_tagged_with(self, tag, user):
