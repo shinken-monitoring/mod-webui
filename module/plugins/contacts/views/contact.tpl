@@ -4,18 +4,15 @@
 %# If got no element, bailout
 %if not contact:
 %rebase("layout", title='Invalid contact name')
-
-%else:
+%end
 
 %helper = app.helper
 
 %username = 'anonymous'
-%if user is not None:
-%if hasattr(contact, 'alias'):
+%if hasattr(contact, 'alias') and contact.alias != 'none':
 %username = contact.alias
 %else:
-%username = contact.get_name()
-%end
+%username = contact.contact_name
 %end
 
 %rebase("layout", title='Contact ' + username, breadcrumb=[ ['All contacts', '/contacts'], [username, '/contact/'+username] ])
@@ -71,7 +68,7 @@
                </p>
                %if app.manage_acl:
                <p class="usercategory">
-                  <small>{{'Administrator' if contact.is_administrator() else 'User'}}</small>
+                  <small>{{'Administrator' if contact.is_admin else 'User'}}</small>
                </p>
                %end
             </div>
@@ -457,7 +454,7 @@
                         <td>
                         %i=1
                         %for item in my_contactgroups:
-                          {{', ' if i!=1 else ''}}{{item.alias if item.alias!='' else item.get_name()}}
+                          {{', ' if i!=1 else ''}}<a href="/all?search=cg:{{item.get_name()}}">{{item.alias if item.alias!='' else item.get_name()}}</a>
                           %i+=1
                           %if i > 20:
                           <span> ... </span>
@@ -474,4 +471,3 @@
       </div>
    </div>
 </div>
-%end

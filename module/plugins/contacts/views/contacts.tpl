@@ -19,7 +19,7 @@
                <td><strong>{{contact.contact_name}}</strong></td>
                <td><strong>{{"%s (%s)" % (contact.alias, contact.contact_name) if contact.alias != 'none' else contact.contact_name}}</strong></td>
                <td><a href="mailto:{{contact.email}}?subject=Sent from Shinken WebUI">{{contact.email}}</a></td>
-               <td><a href="/contact/{{contact.get_name()}}" class="firstbtn">Detail</a></td>
+               <td><a href="/contact/{{contact.contact_name}}" >Detail</a></td>
             </tr>
          %end
       </tbody>
