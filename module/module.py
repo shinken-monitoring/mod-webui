@@ -25,17 +25,18 @@
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 
 
-WEBUI_VERSION = "2.4.0"
+WEBUI_VERSION = "2.3.2"
 WEBUI_COPYRIGHT = "(c) 2009-2016 - License GNU AGPL as published by the FSF, minimum version 3 of the License."
 WEBUI_RELEASENOTES = """
-Stand-alone mode
-Use Alignak backend
+Dashboard currently view
+Global notifications enable/disable widget
+Use Alignak backend (experimental)
 """
 
 
 """
 This Class is a plugin for the Shinken Broker. It is in charge
-to get brok and recreate real objects, and propose a Web interface :)
+to get broks and recreate real objects, and propose a Web User Interface :)
 """
 
 import traceback
