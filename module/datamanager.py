@@ -135,7 +135,8 @@ class WebUIDataManager(DataManager):
     def _is_related_to(item, user):
         """
         """
-        if not user:
+        # if no user or user is an admin, always consider there is a relation
+        if not user or user.is_administrator():
             return item
 
         return user._is_related_to(item)
@@ -146,7 +147,8 @@ class WebUIDataManager(DataManager):
 
             :returns: List of elements related to the user
         """
-        if not user:
+        # if no user or user is an admin, always consider there is a relation
+        if not user or user.is_administrator():
             return items
 
         try:
