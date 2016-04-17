@@ -2,7 +2,7 @@
    // Initial start/stop for downtime, do not consider seconds ...
    var downtime_start = moment().seconds(0);
    // Set default downtime period as two days
-   var downtime_stop = moment().seconds(0).add('days', 2);
+   var downtime_stop = moment().seconds(0).add('hours', "{{ default_downtime_hours }}");
 
    function submit_local_form(){
       // Launch downtime request and bailout this modal view
