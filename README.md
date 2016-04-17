@@ -22,11 +22,11 @@ Current version is 2.3.2, available on [`shinken.io`](http://shinken.io/package/
    - Allows authenticating a user with Alignak backend
 
  - Bugs and fixes:
-    #471: downtime page error
-    #469: currently 404
-    #468: CSS bug
-    #466: use display_name when available
-    ... and some others :)
+   - #471: downtime page error
+   - #469: currently 404
+   - #468: CSS bug
+   - #466: use display_name when available
+   - ... and some others :)
 
 ### Version 2.3.1
  Only for internal testings and not published on shinken.io
