@@ -48,6 +48,12 @@ def get_all():
         app.prefs_module.set_ui_user_preference(user, 'sound', sound)
         sound_pref = sound
 
+    # Set hostgroups level ...
+    app.datamgr.set_hostgroups_level(user)
+
+    # Set servicegroups level ...
+    app.datamgr.set_servicegroups_level(user)
+
     # We want to limit the number of elements
     step = int(app.request.GET.get('step', elts_per_page))
     start = int(app.request.GET.get('start', '0'))
