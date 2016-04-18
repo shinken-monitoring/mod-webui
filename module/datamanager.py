@@ -433,24 +433,38 @@ class WebUIDataManager(DataManager):
 
         logger.debug("[WebUI - datamanager] search_hosts_and_services, search for %s in %d items", search, len(items))
 
-        search = [s for s in search.split(' ')]
+        # Search patterns like: isnot:0 isnot:ack isnot:"downtime fred" name "vm fred"
+        regex = re.compile(
+            r'''
+                                    # 1/ Search a key:value pattern.
+                (?P<key>\w+):       # Key consists of only a word followed by a colon
+                (?P<quote2>["']?)   # Optional quote character.
+                (?P<value>.*?)      # Value is a non greedy match
+                (?P=quote2)         # Closing quote equals the first.
+                ($|\s)              # Entry ends with whitespace or end of string
+                |                   # OR
+                                    # 2/ Search a single string quoted or not
+                (?P<quote>["']?)    # Optional quote character.
+                (?P<name>.*?)       # Name is a non greedy match
+                (?P=quote)          # Closing quote equals the opening one.
+                ($|\s)              # Entry ends with whitespace or end of string
+            ''',
+            re.VERBOSE
+            )
 
-        for s in search:
-            s = s.strip()
-            if not s:
-                continue
+        patterns = []
+        for match in regex.finditer(search):
+            if match.group('name'):
+                patterns.append( ('name', match.group('name')) )
+            elif match.group('key'):
+                patterns.append( (match.group('key'), match.group('value')) )
+        logger.debug("[WebUI - datamanager] search patterns: %s", patterns)
 
-            elts = s.split(':', 1)
-            t = 'hst_srv'
-            if len(elts) > 1:
-                t = elts[0]
-                s = elts[1]
-
-            # s = s.lower()
+        for t, s in patterns:
             t = t.lower()
             logger.debug("[WebUI - datamanager] searching for %s %s", t, s)
 
-            if t == 'hst_srv':
+            if t == 'name':
                 # Case insensitive
                 pat = re.compile(s, re.IGNORECASE)
                 new_items = []
@@ -642,16 +656,16 @@ class WebUIDataManager(DataManager):
             # :COMMENT:maethor:150616: Legacy filters, kept for bookmarks compatibility
             if t == 'ack':
                 if s.lower() == 'false' or s.lower() == 'no':
-                    search.append("isnot:ack")
+                    search.append( ("isnot", "ack") )
                 if s.lower() == 'true' or s.lower() == 'yes':
-                    search.append("is:ack")
+                    search.append( ("is", "ack") )
             if t == 'downtime':
                 if s.lower() == 'false' or s.lower() == 'no':
-                    search.append("isnot:downtime")
+                    search.append( ("isnot", "downtime") )
                 if s.lower() == 'true' or s.lower() == 'yes':
-                    search.append("is:downtime")
+                    search.append( ("is", "downtime") )
             if t == 'crit':
-                search.append("is:critical")
+                search.append( ("is", "critical") )
 
         if sorter is not None:
             items.sort(sorter)
