@@ -79,7 +79,15 @@ from submodules.logs import LogsMetaModule
 from submodules.graphs import GraphsMetaModule
 from submodules.helpdesk import HelpdeskMetaModule
 
-from frontend import FrontEnd
+try:
+    from frontend import FrontEnd
+    frontend_available = True
+except ImportError:
+    logger.warning(
+        '[WebUI] Can not import Alignak frontend library. '
+        'If you intend to use Alignak backend authentication or objects, you should \'pip install alignak_backend_client\''
+    )
+    frontend_available = False
 
 # Default bottle app
 root_app = bottle.default_app()
@@ -206,7 +214,7 @@ class Webui_broker(BaseModule, Daemon):
         self.frontend = None
         self.alignak_backend_objects = False
         self.alignak_backend_endpoint = getattr(modconf, 'alignak_backend_endpoint', None)
-        if self.alignak_backend_endpoint:
+        if frontend_available and self.alignak_backend_endpoint:
             self.frontend = FrontEnd()
             if self.frontend:
                 self.frontend.configure(self.alignak_backend_endpoint)
