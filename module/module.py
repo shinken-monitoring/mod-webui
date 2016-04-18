@@ -191,6 +191,9 @@ class Webui_broker(BaseModule, Daemon):
         self.manage_acl = to_bool(getattr(modconf, 'manage_acl', '1'))
         self.allow_anonymous = to_bool(getattr(modconf, 'allow_anonymous', '0'))
 
+        # Allow to customize default downtime duration
+        self.default_downtime_hours = int(getattr(modconf, 'default_downtime_hours', '48'))
+
         # Advanced options
         self.http_backend = getattr(modconf, 'http_backend', 'auto')
         self.remote_user_enable = getattr(modconf, 'remote_user_enable', '0')
