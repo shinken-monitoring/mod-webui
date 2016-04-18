@@ -834,7 +834,11 @@ Invalid element name
                            <tr>
                               <td>{{var}}</td>
                               <td>{{elt.customs[var]}}</td>
-                              %if app.can_action():
+                              %# ************
+                              %# Remove the Change button because Shinken does not take care of the external command!
+                              %# Issue #224
+                              %# ************
+                              %if app.can_action() and False:
                               <td>
                                  <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm"
                                        data-type="action" action="change-variable"
