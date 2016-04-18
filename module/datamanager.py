@@ -656,16 +656,16 @@ class WebUIDataManager(DataManager):
             # :COMMENT:maethor:150616: Legacy filters, kept for bookmarks compatibility
             if t == 'ack':
                 if s.lower() == 'false' or s.lower() == 'no':
-                    search.append( ("isnot", "ack") )
+                    patterns.append( ("isnot", "ack") )
                 if s.lower() == 'true' or s.lower() == 'yes':
-                    search.append( ("is", "ack") )
+                    patterns.append( ("is", "ack") )
             if t == 'downtime':
                 if s.lower() == 'false' or s.lower() == 'no':
-                    search.append( ("isnot", "downtime") )
+                    patterns.append( ("isnot", "downtime") )
                 if s.lower() == 'true' or s.lower() == 'yes':
-                    search.append( ("is", "downtime") )
+                    patterns.append( ("is", "downtime") )
             if t == 'crit':
-                search.append( ("is", "critical") )
+                patterns.append( ("is", "critical") )
 
         if sorter is not None:
             items.sort(sorter)
