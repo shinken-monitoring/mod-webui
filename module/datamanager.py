@@ -764,7 +764,7 @@ class WebUIDataManager(DataManager):
         else:
             return self._only_related_to(items, user)
 
-    def get_contact(self, user=None, name=None):
+    def get_contact(self, name=None, user=None):
         try:
             name = name.decode('utf8', 'ignore')
         except UnicodeEncodeError:

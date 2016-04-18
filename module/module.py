@@ -321,7 +321,7 @@ class Webui_broker(BaseModule, Daemon):
         self.debug_output = []
         self.modules_dir = modulesctx.get_modulesdir()
         self.modules_manager = ModulesManager('webui', self.find_modules_path(), [])
-        # self.modules_manager.set_modules(self.modules)
+        self.modules_manager.set_modules(self.modules)
         logger.info("[WebUI] modules %s", self.modules)
 
         # We can now output some previously silenced debug output
@@ -966,7 +966,7 @@ def login_required():
         # Only the /dashboard/currently should be accessible to anonymous users
         if request.urlparts.path != "/dashboard/currently":
             bottle.redirect("/user/login")
-        contact = app.datamgr.get_contact('anonymous')
+        contact = app.datamgr.get_contact(name='anonymous')
 
     if not contact:
         bottle.redirect(app.get_url("GetLogin"))

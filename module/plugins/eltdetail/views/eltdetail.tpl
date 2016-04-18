@@ -725,7 +725,7 @@ Invalid element name
                               <tr>
                                  <td><strong>Contacts:</strong></td>
                                  <td>
-                                   %contacts = [c for c in elt.contacts if app.datamgr.get_contact(c.contact_name, user)]
+                                   %contacts = [c for c in elt.contacts if app.datamgr.get_contact(name=c.contact_name, user=user)]
                                    %for c in contacts:
                                    <a href="/contact/{{c.contact_name}}">{{ c.alias if c.alias and c.alias != 'none' else c.contact_name }}</a>,
                                    %end
