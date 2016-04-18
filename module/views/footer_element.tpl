@@ -177,19 +177,27 @@
       var elt = $(this).data('element');
       var user = '{{username}}';
       if (! elt) {
-         // Initial start/stop for downtime, do not consider seconds ...
-         var downtime_start = moment().seconds(0);
-         var downtime_stop = moment().seconds(0).add('day', 1);
+         if (selected_elements.length == 1) {
+            var elt = selected_elements[0];
+            if (eltdetail_logs) console.debug("Schedule a downtime for: ", elt)
 
-         $.each(selected_elements, function(idx, name){
-            if (eltdetail_logs) console.debug("Schedule a downtime for: ", name)
-            do_schedule_downtime(name, downtime_start.format('X'), downtime_stop.format('X'), user, 'One day downtime scheduled by '+user);
-         });
+            display_modal("/forms/downtime/add/"+elt);
+         } else {
+            // Default downtime scheduling...
+            // Initial start/stop for downtime, do not consider seconds ...
+            var downtime_start = moment().seconds(0);
+            var downtime_stop = moment().seconds(0).add('day', 1);
+
+            $.each(selected_elements, function(idx, name){
+               if (eltdetail_logs) console.debug("Schedule a downtime for: ", name)
+               do_schedule_downtime(name, downtime_start.format('X'), downtime_stop.format('X'), user, 'One day downtime scheduled by '+user);
+            });
+         }
          flush_selected_elements();
       } else {
          if (eltdetail_logs) console.debug("Schedule a downtime for: ", elt)
 
-         display_modal("/forms/downtime/add/"+$(this).data('element'));
+         display_modal("/forms/downtime/add/"+elt);
       }
    });
 
@@ -214,7 +222,7 @@
       } else {
          if (eltdetail_logs) console.debug("Delete all downtimes for: ", elt)
 
-         display_modal("/forms/downtime/delete_all/"+$(this).data('element'));
+         display_modal("/forms/downtime/delete_all/"+elt);
       }
    });
 
