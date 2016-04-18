@@ -242,7 +242,14 @@ class WebUIDataManager(DataManager):
                 h['nb_' + state] = sum(1 for host in hosts if host.state == state.upper()  and not (host.problem_has_been_acknowledged or host.in_scheduled_downtime))
                 h['pct_' + state] = round(100.0 * h['nb_' + state] / h['nb_elts'], 2)
 
-            h['nb_problems'] = sum(1 for host in hosts if host.is_problem and not host.problem_has_been_acknowledged)
+            # h['nb_problems'] = sum(1 for host in hosts if host.is_problem and not host.problem_has_been_acknowledged)
+            # Shinken does not always reflect the "problem" state ... to make UI more consistent, build our own problems counter!
+            h['nb_problems'] = 0
+            for host in hosts:
+                if host.state.lower() in ['down', 'unreachable'] and not host.problem_has_been_acknowledged:
+                    h['nb_problems'] += 1
+                    logger.debug("[WebUI - datamanager] get_hosts_synthesis: %s: %s, %s, %s", host.get_name(), host.state, host.is_problem, host.problem_has_been_acknowledged)
+
             h['pct_problems'] = round(100.0 * h['nb_problems'] / h['nb_elts'], 2)
             h['nb_ack'] = sum(1 for host in hosts if host.is_problem and host.problem_has_been_acknowledged)
             h['pct_ack'] = round(100.0 * h['nb_ack'] / h['nb_elts'], 2)
@@ -333,7 +340,14 @@ class WebUIDataManager(DataManager):
                 s['nb_' + state] = sum(1 for service in services if service.state == state.upper()  and not (service.problem_has_been_acknowledged or service.in_scheduled_downtime))
                 s['pct_' + state] = round(100.0 * s['nb_' + state] / s['nb_elts'], 2)
 
-            s['nb_problems'] = sum(1 for service in services if service.is_problem and not service.problem_has_been_acknowledged)
+            # s['nb_problems'] = sum(1 for service in services if service.is_problem and not service.problem_has_been_acknowledged)
+            # Shinken does not always reflect the "problem" state ... to make UI more consistent, build our own problems counter!
+            s['nb_problems'] = 0
+            for service in services:
+                if service.state.lower() in ['warning', 'critical'] and not service.problem_has_been_acknowledged:
+                    s['nb_problems'] += 1
+                    logger.debug("[WebUI - datamanager] get_services_synthesis: %s: %s, %s, %s", service.get_name(), service.state, service.is_problem, service.problem_has_been_acknowledged)
+
             s['pct_problems'] = round(100.0 * s['nb_problems'] / s['nb_elts'], 2)
             s['nb_ack'] = sum(1 for service in services if service.is_problem and service.problem_has_been_acknowledged)
             s['pct_ack'] = round(100.0 * s['nb_ack'] / s['nb_elts'], 2)
