@@ -190,7 +190,7 @@
 
             $.each(selected_elements, function(idx, name){
                if (eltdetail_logs) console.debug("Schedule a downtime for: ", name)
-               do_schedule_downtime(name, downtime_start.format('X'), downtime_stop.format('X'), user, 'One day downtime scheduled by '+user);
+               do_schedule_downtime(name, downtime_start.format('X'), downtime_stop.format('X'), user, 'One day downtime scheduled by '+user, undefined, '{{app.shinken_downtime_fixed}}', '{{app.shinken_downtime_trigger}}', '{{app.shinken_downtime_duration}}');
             });
          }
          flush_selected_elements();
@@ -233,7 +233,7 @@
       if (! elt) {
          $.each(selected_elements, function(idx, name){
             if (eltdetail_logs) console.debug("Add acknowledge for: ", name)
-            do_acknowledge(name, 'Acknowledged by '+user, user);
+            do_acknowledge(name, 'Acknowledged by '+user, user, '{{app.default_ack_sticky}}', '{{app.default_ack_notify}}', '{{app.default_ack_persistent}}');
          });
          flush_selected_elements();
       } else {
