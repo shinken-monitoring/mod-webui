@@ -25,12 +25,13 @@
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 
 
-WEBUI_VERSION = "2.3.2"
+WEBUI_VERSION = "2.4.0"
 WEBUI_COPYRIGHT = "(c) 2009-2016 - License GNU AGPL as published by the FSF, minimum version 3 of the License."
 WEBUI_RELEASENOTES = """
 Dashboard currently view
 Global notifications enable/disable widget
 Use Alignak backend (experimental)
+Fix bugs found in 2.3.2
 """
 
 
@@ -535,7 +536,7 @@ class Webui_broker(BaseModule, Daemon):
             start = time.clock()
             l = self.to_q.get()
 
-            # try to relaunch dead module (like mongo one when mongo is not available at startup for example)
+            # try to relaunch dead module
             self.check_and_del_zombie_modules()
 
             logger.debug("[WebUI] manage_brok_thread got %d broks, queue length: %d", len(l), self.to_q.qsize())
