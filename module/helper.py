@@ -136,6 +136,14 @@ class Helper(object):
         else:
             return ' '.join(duration) + ' ago'
 
+    def hms_string(self, sec_elapsed):
+        '''
+            Receiving an elapsed time in seconds, returns a human readable formatted string
+        '''
+        h = int(sec_elapsed / (60 * 60))
+        m = int((sec_elapsed % (60 * 60)) / 60)
+        s = sec_elapsed % 60.
+        return "{}:{:>02}:{:>05.2f}".format(h, m, s)
 
     # Need to create a X level higher and lower to the element
     def create_json_dep_graph(self, elt, levels=3):
