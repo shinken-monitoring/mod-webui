@@ -11,7 +11,7 @@ Current version is 2.3.2, available on [`shinken.io`](http://shinken.io/package/
  This version mainly intends to fix a serious bug (#486) that makes the WebUI not loading the external modules ... all my apologies for this!
 
  - Features:
-   - No new features
+   - No new major features
 
  - Enhancements:
    - Search filter improvements
@@ -19,6 +19,9 @@ Current version is 2.3.2, available on [`shinken.io`](http://shinken.io/package/
    - #224: remove change custom variable button
    - #472: downtime form when only one element is selected
    - Add default downtime duration in webui2.cfg (thanks to @TomaszUrugOlszewski, PR#451)
+   - Add default downtime / acknowledge external commands parameters in webui2.cfg
+   - #481: graph proxy response
+   - #487: actions/widgets menu relooking
 
  - Bugs and fixes:
    - #482: make problems counters consistent
