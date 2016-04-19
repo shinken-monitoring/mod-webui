@@ -435,10 +435,7 @@ function delete_all_comments(name) {
  Set the "trigger_id" argument to zero (0) if the downtime for the
  specified host should not be triggered by another downtime entry.
 */
-var shinken_downtime_fixed='1';
-var shinken_downtime_trigger='0';
-var shinken_downtime_duration='0';
-function do_schedule_downtime(name, start_time, end_time, user, comment, contact){
+function do_schedule_downtime(name, start_time, end_time, user, comment, contact, shinken_downtime_fixed, shinken_downtime_trigger, shinken_downtime_duration){
    var elts = get_elements(name, contact);
    var url = '/action/SCHEDULE_'+elts.type+'_DOWNTIME/'+elts.nameslash+'/'+start_time+'/'+end_time+'/'+shinken_downtime_fixed+'/'+shinken_downtime_trigger+'/'+shinken_downtime_duration+'/'+user+'/'+comment;
    launch(url, capitalize(elts.type)+': '+name+', downtime scheduled');
@@ -476,13 +473,10 @@ are disabled.
  If the "notify" option is set to one (1), a notification will be sent out to
  contacts indicating that the current host problem has been acknowledged.
  If the "persistent" option is set to one (1), the comment associated with the
- acknowledgement will survive across restarts of the Nagios process.
- If not, the comment will be deleted the next time Nagios restarts.
+ acknowledgement will survive across restarts of the Shinken process.
+ If not, the comment will be deleted the next time Shinken restarts.
 */
-var shinken_acknowledge_sticky='2';
-var shinken_acknowledge_notify='1';
-var shinken_acknowledge_persistent='1';
-function do_acknowledge(name, text, user){
+function do_acknowledge(name, text, user, shinken_acknowledge_sticky, shinken_acknowledge_notify, shinken_acknowledge_persistent){
    var elts = get_elements(name);
    var url = '/action/ACKNOWLEDGE_'+elts.type+'_PROBLEM/'+elts.nameslash+'/'+shinken_acknowledge_sticky+'/'+shinken_acknowledge_notify+'/'+shinken_acknowledge_persistent+'/'+user+'/'+text;
    launch(url, capitalize(elts.type)+': '+name+', acknowledged');

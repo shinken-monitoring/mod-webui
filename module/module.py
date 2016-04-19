@@ -25,12 +25,13 @@
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 
 
-WEBUI_VERSION = "2.3.2"
+WEBUI_VERSION = "2.4.0"
 WEBUI_COPYRIGHT = "(c) 2009-2016 - License GNU AGPL as published by the FSF, minimum version 3 of the License."
 WEBUI_RELEASENOTES = """
 Dashboard currently view
 Global notifications enable/disable widget
 Use Alignak backend (experimental)
+Fix bugs found in 2.3.2
 """
 
 
@@ -79,7 +80,15 @@ from submodules.logs import LogsMetaModule
 from submodules.graphs import GraphsMetaModule
 from submodules.helpdesk import HelpdeskMetaModule
 
-from frontend import FrontEnd
+try:
+    from frontend import FrontEnd
+    frontend_available = True
+except ImportError:
+    logger.warning(
+        '[WebUI] Can not import Alignak frontend library. '
+        'If you intend to use Alignak backend authentication or objects, you should \'pip install alignak_backend_client\''
+    )
+    frontend_available = False
 
 # Default bottle app
 root_app = bottle.default_app()
@@ -183,6 +192,17 @@ class Webui_broker(BaseModule, Daemon):
         self.manage_acl = to_bool(getattr(modconf, 'manage_acl', '1'))
         self.allow_anonymous = to_bool(getattr(modconf, 'allow_anonymous', '0'))
 
+        # Allow to customize default downtime duration
+        self.default_downtime_hours = int(getattr(modconf, 'default_downtime_hours', '48'))
+        self.shinken_downtime_fixed = int(getattr(modconf, 'shinken_downtime_fixed', '1'))
+        self.shinken_downtime_trigger = int(getattr(modconf, 'shinken_downtime_trigger', '0'))
+        self.shinken_downtime_duration = int(getattr(modconf, 'shinken_downtime_duration', '0'))
+
+        # Allow to customize default acknowledge parameters
+        self.default_ack_sticky = int(getattr(modconf, 'default_ack_sticky', '2'))
+        self.default_ack_notify = int(getattr(modconf, 'default_ack_notify', '1'))
+        self.default_ack_persistent = int(getattr(modconf, 'default_ack_persistent', '1'))
+
         # Advanced options
         self.http_backend = getattr(modconf, 'http_backend', 'auto')
         self.remote_user_enable = getattr(modconf, 'remote_user_enable', '0')
@@ -206,7 +226,7 @@ class Webui_broker(BaseModule, Daemon):
         self.frontend = None
         self.alignak_backend_objects = False
         self.alignak_backend_endpoint = getattr(modconf, 'alignak_backend_endpoint', None)
-        if self.alignak_backend_endpoint:
+        if frontend_available and self.alignak_backend_endpoint:
             self.frontend = FrontEnd()
             if self.frontend:
                 self.frontend.configure(self.alignak_backend_endpoint)
@@ -310,7 +330,7 @@ class Webui_broker(BaseModule, Daemon):
         self.debug_output = []
         self.modules_dir = modulesctx.get_modulesdir()
         self.modules_manager = ModulesManager('webui', self.find_modules_path(), [])
-        # self.modules_manager.set_modules(self.modules)
+        self.modules_manager.set_modules(self.modules)
         logger.info("[WebUI] modules %s", self.modules)
 
         # We can now output some previously silenced debug output
@@ -516,7 +536,7 @@ class Webui_broker(BaseModule, Daemon):
             start = time.clock()
             l = self.to_q.get()
 
-            # try to relaunch dead module (like mongo one when mongo is not available at startup for example)
+            # try to relaunch dead module
             self.check_and_del_zombie_modules()
 
             logger.debug("[WebUI] manage_brok_thread got %d broks, queue length: %d", len(l), self.to_q.qsize())
@@ -955,7 +975,7 @@ def login_required():
         # Only the /dashboard/currently should be accessible to anonymous users
         if request.urlparts.path != "/dashboard/currently":
             bottle.redirect("/user/login")
-        contact = app.datamgr.get_contact('anonymous')
+        contact = app.datamgr.get_contact(name='anonymous')
 
     if not contact:
         bottle.redirect(app.get_url("GetLogin"))

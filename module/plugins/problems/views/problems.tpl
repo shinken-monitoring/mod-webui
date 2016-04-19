@@ -62,15 +62,27 @@
                </td>
                <td>
                   %if i == 0:
+                     %title = ''
+                     %if pb.__class__.my_type == 'service':
+                        %groups = sorted(pb.host.hostgroups, key=lambda x:x.level, reverse=True)
+                        %group = groups[0] if groups else None
+                        %title = 'Member of %s' % (group.alias if group.alias else group.get_name()) if group else ''
+                     %else:
+                        %groups = sorted(pb.hostgroups, key=lambda x:x.level, reverse=True)
+                        %group = groups[0] if groups else None
+                        %title = 'Member of %s' % (group.alias if group.alias else group.get_name()) if group else ''
+                     %end
+                     <a href="/host/{{pb.host_name}}" title="{{title}}">
                      %if pb.__class__.my_type == 'service':
                         %if pb.host:
-                        <a href="/host/{{pb.host_name}}">{{pb.host.get_name() if pb.host.display_name == '' else pb.host.display_name}}</a>
+                        {{pb.host.get_name() if pb.host.display_name == '' else pb.host.display_name}}
                         %else:
-                        <a href="/host/{{pb.host_name}}">{{pb.host_name}}</a>
+                        {{pb.host_name}}
                         %end
                      %else:
-                        <a href="/host/{{pb.host_name}}">{{pb.get_name() if pb.display_name == '' else pb.display_name}}</a>
+                        {{pb.get_name() if pb.display_name == '' else pb.display_name}}
                      %end
+                     </a>
                   %end
                </td>
                <td>

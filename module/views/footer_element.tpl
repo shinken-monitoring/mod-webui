@@ -13,124 +13,143 @@
 
 
 <!-- Footer -->
-<nav class="footer navbar navbar-default navbar-fixed-bottom">
-   <!-- Actions bar:
-   - enabled when elt is defined ...
-   - enabled when problems are selected
-   -->
-   <div id="actions" class="navbar-default actionbar" role="navigation" style="display:none;">
-      <div class="actionbar-nav navbar-collapse">
-         <ul class="nav actions-menu">
-         %if app.can_action():
-         %if elt:
-            %elt_type = elt.__class__.my_type
-            <li> <a href="#" action="add-comment" title="Add a comment for this {{elt_type}}"
-               data-element="{{helper.get_uri_name(elt)}}" >
-               <i class="fa fa-plus"></i> Add a comment
-            </a> </li>
-            %if elt.is_problem and elt.event_handler_enabled and elt.event_handler:
-            <li> <a href="#" action="event-handler" title="Try to fix the current problem for this {{elt_type}}"
-               data-element="{{helper.get_uri_name(elt)}}" >
-               <i class="fa fa-magic"></i> Try to fix
-            </a> </li>
-            %end
-            <li> <a href="#" action="recheck" title="Launch the defined check command for this {{elt_type}}"
-               data-element="{{helper.get_uri_name(elt)}}" >
-               <i class="fa fa-refresh"></i> Recheck
-            </a> </li>
-            %if (elt.passive_checks_enabled):
-            <li> <a href="#" action="check-result" title="Set this {{elt_type}} as ok"
-               data-element="{{helper.get_uri_name(elt)}}" >
-               <i class="fa fa-share"></i> Submit check result
-            </a> </li>
-            %end
-            %if elt.state != elt.ok_up and not elt.problem_has_been_acknowledged:
-            <li> <a href="#" action="add-acknowledge" title="Acknowledge this {{elt_type}} problem"
-               data-element="{{helper.get_uri_name(elt)}}" >
-               <i class="fa fa-check"></i> Acknowledge
-            </a> </li>
-            %end
-            %if elt.problem_has_been_acknowledged:
-            <li> <a href="#" action="remove-acknowledge" title="Remove the acknowledge for this {{elt_type}} problem"
-               data-element="{{helper.get_uri_name(elt)}}" >
-               <i class="fa fa-check"></i> Unacknowledge
-            </a> </li>
-            %end
-            <li> <a href="#" action="schedule-downtime" title="Schedule a downtime for this {{elt_type}}"
-               data-element="{{helper.get_uri_name(elt)}}" >
-               <i class="fa fa-ambulance"></i> Schedule a downtime
-            </a> </li>
-            %if elt_type=='host' and app.helpdesk_module.is_available():
-            <li> <a href="#" action="create-ticket" title="Create a ticket for this {{elt_type}}"
-               data-element="{{helper.get_uri_name(elt)}}" >
-               <i class="fa fa-medkit"></i> Create a ticket
-            </a> </li>
-            %end
-         %else:
-            <li> <a href="#" action="event-handler" title="Try to fix the selected problems">
-               <i class="fa fa-magic"></i> Try to fix
-            </a> </li>
-            <li> <a href="#" action="recheck" title="Launch the check command for selected problems">
-               <i class="fa fa-refresh"></i> Recheck
-            </a> </li>
-            <li> <a href="#" action="check-result" title="Set the selected problems as OK/UP">
-               <i class="fa fa-share"></i> Set Ok
-            </a> </li>
-            <li> <a href="#" action="add-acknowledge" title="Acknowledge the selected problems">
-               <i class="fa fa-check"></i> Acknowledge
-            </a> </li>
-            <li> <a href="#" action="schedule-downtime" title="Schedule a one day downtime for the selected problems">
-               <i class="fa fa-ambulance"></i> Schedule a downtime
-            </a> </li>
-            <li> <a href="#" action="ignore-checks" title="Remove the selected problems from the problems list">
-               <i class="fa fa-eraser"></i> Uncheck
-            </a> </li>
-         %end
-         %end
-         </ul>
-      </div>
-   </div>
+<footer>
+   <nav class="navbar navbar-default navbar-fixed-bottom">
+      <div class="container-fluid">
+         <!-- Actions bar:
+         - enabled when elt is defined ...
+         - enabled when problems are selected
+         -->
+         <nav id="actions" class="navbar navbar-default navbar-element" role="navigation" style="display:none;">
+            <ul class="nav navbar-nav navbar-left">
+               <li class="dropdown" data-toggle="tooltip" data-placement="right" title="Add a new widget">
+                  <a class="navbar-link" href="#" class="dropdown-toggle" data-toggle="dropdown">
+                     <span class="caret"></span>
+                     <span class="fa fa-bolt"></span>
+                     <span class="hidden-xs">Execute an action</span>
+                  </a>
 
-   <!-- Dashboard actions bar:
-   - enabled when elt is defined ...
-   - enabled when problems are selected
-   -->
-   <div id="dashboard-actions" class="navbar-default actionbar" role="navigation" style="display:none;">
-      <div class="actionbar-nav navbar-collapse">
-         <ul class="nav actions-menu">
-            <li> <a href="#"><i class="fa fa-leaf"></i> Add a new widget <i class="fa arrow"></i></a>
-              <ul class="nav nav-second-level">
-                %for w in app.get_widgets_for('dashboard'):
-                   <li>
-                      <a href="#"
-                         class="dashboard-widget"
-                         data-widget-title="
-                            <button href='#' role='button'
-                                action='add-widget'
-                                data-widget='{{w['widget_name']}}'
-                                data-wuri='{{w['base_uri']}}'
-                                class='btn btn-sm btn-success'>
-                                <span class='fa fa-plus'></span>
-                                Add this widget to your dashboard
-                            </button>"
-                         data-widget-description='{{!w["widget_desc"]}} <hr/> <div class="center-block"><img class="text-center" src="{{w["widget_picture"]}}"/></div>'
-                         >
-                         <span class="fa fa-plus"></span> {{w['widget_name']}}
-                      </a>
-                   </li>
-                %end
-              </ul>
-            </li>
-         </ul>
-      </div>
-   </div>
+                  <ul class="dropdown-menu" role="menu" aria-labelledby="Actions bar menu">
+               %if app.can_action():
+               %if elt:
+                  %elt_type = elt.__class__.my_type
+                  <li> <a href="#" action="add-comment" title="Add a comment for this {{elt_type}}"
+                     data-element="{{helper.get_uri_name(elt)}}" >
+                     <i class="fa fa-plus"></i> Add a comment
+                  </a> </li>
+                  %if elt.is_problem and elt.event_handler_enabled and elt.event_handler:
+                  <li> <a href="#" action="event-handler" title="Try to fix the current problem for this {{elt_type}}"
+                     data-element="{{helper.get_uri_name(elt)}}" >
+                     <i class="fa fa-magic"></i> Try to fix
+                  </a> </li>
+                  %end
+                  <li> <a href="#" action="recheck" title="Launch the defined check command for this {{elt_type}}"
+                     data-element="{{helper.get_uri_name(elt)}}" >
+                     <i class="fa fa-refresh"></i> Recheck
+                  </a> </li>
+                  %if (elt.passive_checks_enabled):
+                  <li> <a href="#" action="check-result" title="Set this {{elt_type}} as ok"
+                     data-element="{{helper.get_uri_name(elt)}}" >
+                     <i class="fa fa-share"></i> Submit check result
+                  </a> </li>
+                  %end
+                  %if elt.state != elt.ok_up and not elt.problem_has_been_acknowledged:
+                  <li> <a href="#" action="add-acknowledge" title="Acknowledge this {{elt_type}} problem"
+                     data-element="{{helper.get_uri_name(elt)}}" >
+                     <i class="fa fa-check"></i> Acknowledge
+                  </a> </li>
+                  %end
+                  %if elt.problem_has_been_acknowledged:
+                  <li> <a href="#" action="remove-acknowledge" title="Remove the acknowledge for this {{elt_type}} problem"
+                     data-element="{{helper.get_uri_name(elt)}}" >
+                     <i class="fa fa-check"></i> Unacknowledge
+                  </a> </li>
+                  %end
+                  <li> <a href="#" action="schedule-downtime" title="Schedule a downtime for this {{elt_type}}"
+                     data-element="{{helper.get_uri_name(elt)}}" >
+                     <i class="fa fa-ambulance"></i> Schedule a downtime
+                  </a> </li>
+                  %if elt_type=='host' and app.helpdesk_module.is_available():
+                  <li> <a href="#" action="create-ticket" title="Create a ticket for this {{elt_type}}"
+                     data-element="{{helper.get_uri_name(elt)}}" >
+                     <i class="fa fa-medkit"></i> Create a ticket
+                  </a> </li>
+                  %end
+               %else:
+                  <li> <a href="#" action="event-handler" title="Try to fix the selected problems">
+                     <i class="fa fa-magic"></i> Try to fix
+                  </a> </li>
+                  <li> <a href="#" action="recheck" title="Launch the check command for selected problems">
+                     <i class="fa fa-refresh"></i> Recheck
+                  </a> </li>
+                  <li> <a href="#" action="check-result" title="Set the selected problems as OK/UP">
+                     <i class="fa fa-share"></i> Set Ok
+                  </a> </li>
+                  <li> <a href="#" action="add-acknowledge" title="Acknowledge the selected problems">
+                     <i class="fa fa-check"></i> Acknowledge
+                  </a> </li>
+                  <li> <a href="#" action="schedule-downtime" title="Schedule a one day downtime for the selected problems">
+                     <i class="fa fa-ambulance"></i> Schedule a downtime
+                  </a> </li>
+                  <li> <a href="#" action="ignore-checks" title="Remove the selected problems from the problems list">
+                     <i class="fa fa-eraser"></i> Uncheck
+                  </a> </li>
+               %end
+               %end
+                  </ul>
+               </li>
+            </ul>
+         </nav>
 
-   <!-- Page footer -->
-   <div class="container-fluid">
-      <img src="/static/images/default_company_xxs.png" alt="Shinken Logo"/>
-      <i class="col-lg-10 text-muted">Shinken {{VERSION}} &mdash; Web User Interface {{app.app_version}}, &copy;2011-2016</i>
-   </div>
-</nav>
+         <!-- Dashboard actions bar:
+         - enabled when elt is defined ...
+         - enabled when problems are selected
+         -->
+         <nav id="dashboard-actions" class="navbar navbar-default navbar-dashboard" role="navigation" style="display:none;">
+            <ul class="nav navbar-nav navbar-left">
+               <li class="dropdown" data-toggle="tooltip" data-placement="right" title="Add a new widget">
+                  <a class="navbar-link" href="#" class="dropdown-toggle" data-toggle="dropdown">
+                     <span class="caret"></span>
+                     <span class="fa fa-leaf"></span>
+                     <span class="hidden-xs">Add a new widget</span>
+                  </a>
+
+                  <ul class="dropdown-menu" role="menu" aria-labelledby="Widgets bar menu">
+                      %for w in app.get_widgets_for('dashboard'):
+                         <li>
+                            <a href="#"
+                               class="dashboard-widget"
+                               data-widget-title="
+                                  <button href='#' role='button'
+                                      action='add-widget'
+                                      data-widget='{{w['widget_name']}}'
+                                      data-wuri='{{w['base_uri']}}'
+                                      class='btn btn-sm btn-success'>
+                                      <span class='fa fa-plus'></span>
+                                      Add this widget to your dashboard
+                                  </button>"
+                               data-widget-description='{{!w["widget_desc"]}} <hr/> <div class="center-block"><img class="text-center" src="{{w["widget_picture"]}}"/></div>'
+                               >
+                               <span class="fa fa-plus"></span> {{w['widget_name']}}
+                            </a>
+                         </li>
+                      %end
+                  </ul>
+               </li>
+            </ul>
+         </nav>
+
+         <!-- Page footer -->
+         <div>
+            <img src="/static/images/default_company_xxs.png" alt="Shinken Logo"/>
+            <small><em class="text-muted">
+               Shinken {{VERSION}} &mdash; Web User Interface {{app.app_version}}, &copy;2011-2016
+            </em></small>
+         </div>
+      </div>
+   </nav>
+</footer>
+
 <script>
    /* We keep an array of all selected elements */
    var selected_elements = [];
@@ -177,19 +196,27 @@
       var elt = $(this).data('element');
       var user = '{{username}}';
       if (! elt) {
-         // Initial start/stop for downtime, do not consider seconds ...
-         var downtime_start = moment().seconds(0);
-         var downtime_stop = moment().seconds(0).add('day', 1);
+         if (selected_elements.length == 1) {
+            var elt = selected_elements[0];
+            if (eltdetail_logs) console.debug("Schedule a downtime for: ", elt)
 
-         $.each(selected_elements, function(idx, name){
-            if (eltdetail_logs) console.debug("Schedule a downtime for: ", name)
-            do_schedule_downtime(name, downtime_start.format('X'), downtime_stop.format('X'), user, 'One day downtime scheduled by '+user);
-         });
+            display_modal("/forms/downtime/add/"+elt);
+         } else {
+            // Default downtime scheduling...
+            // Initial start/stop for downtime, do not consider seconds ...
+            var downtime_start = moment().seconds(0);
+            var downtime_stop = moment().seconds(0).add('day', 1);
+
+            $.each(selected_elements, function(idx, name){
+               if (eltdetail_logs) console.debug("Schedule a downtime for: ", name)
+               do_schedule_downtime(name, downtime_start.format('X'), downtime_stop.format('X'), user, 'One day downtime scheduled by '+user, undefined, '{{app.shinken_downtime_fixed}}', '{{app.shinken_downtime_trigger}}', '{{app.shinken_downtime_duration}}');
+            });
+         }
          flush_selected_elements();
       } else {
          if (eltdetail_logs) console.debug("Schedule a downtime for: ", elt)
 
-         display_modal("/forms/downtime/add/"+$(this).data('element'));
+         display_modal("/forms/downtime/add/"+elt);
       }
    });
 
@@ -214,7 +241,7 @@
       } else {
          if (eltdetail_logs) console.debug("Delete all downtimes for: ", elt)
 
-         display_modal("/forms/downtime/delete_all/"+$(this).data('element'));
+         display_modal("/forms/downtime/delete_all/"+elt);
       }
    });
 
@@ -225,7 +252,7 @@
       if (! elt) {
          $.each(selected_elements, function(idx, name){
             if (eltdetail_logs) console.debug("Add acknowledge for: ", name)
-            do_acknowledge(name, 'Acknowledged by '+user, user);
+            do_acknowledge(name, 'Acknowledged by '+user, user, '{{app.default_ack_sticky}}', '{{app.default_ack_notify}}', '{{app.default_ack_persistent}}');
          });
          flush_selected_elements();
       } else {

@@ -23,6 +23,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 import time
+import json
 import requests
 import random
 from shinken.log import logger
@@ -42,10 +43,21 @@ def proxy_graph():
     try:
         r = requests.get(url)
         if r.status_code != 200:
-            logger.error("[WebUI-graph] Image URL not found: %s", url)
-            raise Exception("Image not found")
+            logger.error("[WebUI-graph] Image URL not found: %d - %s", r.status_code, url)
+            app.bottle.response.status = r.status_code
+            app.bottle.response.content_type = 'application/json'
+            return json.dumps(
+                {'status': 'ko', 'message': r.content}
+            )
+
     except Exception as e:
-        app.redirect404(e)
+        logger.error("[WebUI-graph] exception: %s", str(e))
+        app.bottle.response.status = 409
+        app.bottle.response.content_type = 'application/json'
+        return json.dumps(
+            {'status': 'ko', 'message': str(e)}
+        )
+
     app.bottle.response.content_type = str(r.headers['content-type'])
     return r.content
 

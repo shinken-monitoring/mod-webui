@@ -79,7 +79,7 @@ def form_comment_delete_all(name):
 def form_downtime_add(name):
     user = app.request.environ['USER']
     elt = app.datamgr.get_element(name, user) or app.redirect404()
-    return {'elt': elt, 'name': name}
+    return {'elt': elt, 'name': name, 'default_downtime_hours': app.default_downtime_hours}
 
 def form_downtime_delete(name):
     user = app.request.environ['USER']

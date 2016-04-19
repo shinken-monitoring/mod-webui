@@ -43,8 +43,9 @@ Invalid element name
 
 <div id="element" class="row container-fluid">
 
-   %groups=elt_service.servicegroups if elt_service else elt_host.hostgroups
-   %tags=elt_service.get_service_tags() if elt_service else elt_host.get_host_tags()
+   %groups = elt_service.servicegroups if elt_service else elt_host.hostgroups
+   %groups = sorted(groups, key=lambda x:x.level)
+   %tags = elt_service.get_service_tags() if elt_service else elt_host.get_host_tags()
 
 
    <!-- First row : tags and actions ... -->
@@ -57,7 +58,7 @@ Invalid element name
          <ul class="dropdown-menu pull-right">
          %for g in groups:
             <li>
-            <a href="/{{elt_type}}s-group/{{g.get_name()}}">{{g.alias if g.alias else g.get_name()}}</a>
+            <a href="/{{elt_type}}s-group/{{g.get_name()}}">{{g.level if g.level else '0'}} - {{g.alias if g.alias else g.get_name()}}</a>
             </li>
          %end
          </ul>
@@ -724,7 +725,7 @@ Invalid element name
                               <tr>
                                  <td><strong>Contacts:</strong></td>
                                  <td>
-                                   %contacts = [c for c in elt.contacts if app.datamgr.get_contact(c.contact_name, user)]
+                                   %contacts = [c for c in elt.contacts if app.datamgr.get_contact(name=c.contact_name, user=user)]
                                    %for c in contacts:
                                    <a href="/contact/{{c.contact_name}}">{{ c.alias if c.alias and c.alias != 'none' else c.contact_name }}</a>,
                                    %end
@@ -834,7 +835,11 @@ Invalid element name
                            <tr>
                               <td>{{var}}</td>
                               <td>{{elt.customs[var]}}</td>
-                              %if app.can_action():
+                              %# ************
+                              %# Remove the Change button because Shinken does not take care of the external command!
+                              %# Issue #224
+                              %# ************
+                              %if app.can_action() and False:
                               <td>
                                  <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm"
                                        data-type="action" action="change-variable"

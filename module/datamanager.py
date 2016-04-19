@@ -242,7 +242,14 @@ class WebUIDataManager(DataManager):
                 h['nb_' + state] = sum(1 for host in hosts if host.state == state.upper()  and not (host.problem_has_been_acknowledged or host.in_scheduled_downtime))
                 h['pct_' + state] = round(100.0 * h['nb_' + state] / h['nb_elts'], 2)
 
-            h['nb_problems'] = sum(1 for host in hosts if host.is_problem and not host.problem_has_been_acknowledged)
+            # h['nb_problems'] = sum(1 for host in hosts if host.is_problem and not host.problem_has_been_acknowledged)
+            # Shinken does not always reflect the "problem" state ... to make UI more consistent, build our own problems counter!
+            h['nb_problems'] = 0
+            for host in hosts:
+                if host.state.lower() in ['down', 'unreachable'] and not host.problem_has_been_acknowledged:
+                    h['nb_problems'] += 1
+                    logger.debug("[WebUI - datamanager] get_hosts_synthesis: %s: %s, %s, %s", host.get_name(), host.state, host.is_problem, host.problem_has_been_acknowledged)
+
             h['pct_problems'] = round(100.0 * h['nb_problems'] / h['nb_elts'], 2)
             h['nb_ack'] = sum(1 for host in hosts if host.is_problem and host.problem_has_been_acknowledged)
             h['pct_ack'] = round(100.0 * h['nb_ack'] / h['nb_elts'], 2)
@@ -333,7 +340,14 @@ class WebUIDataManager(DataManager):
                 s['nb_' + state] = sum(1 for service in services if service.state == state.upper()  and not (service.problem_has_been_acknowledged or service.in_scheduled_downtime))
                 s['pct_' + state] = round(100.0 * s['nb_' + state] / s['nb_elts'], 2)
 
-            s['nb_problems'] = sum(1 for service in services if service.is_problem and not service.problem_has_been_acknowledged)
+            # s['nb_problems'] = sum(1 for service in services if service.is_problem and not service.problem_has_been_acknowledged)
+            # Shinken does not always reflect the "problem" state ... to make UI more consistent, build our own problems counter!
+            s['nb_problems'] = 0
+            for service in services:
+                if service.state.lower() in ['warning', 'critical'] and not service.problem_has_been_acknowledged:
+                    s['nb_problems'] += 1
+                    logger.debug("[WebUI - datamanager] get_services_synthesis: %s: %s, %s, %s", service.get_name(), service.state, service.is_problem, service.problem_has_been_acknowledged)
+
             s['pct_problems'] = round(100.0 * s['nb_problems'] / s['nb_elts'], 2)
             s['nb_ack'] = sum(1 for service in services if service.is_problem and service.problem_has_been_acknowledged)
             s['pct_ack'] = round(100.0 * s['nb_ack'] / s['nb_elts'], 2)
@@ -419,24 +433,38 @@ class WebUIDataManager(DataManager):
 
         logger.debug("[WebUI - datamanager] search_hosts_and_services, search for %s in %d items", search, len(items))
 
-        search = [s for s in search.split(' ')]
+        # Search patterns like: isnot:0 isnot:ack isnot:"downtime fred" name "vm fred"
+        regex = re.compile(
+            r'''
+                                    # 1/ Search a key:value pattern.
+                (?P<key>\w+):       # Key consists of only a word followed by a colon
+                (?P<quote2>["']?)   # Optional quote character.
+                (?P<value>.*?)      # Value is a non greedy match
+                (?P=quote2)         # Closing quote equals the first.
+                ($|\s)              # Entry ends with whitespace or end of string
+                |                   # OR
+                                    # 2/ Search a single string quoted or not
+                (?P<quote>["']?)    # Optional quote character.
+                (?P<name>.*?)       # Name is a non greedy match
+                (?P=quote)          # Closing quote equals the opening one.
+                ($|\s)              # Entry ends with whitespace or end of string
+            ''',
+            re.VERBOSE
+            )
 
-        for s in search:
-            s = s.strip()
-            if not s:
-                continue
+        patterns = []
+        for match in regex.finditer(search):
+            if match.group('name'):
+                patterns.append( ('name', match.group('name')) )
+            elif match.group('key'):
+                patterns.append( (match.group('key'), match.group('value')) )
+        logger.debug("[WebUI - datamanager] search patterns: %s", patterns)
 
-            elts = s.split(':', 1)
-            t = 'hst_srv'
-            if len(elts) > 1:
-                t = elts[0]
-                s = elts[1]
-
-            # s = s.lower()
+        for t, s in patterns:
             t = t.lower()
             logger.debug("[WebUI - datamanager] searching for %s %s", t, s)
 
-            if t == 'hst_srv':
+            if t == 'name':
                 # Case insensitive
                 pat = re.compile(s, re.IGNORECASE)
                 new_items = []
@@ -628,16 +656,16 @@ class WebUIDataManager(DataManager):
             # :COMMENT:maethor:150616: Legacy filters, kept for bookmarks compatibility
             if t == 'ack':
                 if s.lower() == 'false' or s.lower() == 'no':
-                    search.append("isnot:ack")
+                    patterns.append( ("isnot", "ack") )
                 if s.lower() == 'true' or s.lower() == 'yes':
-                    search.append("is:ack")
+                    patterns.append( ("is", "ack") )
             if t == 'downtime':
                 if s.lower() == 'false' or s.lower() == 'no':
-                    search.append("isnot:downtime")
+                    patterns.append( ("isnot", "downtime") )
                 if s.lower() == 'true' or s.lower() == 'yes':
-                    search.append("is:downtime")
+                    patterns.append( ("is", "downtime") )
             if t == 'crit':
-                search.append("is:critical")
+                patterns.append( ("is", "critical") )
 
         if sorter is not None:
             items.sort(sorter)
@@ -736,7 +764,7 @@ class WebUIDataManager(DataManager):
         else:
             return self._only_related_to(items, user)
 
-    def get_contact(self, user=None, name=None):
+    def get_contact(self, name=None, user=None):
         try:
             name = name.decode('utf8', 'ignore')
         except UnicodeEncodeError:
