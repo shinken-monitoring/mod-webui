@@ -51,10 +51,10 @@
       // Schedule a downtime ...
       if ($('#ticket_downtime').prop("checked")) {
          // Launch downtime request
-         do_schedule_downtime("{{name}}", downtime_start.format('X'), downtime_stop.format('X'), '{{user.get_name()}}', $('#ticket_title').val());
+         do_schedule_downtime("{{name}}", downtime_start.format('X'), downtime_stop.format('X'), '{{user.get_name()}}', $('#ticket_title').val(), undefined, '{{app.shinken_downtime_fixed}}', '{{app.shinken_downtime_trigger}}', '{{app.shinken_downtime_duration}}');
          if ($('#dwn_services').is(":checked")) {
          %for service in elt.services:
-            do_schedule_downtime("{{name}}/{{service.get_name()}}", downtime_start.format('X'), downtime_stop.format('X'), '{{user.get_name()}}', $('#reason').val());
+            do_schedule_downtime("{{name}}/{{service.get_name()}}", downtime_start.format('X'), downtime_stop.format('X'), '{{user.get_name()}}', $('#reason').val(), undefined, '{{app.shinken_downtime_fixed}}', '{{app.shinken_downtime_trigger}}', '{{app.shinken_downtime_duration}}');
          %end
          }
       }

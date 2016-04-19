@@ -193,6 +193,14 @@ class Webui_broker(BaseModule, Daemon):
 
         # Allow to customize default downtime duration
         self.default_downtime_hours = int(getattr(modconf, 'default_downtime_hours', '48'))
+        self.shinken_downtime_fixed = int(getattr(modconf, 'shinken_downtime_fixed', '1'))
+        self.shinken_downtime_trigger = int(getattr(modconf, 'shinken_downtime_trigger', '0'))
+        self.shinken_downtime_duration = int(getattr(modconf, 'shinken_downtime_duration', '0'))
+
+        # Allow to customize default acknowledge parameters
+        self.default_ack_sticky = int(getattr(modconf, 'default_ack_sticky', '2'))
+        self.default_ack_notify = int(getattr(modconf, 'default_ack_notify', '1'))
+        self.default_ack_persistent = int(getattr(modconf, 'default_ack_persistent', '1'))
 
         # Advanced options
         self.http_backend = getattr(modconf, 'http_backend', 'auto')
