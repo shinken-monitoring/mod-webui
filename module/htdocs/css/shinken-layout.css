@@ -124,58 +124,6 @@ html, body {
 }
 
 /*
- * Actions bar
- */
-.actionbar .actionbar-nav.navbar-collapse {
-   padding-right: 0;
-   padding-left: 0;
-}
-
-.actionbar ul li {
-   border-bottom: 1px solid #e7e7e7;
-}
-
-.actionbar ul li a.active {
-   background-color: #eee;
-}
-
-.actionbar .arrow {
-   float: right;
-}
-
-.actionbar .fa.arrow:before {
-   content: "\f104";
-}
-
-.actionbar .active>a>.fa.arrow:before {
-   content: "\f107";
-}
-
-.actionbar .nav-second-level li,
-.actionbar .nav-third-level li {
-   border-bottom: 0!important;
-}
-
-.actionbar .nav-second-level li a {
-   padding-left: 37px;
-}
-
-.actionbar .nav-third-level li a {
-   padding-left: 52px;
-}
-
-@media(min-width:768px) {
-   .actionbar {
-      z-index: 1;
-      position: absolute;
-      width: 200px;
-      margin-bottom: 15px;
-      bottom: 15px;
-   }
-}
-
-
-/*
  * Navigation bar, company logo
  */
 .header .navbar-brand {
@@ -251,19 +199,24 @@ html, body {
 
 
 /*
- * Footer
+ * Footer - make footer bar smaller than usual ...
  */
-.footer.navbar {
-  height: 25px;
-  min-height: 25px !important;
-  margin-bottom: 0;
-}
-.footer img {
-  float: left;
-  padding: 2px;
-  display: block;
+footer nav {
+    height: 25px;
+    min-height: 25px !important;
 }
 
+footer nav.navbar-dashboard {
+    position: absolute;
+    width: 200px;
+    left: 0px; bottom: 30px;
+}
+
+footer nav.navbar-element {
+    position: absolute;
+    width: 200px;
+    left: 0px; bottom: 30px;
+}
 /*
  * Breadcrumb
  */
