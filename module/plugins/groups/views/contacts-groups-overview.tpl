@@ -1,6 +1,6 @@
 %setdefault('debug', False)
 
-%rebase("layout", css=['groups/css/groups-overview.css'], title='Contacts groups overview')
+%rebase("layout", title='Contacts groups overview')
 
 %helper = app.helper
 
@@ -17,7 +17,7 @@
                   All contacts
                </a>
             </h3>
-            <section class="col-sm-8 col-xs-6">
+            <section class="col-md-8 col-sm-6 col-xs-6">
                %contacts=[]
                %[contacts.append('<a href="/contact/%s">%s</a>' %(item.contact_name, item.alias if item.alias!='none' else item.contact_name)) for item in all_contacts]
                <div>{{!', '.join(contacts)}}</div>
@@ -35,11 +35,11 @@
                %end
             </section>
 
-            <section class="col-sm-4 col-xs-6">
-               <section >
+            <section class="col-md-4 col-sm-6 col-xs-6">
+               <section class="col-sm-12 col-xs-12">
                </section>
 
-               <section >
+               <section class="col-sm-12 col-xs-12">
                   <div class="btn-group btn-group-justified" role="group" aria-label="Minemap" title="View minemap for hosts related with all contacts">
                      <a class="btn btn-default" href="/minemap?search=type:host"><i class="fa fa-table"></i> <span class="hidden-xs">Minemap</span></a>
                   </div>
@@ -68,7 +68,7 @@
                   {{group.alias if group.alias else group.get_name()}}
                </a>
             </h3>
-            <section class="col-sm-8 col-xs-6">
+            <section class="col-md-8 col-sm-6 col-xs-6">
                <div>
                   %groupcontacts=group.members
                   %contacts=[]
@@ -77,11 +77,11 @@
                </div>
             </section>
 
-            <section class="col-sm-4 col-xs-6">
-               <section >
+            <section class="col-md-4 col-sm-6 col-xs-6">
+               <section class="col-sm-12 col-xs-12">
                </section>
 
-               <section >
+               <section class="col-sm-12 col-xs-12">
                   <div class="btn-group btn-group-justified" role="group" aria-label="Minemap" title="View minemap for hosts related with this contact group">
                      <a class="btn btn-default" href="/minemap?search=type:host cg:{{'"%s"' % group.get_name()}}"><i class="fa fa-table"></i> <span class="hidden-xs">Minemap</span></a>
                   </div>

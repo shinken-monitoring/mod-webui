@@ -1,6 +1,6 @@
 %setdefault('debug', False)
 
-%rebase("layout", css=['groups/css/groups-overview.css'], title='Hosts groups overview')
+%rebase("layout", title='Hosts groups overview')
 
 %helper = app.helper
 %h = app.datamgr.get_hosts_synthesis()
@@ -57,12 +57,12 @@
          %nHosts=h['nb_elts']
          %nGroups=len(hostgroups)
          <li class="all_groups list-group-item clearfix {{even}} {{'alert-danger' if h['nb_elts'] == h['nb_down'] and h['nb_elts'] != 0 else ''}}">
-            <section class="left">
-               <h3>
-                  <a role="menuitem" href="/all?search=type:host">
-                     All hosts {{!helper.get_business_impact_text(h['bi'])}}
-                  </a>
-               </h3>
+            <h3>
+               <a role="menuitem" href="/all?search=type:host">
+                  All hosts {{!helper.get_business_impact_text(h['bi'])}}
+               </a>
+            </h3>
+            <section class="col-md-8 col-sm-6 col-xs-6">
                <div>
                   %for state in 'up', 'unreachable', 'down', 'pending':
                   %if h['nb_' + state]>0:
@@ -94,11 +94,11 @@
             </section>
 
 
-            <section class="right">
-               <section class="notes">
+            <section class="col-md-4 col-sm-6 col-xs-6">
+               <section class="col-sm-12 col-xs-12">
                </section>
 
-               <section class="groups">
+               <section class="col-sm-12 col-xs-12">
                   <div class="btn-group btn-group-justified" role="group" aria-label="Minemap" title="View minemap for all hosts">
                      <a class="btn btn-default" href="/minemap?search=type:host"><i class="fa fa-table"></i> <span class="hidden-xs">Minemap</span></a>
                   </div>
@@ -162,7 +162,7 @@
                   {{group.alias if group.alias != '' else group.get_name()}} {{!helper.get_business_impact_text(h['bi'])}}
                </a>
             </h3>
-            <section class="col-sm-8 col-xs-6">
+            <section class="col-md-8 col-sm-6 col-xs-6">
                <div>
                   %for state in 'up', 'unreachable', 'down', 'pending':
                   %if h['nb_' + state]>0:
@@ -193,8 +193,8 @@
                </div>
             </section>
 
-            <section class="col-sm-4 col-xs-6">
-               <section >
+            <section class="col-md-4 col-sm-6 col-xs-6">
+               <section class="col-sm-12 col-xs-12">
                   %notes = helper.get_element_notes_url(group, default_title="Comment", default_icon="comment", popover=True)
                   %if len(notes):
                   <ul class="list-group">
@@ -210,7 +210,7 @@
                   %end
                </section>
 
-               <section >
+               <section class="col-sm-12 col-xs-12">
                   <div class="btn-group btn-group-justified" role="group" aria-label="Minemap" title="View minemap for this group">
                      <a class="btn btn-default" href="/minemap?search=type:host hg:{{'"%s"' % group.get_name()}}"><i class="fa fa-table"></i> <span class="hidden-xs">Minemap</span></a>
                   </div>

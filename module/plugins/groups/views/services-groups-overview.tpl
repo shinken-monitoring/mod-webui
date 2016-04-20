@@ -1,6 +1,6 @@
 %setdefault('debug', False)
 
-%rebase("layout", css=['groups/css/groups-overview.css'], title='Services groups overview')
+%rebase("layout", title='Services groups overview')
 
 %helper = app.helper
 %s = app.datamgr.get_services_synthesis()
@@ -57,12 +57,12 @@
          %nServices=s['nb_elts']
          %nGroups=len(servicegroups)
          <li class="all_groups list-group-item clearfix {{even}} {{'empty' if s['nb_elts'] == s['nb_critical'] and s['nb_elts'] != 0 else ''}}">
-            <section class="left">
-               <h3>
-                  <a role="menuitem" href="/all?search=type:service">
-                     All services {{!helper.get_business_impact_text(s['bi'])}}
-                  </a>
-               </h3>
+            <h3>
+               <a role="menuitem" href="/all?search=type:service">
+                  All services {{!helper.get_business_impact_text(s['bi'])}}
+               </a>
+            </h3>
+            <section class="col-md-8 col-sm-6 col-xs-6">
                <div>
                   %for state in 'ok', 'warning', 'critical':
                   %if s['nb_' + state]>0:
@@ -93,11 +93,11 @@
                </div>
             </section>
 
-            <section class="right">
-               <section class="notes">
+            <section class="col-md-4 col-sm-6 col-xs-6">
+               <section class="col-sm-12 col-xs-12">
                </section>
 
-               <section class="groups">
+               <section class="col-sm-12 col-xs-12">
                   <div class="btn-group btn-group-justified" role="group" aria-label="Minemap" title="View minemap for all services">
                      <a class="btn btn-default" href="/minemap?search=type:service"><i class="fa fa-table"></i> <span class="hidden-xs">Minemap</span></a>
                   </div>
@@ -148,20 +148,20 @@
          %# Filter empty groups ?
          %#if nServices > 0 or nGroups > 0:
          <li class="group list-group-item clearfix {{'empty' if s['nb_elts'] == s['nb_critical'] and s['nb_elts'] != 0 else ''}} {{even}}">
-            <section class="left">
-               <h3>
-                  %if nGroups > 0:
-                  <a class="btn btn-default btn-xs" href="services-groups?level={{int(level+1)}}&parent={{group.get_name()}}" title="View contained groups"><i class="fa fa-angle-double-down"></i></a>
-                  %end
+            <h3>
+               %if nGroups > 0:
+               <a class="btn btn-default btn-xs" href="services-groups?level={{int(level+1)}}&parent={{group.get_name()}}" title="View contained groups"><i class="fa fa-angle-double-down"></i></a>
+               %end
 
-                  %if group.has('level') and group.level > 0:
-                  <a class="btn btn-default btn-xs" href="services-groups?level={{int(level-1)}}" title="View parent group"><i class="fa fa-angle-double-up"></i></a>
-                  %end
+               %if group.has('level') and group.level > 0:
+               <a class="btn btn-default btn-xs" href="services-groups?level={{int(level-1)}}" title="View parent group"><i class="fa fa-angle-double-up"></i></a>
+               %end
 
-                  <a role="menuitem" href="/all?search=type:service sg:{{'"%s"' % group.get_name()}}">
-                     {{group.alias if group.alias != '' else group.get_name()}} {{!helper.get_business_impact_text(s['bi'])}}
-                  </a>
-               </h3>
+               <a role="menuitem" href="/all?search=type:service sg:{{'"%s"' % group.get_name()}}">
+                  {{group.alias if group.alias != '' else group.get_name()}} {{!helper.get_business_impact_text(s['bi'])}}
+               </a>
+            </h3>
+            <section class="col-md-8 col-sm-6 col-xs-6">
                <div>
                   %for state in 'ok', 'warning', 'critical':
                   %if s['nb_' + state]>0:
@@ -192,8 +192,8 @@
                </div>
             </section>
 
-            <section class="right">
-               <section class="notes">
+            <section class="col-md-4 col-sm-6 col-xs-6">
+               <section class="col-sm-12 col-xs-12">
                   %notes = helper.get_element_notes_url(group, default_title="Comment", default_icon="comment", popover=True)
                   %if len(notes):
                   <ul class="list-group">
@@ -209,7 +209,7 @@
                   %end
                </section>
 
-               <section class="groups">
+               <section class="col-sm-12 col-xs-12">
                   <div class="btn-group btn-group-justified" role="group" aria-label="Minemap" title="View minemap for this group">
                      <a class="btn btn-default" href="/minemap?search=type:service sg:{{'"%s"' % group.get_name()}}"><i class="fa fa-table"></i> <span class="hidden-xs">Minemap</span></a>
                   </div>
