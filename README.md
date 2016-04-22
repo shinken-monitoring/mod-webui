@@ -7,13 +7,17 @@ Current version is 2.3.2, available on [`shinken.io`](http://shinken.io/package/
 
 ## Release notes
 
-### Version 2.4.0
- This version mainly intends to fix a serious bug (#486) that makes the WebUI not loading the external modules ... all my apologies for this!
+### Version 2.4.1
+ *This version replaces the 2.4.0 that was not released nor published on shinken.io.*
+ 
+ Version 2.4.0 intended to fix a serious bug (#486) that makes the WebUI not loading the external modules ... all my apologies for this!
 
  - Features:
    - No new major features
 
  - Enhancements:
+   - Element view availability graphs tab (2.4.1)
+   - Groups (hosts,services,contacts) pages are responsive (2.4.1)
    - Search filter improvements
    - Sort groups in element view
    - #224: remove change custom variable button
@@ -24,6 +28,7 @@ Current version is 2.3.2, available on [`shinken.io`](http://shinken.io/package/
    - #487: actions/widgets menu relooking
 
  - Bugs and fixes:
+   - #489: groups filtering is broken
    - #482: make problems counters consistent
    - #483: protect against missing Alignak library
    - #485: modules broken (Active directory authentication)
