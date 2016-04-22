@@ -527,26 +527,41 @@ class WebUIDataManager(DataManager):
                 items = new_items
 
             if (t == 'hg' or t == 'hgroup') and s.lower() != 'all':
-                logger.debug("[WebUI - datamanager] searching for a hostgroup %s", s)
+                logger.debug("[WebUI - datamanager] searching for items in the hostgroup %s", s)
                 group = self.get_hostgroup(s)
                 if not group:
                     return []
-                # Items have a item.get_groupnames() method that returns a comma separated string ...
-                items = [i for i in items if group in i.get_groupnames().split(',')]
+                # Items have a item.get_groupnames() method that returns a comma separated string ... strange format!
+                for item in items:
+                    if group.get_name() in item.get_groupnames().split(', '):
+                        logger.debug("[WebUI - datamanager] => item %s is a known member!", item.get_name())
+                items = [i for i in items if group.get_name() in i.get_groupnames().split(', ')]
 
             if (t == 'sg' or t == 'sgroup') and s.lower() != 'all':
-                logger.warning("[WebUI - datamanager] searching for a servicegroup %s", s)
+                logger.debug("[WebUI - datamanager] searching for items in the servicegroup %s", s)
                 group = self.get_servicegroup(s)
                 if not group:
                     return []
-                # Items have a item.get_groupnames() method that returns a comma separated string ...
-                items = [i for i in items if group in i.get_groupnames().split(',')]
+                # Items have a item.get_groupnames() method that returns a comma+space separated string ... strange format!
+                for item in items:
+                    # logger.info("[WebUI - datamanager] - item %s is member of %s", item.get_name(), item.get_groupnames())
+                    if group.get_name() in item.get_groupnames().split(', '):
+                        logger.debug("[WebUI - datamanager] => item %s is a known member!", item.get_name())
+                items = [i for i in items if group.get_name() in i.get_groupnames().split(', ')]
 
+            #@mohierf: to be refactored!
             if (t == 'cg' or t == 'cgroup') and s.lower() != 'all':
-                logger.debug("[WebUI - datamanager] searching for a contactgroup %s", s)
+                logger.info("[WebUI - datamanager] searching for items related with the contactgroup %s", s)
                 group = self.get_contactgroup(s, user)
                 if not group:
                     return []
+                # Items have a item.get_groupnames() method that returns a comma+space separated string ... strange format!
+                for item in items:
+                    for contact in item.contacts:
+                        logger.info("[WebUI - datamanager] - item %s has a contact %s, member of: %s", item.get_name(), contact.get_name(), contact.get_groupnames())
+                        if group.get_name() in contact.get_groupnames().split(', '):
+                            logger.info("[WebUI - datamanager] => contact %s is a known member!", contact.get_name())
+
                 contacts = [c for c in self.get_contacts(user=user) if c in group.members]
                 items = list(set(itertools.chain(*[self._only_related_to(items, self.rg.contacts.find_by_name(c)) for c in contacts])))
 
@@ -874,13 +889,12 @@ class WebUIDataManager(DataManager):
         # All known hostgroups are level 0 groups ...
         for group in self.get_hostgroups(user=user):
             logger.debug("[WebUI - datamanager] set_hostgroups_level, group: %s", group)
-            # logger.info("[WebUI - datamanager] set_hostgroups_level, group members: %s", group.members)
             if not hasattr(group, 'level'):
                 self.set_hostgroup_level(group, 0, user)
 
     def set_hostgroup_level(self, group, level, user):
-        logger.debug("[WebUI - datamanager] set_hostgroup_level, group: %s, level: %d", group, level)
         setattr(group, 'level', level)
+        logger.debug("[WebUI - datamanager] set_hostgroup_level, group: %s, level: %d", group, level)
 
         for g in sorted(group.get_hostgroup_members()):
             if not g:
@@ -892,7 +906,7 @@ class WebUIDataManager(DataManager):
             except AttributeError:
                 pass
 
-    def get_hostgroups(self, user=None, name=None, parent=None, members=False):
+    def get_hostgroups(self, user=None, name=None, parent=None):
         """ Get a list of known hosts groups
 
             :param user: concerned user
@@ -919,7 +933,7 @@ class WebUIDataManager(DataManager):
         else:
             return self._only_related_to(items, user)
 
-    def get_hostgroup(self, name, user=None, members=False):
+    def get_hostgroup(self, name, user=None):
         """ Get a specific hosts group
 
             :param name: searched hosts group name
@@ -931,21 +945,33 @@ class WebUIDataManager(DataManager):
         except UnicodeEncodeError:
             pass
 
-        return self._is_related_to(self.get_hostgroups(user=user, name=name, members=members), user)
+        group = self.get_hostgroups(user=user, name=name)
+        return self._is_related_to(self.get_hostgroups(user=user, name=name), user)
 
-    def get_hostgroup_members(self, name, user=None):
+    def get_hostgroup_hosts(self, name, user=None):
         """ Get a list of hosts members of a group
 
             :param name: searched group name
             :param user: concerned user
             :returns: List of hosts groups related to the user
         """
+        logger.warning("[WebUI - datamanager] get_hostgroup_hosts: %s", name)
         try:
             name = name.decode('utf8', 'ignore')
         except UnicodeEncodeError:
             pass
 
-        return self._is_related_to(self.get_hostgroup(user=user, name=name, members=True), user)
+        group = self.get_hostgroup(user=user, name=name)
+        logger.warning("[WebUI - datamanager] get_hostgroup_hosts, found: %s", group)
+        if group:
+            for host in group.get_hosts():
+                logger.warning("[WebUI - datamanager] -> host: %s, contacts: %s", host.get_name(), host.contacts)
+                if user:
+                    for contact in host.contacts:
+                        if contact.contact_name == user.contact_name:
+                            logger.info("[WebUI - relation], user is a contact through an hostgroup")
+            return self._is_related_to(group.get_hosts(), user)
+        return None
 
     ##
     # Services groups
