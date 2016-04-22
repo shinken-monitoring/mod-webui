@@ -1081,7 +1081,7 @@ class WebUIDataManager(DataManager):
 
         names.sort()
         for name in names:
-            items.append((name, self.rg.tags[name]))
+            items.append((name, self.rg.services_tags[name]))
 
         logger.debug("[WebUI - datamanager] got %d services tags", len(items))
         return items
