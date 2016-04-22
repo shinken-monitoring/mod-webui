@@ -25,13 +25,16 @@
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 
 
-WEBUI_VERSION = "2.4.0"
+WEBUI_VERSION = "2.4.1"
 WEBUI_COPYRIGHT = "(c) 2009-2016 - License GNU AGPL as published by the FSF, minimum version 3 of the License."
 WEBUI_RELEASENOTES = """
 Dashboard currently view
 Global notifications enable/disable widget
 Use Alignak backend (experimental)
 Fix bugs found in 2.3.2
+Groups (hosts, services, contacts) management
+Element availability graphs tab
+Hosts nad services SLA panels in dashboard currently
 """
 
 
