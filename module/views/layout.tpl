@@ -157,7 +157,7 @@
 
                   <!-- Page content -->
                   <section class="content">
-                   %include
+                     {{!base}}
                   </section>
 
                   %if navi and len(navi) > 1:

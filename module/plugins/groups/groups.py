@@ -38,11 +38,9 @@ def show_contactgroups():
     level = int(app.request.GET.get('level', 0))
     parent = app.request.GET.get('parent', None)
 
-    cgroups = sorted(app.datamgr.get_contactgroups(parent=parent, user=user), key=lambda cg: cg.contactgroup_name)
-
     return {
         'level': level,
-        'contactgroups': cgroups,
+        'contactgroups': sorted(app.datamgr.get_contactgroups(parent=parent, user=user), key=lambda cg: cg.contactgroup_name),
         'user': user
         }
 

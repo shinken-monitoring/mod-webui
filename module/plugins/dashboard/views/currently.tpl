@@ -540,77 +540,42 @@
                 </div>
                 <div id="p_panel_percentage_hosts" class="panel-collapse collapse {{'in' if not panels['panel_percentage_hosts']['collapsed'] else ''}}">
                     <div class="panel-body">
-                        <!-- Hosts -->
-                        <div class="col-xs-6 col-sm-3">
+                        <!-- Hosts SLA icons -->
+                        <div class="col-xs-4 col-sm-4 text-center">
                             %if username != 'anonymous':
-                            <a href="/all?search=type:host is:UP" class="btn btn-sm">
+                            <a href="/all?search=type:host" class="btn">
                             %end
                                <div>
-                                  %state = h['pct_up']
-                                  %font='ok' if state >= app.hosts_states_critical else 'warning' if state >= app.hosts_states_warning  else 'critical'
-                                  <span class="badger-big badger-right font-{{font}}">{{h['pct_up']}}%</span>
+                                  %state = (100 - h['pct_up'])
+                                  %font='ok' if state >= app.hosts_states_warning else 'warning' if state >= app.hosts_states_critical else 'critical'
+                                  <span class="badger-big badger-right font-{{font}}">{{state}}%</span>
                                </div>
 
-                               <i class="fa fa-5x fa-server font-{{font}}"></i>
-                               <p class="badger-title font-{{font}}">&nbsp;Hosts up</p>
+                               <i class="fa fa-4x fa-server font-{{font}}"></i>
+                               <p class="badger-title font-{{font}}">&nbsp;SLA</p>
 
                             %if username != 'anonymous':
                             </a>
                             %end
                         </div>
 
-                        <div class="col-xs-6 col-sm-3">
-                            %if username != 'anonymous':
-                            <a href="/all?search=type:host is:UNREACHABLE" class="btn btn-sm">
-                            %end
-                               <div>
-                                  %state = 100.0-h['pct_unreachable']
-                                  %font='ok' if state >= app.hosts_states_critical else 'warning' if state >= app.hosts_states_warning else 'critical'
-                                  <span class="badger-big badger-right font-{{font}}">{{h['pct_unreachable']}}%</span>
-                               </div>
-
-                               <i class="fa fa-5x fa-server font-{{font}}"></i>
-                               <p class="badger-title font-{{font}}">&nbsp;Hosts unreachable</p>
-
-                            %if username != 'anonymous':
+                        %for state in 'up', 'unreachable', 'down':
+                        <div class="col-xs-4 col-sm-4 text-center">
+                            <a role="button" href="/all?search=type:host is:{{state}} isnot:ack isnot:downtime" class="font-{{state.lower()}}">
+                                <span class="hosts-count" data-count="{{ h['nb_' + state] }}" data-state="{{ state }}" style="font-size: 1.8em;">{{ h['pct_' + state] }}%</span>
+                                <br/>
+                                <span style="font-size: 1em;">{{ state }}</span>
                             </a>
-                            %end
                         </div>
-
-                        <div class="col-xs-6 col-sm-3">
-                            %if username != 'anonymous':
-                            <a href="/all?search=type:host is:DOWN" class="btn btn-sm">
-                            %end
-                               <div>
-                                  %state = 100.0-h['pct_down']
-                                  %font='ok' if state >= app.hosts_states_critical else 'warning' if state >= app.hosts_states_warning else 'critical'
-                                  <span class="badger-big badger-right font-{{font}}">{{h['pct_down']}}%</span>
-                               </div>
-
-                               <i class="fa fa-5x fa-server font-{{font}}"></i>
-                               <p class="badger-title font-{{font}}">&nbsp;Hosts down</p>
-
-                            %if username != 'anonymous':
+                        %end
+                        %known_problems=h['nb_ack']+h['nb_downtime']+h['nb_unknown']
+                        %pct_known_problems=round(100.0 * known_problems / h['nb_elts'], 2)
+                        <div class="col-xs-4 col-sm-4 text-center">
+                            <a role="button" href="/all?search=type:host is:ack" class="font-unknown">
+                                <span class="hosts-count" data-count="{{ h['nb_' + state] }}" data-state="{{ state }}" style="font-size: 1.8em;">{{ pct_known_problems }}%</span>
+                                <br/>
+                                <span style="font-size: 1em;">Known problems</span>
                             </a>
-                            %end
-                        </div>
-
-                        <div class="col-xs-6 col-sm-3">
-                            %if username != 'anonymous':
-                            <a href="/all?search=type:host is:UNKNOWN" class="btn btn-sm">
-                            %end
-                               <div>
-                                  %state = 100.0-h['pct_unknown']
-                                  %font='ok' if state >= app.hosts_states_critical else 'warning' if state >= app.hosts_states_warning else 'critical'
-                                  <span class="badger-big badger-right font-{{font}}">{{h['pct_unknown']}}%</span>
-                               </div>
-
-                               <i class="fa fa-5x fa-server font-{{font}}"></i>
-                               <p class="badger-title font-{{font}}">&nbsp;Hosts unknown</p>
-
-                            %if username != 'anonymous':
-                            </a>
-                            %end
                         </div>
                     </div>
                 </div>
@@ -629,77 +594,42 @@
                 </div>
                 <div id="p_panel_percentage_services" class="panel-collapse collapse {{'in' if not panels['panel_percentage_services']['collapsed'] else ''}}">
                     <div class="panel-body">
-                        <!-- Services -->
-                        <div class="col-xs-6 col-sm-3">
+                        <!-- Services SLA icons -->
+                        <div class="col-xs-4 col-sm-4 text-center">
                             %if username != 'anonymous':
-                            <a href="/all?search=type:service is:OK" class="btn btn-sm">
+                            <a href="/all?search=type:service" class="btn">
                             %end
                                <div>
-                                  %state = s['pct_ok']
-                                  %font='ok' if state >= app.services_states_critical else 'warning' if state >= app.services_states_warning else 'critical'
-                                  <span class="badger-big badger-right font-{{font}}">{{s['pct_ok']}}%</span>
+                                  %state = (100 - s['pct_ok'])
+                                  %font='ok' if state >= app.services_states_warning else 'warning' if state >= app.services_states_critical else 'critical'
+                                  <span class="badger-big badger-right font-{{font}}">{{state}}%</span>
                                </div>
 
-                               <i class="fa fa-5x fa-bars font-{{font}}"></i>
-                               <p class="badger-title font-{{font}}">&nbsp;Services ok</p>
+                               <i class="fa fa-4x fa-server font-{{font}}"></i>
+                               <p class="badger-title font-{{font}}">&nbsp;SLA</p>
 
                             %if username != 'anonymous':
                             </a>
                             %end
                         </div>
 
-                        <div class="col-xs-6 col-sm-3">
-                            %if username != 'anonymous':
-                            <a href="/all?search=type:service is:WARNING" class="btn btn-sm">
-                            %end
-                               <div>
-                                  %state = 100.0-s['pct_warning']
-                                  %font='ok' if state >= app.services_states_critical else 'warning' if state >= app.services_states_warning else 'critical'
-                                  <span class="badger-big badger-right font-{{font}}">{{s['pct_warning']}}%</span>
-                               </div>
-
-                               <i class="fa fa-5x fa-bars font-{{font}}"></i>
-                               <p class="badger-title font-{{font}}">&nbsp;Services warning</p>
-
-                            %if username != 'anonymous':
+                        %for state in 'ok', 'warning', 'critical':
+                        <div class="col-xs-4 col-sm-4 text-center">
+                            <a role="button" href="/all?search=type:service is:{{state}} isnot:ack isnot:downtime" class="font-{{state.lower()}}">
+                                <span class="services-count" data-count="{{ s['nb_' + state] }}" data-state="{{ state }}" style="font-size: 1.8em;">{{ s['pct_' + state] }}%</span>
+                                <br/>
+                                <span style="font-size: 1em;">{{ state }}</span>
                             </a>
-                            %end
                         </div>
-
-                        <div class="col-xs-6 col-sm-3">
-                            %if username != 'anonymous':
-                            <a href="/all?search=type:service is:CRITICAL" class="btn btn-sm">
-                            %end
-                               <div>
-                                  %state = 100.0-s['pct_critical']
-                                  %font='ok' if state >= app.services_states_critical else 'warning' if state >= app.services_states_warning else 'critical'
-                                  <span class="badger-big badger-right font-{{font}}">{{s['pct_critical']}}%</span>
-                               </div>
-
-                               <i class="fa fa-5x fa-bars font-{{font}}"></i>
-                               <p class="badger-title font-{{font}}">&nbsp;Services critical</p>
-
-                            %if username != 'anonymous':
+                        %end
+                        %known_problems=s['nb_ack']+s['nb_downtime']+s['nb_unknown']
+                        %pct_known_problems=round(100.0 * known_problems / s['nb_elts'], 2)
+                        <div class="col-xs-4 col-sm-4 text-center">
+                            <a role="button" href="/all?search=type:service is:ack" class="font-unknown">
+                                <span class="services-count" data-count="{{ s['nb_' + state] }}" data-state="{{ state }}" style="font-size: 1.8em;">{{ pct_known_problems }}%</span>
+                                <br/>
+                                <span style="font-size: 1em;">Known problems</span>
                             </a>
-                            %end
-                        </div>
-
-                        <div class="col-xs-6 col-sm-3">
-                            %if username != 'anonymous':
-                            <a href="/all?search=type:host is:UNKNOWN" class="btn btn-sm">
-                            %end
-                               <div>
-                                  %state = 100.0-s['pct_unknown']
-                                  %font='ok' if state >= app.services_states_critical else 'warning' if state >= app.services_states_warning else 'critical'
-                                  <span class="badger-big badger-right font-{{font}}">{{s['pct_unknown']}}%</span>
-                               </div>
-
-                               <i class="fa fa-5x fa-bars font-{{font}}"></i>
-                               <p class="badger-title font-{{font}}">&nbsp;Services unknown</p>
-
-                            %if username != 'anonymous':
-                            </a>
-                            %end
                         </div>
                     </div>
                 </div>
