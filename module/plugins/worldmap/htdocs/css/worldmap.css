@@ -11,19 +11,14 @@
    height: 320px;
 }
 
-.map_container .gMap {
+.map_container .osm {
    width: 100%;
    height: 100%;
 }
-.map_container_widget .gMap {
+.map_container_widget .osm {
    width: 100%;
    height: 320px;
 }
-
-/* Thanks to http://stackoverflow.com/questions/9663375/google-map-infowindow-not-showing-properly 
-   This Css avoids corrupted map control and infowindow */
-   
-.map_container img{max-width:none}
 
 .map-iconHostState {
    width: 32px;
@@ -45,4 +40,8 @@
 .map-services {
    list-style-type: none;
    margin-left: -40px;
+}
+
+.map-infoView hr {
+  margin: 3px;
 }

@@ -1,5 +1,5 @@
 %# No default refresh for this page
-%rebase("layout", css=['worldmap/css/worldmap.css'], title='Worldmap', refresh=False)
+%rebase("layout", css=['worldmap/css/worldmap.css', 'worldmap/css/leaflet.css', 'worldmap/css/MarkerCluster.css', 'worldmap/css/MarkerCluster.Default.css', 'worldmap/css/leaflet.label.css'], title='Worldmap', refresh=False)
 
 <!-- HTML map container -->
 <div class="map_container">
@@ -16,11 +16,11 @@
       <p>_LOC_LNG             5.080856</p>
       </code>
    %else:
-      <div id="{{mapId}}" class="gMap">
-         <div class="alert alert-info">
-            <a href="#" class="alert-link">Loading map ...</a>
-         </div>
-      </div>
+     <div id="{{mapId}}" class="osm">
+       <div class="alert alert-info">
+          <a href="#" class="alert-link">Loading map ...</a>
+       </div>
+     </div>
    %end
 </div>
 
