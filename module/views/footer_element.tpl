@@ -20,6 +20,7 @@
          - enabled when elt is defined ...
          - enabled when problems are selected
          -->
+         %if app.can_action():
          <nav id="actions" class="navbar navbar-default navbar-element" role="navigation" style="display:none;">
             <ul class="nav navbar-nav navbar-left">
                <li class="dropdown" data-toggle="tooltip" data-placement="right" title="Add a new widget">
@@ -30,7 +31,6 @@
                   </a>
 
                   <ul class="dropdown-menu" role="menu" aria-labelledby="Actions bar menu">
-               %if app.can_action():
                %if elt:
                   %elt_type = elt.__class__.my_type
                   <li> <a href="#" action="add-comment" title="Add a comment for this {{elt_type}}"
@@ -95,11 +95,11 @@
                      <i class="fa fa-eraser"></i> Uncheck
                   </a> </li>
                %end
-               %end
                   </ul>
                </li>
             </ul>
          </nav>
+         %end
 
          <!-- Dashboard actions bar:
          - enabled when elt is defined ...
