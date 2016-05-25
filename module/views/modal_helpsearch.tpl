@@ -44,7 +44,7 @@
   <p>For example:</p>
   <ul>
     <li><code>is:sDOWN</code> Matches hosts that are SOFT state DOWN.</li>
-    <li><code>isnot:0</code> Matches services and hosts that are SOFT state not OK neither UP (all the not yet confirmed problems)</li>
+    <li><code>isnot:s0</code> Matches services and hosts that are SOFT state not OK neither UP (all the not yet confirmed problems)</li>
     <li><code>is:hCRITICAL</code> Matches services that are HARD state CRITICAL.</li>
   </ul>
 
