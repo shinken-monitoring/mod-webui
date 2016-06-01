@@ -518,11 +518,11 @@ Invalid element name
                               %if (elt.active_checks_enabled):
                               <tr>
                                  <td><strong>Check interval:</strong></td>
-                                 <td>{{elt.check_interval}} seconds</td>
+                                 <td>{{elt.check_interval*configintervallength}} seconds</td>
                               </tr>
                               <tr>
                                  <td><strong>Retry interval:</strong></td>
-                                 <td>{{elt.retry_interval}} seconds</td>
+                                 <td>{{elt.retry_interval*configintervallength}} seconds</td>
                               </tr>
                               <tr>
                                  <td><strong>Max check attempts:</strong></td>
