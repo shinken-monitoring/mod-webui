@@ -116,6 +116,15 @@ html, body {
         width: 200px;
     }
 }
+@media (max-width: 768px) {
+    #sidebar-menu > li  {
+        float:left;
+    }
+    #sidebar-menu {
+        height: 50px;
+        max-width: none;
+    }
+}
 
 @media(max-height:600px) {
     .sidebar li  a {
