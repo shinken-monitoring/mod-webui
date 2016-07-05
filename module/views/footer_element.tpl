@@ -21,16 +21,13 @@
          - enabled when problems are selected
          -->
          %if app.can_action():
-         <nav id="actions" class="navbar navbar-default navbar-element" role="navigation" style="display:none;">
-            <ul class="nav navbar-nav navbar-left">
-               <li class="dropdown" data-toggle="tooltip" data-placement="right" title="Add a new widget">
-                  <a class="navbar-link" href="#" class="dropdown-toggle" data-toggle="dropdown">
-                     <span class="caret"></span>
-                     <span class="fa fa-bolt"></span>
-                     <span class="hidden-xs">Execute an action</span>
-                  </a>
-
-                  <ul class="dropdown-menu" role="menu" aria-labelledby="Actions bar menu">
+         <nav id="actions" class="navbar navbar-default navbar-element dropup" role="navigation" style="display:none;">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+               <span class="caret"></span>
+               <span class="fa fa-bolt"></span>
+               <span>Execute an action</span>
+            </button>
+            <ul class="dropdown-menu" role="menu" aria-labelledby="Actions bar menu">
                %if elt:
                   %elt_type = elt.__class__.my_type
                   <li> <a href="#" action="add-comment" title="Add a comment for this {{elt_type}}"
@@ -95,8 +92,6 @@
                      <i class="fa fa-eraser"></i> Uncheck
                   </a> </li>
                %end
-                  </ul>
-               </li>
             </ul>
          </nav>
          %end
@@ -105,14 +100,12 @@
          - enabled when elt is defined ...
          - enabled when problems are selected
          -->
-         <nav id="dashboard-actions" class="navbar navbar-default navbar-dashboard" role="navigation" style="display:none;">
-            <ul class="nav navbar-nav navbar-left">
-               <li class="dropdown" data-toggle="tooltip" data-placement="right" title="Add a new widget">
-                  <a class="navbar-link" href="#" class="dropdown-toggle" data-toggle="dropdown">
-                     <span class="caret"></span>
-                     <span class="fa fa-leaf"></span>
-                     <span class="hidden-xs">Add a new widget</span>
-                  </a>
+         <nav id="dashboard-actions" class="navbar navbar-default navbar-dashboard dropup" role="navigation" style="display:none;">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+               <span class="caret"></span>
+               <span class="fa fa-leaf"></span>
+               <span>Add a new widget</span>
+            </button>
 
                   <ul class="dropdown-menu" role="menu" aria-labelledby="Widgets bar menu">
                       %for w in app.get_widgets_for('dashboard'):
@@ -135,8 +128,6 @@
                          </li>
                       %end
                   </ul>
-               </li>
-            </ul>
          </nav>
 
          <!-- Page footer -->
