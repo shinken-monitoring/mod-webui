@@ -166,7 +166,7 @@
                <div>
                   %for state in 'up', 'unreachable', 'down', 'pending':
                   %if h['nb_' + state]>0:
-                  <a role="menuitem" href="/all?search=type:host hg:'{{'"%s"' % group.get_name()}}' is:{{state}}">
+                  <a role="menuitem" href="/all?search=type:host hg:{{'"%s"' % group.get_name()}} is:{{state}}">
                   %end
                   <span class="{{'font-' + state if h['nb_' + state] > 0 else 'font-greyed'}}">
                     %label = "%s <i>(%s%%)</i>" % (h['nb_' + state], h['pct_' + state])
