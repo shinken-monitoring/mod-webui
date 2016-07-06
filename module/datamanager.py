@@ -630,18 +630,24 @@ class WebUIDataManager(DataManager):
                 elif s.lower() == 'impact':
                     items = [i for i in items if i.is_impact]
                 else:
-                    # Manage SOFT state
+                    # Manage SOFT & HARD state
                     if s.startswith('s'):
                         s = s[1:]
                         if len(s) == 1:
                             items = [i for i in items if i.state_id == int(s) and i.state_type != 'HARD']
                         else:
                             items = [i for i in items if i.state == s.upper() and i.state_type != 'HARD']
+                    elif s.startswith('h'):
+                        s = s[1:]
+                        if len(s) == 1:
+                            items = [i for i in items if i.state_id != int(s) and i.state_type == 'HARD']
+                        else:
+                            items = [i for i in items if i.state != s.upper() and i.state_type == 'HARD']
                     else:
                         if len(s) == 1:
-                            items = [i for i in items if i.state_id == int(s) and i.state_type == 'HARD']
+                            items = [i for i in items if i.state_id == int(s)]
                         else:
-                            items = [i for i in items if i.state == s.upper() and i.state_type == 'HARD']
+                            items = [i for i in items if i.state == s.upper()]
 
             if t == 'isnot':
                 if s.lower() == 'ack':
@@ -653,18 +659,24 @@ class WebUIDataManager(DataManager):
                 elif s.lower() == 'impact':
                     items = [i for i in items if not i.is_impact]
                 else:
-                    # Manage soft state
+                    # Manage soft & hard state
                     if s.startswith('s'):
                         s = s[1:]
                         if len(s) == 1:
                             items = [i for i in items if i.state_id != int(s) and i.state_type != 'HARD']
                         else:
                             items = [i for i in items if i.state != s.upper() and i.state_type != 'HARD']
-                    else:
+                    elif s.startswith('h'):
+                        s = s[1:]
                         if len(s) == 1:
                             items = [i for i in items if i.state_id != int(s) and i.state_type == 'HARD']
                         else:
                             items = [i for i in items if i.state != s.upper() and i.state_type == 'HARD']
+                    else:
+                        if len(s) == 1:
+                            items = [i for i in items if i.state_id != int(s)]
+                        else:
+                            items = [i for i in items if i.state != s.upper()]
 
             # :COMMENT:maethor:150616: Legacy filters, kept for bookmarks compatibility
             if t == 'ack':

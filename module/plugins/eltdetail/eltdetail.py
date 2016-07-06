@@ -42,7 +42,14 @@ def show_host(host_name):
     now = int(time.time())
     graphstart = int(app.request.GET.get('graphstart', str(now - 4 * 3600)))
     graphend = int(app.request.GET.get('graphend', str(now)))
-    return {'elt': h, 'graphstart': graphstart, 'graphend': graphend}
+
+    configs = app.datamgr.get_configs()
+    if configs:
+        configintervallength = vars(configs[0])['interval_length']
+    else:
+        configintervallength = 1
+
+    return {'elt': h, 'graphstart': graphstart, 'graphend': graphend, 'configintervallength': configintervallength}
 
 
 # Service element view
@@ -58,7 +65,13 @@ def show_service(host_name, service):
     graphstart = int(app.request.GET.get('graphstart', str(now - 4 * 3600)))
     graphend = int(app.request.GET.get('graphend', str(now)))
 
-    return {'elt': s, 'graphstart': graphstart, 'graphend': graphend}
+    configs = app.datamgr.get_configs()
+    if configs:
+        configintervallength = vars(configs[0])['interval_length']
+    else:
+        configintervallength = 1
+
+    return {'elt': s, 'graphstart': graphstart, 'graphend': graphend, 'configintervallength': configintervallength}
 
 
 pages = {
