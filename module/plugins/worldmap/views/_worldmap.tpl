@@ -93,7 +93,7 @@
           case 'OK':
             break;
           case 'CRITICAL':
-            if (hs == 'OK' || hs == 'WARNING') {
+            if (hs == 'OK' || hs == 'WARNING' || hs == 'ACK') {
               if (s.isAcknowledged) {
                 hs = 'ACK';
               } else {
@@ -102,7 +102,7 @@
             }
             break;
           default:
-            if (hs == 'OK') {
+            if (hs == 'OK' || hs == 'ACK') {
               if (s.isAcknowledged) {
                 hs = 'ACK';
               } else {
@@ -155,7 +155,9 @@
   // Images dir
   var imagesDir = "/static/worldmap/img/";
 
-  //------------------------------------------------------------------------------ Sequentially load necessary scripts to create map with markers ------------------------------------------------------------------------------
+  //------------------------------------------------------------------------------
+  // Sequentially load necessary scripts to create map with markers
+  // ------------------------------------------------------------------------------
   loadScripts = function(scripts, complete) {
     var loadScript = function(src) {
       if (!src)
@@ -178,8 +180,9 @@
     }
   }
 
-  // ------------------------------------------------------------------------------ Create a marker on specified position for specified host/state with IW content ------------------------------------------------------------------------------ position :
-  // GPS coordinates name : host name state : host state content : infoWindow content ------------------------------------------------------------------------------
+  // ------------------------------------------------------------------------------
+  // Create a marker on specified position for specified host/state with IW content
+  // ------------------------------------------------------------------------------
   markerCreate_{{mapId}} = function(host) {
     if (debugMaps)
       console.log("-> marker creation for " + host.name + ", state : " + host.hostState());
@@ -195,7 +198,9 @@
     return m;
   }
 
-  // ------------------------------------------------------------------------------ Map initialization ------------------------------------------------------------------------------
+  // ------------------------------------------------------------------------------
+  // Map initialization
+  // ------------------------------------------------------------------------------
   // ------------------------------------------------------------------------------
   mapInit_{{mapId}} = function() {
     if (debugMaps)

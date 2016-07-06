@@ -102,8 +102,8 @@ def show_worldmap():
     search = app.request.query.get('search', "type:host")
 
     # So now we can just send the valid hosts to the template
-    return {'params': params,
-            'mapId': 'hostsMap',
+    return {'search_string': search, 'params': params,
+            'mapId': 'hostsMap', 
             'hosts': search_hosts_with_coordinates(search, user)}
 
 
