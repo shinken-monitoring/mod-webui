@@ -1116,7 +1116,11 @@ Invalid element name
                                  %graphs = app.graphs_module.get_graph_uris(elt, duration=12*3600)
                                  %for graph in graphs:
                                     %if re.findall('\\b'+metric.name+'\\b', graph['img_src']):
-                                       <a role="button" tabindex="0" data-toggle="popover" title="{{ elt.get_full_name() }}" data-html="true" data-content="<img src='{{ graph['img_src'] }}' width='600px' height='200px'>" data-trigger="hover" data-placement="left">{{!helper.get_perfometer(elt, metric.name)}}</a>
+                                       <a role="button" tabindex="0"
+                                          data-toggle="popover" title="{{ elt.get_full_name() }}"
+                                          data-html="true"
+                                          data-content="<img src='{{ graph['img_src'] }}' width='600px' height='200px'>"
+                                          data-trigger="hover" data-placement="left">{{!helper.get_perfometer(elt, metric.name)}}</a>
                                     %end
                                  %end
                               </td>
@@ -1154,7 +1158,11 @@ Invalid element name
                                  %graphs = app.graphs_module.get_graph_uris(s, duration=12*3600)
                                  %for graph in graphs:
                                     %if re.findall('\\b'+metric.name+'\\b', graph['img_src']):
-                                       <a role="button" tabindex="0" data-toggle="popover" title="{{ s.get_full_name() }}" data-html="true" data-content="<img src='{{ graph['img_src'] }}' width='600px' height='200px'>" data-trigger="hover" data-placement="left">{{!helper.get_perfometer(s, metric.name)}}</a>
+                                       <a role="button" tabindex="0"
+                                          data-toggle="popover" title="{{ s.get_full_name() }}"
+                                          data-html="true"
+                                          data-content="<img src='{{ graph['img_src'] }}' width='600px' height='200px'>"
+                                          data-trigger="hover" data-placement="left">{{!helper.get_perfometer(s, metric.name)}}</a>
                                     %end
                                  %end
                               </td>
@@ -1221,13 +1229,6 @@ Invalid element name
 
                         html_graphes['{{period}}'] = '<p>';
                         %for g in uris[period]:
-                        /* Feature removed because of URL encoding in graphs submodule.
-                        // Adjust image width / height parameter ... width is sized to container, and height is 1/3
-                        var img_src = "{{g['img_src']}}".replace("'","\'")
-                        img_src = img_src.replace(/(width=).*?(&)/,'$1' + $('#real_graphs').width() + '$2');
-                        img_src = img_src.replace(/(height=).*?(&)/,'$1' + ($('#real_graphs').width() / 3) + '$2');
-                        */
-
                         html_graphes['{{period}}'] +=  '<img src="{{g['img_src']}}" class="jcropelt"/> <p></p>';
                         %end
                         html_graphes['{{period}}'] += '</p>';

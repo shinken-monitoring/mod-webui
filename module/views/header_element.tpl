@@ -162,12 +162,15 @@
 
   <!--SIDEBAR-->
   <div class="navbar-default sidebar" role="navigation">
-    <div class="sidebar-nav navbar-collapse">
+    <div class="sidebar-nav">
       <ul class="nav" id="sidebar-menu">
         %if app:
-        <li> <a href="{{ app.get_url('Dashboard') }}"> <span class="fa fa-dashboard"></span> Dashboard </a> </li>
-        <li> <a href="{{ app.get_url('Problems') }}"> <span class="fa fa-ambulance"></span> Problems </a> </li>
-        <li> <a href="#"><i class="fa fa-sitemap"></i> Groups and tags <i class="fa arrow"></i></a>
+        <li> <a href="{{ app.get_url('Dashboard') }}"> <span class="fa fa-dashboard"></span>
+        <span class="hidden-xs">Dashboard</span> </a> </li>
+        <li> <a href="{{ app.get_url('Problems') }}"> <span class="fa fa-ambulance"></span>
+        <span class="hidden-xs">Problems</span> </a> </li>
+        <li> <a href="#"><i class="fa fa-sitemap"></i>
+        <span class="hidden-xs">Groups and tags</span> <i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
             <li> <a href="{{ app.get_url('HostsGroups') }}"> <span class="fa fa-sitemap"></span> Hosts groups </a> </li>
             <li> <a href="{{ app.get_url('ServicesGroups') }}"> <span class="fa fa-sitemap"></span> Services groups </a> </li>
@@ -175,7 +178,8 @@
             <li> <a href="{{ app.get_url('ServicesTags') }}"> <span class="fa fa-tags"></span> Services tags </a> </li>
           </ul>
         </li>
-        <li> <a href="#"><i class="fa fa-bar-chart"></i> Tactical views <i class="fa arrow"></i></a>
+        <li> <a href="#"><i class="fa fa-bar-chart"></i>
+        <span class="hidden-xs">Tactical views</span> <i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
             <li> <a href="{{ app.get_url('Impacts') }}"> <span class="fa fa-bolt"></span> Impacts </a> </li>
             <li> <a href="{{ app.get_url('Minemap') }}"> <span class="fa fa-table"></span> Minemap </a> </li>
@@ -187,7 +191,8 @@
           </ul>
         </li>
         %if user.is_administrator():
-        <li> <a href="#"><i class="fa fa-gears"></i> System <i class="fa arrow"></i></a>
+        <li> <a href="#"><i class="fa fa-gears"></i>
+        <span class="hidden-xs">System</span> <i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
             <li> <a href="{{ app.get_url('System') }}"> <span class="fa fa-heartbeat"></span> Status </a> </li>
             %if app.logs_module.is_available():
@@ -195,7 +200,8 @@
             %end
           </ul>
         </li>
-        <li> <a href="#"><i class="fa fa-wrench"></i> Configuration <i class="fa arrow"></i></a>
+        <li> <a href="#"><i class="fa fa-wrench"></i>
+        <span class="hidden-xs">Configuration</span> <i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
             <li> <a href="{{ app.get_url('Parameters') }}"> <span class="fa fa-gears"></span> Parameters </a> </li>
             <li> <a href="{{ app.get_url('Contacts') }}"> <span class="fa fa-user"></span> Contacts </a> </li>
@@ -207,7 +213,8 @@
         %end
         %other_uis = app.get_ui_external_links()
         %if len(other_uis) > 0:
-        <li> <a href="#"><i class="fa fa-rocket"></i> External <i class="fa arrow"></i></a>
+        <li> <a href="#"><i class="fa fa-rocket"></i>
+        <span class="hidden-xs">External</span> <i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
             %for c in other_uis:
             <li>

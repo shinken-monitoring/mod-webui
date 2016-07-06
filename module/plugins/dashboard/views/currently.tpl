@@ -61,7 +61,6 @@
 
     panels = {{ ! json.dumps(panels) }};
     graphs = {{ ! json.dumps(graphs) }};
-    console.log(graphs);
 
     %if create_panels_preferences:
     save_user_preference('panels', JSON.stringify(panels));

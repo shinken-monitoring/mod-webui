@@ -42,17 +42,19 @@ var layout_logs=false;
 function loadjscssfile(filename, filetype){
    if (filetype=="js") {
       if (layout_logs) console.debug('Loading Js file: ', filename);
-      $.ajax({
-         url: filename,
-         dataType: "script",
-         error: function () {
-            console.error('Shinken script error, not loaded: ', filename);
-         }
-      });
+      window.setTimeout(function() {
+         $.ajax({
+            url: filename,
+            dataType: "script",
+            error: function () {
+               console.error('Shinken script error, not loaded: ', filename);
+            }
+         });
+      }, 100);
    } else if (filetype=="css") {
       if (layout_logs) console.debug('Loading Css file: ', filename);
-       if (!$('link[href="' + filename + '"]').length)
-           $('head').append('<link rel="stylesheet" type="text/css" href="' + filename + '">');
+      if (!$('link[href="' + filename + '"]').length)
+         $('head').append('<link rel="stylesheet" type="text/css" href="' + filename + '">');
    }
 }
 

@@ -64,11 +64,13 @@
                   %if i == 0:
                      %title = ''
                      %if pb.__class__.my_type == 'service':
-                        %groups = sorted(pb.host.hostgroups, key=lambda x:x.level, reverse=True)
+                        %groups = pb.host.hostgroups
+                        %#groups = sorted(pb.host.hostgroups, key=lambda x:x.level, reverse=True)
                         %group = groups[0] if groups else None
                         %title = 'Member of %s' % (group.alias if group.alias else group.get_name()) if group else ''
                      %else:
-                        %groups = sorted(pb.hostgroups, key=lambda x:x.level, reverse=True)
+                        %groups = pb.hostgroups
+                        %#groups = sorted(pb.hostgroups, key=lambda x:x.level, reverse=True)
                         %group = groups[0] if groups else None
                         %title = 'Member of %s' % (group.alias if group.alias else group.get_name()) if group else ''
                      %end

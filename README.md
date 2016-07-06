@@ -3,13 +3,24 @@
 ## Description
 Shinken Web User Interface
 
-Current version is 2.4.1, available on [`shinken.io`](http://shinken.io/package/webui2).
+Current version is 2.4.2, available on [`shinken.io`](http://shinken.io/package/webui2).
 
 ## Release notes
 
+### Version 2.4.2
+
+ - Bugs and fixes:
+   - #492: error on services tags page
+   - #496: hide Execute menu for simple users
+   - #515: missing view port declaration for mobile devices
+   - #517: missing menu on mobile devices
+   - #514: broken notification toggle widget
+   - #513: bad quotes aroud hostgroups links
+
+
 ### Version 2.4.1
  *This version replaces the 2.4.0 that was not released nor published on shinken.io.*
- 
+
  Version 2.4.0 intended to fix a serious bug (#486) that makes the WebUI not loading the external modules ... all my apologies for this!
 
  - Features:
