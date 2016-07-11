@@ -139,6 +139,7 @@ class WebUIDataManager(DataManager):
         if not user or user.is_administrator():
             return item
 
+        logger.debug("[WebUI - relation], DM _is_related_to: %s", item.__class__)
         return user._is_related_to(item)
 
     @staticmethod
@@ -152,6 +153,7 @@ class WebUIDataManager(DataManager):
             return items
 
         try:
+            logger.debug("[WebUI - relation], DM _only_related_to: %s", items)
             return [item for item in items if user._is_related_to(item)]
         except TypeError:
             return items if user._is_related_to(items) else None
@@ -875,7 +877,7 @@ class WebUIDataManager(DataManager):
             pass
         logger.debug("[WebUI - datamanager] get_contactgroup, name: %s", name)
 
-        return self._is_related_to(self.get_contactgroups(user=user, name=name, members=members), user)
+        return self._only_related_to(self.get_contactgroups(user=user, name=name, members=members), user)
 
     def get_contactgroup_members(self, name, user=None):
         """ Get a list of contacts members of a group

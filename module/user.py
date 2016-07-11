@@ -93,27 +93,32 @@ class User(Contact):
 
             :returns: True or False
         """
-        # logger.debug("[WebUI - alignak] _is_related_to, self: %s", self)
-        # logger.debug("[WebUI - alignak] _is_related_to, item: %s (class: %s)", item, item.__class__)
+        logger.debug("[WebUI - relation], item: %s", item)
 
         # if the user is an admin, always consider there is a relation
         if self.is_administrator():
             return True
 
+        if isinstance(item, list):
+            logger.warning("[WebUI - relation], item is a list: %s %s", item, item.__class__)
+            return True
+
         # is it me as a Contact object ?
         if item.__class__.my_type == 'contact':
-            return item.name == self.name
+            return item.contact_name == self.contact_name
 
         # Am I member of the contacts group?
         if item.__class__.my_type == 'contactgroup':
             for contact in item.members:
                 if contact.contact_name == self.contact_name:
+                    logger.debug("[WebUI - relation], member of contactgroup")
                     return True
 
         # May be the user is a direct contact
         if hasattr(item, 'contacts'):
             for contact in item.contacts:
                 if contact.contact_name == self.contact_name:
+                    logger.debug("[WebUI - relation], user is a direct contact")
                     return True
 
         # May be it's a contact of a linked item
@@ -121,6 +126,7 @@ class User(Contact):
             for host in item.get_hosts():
                 for contact in host.contacts:
                     if contact.contact_name == self.contact_name:
+                        logger.debug("[WebUI - relation], user is a contact through an hostgroup")
                         return True
 
         # May be it's a contact of a sub item ...
@@ -128,6 +134,7 @@ class User(Contact):
             for service in item.get_services():
                 for contact in service.contacts:
                     if contact.contact_name == self.contact_name:
+                        logger.debug("[WebUI - relation], user is a contact through a servicegroup")
                         return True
 
         # May be it's a contact of a linked item
@@ -136,21 +143,25 @@ class User(Contact):
             for source_problem in item.source_problems:
                 for contact in source_problem.contacts:
                     if contact.contact_name == self.contact_name:
+                        logger.debug("[WebUI - relation], user is a contact of a source problem")
                         return True
 
         # May be it's a contact of service's host
-        # if item.__class__.my_type == 'service':
-            # for contact in service.host.contacts:
-                # if contact.contact_name == self.contact_name:
-                    # return True
+        if item.__class__.my_type == 'service':
+            for contact in item.host.contacts:
+                if contact.contact_name == self.contact_name:
+                    logger.debug("[WebUI - relation], user is a contact of the main host")
+                    return True
 
         # Now impacts related maybe?
-        # if hasattr(item, 'impacts'):
-            # for impact in item.impacts:
-                # for contact in impact.contacts:
-                    # if contact.contact_name == self.contact_name:
-                        # return True
+        if hasattr(item, 'impacts'):
+            for impact in item.impacts:
+                for contact in impact.contacts:
+                    if contact.contact_name == self.contact_name:
+                        logger.debug("[WebUI - relation], user is a contact of an impact")
+                        return True
 
+        logger.debug("[WebUI - relation] user is not related to item")
         return False
 
     @classmethod

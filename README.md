@@ -7,7 +7,15 @@ Current version is 2.4.2, available on [`shinken.io`](http://shinken.io/package/
 
 ## Release notes
 
+### Version 2.4.2b
+
+ - Bugs and fixes:
+   - #520: data display for simple (non admin) user
+
 ### Version 2.4.2
+
+ - Features:
+   - Worldmap is based upon OSM/Leaflet instead of Google maps (thanks to RoPP)
 
  - Bugs and fixes:
    - #492: error on services tags page

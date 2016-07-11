@@ -508,11 +508,15 @@ Invalid element name
                               <tr>
                                  <td><strong>Active checks:</strong></td>
                                  <td>
-                                    <input type="checkbox" {{'checked' if elt.active_checks_enabled else ''}}
-                                          class="switch" data-size="mini" data-on-color="success" data-off-color="danger"
-                                          data-type="action" action="toggle-active-checks"
-                                          data-element="{{helper.get_uri_name(elt)}}" data-value="{{elt.active_checks_enabled}}"
-                                          >
+                                    <input type="checkbox" class="switch"
+                                       {{'checked' if elt.active_checks_enabled else ''}}
+                                       {{'readonly' if not app.can_action() else ''}}
+                                       data-size="mini"
+                                       data-on-color="success" data-off-color="danger"
+                                       data-type="action" action="toggle-active-checks"
+                                       data-element="{{helper.get_uri_name(elt)}}"
+                                       data-value="{{elt.active_checks_enabled}}"
+                                       >
                                  </td>
                               </tr>
                               %if (elt.active_checks_enabled):
@@ -532,11 +536,15 @@ Invalid element name
                               <tr>
                                  <td><strong>Passive checks:</strong></td>
                                  <td>
-                                    <input type="checkbox" {{'checked' if elt.passive_checks_enabled else ''}}
-                                          class="switch" data-size="mini" data-on-color="success" data-off-color="danger"
-                                          data-type="action" action="toggle-passive-checks"
-                                          data-element="{{helper.get_uri_name(elt)}}" data-value="{{elt.passive_checks_enabled}}"
-                                          >
+                                    <input type="checkbox" class="switch"
+                                       {{'checked' if elt.passive_checks_enabled else ''}}
+                                       {{'readonly' if not app.can_action() else ''}}
+                                       data-size="mini"
+                                       data-on-color="success" data-off-color="danger"
+                                       data-type="action" action="toggle-passive-checks"
+                                       data-element="{{helper.get_uri_name(elt)}}"
+                                       data-value="{{elt.passive_checks_enabled}}"
+                                       >
                                  </td>
                               </tr>
                               %if (elt.passive_checks_enabled):
@@ -571,11 +579,15 @@ Invalid element name
                               <tr>
                                  <td><strong>Event handler enabled:</strong></td>
                                  <td>
-                                    <input type="checkbox" {{'checked' if elt.event_handler_enabled else ''}}
-                                          class="switch" data-size="mini" data-on-color="success" data-off-color="danger"
-                                          data-type="action" action="toggle-event-handler"
-                                          data-element="{{helper.get_uri_name(elt)}}" data-value="{{elt.event_handler_enabled}}"
-                                          >
+                                    <input type="checkbox" class="switch"
+                                       {{'checked' if elt.event_handler_enabled else ''}}
+                                       {{'readonly' if not app.can_action() else ''}}
+                                       data-size="mini"
+                                       data-on-color="success" data-off-color="danger"
+                                       data-type="action" action="toggle-event-handler"
+                                       data-element="{{helper.get_uri_name(elt)}}"
+                                       data-value="{{elt.event_handler_enabled}}"
+                                       >
                                  </td>
                               </tr>
                               %if elt.event_handler_enabled and elt.event_handler:
@@ -610,11 +622,15 @@ Invalid element name
                               <tr>
                                  <td><strong>Flapping detection:</strong></td>
                                  <td>
-                                    <input type="checkbox" {{'checked' if elt.flap_detection_enabled else ''}}
-                                          class="switch" data-size="mini" data-on-color="success" data-off-color="danger"
-                                          data-type="action" action="toggle-flap-detection"
-                                          data-element="{{helper.get_uri_name(elt)}}" data-value="{{elt.flap_detection_enabled}}"
-                                          >
+                                    <input type="checkbox" class="switch"
+                                       {{'checked' if elt.flap_detection_enabled else ''}}
+                                       {{'readonly' if not app.can_action() else ''}}
+                                       data-size="mini"
+                                       data-on-color="success" data-off-color="danger"
+                                       data-type="action" action="toggle-flap-detection"
+                                       data-element="{{helper.get_uri_name(elt)}}"
+                                       data-value="{{elt.flap_detection_enabled}}"
+                                       >
                                  </td>
                               </tr>
                               %if elt.flap_detection_enabled:
@@ -668,11 +684,15 @@ Invalid element name
                               <tr>
                                  <td><strong>Notifications:</strong></td>
                                  <td>
-                                    <input type="checkbox" {{'checked' if elt.notifications_enabled else ''}}
-                                          class="switch" data-size="mini" data-on-color="success" data-off-color="danger"
-                                          data-type="action" action="toggle-notifications"
-                                          data-element="{{helper.get_uri_name(elt)}}" data-value="{{elt.notifications_enabled}}"
-                                          >
+                                    <input type="checkbox" class="switch"
+                                       {{'checked' if elt.notifications_enabled else ''}}
+                                       {{'readonly' if not app.can_action() else ''}}
+                                       data-size="mini"
+                                       data-on-color="success" data-off-color="danger"
+                                       data-type="action" action="toggle-notifications"
+                                       data-element="{{helper.get_uri_name(elt)}}"
+                                       data-value="{{elt.notifications_enabled}}"
+                                       >
                                  </td>
                               </tr>
                               %if elt.notifications_enabled and elt.notification_period:
