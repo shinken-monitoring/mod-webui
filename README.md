@@ -7,6 +7,11 @@ Current version is 2.4.2, available on [`shinken.io`](http://shinken.io/package/
 
 ## Release notes
 
+### Version 2.4.2b
+
+ - Bugs and fixes:
+   - #520: data display for simple (non admin) user
+
 ### Version 2.4.2
 
  - Features:
