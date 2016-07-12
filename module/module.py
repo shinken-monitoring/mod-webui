@@ -25,7 +25,7 @@
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 
 
-WEBUI_VERSION = "2.4.2b"
+WEBUI_VERSION = "2.4.2c"
 WEBUI_COPYRIGHT = "(c) 2009-2016 - License GNU AGPL as published by the FSF, minimum version 3 of the License."
 WEBUI_RELEASENOTES = """
 Worlmap based on OSM/Leaflet
