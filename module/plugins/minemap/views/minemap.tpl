@@ -53,8 +53,8 @@
       %end
 
       <!-- Problems synthesis -->
-      %s = app.datamgr.get_services_synthesis()
-      %h = app.datamgr.get_hosts_synthesis()
+      %s = app.datamgr.get_services_synthesis(user=user)
+      %h = app.datamgr.get_hosts_synthesis(user=user)
       <div class="panel panel-default">
          <div class="panel-heading">
             <h3 class="panel-title">Current filtered hosts/services:</h3>

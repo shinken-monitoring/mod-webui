@@ -3,7 +3,7 @@
 %rebase("layout", title='Services groups overview')
 
 %helper = app.helper
-%s = app.datamgr.get_services_synthesis()
+%s = app.datamgr.get_services_synthesis(user=user)
 
 
 <div id="servicesgroups">
@@ -126,7 +126,7 @@
          %end
 
          %services = app.datamgr.search_hosts_and_services('type:service sg:"'+group.get_name()+'"', user)
-         %s = app.datamgr.get_services_synthesis(services)
+         %s = app.datamgr.get_services_synthesis(services, user=user)
          %if debug:
          <div>Group <strong>{{group.get_name()}}</strong>:<ul>
             %for service in services:
