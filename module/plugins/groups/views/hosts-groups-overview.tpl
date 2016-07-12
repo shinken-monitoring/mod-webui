@@ -3,7 +3,7 @@
 %rebase("layout", title='Hosts groups overview')
 
 %helper = app.helper
-%h = app.datamgr.get_hosts_synthesis()
+%h = app.datamgr.get_hosts_synthesis(user=user)
 
 
 <div id="hostsgroups">
@@ -127,7 +127,7 @@
          %end
 
          %hosts = app.datamgr.search_hosts_and_services('type:host hg:"'+group.get_name()+'"', user)
-         %h = app.datamgr.get_hosts_synthesis(hosts)
+         %h = app.datamgr.get_hosts_synthesis(hosts, user=user)
          %if debug:
          <div>Group <strong>{{group.get_name()}}</strong>:<ul>
             %for host in hosts:

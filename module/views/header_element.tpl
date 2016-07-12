@@ -27,8 +27,8 @@
    </ul>
 
    <!-- Right part ... -->
-   %s = app.datamgr.get_services_synthesis()
-   %h = app.datamgr.get_hosts_synthesis()
+   %s = app.datamgr.get_services_synthesis(user=user)
+   %h = app.datamgr.get_hosts_synthesis(user=user)
    <div id="hosts-states-popover-content" class="hidden">
       <table class="table table-invisible table-condensed">
          <tbody>

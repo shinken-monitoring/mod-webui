@@ -3,8 +3,8 @@
 %setdefault('widget', False)
 
 %if header:
-%s = app.datamgr.get_services_synthesis(elts=all_pbs)
-%h = app.datamgr.get_hosts_synthesis(elts=all_pbs)
+%s = app.datamgr.get_services_synthesis(user=user, elts=all_pbs)
+%h = app.datamgr.get_hosts_synthesis(user=user, elts=all_pbs)
 
 <div class="panel panel-default">
    <div class="panel-body">
