@@ -138,7 +138,7 @@ class AuthMetaModule(MetaModule):
             logger.error("[WebUI-auth-alignak] could not connect to Alignak backend")
             return False
 
-        logger.warning("[WebUI-auth-alignak] Authentication failed %s != %s", p, password)
+        logger.warning("[WebUI-auth-alignak] Authentication failed, password mismatch")
         return False
 
     def check_cfg_password_auth(self, username, password):
@@ -161,7 +161,7 @@ class AuthMetaModule(MetaModule):
             logger.info("[WebUI-auth-cfg-password] Authenticated")
             return True
 
-        logger.warning("[WebUI-auth-cfg-password] Authentication failed %s != %s", p, password)
+        logger.warning("[WebUI-auth-cfg-password] Authentication failed, password mismatch ")
         return False
 
     def check_apache_htpasswd_auth(self, username, password):
