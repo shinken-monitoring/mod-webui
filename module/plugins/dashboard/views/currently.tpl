@@ -415,7 +415,12 @@
 </script>
 %end
 
-%synthesis = app.datamgr.get_synthesis()
+%search = app.request.query.get('search','')
+%if len(search) > 0:
+%search = ' '+search
+%end
+
+%synthesis = app.datamgr.get_synthesis(app.datamgr.search_hosts_and_services(search, user))
 %s = synthesis['services']
 %h = synthesis['hosts']
 
@@ -485,7 +490,7 @@
                         %for state in 'up', 'unreachable', 'down', 'unknown':
                         <div class="col-xs-6 col-md-3 text-center">
                             %label = "%d<br/><em>(%s)</em>" % (h['nb_' + state], state)
-                            <a role="button" href="/all?search=type:host is:{{state}} isnot:ack isnot:downtime" class="font-{{state.lower()}}">
+                            <a role="button" href="/all?search=type:host is:{{state}} isnot:ack isnot:downtime{{search}}" class="font-{{state.lower()}}">
                                 <span class="hosts-count" data-count="{{ h['nb_' + state] }}" data-state="{{ state }}" style="font-size: 3em;">{{ h['nb_' + state] }}</span>
                                 <br/>
                                 <span style="font-size: 1.5em;">{{ state }}</span>
@@ -512,7 +517,7 @@
                         %for state in 'ok', 'warning', 'critical', 'unknown':
                         <div class="col-xs-6 col-md-3 text-center">
                             %label = "%d<br/><em>(%s)</em>" % (s['nb_' + state], state)
-                            <a role="button" href="/all?search=type:service is:{{state}} isnot:ack isnot:downtime" class="font-{{state.lower()}}">
+                            <a role="button" href="/all?search=type:service is:{{state}} isnot:ack isnot:downtime{{search}}" class="font-{{state.lower()}}">
                                 <span class="services-count" data-count="{{ s['nb_' + state] }}" data-state="{{ state }}" style="font-size: 3em;">{{ s['nb_' + state] }}</span>
                                 <br/>
                                 <span style="font-size: 1.5em;">{{ state }}</span>
@@ -542,7 +547,7 @@
                         <!-- Hosts SLA icons -->
                         <div class="col-xs-4 col-sm-4 text-center">
                             %if username != 'anonymous':
-                            <a href="/all?search=type:host" class="btn">
+                            <a href="/all?search=type:host{{search}}" class="btn">
                             %end
                                <div>
                                   %state = (100 - h['pct_up'])
@@ -560,7 +565,7 @@
 
                         %for state in 'up', 'unreachable', 'down':
                         <div class="col-xs-4 col-sm-4 text-center">
-                            <a role="button" href="/all?search=type:host is:{{state}} isnot:ack isnot:downtime" class="font-{{state.lower()}}">
+                            <a role="button" href="/all?search=type:host is:{{state}} isnot:ack isnot:downtime{{search}}" class="font-{{state.lower()}}">
                                 <span class="hosts-count" data-count="{{ h['nb_' + state] }}" data-state="{{ state }}" style="font-size: 1.8em;">{{ h['pct_' + state] }}%</span>
                                 <br/>
                                 <span style="font-size: 1em;">{{ state }}</span>
@@ -570,7 +575,7 @@
                         %known_problems=h['nb_ack']+h['nb_downtime']+h['nb_unknown']
                         %pct_known_problems=round(100.0 * known_problems / h['nb_elts'], 2)
                         <div class="col-xs-4 col-sm-4 text-center">
-                            <a role="button" href="/all?search=type:host is:ack" class="font-unknown">
+                            <a role="button" href="/all?search=type:host is:ack{{search}}" class="font-unknown">
                                 <span class="hosts-count" data-count="{{ h['nb_' + state] }}" data-state="{{ state }}" style="font-size: 1.8em;">{{ pct_known_problems }}%</span>
                                 <br/>
                                 <span style="font-size: 1em;">Known problems</span>
@@ -596,7 +601,7 @@
                         <!-- Services SLA icons -->
                         <div class="col-xs-4 col-sm-4 text-center">
                             %if username != 'anonymous':
-                            <a href="/all?search=type:service" class="btn">
+                            <a href="/all?search=type:service{{search}}" class="btn">
                             %end
                                <div>
                                   %state = (100 - s['pct_ok'])
@@ -614,7 +619,7 @@
 
                         %for state in 'ok', 'warning', 'critical':
                         <div class="col-xs-4 col-sm-4 text-center">
-                            <a role="button" href="/all?search=type:service is:{{state}} isnot:ack isnot:downtime" class="font-{{state.lower()}}">
+                            <a role="button" href="/all?search=type:service is:{{state}} isnot:ack isnot:downtime{{search}}" class="font-{{state.lower()}}">
                                 <span class="services-count" data-count="{{ s['nb_' + state] }}" data-state="{{ state }}" style="font-size: 1.8em;">{{ s['pct_' + state] }}%</span>
                                 <br/>
                                 <span style="font-size: 1em;">{{ state }}</span>
@@ -624,7 +629,7 @@
                         %known_problems=s['nb_ack']+s['nb_downtime']+s['nb_unknown']
                         %pct_known_problems=round(100.0 * known_problems / s['nb_elts'], 2)
                         <div class="col-xs-4 col-sm-4 text-center">
-                            <a role="button" href="/all?search=type:service is:ack" class="font-unknown">
+                            <a role="button" href="/all?search=type:service is:ack{{search}}" class="font-unknown">
                                 <span class="services-count" data-count="{{ s['nb_' + state] }}" data-state="{{ state }}" style="font-size: 1.8em;">{{ pct_known_problems }}%</span>
                                 <br/>
                                 <span style="font-size: 1em;">Known problems</span>
