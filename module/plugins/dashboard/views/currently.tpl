@@ -415,7 +415,7 @@
 </script>
 %end
 
-%synthesis = app.datamgr.get_synthesis()
+%synthesis = app.datamgr.get_synthesis(None, user)
 %s = synthesis['services']
 %h = synthesis['hosts']
 
