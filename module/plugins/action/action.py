@@ -97,13 +97,7 @@ def get_page(cmd=None):
 
     # Expand macros
     extcmd = expand_macros(extcmd)
-
-    # Ok, if good, we can launch the command
-    # extcmd = extcmd.decode('utf8', 'replace')
-    # Fix #69
     logger.info("[WebUI-actions] external command: %s.", extcmd)
-    # extcmd = extcmd.decode('utf8', 'ignore')
-    # logger.info("[WebUI-actions] external command decoded: %s.", extcmd)
     e = ExternalCommand(extcmd)
     app.push_external_command(e)
 

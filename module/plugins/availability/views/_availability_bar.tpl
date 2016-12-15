@@ -13,24 +13,24 @@
 
 <td>
   <div class="progress" style="margin-bottom: 0px;">
-    <div title="{{t_0}} Up" data-duration={{t_0}} class="moment-duration progress-bar progress-bar-success " role="progressbar" 
-      aria-valuenow="{{p_0}}" aria-valuemin="0" aria-valuemax="100" 
-      data-toggle="tooltip" data-placement="bottom" 
+    <div title="{{t_0}} Up" data-duration={{t_0}} class="moment-duration progress-bar progress-bar-success " role="progressbar"
+      aria-valuenow="{{p_0}}" aria-valuemin="0" aria-valuemax="100"
+      data-toggle="tooltip" data-placement="bottom"
       style="width: {{p_0}}%;">{{p_0}}% Up</div>
 
-    <div title="{{t_1}} Down" data-duration={{t_1}} class="moment-duration progress-bar progress-bar-danger " role="progressbar" 
-      aria-valuenow="{{p_1}}" aria-valuemin="0" aria-valuemax="100" 
-      data-toggle="tooltip" data-placement="bottom" 
+    <div title="{{t_1}} Down" data-duration={{t_1}} class="moment-duration progress-bar progress-bar-danger " role="progressbar"
+      aria-valuenow="{{p_1}}" aria-valuemin="0" aria-valuemax="100"
+      data-toggle="tooltip" data-placement="bottom"
       style="width: {{p_1}}%;">{{p_1}}% Down</div>
 
-    <div title="{{t_2}} Unreachable" data-duration={{t_2}} class="moment-duration progress-bar progress-bar-warning " role="progressbar" 
-      aria-valuenow="{{p_2}}" aria-valuemin="0" aria-valuemax="100" 
-      data-toggle="tooltip" data-placement="bottom" 
+    <div title="{{t_2}} Unreachable" data-duration={{t_2}} class="moment-duration progress-bar progress-bar-warning " role="progressbar"
+      aria-valuenow="{{p_2}}" aria-valuemin="0" aria-valuemax="100"
+      data-toggle="tooltip" data-placement="bottom"
       style="width: {{p_2}}%;">{{p_2}}% Unreachable</div>
 
-    <div title="{{t_3}} Pending" data-duration={{t_3}} class="moment-duration progress-bar progress-bar-info " role="progressbar" 
-      aria-valuenow="{{p_3}}" aria-valuemin="0" aria-valuemax="100" 
-      data-toggle="tooltip" data-placement="bottom" 
+    <div title="{{t_3}} Unknown" data-duration={{t_3}} class="moment-duration progress-bar progress-bar-info " role="progressbar"
+      aria-valuenow="{{p_3}}" aria-valuemin="0" aria-valuemax="100"
+      data-toggle="tooltip" data-placement="bottom"
       style="width: {{p_3}}%;">{{p_3}}% Unknown</div>
 
     <!--<div title="{{t_4}} seconds Unknown" class="progress-bar " role="progressbar" -->

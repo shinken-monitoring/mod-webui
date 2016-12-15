@@ -3,11 +3,7 @@
 
 %username = 'anonymous'
 %if user is not None:
-%if hasattr(user, 'alias') and user.alias != 'none':
-%username = user.alias
-%else:
 %username = user.get_name()
-%end
 %end
 
 
@@ -31,9 +27,8 @@
    </ul>
 
    <!-- Right part ... -->
-   %synthesis = helper.get_synthesis(app.datamgr.search_hosts_and_services("", user))
-   %s = synthesis['services']
-   %h = synthesis['hosts']
+   %s = app.datamgr.get_services_synthesis(user=user)
+   %h = app.datamgr.get_hosts_synthesis(user=user)
    <div id="hosts-states-popover-content" class="hidden">
       <table class="table table-invisible table-condensed">
          <tbody>
@@ -72,9 +67,12 @@
       <li id="overall-hosts-states">
          %state = app.datamgr.get_percentage_hosts_state(user, False)
          %label = 'danger' if state <= app.hosts_states_warning else 'warning' if state <= app.hosts_states_critical else 'success'
-         <a id="hosts-states-popover" href="/all?search=type:host" data-original-title="Hosts states" data-toggle="popover" title="Overall hosts states, {{h['nb_elts']}} hosts, {{h["nb_down"]+h["nb_unreachable"]}} problems" data-html="true" data-trigger="hover">
+         <a id="hosts-states-popover"
+            class="hosts-all" data-count="{{ h['nb_elts'] }}" data-problems="{{ h['nb_problems'] }}"
+            href="/all?search=type:host"
+            data-original-title="Hosts states" data-toggle="popover popover-hosts" title="Overall hosts states: {{h['nb_elts']}} hosts, {{h["nb_problems"]}} problems" data-html="true" data-trigger="hover">
             <i class="fa fa-server"></i>
-            <span class="label label-as-badge label-{{label}}">{{ len(app.datamgr.get_problems(user=user, search='type:host')) }}</span>
+            <span class="label label-as-badge label-{{label}}">{{h["nb_problems"]}}</span>
          </a>
       </li>
       <!--end-hosts-states-->
@@ -87,9 +85,12 @@
       <li id="overall-services-states">
          %state = app.datamgr.get_percentage_service_state(user, False)
          %label = 'danger' if state <= app.services_states_warning else 'warning' if state <= app.services_states_critical else 'success'
-         <a id="services-states-popover" href="/all?search=type:service" data-original-title="Services states" data-toggle="popover popover-services" title="Overall services states, {{s['nb_elts']}} services, {{s["nb_critical"]+s["nb_warning"]}} problems" data-html="true" data-trigger="hover">
+         <a id="services-states-popover"
+            class="services-all" data-count="{{ s['nb_elts'] }}" data-problems="{{ s['nb_problems'] }}"
+            href="/all?search=type:service"
+            data-original-title="Services states" data-toggle="popover popover-services" title="Overall services states: {{s['nb_elts']}} services, {{s["nb_problems"]}} problems" data-html="true" data-trigger="hover">
             <i class="fa fa-bars"></i>
-            <span class="label label-as-badge label-{{label}}">{{ len(app.datamgr.get_problems(user=user, search='type:service')) }}</span>
+            <span class="label label-as-badge label-{{label}}">{{s["nb_problems"]}}</span>
          </a>
       </li>
       <!--end-services-states-->
@@ -109,7 +110,7 @@
       %end
 
       %if app.play_sound:
-      <li>
+      <li class="hidden-sm hidden-xs hidden-md">
          <a class="quickinfo" action="toggle-sound-alert" data-original-title='Sound alerting' href="#">
             <span id="sound_alerting" class="fa-stack">
               <i class="fa fa-music fa-stack-1x"></i>
@@ -134,10 +135,10 @@
                      <p class="username">{{username}}</p>
                      %if app.can_action():
                      <p class="usercategory">
-                        <small>{{'Administrator' if user.is_admin else 'User'}}</small>
+                        <small>{{'Administrator' if user.is_administrator() else 'User'}}</small>
                      </p>
                      %end
-                     <img src="{{app.user_picture}}" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}">
+                     <img src="{{user.get_picture()}}" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}">
                   </div>
                   <div class="panel-footer">
                      <!-- User actions -->
@@ -161,12 +162,15 @@
 
   <!--SIDEBAR-->
   <div class="navbar-default sidebar" role="navigation">
-    <div class="sidebar-nav navbar-collapse">
+    <div class="sidebar-nav">
       <ul class="nav" id="sidebar-menu">
         %if app:
-        <li> <a href="{{ app.get_url('Dashboard') }}"> <span class="fa fa-dashboard"></span> Dashboard </a> </li>
-        <li> <a href="{{ app.get_url('Problems') }}"> <span class="fa fa-ambulance"></span> Problems </a> </li>
-        <li> <a href="#"><i class="fa fa-sitemap"></i> Groups and tags <i class="fa arrow"></i></a>
+        <li> <a href="{{ app.get_url('Dashboard') }}"> <span class="fa fa-dashboard"></span>
+        <span class="hidden-xs">Dashboard</span> </a> </li>
+        <li> <a href="{{ app.get_url('Problems') }}"> <span class="fa fa-ambulance"></span>
+        <span class="hidden-xs">Problems</span> </a> </li>
+        <li> <a href="#"><i class="fa fa-sitemap"></i>
+        <span class="hidden-xs">Groups and tags</span> <i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
             <li> <a href="{{ app.get_url('HostsGroups') }}"> <span class="fa fa-sitemap"></span> Hosts groups </a> </li>
             <li> <a href="{{ app.get_url('ServicesGroups') }}"> <span class="fa fa-sitemap"></span> Services groups </a> </li>
@@ -174,7 +178,8 @@
             <li> <a href="{{ app.get_url('ServicesTags') }}"> <span class="fa fa-tags"></span> Services tags </a> </li>
           </ul>
         </li>
-        <li> <a href="#"><i class="fa fa-bar-chart"></i> Tactical views <i class="fa arrow"></i></a>
+        <li> <a href="#"><i class="fa fa-bar-chart"></i>
+        <span class="hidden-xs">Tactical views</span> <i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
             <li> <a href="{{ app.get_url('Impacts') }}"> <span class="fa fa-bolt"></span> Impacts </a> </li>
             <li> <a href="{{ app.get_url('Minemap') }}"> <span class="fa fa-table"></span> Minemap </a> </li>
@@ -185,8 +190,9 @@
             %end
           </ul>
         </li>
-        %if user.is_admin:
-        <li> <a href="#"><i class="fa fa-gears"></i> System <i class="fa arrow"></i></a>
+        %if user.is_administrator():
+        <li> <a href="#"><i class="fa fa-gears"></i>
+        <span class="hidden-xs">System</span> <i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
             <li> <a href="{{ app.get_url('System') }}"> <span class="fa fa-heartbeat"></span> Status </a> </li>
             %if app.logs_module.is_available():
@@ -194,10 +200,12 @@
             %end
           </ul>
         </li>
-        <li> <a href="#"><i class="fa fa-wrench"></i> Configuration <i class="fa arrow"></i></a>
+        <li> <a href="#"><i class="fa fa-wrench"></i>
+        <span class="hidden-xs">Configuration</span> <i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
             <li> <a href="{{ app.get_url('Parameters') }}"> <span class="fa fa-gears"></span> Parameters </a> </li>
-            <li> <a href="{{ app.get_url('ContactsGroups') }}"> <span class="fa fa-users"></span> Contacts </a> </li>
+            <li> <a href="{{ app.get_url('Contacts') }}"> <span class="fa fa-user"></span> Contacts </a> </li>
+            <li> <a href="{{ app.get_url('ContactsGroups') }}"> <span class="fa fa-users"></span> Contact Groups </a> </li>
             <li> <a href="{{ app.get_url('Commands') }}"> <span class="fa fa-terminal"></span> Commands </a> </li>
             <li> <a href="{{ app.get_url('TimePeriods') }}"> <span class="fa fa-calendar"></span> Time periods </a> </li>
           </ul>
@@ -205,7 +213,8 @@
         %end
         %other_uis = app.get_ui_external_links()
         %if len(other_uis) > 0:
-        <li> <a href="#"><i class="fa fa-rocket"></i> External <i class="fa arrow"></i></a>
+        <li> <a href="#"><i class="fa fa-rocket"></i>
+        <span class="hidden-xs">External</span> <i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
             %for c in other_uis:
             <li>

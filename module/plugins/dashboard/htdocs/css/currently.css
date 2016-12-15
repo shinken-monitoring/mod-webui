@@ -24,30 +24,36 @@
 *
 **/
 
-/*  Currently basics
-    ------------------------------------------------------- */
+/*
+ * Background layout
 body, section.content {
    background: #232426 !important;
 }
+*/
 
 /*
  * Date and time
- */
 #clock {
    text-align: center;
    font-family: Century Gothic, sans-serif;
-   
+
+   font-size: 4em;
+
    color: #FFFFFF;
 }
 
 #date {
    text-align: center;
    font-family: Century Gothic, sans-serif;
-   
-   color: #535456;
-   padding-bottom: 20px;
-}
 
+   font-size: 3em;
+
+   color: #535456;
+   padding-bottom: 0.25em;
+}
+ */
+
+/*
 @media (max-width: 768px) {
    #clock {
       font-size: 4em;
@@ -72,19 +78,19 @@ body, section.content {
       font-size: 3em;
    }
 }
+*/
 
 /*
  * Overall state
- */
 #one-eye-overall div.panel-darkgrey {
    background-color: #444;
    border: 0;
 }
+ */
 
 
 /*
  * Icons bar
- */
 #one-eye-icons {
    text-align: center;
 }
@@ -94,13 +100,19 @@ body, section.content {
    border: 0;
 }
 
-/* 
- * Badger styles
+#one-eye-problems {
+   text-align: center;
+}
+
+#one-eye-problems div.panel-darkgrey {
+   background-color: #444;
+   border: 0;
+}
  */
+
+/*
+ * Badger styles
 .badger-big {
-  /*
-  background-color: #999999;*/
-  
   border-radius: 3px;
   color: #FFFFFF;
   font-size: 2em;
@@ -116,3 +128,4 @@ body, section.content {
    color: white;
 }
 
+ */

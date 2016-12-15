@@ -1,18 +1,14 @@
+%setdefault('app', None)
+%setdefault('user', None)
+
 %import json
 
 %username = 'anonymous'
 %if user is not None:
-%if hasattr(user, 'alias') and user.alias != 'none':
-%	username = user.alias
-%else:
-%	username = user.get_name()
-%end
+%username = user.get_name()
 %end
 
 %rebase("layout", css=['user/css/user.css'], breadcrumb=[ ['User preferences', '/user/pref'] ], title='User preferences')
-
-%setdefault('app', None)
-%setdefault('user', None)
 
 <div class="row">
    <div class="col-sm-12">
@@ -24,41 +20,28 @@
             <!-- User image -->
             <div class="user-header bg-light-blue">
                <script>
-                  %if app is not None and app.gravatar:
-                  $('<img src="{{app.get_gravatar(user.email, 32)}}" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}" style="display:none">')
+                  $('<img src="{{app.user_picture}}" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}" style="display:none">')
                      .load(function() { $(this).show(); })
-                     .error(function() { 
-                        $(this).remove(); 
+                     .error(function() {
+                        $(this).remove();
                         $('<img src="/static/images/logo/default_user.png" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}" style="display:none">')
                            .load(function() { $(this).show(); })
                            .error(function() { $(this).remove(); })
                            .prependTo('div.user-header');
                      })
                      .prependTo('div.user-header');
-                  %else:
-               $('<img src="/static/images/logo/{{user.get_name()}}.png" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}" style="display:none">')
-                  .load(function() { $(this).show(); })
-                  .error(function() { 
-                     $(this).remove(); 
-                     $('<img src="/static/images/logo/default_user.png" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}" style="display:none">')
-                        .load(function() { $(this).show(); })
-                        .error(function() { $(this).remove(); })
-                        .prependTo('div.user-header');
-                  })
-                  .prependTo('div.user-header');
-                  %end
                </script>
-            
+
                <p class="username">
                  {{username}}
                </p>
                %if app.manage_acl:
                <p class="usercategory">
-                  <small>{{'Administrator' if user.is_admin else 'User'}}</small>
+                  <small>{{'Administrator' if user.is_administrator() else 'User'}}</small>
                </p>
                %end
             </div>
-          
+
             <div class="user-body">
                <table class="table table-condensed col-sm-12" style="table-layout: fixed; word-wrap: break-word;">
                   <colgroup>
@@ -79,7 +62,25 @@
                      </tr>
                   </tbody>
                </table>
-            
+
+               <table class="table table-condensed col-sm-12" style="table-layout: fixed; word-wrap: break-word;">
+                  <colgroup>
+                     <col style="width: 30%" />
+                     <col style="width: 70%" />
+                  </colgroup>
+                  <thead>
+                     <tr><th colspan="2"></td></tr>
+                  </thead>
+                  <tbody style="font-size:x-small;">
+                     %for attr, value in user.__dict__.iteritems():
+                     <tr>
+                        <td><strong>{{attr}}:</strong></td>
+                        <td>{{value}}</td>
+                     </tr>
+                     %end
+                  </tbody>
+               </table>
+
                <table class="table table-condensed col-sm-12" style="table-layout: fixed; word-wrap: break-word;">
                   <colgroup>
                      <col style="width: 30%" />

@@ -6,7 +6,7 @@ function bootstrap_tab_bookmark (selector) {
     var bookmark_switch = function () {
         url = document.location.href.split('#');
         if(url[1] != undefined) {
-            $(selector + '[href=#'+url[1]+']').tab('show');
+            $(selector + '[href="#'+url[1]+'"]').tab('show');
         }
     }
 

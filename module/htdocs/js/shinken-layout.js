@@ -42,69 +42,44 @@ var layout_logs=false;
 function loadjscssfile(filename, filetype){
    if (filetype=="js") {
       if (layout_logs) console.debug('Loading Js file: ', filename);
-      $.ajax({
-         url: filename,
-         dataType: "script",
-         error: function () {
-            console.error('Shinken script error, not loaded: ', filename);
-         }
-      });
+      window.setTimeout(function() {
+         $.ajax({
+            url: filename,
+            dataType: "script",
+            error: function () {
+               console.error('Shinken script error, not loaded: ', filename);
+            }
+         });
+      }, 100);
    } else if (filetype=="css") {
       if (layout_logs) console.debug('Loading Css file: ', filename);
-       if (!$('link[href="' + filename + '"]').length)
-           $('head').append('<link rel="stylesheet" type="text/css" href="' + filename + '">');
+      if (!$('link[href="' + filename + '"]').length)
+         $('head').append('<link rel="stylesheet" type="text/css" href="' + filename + '">');
    }
-}
-
-
-/**
- * Save current user preference value:
- * - key / value
- * - callback function called after data are posted
-**/
-function save_user_preference(key, value, callback) {
-
-   $.get("/user/save_pref", { 'key' : key, 'value' : value}, function() {
-      if (layout_logs) console.debug('User preference saved: ', key, value);
-      raise_message_ok("User parameter saved");
-
-      if (typeof callback !== 'undefined' && $.isFunction(callback)) {
-         if (layout_logs) console.debug('Calling callback function ...', callback);
-         callback();
-      }
-   });
-}
-
-/**
- * Save common preference value
- * - key / value
- * - callback function called after data are posted
-**/
-function save_common_preference(key, value, callback) {
-
-   $.get("/user/save_common_pref", { 'key' : key, 'value' : value}, function() {
-      if (layout_logs) console.debug('Common preference saved: ', key, value);
-      raise_message_ok("Common parameter saved");
-
-      if (typeof callback !== 'undefined' && $.isFunction(callback)) {
-         if (layout_logs) console.debug('Calling callback function ...', callback);
-         callback();
-      }
-   });
 }
 
 
 /**
  *  Actions bar related code
  */
-function hide_actions(){
+function hide_actions(part){
    if (layout_logs) console.debug('Hiding actions bar');
-   $('#actions').hide();
+
+   if (part !== undefined) {
+      $('#'+part).hide();
+   } else {
+      $('#actions').hide();
+   }
 }
 
-function show_actions(){
+function show_actions(part){
    if (layout_logs) console.debug('Showing actions bar');
-   $('#actions').show();
+
+   if (part !== undefined) {
+      $('#'+part).show();
+   } else {
+      $('#actions').show();
+   }
 }
 
 
@@ -147,6 +122,6 @@ $(document).ready(function(){
    $('#sidebar-menu').metisMenu();
 
    // Actions bar menu
-   $('#actions-menu').metisMenu();
+   $('.actions-menu').metisMenu();
 
 });

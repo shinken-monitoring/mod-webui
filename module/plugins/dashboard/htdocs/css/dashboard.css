@@ -43,19 +43,14 @@
 }
 
 /*  Widget styles informations
-------------------------------------------------------- 
+-------------------------------------------------------
  This is the widgets basic CSS. Note that you can change
  the classes names using the plugin settings. But you can
  use directly the default classes names, this names. */
 
 .widget-place {
-   margin: 0;
-   padding: 0;
-   float: left;
-   width: 33.3%;
    height: auto;
-   list-style: none;
-   min-height: 400px;
+   min-height: 120px;
 }
 
 .widget-menu {
@@ -109,7 +104,7 @@
 }
 
 .table-result {
-   border-top: 4px double #ebebeb !important; 
+   border-top: 4px double #ebebeb !important;
 }
 
 
@@ -146,7 +141,7 @@ ul#Navigation li {
   padding: 1px 3px 2px;
   text-transform: uppercase;
   left: 1.2em;
-  
+
   position: relative;
   bottom: 4.5em;
 }
@@ -180,6 +175,6 @@ ul#Navigation li {
   text-align: center;
   font-family: Century Gothic, sans-serif;
   font-size: 1em;
-  
+
   z-index: 666;
 }

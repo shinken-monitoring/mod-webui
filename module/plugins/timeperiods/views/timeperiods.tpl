@@ -54,9 +54,13 @@
                     &nbsp;(
                     %idx=0
                     %for timerange in dr.timeranges:
+                    %if timerange.is_valid:
                     %hr_start = ("%02d:%02d" % (timerange.hstart, timerange.mstart))
                     %hr_end = ("%02d:%02d" % (timerange.hend, timerange.mend))
                     <strong>{{hr_start}}-{{hr_end}}&nbsp;</strong>
+                    %else:
+                    <strong>Invalid!&nbsp;</strong>
+                    %end
                     %', ' if idx == 0 else ''
                     %idx = idx+1
                     %end

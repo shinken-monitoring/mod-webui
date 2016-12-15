@@ -117,17 +117,36 @@ def get_depgraph_inner(name):
     return {'elt': elt, 'graphId': graphId}
 
 widget_desc = '''<h4>Relation graph</h4>
-Show a graph of an object relations
+Displays a dependeny graph for the selected object
 '''
 
 pages = {
     depgraph_host:{
-        'name': 'DepgraphHost', 'route': ['/depgraph/:name'], 'view': 'depgraph', 'static': True},
+        'name': 'DepgraphHost',
+        'route': '/depgraph/:name',
+        'view': 'depgraph',
+        'static': True
+    },
     depgraph_service:{
-        'name': 'DepgraphService', 'route': ['/depgraph/:hname/:desc'], 'view': 'depgraph', 'static': True},
+        'name': 'DepgraphService',
+        'route': '/depgraph/:hname/:desc',
+        'view': 'depgraph',
+        'static': True
+    },
     get_depgraph_widget:{
-        'name': 'wid_Depgraph', 'route': ['/widget/depgraph'], 'view': 'widget_depgraph', 'static': True, 'widget': ['dashboard'], 'widget_desc': widget_desc, 'widget_name': 'depgraph', 'widget_picture': '/static/depgraph/img/widget_depgraph.png'},
+        'name': 'wid_Depgraph',
+        'route': '/widget/depgraph',
+        'view': 'widget_depgraph',
+        'static': True,
+        'widget': ['dashboard'],
+        'widget_desc': widget_desc,
+        'widget_name': 'depgraph',
+        'widget_picture': '/static/depgraph/img/widget_depgraph.png'
+    },
     get_depgraph_inner:{
-        'name': 'DepgraphInner', 'route': ['/inner/depgraph/:name#.+#'], 'view': 'inner_depgraph', 'static': True
+        'name': 'DepgraphInner',
+        'route': '/inner/depgraph/:name#.+#',
+        'view': 'inner_depgraph',
+        'static': True
     }
 }

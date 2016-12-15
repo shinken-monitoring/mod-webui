@@ -26,6 +26,8 @@
 ### Will be populated by the UI with it's own value
 app = None
 
+from shinken.log import logger
+
 try:
     import json
 except ImportError:
@@ -38,40 +40,32 @@ except ImportError:
         raise
 
 
-def lookup(name=''):
+def lookup():
     app.response.content_type = 'application/json'
 
+    query = app.request.GET.get('q', '')
+    name = query
     user = app.request.environ['USER']
 
-    filtered_hosts = app.datamgr.get_hosts(user)
-    hnames = (h.host_name for h in filtered_hosts)
-    # r = [n for n in hnames if n.startswith(name)]
-    r = [n for n in hnames if name in n]
+    logger.debug("[WebUI] lookup: %s", name)
+
+    if '/' in name:
+        logger.debug("[WebUI] lookup services for %s", name)
+        splitted = name.split('/')
+        hname = splitted[0]
+        filtered_services = app.datamgr.get_host_services(hname, user)
+        snames = ("%s/%s" % (hname, s.service_description) for s in filtered_services)
+        r = [n for n in snames]
+    else:
+        filtered_hosts = app.datamgr.get_hosts(user)
+        hnames = (h.host_name for h in filtered_hosts)
+        r = [n for n in hnames if name in n]
 
     return json.dumps(r)
 
-
-def lookup_post():
-    app.response.content_type = 'application/json'
-
-    user = app.request.environ['USER']
-
-    name = app.request.forms.get('value')
-    if not name or len(name) < 3:
-        print "Lookup POST %s too short, bail out" % name
-        return []
-
-    filtered_hosts = app.datamgr.get_hosts(user)
-    hnames = (h.host_name for h in filtered_hosts)
-    r = [n for n in hnames if n.startswith(name)]
-
-    return json.dumps(r)
 
 pages = {
     lookup: {
-        'name': 'GetLookup', 'route': '/lookup/:name'
-    },
-    lookup_post: {
-        'name': 'SetLookup', 'route': '/lookup', 'method': 'POST'
+        'name': 'GetLookup', 'route': '/lookup', 'method': 'GET'
     }
  }

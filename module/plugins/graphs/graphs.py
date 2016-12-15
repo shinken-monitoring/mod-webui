@@ -23,6 +23,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 import time
+import json
 import requests
 import random
 from shinken.log import logger
@@ -42,10 +43,21 @@ def proxy_graph():
     try:
         r = requests.get(url)
         if r.status_code != 200:
-            logger.error("[WebUI-graph] Image URL not found: %s", url)
-            raise Exception("Image not found")
+            logger.error("[WebUI-graph] Image URL not found: %d - %s", r.status_code, url)
+            app.bottle.response.status = r.status_code
+            app.bottle.response.content_type = 'application/json'
+            return json.dumps(
+                {'status': 'ko', 'message': r.content}
+            )
+
     except Exception as e:
-        app.redirect404(e)
+        logger.error("[WebUI-graph] exception: %s", str(e))
+        app.bottle.response.status = 409
+        app.bottle.response.content_type = 'application/json'
+        return json.dumps(
+            {'status': 'ko', 'message': str(e)}
+        )
+
     app.bottle.response.content_type = str(r.headers['content-type'])
     return r.content
 
@@ -53,16 +65,25 @@ def proxy_graph():
 # Our page
 def get_graphs_widget():
     user = app.request.environ['USER']
-    search = app.request.GET.get('search', '') or app.datamgr.get_hosts(user)[0].host_name
-    elt = app.datamgr.get_element(search, user) or app.redirect(404)
+    # Graph URL may be: http://192.168.0.42/render/?width=320&height=240&fontSize=8&lineMode=connected&from=04:57_20151203&until=04:57_20151204&tz=Europe/Paris&title=Outlook_Web_Access/ - rta&target=alias(color(Outlook_Web_Access.rta,"green"),"rta")&target=alias(color(constantLine(1000),"orange"),"Warning")&target=alias(color(constantLine(3000),"red"),"Critical")
+    url = app.request.GET.get('url', '')
+    logger.debug("[WebUI-graph] graph URL: %s", url)
+
+    if not url:
+        search = app.request.GET.get('search', '') or app.datamgr.get_hosts(user)[0].host_name
+        elt = app.datamgr.get_element(search, user) or app.redirect(404)
+    else:
+        search = app.request.GET.get('search', '')
+        elt = None
 
     duration = app.request.GET.get('duration', '86400')
     duration_list = {
-        '1h'   : '3600',
-        '1d'   : '86400',
-        '7d'   : '604800',
-        '30d'  : '2592000',
-        '365d' : '31536000' ,
+        '3600': '1h',
+        '86400': '1d',
+        '172800': '2d',
+        '604800': '7d',
+        '2592000': '30d',
+        '31536000': '365d'
     }
 
     wid = app.request.query.get('wid', 'widget_graphs_' + str(int(time.time())))
@@ -74,6 +95,11 @@ def get_graphs_widget():
             'type': 'hst_srv',
             'label': 'Element name'
         },
+        'url': {
+            'value': url,
+            'type': 'text',
+            'label': 'Graph URL'
+        },
         'duration': {
             'value': duration,
             'values':  duration_list,
@@ -82,7 +108,9 @@ def get_graphs_widget():
         },
     }
 
-    title = 'Element graphs for %s' % search
+    title = 'Element graphs'
+    if search:
+        title = 'Element graphs for %s (%s)' % (search, duration_list[str(duration)])
 
     graphsId = "graphs_%d" % random.randint(1, 9999)
 
@@ -93,6 +121,7 @@ def get_graphs_widget():
         'collapsed': collapsed,
         'options': options,
         'base_url': '/widget/graphs',
+        'url': url,
         'title': title,
         'duration': int(duration),
     }

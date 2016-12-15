@@ -30,10 +30,17 @@ app = None
 
 def show_contactgroups():
     user = app.request.environ['USER']
-    cgroups = sorted(app.datamgr.get_contactgroups(user), key=lambda cg: cg.contactgroup_name)
+
+    # Set contactgroups level ...
+    # @mohierf: should be done only once for initialization ... to be delegated to datamanager!
+    app.datamgr.set_contactgroups_level(user)
+
+    level = int(app.request.GET.get('level', 0))
+    parent = app.request.GET.get('parent', None)
 
     return {
-        'contactgroups': cgroups,
+        'level': level,
+        'contactgroups': sorted(app.datamgr.get_contactgroups(parent=parent, user=user), key=lambda cg: cg.contactgroup_name),
         'user': user
         }
 

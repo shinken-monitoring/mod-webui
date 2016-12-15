@@ -1,5 +1,4 @@
 #!/usr/bin/python
-
 # -*- coding: utf-8 -*-
 
 # Copyright (C) 2009-2012:
@@ -29,17 +28,16 @@ app = None
 # Contact page
 def show_contact(name):
     user = app.request.environ['USER']
-    contact = app.datamgr.get_contact(name, user) or app.redirect404()
+    contact = app.datamgr.get_contact(name=name, user=user) or app.redirect404()
 
     return {'contact': contact}
 
 # All contacts
 def show_contacts():
     user = app.request.environ['USER']
-    user.is_admin or app.redirect_403()
+    user.is_administrator() or app.redirect403()
 
-    return {'contacts': sorted(app.datamgr.get_contacts(user),
-                               key=lambda c: c.contact_name)}
+    return {'contacts': sorted(app.datamgr.get_contacts(user=user), key=lambda c: c.contact_name)}
 
 pages = {
     show_contact: {

@@ -164,25 +164,28 @@ def manage_unknown_command(elt, metric=None):
             for v in p:
                 if v.name is not None and v.value is not None and v.name == metric:
                     metric = v
-        
+
     if metric is None:
         return None
-    
+
     name = metric.name
     value = metric.value
     logger.debug("[WebUI] perfometer, manage command, metric: %s=%d", name, value)
     if not value:
         return None
 
-    
+
     pct = 0
     # If metric UOM is %
     if metric.uom and metric.uom == '%':
         # Return value
         pct = value
     # Look if min/max are defined
-    elif metric.min and metric.max and (metric.max - metric.min != 0):
-        pct = 100 * (value / (metric.max - metric.min))
+    # Thanks @medismail
+    # elif metric.min and metric.max and (metric.max - metric.min != 0):
+        # pct = 100 * (value / (metric.max - metric.min))
+    elif (metric.min != None) and (metric.max != None) and (metric.max - metric.min != 0):
+        pct = int(1000 * (value / float(metric.max - metric.min))+5)/10
     else:
         # Assume value is 100%
         pct = 100
@@ -190,7 +193,7 @@ def manage_unknown_command(elt, metric=None):
     # Percentage is at least 1% and max 100%
     pct = max(1, pct)
     pct = min(pct, 100)
-    
+
     # Title
     try:
         title = '%s%s' % (value, metric.uom)
@@ -203,7 +206,16 @@ def manage_unknown_command(elt, metric=None):
     # Get the color
     base = {0: 'success', 1: 'warning', 2: 'danger', 3: 'info'}
     color = base.get(elt.state_id, 'info')
-    
+
+    # Thanks @medismail
+	# Color depending upon success ...
+    if metric.warning and value < metric.warning:
+        color = 'success'
+    if metric.warning and value > metric.warning:
+        color = 'warning'
+    if metric.critical and value > metric.critical:
+        color = 'danger'
+
     logger.debug("[WebUI] perfometer, manage command, metric: %s=%d -> %d", name, value, pct)
 
     return {'lnk': lnk, 'metrics': [(color, pct)], 'title': title}

@@ -9,26 +9,43 @@
 
   <h4>Search hosts or services</h4>
   <p>
+    Use the (optional) name qualifier to search for specific elements (hosts and/or services).
+  </p>
+  <ul>
+    <li><code>name:www</code> Matches hosts and services with "www" in their name.</li>
+    <li><code>name:"www server"</code> or <code>name:"www server"</code> Matches hosts and services with "www server" in their name.</li>
+    <li><code>name:www name:server</code> or <code>www server</code> Matches hosts and services with "www" or "server" in their name.</li>
+  </ul>
+
+  <p><i class="fa fa-thumbs-up"></i> The name qualifier is optional and may be omitted, as used in the two last examples.</p>
+
+  <p>
     By default, searching for elements will return both hosts and services. However, you can use the type qualifier to restrict search results to hosts or services only.
   </p>
   <ul>
-    <li><code>www type:host</code> Matches hosts with "www" in their hostname.</li>
+    <li><code>type:host</code> Matches all hosts</li>
+    <li><code>type:service</code> Matches all services.</li>
+    <li><code>type:host name:www</code> Matches hosts with "www" in their hostname.</li>
+    <li><code>type:host name:"www server"</code> Matches hosts with "www server" in their hostname.</li>
   </ul>
 
   <h4>Search by the state of an element</h4>
-  <p>The <code>is</code> and <code>isnot</code> qualifiers finds elements by a certain state. For example:</p>
+  <p>The <code>is</code> and <code>isnot</code> qualifiers find elements by a certain state. For example:</p>
   <ul>
     <li><code>is:DOWN</code> Matches hosts that are DOWN.</li>
-    <li><code>isnot:0</code> Matches services and hosts that are not OK or UP (all the problems). Equivalent to <code>isnot:OK isnot:UP</code></li>
-    <li><code>load isnot:ok</code> Matches services with the word "load", in states warning, critical, unknown or pending.</li>
+    <li><code>isnot:0</code> Matches services and hosts that are not OK or UP. Equivalent to <code>isnot:OK isnot:UP</code></li>
+    <li><code>name:load isnot:ok</code> Matches services with the word "load", in states warning, critical, unknown or pending.</li>
     <li><code>is:ack</code> Matches elements that are acknownledged.</li>
     <li><code>is:downtime</code> Matches elements that are in a scheduled downtime.</li>
   </ul>
-  <p><strong>Note:</strong> default search on state is made only against HARD states.</p>
-  <p>Preceding the state with the letter <code>s</code> makes the search only consider SOFT states. For example:</p>
+  <p><strong>Note:</strong> default search on state is made against HARD and SOFT states.</p>
+  <p>Preceding the state with the letter <code>s</code> makes the search only consider SOFT states.</p>
+  <p>You can also preceding the state with the letter <code>h</code> to made the search only cosider HARD states.</p>
+  <p>For example:</p>
   <ul>
     <li><code>is:sDOWN</code> Matches hosts that are SOFT state DOWN.</li>
     <li><code>isnot:s0</code> Matches services and hosts that are SOFT state not OK neither UP (all the not yet confirmed problems)</li>
+    <li><code>is:hCRITICAL</code> Matches services that are HARD state CRITICAL.</li>
   </ul>
 
   <h4>Search by the business impact of an element</h4>
@@ -57,7 +74,7 @@
     <li><code>stag:mysql</code> Matches services tagged "mysql".</li>
   </ul>
 
-  <p>Obviously, you can't combine htag and stag qualifiers in a search and expect to get results.</p>
+  <p><i class="fa fa-thumbs-up"></i> Obviously, you can't combine htag and stag qualifiers in a search and expect to get results.</p>
 
   <h4>Search by contact group and contact tag</h4>
   <p>Examples:</p>

@@ -45,6 +45,25 @@ def show_pref():
     return {}
 
 
+def get_pref():
+    user = app.request.environ['USER']
+    key = app.request.query.get('key', None)
+
+    if not key:
+        return
+
+    return app.prefs_module.get_ui_user_preference(user, key)
+
+
+def get_common_pref():
+    user = app.request.environ['USER']
+    key = app.request.query.get('key', None)
+
+    if not key:
+        return
+
+    return app.prefs_module.get_ui_common_preference(user, key)
+
 def save_pref():
     user = app.request.environ['USER']
     key = app.request.query.get('key', None)
@@ -73,7 +92,7 @@ def save_common_pref():
     print "We will save common pref ", key, ':', value
     print "As %s" % s
 
-    if user.is_admin:
+    if user.is_administrator():
         app.prefs_module.set_ui_common_preference( key, value)
 
     return
@@ -81,12 +100,18 @@ def save_common_pref():
 
 pages = {
     show_pref: {
-        'name': 'GetPref', 'route': '/user/pref', 'view': 'user_pref', 'static': True
+        'name': 'ShowPref', 'route': '/user/pref', 'view': 'user_pref', 'static': True
     },
     save_pref: {
         'name': 'SetPref', 'route': '/user/save_pref'
     },
     save_common_pref: {
         'name': 'SetCommonPref', 'route': '/user/save_common_pref'
+    },
+    get_pref: {
+        'name': 'GetPref', 'route': '/user/get_pref'
+    },
+    get_common_pref: {
+        'name': 'GetCommonPref', 'route': '/user/get_common_pref'
     }
 }

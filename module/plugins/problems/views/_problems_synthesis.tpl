@@ -1,9 +1,10 @@
 <!-- Problems synthesis -->
+%setdefault('header', True)
+%setdefault('widget', False)
 
-%search_string = app.get_search_string()
-%synthesis = helper.get_synthesis(all_pbs)
-%s = synthesis['services']
-%h = synthesis['hosts']
+%if header:
+%s = app.datamgr.get_services_synthesis(user=user, elts=all_pbs)
+%h = app.datamgr.get_hosts_synthesis(user=user, elts=all_pbs)
 
 <div class="panel panel-default">
    <div class="panel-body">
@@ -12,32 +13,62 @@
             %if 'type:service' not in search_string:
             <tr>
                <td>
-               <b>{{h['nb_elts']}} hosts:&nbsp;</b> 
+               <b>{{h['nb_elts']}} hosts</b>
                </td>
-             
-               %for state in 'up', 'unreachable', 'down', 'pending', 'unknown', 'ack', 'downtime':
+
+               %if not widget:
+               %states = ['up', 'unreachable', 'down', 'pending', 'unknown']
+               %else:
+               %states = ['unreachable', 'down', 'pending', 'unknown']
+               %end
+               %for state in states:
                <td>
-                 %label = "%s <i>(%s%%)</i>" % (h['nb_' + state], h['pct_' + state])
-                 <a href="/all?search=type:host is:{{state}}">
-                 {{!helper.get_fa_icon_state_and_label(cls='host', state=state, label=label, disabled=(not h['nb_' + state]))}}
+                 %label = "%s hosts %s (%s%%)" % (h['nb_' + state], state, h['pct_' + state])
+                 <a style="text-decoration: none;" href="/all?search=type:host is:{{state}} isnot:ack isnot:downtime" title="{{label}}">
+                 {{! helper.get_fa_icon_state_and_label(cls='host', state=state, label=h['nb_' + state], useTitle=False, disabled=(not h['nb_' + state]))}}
                  </a>
                </td>
+               %end
+               %if not widget:
+               %for state in 'ack', 'downtime':
+               <td>
+                 %label = "%s hosts %s (%s%%)" % (h['nb_' + state], state, h['pct_' + state])
+                 <a style="text-decoration: none;" href="/all?search=type:host is:{{state}}" title="{{label}}">
+                 {{! helper.get_fa_icon_state_and_label(cls='host', state=state, label=h['nb_' + state], useTitle=False, disabled=(not h['nb_' + state]))}}
+                 </a>
+               </td>
+               %end
                %end
             </tr>
             %end
             %if 'type:host' not in search_string:
             <tr>
                <td>
-                  <b>{{s['nb_elts']}} services:&nbsp;</b> 
+                  <b>{{s['nb_elts']}} services</b>
                </td>
-          
-               %for state in 'ok', 'warning', 'critical', 'pending', 'unknown', 'ack', 'downtime':
+
+               %if not widget:
+               %states = ['ok', 'warning', 'critical', 'pending', 'unknown']
+               %else:
+               %states = ['warning', 'critical', 'pending', 'unknown']
+               %end
+               %for state in states:
                <td>
-                 %label = "%s <i>(%s%%)</i>" % (s['nb_' + state], s['pct_' + state])
-                 <a href="/all?search=type:service is:{{state}}">
-                 {{!helper.get_fa_icon_state_and_label(cls='service', state=state, label=label, disabled=(not s['nb_' + state]))}}
+                 %label = "%s services %s (%s%%)" % (s['nb_' + state], state, s['pct_' + state])
+                 <a style="text-decoration: none;" href="/all?search=type:service is:{{state}} isnot:ack isnot:downtime" title="{{label}}">
+                 {{!helper.get_fa_icon_state_and_label(cls='service', state=state, label=s['nb_' + state], useTitle=False, disabled=(not s['nb_' + state]))}}
                  </a>
                </td>
+               %end
+               %if not widget:
+               %for state in 'ack', 'downtime':
+               <td>
+                 %label = "%s services %s (%s%%)" % (s['nb_' + state], state, s['pct_' + state])
+                 <a style="text-decoration: none;" href="/all?search=type:service is:{{state}}" title="{{label}}">
+                 {{!helper.get_fa_icon_state_and_label(cls='service', state=state, label=s['nb_' + state], useTitle=False, disabled=(not s['nb_' + state]))}}
+                 </a>
+               </td>
+               %end
                %end
             </tr>
             %end
@@ -45,4 +76,4 @@
       </table>
    </div>
 </div>
-
+%end

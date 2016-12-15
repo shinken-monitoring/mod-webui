@@ -1,13 +1,13 @@
 <script type="text/javascript">
    function submit_local_form() {
       // Launch acknowledge request and bailout this modal view
-      do_acknowledge("{{name}}", $('#reason').val(), '{{user.get_name()}}');
-      
+      do_acknowledge("{{name}}", $('#reason').val(), '{{user.get_name()}}', '{{app.default_ack_sticky}}', '{{app.default_ack_notify}}', '{{app.default_ack_persistent}}');
+
       %if elt.__class__.my_type=='host':
       if ($('#ack_services').is(":checked")) {
       %for service in elt.services:
       %if service.state != service.ok_up and not service.problem_has_been_acknowledged:
-         do_acknowledge("{{name}}/{{service.get_name()}}", $('#reason').val(), '{{user.get_name()}}');
+         do_acknowledge("{{name}}/{{service.get_name()}}", $('#reason').val(), '{{user.get_name()}}', '{{app.default_ack_sticky}}', '{{app.default_ack_notify}}', '{{app.default_ack_persistent}}');
       %end
       %end
       }
@@ -30,11 +30,17 @@
          <input name="ack_services" id="ack_services" type="checkbox" checked="checked">Acknowledge all services for the host?</input>
       </div>
       %end
-      
+
+      <div class="form-group">
+         <input name="default_ack_sticky" id="default_ack_sticky" type="hidden" value="{{app.default_ack_sticky}}">
+         <input name="default_ack_notify" id="default_ack_notify" type="hidden" value="{{app.default_ack_notify}}">
+         <input name="default_ack_persistent" id="default_ack_persistent" type="hidden" value="{{app.default_ack_persistent}}">
+      </div>
+
       <div class="form-group">
          <textarea name="reason" id="reason" class="form-control" rows="5" placeholder="Reason…">Acknowledged from WebUI by {{user.get_name()}}.</textarea>
       </div>
-       
+
       <a href="javascript:submit_local_form();" class="btn btn-primary btn-lg btn-block"> <i class="fa fa-save"></i> Submit</a>
    </form>
 </div>

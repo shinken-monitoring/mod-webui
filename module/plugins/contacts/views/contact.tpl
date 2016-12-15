@@ -4,16 +4,15 @@
 %# If got no element, bailout
 %if not contact:
 %rebase("layout", title='Invalid contact name')
+%end
 
-%else:
+%helper = app.helper
 
 %username = 'anonymous'
-%if user is not None: 
-%if hasattr(contact, 'alias'):
+%if hasattr(contact, 'alias') and contact.alias != 'none':
 %username = contact.alias
 %else:
-%username = contact.get_name()
-%end
+%username = contact.contact_name
 %end
 
 %rebase("layout", title='Contact ' + username, breadcrumb=[ ['All contacts', '/contacts'], [username, '/contact/'+username] ])
@@ -63,7 +62,7 @@
             <!-- User image / user name / user category -->
             <div class="user-header bg-light-blue">
                <img src="{{app.user_picture}}" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}">
-            
+
                <p class="username">
                  {{username}}
                </p>
@@ -73,8 +72,67 @@
                </p>
                %end
             </div>
-          
+
             <div class="user-body">
+               %if contact.downtimes:
+               <table class="table table-condensed col-sm-12" style="table-layout: fixed; word-wrap: break-word;">
+                  <colgroup>
+                     <col style="width: 30%" />
+                     <col style="width: 70%" />
+                  </colgroup>
+                  <thead>
+                     <tr>
+                       <th>Author</th>
+                       <th>Reason</th>
+                       <th>Period</th>
+                       <th></th>
+                     </tr>
+                  </thead>
+                  <tbody style="font-size:x-small;">
+                        %for dt in sorted(contact.downtimes, key=lambda dt: dt.entry_time, reverse=True):
+                           <tr>
+                              <td>{{dt.author}}</td>
+                           </tr>
+                        %end
+                        %for dt in sorted(contact.downtimes, key=lambda dt: dt.entry_time, reverse=True):
+                           <tr>
+                              <td>{{dt.author}}</td>
+                              <td>{{dt.comment}}</td>
+                              <td>{{helper.print_date(dt.start_time)}} - {{helper.print_date(dt.end_time)}}</td>
+                              <td>
+                                 <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm"
+                                       data-type="action" action="delete-downtime"
+                                       data-toggle="tooltip" data-placement="bottom" title="Delete the downtime '{{dt.id}}' for this {{elt_type}}"
+                                       data-element="{{helper.get_uri_name(contact)}}" data-downtime="{{dt.id}}"
+                                       >
+                                    <i class="fa fa-trash-o"></i>
+                                 </button>
+                              </td>
+                           </tr>
+                        %end
+                  </tbody>
+               </table>
+               %end
+
+               <!--
+               <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm"
+                       data-type="action" action="schedule-downtime"
+                       data-toggle="tooltip" data-placement="bottom" title="Schedule a downtime for this contact"
+                       data-element="{{contact.contact_name}}"
+                       >
+                    <i class="fa fa-plus"></i> Schedule a downtime
+               </button>
+               %if contact.downtimes:
+               <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm"
+                       data-type="action" action="delete-downtimes"
+                       data-toggle="tooltip" data-placement="bottom" title="Delete all the downtimes of this contact"
+                       data-element="{{contact.contact_name}}"
+                       >
+                    <i class="fa fa-minus"></i> Delete all downtimes
+               </button>
+               %end
+               -->
+
                <table class="table table-condensed col-sm-12" style="table-layout: fixed; word-wrap: break-word;">
                   <colgroup>
                      <col style="width: 30%" />
@@ -144,7 +202,7 @@
                      %end
                   </tbody>
                </table>
-            
+
                <table class="table table-condensed col-sm-12" style="table-layout: fixed; word-wrap: break-word;">
                   <colgroup>
                      <col style="width: 30%" />
@@ -164,7 +222,7 @@
                               <script>
                               %j=0
                               %for t in sorted(contact.tags):
-                              var b{{j}} = $('<a href="/all?search=stag:{{t}}"/>').appendTo($('#contact_tags'));
+                              var b{{j}} = $('<a href="/all?search=ctag:{{t}}"/>').appendTo($('#contact_tags'));
                               $('<img />')
                                  .attr({ 'src': '/static/images/tags/{{t.lower()}}.png', 'alt': '{{t.lower()}}', 'title': 'Tag: {{t.lower()}}' })
                                  .css({height: "24px"})
@@ -193,7 +251,7 @@
                         <td><strong>&raquo;&nbsp;Minimum business impact:</strong></td>
                         <td>{{nw.min_business_impact}} - {{app.helper.get_business_impact_text(nw.min_business_impact, True)}}</td>
                      </tr>
-                  
+
                      <tr>
                         <td colspan="2"><strong>&raquo;&nbsp;Hosts notifications:</strong>&nbsp;{{! app.helper.get_on_off(not in_scheduled_downtime, "Are hosts notifications sent to this contact?")}}</td>
                      </tr>
@@ -211,7 +269,7 @@
                            </script>
                         </td>
                      </tr>
-                  
+
                      %if nw.host_notification_options != '':
                      %options = nw.host_notification_options
                      %message = {}
@@ -231,7 +289,7 @@
                         </td>
                      </tr>
                      %end
-                  
+
                      %i=0
                      %for command in nw.host_notification_commands:
                        %i += 1
@@ -250,8 +308,8 @@
                      %end
                      %end
                      %# If host notifications enabled ...
-                  
-                
+
+
                      <tr>
                         <td colspan="2"><strong>&raquo;&nbsp;Services notifications:</strong>&nbsp;{{! app.helper.get_on_off(nw.service_notifications_enabled, "Are services notifications sent to this contact?")}}</td>
                      </tr>
@@ -269,7 +327,7 @@
                            </script>
                         </td>
                      </tr>
-                  
+
                      %if nw.service_notification_options != '':
                      %options = nw.service_notification_options
                      %message = {}
@@ -290,14 +348,14 @@
                         </td>
                      </tr>
                      %end
-                  
+
                      %i=0
                      %for command in nw.service_notification_commands:
                         %i += 1
                         <tr>
                            <td><strong>&nbsp;&ndash;command:</strong></td>
                            <td name="service_command{{i}}" class="popover-dismiss" data-html="true" data-toggle="popover" data-trigger="hover" title="Service notification command" data-placement="top" data-content="...">
-                              {{command.get_name()}}
+                              <a href="/commands#{{command.get_name()}}">{{command.get_name()}}</a>
                               <script>
                                  $('td[name="service_command{{i}}"]')
                                    .attr('title', '{{command.get_name()}}')
@@ -309,14 +367,47 @@
                      %end
                      %end
                      %# If service notifications enabled ...
-                  
-                
+
+
                   %i+=1
                   %end
                   %# For notificationways ...
                   </tbody>
                </table>
-            
+
+               %if contact.customs:
+               <table class="table table-condensed col-sm-12" style="table-layout: fixed; word-wrap: break-word;">
+                  <colgroup>
+                     <col style="width: 30%" />
+                     <col style="width: 70%" />
+                  </colgroup>
+                  <thead>
+                     <tr>
+                        <th colspan="2">Customs:</td>
+                     </tr>
+                  </thead>
+                  <tbody style="font-size:x-small;">
+                        %for var in sorted(contact.customs):
+                           <tr>
+                              <td>{{var}}</td>
+                              <td>{{contact.customs[var]}}</td>
+                              %if app.can_action():
+                              <td>
+                                 <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm"
+                                       data-type="action" action="change-variable"
+                                       data-toggle="tooltip" data-placement="bottom" title="Change a custom variable for this {{elt_type}}"
+                                       data-element="{{helper.get_uri_name(contact)}}" data-variable="{{var}}" data-value="{{contact.customs[var]}}"
+                                       >
+                                    <i class="fa fa-gears"></i> Change
+                                 </button>
+                              </td>
+                              %end
+                           </tr>
+                        %end
+                  </tbody>
+               </table>
+               %end
+
                <table class="table table-condensed col-sm-12" style="table-layout: fixed; word-wrap: break-word;">
                   <colgroup>
                      <col style="width: 30%" />
@@ -363,7 +454,7 @@
                         <td>
                         %i=1
                         %for item in my_contactgroups:
-                          {{', ' if i!=1 else ''}}{{item.alias if item.alias!='' else item.get_name()}}
+                          {{', ' if i!=1 else ''}}<a href="/all?search=cg:{{item.get_name()}}">{{item.alias if item.alias!='' else item.get_name()}}</a>
                           %i+=1
                           %if i > 20:
                           <span> ... </span>
@@ -380,4 +471,3 @@
       </div>
    </div>
 </div>
-%end
