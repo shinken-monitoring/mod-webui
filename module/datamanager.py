@@ -759,6 +759,10 @@ class WebUIDataManager(DataManager):
                 logger.info("[WebUI-REG] s=%s -> len(new_items)=%d", s.split(','), len(new_items))
                 items = new_items
 
+            if t == 'loc':
+                items = [i for i in items if i.customs.get('_LOCATION') == s]
+
+
             # :COMMENT:maethor:150616: Legacy filters, kept for bookmarks compatibility
             if t == 'ack':
                 if s.lower() == 'false' or s.lower() == 'no':
