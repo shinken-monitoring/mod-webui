@@ -1,6 +1,6 @@
 <script>
   // Set true to activate javascript console logs
-  var debugMaps = false;
+  var debugMaps = true;
   if (debugMaps && !window.console) {
     alert('Your web browser does not have any console object ... you should stop using IE ;-) !');
   }
@@ -9,7 +9,9 @@
 
   %# List hosts and their services
     var hosts = [
+      %included_hosts = []
       %for h in hosts:
+      %included_hosts.append(h.get_name())
       new Host(
         '{{ h.get_name() }}', '{{ h.state }}',
         '{{ !app.helper.get_fa_icon_state(h) }}',
@@ -30,13 +32,23 @@
           %end
         ],
         [
-          %for p in h.parent_dependencies:
-          [{{float(p.customs.get('_LOC_LAT'))}}, {{float(p.customs.get('_LOC_LNG'))}}],
+          %for x in h.parent_dependencies:
+          %included_hosts.append(x.get_name())
+          [{{float(x.customs.get('_LOC_LAT'))}}, {{float(x.customs.get('_LOC_LNG'))}}],
+          %end
+        ],
+        [
+          %for x in h.child_dependencies:
+          %if x.__class__.my_type == 'host' and x.business_impact > 1 and x.get_name() not in included_hosts:
+          %included_hosts.append(x.get_name())
+          [{{float(x.customs.get('_LOC_LAT'))}}, {{float(x.customs.get('_LOC_LNG'))}}],
+          %end
           %end
         ]
       ),
       %end
     ]
+    console.log('TFLK included_hosts:' + '{{','.join(included_hosts)}}');
 
 
   function hostInfoContent() {
@@ -70,11 +82,18 @@
   }
 
   function parentsGpsLocations() {
-    // console.log('TFLK parentsGpsLocations')
     locations = [];
     for (var i = 0; i < this.parents.length; i++) {
-      // console.log('TFLK parentsGpsLocations parent' + this.parents[i][0])
       var loc = L.latLng(this.parents[i][0], this.parents[i][1]);
+      locations.push(loc);
+    }
+    return locations;
+  }
+
+  function childsGpsLocations() {
+    locations = [];
+    for (var i = 0; i < this.childs.length; i++) {
+      var loc = L.latLng(this.childs[i][0], this.childs[i][1]);
       locations.push(loc);
     }
     return locations;
@@ -133,7 +152,7 @@
     return hs;
   }
 
-  function Host(name, state, iconState, businessImpactNumber, businessImpact, lat, lng, isProblem, isAcknowledged, scheduledDowntime, services, parents) {
+  function Host(name, state, iconState, businessImpactNumber, businessImpact, lat, lng, isProblem, isAcknowledged, scheduledDowntime, services, parents, childs) {
     this.name = name;
     this.state = state;
     this.iconState = iconState;
@@ -146,10 +165,12 @@
     this.scheduledDowntime = scheduledDowntime;
     this.services = services;
     this.parents = parents;
+    this.childs = childs;
 
     this.infoContent = hostInfoContent;
     this.location = gpsLocation;
-    this.parentLocations = parentsGpsLocations
+    this.parentLocations = parentsGpsLocations;
+    this.childLocations = childsGpsLocations;
     this.markerIcon = markerIcon;
     this.hostState = hostState;
   }
@@ -169,6 +190,10 @@
     this.infoContent = serviceInfoContent;
   }
 
+  function getLineId(firstPoint, secondPoint) {
+      return Math.floor(firstPoint.lat*10000) + '/' + Math.floor(firstPoint.lng*10000) + '__' + Math.floor(secondPoint.lat*10000) + '/' + Math.floor(secondPoint.lng*10000);
+  }
+  
   function Arrow(firstPoint, secondPoint) {
     var arrowIcon = L.icon({
       iconUrl: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IArs4c6QAAAAlwSFlzAAALEwAACxMBAJqcGAAAAVlpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IlhNUCBDb3JlIDUuNC4wIj4KICAgPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4KICAgICAgPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIKICAgICAgICAgICAgeG1sbnM6dGlmZj0iaHR0cDovL25zLmFkb2JlLmNvbS90aWZmLzEuMC8iPgogICAgICAgICA8dGlmZjpPcmllbnRhdGlvbj4xPC90aWZmOk9yaWVudGF0aW9uPgogICAgICA8L3JkZjpEZXNjcmlwdGlvbj4KICAgPC9yZGY6UkRGPgo8L3g6eG1wbWV0YT4KTMInWQAAAdpJREFUOBGFVDtOA0EMnewGCS7ACeAYUIISEtpAxRGgRaLlFijiFkCAlgqJDokT0CAqJD7ZxLznsScT2GR35IzXnzdvbG9CWPZIKOhuS3u3lLKroWZbllbvyxIB9gB5TIGZL9kaFQltxoDdDsB8dTTPfI0YKUBCy3VA3SQ4Ke/cHrKYZFuoSFihD0AdBZtmv1L2NM9iFmIkR3YyYEYKJeUYO4XrPovVpqX3WmXGbs8ACDIx8Vrua24jy6x7APDa/UDnpSnUufJaLmFp3UNCzq5KcFJWBkjQvrHUafh/23p23wbgDAnktgaWM3bdjAVr52C+T9QSr+4d/8NyvrO3Buj1ciDfCeW+nGWa3YAh9bnrNbBzUDL35SwVowBYge9ibEU9sb1Se3wRbBMT6iTAzlaqhxBziKH2Gbt+OjN2kx3lMJOVL+q00Zd3PLHM2R3biV/KAV8edha7JUGeKNTNRh/ZfkL4xFy/KU7z2uW1oc4GHSJ1DbIK/QAyguTsfBLi/yXhEXAN8fWOD22Iv61t+uoe+LYQfQF5S1lSXmksDAMaCyleIGdgsjkHwhqz2FG0k8kvYQM5p5BnAx608HKOgNdpmF6iQh8aHOeS9atgi511lDofSlKE4ggh679ecGIXq+UAsgAAAABJRU5ErkJggg==',
@@ -197,9 +222,12 @@
       // rad2deg -> angle * (180/Math.PI)
       angle = Math.atan(slope)-Math.PI;
     }
-    var midPoint = new L.latLng((firstPoint.lat+secondPoint.lat)/2, (firstPoint.lng+secondPoint.lng)/2);
+    var offset = 0.25 + (Math.random() * 0.5);
+    var intermediateLat = firstPoint.lat + (secondPoint.lat-firstPoint.lat)*offset
+    var intermediateLng = firstPoint.lng + (secondPoint.lng-firstPoint.lng)*offset
+    var intermediatePoint = new L.latLng(intermediateLat, intermediateLng);
     // console.log('TFLK arrow:' + firstPoint + secondPoint + angle + '->' + (angle * (180/Math.PI)));
-    return L.marker(midPoint, {icon: arrowIcon, rotationAngle: 90-(angle * (180/Math.PI))});
+    return L.marker(intermediatePoint, {icon: arrowIcon, rotationAngle: 90-(angle * (180/Math.PI))});
   }
 
   var map_{{mapId}};
@@ -278,33 +306,45 @@
 
         // Markers ...
       var allMarkers_{{mapId}} = [];
-      // var arrow_latlngs = [], arrow_latlng;
+      var lineIds = [], lineId;
       for (var i = 0; i < hosts.length; i++) {
         var h = hosts[i];
         bounds.extend(h.location());
         allMarkers_{{mapId}}.push(markerCreate_{{mapId}}(h));
-        // console.log('TFLK')
+
         var parentLocations = h.parentLocations();
         for (var j = 0; j < parentLocations.length; j++) {
-          // console.log('TFLK j' + j)
           var loc = parentLocations[j];
-          var line = new L.Polyline(
-            [h.location(), loc],{
-              weight: h.businessImpactNumber,
-              color: '#00ff00',
-            }
-          );
-          allMarkers_{{mapId}}.push(line);
-          // console.log('TFLK arrow_latlngs1' + arrow_latlngs);
-          // arrow_latlng = Math.floor(loc.lat*10000) + '/' + Math.floor(loc.lng*10000);
-            // var arrow = Arrow(h.location(), loc);
-          allMarkers_{{mapId}}.push(Arrow(h.location(), loc));
-          // if (arrow_latlngs.indexOf(arrow_latlng) == -1) {
-          //   arrow_latlngs.push(arrow_latlng);
-          //   console.log('TFLK arrow_latlngs2:' + arrow_latlngs.indexOf(arrow_latlng) + '-' + arrow_latlngs);
-          //   var arrow = Arrow(h.location(), loc);
-          //   allMarkers_{{mapId}}.push(arrow);
-          // }
+
+          lineId = getLineId(h.location(), loc);
+          if (lineIds.indexOf(lineId) == -1) {
+            lineIds.push(lineId);
+            var line = new L.Polyline(
+              [h.location(), loc],{
+                weight: h.businessImpactNumber,
+                color: '#00ff00',
+              }
+            );
+            allMarkers_{{mapId}}.push(line);
+            allMarkers_{{mapId}}.push(Arrow(h.location(), loc));
+          }
+        }
+
+        var childLocations = h.childLocations();
+        for (var j = 0; j < childLocations.length; j++) {
+          var loc = childLocations[j];
+          lineId = getLineId(loc, h.location());
+          if (lineIds.indexOf(lineId) == -1) {
+            lineIds.push(lineId);
+            var line = new L.Polyline(
+              [loc, h.location()],{
+                weight: h.businessImpactNumber,
+                color: '#00ff00',
+              }
+            );
+            allMarkers_{{mapId}}.push(line);
+            allMarkers_{{mapId}}.push(Arrow(loc, h.location()));
+          }
         }
       }
 
