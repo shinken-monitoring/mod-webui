@@ -760,7 +760,7 @@ class WebUIDataManager(DataManager):
                 items = new_items
 
             if t == 'loc':
-                items = [i for i in items if i.customs.get('_LOCATION') == s]
+                items = [i for i in items if i.customs.get('_LOCATION') in s.split(',')]
 
 
             # :COMMENT:maethor:150616: Legacy filters, kept for bookmarks compatibility
