@@ -622,7 +622,7 @@
                         </div>
                         %end
                         %known_problems=s['nb_ack']+s['nb_downtime']+s['nb_unknown']
-                        %pct_known_problems=round(100.0 * known_problems / s['nb_elts'], 2)
+                        %pct_known_problems=round(100.0 * known_problems / s['nb_elts'], 2) if s['nb_elts'] else 0
                         <div class="col-xs-4 col-sm-4 text-center">
                             <a role="button" href="/all?search=type:service is:ack" class="font-unknown">
                                 <span class="services-count" data-count="{{ s['nb_' + state] }}" data-state="{{ state }}" style="font-size: 1.8em;">{{ pct_known_problems }}%</span>
