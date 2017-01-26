@@ -16,7 +16,7 @@
          <span class="icon-bar"></span>
          <span class="icon-bar"></span>
       </button>
-      <a onclick="display_modal('/modal/about')" class="logo navbar-brand">
+      <a href="/" class="logo navbar-brand">
          <img src="/static/logo/{{app.company_logo}}" alt="Company logo" />
       </a>
    </div>
