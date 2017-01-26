@@ -322,6 +322,22 @@ function toggle_all_notifications(b){
 
 
 /*
+ * Enable/disable all notifications
+ */
+function toggle_all_notifications(b){
+   if (actions_logs) console.debug("Toggle all notifications, currently: ", b)
+
+   if (b) {
+      var url = '/action/DISABLE_NOTIFICATIONS';
+      launch(url, 'All notifications disabled');
+   } else {
+      var url = '/action/ENABLE_NOTIFICATIONS'
+      launch(url, 'All notifications enabled');
+   }
+}
+
+
+/*
  * Enable/disable host/service notifications
  */
 function toggle_notifications(name, b){
