@@ -546,9 +546,9 @@ class WebUIDataManager(DataManager):
                     return []
                 # Items have a item.get_groupnames() method that returns a comma+space separated string ... strange format!
                 for item in items:
-                    if group.get_name() in item.get_groupnames().split(', '):
+                    if group.get_name() in item.get_groupnames().split(','):
                         logger.debug("[WebUI - datamanager] => item %s is a known member!", item.get_name())
-                items = [i for i in items if group.get_name() in i.get_groupnames().split(', ')]
+                items = [i for i in items if group.get_name() in i.get_groupnames().split(',')]
 
             #@mohierf: to be refactored!
             if (t == 'cg' or t == 'cgroup') and s.lower() != 'all':
