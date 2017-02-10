@@ -386,12 +386,13 @@ Invalid element name
                               </tr>
                               <tr>
                                  <td><strong>Since:</strong></td>
-                                 <td class="popover-dismiss"
-                                       data-html="true" data-toggle="popover" data-trigger="hover" data-placement="bottom"
+                                 <td><span class="popover-dismiss"
+                                       data-html="true" data-toggle="popover" data-placement="bottom"
                                        data-title="{{elt.get_full_name()}} last state change date"
                                        data-content=" {{time.strftime('%d %b %Y %H:%M:%S', time.localtime(elt.last_state_change))}} "
                                        >
                                     {{! helper.print_duration(elt.last_state_change, just_duration=True, x_elts=2)}}
+                                    </span>
                                  </td>
                               </tr>
                            </tbody>
@@ -410,26 +411,28 @@ Invalid element name
                            <tbody style="font-size:x-small;">
                               <tr>
                                  <td><strong>Last Check:</strong></td>
-                                 <td><span class="popover-dismiss" data-html="true" data-toggle="popover" data-trigger="hover" data-placement="bottom" data-content="Last check was at {{time.asctime(time.localtime(elt.last_chk))}}">was {{helper.print_duration(elt.last_chk)}}</span></td>
+                                 <td><span class="popover-dismiss" data-html="true" data-toggle="popover" data-placement="bottom" data-content="Last check was at {{time.asctime(time.localtime(elt.last_chk))}}">was {{helper.print_duration(elt.last_chk)}}</span></td>
                               </tr>
                               <tr>
                                  <td><strong>Output:</strong></td>
-                                 <td class="popover-dismiss popover-large"
-                                       data-html="true" data-toggle="popover" data-trigger="hover" data-placement="bottom"
+                                 <td><span class="popover-dismiss popover-large"
+                                       data-html="true" data-toggle="popover" data-placement="bottom"
                                        data-title="{{elt.get_full_name()}} check output"
                                        data-content=" {{elt.output}}{{'<br/>'+elt.long_output.replace('\n', '<br/>') if elt.long_output else ''}}"
                                        >
                                   {{!helper.strip_html_output(elt.output) if app.allow_html_output else elt.output}}
+                                    </span>
                                  </td>
                               </tr>
                               <tr>
                                  <td><strong>Performance data:</strong></td>
-                                 <td class="popover-dismiss popover-large ellipsis"
-                                       data-html="true" data-toggle="popover" data-trigger="hover" data-placement="bottom"
+                                 <td><span class="popover-dismiss popover-large ellipsis"
+                                       data-html="true" data-toggle="popover" data-placement="bottom"
                                        data-title="{{elt.get_full_name()}} performance data"
                                        data-content=" {{elt.perf_data if elt.perf_data else '(none)'}}"
                                        >
                                   {{elt.perf_data if elt.perf_data else '(none)'}}
+                                    </span>
                                  </td>
                               </tr>
                               <tr>
@@ -441,7 +444,7 @@ Invalid element name
 
                               <tr>
                                  <td><strong>Last State Change:</strong></td>
-                                 <td><span class="popover-dismiss" data-html="true" data-toggle="popover" data-trigger="hover" data-placement="bottom" data-content="Last state change at {{time.asctime(time.localtime(elt.last_state_change))}}">{{helper.print_duration(elt.last_state_change)}}</span></td>
+                                 <td><span class="popover-dismiss" data-html="true" data-toggle="popover" data-placement="bottom" data-content="Last state change at {{time.asctime(time.localtime(elt.last_state_change))}}">{{helper.print_duration(elt.last_state_change)}}</span></td>
                               </tr>
                               <tr>
                                  <td><strong>Current Attempt:</strong></td>
@@ -449,7 +452,7 @@ Invalid element name
                               </tr>
                               <tr>
                                  <td><strong>Next Active Check:</strong></td>
-                                 <td><span class="popover-dismiss" data-html="true" data-toggle="popover" data-trigger="hover" data-placement="bottom" data-content="Next active check at {{time.asctime(time.localtime(elt.next_chk))}}">{{helper.print_duration(elt.next_chk)}}</span></td>
+                                 <td><span class="popover-dismiss" data-html="true" data-toggle="popover" data-placement="bottom" data-content="Next active check at {{time.asctime(time.localtime(elt.next_chk))}}">{{helper.print_duration(elt.next_chk)}}</span></td>
                               </tr>
                            </tbody>
                         </table>
@@ -470,7 +473,7 @@ Invalid element name
                                  <td><strong>Check period:</strong></td>
                                  %tp=app.datamgr.get_timeperiod(elt.check_period.get_name())
                                  <td name="check_period" class="popover-dismiss"
-                                       data-html="true" data-toggle="popover" data-trigger="hover" data-placement="left"
+                                       data-html="true" data-toggle="popover" data-placement="left"
                                        data-title='{{tp.alias if hasattr(tp, "alias") else tp.timeperiod_name}}'
                                        data-content='{{!helper.get_timeperiod_html(tp)}}'
                                        >
@@ -488,7 +491,7 @@ Invalid element name
                               <tr>
                                  <td><strong>Maintenance period:</strong></td>
                                  <td name="maintenance_period" class="popover-dismiss"
-                                       data-html="true" data-toggle="popover" data-trigger="hover" data-placement="left"
+                                       data-html="true" data-toggle="popover" data-placement="left"
                                        data-title='{{tp.alias if hasattr(tp, "alias") else tp.timeperiod_name}}'
                                        data-content='{{!helper.get_timeperiod_html(tp)}}'
                                        >
@@ -699,7 +702,7 @@ Invalid element name
                               <tr>
                                  <td><strong>Notification period:</strong></td>
                                  %tp=app.datamgr.get_timeperiod(elt.notification_period.get_name())
-                                 <td name="notification_period" class="popover-dismiss" data-html="true" data-toggle="popover" data-trigger="hover" data-placement="left"
+                                 <td name="notification_period" class="popover-dismiss" data-html="true" data-toggle="popover" data-placement="left"
                                        data-title='{{tp.alias if hasattr(tp, "alias") else tp.timeperiod_name}}'
                                        data-content='{{!helper.get_timeperiod_html(tp)}}'>
                                     {{! helper.get_on_off(elt.notification_period.is_time_valid(now), 'Is element notification period currently active?')}}
@@ -1140,7 +1143,7 @@ Invalid element name
                                           data-toggle="popover" title="{{ elt.get_full_name() }}"
                                           data-html="true"
                                           data-content="<img src='{{ graph['img_src'] }}' width='600px' height='200px'>"
-                                          data-trigger="hover" data-placement="left">{{!helper.get_perfometer(elt, metric.name)}}</a>
+                                          data-placement="left">{{!helper.get_perfometer(elt, metric.name)}}</a>
                                     %end
                                  %end
                               </td>
@@ -1182,7 +1185,7 @@ Invalid element name
                                           data-toggle="popover" title="{{ s.get_full_name() }}"
                                           data-html="true"
                                           data-content="<img src='{{ graph['img_src'] }}' width='600px' height='200px'>"
-                                          data-trigger="hover" data-placement="left">{{!helper.get_perfometer(s, metric.name)}}</a>
+                                          data-placement="left">{{!helper.get_perfometer(s, metric.name)}}</a>
                                     %end
                                  %end
                               </td>
