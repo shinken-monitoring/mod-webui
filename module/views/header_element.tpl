@@ -36,13 +36,7 @@
                %for state in "up", "unreachable", "down", "pending", "unknown", "ack", "downtime":
                <td>
                  %label = "%s <i>(%s%%)</i>" % (h["nb_" + state], h["pct_" + state])
-                 %if state in ['ack', 'downtime']:
-                 <a href="/all?search=type:host is:{{state}}">
-                 %else:
-                 <a href="/all?search=type:host is:{{state}} isnot:ack isnot:downtime">
-                 %end
                  {{!helper.get_fa_icon_state_and_label(cls="host", state=state, label=label, disabled=(not h["nb_" + state]))}}
-                 </a>
                </td>
                %end
             </tr>
@@ -56,13 +50,7 @@
                %for state in "ok", "warning", "critical", "pending", "unknown", "ack", "downtime":
                <td>
                  %label = "%s <i>(%s%%)</i>" % (s["nb_" + state], s["pct_" + state])
-                 %if state in ['ack', 'downtime']:
-                 <a href="/all?search=type:service is:{{state}}">
-                 %else:
-                 <a href="/all?search=type:service is:{{state}} isnot:ack isnot:downtime">
-                 %end
                  {{!helper.get_fa_icon_state_and_label(cls="service", state=state, label=label, disabled=(not s["nb_" + state]))}}
-                 </a>
                </td>
                %end
             </tr>
@@ -82,7 +70,7 @@
          <a id="hosts-states-popover"
             class="hosts-all" data-count="{{ h['nb_elts'] }}" data-problems="{{ h['nb_problems'] }}"
             href="/all?search=type:host"
-            data-original-title="Hosts states" data-toggle="popover popover-hosts" title="Overall hosts states: {{h['nb_elts']}} hosts, {{h["nb_problems"]}} problems">
+            data-original-title="Hosts states" data-toggle="popover popover-hosts" title="Overall hosts states: {{h['nb_elts']}} hosts, {{h["nb_problems"]}} problems" data-html="true" data-trigger="hover">
             <i class="fa fa-server"></i>
             <span class="label label-as-badge label-{{label}}">{{h["nb_problems"]}}</span>
          </a>
@@ -100,7 +88,7 @@
          <a id="services-states-popover"
             class="services-all" data-count="{{ s['nb_elts'] }}" data-problems="{{ s['nb_problems'] }}"
             href="/all?search=type:service"
-            data-original-title="Services states" data-toggle="popover popover-services" title="Overall services states: {{s['nb_elts']}} services, {{s["nb_problems"]}} problems">
+            data-original-title="Services states" data-toggle="popover popover-services" title="Overall services states: {{s['nb_elts']}} services, {{s["nb_problems"]}} problems" data-html="true" data-trigger="hover">
             <i class="fa fa-bars"></i>
             <span class="label label-as-badge label-{{label}}">{{s["nb_problems"]}}</span>
          </a>
@@ -281,48 +269,20 @@
    // Activate the popover ...
    $('#hosts-states-popover').popover({
       placement: 'bottom',
-      trigger: 'manual',
-      animation: false,
+      animation: true,
       template: '<div class="popover img-popover"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
       content: function() {
          return $('#hosts-states-popover-content').html();
       }
-   }).on("mouseenter", function () {
-      var _this = this;
-      $(this).popover("show");
-      $(this).siblings(".popover").on("mouseleave", function () {
-          $(_this).popover('hide');
-      });
-   }).on("mouseleave", function () {
-      var _this = this;
-      setTimeout(function () {
-          if (!$(".popover:hover").length) {
-              $(_this).popover("hide");
-          }
-      }, 100);
    });
 
    // Activate the popover ...
    $('#services-states-popover').popover({
       placement: 'bottom',
-      trigger: 'manual',
-      animation: false,
+      animation: true,
       template: '<div class="popover img-popover"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
       content: function() {
          return $('#services-states-popover-content').html();
       }
-   }).on("mouseenter", function () {
-      var _this = this;
-      $(this).popover("show");
-      $(this).siblings(".popover").on("mouseleave", function () {
-          $(_this).popover('hide');
-      });
-   }).on("mouseleave", function () {
-      var _this = this;
-      setTimeout(function () {
-          if (!$(".popover:hover").length) {
-              $(_this).popover("hide");
-          }
-      }, 100);
    });
 </script>

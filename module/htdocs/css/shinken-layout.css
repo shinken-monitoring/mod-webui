@@ -175,17 +175,6 @@ html, body {
 }
 
 /*
- * Navigation bar, state displays
- */
-.navbar-top-links li .popover a {
-    padding: 0px;
-}
-
-.navbar-top-links li .popover a:hover {
-    text-decoration: none;
-}
-
-/*
  * Navigation bar, user menu
  */
 .user-menu > .dropdown-menu {

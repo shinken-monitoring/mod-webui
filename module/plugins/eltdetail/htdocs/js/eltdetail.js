@@ -45,23 +45,12 @@ function on_page_refresh() {
 //   $('[data-toggle="popover"]').popover();
 
    $('[data-toggle="popover"]').popover({
-      trigger: 'manual',
-      animation: false,
+      trigger: "hover",
+      container: "body",
+      placement: 'bottom',
+      toggle : "popover",
 
       template: '<div class="popover popover-large"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>'
-   }).on("mouseenter", function () {
-      var _this = this;
-      $(this).popover("show");
-      $(this).siblings(".popover").on("mouseleave", function () {
-          $(_this).popover('hide');
-      });
-   }).on("mouseleave", function () {
-      var _this = this;
-      setTimeout(function () {
-          if (!$(_this).siblings(".popover").is(":hover")) {
-              $(_this).popover("hide");
-          }
-      }, 100);
    });
 
    /*
