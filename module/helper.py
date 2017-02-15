@@ -610,7 +610,7 @@ class Helper(object):
                         'UNREACHABLE': 'server',
                         'ACK': 'check',
                         'DOWNTIME': 'ambulance',
-                        'FLAPPING': 'spinner fa-spin',
+                        'FLAPPING': 'cog fa-spin',
                         'PENDING': 'server',
                         'UNKNOWN': 'server' },
                   'service':
@@ -619,7 +619,7 @@ class Helper(object):
                         'WARNING': 'exclamation',
                         'ACK': 'check',
                         'DOWNTIME': 'ambulance',
-                        'FLAPPING': 'spinner fa-spin',
+                        'FLAPPING': 'cog fa-spin',
                         'PENDING': 'spinner fa-circle-o-notch',
                         'UNKNOWN': 'question' }
                 }
@@ -627,9 +627,12 @@ class Helper(object):
         cls = obj.__class__.my_type if obj is not None else cls
 
         back = '''<i class="fa fa-%s fa-stack-2x font-%s"></i>''' % (icons[cls]['FLAPPING'] if flapping else 'circle', state.lower() if not disabled else 'greyed')
+        if flapping:
+            back += '''<i class="fa fa-circle fa-stack-1x font-%s"></i>''' % (state.lower() if not disabled else 'greyed')
+
         title = "%s is %s" % (cls, state)
         if flapping:
-            icon_color = 'font-' + state.lower() if not disabled else 'font-greyed'
+            icon_color = 'fa-inverse' if not disabled else 'font-greyed'
             title += " and is flapping"
         else:
             icon_color = 'fa-inverse'
@@ -649,7 +652,7 @@ class Helper(object):
         if useTitle:
             icon_text = '''<span class="fa-stack" %s title="%s">%s%s</span>''' % (icon_style, title, back, front)
         else:
-            icon_text = '''<span class="fa-stack" %s">%s%s</span>''' % (icon_style, back, front)
+            icon_text = '''<span class="fa-stack" %s>%s%s</span>''' % (icon_style, back, front)
 
         if label=='':
             return icon_text
