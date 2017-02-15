@@ -567,14 +567,19 @@ class WebUIDataManager(DataManager):
 
             if (t == 'hg' or t == 'hgroup') and s.lower() != 'all':
                 logger.debug("[WebUI - datamanager] searching for items in the hostgroup %s", s)
-                group = self.get_hostgroup(s)
-                if not group:
-                    return []
-                # Items have a item.get_groupnames() method that returns a comma separated string ... strange format!
-                for item in items:
-                    if group.get_name() in item.get_groupnames().split(', '):
-                        logger.debug("[WebUI - datamanager] => item %s is a known member!", item.get_name())
-                items = [i for i in items if group.get_name() in i.get_groupnames().split(', ')]
+                new_items = []
+                for x in s.split(','):
+                    group = self.get_hostgroup(x)
+                    if not group:
+                        return []
+                    # Items have a item.get_groupnames() method that returns a comma separated string ... strange format!
+                    for item in items:
+                        if group.get_name() in item.get_groupnames().split(', '):
+                            logger.debug("[WebUI - datamanager] => item %s is a known member!", item.get_name())
+
+                        if group.get_name() in item.get_groupnames().split(', '):
+                            new_items.append(item)
+                items = new_items
 
             if (t == 'sg' or t == 'sgroup') and s.lower() != 'all':
                 logger.debug("[WebUI - datamanager] searching for items in the servicegroup %s", s)
