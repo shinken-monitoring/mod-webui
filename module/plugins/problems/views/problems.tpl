@@ -57,8 +57,9 @@
                <td>
                   <input type="checkbox" class="input-sm" value="" id="selector-{{helper.get_html_id(pb)}}" data-type="problem" data-business-impact="{{business_impact}}" data-item="{{pb.get_full_name()}}">
                </td>
-               <td title="{{pb.get_name()}} - {{pb.output}} - Since {{helper.print_duration(pb.last_state_change)}} - Last check: {{helper.print_duration(pb.last_chk)}}" class="align-center">
+               <td> <a href="/all?search={{pb.host_name}}" title="{{pb.get_name()}} - {{pb.output}} - Since {{helper.print_duration(pb.last_state_change)}} - Last check: {{helper.print_duration(pb.last_chk)}}" class="align-center">
                   {{!helper.get_fa_icon_state(pb, useTitle=False)}}
+                  </a>
                </td>
                <td>
                   %if i == 0:

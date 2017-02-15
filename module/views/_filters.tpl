@@ -19,6 +19,11 @@
       <li role="presentation"><a role="menuitem" href="/all?search=type:host&title=All hosts">All hosts</a></li>
       <li role="presentation"><a role="menuitem" href="/all?search=type:service&title=All services">All services</a></li>
       <li role="presentation" class="divider"></li>
+      <li role="presentation"><a role="menuitem" href="{{ search_action }}?search=is:probe&title=All Probes">All Probes</a></li>
+      <li role="presentation"><a role="menuitem" href="{{ search_action }}?search=tech:gpon is:probe&title=GPON Probes">GPON Probes</a></li>
+      <li role="presentation"><a role="menuitem" href="{{ search_action }}?search=tech:wimax is:probe&title=WiMAX Probes">WiMAX Probes</a></li>
+      <li role="presentation"><a role="menuitem" href="{{ search_action }}?search=tech:docsis is:probe&title=DOCSIS Probes">DOCSIS Probes</a></li>
+      <li role="presentation" class="divider"></li>
       <li role="presentation"><a role="menuitem" href="/all?search=isnot:0 isnot:ack isnot:downtime&title=New problems">New problems</a></li>
       <li role="presentation"><a role="menuitem" href="/all?search=is:ack&title=Acknowledged problems">Acknowledged problems</a></li>
       <li role="presentation"><a role="menuitem" href="/all?search=is:downtime&title=Scheduled downtimes">Scheduled downtimes</a></li>
