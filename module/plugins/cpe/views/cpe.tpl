@@ -64,8 +64,8 @@ Invalid element name
 	    <dd>{{cpe.customs['_CPE_MODEL']}}</dd>
 	    <dt>Serial Number</dt>
 	    <dd>{{cpe.customs['_SN']}}</dd>
-	    <dd>MAC Address</dd>
-	    <dt>{{cpe.customs['_MAC']}}</dd>
+	    <dt>MAC Address</dt>
+	    <dd>{{cpe.customs['_MAC']}}</dd>
             <dt>CPE IP Address:</dt>
 	    <dd>{{cpe.cpe_address}}</dd>
 	    <dt>Registration host:</dt>
