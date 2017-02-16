@@ -36,7 +36,7 @@
                <i class="fa fa-4x fa-exclamation-triangle font-darkgrey"></i>
                <span class="badger-title itproblem"><i class="fa fa-plus" style="color: #ccc"></i>&nbsp;IT Problems</span>
                %overall_itproblem = app.datamgr.get_overall_it_state(user)
-               <span title="Number of not acknowledged IT problems." class="badger-big background-{{'ok' if overall_itproblem == 0 else 'warning' if overall_itproblem == 1 else 'critical'}}">{{len(app.datamgr.get_problems(user, sorter=None))}}</span>
+               <span title="Number of unacknowledged IT problems." class="badger-big background-{{'ok' if overall_itproblem == 0 else 'warning' if overall_itproblem == 1 else 'critical'}}">{{len(app.datamgr.get_problems(user, sorter=None))}}</span>
             </a></center>
          </td>
 
@@ -45,7 +45,7 @@
                <i class="fa fa-4x fa-flash font-darkgrey"></i>
                <span class="badger-title impacts"><i class="fa fa-plus" style="color: #ccc"></i>&nbsp;Impacts</span>
                %overall_state = app.datamgr.get_overall_state(user)
-               <span title="Number of not acknownledged IT problems." class="badger-big background-{{'ok' if overall_state == 0 else 'warning' if overall_state == 1 else 'critical'}}">{{len(app.datamgr.get_impacts(user))}}</span>
+               <span title="Number of unacknowledged IT problems." class="badger-big background-{{'ok' if overall_state == 0 else 'warning' if overall_state == 1 else 'critical'}}">{{len(app.datamgr.get_impacts(user))}}</span>
             </a></center>
          </td>
       </tr>
@@ -68,8 +68,8 @@
    <div class="panel panel-default">
       <div class="panel-heading" style="padding-bottom: -10">
          <center>
-            <h3>You do not have any user's preferences storage module installed.</h3>
-            <h4 class="alert alert-danger">The Web UI dashboard and user's preferences will not be saved.</h4>
+            <h3>You do not have any user preferences storage modules installed.</h3>
+            <h4 class="alert alert-danger">The Web UI dashboard and user preferences will not be saved.</h4>
          </center>
          <hr/>
          <p>Installing and using a storage module is really easy, follow instructions in this documentation: <a href="https://github.com/shinken-monitoring/mod-webui/wiki/Installing-WebUI-storage-modules" target="_blank"> installing WebUI storage module</a></p>

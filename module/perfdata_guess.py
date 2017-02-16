@@ -24,6 +24,7 @@
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 
 import math
+import operator
 
 from shinken.misc.perfdata import PerfDatas
 from shinken.log import logger
@@ -171,7 +172,7 @@ def manage_unknown_command(elt, metric=None):
     name = metric.name
     value = metric.value
     logger.debug("[WebUI] perfometer, manage command, metric: %s=%d", name, value)
-    if not value:
+    if value is None:
         return None
 
 
@@ -209,11 +210,16 @@ def manage_unknown_command(elt, metric=None):
 
     # Thanks @medismail
 	# Color depending upon success ...
-    if metric.warning and value < metric.warning:
+    if metric.warning and metric.critical and metric.warning < metric.critical:
+        op_func = operator.lt
+    else:
+        op_func = operator.gt
+
+    if metric.warning and op_func(value, metric.warning):
         color = 'success'
-    if metric.warning and value > metric.warning:
+    if metric.warning and op_func(metric.warning, value):
         color = 'warning'
-    if metric.critical and value > metric.critical:
+    if metric.critical and op_func(metric.critical, value):
         color = 'danger'
 
     logger.debug("[WebUI] perfometer, manage command, metric: %s=%d -> %d", name, value, pct)
