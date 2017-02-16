@@ -75,7 +75,7 @@ Invalid element name
 	    <dt>Registration state</dt>
 	    <dd>{{cpe.cpe_registration_state}}</dd>
 	    <dt>Registration tags</dt>
-	    <dd>{{cpe.cpe_registation_tags}}</dd>
+	    <dd>{{cpe.cpe_registration_tags}}</dd>
 	    <dt>Configuration URL:</dt>
 	    <dd>{{cpe.cpe_connection_request_url}}</dd>
             %if cpe.cpe_ipleases:
