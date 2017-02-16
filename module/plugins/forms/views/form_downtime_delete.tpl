@@ -19,7 +19,7 @@
 <div class="modal-body">
    <form name="input_form" role="form">
       <div class="form-group">
-         <textarea name="reason" id="reason" class="form-control" rows="5" placeholder="Comment ...">Dowtime '{{downtime}}' for {{name}} deleted by {{user.get_name()}}.</textarea>
+         <textarea name="reason" id="reason" class="form-control" rows="5" placeholder="Comment ...">Downtime '{{downtime}}' for {{name}} deleted by {{user.get_name()}}.</textarea>
       </div>
 
       <a href="javascript:submit_local_form();" class="btn btn-danger btn-lg btn-block"> <i class="fa fa-save"></i> Submit</a>

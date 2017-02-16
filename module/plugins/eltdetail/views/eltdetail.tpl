@@ -1,5 +1,6 @@
 %import time
 %import re
+%import ast
 %now = int(time.time())
 
 %# If got no element, bailout
@@ -105,6 +106,35 @@ Invalid element name
          %if elt.customs:
          <div class="row">
          <dl class="col-sm-6 dl-horizontal">
+            %if elt_type=='host':
+            <dt>cpe_address:</dt>
+            <dd>{{elt.cpe_address}}</dd>
+            <dt>cpe_registration_host:</dt>
+            <dd>{{elt.cpe_registration_host}}</dd>
+            <dt>cpe_registration_id:</dt>
+            <dd>{{elt.cpe_registration_id}}</dd>
+            <dt>cpe_registration_state:</dt>
+            <dd>{{elt.cpe_registration_state}}</dd>
+            <dt>cpe_registration_tags:</dt>
+            <dd>{{elt.cpe_registration_tags}}</dd>
+            <dt>cpe_connection_request_url:</dt>
+            <dd>{{elt.cpe_connection_request_url}}</dd>
+            %if elt.cpe_ipleases:
+            %try:
+            %cpe_ipleases = ast.literal_eval(elt.cpe_ipleases) or {'foo': 'bar'}
+            %for ip,lease in cpe_ipleases.iteritems():
+            <dt>{{ip}}</dt>
+            <dd>{{lease}}</dd>
+            %end
+            %except Exception, exc:
+            <dt>{{elt.cpe_ipleases}}</dt>
+            <dd>{{exc}}</dd>
+            %end
+            %else:
+            <dt>cpe_ipleases</dt>
+            <dd>empty!</dd>
+            %end
+
             %if '_DETAILLEDESC' in elt.customs:
             <dt>Description:</dt>
             <dd>{{elt.customs['_DETAILLEDESC']}}</dd>
@@ -381,7 +411,9 @@ Invalid element name
                               <tr>
                                  <td><strong>Status:</strong></td>
                                  <td>
+                                    <a href="/all?search={{elt.host_name}}">
                                     {{! helper.get_fa_icon_state(obj=elt, label='title')}}
+                                    </a>
                                  </td>
                               </tr>
                               <tr>
@@ -1161,7 +1193,7 @@ Invalid element name
                            %perfdatas = PerfDatas(s.perf_data)
                            %if perfdatas:
                            %for metric in sorted(perfdatas, key=lambda metric: metric.name):
-                           %if metric.name and metric.value:
+                           %if metric.name and metric.value is not None:
                            <tr>
                               <td>{{!helper.get_link(s, short=True) if service_line else ''}}</td>
                               %service_line = False
