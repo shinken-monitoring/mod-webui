@@ -24,6 +24,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 
+import time
 
 # Will be populated by the UI with it's own value
 app = None
@@ -42,6 +43,8 @@ def show_cpe(cpe_name):
     app.datamgr.set_hostgroups_level(user)
 
     # Get graph data. By default, show last 4 hours
+    maxtime = int(time.time())
+    mintime = maxtime - 7 * 24 * 3600
 
     configs = app.datamgr.get_configs()
     if configs:
@@ -49,7 +52,8 @@ def show_cpe(cpe_name):
     else:
         configintervallength = 1
 
-    return {'cpe': cpe, 'configintervallength': configintervallength}
+    return {'cpe': cpe, 'mintime': mintime, 'maxtime': maxtime,
+            'configintervallength': configintervallength}
 
 
 pages = {

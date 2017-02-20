@@ -1,5 +1,6 @@
 %import time
 %import re
+%from shinken.misc.perfdata import PerfDatas
 %now = int(time.time())
 
 %# If got no element, bailout
@@ -20,6 +21,7 @@ Invalid element name
 %cpe_service = cpe if cpe_type=='service' else None
 %cpe_name = cpe.host_name if cpe_type=='host' else cpe.host.host_name+'/'+cpe.service_description
 %cpe_display_name = cpe_host.display_name if cpe_type=='host' else cpe_service.display_name+' on '+cpe_host.display_name
+%cpe_metrics = PerfDatas(cpe.perf_data)
 
 %# Replace MACROS in display name ...
 %if hasattr(cpe, 'get_data_for_checks'):
@@ -37,9 +39,30 @@ Invalid element name
 %breadcrumb += [[cpe_service.display_name, '/service/'+cpe_name] ]
 %end
 
-%js=['availability/js/justgage.js', 'availability/js/raphael-2.1.4.min.js', 'cv_host/js/flot/jquery.flot.min.js', 'cv_host/js/flot/jquery.flot.tickrotor.js', 'cv_host/js/flot/jquery.flot.resize.min.js', 'cv_host/js/flot/jquery.flot.pie.min.js', 'cv_host/js/flot/jquery.flot.categories.min.js', 'cv_host/js/flot/jquery.flot.time.min.js', 'cv_host/js/flot/jquery.flot.stack.min.js', 'cv_host/js/flot/jquery.flot.valuelabels.js',  'cpe/js/jquery.color.js', 'cpe/js/bootstrap-switch.min.js', 'cpe/js/custom_views.js', 'cpe/js/cpe.js']
+%js=['availability/js/justgage.js', 'availability/js/raphael-2.1.4.min.js', 'cv_host/js/flot/jquery.flot.min.js', 'cv_host/js/flot/jquery.flot.tickrotor.js', 'cv_host/js/flot/jquery.flot.resize.min.js', 'cv_host/js/flot/jquery.flot.pie.min.js', 'cv_host/js/flot/jquery.flot.categories.min.js', 'cv_host/js/flot/jquery.flot.time.min.js', 'cv_host/js/flot/jquery.flot.stack.min.js', 'cv_host/js/flot/jquery.flot.valuelabels.js',  'cpe/js/jquery.color.js', 'cpe/js/bootstrap-switch.min.js', 'cpe/js/custom_views.js', 'cpe/js/google-charts.min.js', 'cpe/js/cpe.js']
 %css=['cpe/css/bootstrap-switch.min.css', 'cpe/css/cpe.css', 'cv_host/css/cv_host.css']
 %rebase("layout", js=js, css=css, breadcrumb=breadcrumb, title=title)
+
+<script>
+var cpe_name = '{{cpe_host.address}}';
+var cpe_metrics = [];
+%for metric in cpe_metrics:
+cpe_metrics.push({
+  'name': '{{cpe_name}}.__HOST__.{{metric.name}}',
+  'uom': '{{metric.uom}}',
+  'value': {{metric.value}}
+})
+%end
+%for service in cpe.services:
+  %for metric in PerfDatas(service.perf_data):
+    cpe_metrics.push({
+      'name': '{{cpe_name}}.{{service.display_name}}.{{metric.name}}',
+      'uom': '{{metric.uom}}',
+      'value': {{metric.value}}
+    })
+  %end
+%end
+</script>
 
 <div id="element" class="row container-fluid">
 
@@ -112,6 +135,27 @@ Invalid element name
          </div>
       </div>
    </div>
+      
+   <div class="panel panel-default">
+     <div class="panel-body">
+     %for metric in cpe_metrics:
+       <div class="row">
+         <h3>{{metric.name}}</h3>
+         <div id="{{cpe_name}}.__HOST__.{{metric.name}}_chart" style="width: 900px; height: 500px"></div>
+       </div>
+     %end
+     %for service in cpe.services:
+       <div class="row">
+         <h2>{{service.display_name}}</h2>
+         %for metric in PerfDatas(service.perf_data):
+           <h3>{{metric.name}}</h3>
+           <div id="{{cpe_name}}.{{service.display_name}}.{{metric.name}}_chart" style="width: 900px; height: 500px"></div>
+         %end
+       </div>
+     %end
+    </div>
+   </div>
+
 </div>
 %#End of the element exist or not case
 %end
