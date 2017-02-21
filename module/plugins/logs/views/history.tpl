@@ -26,8 +26,10 @@
                    <i class="fa fa-exclamation-circle fa-2x font-warning"></i>
                    %else:    # SOFT/HARD/DOWN/CRITICAL
                    <i class="fa fa-times-circle fa-2x font-critical"></i>
+                   %end
                %else:
                    <i class="fa fa-check-circle fa-2x font-greyed"></i>
+               %end
                </td>
                <td>{{time.strftime(date_format, time.localtime(log['timestamp']))}}</td>
                %if elt_type == 'host':
