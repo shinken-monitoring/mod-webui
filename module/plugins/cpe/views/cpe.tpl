@@ -156,6 +156,14 @@ cpe_metrics.push({
     </div>
    </div>
 
+            %if app.logs_module.is_available():
+               <div class="panel panel-default">
+                  <div class="panel-body">
+                     <div id="inner_history" data-element='{{cpe.get_full_name()}}'>
+                     </div>
+                  </div>
+               </div>
+            %end
 </div>
 %#End of the element exist or not case
 %end

@@ -29,6 +29,15 @@ var eltdetail_logs=false;
 google.charts.load('current', {'packages':['corechart']});
 google.charts.setOnLoadCallback(drawChart);
 
+var element = $('#inner_history').data('element');
+
+// Loading indicator ...
+$("#inner_history").html('<i class="fa fa-spinner fa-spin fa-3x"></i> Loading history data ...');
+$("#inner_history").load('/logs/inner/'+encodeURIComponent(element), function(response, status, xhr) {
+    if (status == "error") {
+        $('#inner_history').html('<div class="alert alert-danger">Sorry but there was an error: ' + xhr.status + ' ' + xhr.statusText+'</div>');
+    }
+});
 
 
 
@@ -228,23 +237,6 @@ function on_page_refresh() {
 
         toggle_flap_detection(elt, value);
     });
-
-
-    /*
-     * History / logs
-     */
-    $('a[data-toggle="tab"][href="#history"]').on('shown.bs.tab', function (e) {
-        // First we get the full name of the object from div data
-        var element = $('#inner_history').data('element');
-
-        // Loading indicator ...
-        $("#inner_history").html('<i class="fa fa-spinner fa-spin fa-3x"></i> Loading history data ...');
-        $("#inner_history").load('/logs/inner/'+encodeURIComponent(element), function(response, status, xhr) {
-            if (status == "error") {
-                $('#inner_history').html('<div class="alert alert-danger">Sorry but there was an error: ' + xhr.status + ' ' + xhr.statusText+'</div>');
-            }
-        });
-    })
 
 
     /*
