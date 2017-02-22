@@ -48,6 +48,14 @@ def _get_logs(*args, **kwargs):
         return None
 
 
+def _get_events(*args, **kwargs):
+    if app.logs_module.is_available():
+        return app.logs_module.get_ui_events(*args, **kwargs)
+    else:
+        logger.warning("[WebUI-logs] no get history external module defined!")
+        return None
+
+
 def load_config(app):
     global params
 
@@ -73,7 +81,7 @@ def load_config(app):
         logger.info("[WebUI-logs] configuration, hosts: %s", params['logs_hosts'])
         logger.info("[WebUI-logs] configuration, services: %s", params['logs_services'])
         return True
-    except Exception, exp:
+    except Exception as exp:
         logger.warning("[WebUI-logs] configuration file (%s) not available: %s", configuration_file, str(exp))
         return False
 
@@ -162,6 +170,13 @@ def get_global_history():
     return {'records': logs, 'params': params, 'message': message, 'range_start': range_start, 'range_end': range_end}
 
 
+def get_host_events(name):
+    user = app.request.environ['USER']
+    name = urllib.unquote(name)
+    elt = app.datamgr.get_element(name, user) or app.redirect404()
+    events = _get_events(elt=elt)
+    return {'records': events, 'elt': elt}
+
 
 pages = {
     get_global_history: {
@@ -187,5 +202,9 @@ pages = {
     },
     set_logs_type_list: {
         'name': 'SetLogsTypeList', 'route': '/logs/set_logs_type_list', 'view': 'logs', 'method': 'POST'
+    },
+    get_host_events: {
+        'name': 'GetHostEvents', 'route': '/events/inner/<name:path>', 'view': 'events'
     }
+
 }

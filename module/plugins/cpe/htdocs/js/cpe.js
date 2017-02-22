@@ -26,8 +26,8 @@ var eltdetail_logs=false;
 
 // @mohierf@: really need this global ?
 
-google.charts.load('current', {'packages':['corechart']});
-google.charts.setOnLoadCallback(drawChart);
+google.charts.load('current', {'packages':['corechart', 'controls']});
+google.charts.setOnLoadCallback(drawDashboard);
 
 var element = $('#inner_history').data('element');
 
@@ -39,6 +39,12 @@ $("#inner_history").load('/logs/inner/'+encodeURIComponent(element), function(re
     }
 });
 
+$("#inner_events").html('<i class="fa fa-spinner fa-spin fa-3x"></i> Loading history data ...');
+$("#inner_events").load('/events/inner/'+encodeURIComponent(element), function(response, status, xhr) {
+    if (status == "error") {
+        $('#events_history').html('<div class="alert alert-danger">Sorry but there was an error: ' + xhr.status + ' ' + xhr.statusText+'</div>');
+    }
+});
 
 
 function reload_custom_view(elt){
@@ -57,15 +63,16 @@ function cleanData(element, index, array) {
     element[0] = new Date(aux * 1000)
 }
 
-function drawChart() {
+function drawDashboard() {
     cpe_metrics.forEach(function (metric){
-        $.getJSON('http://'+window.location.hostname+':4288/render/?width=588&height=310&_salt=1487262913.012&target='+metric.name+'&from=-1d&format=json&jsonp=?', function(result) {
+        $.getJSON('http://'+window.location.hostname+':4288/render/?width=588&height=310&_salt=1487262913.012&target='+metric.name+'&from=-7d&format=json&jsonp=?', function(result) {
             var data = result[0].datapoints
             data = data.filter(function (e) {
                 return e[0] !== null
             })
             data.forEach(cleanData)
-            data.unshift(['Time', metric.name])
+            data.unshift([{label: 'Time', id: 'Time', type: 'datetime'},
+                {label: metric.name, id: metric.name, type: 'number'}])
             var dataTable = google.visualization.arrayToDataTable(data)
             var options = {
                 title: result[0].target,
@@ -74,15 +81,41 @@ function drawChart() {
                     title: metric.uom,
                     minValue: 0
                 },
-                explorer: { 
-                    actions: ['dragToZoom', 'rightClickToReset'],
-                    axis: 'horizontal'
+                height: 400,
+                width: 600,
+                chartArea: {
+                    width: '80%'
                 }
+                //explorer: { 
+                //    actions: ['dragToZoom', 'rightClickToReset'],
+                //    axis: 'horizontal'
+                //}
             };
+            var dashboard = new google.visualization.Dashboard(document.getElementById(metric.name+'_dashboard'));
+            var rangeFilter = new google.visualization.ControlWrapper({
+                controlType: 'ChartRangeFilter',
+                containerId: metric.name+'_control',
+                options: {
+                    filterColumnLabel: 'Time',
+                    ui: {
+                        chartOptions: {
+                            height: 50,
+                            width: 600,
+                            chartArea: {
+                                width: '80%'
+                            }
+                        }
+                    }
+                }
+            });
 
-            var chart = new google.visualization.LineChart(document.getElementById(metric.name+'_chart'));
-
-            chart.draw(dataTable, options);
+            var chart = new google.visualization.ChartWrapper({
+                'chartType': 'LineChart',
+                'containerId': metric.name+'_chart',
+                'options': options
+            });
+            dashboard.bind(rangeFilter, chart);
+            dashboard.draw(dataTable);
         });
 
 

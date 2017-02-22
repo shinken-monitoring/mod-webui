@@ -35,6 +35,16 @@
    width: auto\9;
 }
 
+.dashboard-chart {
+   height: 100%;
+   width: 100%;
+}
+
+.dashboard-control {
+   height: 100%;
+   width: 100%;
+}
+
 #event_command {
    margin-bottom: 10px;
    float:right;

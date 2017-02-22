@@ -40,7 +40,7 @@ Invalid element name
 %end
 
 %js=['availability/js/justgage.js', 'availability/js/raphael-2.1.4.min.js', 'cv_host/js/flot/jquery.flot.min.js', 'cv_host/js/flot/jquery.flot.tickrotor.js', 'cv_host/js/flot/jquery.flot.resize.min.js', 'cv_host/js/flot/jquery.flot.pie.min.js', 'cv_host/js/flot/jquery.flot.categories.min.js', 'cv_host/js/flot/jquery.flot.time.min.js', 'cv_host/js/flot/jquery.flot.stack.min.js', 'cv_host/js/flot/jquery.flot.valuelabels.js',  'cpe/js/jquery.color.js', 'cpe/js/bootstrap-switch.min.js', 'cpe/js/custom_views.js', 'cpe/js/google-charts.min.js', 'cpe/js/cpe.js']
-%css=['cpe/css/bootstrap-switch.min.css', 'cpe/css/cpe.css', 'cv_host/css/cv_host.css']
+%css=['cpe/css/bootstrap-switch.min.css', 'cpe/css/datatables.min.css', 'cv_host/css/cv_host.css']
 %rebase("layout", js=js, css=css, breadcrumb=breadcrumb, title=title)
 
 <script>
@@ -141,7 +141,11 @@ cpe_metrics.push({
      %for metric in cpe_metrics:
        <div class="row">
          <h3>{{metric.name}}</h3>
-         <div id="{{cpe_name}}.__HOST__.{{metric.name}}_chart" style="width: 900px; height: 500px"></div>
+         
+         <div id="{{cpe_name}}.__HOST__.{{metric.name}}_dashboard">
+           <div id="{{cpe_name}}.__HOST__.{{metric.name}}_chart" class="dashboard-chart"></div>
+           <div id="{{cpe_name}}.__HOST__.{{metric.name}}_control" class="dashboard-control"></div>
+         </div>
        </div>
      %end
      %for service in cpe.services:
@@ -149,7 +153,10 @@ cpe_metrics.push({
          <h2>{{service.display_name}}</h2>
          %for metric in PerfDatas(service.perf_data):
            <h3>{{metric.name}}</h3>
-           <div id="{{cpe_name}}.{{service.display_name}}.{{metric.name}}_chart" style="width: 900px; height: 500px"></div>
+           <div id="{{cpe_name}}.{{service.display_name}}.{{metric.name}}_dashboard">
+             <div id="{{cpe_name}}.{{service.display_name}}.{{metric.name}}_chart" class="dashboard-chart"></div>
+             <div id="{{cpe_name}}.{{service.display_name}}.{{metric.name}}_control" class="dashboard-control"></div>
+           </div>
          %end
        </div>
      %end
@@ -160,6 +167,12 @@ cpe_metrics.push({
                <div class="panel panel-default">
                   <div class="panel-body">
                      <div id="inner_history" data-element='{{cpe.get_full_name()}}'>
+                     </div>
+                  </div>
+               </div>
+               <div class="panel panel-default">
+                  <div class="panel-body">
+                     <div id="inner_events" data-element='{{cpe.get_full_name()}}'>
                      </div>
                   </div>
                </div>
