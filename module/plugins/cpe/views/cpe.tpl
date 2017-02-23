@@ -40,7 +40,7 @@ Invalid element name
 %end
 
 %js=['availability/js/justgage.js', 'availability/js/raphael-2.1.4.min.js', 'cv_host/js/flot/jquery.flot.min.js', 'cv_host/js/flot/jquery.flot.tickrotor.js', 'cv_host/js/flot/jquery.flot.resize.min.js', 'cv_host/js/flot/jquery.flot.pie.min.js', 'cv_host/js/flot/jquery.flot.categories.min.js', 'cv_host/js/flot/jquery.flot.time.min.js', 'cv_host/js/flot/jquery.flot.stack.min.js', 'cv_host/js/flot/jquery.flot.valuelabels.js',  'cpe/js/jquery.color.js', 'cpe/js/bootstrap-switch.min.js', 'cpe/js/custom_views.js', 'cpe/js/google-charts.min.js', 'cpe/js/cpe.js']
-%css=['cpe/css/bootstrap-switch.min.css', 'cpe/css/datatables.min.css', 'cv_host/css/cv_host.css']
+%css=['cpe/css/bootstrap-switch.min.css', 'cpe/css/datatables.min.css', 'cv_host/css/cv_host.css', 'cpe/css/cpe.css']
 %rebase("layout", js=js, css=css, breadcrumb=breadcrumb, title=title)
 
 <script>
@@ -74,13 +74,14 @@ cpe_metrics.push({
    <!-- Second row : host/service overview ... -->
    <div class="panel panel-default">
       <div class="panel-heading fitted-header cursor" data-toggle="collapse" data-parent="#Overview" href="#collapseOverview">
-         <h4 class="panel-title"><span class="caret"></span>&nbsp;Overview {{cpe_display_name}} {{!helper.get_business_impact_text(cpe.business_impact)}}</h4>
+         <h4 class="panel-title"><span class="caret"></span>{{cpe_display_name}} {{!helper.get_business_impact_text(cpe.business_impact)}}</h4>
       </div>
 
       <div id="collapseOverview" class="panel-body panel-collapse collapse">
-         <div class="row">
-	 <h2>CPE Info</h2>
-	 <dl class="col-sm-12 dl-horizontal">
+         <div class="panel panel-default">
+	 <div class="panel-heading"><h2 class="panel-title">CPE Info</h2></div>
+         <div class="panel-body">
+	 <dl class="col-sm-6 dl-horizontal">
             <dt>CPE alias:</dt>
 	    <dd>{{cpe_host.address}}</dd>
 	    <dt>Model</dd>
@@ -91,21 +92,21 @@ cpe_metrics.push({
 	    <dd>{{cpe.customs['_MAC']}}</dd>
             <dt>CPE IP Address:</dt>
 	    <dd>{{cpe.cpe_address}}</dd>
-	    <dt>Registration host:</dt>
+	    <dt>Registration host</dt>
 	    <dd>{{cpe.cpe_registration_host}}</dt>
-	    <dt>Registration ID:</dt>
+	    <dt>Registration ID</dt>
 	    <dd>{{cpe.cpe_registration_id}}</dd>
 	    <dt>Registration state</dt>
 	    <dd>{{cpe.cpe_registration_state}}</dd>
 	    <dt>Registration tags</dt>
 	    <dd>{{cpe.cpe_registration_tags}}</dd>
-	    <dt>Configuration URL:</dt>
+	    <dt>Configuration URL</dt>
 	    <dd>{{cpe.cpe_connection_request_url}}</dd>
             %if cpe.cpe_ipleases:
             %try:
             %cpe_ipleases = ast.literal_eval(cpe.cpe_ipleases) or {'foo': 'bar'}
             %for ip,lease in cpe_ipleases.iteritems():
-            <dt>Leased IP: {{ip}}</dt>
+            <dt>Leased IP {{ip}}</dt>
             <dd>{{lease}}</dd>
             %end
             %except Exception, exc:
@@ -113,14 +114,16 @@ cpe_metrics.push({
             <dd>{{exc}}</dd>
             %end
             %else:
-            <dt>cpe_ipleases</dt>
-            <dd>empty!</dd>
+            <dt>IP Leases</dt>
+            <dd>N/A</dd>
             %end
 
 	 </dl>
+         </div>
 	 </div>
-         <div class="row">
-	 <h2>Customer info</h2>
+         <div class="panel panel-default">
+	 <div class="panel-heading"><h2 class="panel-title">Customer info</h2></div>
+         <div class="panel-body">
          <dl class="col-sm-6 dl-horizontal">
 	   <dt>Name</dt>
 	   <dd>{{cpe.customs['_CUSTOMER_NAME']}}</dd>
@@ -133,44 +136,54 @@ cpe_metrics.push({
 
          </dl>
          </div>
+         </div>
       </div>
    </div>
       
-   <div class="panel panel-default">
-     <div class="panel-body">
      %for metric in cpe_metrics:
-       <div class="row">
-         <h3>{{metric.name}}</h3>
-         
+   <div class="col-md-6">
+     <div class="panel panel-default">
+       <div class="panel-heading"><h4 class="panel-title">{{metric.name}}</h4></div>
+       <div class="panel-body">
          <div id="{{cpe_name}}.__HOST__.{{metric.name}}_dashboard">
            <div id="{{cpe_name}}.__HOST__.{{metric.name}}_chart" class="dashboard-chart"></div>
            <div id="{{cpe_name}}.__HOST__.{{metric.name}}_control" class="dashboard-control"></div>
          </div>
        </div>
-     %end
-     %for service in cpe.services:
-       <div class="row">
-         <h2>{{service.display_name}}</h2>
-         %for metric in PerfDatas(service.perf_data):
-           <h3>{{metric.name}}</h3>
-           <div id="{{cpe_name}}.{{service.display_name}}.{{metric.name}}_dashboard">
-             <div id="{{cpe_name}}.{{service.display_name}}.{{metric.name}}_chart" class="dashboard-chart"></div>
-             <div id="{{cpe_name}}.{{service.display_name}}.{{metric.name}}_control" class="dashboard-control"></div>
-           </div>
-         %end
-       </div>
-     %end
     </div>
    </div>
+     %end
+     %for service in cpe.services:
+         %service_perf = PerfDatas(service.perf_data)
+         %if service_perf:
+         <h2>{{service.display_name}}</h2>
+         %for metric in service_perf:
+           <div class="col-md-6">
+             <div class="panel panel-default">
+               <div class="panel-heading"><h4 class="panel-title">{{metric.name}}</h4></div>
+                <div class="panel-body">
+                  <div id="{{cpe_name}}.{{service.display_name}}.{{metric.name}}_dashboard">
+                    <div id="{{cpe_name}}.{{service.display_name}}.{{metric.name}}_chart" class="dashboard-chart"></div>
+                    <div id="{{cpe_name}}.{{service.display_name}}.{{metric.name}}_control" class="dashboard-control"></div>
+                  </div>
+                </div>
+              </div>
+           </div>
+         %end
+         %end
+     %end
+    </div>
 
             %if app.logs_module.is_available():
                <div class="panel panel-default">
+                  <div class="panel-heading"><h4 class="panel-title">Log History</h4></div>
                   <div class="panel-body">
                      <div id="inner_history" data-element='{{cpe.get_full_name()}}'>
                      </div>
                   </div>
                </div>
                <div class="panel panel-default">
+                  <div class="panel-heading"><h4 class="panel-title">Event History</h4></div>
                   <div class="panel-body">
                      <div id="inner_events" data-element='{{cpe.get_full_name()}}'>
                      </div>

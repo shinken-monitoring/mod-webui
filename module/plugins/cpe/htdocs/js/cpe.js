@@ -75,11 +75,12 @@ function drawDashboard() {
                 {label: metric.name, id: metric.name, type: 'number'}])
             var dataTable = google.visualization.arrayToDataTable(data)
             var options = {
-                title: result[0].target,
-                legend: { position: 'bottom' },
+                //title: result[0].target,
+                legend: { position: 'top' },
                 vAxis: {
                     title: metric.uom,
-                    minValue: 0
+                    minValue: 0,
+                    format: 'short'
                 },
                 height: 400,
                 width: 600,
