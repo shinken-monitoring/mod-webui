@@ -29,22 +29,6 @@ var eltdetail_logs=false;
 google.charts.load('current', {'packages':['corechart', 'controls']});
 google.charts.setOnLoadCallback(drawDashboard);
 
-var element = $('#inner_history').data('element');
-
-// Loading indicator ...
-$("#inner_history").html('<i class="fa fa-spinner fa-spin fa-3x"></i> Loading history data ...');
-$("#inner_history").load('/logs/inner/'+encodeURIComponent(element), function(response, status, xhr) {
-    if (status == "error") {
-        $('#inner_history').html('<div class="alert alert-danger">Sorry but there was an error: ' + xhr.status + ' ' + xhr.statusText+'</div>');
-    }
-});
-
-$("#inner_events").html('<i class="fa fa-spinner fa-spin fa-3x"></i> Loading history data ...');
-$("#inner_events").load('/events/inner/'+encodeURIComponent(element), function(response, status, xhr) {
-    if (status == "error") {
-        $('#events_history').html('<div class="alert alert-danger">Sorry but there was an error: ' + xhr.status + ' ' + xhr.statusText+'</div>');
-    }
-});
 
 
 function reload_custom_view(elt){
@@ -128,6 +112,24 @@ function drawDashboard() {
  * Function called when the page is loaded and on each page refresh ...
  */
 function on_page_refresh() {
+    var element = $('#inner_history').data('element');
+
+    // Log History
+    $("#inner_history").html('<i class="fa fa-spinner fa-spin fa-3x"></i> Loading history data ...');
+    $("#inner_history").load('/logs/inner/'+encodeURIComponent(element), function(response, status, xhr) {
+        if (status == "error") {
+            $('#inner_history').html('<div class="alert alert-danger">Sorry but there was an error: ' + xhr.status + ' ' + xhr.statusText+'</div>');
+        }
+    });
+
+    // Event History
+    $("#inner_events").html('<i class="fa fa-spinner fa-spin fa-3x"></i> Loading history data ...');
+    $("#inner_events").load('/events/inner/'+encodeURIComponent(element), function(response, status, xhr) {
+        if (status == "error") {
+            $('#events_history').html('<div class="alert alert-danger">Sorry but there was an error: ' + xhr.status + ' ' + xhr.statusText+'</div>');
+        }
+    });
+
     // Show actions bar
     show_actions();
 
@@ -148,6 +150,20 @@ function on_page_refresh() {
 
         template: '<div class="popover popover-large"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>'
     });
+
+
+    $('#btn-reboot').click(function (e) {
+        launch('/action/REBOOT_HOST/'+cpe_name+'/', 'Host reboot ordered')
+    });
+
+    $('#btn-factrestore').click(function (e) {
+        launch('/action/RESTORE_HOST/'+cpe_name+'/', 'Factory reset ordered')
+    });
+
+    $('#btn-unprovision').click(function (e) {
+        launch('/action/UNPROVISION_HOST/'+cpe_name+'/', 'Unprovision ordered')
+    });
+
 
     /*
      * Impacts view
@@ -292,24 +308,6 @@ function on_page_refresh() {
 
 
     /*
-     * Helpdesk
-     */
-    $('a[data-toggle="tab"][href="#helpdesk"]').on('shown.bs.tab', function (e) {
-        // First we get the full name of the object from div data
-        var element = $('#inner_helpdesk').data('element');
-
-        // Loading indicator ...
-        $("#inner_helpdesk").html('<i class="fa fa-spinner fa-spin fa-3x"></i> Loading helpdesk data ...');
-
-        $("#inner_helpdesk").load('/helpdesk/tickets/'+encodeURIComponent(element), function(response, status, xhr) {
-            if (status == "error") {
-                $('#inner_helpdesk').html('<div class="alert alert-danger">Sorry but there was an error: ' + xhr.status + ' ' + xhr.statusText+'</div>');
-            }
-        });
-    })
-
-
-    /*
      * Timeline
      */
     $('a[data-toggle="tab"][href="#timeline"]').on('shown.bs.tab', function (e) {
@@ -388,17 +386,5 @@ function toggleBusinessElt(e) {
     }
 }
 
-
-/* Not very nice ... should be better to request smaller/bigger image to Graphite!
-   @TODO: request adapted size images to Graphite.
-// On window resize ... resizes graphs.
-$(window).bind('resize', function () {
-var img_width = $("#real_graphs").width();
-
-$.each($('#real_graphs img'), function (index, value) {
-$(this).css("width", img_width);
-});
-});
-*/
 
 on_page_refresh();
