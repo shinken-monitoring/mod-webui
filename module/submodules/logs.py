@@ -46,6 +46,11 @@ class LogsMetaModule(MetaModule):
             return self.module.get_ui_availability(elt, range_start, range_end) or default
         return default
 
+    def get_ui_events(self, elt, range_start=None, range_end=None, default=None, limit=200):
+        if self.is_available():
+            return self.module.get_ui_events(elt, range_start, range_end, limit) or default
+        return default
+
 
 class MongoDBLogs():
     '''
@@ -82,6 +87,9 @@ class MongoDBLogs():
 
         self.hav_collection = getattr(mod_conf, 'hav_collection', 'availability')
         logger.info('[WebUI-mongo-logs] hosts availability collection: %s', self.hav_collection)
+
+        self.events_collection = getattr(mod_conf, 'events_collection', 'hostevents')
+        logger.info('[WebUI-mongo-logs] shinken events collection: %s', self.events_collection)
 
         # self.max_records = int(getattr(mod_conf, 'max_records', '200'))
         # logger.info('[WebUI-mongo-logs] max records: %s' % self.max_records)
@@ -131,7 +139,7 @@ class MongoDBLogs():
 
             self.is_connected = True
             logger.info('[WebUI-mongo-logs] database connection established')
-        except Exception, e:
+        except Exception as e:
             logger.error("[WebUI-mongo-logs] Exception: %s", str(e))
             logger.debug("[WebUI-mongo-logs] Exception type: %s", type(e))
             logger.debug("[WebUI-mongo-logs] Back trace of this kill: %s", traceback.format_exc())
@@ -187,7 +195,7 @@ class MongoDBLogs():
                 })
 
             logger.debug("[mongo-logs] %d records fetched from database.", len(records))
-        except Exception, exp:
+        except Exception as exp:
             logger.error("[mongo-logs] Exception when querying database: %s", str(exp))
 
         return records
@@ -222,7 +230,7 @@ class MongoDBLogs():
                     del log['_id']
                 records.append(log)
             logger.debug("[mongo-logs] %d records fetched from database.", len(records))
-        except Exception, exp:
+        except Exception as exp:
             logger.error("[mongo-logs] Exception when querying database: %s", str(exp))
 
         if not records:
@@ -259,3 +267,40 @@ class MongoDBLogs():
                 record['first_check_state'] = log['first_check_state']
 
         return record
+
+    def get_ui_events(self, elt, range_start=None, range_end=None, limit=200):
+        import pymongo
+        if not self.db:
+            logger.error("[mongo-logs] error Problem during init phase, no database connection")
+            return None
+
+        logger.debug("[mongo-logs] get_ui_events, name: %s", elt)
+
+        query = []
+        if elt:
+            query.append({"host_name": elt.host_name})
+        if range_start:
+            query.append({'ts': {'$gte': range_start}})
+        if range_end:
+            query.append({'ts': {'$lte': range_end}})
+
+        query = {'$and': query} if query else None
+        logger.debug("[mongo-logs] Fetching records from database with query: '%s'", query)
+
+        records = []
+        try:
+            for event in self.db[self.events_collection].find(query).sort(
+                    [("ts", pymongo.DESCENDING)]).limit(limit):
+
+                records.append({
+                    "timestamp":    int(event["ts"]),
+                    "host":         event['host_name'],
+                    "source":       event['source'],
+                    "data":         event['data']
+                })
+
+            logger.debug("[mongo-logs] %d records fetched from database.", len(records))
+        except Exception as exp:
+            logger.error("[mongo-logs] Exception when querying database: %s", str(exp))
+
+        return records
