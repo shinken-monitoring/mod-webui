@@ -82,7 +82,7 @@ cpe_metrics.push({
 	 <div class="panel-heading"><h2 class="panel-title">CPE Info</h2></div>
          <div class="panel-body">
 	 <dl class="col-sm-6 dl-horizontal">
-            <dt>CPE alias:</dt>
+            <dt>CPE alias</dt>
 	    <dd>{{cpe_host.address}}</dd>
 	    <dt>Model</dd>
 	    <dd>{{cpe.customs['_CPE_MODEL']}}</dd>
@@ -90,7 +90,7 @@ cpe_metrics.push({
 	    <dd>{{cpe.customs['_SN']}}</dd>
 	    <dt>MAC Address</dt>
 	    <dd>{{cpe.customs['_MAC']}}</dd>
-            <dt>CPE IP Address:</dt>
+            <dt>CPE IP Address</dt>
 	    <dd>{{cpe.cpe_address}}</dd>
 	    <dt>Registration host</dt>
 	    <dd>{{cpe.cpe_registration_host}}</dt>
@@ -141,9 +141,13 @@ cpe_metrics.push({
    </div>
              <!-- Tab Impacts start -->
                <div class="panel panel-default">
+                  <div class="panel-heading"><h4 class="panel-title">Current status</h4></div>
                   <div class="panel-body">
                      <div class="col-lg-6">
                         %displayed_services=False
+                        <a href="/all?search={{cpe.host_name}}">
+                        {{! helper.get_fa_icon_state(obj=cpe, label='title')}}
+                        </a>
                         <!-- Show our father dependencies if we got some -->
                         %if cpe.parent_dependencies:
                         <h4>Root cause:</h4>
@@ -154,7 +158,7 @@ cpe_metrics.push({
                         %if cpe_type=='host' and not cpe.is_problem:
                         %if cpe.services:
                         %displayed_services=True
-                        <h4>My services:</h4>
+                        <h4>Services:</h4>
                         <div class="services-tree">
                           {{!helper.print_aggregation_tree(helper.get_host_service_aggregation_tree(cpe, app), helper.get_html_id(cpe), expanded=False, max_sons=3)}}
                         </div>
@@ -207,7 +211,7 @@ cpe_metrics.push({
             <button id="btn-reboot" type="button" class="btn btn-default">Reboot</button>
             %if cpe.customs['_TECH'] == 'gpon':
             <button id="btn-factrestore" type="button" class="btn btn-default">Factory restore</button>
-            <button id="btn-unprovision" type="button" class="btn btn-default">Desprovisionar</button>
+            <button id="btn-unprovision" type="button" class="btn btn-default">Unprovision</button>
             %end
         </div>
      </div>
