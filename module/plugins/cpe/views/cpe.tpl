@@ -1,5 +1,6 @@
 %import time
 %import re
+%import ast
 %from shinken.misc.perfdata import PerfDatas
 %now = int(time.time())
 
