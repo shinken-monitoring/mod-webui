@@ -180,7 +180,7 @@ cpe_metrics.push({
                             %s += helper.get_link(svc, short=True)
                             %s += "(" + helper.get_business_impact_text(svc.business_impact) + ")"
                             %s += """ is <span class="font-%s"><strong>%s</strong></span>""" % (svc.state.lower(), svc.state)
-                            %s += " since %s" % helper.print_duration(svc.last_state_change, just_duration=True, x_cpes=2)
+                            %s += " since %s" % helper.print_duration(svc.last_state_change, just_duration=True, x_elts=2)
                             %s += "</li>"
                         %end
                         {{!s}}
