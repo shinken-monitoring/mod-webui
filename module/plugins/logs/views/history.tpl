@@ -19,16 +19,18 @@
          %for log in records:
             <tr>
                <td>
-               %if log['state_type']:
-                   %if log['state_type'] is 'UP':
+               %if log['state'] is not None:
+                   %if log['state'] == 0: # UP
                    <i class="fa fa-check-circle fa-2x font-ok"></i>
-                   %elif log['state_type'] is 'WARNING':
+                   %elif log['state'] == 1: # WARNING
                    <i class="fa fa-exclamation-circle fa-2x font-warning"></i>
-                   %else:    # SOFT/HARD/DOWN/CRITICAL
+                   %elif log['state'] == 2:    # 2, CRITICAL
                    <i class="fa fa-times-circle fa-2x font-critical"></i>
+                   %else: # UNKNWON
+                   <i class="fa fa-question-circle fa-2x font-unknown"></i>
                    %end
-               %else:
-                   <i class="fa fa-check-circle fa-2x font-greyed"></i>
+               %else: # UNKNOWN
+                   <i class="fa fa-question-circle fa-2x font-greyed"></i>
                %end
                </td>
                <td>{{time.strftime(date_format, time.localtime(log['timestamp']))}}</td>

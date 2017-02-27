@@ -191,6 +191,7 @@ class MongoDBLogs():
                     "host":         log['host_name'],
                     "service":      log['service_description'],
                     "message":      message,
+                    "state":        log['state'],
                     "state_type":   log['state_type']
                 })
 
