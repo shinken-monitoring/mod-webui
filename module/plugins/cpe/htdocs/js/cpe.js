@@ -238,7 +238,7 @@ function on_page_refresh() {
     });
 
     $('#btn-factrestore').click(function (e) {
-        launch('/action/RESTORE_HOST/'+cpe_name+'/', 'Factory reset ordered')
+        launch('/action/RESTORE_FACTORY_HOST/'+cpe_name+'/', 'Factory reset ordered')
     });
 
     $('#btn-unprovision').click(function (e) {
