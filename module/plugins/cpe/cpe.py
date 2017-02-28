@@ -26,8 +26,18 @@
 
 import time
 
+from shinken.log import logger
+
 # Will be populated by the UI with it's own value
 app = None
+
+
+def _get_logs(*args, **kwargs):
+    if app.logs_module.is_available():
+        return app.logs_module.get_ui_logs(*args, **kwargs)
+    else:
+        logger.warning("[WebUI-logs] no get history external module defined!")
+        return None
 
 
 # Our page
@@ -52,8 +62,12 @@ def show_cpe(cpe_name):
     else:
         configintervallength = 1
 
+    elt = app.datamgr.get_element(cpe_name, user)
+    logs = _get_logs(elt=elt)
+
     return {'cpe': cpe, 'mintime': mintime, 'maxtime': maxtime,
-            'configintervallength': configintervallength}
+            'configintervallength': configintervallength,
+            'records': logs}
 
 
 pages = {

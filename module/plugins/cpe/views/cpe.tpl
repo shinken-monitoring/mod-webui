@@ -1,6 +1,7 @@
 %import time
 %import re
 %import ast
+%import json
 %from shinken.misc.perfdata import PerfDatas
 %now = int(time.time())
 
@@ -40,13 +41,14 @@ Invalid element name
 %breadcrumb += [[cpe_service.display_name, '/service/'+cpe_name] ]
 %end
 
-%js=['availability/js/justgage.js', 'availability/js/raphael-2.1.4.min.js', 'cv_host/js/flot/jquery.flot.min.js', 'cv_host/js/flot/jquery.flot.tickrotor.js', 'cv_host/js/flot/jquery.flot.resize.min.js', 'cv_host/js/flot/jquery.flot.pie.min.js', 'cv_host/js/flot/jquery.flot.categories.min.js', 'cv_host/js/flot/jquery.flot.time.min.js', 'cv_host/js/flot/jquery.flot.stack.min.js', 'cv_host/js/flot/jquery.flot.valuelabels.js',  'cpe/js/jquery.color.js', 'cpe/js/bootstrap-switch.min.js', 'cpe/js/custom_views.js', 'cpe/js/google-charts.min.js', 'cpe/js/cpe.js']
-%css=['cpe/css/bootstrap-switch.min.css', 'cpe/css/datatables.min.css', 'cv_host/css/cv_host.css', 'cpe/css/cpe.css']
+%js=['availability/js/justgage.js', 'availability/js/raphael-2.1.4.min.js', 'cv_host/js/flot/jquery.flot.min.js', 'cv_host/js/flot/jquery.flot.tickrotor.js', 'cv_host/js/flot/jquery.flot.resize.min.js', 'cv_host/js/flot/jquery.flot.pie.min.js', 'cv_host/js/flot/jquery.flot.categories.min.js', 'cv_host/js/flot/jquery.flot.time.min.js', 'cv_host/js/flot/jquery.flot.stack.min.js', 'cv_host/js/flot/jquery.flot.valuelabels.js',  'cpe/js/jquery.color.js', 'cpe/js/bootstrap-switch.min.js', 'cpe/js/custom_views.js', 'cpe/js/google-charts.min.js', 'cpe/js/vis.min.js', 'cpe/js/cpe.js']
+%css=['cpe/css/bootstrap-switch.min.css', 'cpe/css/datatables.min.css', 'cv_host/css/cv_host.css', 'cpe/css/vis.min.css', 'cpe/css/cpe.css']
 %rebase("layout", js=js, css=css, breadcrumb=breadcrumb, title=title)
 
 <script>
 var cpe_name = '{{cpe_host.address}}';
 var cpe_metrics = [];
+var services = [];
 %for metric in cpe_metrics:
 cpe_metrics.push({
   'name': '{{cpe_name}}.__HOST__.{{metric.name}}',
@@ -55,6 +57,7 @@ cpe_metrics.push({
 })
 %end
 %for service in cpe.services:
+  services.push('{{service.display_name}}');
   %for metric in PerfDatas(service.perf_data):
     cpe_metrics.push({
       'name': '{{cpe_name}}.{{service.display_name}}.{{metric.name}}',
@@ -63,6 +66,10 @@ cpe_metrics.push({
     })
   %end
 %end
+</script>
+<script>
+%logs = json.dumps(records)
+logs = {{!logs}}
 </script>
 
 <div id="element" class="row container-fluid">
@@ -79,9 +86,9 @@ cpe_metrics.push({
         </div>
 
         <div id="collapseOverview" class="panel-body panel-collapse collapse in">
-            <div class="panel panel-default">
+            <div class="col-md-6 panel panel-default">
 	        <div class="panel-heading"><h2 class="panel-title">CPE Info</h2></div>
-            <div class="panel-body">
+                <div class="panel-body">
                 <dl class="col-sm-6 dl-horizontal">
                     <dt>CPE alias</dt>
            	    <dd>{{cpe_host.address}}</dd>
@@ -120,9 +127,9 @@ cpe_metrics.push({
                     %end
 
 	        </dl>
+                </div>
             </div>
-        </div>
-        <div class="panel panel-default">
+            <div class="col-md-6 panel panel-default">
             <div class="panel-heading"><h2 class="panel-title">Customer info</h2></div>
             <div class="panel-body">
                 <dl class="col-sm-6 dl-horizontal">
@@ -137,6 +144,15 @@ cpe_metrics.push({
 
                 </dl>
             </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row container-fluid">
+    <div class="panel panel-default">
+        <div class="panel-heading"><h4 class="panel-title">Timeline</h4></div>
+        <div class="panel-body">
+        <div id="timeline"></div>
         </div>
     </div>
 </div>

@@ -26,10 +26,9 @@ var eltdetail_logs=false;
 
 // @mohierf@: really need this global ?
 
-google.charts.load('current', {'packages':['corechart', 'controls']});
+google.charts.load('current', {'packages':['corechart', 'controls','timeline']});
 google.charts.setOnLoadCallback(drawDashboard);
-
-
+drawTimeline();
 
 function reload_custom_view(elt){
     var hname = elt.data('element');
@@ -45,6 +44,88 @@ function cleanData(element, index, array) {
     var aux = element[1]
     element[1] = element[0]
     element[0] = new Date(aux * 1000)
+}
+
+
+/*
+ * Returns an array with the alert logs of the service/host combination ordered by time
+ */
+function getServiceAlerts(hostname, service_name, min_date) {
+    alerts = logs.filter(function(e){
+        return new Date(e.timestamp * 1000) >= min_date && e.type === "SERVICE ALERT" && e.host === hostname && e.service === service_name;
+    });
+
+    alerts.sort(function(a, b){
+        if(a.timestamp > b.timestamp) {
+            return 1;
+        }
+        if(a.timestamp < b.timestamp) {
+            return -1;
+        }
+        return 0;
+    });
+
+    return alerts;
+
+}
+
+
+function stateIdToStr(state_id) {
+    ids = ['OK','WARNING','CRITICAL','UNKNOWN'];
+    return ids[state_id];
+}
+
+function generateTimelineRows(hostname, service_name) {
+    now = new Date();
+    min_date = new Date(new Date().setDate(now.getDate() - 7));
+    alerts = getServiceAlerts(hostname, service_name, min_date);
+    start_time = min_date;
+    rows = [];
+    state = "UNKNOWN";
+    alerts.forEach(function(element, index, array) {
+        end_time = new Date(element.timestamp * 1000);
+        rows.push({
+            group: service_name,
+            content: state,
+            start: start_time,
+            end: end_time,
+            className: labelToColor(state)
+        });
+        start_time = end_time;
+        state = stateIdToStr(element.state);
+    });
+    rows.push({
+        group: service_name,
+        content: state,
+        start: start_time,
+        end: now,
+        className: labelToColor(state)
+    });
+    return rows;
+}
+
+function labelToColor(label) {
+    if (label == 'UP' || label == 'OK')
+        return 'green';
+    if (label == 'WARNING')
+        return 'orange';
+    if (label == 'CRITICAL' || label == 'UNREACHABLE')
+        return 'red';
+    return 'blue';
+}
+
+function drawTimeline() {
+    var container = document.getElementById('timeline');
+    var items = [];
+    var groups = [];
+    services.forEach(function(service) {
+        items = items.concat(generateTimelineRows(cpe_name, service));
+        groups.push({id: service, content: service});
+    });
+    var data = new vis.DataSet(items);
+    var options = {
+    };
+    var timeline = new vis.Timeline(container,data,groups, options);
 }
 
 function drawDashboard() {
