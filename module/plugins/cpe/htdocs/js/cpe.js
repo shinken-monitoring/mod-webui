@@ -24,26 +24,17 @@
 
 var eltdetail_logs=false;
 
-// @mohierf@: really need this global ?
-
 google.charts.load('current', {'packages':['corechart', 'controls','timeline']});
 google.charts.setOnLoadCallback(drawDashboard);
 drawTimeline();
 
-function reload_custom_view(elt){
-    var hname = elt.data('element');
-    var cvname = elt.data('name');
-    var cvconf = elt.data('conf');
-
-    // Be sure to remove the panel from already loaded panels, else it won't load
-    delete _already_loaded[cvname+cvconf];
-    show_custom_view(elt);
-}
-
+/*
+ * Clean graphite raw data for using with Google Charts
+ */
 function cleanData(element, index, array) {
-    var aux = element[1]
-    element[1] = element[0]
-    element[0] = new Date(aux * 1000)
+    var aux = element[1];
+    element[1] = element[0];
+    element[0] = new Date(aux * 1000);
 }
 
 
@@ -51,9 +42,16 @@ function cleanData(element, index, array) {
  * Returns an array with the alert logs of the service/host combination ordered by time
  */
 function getServiceAlerts(hostname, service_name, min_date) {
-    alerts = logs.filter(function(e){
-        return new Date(e.timestamp * 1000) >= min_date && e.type === "SERVICE ALERT" && e.host === hostname && e.service === service_name;
-    });
+    if (logs === null)
+        return null;
+    if (service_name == "host") 
+        alerts = logs.filter(function(e){
+            return new Date(e.timestamp * 1000) >= min_date && e.type === "HOST ALERT" && e.host === hostname;
+        });
+    else
+        alerts = logs.filter(function(e){
+            return new Date(e.timestamp * 1000) >= min_date && e.type === "SERVICE ALERT" && e.host === hostname && e.service === service_name;
+        });
 
     alerts.sort(function(a, b){
         if(a.timestamp > b.timestamp) {
@@ -66,44 +64,62 @@ function getServiceAlerts(hostname, service_name, min_date) {
     });
 
     return alerts;
-
 }
 
-
+/*
+ * Translate an state id as it's stored in mongo-logs to the actual state name
+ */
 function stateIdToStr(state_id) {
     ids = ['OK','WARNING','CRITICAL','UNKNOWN'];
     return ids[state_id];
 }
 
-function generateTimelineRows(hostname, service_name) {
-    now = new Date();
-    min_date = new Date(new Date().setDate(now.getDate() - 7));
-    alerts = getServiceAlerts(hostname, service_name, min_date);
+/*
+ * Iterates every SERVICE/HOST ALERT since min_date to generate rows for a timeline for this service/host state
+ */
+function generateTimelineServiceRows(hostname, service, min_date, max_date) {
+    alerts = getServiceAlerts(hostname, service.name, min_date);
     start_time = min_date;
+    if(alerts === null || alerts.lenght === 0) {  // No logged SERVICE/HOST alerts found. Use current state data.
+        return [{
+            group: service.name,
+            content: '',
+            start: new Date(service.last_state_change * 1000),
+            end: max_date,
+            className: labelToColor(service.state)
+        }];
+    }
+
+    state = "UNKNOWN";  // State is UNKNOWN until we find any ALERT
     rows = [];
-    state = "UNKNOWN";
     alerts.forEach(function(element, index, array) {
         end_time = new Date(element.timestamp * 1000);
-        rows.push({
-            group: service_name,
-            content: state,
-            start: start_time,
-            end: end_time,
-            className: labelToColor(state)
-        });
-        start_time = end_time;
-        state = stateIdToStr(element.state);
+        new_state = stateIdToStr(element.state);
+        if (state !== new_state) {
+            rows.push({
+                group: service.name,
+                content: '',
+                start: start_time,
+                end: end_time,
+                className: labelToColor(state)
+            });
+            start_time = end_time;
+            state = new_state;
+        }
     });
     rows.push({
-        group: service_name,
-        content: state,
+        group: service.name,
+        content: '',
         start: start_time,
-        end: now,
+        end: max_date,
         className: labelToColor(state)
     });
     return rows;
 }
 
+/*
+ * Get the color associated with this state for styling the timeline
+ */
 function labelToColor(label) {
     if (label == 'UP' || label == 'OK')
         return 'green';
@@ -114,31 +130,45 @@ function labelToColor(label) {
     return 'blue';
 }
 
+/*
+ * Draws a timeline for this host state and its service
+ */
 function drawTimeline() {
     var container = document.getElementById('timeline');
     var items = [];
     var groups = [];
+    var now = new Date();
+    var min_date = new Date(new Date().setDate(now.getDate() - 7));
+    items = items.concat(generateTimelineServiceRows(cpe_name, cpe, min_date, now));
+    groups.push({id: cpe.name, content: cpe.name});
     services.forEach(function(service) {
-        items = items.concat(generateTimelineRows(cpe_name, service));
-        groups.push({id: service, content: service});
+        items = items.concat(generateTimelineServiceRows(cpe_name, service, min_date, now));
+        groups.push({id: service.name, content: service.name});
     });
     var data = new vis.DataSet(items);
     var options = {
+        min: min_date,
+        max: now,
+        stack: false
     };
     var timeline = new vis.Timeline(container,data,groups, options);
 }
 
+/*
+ * Draws a graphic for every metric in this host using data from Graphite
+ */
 function drawDashboard() {
     cpe_metrics.forEach(function (metric){
+        // Get graphite data in JSON
         $.getJSON('http://'+window.location.hostname+':4288/render/?width=588&height=310&_salt=1487262913.012&target='+metric.name+'&from=-7d&format=json&jsonp=?', function(result) {
-            var data = result[0].datapoints
+            var data = result[0].datapoints;
             data = data.filter(function (e) {
-                return e[0] !== null
-            })
-            data.forEach(cleanData)
+                return e[0] !== null;
+            });
+            data.forEach(cleanData);
             data.unshift([{label: 'Time', id: 'Time', type: 'datetime'},
-                {label: metric.name, id: metric.name, type: 'number'}])
-            var dataTable = google.visualization.arrayToDataTable(data)
+                {label: metric.name, id: metric.name, type: 'number'}]);
+            var dataTable = google.visualization.arrayToDataTable(data);
             var options = {
                 //title: result[0].target,
                 legend: { position: 'top' },
@@ -185,7 +215,7 @@ function drawDashboard() {
         });
 
 
-    })
+    });
 }
 
 
@@ -211,9 +241,6 @@ function on_page_refresh() {
         }
     });
 
-    // Show actions bar
-    show_actions();
-
     // Buttons tooltips
     $('button').tooltip();
 
@@ -234,15 +261,15 @@ function on_page_refresh() {
 
 
     $('#btn-reboot').click(function (e) {
-        launch('/action/REBOOT_HOST/'+cpe_name+'/', 'Host reboot ordered')
+        launch('/action/REBOOT_HOST/'+cpe_name+'/', 'Host reboot ordered');
     });
 
     $('#btn-factrestore').click(function (e) {
-        launch('/action/RESTORE_FACTORY_HOST/'+cpe_name+'/', 'Factory reset ordered')
+        launch('/action/RESTORE_FACTORY_HOST/'+cpe_name+'/', 'Factory reset ordered');
     });
 
     $('#btn-unprovision').click(function (e) {
-        launch('/action/UNPROVISION_HOST/'+cpe_name+'/', 'Unprovision ordered')
+        launch('/action/UNPROVISION_HOST/'+cpe_name+'/', 'Unprovision ordered');
     });
 
 
@@ -256,136 +283,21 @@ function on_page_refresh() {
 
         if (state=='expanded') {
             $('#impacts ul[name="'+target+'"]').hide();
-            $(this).data('state', 'collapsed')
+            $(this).data('state', 'collapsed');
             $(this).children('i').removeClass('fa-minus').addClass('fa-plus');
         } else {
             $('#impacts ul[name="'+target+'"]').show();
-            $(this).data('state', 'expanded')
+            $(this).data('state', 'expanded');
             $(this).children('i').removeClass('fa-plus').addClass('fa-minus');
         }
     });
 
-    /*
-     * Custom views
-     */
-    $('.cv_pane').on('shown.bs.tab', function (e) {
-        show_custom_view($(this));
-    })
-
-    // Show each active custom view
-    $('.cv_pane.active').each(function(index, elt) {
-        show_custom_view($(elt));
-    });
-
-    /*
-     * Dependency graph
-     */
-    $('a[href="#depgraph"]').on('shown.bs.tab', function (e) {
-        // First we get the full name of the object from div data
-        var element = $('#inner_depgraph').data('element');
-        // Loading indicator ...
-        $("#inner_depgraph").html('<i class="fa fa-spinner fa-spin fa-3x"></i> Loading dependency graph ...');
-        // Then we load the inner depgraph page. Easy isn't it? :)
-        $('#inner_depgraph').load('/inner/depgraph/'+encodeURIComponent(element));
-    });
 
     // Fullscreen management
     $('button[action="fullscreen-request"]').click(function() {
         var elt = $(this).data('element');
         screenfull.request($('#'+elt)[0]);
     });
-
-
-    /*
-     * Commands buttons
-     */
-    // Change a custom variable
-    $('button[action="change-variable"]').click(function () {
-        var elt = $(this).data('element');
-        var variable = $(this).data('variable');
-        var value = $(this).data('value');
-        if (eltdetail_logs) console.debug("Button - set custom variable '"+variable+"'="+value+" for: ", elt)
-
-        display_modal("/forms/change_var/"+elt+"?variable="+variable+"&value="+value);
-    });
-
-    // Toggles ...
-    $('input[action="toggle-active-checks"]').on('switchChange.bootstrapSwitch', function (e, data) {
-        var elt = $(this).data('element');
-        var value = data==false ? true : false;
-        if (eltdetail_logs) console.debug("Toggle active checks for: ", elt, ", currently: ", value);
-
-        // Toggle active checks & host checks
-        toggle_active_checks(elt, value);
-        toggle_host_checks(elt, value);
-    });
-    $('input[action="toggle-passive-checks"]').on('switchChange.bootstrapSwitch', function (e, data) {
-        var elt = $(this).data('element');
-        var value = data==false ? true : false;
-        if (eltdetail_logs) console.debug("Toggle passive checks for: ", elt, ", currently: ", value);
-
-        // Toggle passive checks
-        toggle_passive_checks(elt, value);
-
-        // If active checks match the passive checks state, toggle active checks too
-        var active_check_value = $('input[action="toggle-active-checks"]').bootstrapSwitch('state');
-        if (value == active_check_value) {
-            $('input[action="toggle-active-checks"]').bootstrapSwitch('toggleState');
-        }
-    });
-    $('input[action="toggle-check-freshness"]').on('switchChange.bootstrapSwitch', function (e, data) {
-        var elt = $(this).data('element');
-        var value = data==false ? true : false;
-        if (eltdetail_logs) console.debug("Toggle freshness checks for: ", elt, ", currently: ", value);
-
-        toggle_freshness_check(elt, value);
-    });
-    $('input[action="toggle-notifications"]').on('switchChange.bootstrapSwitch', function (e, data) {
-        var elt = $(this).data('element');
-        var value = data==false ? true : false;
-        if (eltdetail_logs) console.debug("Toggle notifications for: ", elt, ", currently: ", value);
-
-        toggle_notifications(elt, value);
-    });
-    $('input[action="toggle-event-handler"]').on('switchChange.bootstrapSwitch', function (e, data) {
-        var elt = $(this).data('element');
-        var value = data==false ? true : false;
-        if (eltdetail_logs) console.debug("Toggle event handler for: ", elt, ", currently: ", value);
-
-        toggle_event_handlers(elt, value);
-    });
-    $('input[action="toggle-process-perfdata"]').on('switchChange.bootstrapSwitch', function (e, data) {
-        var elt = $(this).data('element');
-        var value = data==false ? true : false;
-        if (eltdetail_logs) console.debug("Toggle perfdata processing for: ", elt, ", currently: ", value);
-
-        toggle_process_perfdata(elt, value);
-    });
-    $('input[action="toggle-flap-detection"]').on('switchChange.bootstrapSwitch', function (e, data) {
-        var elt = $(this).data('element');
-        var value = data==false ? true : false;
-        if (eltdetail_logs) console.debug("Toggle flap detection for: ", elt, ", currently: ", value);
-
-        toggle_flap_detection(elt, value);
-    });
-
-
-    /*
-     * Availability
-     */
-    $('a[data-toggle="tab"][href="#availability"]').on('shown.bs.tab', function (e) {
-        // First we get the full name of the object from div data
-        var element = $('#inner_availability').data('element');
-
-        // Loading indicator ...
-        $("#inner_availability").html('<i class="fa fa-spinner fa-spin fa-3x"></i> Loading availability data ...');
-
-        $("#inner_availability").load('/availability/inner/'+encodeURIComponent(element), function(response, status, xhr) {
-            if (status == "error") {
-                $('#inner_availability').html('<div class="alert alert-danger">Sorry but there was an error: ' + xhr.status + ' ' + xhr.statusText+'</div>');
-            }
-        });
-    })
 
 
     /*
@@ -397,74 +309,8 @@ function on_page_refresh() {
         // Get timeline tab content ...
         $('#inner_timeline').load('/timeline/inner/'+encodeURIComponent(element));
 
-    })
-
-
-    /*
-     * Graphs
-     */
-    // Change graph
-    $('a[data-type="graph"]').click(function (e) {
-        current_graph=$(this).data('period');
-
-        // Update graphs
-        $("#real_graphs").html( html_graphes[current_graph] );
-
-        // Update active period selected
-        $('#graph_periods li').removeClass('active');
-        $(this).parent('li').addClass('active');
     });
 
-    // Restore previously selected tab
-    bootstrap_tab_bookmark();
-
-    // Show actions bar
-    show_actions();
-}
-
-
-/*
- * Host/service aggregation toggle image button action
- */
-function toggleAggregationElt(e) {
-    var toc = document.getElementById('aggregation-node-'+e);
-    var imgLink = document.getElementById('aggregation-toggle-img-'+e);
-
-    img_src = '/static/images/';
-
-    if (toc && toc.style.display == 'none') {
-        toc.style.display = 'block';
-        if (imgLink != null){
-            imgLink.src = img_src+'reduce.png';
-        }
-    } else {
-        toc.style.display = 'none';
-        if (imgLink != null){
-            imgLink.src = img_src+'expand.png';
-        }
-    }
-}
-
-
-/* The business rules toggle buttons*/
-function toggleBusinessElt(e) {
-    //alert('Toggle'+e);
-    var toc = document.getElementById('business-parents-'+e);
-    var imgLink = document.getElementById('business-parents-img-'+e);
-
-    img_src = '/static/images/';
-
-    if (toc && toc.style.display == 'none') {
-        toc.style.display = 'block';
-        if (imgLink != null){
-            imgLink.src = img_src+'reduce.png';
-        }
-    } else {
-        toc.style.display = 'none';
-        if (imgLink != null){
-            imgLink.src = img_src+'expand.png';
-        }
-    }
 }
 
 

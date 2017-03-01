@@ -46,6 +46,11 @@ Invalid element name
 %rebase("layout", js=js, css=css, breadcrumb=breadcrumb, title=title)
 
 <script>
+var cpe = {
+    name: '{{cpe_host.address}}',
+    state: '{{cpe_host.state}}',
+    last_state_change: '{{cpe_host.last_state_change}}'
+};
 var cpe_name = '{{cpe_host.address}}';
 var cpe_metrics = [];
 var services = [];
@@ -54,10 +59,14 @@ cpe_metrics.push({
   'name': '{{cpe_name}}.__HOST__.{{metric.name}}',
   'uom': '{{metric.uom}}',
   'value': {{metric.value}}
-})
+});
 %end
 %for service in cpe.services:
-  services.push('{{service.display_name}}');
+  services.push({
+    name: '{{service.display_name}}',
+    state: '{{service.state}}',
+    last_state_change: '{{service.last_state_change}}'
+  });
   %for metric in PerfDatas(service.perf_data):
     cpe_metrics.push({
       'name': '{{cpe_name}}.{{service.display_name}}.{{metric.name}}',
