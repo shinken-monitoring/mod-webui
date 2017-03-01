@@ -24,7 +24,7 @@
 
 var eltdetail_logs=false;
 
-google.charts.load('current', {'packages':['corechart', 'controls','timeline']});
+google.charts.load('current', {'packages':['corechart', 'controls']});
 google.charts.setOnLoadCallback(drawDashboard);
 drawTimeline();
 
@@ -67,10 +67,18 @@ function getServiceAlerts(hostname, service_name, min_date) {
 }
 
 /*
- * Translate an state id as it's stored in mongo-logs to the actual state name
+ * Translate a service state id as it's stored in mongo-logs to the actual state name
  */
-function stateIdToStr(state_id) {
+function serviceStateIdToStr(state_id) {
     ids = ['OK','WARNING','CRITICAL','UNKNOWN'];
+    return ids[state_id];
+}
+
+/*
+ * Translate a host state id as it's stored in mongo-logs to the actual state name
+ */
+function hostStateIdToStr(state_id) {
+    ids = ['UP','DOWN','UNREACHABLE','UNKNOWN'];
     return ids[state_id];
 }
 
@@ -90,6 +98,12 @@ function generateTimelineServiceRows(hostname, service, min_date, max_date) {
             type: 'background'
         }];
     }
+
+    if (hostname === service.name)
+        stateIdToStr = hostStateIdToStr;
+    else
+        stateIdToStr = serviceStateIdToStr;
+
 
     state = "UNKNOWN";  // State is UNKNOWN until we find any ALERT
     rows = [];
@@ -128,7 +142,7 @@ function labelToColor(label) {
         return 'green';
     if (label == 'WARNING')
         return 'orange';
-    if (label == 'CRITICAL' || label == 'UNREACHABLE')
+    if (label == 'CRITICAL' || label == 'UNREACHABLE' || label == 'DOWN')
         return 'red';
     return 'blue';
 }
@@ -143,9 +157,23 @@ function drawTimeline() {
     var now = new Date();
     var min_date = new Date(new Date().setDate(now.getDate() - 7));
     items = items.concat(generateTimelineServiceRows(cpe_name, cpe, min_date, now));
+    items.push({
+        group: cpe.name,
+        content: '',
+        start: now,
+        className: 'point-'+labelToColor(cpe.state),
+        type: 'point'
+    });
     groups.push({id: cpe.name, content: cpe.name});
     services.forEach(function(service) {
         items = items.concat(generateTimelineServiceRows(cpe_name, service, min_date, now));
+        items.push({
+            group: service.name,
+            content: '',
+            start: now,
+            className: 'point-'+labelToColor(service.state),
+            type: 'point'
+        });
         groups.push({id: service.name, content: service.name});
     });
     var data = new vis.DataSet(items);

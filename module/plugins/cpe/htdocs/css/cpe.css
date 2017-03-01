@@ -48,6 +48,22 @@
   border-color: yellow;
 }
 
+.vis-item.point-green {
+  border-color: darkgreen;
+}
+
+.vis-item.point-red {
+  border-color: darkred;
+}
+
+.vis-item.point-blue {
+  border-color: darkblue;
+}
+
+.vis-item.point-orange {
+  border-color: yellow;
+}
+
 +/* Graph tab */
 #graphs img {
    max-width: 100%;
