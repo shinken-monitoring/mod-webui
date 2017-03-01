@@ -44,7 +44,7 @@ function cleanData(element, index, array) {
 function getServiceAlerts(hostname, service_name, min_date) {
     if (logs === null)
         return null;
-    if (service_name == "host") 
+    if (service_name == hostname) 
         alerts = logs.filter(function(e){
             return new Date(e.timestamp * 1000) >= min_date && e.type === "HOST ALERT" && e.host === hostname;
         });
@@ -86,7 +86,8 @@ function generateTimelineServiceRows(hostname, service, min_date, max_date) {
             content: '',
             start: new Date(service.last_state_change * 1000),
             end: max_date,
-            className: labelToColor(service.state)
+            className: labelToColor(service.state),
+            type: 'background'
         }];
     }
 
@@ -101,7 +102,8 @@ function generateTimelineServiceRows(hostname, service, min_date, max_date) {
                 content: '',
                 start: start_time,
                 end: end_time,
-                className: labelToColor(state)
+                className: labelToColor(state),
+                type: 'background'
             });
             start_time = end_time;
             state = new_state;
@@ -112,7 +114,8 @@ function generateTimelineServiceRows(hostname, service, min_date, max_date) {
         content: '',
         start: start_time,
         end: max_date,
-        className: labelToColor(state)
+        className: labelToColor(state),
+        type: 'background'
     });
     return rows;
 }
