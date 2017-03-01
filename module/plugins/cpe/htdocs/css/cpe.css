@@ -28,6 +28,26 @@
   padding: 15px;
 }
 
+.vis-item.green {
+  background-color: palegreen;
+  border-color: darkgreen;
+}
+
+.vis-item.red {
+  background-color: red;
+  border-color: darkred;
+}
+
+.vis-item.blue {
+  background-color: lavender;
+  border-color: darkblue;
+}
+
+.vis-item.orange {
+  background-color: orange;
+  border-color: yellow;
+}
+
 +/* Graph tab */
 #graphs img {
    max-width: 100%;

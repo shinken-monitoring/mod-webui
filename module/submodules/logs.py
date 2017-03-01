@@ -191,7 +191,9 @@ class MongoDBLogs():
                     "host":         log['host_name'],
                     "service":      log['service_description'],
                     "message":      message,
-                    "state_type":   log['state_type']
+                    "state":        log['state'],
+                    "state_type":   log['state_type'],
+                    "type":         log['type']
                 })
 
             logger.debug("[mongo-logs] %d records fetched from database.", len(records))
