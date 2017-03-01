@@ -729,7 +729,7 @@ class WebUIDataManager(DataManager):
                 items = [i for i in items if i.customs.get('_TECH') == s]
 
             if t == 'perf':
-                match = re.compile('(?P<attr>[\w_]+)(?P<operator>>=|>|==|<|<=)(?P<value>[\d\.]+)').match(s)
+                match = re.compile('(?P<attr>[\w_]+)(?P<operator>>=|>|==|<|<=)(?P<value>[-\d\.]+)').match(s)
                 operator_str2function = {'>=':operator.ge, '>':operator.gt, '==':operator.eq, '<':operator.lt, '<=':operator.le}
                 oper = operator_str2function[match.group('operator')]
                 new_items = []
