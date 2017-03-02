@@ -88,13 +88,6 @@ logs = {{!logs}}
    %tags = cpe_service.get_service_tags() if cpe_service else cpe_host.get_host_tags()
 
 
-   <!-- Second row : host/service overview ... -->
-    <div class="panel panel-default">
-        <div class="panel-heading fitted-header cursor" data-toggle="collapse" data-parent="#Overview" href="#collapseOverview">
-            <h4 class="panel-title"><span class="caret"></span>{{cpe_display_name}} {{!helper.get_business_impact_text(cpe.business_impact)}}</h4>
-        </div>
-
-        <div id="collapseOverview" class="panel-body panel-collapse collapse in">
             <div class="col-md-6 panel panel-default">
 	        <div class="panel-heading"><h2 class="panel-title">CPE Info</h2></div>
                 <div class="panel-body">
@@ -105,8 +98,16 @@ logs = {{!logs}}
                     <dd>{{cpe.customs['_CPE_MODEL']}}</dd>
 	            <dt>Serial Number</dt>
                     <dd>{{cpe.customs['_SN']}}</dd>
+                    %if cpe.customs['_DSN']:
+                    <dt>DSN</dt>
+                    <dd>{{cpe.customs['_DSN']}}</dd>
+                    %end
                     <dt>MAC Address</dt>
                     <dd>{{cpe.customs['_MAC']}}</dd>
+                    %if cpe.customs['_MTAMAC']:
+                    <dt>MTA MAC</dt>
+                    <dd>{{cpe.customs['_MTAMAC']}}</dd>
+                    %end
                     <dt>CPE IP Address</dt>
 	            <dd>{{cpe.cpe_address}}</dd>
 	            <dt>Registration host</dt>
@@ -154,8 +155,6 @@ logs = {{!logs}}
                 </dl>
             </div>
             </div>
-        </div>
-    </div>
 </div>
 <div class="row container-fluid">
     <div class="col-md-9 panel panel-default">
@@ -171,15 +170,15 @@ logs = {{!logs}}
                 {{! helper.get_fa_icon_state(obj=cpe, label='title')}}
                 </a>
                     <!-- Show our own services  -->
-                    <h4>My services:</h4>
-                    <div>
-                        {{!helper.print_aggregation_tree(helper.get_host_service_aggregation_tree(cpe, app), helper.get_html_id(cpe))}}
-                    </div>
-            </div>
+                <h4>My services:</h4>
+                <div>
+                    {{!helper.print_aggregation_tree(helper.get_host_service_aggregation_tree(cpe, app), helper.get_html_id(cpe))}}
+                </div>
         </div>
     </div>
 
-
+</div>
+<div class="row container-fluid">
     <div class="panel panel-default">
         <div class="panel-heading"><h4 class="panel-title">CPE actions</h4></div>
         <div class="panel-body">
@@ -227,7 +226,6 @@ logs = {{!logs}}
         %end
         %end
     %end
-    </div>
 </div>
 <div class="row container-fluid">
     %if app.logs_module.is_available():
