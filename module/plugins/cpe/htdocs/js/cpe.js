@@ -88,7 +88,7 @@ function hostStateIdToStr(state_id) {
 function generateTimelineServiceRows(hostname, service, min_date, max_date) {
     alerts = getServiceAlerts(hostname, service.name, min_date);
     start_time = min_date;
-    if(alerts === null || alerts.lenght === 0) {  // No logged SERVICE/HOST alerts found. Use current state data.
+    if(alerts === null || alerts.length === 0) {  // No logged SERVICE/HOST alerts found. Use current state data.
         return [{
             group: service.name,
             content: '',
