@@ -70,7 +70,7 @@ function getServiceAlerts(hostname, service_name, min_date) {
  * Translate a service state id as it's stored in mongo-logs to the actual state name
  */
 function serviceStateIdToStr(state_id) {
-    ids = ['OK','WARNING','CRITICAL','UNKNOWN'];
+    var ids = ['OK','WARNING','CRITICAL','UNKNOWN'];
     return ids[state_id];
 }
 
@@ -78,7 +78,7 @@ function serviceStateIdToStr(state_id) {
  * Translate a host state id as it's stored in mongo-logs to the actual state name
  */
 function hostStateIdToStr(state_id) {
-    ids = ['UP','DOWN','UNREACHABLE','UNKNOWN'];
+    var ids = ['UP','DOWN','UNREACHABLE','UNKNOWN'];
     return ids[state_id];
 }
 
@@ -86,8 +86,8 @@ function hostStateIdToStr(state_id) {
  * Iterates every SERVICE/HOST ALERT since min_date to generate rows for a timeline for this service/host state
  */
 function generateTimelineServiceRows(hostname, service, min_date, max_date) {
-    alerts = getServiceAlerts(hostname, service.name, min_date);
-    start_time = min_date;
+    var alerts = getServiceAlerts(hostname, service.name, min_date);
+    var start_time = min_date;
     if(alerts === null || alerts.length === 0) {  // No logged SERVICE/HOST alerts found. Use current state data.
         return [{
             group: service.name,
@@ -105,8 +105,8 @@ function generateTimelineServiceRows(hostname, service, min_date, max_date) {
         stateIdToStr = serviceStateIdToStr;
 
 
-    state = "UNKNOWN";  // State is UNKNOWN until we find any ALERT
-    rows = [];
+    var state = "UNKNOWN";  // State is UNKNOWN until we find any ALERT
+    var rows = [];
     alerts.forEach(function(element, index, array) {
         end_time = new Date(element.timestamp * 1000);
         new_state = stateIdToStr(element.state);
@@ -292,15 +292,15 @@ function on_page_refresh() {
 
 
     $('#btn-reboot').click(function (e) {
-        launch('/action/REBOOT_HOST/'+cpe_name+'/', 'Host reboot ordered');
+        launch('/action/REBOOT_HOST/'+cpe_name, 'Host reboot ordered');
     });
 
     $('#btn-factrestore').click(function (e) {
-        launch('/action/RESTORE_FACTORY_HOST/'+cpe_name+'/', 'Factory reset ordered');
+        launch('/action/RESTORE_FACTORY_HOST/'+cpe_name, 'Factory reset ordered');
     });
 
     $('#btn-unprovision').click(function (e) {
-        launch('/action/UNPROVISION_HOST/'+cpe_name+'/', 'Unprovision ordered');
+        launch('/action/UNPROVISION_HOST/'+cpe_name, 'Unprovision ordered');
     });
 
 
