@@ -24,9 +24,6 @@
 
 var eltdetail_logs=false;
 
-google.charts.load('current', {'packages':['corechart', 'controls']});
-google.charts.setOnLoadCallback(drawDashboard);
-drawTimeline();
 
 /*
  * Clean graphite raw data for using with Google Charts
@@ -255,6 +252,10 @@ function drawDashboard() {
  */
 function on_page_refresh() {
     var element = $('#inner_history').data('element');
+
+    google.charts.load('current', {'packages':['corechart', 'controls']});
+    google.charts.setOnLoadCallback(drawDashboard);
+    drawTimeline();
 
     // Log History
     $("#inner_history").html('<i class="fa fa-spinner fa-spin fa-3x"></i> Loading history data ...');
