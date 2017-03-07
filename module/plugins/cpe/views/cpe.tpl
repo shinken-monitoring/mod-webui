@@ -41,8 +41,8 @@ Invalid element name
 %breadcrumb += [[cpe_service.display_name, '/service/'+cpe_name] ]
 %end
 
-%js=['availability/js/justgage.js', 'availability/js/raphael-2.1.4.min.js', 'cv_host/js/flot/jquery.flot.min.js', 'cv_host/js/flot/jquery.flot.tickrotor.js', 'cv_host/js/flot/jquery.flot.resize.min.js', 'cv_host/js/flot/jquery.flot.pie.min.js', 'cv_host/js/flot/jquery.flot.categories.min.js', 'cv_host/js/flot/jquery.flot.time.min.js', 'cv_host/js/flot/jquery.flot.stack.min.js', 'cv_host/js/flot/jquery.flot.valuelabels.js',  'cpe/js/jquery.color.js', 'cpe/js/bootstrap-switch.min.js', 'cpe/js/custom_views.js', 'cpe/js/google-charts.min.js', 'cpe/js/vis.min.js', 'cpe/js/cpe.js']
-%css=['cpe/css/bootstrap-switch.min.css', 'cpe/css/datatables.min.css', 'cv_host/css/cv_host.css', 'cpe/css/vis.min.css', 'cpe/css/cpe.css']
+%js=['cpe/js/bootstrap-switch.min.js', 'cpe/js/google-charts.min.js', 'cpe/js/vis.min.js', 'cpe/js/cpe.js']
+%css=['cpe/css/bootstrap-switch.min.css', 'cpe/css/vis.min.css', 'cpe/css/cpe.css']
 %rebase("layout", js=js, css=css, breadcrumb=breadcrumb, title=title)
 
 <script>
