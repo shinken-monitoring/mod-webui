@@ -56,17 +56,9 @@ def show_cpe(cpe_name):
     maxtime = int(time.time())
     mintime = maxtime - 7 * 24 * 3600
 
-    configs = app.datamgr.get_configs()
-    if configs:
-        configintervallength = vars(configs[0])['interval_length']
-    else:
-        configintervallength = 1
-
-    elt = app.datamgr.get_element(cpe_name, user)
-    logs = _get_logs(elt=elt)
+    logs = _get_logs(elt=cpe)
 
     return {'cpe': cpe, 'mintime': mintime, 'maxtime': maxtime,
-            'configintervallength': configintervallength,
             'records': logs}
 
 

@@ -22,9 +22,6 @@
    along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
    */
 
-var eltdetail_logs=false;
-
-
 /*
  * Clean graphite raw data for using with Google Charts
  */
@@ -210,10 +207,6 @@ function drawDashboard() {
                 chartArea: {
                     width: '80%'
                 }
-                //explorer: { 
-                //    actions: ['dragToZoom', 'rightClickToReset'],
-                //    axis: 'horizontal'
-                //}
             };
             var dashboard = new google.visualization.Dashboard(document.getElementById(metric.name+'_dashboard'));
             var rangeFilter = new google.visualization.ControlWrapper({
@@ -258,12 +251,26 @@ function on_page_refresh() {
     drawTimeline();
 
     // Log History
-    $("#inner_history").html('<i class="fa fa-spinner fa-spin fa-3x"></i> Loading history data ...');
+    /*$("#inner_history").html('<i class="fa fa-spinner fa-spin fa-3x"></i> Loading history data ...');
     $("#inner_history").load('/logs/inner/'+encodeURIComponent(element), function(response, status, xhr) {
         if (status == "error") {
             $('#inner_history').html('<div class="alert alert-danger">Sorry but there was an error: ' + xhr.status + ' ' + xhr.statusText+'</div>');
         }
-    });
+    });*/
+    $('#inner_history').DataTable( {
+        data: logs,
+        columns: [
+            { data: 'timestamp', 
+              render: function ( data, type, row ) {
+                var date = new Date(data * 1000);
+                return date.toLocaleString();
+              }
+            },
+            { data: 'service' },
+            { data: 'message' }
+        ],
+        order: [[0, 'desc']]
+    } );
 
     // Event History
     $("#inner_events").html('<i class="fa fa-spinner fa-spin fa-3x"></i> Loading history data ...');
@@ -331,17 +338,6 @@ function on_page_refresh() {
         screenfull.request($('#'+elt)[0]);
     });
 
-
-    /*
-     * Timeline
-     */
-    $('a[data-toggle="tab"][href="#timeline"]').on('shown.bs.tab', function (e) {
-        // First we get the full name of the object from div data
-        var element = $('#inner_timeline').data('element');
-        // Get timeline tab content ...
-        $('#inner_timeline').load('/timeline/inner/'+encodeURIComponent(element));
-
-    });
 
 }
 

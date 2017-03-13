@@ -20,7 +20,6 @@ Invalid element name
 %# Main variables
 %cpe_type = cpe.__class__.my_type
 %cpe_host = cpe if cpe_type=='host' else cpe.host
-%cpe_service = cpe if cpe_type=='service' else None
 %cpe_name = cpe.host_name if cpe_type=='host' else cpe.host.host_name+'/'+cpe.service_description
 %cpe_display_name = cpe_host.display_name if cpe_type=='host' else cpe_service.display_name+' on '+cpe_host.display_name
 %cpe_metrics = PerfDatas(cpe.perf_data)
@@ -37,12 +36,9 @@ Invalid element name
 
 %breadcrumb = [ ['All '+cpe_type.title()+'s', '/'+cpe_type+'s-groups'], [cpe_host.display_name, '/host/'+cpe_host.host_name] ]
 %title = cpe_type.title()+' detail: ' + cpe_display_name
-%if cpe_service:
-%breadcrumb += [[cpe_service.display_name, '/service/'+cpe_name] ]
-%end
 
-%js=['cpe/js/bootstrap-switch.min.js', 'cpe/js/google-charts.min.js', 'cpe/js/vis.min.js', 'cpe/js/cpe.js']
-%css=['cpe/css/bootstrap-switch.min.css', 'cpe/css/vis.min.css', 'cpe/css/cpe.css']
+%js=['cpe/js/bootstrap-switch.min.js', 'cpe/js/datatables.min.js', 'cpe/js/google-charts.min.js', 'cpe/js/vis.min.js', 'cpe/js/cpe.js']
+%css=['cpe/css/bootstrap-switch.min.css', 'cpe/css/datatables.min.css', 'cpe/css/vis.min.css', 'cpe/css/cpe.css']
 %rebase("layout", js=js, css=css, breadcrumb=breadcrumb, title=title)
 
 <script>
@@ -83,11 +79,6 @@ logs = {{!logs}}
 
 <div id="element" class="row container-fluid">
 
-   %groups = cpe_service.servicegroups if cpe_service else cpe_host.hostgroups
-   %groups = sorted(groups, key=lambda x:x.level)
-   %tags = cpe_service.get_service_tags() if cpe_service else cpe_host.get_host_tags()
-
-
             <div class="col-md-6 panel panel-default">
 	        <div class="panel-heading"><h2 class="panel-title">CPE Info</h2></div>
                 <div class="panel-body">
@@ -124,7 +115,7 @@ logs = {{!logs}}
                     %try:
                     %cpe_ipleases = ast.literal_eval(cpe.cpe_ipleases) or {'foo': 'bar'}
                     %for ip,lease in cpe_ipleases.iteritems():
-                    <dt>Leased IP {{ip}}</dt>
+                    <dt>{{ip}}</dt>
                     <dd>{{lease}}</dd>
                     %end
                     %except Exception, exc:
@@ -232,7 +223,15 @@ logs = {{!logs}}
     <div class="panel panel-default">
         <div class="panel-heading"><h4 class="panel-title">Log History</h4></div>
         <div class="panel-body">
-            <div id="inner_history" data-element='{{cpe.get_full_name()}}'></div>
+            <table id="inner_history" class="table" data-element='{{cpe.get_full_name()}}'>
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Service</th>
+                        <th>Message</th>
+                    </tr>
+                </thead>
+            </table>
         </div>
     </div>
     <div class="panel panel-default">
