@@ -47,7 +47,7 @@ var cpe = {
     state: '{{cpe_host.state}}',
     last_state_change: '{{cpe_host.last_state_change}}'
 };
-var cpe_name = '{{cpe_host.address}}';
+var cpe_name = '{{cpe_name}}';
 var cpe_metrics = [];
 var services = [];
 %for metric in cpe_metrics:
@@ -71,10 +71,6 @@ cpe_metrics.push({
     })
   %end
 %end
-</script>
-<script>
-%logs = json.dumps(records)
-logs = {{!logs}}
 </script>
 
 <div id="element" class="row container-fluid">

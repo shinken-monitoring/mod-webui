@@ -35,18 +35,18 @@ function cleanData(element, index, array) {
 /*
  * Returns an array with the alert logs of the service/host combination ordered by time
  */
-function getServiceAlerts(hostname, service_name, min_date) {
+function getServiceAlerts(logs, hostname, service_name, min_date) {
     if (logs === null)
         return null;
-    if (service_name == hostname) 
+    if (service_name == hostname) // Is a host
         alerts = logs.filter(function(e){
             return new Date(e.timestamp * 1000) >= min_date && e.type === "HOST ALERT" && e.host === hostname;
         });
-    else
+    else // Is a service
         alerts = logs.filter(function(e){
             return new Date(e.timestamp * 1000) >= min_date && e.type === "SERVICE ALERT" && e.host === hostname && e.service === service_name;
         });
-
+    // Order by date
     alerts.sort(function(a, b){
         if(a.timestamp > b.timestamp) {
             return 1;
@@ -79,8 +79,8 @@ function hostStateIdToStr(state_id) {
 /*
  * Iterates every SERVICE/HOST ALERT since min_date to generate rows for a timeline for this service/host state
  */
-function generateTimelineServiceRows(hostname, service, min_date, max_date) {
-    var alerts = getServiceAlerts(hostname, service.name, min_date);
+function generateTimelineServiceRows(logs, hostname, service, min_date, max_date) {
+    var alerts = getServiceAlerts(logs, hostname, service.name, min_date);
     var start_time = min_date;
     if(alerts === null || alerts.length === 0) {  // No logged SERVICE/HOST alerts found. Use current state data.
         return [{
@@ -93,9 +93,9 @@ function generateTimelineServiceRows(hostname, service, min_date, max_date) {
         }];
     }
 
-    if (hostname === service.name)
+    if (hostname === service.name) // Is a host
         stateIdToStr = hostStateIdToStr;
-    else
+    else // Is a service
         stateIdToStr = serviceStateIdToStr;
 
 
@@ -104,7 +104,7 @@ function generateTimelineServiceRows(hostname, service, min_date, max_date) {
     alerts.forEach(function(element, index, array) {
         end_time = new Date(element.timestamp * 1000);
         new_state = stateIdToStr(element.state);
-        if (state !== new_state) {
+        if (state !== new_state) { // If we find a new state, add a row for the last state
             rows.push({
                 group: service.name,
                 content: '',
@@ -117,7 +117,7 @@ function generateTimelineServiceRows(hostname, service, min_date, max_date) {
             state = new_state;
         }
     });
-    rows.push({
+    rows.push({ // Add a row for the current state in this host
         group: service.name,
         content: '',
         start: start_time,
@@ -138,19 +138,19 @@ function labelToColor(label) {
         return 'orange';
     if (label == 'CRITICAL' || label == 'UNREACHABLE' || label == 'DOWN')
         return 'red';
-    return 'blue';
+    return 'blue'; // UNKNOWN
 }
 
 /*
  * Draws a timeline for this host state and its service
  */
-function drawTimeline() {
+function drawTimeline(logs) {
     var container = document.getElementById('timeline');
     var items = [];
     var groups = [];
     var now = new Date();
     var min_date = new Date(new Date().setDate(now.getDate() - 7));
-    items = items.concat(generateTimelineServiceRows(cpe_name, cpe, min_date, now));
+    items = items.concat(generateTimelineServiceRows(logs, cpe_name, cpe, min_date, now));
     items.push({
         group: cpe.name,
         content: '',
@@ -160,7 +160,7 @@ function drawTimeline() {
     });
     groups.push({id: cpe.name, content: cpe.name});
     services.forEach(function(service) {
-        items = items.concat(generateTimelineServiceRows(cpe_name, service, min_date, now));
+        items = items.concat(generateTimelineServiceRows(logs, cpe_name, service, min_date, now));
         items.push({
             group: service.name,
             content: '',
@@ -239,24 +239,7 @@ function drawDashboard() {
     });
 }
 
-
-/*
- * Function called when the page is loaded and on each page refresh ...
- */
-function on_page_refresh() {
-    var element = $('#inner_history').data('element');
-
-    google.charts.load('current', {'packages':['corechart', 'controls']});
-    google.charts.setOnLoadCallback(drawDashboard);
-    drawTimeline();
-
-    // Log History
-    /*$("#inner_history").html('<i class="fa fa-spinner fa-spin fa-3x"></i> Loading history data ...');
-    $("#inner_history").load('/logs/inner/'+encodeURIComponent(element), function(response, status, xhr) {
-        if (status == "error") {
-            $('#inner_history').html('<div class="alert alert-danger">Sorry but there was an error: ' + xhr.status + ' ' + xhr.statusText+'</div>');
-        }
-    });*/
+function drawLogsTable(logs) {
     $('#inner_history').DataTable( {
         data: logs,
         columns: [
@@ -271,6 +254,22 @@ function on_page_refresh() {
         ],
         order: [[0, 'desc']]
     } );
+}
+
+/*
+ * Function called when the page is loaded and on each page refresh ...
+ */
+function on_page_refresh() {
+    var element = $('#inner_history').data('element');
+
+    // Get host logs
+    $.getJSON('http://'+window.location.hostname+':4267/logs/host/'+cpe_name, function(result) {
+        drawLogsTable(result);
+        drawTimeline(result);
+
+    });
+    google.charts.load('current', {'packages':['corechart', 'controls']});
+    google.charts.setOnLoadCallback(drawDashboard);
 
     // Event History
     $("#inner_events").html('<i class="fa fa-spinner fa-spin fa-3x"></i> Loading history data ...');
@@ -286,19 +285,7 @@ function on_page_refresh() {
     // Buttons as switches
     $('input.switch').bootstrapSwitch();
 
-    // Elements popover
-    //   $('[data-toggle="popover"]').popover();
-
-    $('[data-toggle="popover"]').popover({
-        trigger: "hover",
-        container: "body",
-        placement: 'bottom',
-        toggle : "popover",
-
-        template: '<div class="popover popover-large"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>'
-    });
-
-
+    // CPE Action buttons
     $('#btn-reboot').click(function (e) {
         launch('/action/REBOOT_HOST/'+cpe_name, 'Host reboot ordered');
     });
@@ -309,26 +296,6 @@ function on_page_refresh() {
 
     $('#btn-unprovision').click(function (e) {
         launch('/action/UNPROVISION_HOST/'+cpe_name, 'Unprovision ordered');
-    });
-
-
-    /*
-     * Impacts view
-     */
-    // When toggle list is activated ...
-    $('#impacts a.toggle-list').on('click', function () {
-        var state = $(this).data('state');
-        var target = $(this).data('target');
-
-        if (state=='expanded') {
-            $('#impacts ul[name="'+target+'"]').hide();
-            $(this).data('state', 'collapsed');
-            $(this).children('i').removeClass('fa-minus').addClass('fa-plus');
-        } else {
-            $('#impacts ul[name="'+target+'"]').show();
-            $(this).data('state', 'expanded');
-            $(this).children('i').removeClass('fa-plus').addClass('fa-minus');
-        }
     });
 
 

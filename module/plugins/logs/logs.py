@@ -27,6 +27,7 @@
 import time
 import datetime
 import urllib
+import json
 
 from shinken.log import logger
 
@@ -170,6 +171,13 @@ def get_global_history():
     return {'records': logs, 'params': params, 'message': message, 'range_start': range_start, 'range_end': range_end}
 
 
+def get_host_logs(name):
+    user = app.request.environ['USER']
+    name = urllib.unquote(name)
+    elt = app.datamgr.get_element(name, user) or app.redirect404()
+    logs = _get_logs(elt=elt)
+    return json.dumps(logs)
+
 def get_host_events(name):
     user = app.request.environ['USER']
     name = urllib.unquote(name)
@@ -205,6 +213,9 @@ pages = {
     },
     get_host_events: {
         'name': 'GetHostEvents', 'route': '/events/inner/<name:path>', 'view': 'events'
+    },
+    get_host_logs: {
+        'name': 'GetHostLogs', 'route': '/logs/host/<name:path>'
     }
 
 }

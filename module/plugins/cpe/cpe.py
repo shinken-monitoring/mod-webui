@@ -32,14 +32,6 @@ from shinken.log import logger
 app = None
 
 
-def _get_logs(*args, **kwargs):
-    if app.logs_module.is_available():
-        return app.logs_module.get_ui_logs(*args, **kwargs)
-    else:
-        logger.warning("[WebUI-logs] no get history external module defined!")
-        return None
-
-
 # Our page
 def show_cpe(cpe_name):
     ''' Mostrar la ficha del CPE con nombre cpe_name.'''
@@ -56,10 +48,7 @@ def show_cpe(cpe_name):
     maxtime = int(time.time())
     mintime = maxtime - 7 * 24 * 3600
 
-    logs = _get_logs(elt=cpe)
-
-    return {'cpe': cpe, 'mintime': mintime, 'maxtime': maxtime,
-            'records': logs}
+    return {'cpe': cpe, 'mintime': mintime, 'maxtime': maxtime}
 
 
 pages = {
