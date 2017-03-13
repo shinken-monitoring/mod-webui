@@ -222,6 +222,7 @@ cpe_metrics.push({
             <table id="inner_history" class="table" data-element='{{cpe.get_full_name()}}'>
                 <thead>
                     <tr>
+                        <th>State</th>
                         <th>Time</th>
                         <th>Service</th>
                         <th>Message</th>

@@ -239,10 +239,48 @@ function drawDashboard() {
     });
 }
 
+function getStateIcon(state, state_type, type) {
+    if (type == 'SERVICE FLAPPING ALERT' || type == 'HOST FLAPPING ALERT') {
+        if (state_type == 'STARTED')    // START FLAPPING
+            return "<i class=\"fa fa-exclamation-circle fa-2x font-warning\"></i>"
+        // STOP FLAPPING
+        return "<i class=\"fa fa-check-circle fa-2x font-ok\"></i>"
+    }
+    else if (type == 'HOST ALERT') {
+        if (state == 0) {   // UP
+            return "<i class=\"fa fa-check-circle fa-2x font-ok\"></i>"
+        }
+        else if (state == 3) {  // UNKNOWN
+            return "<i class=\"fa fa-question-circle fa-2x font-unknown\"></i>"
+        }
+        // CRITICAL
+        return "<i class=\"fa fa-times-circle fa-2x font-critical\"></i>"
+    }
+    else {
+        if (state == 0) {   // OK
+            return "<i class=\"fa fa-check-circle fa-2x font-ok\"></i>"
+        }
+        else if (state == 1) {   // WARNING
+            return "<i class=\"fa fa-exclamation-circle fa-2x font-warning\"></i>"
+        }
+        else if (state == 2) {  // CRITICAL
+            return "<i class=\"fa fa-times-circle fa-2x font-critical\"></i>"
+        }
+        // UNKNOWN
+        return "<i class=\"fa fa-question-circle fa-2x font-unknown\"></i>"
+
+    }
+}
+
 function drawLogsTable(logs) {
     $('#inner_history').DataTable( {
         data: logs,
         columns: [
+            { data: 'state',
+              render: function ( data, type, row ) {
+                return getStateIcon(data, row.state_type, row.type);
+              }
+            },
             { data: 'timestamp', 
               render: function ( data, type, row ) {
                 var date = new Date(data * 1000);
