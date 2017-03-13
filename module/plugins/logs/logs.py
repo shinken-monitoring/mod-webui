@@ -183,7 +183,7 @@ def get_host_events(name):
     name = urllib.unquote(name)
     elt = app.datamgr.get_element(name, user) or app.redirect404()
     events = _get_events(elt=elt)
-    return {'records': events, 'elt': elt}
+    return json.dumps(events)
 
 
 pages = {
@@ -211,11 +211,11 @@ pages = {
     set_logs_type_list: {
         'name': 'SetLogsTypeList', 'route': '/logs/set_logs_type_list', 'view': 'logs', 'method': 'POST'
     },
-    get_host_events: {
-        'name': 'GetHostEvents', 'route': '/events/inner/<name:path>', 'view': 'events'
-    },
     get_host_logs: {
         'name': 'GetHostLogs', 'route': '/logs/host/<name:path>'
+    },
+    get_host_events: {
+        'name': 'GetHostEvents', 'route': '/events/host/<name:path>'
     }
 
 }

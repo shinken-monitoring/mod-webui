@@ -233,7 +233,15 @@ cpe_metrics.push({
     <div class="panel panel-default">
         <div class="panel-heading"><h4 class="panel-title">Event History</h4></div>
         <div class="panel-body">
-            <div id="inner_events" data-element='{{cpe.get_full_name()}}'></div>
+            <table id="inner_events" class="table" data-element='{{cpe.get_full_name()}}'>
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Source</th>
+                        <th>Message</th>
+                    </tr>
+                </thead>
+            </table>
         </div>
     </div>
     %end

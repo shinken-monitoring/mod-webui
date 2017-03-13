@@ -256,6 +256,27 @@ function drawLogsTable(logs) {
     } );
 }
 
+function drawEventsTable(events) {
+    $('#inner_events').DataTable( {
+        data: events,
+        columns: [
+            { data: 'timestamp', 
+              render: function ( data, type, row ) {
+                var date = new Date(data * 1000);
+                return date.toLocaleString();
+              }
+            },
+            { data: 'source' },
+            { data: 'data',
+              render: function ( data, type, row ) {
+                return JSON.stringify(data)
+              }
+            }
+        ],
+        order: [[0, 'desc']]
+    } );
+}
+
 /*
  * Function called when the page is loaded and on each page refresh ...
  */
@@ -266,18 +287,15 @@ function on_page_refresh() {
     $.getJSON('http://'+window.location.hostname+':4267/logs/host/'+cpe_name, function(result) {
         drawLogsTable(result);
         drawTimeline(result);
-
     });
+
+    // Get host events
+    $.getJSON('http://'+window.location.hostname+':4267/events/host/'+cpe_name, function(result) {
+        drawEventsTable(result);
+    });
+
     google.charts.load('current', {'packages':['corechart', 'controls']});
     google.charts.setOnLoadCallback(drawDashboard);
-
-    // Event History
-    $("#inner_events").html('<i class="fa fa-spinner fa-spin fa-3x"></i> Loading history data ...');
-    $("#inner_events").load('/events/inner/'+encodeURIComponent(element), function(response, status, xhr) {
-        if (status == "error") {
-            $('#events_history').html('<div class="alert alert-danger">Sorry but there was an error: ' + xhr.status + ' ' + xhr.statusText+'</div>');
-        }
-    });
 
     // Buttons tooltips
     $('button').tooltip();
@@ -304,7 +322,6 @@ function on_page_refresh() {
         var elt = $(this).data('element');
         screenfull.request($('#'+elt)[0]);
     });
-
 
 }
 
