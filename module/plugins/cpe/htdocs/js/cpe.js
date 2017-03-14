@@ -155,7 +155,7 @@ function createTimeline() {
     services.forEach(function(service) {
         groups.push({id: service.name, content: service.name});
     });
-    groups.push({id: 'iplease', content: 'iplease'});
+    //groups.push({id: 'iplease', content: 'iplease'});
     var options = {
         min: min_date,
         max: now,
@@ -340,15 +340,34 @@ function addLeasesTimeline(events) {
         return e.source == 'iplease';
     });
 
+    events.sort(function(a,b) {
+        if (a.data.leased_address > b.data.leased_address)
+            return 1;
+        if (a.data.leased_address < b.data.leased_address)
+            return -1;
+        var date_a = new Date(a.data.starts.replace("/", " ")); // Date is in format YYYY-MM-DD/hh:mm:ss
+        var date_b = new Date(b.data.starts.replace("/", " ")); // Date is in format YYYY-MM-DD/hh:mm:ss
+        if (date_a > date_b)
+            return 1;
+        if (date_a < date_b)
+            return -1;
+        return 0;
+    });
+
     var leases = [];
-    events.forEach(function(lease){
+    events.forEach(function(lease, index, array){
+        var event_end;
+        if (index + 1 >= array.length || array[index + 1].data.leased_address != lease.data.leased_address)
+            event_end = new Date(lease.data.ends.replace("/", " ")); // Date is in format YYYY-MM-DD/hh:mm:ss
+        else
+            event_end = new Date(array[index + 1].data.starts.replace("/", " "));
         leases.push({
-            start: new Date(lease.data.starts.replace("/", " ")), // Date is in format YYYY-MM-DD/hh:mm:ss
-            end: new Date(lease.data.ends.replace("/", " ")), // Date is in format YYYY-MM-DD/hh:mm:ss
+            start: new Date(lease.data.starts.replace("/", " ")),
+            end: event_end,
             content: lease.data.leased_address,
             type: 'range',
-            group: 'iplease',
-            subgroup: JSON.stringify(lease.data)    // To avoid overlapping https://github.com/almende/vis/issues/620
+            group: 'dhcp',
+            subgroup: lease.data.leased_address    // To avoid overlapping https://github.com/almende/vis/issues/620
         });
     });
 
@@ -360,7 +379,6 @@ function addLeasesTimeline(events) {
  * Function called when the page is loaded and on each page refresh ...
  */
 function on_page_refresh() {
-    var element = $('#inner_history').data('element');
     createTimeline();
     // Get host logs
     $.getJSON(window.location.origin + '/logs/host/'+cpe_name, function(result) {
@@ -378,10 +396,10 @@ function on_page_refresh() {
     google.charts.setOnLoadCallback(drawDashboard);
 
     // Buttons tooltips
-    $('button').tooltip();
+    //$('button').tooltip();
 
     // Buttons as switches
-    $('input.switch').bootstrapSwitch();
+    //$('input.switch').bootstrapSwitch();
 
     // CPE Action buttons
     $('#btn-reboot').click(function (e) {
