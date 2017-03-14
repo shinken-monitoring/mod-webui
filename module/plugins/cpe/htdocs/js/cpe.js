@@ -51,13 +51,7 @@ function getServiceAlerts(logs, hostname, service_name, min_date) {
         });
     // Order by date
     alerts.sort(function(a, b){
-        if(a.timestamp > b.timestamp) {
-            return 1;
-        }
-        if(a.timestamp < b.timestamp) {
-            return -1;
-        }
-        return 0;
+        return a.timestamp - b.timestamp;
     });
 
     return alerts;
@@ -347,11 +341,7 @@ function addLeasesTimeline(events) {
             return -1;
         var date_a = new Date(a.data.starts.replace("/", " ")); // Date is in format YYYY-MM-DD/hh:mm:ss
         var date_b = new Date(b.data.starts.replace("/", " ")); // Date is in format YYYY-MM-DD/hh:mm:ss
-        if (date_a > date_b)
-            return 1;
-        if (date_a < date_b)
-            return -1;
-        return 0;
+        return date_a - date_b;
     });
 
     var leases = [];
