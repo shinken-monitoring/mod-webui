@@ -21,6 +21,8 @@
    You should have received a copy of the GNU Affero General Public License
    along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
    */
+'use strict';
+var timeline;
 
 /*
  * Clean graphite raw data for using with Google Charts
@@ -38,6 +40,7 @@ function cleanData(element, index, array) {
 function getServiceAlerts(logs, hostname, service_name, min_date) {
     if (logs === null)
         return null;
+    var alerts;
     if (service_name == hostname) // Is a host
         alerts = logs.filter(function(e){
             return new Date(e.timestamp * 1000) >= min_date && e.type === "HOST ALERT" && e.host === hostname;
@@ -92,7 +95,7 @@ function generateTimelineServiceRows(logs, hostname, service, min_date, max_date
             type: 'background'
         }];
     }
-
+    var stateIdToStr;
     if (hostname === service.name) // Is a host
         stateIdToStr = hostStateIdToStr;
     else // Is a service
@@ -101,6 +104,8 @@ function generateTimelineServiceRows(logs, hostname, service, min_date, max_date
 
     var state = "UNKNOWN";  // State is UNKNOWN until we find any ALERT
     var rows = [];
+    var end_time;
+    var new_state;
     alerts.forEach(function(element, index, array) {
         end_time = new Date(element.timestamp * 1000);
         new_state = stateIdToStr(element.state);
@@ -141,15 +146,33 @@ function labelToColor(label) {
     return 'blue'; // UNKNOWN
 }
 
+function createTimeline() {
+    var container = document.getElementById('timeline');
+    var groups = [];
+    var now = new Date();
+    var min_date = new Date(new Date().setDate(now.getDate() - 7));
+    groups.push({id: cpe.name, content: cpe.name});
+    services.forEach(function(service) {
+        groups.push({id: service.name, content: service.name});
+    });
+    groups.push({id: 'iplease', content: 'iplease'});
+    var options = {
+        min: min_date,
+        max: now,
+        stack: false
+    };
+    timeline = new vis.Timeline(container,[],groups, options);
+}
+
 /*
  * Draws a timeline for this host state and its service
  */
 function drawTimeline(logs) {
-    var container = document.getElementById('timeline');
     var items = [];
     var groups = [];
     var now = new Date();
     var min_date = new Date(new Date().setDate(now.getDate() - 7));
+    // Current status
     items = items.concat(generateTimelineServiceRows(logs, cpe_name, cpe, min_date, now));
     items.push({
         group: cpe.name,
@@ -158,7 +181,6 @@ function drawTimeline(logs) {
         className: 'point-'+labelToColor(cpe.state),
         type: 'point'
     });
-    groups.push({id: cpe.name, content: cpe.name});
     services.forEach(function(service) {
         items = items.concat(generateTimelineServiceRows(logs, cpe_name, service, min_date, now));
         items.push({
@@ -168,15 +190,8 @@ function drawTimeline(logs) {
             className: 'point-'+labelToColor(service.state),
             type: 'point'
         });
-        groups.push({id: service.name, content: service.name});
     });
-    var data = new vis.DataSet(items);
-    var options = {
-        min: min_date,
-        max: now,
-        stack: false
-    };
-    var timeline = new vis.Timeline(container,data,groups, options);
+    timeline.itemsData.add(items);
 }
 
 /*
@@ -240,34 +255,39 @@ function drawDashboard() {
 }
 
 function getStateIcon(state, state_type, type) {
+    var ICON_WARNING = "<i class=\"fa fa-exclamation-circle fa-2x font-warning\"></i>";
+    var ICON_OK = "<i class=\"fa fa-check-circle fa-2x font-ok\"></i>";
+    var ICON_UNKNOWN = "<i class=\"fa fa-question-circle fa-2x font-unknown\"></i>";
+    var ICON_CRITICAL ="<i class=\"fa fa-times-circle fa-2x font-critical\"></i>";
+
     if (type == 'SERVICE FLAPPING ALERT' || type == 'HOST FLAPPING ALERT') {
         if (state_type == 'STARTED')    // START FLAPPING
-            return "<i class=\"fa fa-exclamation-circle fa-2x font-warning\"></i>"
+            return ICON_WARNING;
         // STOP FLAPPING
-        return "<i class=\"fa fa-check-circle fa-2x font-ok\"></i>"
+        return ICON_OK;
     }
     else if (type == 'HOST ALERT') {
-        if (state == 0) {   // UP
-            return "<i class=\"fa fa-check-circle fa-2x font-ok\"></i>"
+        if (state === 0) {   // UP
+            return ICON_OK;
         }
         else if (state == 3) {  // UNKNOWN
-            return "<i class=\"fa fa-question-circle fa-2x font-unknown\"></i>"
+            return ICON_UNKNOWN;
         }
-        // CRITICAL
-        return "<i class=\"fa fa-times-circle fa-2x font-critical\"></i>"
+        // DOWN / UNREACHABLE
+        return ICON_CRITICAL;
     }
     else {
-        if (state == 0) {   // OK
-            return "<i class=\"fa fa-check-circle fa-2x font-ok\"></i>"
+        if (state === 0) {   // OK
+            return ICON_OK;
         }
         else if (state == 1) {   // WARNING
-            return "<i class=\"fa fa-exclamation-circle fa-2x font-warning\"></i>"
+            return ICON_WARNING;
         }
         else if (state == 2) {  // CRITICAL
-            return "<i class=\"fa fa-times-circle fa-2x font-critical\"></i>"
+            return ICON_CRITICAL;
         }
         // UNKNOWN
-        return "<i class=\"fa fa-question-circle fa-2x font-unknown\"></i>"
+        return ICON_UNKNOWN;
 
     }
 }
@@ -307,7 +327,7 @@ function drawEventsTable(events) {
             { data: 'source' },
             { data: 'data',
               render: function ( data, type, row ) {
-                return JSON.stringify(data)
+                return JSON.stringify(data);
               }
             }
         ],
@@ -315,21 +335,43 @@ function drawEventsTable(events) {
     } );
 }
 
+function addLeasesTimeline(events) {
+    events.filter(function(e) {
+        return e.source == 'iplease';
+    });
+
+    var leases = [];
+    events.forEach(function(lease){
+        leases.push({
+            start: new Date(lease.data.starts.replace("/", " ")), // Date is in format YYYY-MM-DD/hh:mm:ss
+            end: new Date(lease.data.ends.replace("/", " ")), // Date is in format YYYY-MM-DD/hh:mm:ss
+            content: lease.data.leased_address,
+            type: 'range',
+            group: 'iplease',
+            subgroup: JSON.stringify(lease.data)    // To avoid overlapping https://github.com/almende/vis/issues/620
+        });
+    });
+
+    timeline.itemsData.add(leases);
+
+}
+
 /*
  * Function called when the page is loaded and on each page refresh ...
  */
 function on_page_refresh() {
     var element = $('#inner_history').data('element');
-
+    createTimeline();
     // Get host logs
-    $.getJSON('http://'+window.location.hostname+':4267/logs/host/'+cpe_name, function(result) {
+    $.getJSON(window.location.origin + '/logs/host/'+cpe_name, function(result) {
         drawLogsTable(result);
         drawTimeline(result);
     });
 
     // Get host events
-    $.getJSON('http://'+window.location.hostname+':4267/events/host/'+cpe_name, function(result) {
+    $.getJSON(window.location.origin+'/events/host/'+cpe_name, function(result) {
         drawEventsTable(result);
+        addLeasesTimeline(result);
     });
 
     google.charts.load('current', {'packages':['corechart', 'controls']});
@@ -354,14 +396,6 @@ function on_page_refresh() {
         launch('/action/UNPROVISION_HOST/'+cpe_name, 'Unprovision ordered');
     });
 
-
-    // Fullscreen management
-    $('button[action="fullscreen-request"]').click(function() {
-        var elt = $(this).data('element');
-        screenfull.request($('#'+elt)[0]);
-    });
-
 }
-
 
 on_page_refresh();
