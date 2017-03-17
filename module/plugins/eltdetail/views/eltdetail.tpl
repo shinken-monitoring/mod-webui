@@ -134,6 +134,7 @@ Invalid element name
             <dt>cpe_ipleases</dt>
             <dd>empty!</dd>
             %end
+            %end
 
             %if '_DETAILLEDESC' in elt.customs:
             <dt>Description:</dt>
