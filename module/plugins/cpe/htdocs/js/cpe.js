@@ -21,12 +21,8 @@
    You should have received a copy of the GNU Affero General Public License
    along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
    */
-
-var eltdetail_logs=false;
-
-google.charts.load('current', {'packages':['corechart', 'controls','timeline']});
-google.charts.setOnLoadCallback(drawDashboard);
-drawTimeline();
+'use strict';
+var timeline;
 
 /*
  * Clean graphite raw data for using with Google Charts
@@ -41,46 +37,49 @@ function cleanData(element, index, array) {
 /*
  * Returns an array with the alert logs of the service/host combination ordered by time
  */
-function getServiceAlerts(hostname, service_name, min_date) {
+function getServiceAlerts(logs, hostname, service_name, min_date) {
     if (logs === null)
         return null;
-    if (service_name == hostname) 
+    var alerts;
+    if (service_name == hostname) // Is a host
         alerts = logs.filter(function(e){
             return new Date(e.timestamp * 1000) >= min_date && e.type === "HOST ALERT" && e.host === hostname;
         });
-    else
+    else // Is a service
         alerts = logs.filter(function(e){
             return new Date(e.timestamp * 1000) >= min_date && e.type === "SERVICE ALERT" && e.host === hostname && e.service === service_name;
         });
-
+    // Order by date
     alerts.sort(function(a, b){
-        if(a.timestamp > b.timestamp) {
-            return 1;
-        }
-        if(a.timestamp < b.timestamp) {
-            return -1;
-        }
-        return 0;
+        return a.timestamp - b.timestamp;
     });
 
     return alerts;
 }
 
 /*
- * Translate an state id as it's stored in mongo-logs to the actual state name
+ * Translate a service state id as it's stored in mongo-logs to the actual state name
  */
-function stateIdToStr(state_id) {
-    ids = ['OK','WARNING','CRITICAL','UNKNOWN'];
+function serviceStateIdToStr(state_id) {
+    var ids = ['OK','WARNING','CRITICAL','UNKNOWN'];
+    return ids[state_id];
+}
+
+/*
+ * Translate a host state id as it's stored in mongo-logs to the actual state name
+ */
+function hostStateIdToStr(state_id) {
+    var ids = ['UP','DOWN','UNREACHABLE','UNKNOWN'];
     return ids[state_id];
 }
 
 /*
  * Iterates every SERVICE/HOST ALERT since min_date to generate rows for a timeline for this service/host state
  */
-function generateTimelineServiceRows(hostname, service, min_date, max_date) {
-    alerts = getServiceAlerts(hostname, service.name, min_date);
-    start_time = min_date;
-    if(alerts === null || alerts.lenght === 0) {  // No logged SERVICE/HOST alerts found. Use current state data.
+function generateTimelineServiceRows(logs, hostname, service, min_date, max_date) {
+    var alerts = getServiceAlerts(logs, hostname, service.name, min_date);
+    var start_time = min_date;
+    if(alerts === null || alerts.length === 0) {  // No logged SERVICE/HOST alerts found. Use current state data.
         return [{
             group: service.name,
             content: '',
@@ -90,13 +89,21 @@ function generateTimelineServiceRows(hostname, service, min_date, max_date) {
             type: 'background'
         }];
     }
+    var stateIdToStr;
+    if (hostname === service.name) // Is a host
+        stateIdToStr = hostStateIdToStr;
+    else // Is a service
+        stateIdToStr = serviceStateIdToStr;
 
-    state = "UNKNOWN";  // State is UNKNOWN until we find any ALERT
-    rows = [];
+
+    var state = "UNKNOWN";  // State is UNKNOWN until we find any ALERT
+    var rows = [];
+    var end_time;
+    var new_state;
     alerts.forEach(function(element, index, array) {
         end_time = new Date(element.timestamp * 1000);
         new_state = stateIdToStr(element.state);
-        if (state !== new_state) {
+        if (state !== new_state) { // If we find a new state, add a row for the last state
             rows.push({
                 group: service.name,
                 content: '',
@@ -109,7 +116,7 @@ function generateTimelineServiceRows(hostname, service, min_date, max_date) {
             state = new_state;
         }
     });
-    rows.push({
+    rows.push({ // Add a row for the current state in this host
         group: service.name,
         content: '',
         start: start_time,
@@ -128,33 +135,57 @@ function labelToColor(label) {
         return 'green';
     if (label == 'WARNING')
         return 'orange';
-    if (label == 'CRITICAL' || label == 'UNREACHABLE')
+    if (label == 'CRITICAL' || label == 'UNREACHABLE' || label == 'DOWN')
         return 'red';
-    return 'blue';
+    return 'blue'; // UNKNOWN
 }
 
-/*
- * Draws a timeline for this host state and its service
- */
-function drawTimeline() {
+function createTimeline() {
     var container = document.getElementById('timeline');
-    var items = [];
     var groups = [];
     var now = new Date();
     var min_date = new Date(new Date().setDate(now.getDate() - 7));
-    items = items.concat(generateTimelineServiceRows(cpe_name, cpe, min_date, now));
     groups.push({id: cpe.name, content: cpe.name});
     services.forEach(function(service) {
-        items = items.concat(generateTimelineServiceRows(cpe_name, service, min_date, now));
         groups.push({id: service.name, content: service.name});
     });
-    var data = new vis.DataSet(items);
+    //groups.push({id: 'iplease', content: 'iplease'});
     var options = {
         min: min_date,
         max: now,
         stack: false
     };
-    var timeline = new vis.Timeline(container,data,groups, options);
+    timeline = new vis.Timeline(container,[],groups, options);
+}
+
+/*
+ * Draws a timeline for this host state and its service
+ */
+function drawTimeline(logs) {
+    var items = [];
+    var groups = [];
+    var now = new Date();
+    var min_date = new Date(new Date().setDate(now.getDate() - 7));
+    // Current status
+    items = items.concat(generateTimelineServiceRows(logs, cpe_name, cpe, min_date, now));
+    items.push({
+        group: cpe.name,
+        content: '',
+        start: now,
+        className: 'point-'+labelToColor(cpe.state),
+        type: 'point'
+    });
+    services.forEach(function(service) {
+        items = items.concat(generateTimelineServiceRows(logs, cpe_name, service, min_date, now));
+        items.push({
+            group: service.name,
+            content: '',
+            start: now,
+            className: 'point-'+labelToColor(service.state),
+            type: 'point'
+        });
+    });
+    timeline.itemsData.add(items);
 }
 
 /*
@@ -185,10 +216,6 @@ function drawDashboard() {
                 chartArea: {
                     width: '80%'
                 }
-                //explorer: { 
-                //    actions: ['dragToZoom', 'rightClickToReset'],
-                //    axis: 'horizontal'
-                //}
             };
             var dashboard = new google.visualization.Dashboard(document.getElementById(metric.name+'_dashboard'));
             var rangeFilter = new google.visualization.ControlWrapper({
@@ -221,100 +248,162 @@ function drawDashboard() {
     });
 }
 
+function getStateIcon(state, state_type, type) {
+    var ICON_WARNING = "<i class=\"fa fa-exclamation-circle fa-2x font-warning\"></i>";
+    var ICON_OK = "<i class=\"fa fa-check-circle fa-2x font-ok\"></i>";
+    var ICON_UNKNOWN = "<i class=\"fa fa-question-circle fa-2x font-unknown\"></i>";
+    var ICON_CRITICAL ="<i class=\"fa fa-times-circle fa-2x font-critical\"></i>";
+
+    if (type == 'SERVICE FLAPPING ALERT' || type == 'HOST FLAPPING ALERT') {
+        if (state_type == 'STARTED')    // START FLAPPING
+            return ICON_WARNING;
+        // STOP FLAPPING
+        return ICON_OK;
+    }
+    else if (type == 'HOST ALERT') {
+        if (state === 0) {   // UP
+            return ICON_OK;
+        }
+        else if (state == 3) {  // UNKNOWN
+            return ICON_UNKNOWN;
+        }
+        // DOWN / UNREACHABLE
+        return ICON_CRITICAL;
+    }
+    else {
+        if (state === 0) {   // OK
+            return ICON_OK;
+        }
+        else if (state == 1) {   // WARNING
+            return ICON_WARNING;
+        }
+        else if (state == 2) {  // CRITICAL
+            return ICON_CRITICAL;
+        }
+        // UNKNOWN
+        return ICON_UNKNOWN;
+
+    }
+}
+
+function drawLogsTable(logs) {
+    $('#inner_history').DataTable( {
+        data: logs,
+        columns: [
+            { data: 'state',
+              render: function ( data, type, row ) {
+                return getStateIcon(data, row.state_type, row.type);
+              }
+            },
+            { data: 'timestamp', 
+              render: function ( data, type, row ) {
+                var date = new Date(data * 1000);
+                return date.toLocaleString();
+              }
+            },
+            { data: 'service' },
+            { data: 'message' }
+        ],
+        order: [[0, 'desc']]
+    } );
+}
+
+function drawEventsTable(events) {
+    $('#inner_events').DataTable( {
+        data: events,
+        columns: [
+            { data: 'timestamp', 
+              render: function ( data, type, row ) {
+                var date = new Date(data * 1000);
+                return date.toLocaleString();
+              }
+            },
+            { data: 'source' },
+            { data: 'data',
+              render: function ( data, type, row ) {
+                return JSON.stringify(data);
+              }
+            }
+        ],
+        order: [[0, 'desc']]
+    } );
+}
+
+function addLeasesTimeline(events) {
+    events.filter(function(e) {
+        return e.source == 'iplease';
+    });
+
+    events.sort(function(a,b) {
+        if (a.data.leased_address > b.data.leased_address)
+            return 1;
+        if (a.data.leased_address < b.data.leased_address)
+            return -1;
+        var date_a = new Date(a.data.starts.replace("/", " ")); // Date is in format YYYY-MM-DD/hh:mm:ss
+        var date_b = new Date(b.data.starts.replace("/", " ")); // Date is in format YYYY-MM-DD/hh:mm:ss
+        return date_a - date_b;
+    });
+
+    var leases = [];
+    events.forEach(function(lease, index, array){
+        var event_end;
+        if (index + 1 >= array.length || array[index + 1].data.leased_address != lease.data.leased_address)
+            event_end = new Date(lease.data.ends.replace("/", " ")); // Date is in format YYYY-MM-DD/hh:mm:ss
+        else
+            event_end = new Date(array[index + 1].data.starts.replace("/", " "));
+        leases.push({
+            start: new Date(lease.data.starts.replace("/", " ")),
+            end: event_end,
+            content: lease.data.leased_address,
+            type: 'range',
+            group: 'dhcp',
+            subgroup: lease.data.leased_address    // To avoid overlapping https://github.com/almende/vis/issues/620
+        });
+    });
+
+    timeline.itemsData.add(leases);
+
+}
 
 /*
  * Function called when the page is loaded and on each page refresh ...
  */
 function on_page_refresh() {
-    var element = $('#inner_history').data('element');
-
-    // Log History
-    $("#inner_history").html('<i class="fa fa-spinner fa-spin fa-3x"></i> Loading history data ...');
-    $("#inner_history").load('/logs/inner/'+encodeURIComponent(element), function(response, status, xhr) {
-        if (status == "error") {
-            $('#inner_history').html('<div class="alert alert-danger">Sorry but there was an error: ' + xhr.status + ' ' + xhr.statusText+'</div>');
-        }
+    createTimeline();
+    // Get host logs
+    $.getJSON(window.location.origin + '/logs/host/'+cpe_name, function(result) {
+        drawLogsTable(result);
+        drawTimeline(result);
     });
 
-    // Event History
-    $("#inner_events").html('<i class="fa fa-spinner fa-spin fa-3x"></i> Loading history data ...');
-    $("#inner_events").load('/events/inner/'+encodeURIComponent(element), function(response, status, xhr) {
-        if (status == "error") {
-            $('#events_history').html('<div class="alert alert-danger">Sorry but there was an error: ' + xhr.status + ' ' + xhr.statusText+'</div>');
-        }
+    // Get host events
+    $.getJSON(window.location.origin+'/events/host/'+cpe_name, function(result) {
+        drawEventsTable(result);
+        addLeasesTimeline(result);
     });
+
+    google.charts.load('current', {'packages':['corechart', 'controls']});
+    google.charts.setOnLoadCallback(drawDashboard);
 
     // Buttons tooltips
-    $('button').tooltip();
+    //$('button').tooltip();
 
     // Buttons as switches
-    $('input.switch').bootstrapSwitch();
+    //$('input.switch').bootstrapSwitch();
 
-    // Elements popover
-    //   $('[data-toggle="popover"]').popover();
-
-    $('[data-toggle="popover"]').popover({
-        trigger: "hover",
-        container: "body",
-        placement: 'bottom',
-        toggle : "popover",
-
-        template: '<div class="popover popover-large"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>'
-    });
-
-
+    // CPE Action buttons
     $('#btn-reboot').click(function (e) {
-        launch('/action/REBOOT_HOST/'+cpe_name+'/', 'Host reboot ordered');
+        launch('/action/REBOOT_HOST/'+cpe_name, 'Host reboot ordered');
     });
 
     $('#btn-factrestore').click(function (e) {
-        launch('/action/RESTORE_FACTORY_HOST/'+cpe_name+'/', 'Factory reset ordered');
+        launch('/action/RESTORE_FACTORY_HOST/'+cpe_name, 'Factory reset ordered');
     });
 
     $('#btn-unprovision').click(function (e) {
-        launch('/action/UNPROVISION_HOST/'+cpe_name+'/', 'Unprovision ordered');
-    });
-
-
-    /*
-     * Impacts view
-     */
-    // When toggle list is activated ...
-    $('#impacts a.toggle-list').on('click', function () {
-        var state = $(this).data('state');
-        var target = $(this).data('target');
-
-        if (state=='expanded') {
-            $('#impacts ul[name="'+target+'"]').hide();
-            $(this).data('state', 'collapsed');
-            $(this).children('i').removeClass('fa-minus').addClass('fa-plus');
-        } else {
-            $('#impacts ul[name="'+target+'"]').show();
-            $(this).data('state', 'expanded');
-            $(this).children('i').removeClass('fa-plus').addClass('fa-minus');
-        }
-    });
-
-
-    // Fullscreen management
-    $('button[action="fullscreen-request"]').click(function() {
-        var elt = $(this).data('element');
-        screenfull.request($('#'+elt)[0]);
-    });
-
-
-    /*
-     * Timeline
-     */
-    $('a[data-toggle="tab"][href="#timeline"]').on('shown.bs.tab', function (e) {
-        // First we get the full name of the object from div data
-        var element = $('#inner_timeline').data('element');
-        // Get timeline tab content ...
-        $('#inner_timeline').load('/timeline/inner/'+encodeURIComponent(element));
-
+        launch('/action/UNPROVISION_HOST/'+cpe_name, 'Unprovision ordered');
     });
 
 }
-
 
 on_page_refresh();

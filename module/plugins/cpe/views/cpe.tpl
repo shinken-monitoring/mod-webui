@@ -20,7 +20,6 @@ Invalid element name
 %# Main variables
 %cpe_type = cpe.__class__.my_type
 %cpe_host = cpe if cpe_type=='host' else cpe.host
-%cpe_service = cpe if cpe_type=='service' else None
 %cpe_name = cpe.host_name if cpe_type=='host' else cpe.host.host_name+'/'+cpe.service_description
 %cpe_display_name = cpe_host.display_name if cpe_type=='host' else cpe_service.display_name+' on '+cpe_host.display_name
 %cpe_metrics = PerfDatas(cpe.perf_data)
@@ -37,12 +36,9 @@ Invalid element name
 
 %breadcrumb = [ ['All '+cpe_type.title()+'s', '/'+cpe_type+'s-groups'], [cpe_host.display_name, '/host/'+cpe_host.host_name] ]
 %title = cpe_type.title()+' detail: ' + cpe_display_name
-%if cpe_service:
-%breadcrumb += [[cpe_service.display_name, '/service/'+cpe_name] ]
-%end
 
-%js=['availability/js/justgage.js', 'availability/js/raphael-2.1.4.min.js', 'cv_host/js/flot/jquery.flot.min.js', 'cv_host/js/flot/jquery.flot.tickrotor.js', 'cv_host/js/flot/jquery.flot.resize.min.js', 'cv_host/js/flot/jquery.flot.pie.min.js', 'cv_host/js/flot/jquery.flot.categories.min.js', 'cv_host/js/flot/jquery.flot.time.min.js', 'cv_host/js/flot/jquery.flot.stack.min.js', 'cv_host/js/flot/jquery.flot.valuelabels.js',  'cpe/js/jquery.color.js', 'cpe/js/bootstrap-switch.min.js', 'cpe/js/custom_views.js', 'cpe/js/google-charts.min.js', 'cpe/js/vis.min.js', 'cpe/js/cpe.js']
-%css=['cpe/css/bootstrap-switch.min.css', 'cpe/css/datatables.min.css', 'cv_host/css/cv_host.css', 'cpe/css/vis.min.css', 'cpe/css/cpe.css']
+%js=['cpe/js/bootstrap-switch.min.js', 'cpe/js/datatables.min.js', 'cpe/js/google-charts.min.js', 'cpe/js/vis.min.js', 'cpe/js/cpe.js']
+%css=['cpe/css/bootstrap-switch.min.css', 'cpe/css/datatables.min.css', 'cpe/css/vis.min.css', 'cpe/css/cpe.css']
 %rebase("layout", js=js, css=css, breadcrumb=breadcrumb, title=title)
 
 <script>
@@ -51,7 +47,7 @@ var cpe = {
     state: '{{cpe_host.state}}',
     last_state_change: '{{cpe_host.last_state_change}}'
 };
-var cpe_name = '{{cpe_host.address}}';
+var cpe_name = '{{cpe_name}}';
 var cpe_metrics = [];
 var services = [];
 %for metric in cpe_metrics:
@@ -76,25 +72,9 @@ cpe_metrics.push({
   %end
 %end
 </script>
-<script>
-%logs = json.dumps(records)
-logs = {{!logs}}
-</script>
 
 <div id="element" class="row container-fluid">
 
-   %groups = cpe_service.servicegroups if cpe_service else cpe_host.hostgroups
-   %groups = sorted(groups, key=lambda x:x.level)
-   %tags = cpe_service.get_service_tags() if cpe_service else cpe_host.get_host_tags()
-
-
-   <!-- Second row : host/service overview ... -->
-    <div class="panel panel-default">
-        <div class="panel-heading fitted-header cursor" data-toggle="collapse" data-parent="#Overview" href="#collapseOverview">
-            <h4 class="panel-title"><span class="caret"></span>{{cpe_display_name}} {{!helper.get_business_impact_text(cpe.business_impact)}}</h4>
-        </div>
-
-        <div id="collapseOverview" class="panel-body panel-collapse collapse in">
             <div class="col-md-6 panel panel-default">
 	        <div class="panel-heading"><h2 class="panel-title">CPE Info</h2></div>
                 <div class="panel-body">
@@ -105,8 +85,16 @@ logs = {{!logs}}
                     <dd>{{cpe.customs['_CPE_MODEL']}}</dd>
 	            <dt>Serial Number</dt>
                     <dd>{{cpe.customs['_SN']}}</dd>
+                    %if cpe.customs['_DSN']:
+                    <dt>DSN</dt>
+                    <dd>{{cpe.customs['_DSN']}}</dd>
+                    %end
                     <dt>MAC Address</dt>
                     <dd>{{cpe.customs['_MAC']}}</dd>
+                    %if cpe.customs['_MTAMAC']:
+                    <dt>MTA MAC</dt>
+                    <dd>{{cpe.customs['_MTAMAC']}}</dd>
+                    %end
                     <dt>CPE IP Address</dt>
 	            <dd>{{cpe.cpe_address}}</dd>
 	            <dt>Registration host</dt>
@@ -123,7 +111,7 @@ logs = {{!logs}}
                     %try:
                     %cpe_ipleases = ast.literal_eval(cpe.cpe_ipleases) or {'foo': 'bar'}
                     %for ip,lease in cpe_ipleases.iteritems():
-                    <dt>Leased IP {{ip}}</dt>
+                    <dt>{{ip}}</dt>
                     <dd>{{lease}}</dd>
                     %end
                     %except Exception, exc:
@@ -154,82 +142,30 @@ logs = {{!logs}}
                 </dl>
             </div>
             </div>
-        </div>
-    </div>
 </div>
 <div class="row container-fluid">
-    <div class="panel panel-default">
+    <div class="col-md-9 panel panel-default">
         <div class="panel-heading"><h4 class="panel-title">Timeline</h4></div>
         <div class="panel-body">
         <div id="timeline"></div>
         </div>
     </div>
-</div>
-<div class="row container-fluid">
-    <div class="panel panel-default">
+    <div class="col-md-3 panel panel-default">
         <div class="panel-heading"><h4 class="panel-title">Current status</h4></div>
         <div class="panel-body">
-            <div class="col-lg-6">
-                %displayed_services=False
                 <a href="/all?search={{cpe.host_name}}">
                 {{! helper.get_fa_icon_state(obj=cpe, label='title')}}
                 </a>
-                <!-- Show our father dependencies if we got some -->
-                %if cpe.parent_dependencies:
-                <h4>Root cause:</h4>
-                {{!helper.print_business_rules(app.datamgr.get_business_parents(user, cpe), source_problems=cpe.source_problems)}}
-                %end
-
-                <!-- If we are an host and not a problem, show our services -->
-                %if cpe_type=='host' and not cpe.is_problem:
-                %if cpe.services:
-                %displayed_services=True
-                <h4>Services:</h4>
-                <div class="services-tree">
-                  {{!helper.print_aggregation_tree(helper.get_host_service_aggregation_tree(cpe, app), helper.get_html_id(cpe), expanded=False, max_sons=3)}}
+                    <!-- Show our own services  -->
+                <h4>My services:</h4>
+                <div>
+                    {{!helper.print_aggregation_tree(helper.get_host_service_aggregation_tree(cpe, app), helper.get_html_id(cpe))}}
                 </div>
-                %elif not cpe.parent_dependencies:
-                <h4>No services!</h4>
-                %end
-                %end #of the only host part
-
-                <!-- If we are a root problem and got real impacts, show them! -->
-                %if cpe.is_problem and cpe.impacts:
-                <h4>My impacts:</h4>
-                <div class='host-services'>
-                    %s = ""
-                    <ul>
-                        %for svc in helper.get_impacts_sorted(cpe):
-                            %s += "<li>"
-                            %s += helper.get_fa_icon_state(svc)
-                            %s += helper.get_link(svc, short=True)
-                            %s += "(" + helper.get_business_impact_text(svc.business_impact) + ")"
-                            %s += """ is <span class="font-%s"><strong>%s</strong></span>""" % (svc.state.lower(), svc.state)
-                            %s += " since %s" % helper.print_duration(svc.last_state_change, just_duration=True, x_elts=2)
-                            %s += "</li>"
-                        %end
-                        {{!s}}
-                    </ul>
-                </div>
-                %# end of the 'is problem' if
-                %end
-            </div>
-                %if cpe_type=='host':
-                    <div class="col-lg-6">
-                        %if not displayed_services:
-                        <!-- Show our own services  -->
-                        <h4>My services:</h4>
-                        <div>
-                          {{!helper.print_aggregation_tree(helper.get_host_service_aggregation_tree(cpe, app), helper.get_html_id(cpe))}}
-                        </div>
-                        %end
-                     </div>
-                %end
-            </div>
         </div>
     </div>
 
-
+</div>
+<div class="row container-fluid">
     <div class="panel panel-default">
         <div class="panel-heading"><h4 class="panel-title">CPE actions</h4></div>
         <div class="panel-body">
@@ -277,20 +213,36 @@ logs = {{!logs}}
         %end
         %end
     %end
-    </div>
 </div>
 <div class="row container-fluid">
     %if app.logs_module.is_available():
     <div class="panel panel-default">
         <div class="panel-heading"><h4 class="panel-title">Log History</h4></div>
         <div class="panel-body">
-            <div id="inner_history" data-element='{{cpe.get_full_name()}}'></div>
+            <table id="inner_history" class="table" data-element='{{cpe.get_full_name()}}'>
+                <thead>
+                    <tr>
+                        <th>State</th>
+                        <th>Time</th>
+                        <th>Service</th>
+                        <th>Message</th>
+                    </tr>
+                </thead>
+            </table>
         </div>
     </div>
     <div class="panel panel-default">
         <div class="panel-heading"><h4 class="panel-title">Event History</h4></div>
         <div class="panel-body">
-            <div id="inner_events" data-element='{{cpe.get_full_name()}}'></div>
+            <table id="inner_events" class="table" data-element='{{cpe.get_full_name()}}'>
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Source</th>
+                        <th>Message</th>
+                    </tr>
+                </thead>
+            </table>
         </div>
     </div>
     %end

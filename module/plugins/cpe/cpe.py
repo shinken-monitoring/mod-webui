@@ -32,14 +32,6 @@ from shinken.log import logger
 app = None
 
 
-def _get_logs(*args, **kwargs):
-    if app.logs_module.is_available():
-        return app.logs_module.get_ui_logs(*args, **kwargs)
-    else:
-        logger.warning("[WebUI-logs] no get history external module defined!")
-        return None
-
-
 # Our page
 def show_cpe(cpe_name):
     ''' Mostrar la ficha del CPE con nombre cpe_name.'''
@@ -56,18 +48,7 @@ def show_cpe(cpe_name):
     maxtime = int(time.time())
     mintime = maxtime - 7 * 24 * 3600
 
-    configs = app.datamgr.get_configs()
-    if configs:
-        configintervallength = vars(configs[0])['interval_length']
-    else:
-        configintervallength = 1
-
-    elt = app.datamgr.get_element(cpe_name, user)
-    logs = _get_logs(elt=elt)
-
-    return {'cpe': cpe, 'mintime': mintime, 'maxtime': maxtime,
-            'configintervallength': configintervallength,
-            'records': logs}
+    return {'cpe': cpe, 'mintime': mintime, 'maxtime': maxtime}
 
 
 pages = {
