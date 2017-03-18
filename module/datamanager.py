@@ -745,6 +745,7 @@ class WebUIDataManager(DataManager):
 
             if t == 'reg':
                 new_items = []
+                logger.debug("[WebUI-REG] s=%s -> len(items)=%d", s.split(','), len(items))
                 for i in items:
                     l1 = s.split(',')
                     if i.__class__.my_type == 'service':
@@ -754,14 +755,13 @@ class WebUIDataManager(DataManager):
                     else:
                         l2 = []
 
-                    # l2 = i.customs.get('_REGTAGS', '').split(',')
-                    logger.info("[WebUI-REG] item %s -> regtags: %s", i, l2)
+                    logger.debug("[WebUI-REG] item %s -> regtags: %s", i, l2)
                     found = [x for x in l1 if x in l2]
                     if found:
-                        # logger.info("[WebUI-REG] found %s", i)
+                        logger.debug("[WebUI-REG] found %s", i)
                         _append_based_on_filtered_by_type(new_items, i, filtered_by_type)
 
-                logger.info("[WebUI-REG] s=%s -> len(new_items)=%d", s.split(','), len(new_items))
+                logger.debug("[WebUI-REG] s=%s -> len(new_items)=%d", s.split(','), len(new_items))
                 items = new_items
 
             if t == 'loc':
