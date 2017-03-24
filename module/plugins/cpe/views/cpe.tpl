@@ -75,14 +75,20 @@ cpe_metrics.push({
 
 <div id="element" class="row container-fluid">
 
-            <div class="col-md-6 panel panel-default">
-	        <div class="panel-heading"><h2 class="panel-title">CPE Info</h2></div>
+            <div class="col-md-12 panel panel-default">
+	        <div class="panel-heading clearfix">
+                    <h2 class="panel-title pull-left">{{cpe_display_name}}</h2>
+                    <div class="btn-group pull-right" role="group">
+                        %if cpe.customs['_TECH'] != 'wimax':
+                        <button id="btn-reboot" type="button" class="btn btn-default">Reboot</button>
+                        %if cpe.customs['_TECH'] == 'gpon':
+                        <button id="btn-factrestore" type="button" class="btn btn-default">Factory restore</button>
+                        <button id="btn-unprovision" type="button" class="btn btn-default">Unprovision</button>
+                    </div>
+                </div>
                 <div class="panel-body">
-                <dl class="col-sm-6 dl-horizontal">
-                    <dt>CPE alias</dt>
-           	    <dd>{{cpe_host.address}}</dd>
-            	    <dt>Model</dt>
-                    <dd>{{cpe.customs['_CPE_MODEL']}}</dd>
+                <div class="col-sm-6">
+                <dl class="dl-horizontal">
 	            <dt>Serial Number</dt>
                     <dd>{{cpe.customs['_SN']}}</dd>
                     %if cpe.customs['_DSN']:
@@ -97,6 +103,8 @@ cpe_metrics.push({
                     %end
                     <dt>CPE IP Address</dt>
 	            <dd>{{cpe.cpe_address}}</dd>
+                </dl>
+                <dl id="more-info" class="dl-horizontal collapse">
 	            <dt>Registration host</dt>
 	            <dd>{{cpe.cpe_registration_host}}</dd>
 	            <dt>Registration ID</dt>
@@ -122,13 +130,9 @@ cpe_metrics.push({
                     <dt>IP Leases</dt>
                     <dd>N/A</dd>
                     %end
-
-	        </dl>
+                </dl>
+                <button class="btn btn-default btn-xs center-block" data-toggle="collapse" data-target="#more-info">More</button>
                 </div>
-            </div>
-            <div class="col-md-6 panel panel-default">
-            <div class="panel-heading"><h2 class="panel-title">Customer info</h2></div>
-            <div class="panel-body">
                 <dl class="col-sm-6 dl-horizontal">
                     <dt>Name</dt>
                     <dd>{{cpe.customs['_CUSTOMER_NAME']}}</dd>
@@ -144,38 +148,22 @@ cpe_metrics.push({
             </div>
 </div>
 <div class="row container-fluid">
-    <div class="col-md-9 panel panel-default">
+    <div class="col-md-6 panel panel-default">
         <div class="panel-heading"><h4 class="panel-title">Timeline</h4></div>
         <div class="panel-body">
         <div id="timeline"></div>
         </div>
     </div>
-    <div class="col-md-3 panel panel-default">
+    <div class="col-md-6 panel panel-default">
         <div class="panel-heading"><h4 class="panel-title">Current status</h4></div>
         <div class="panel-body">
                 <a href="/all?search={{cpe.host_name}}">
                 {{! helper.get_fa_icon_state(obj=cpe, label='title')}}
                 </a>
                     <!-- Show our own services  -->
-                <h4>My services:</h4>
                 <div>
                     {{!helper.print_aggregation_tree(helper.get_host_service_aggregation_tree(cpe, app), helper.get_html_id(cpe))}}
                 </div>
-        </div>
-    </div>
-
-</div>
-<div class="row container-fluid">
-    <div class="panel panel-default">
-        <div class="panel-heading"><h4 class="panel-title">CPE actions</h4></div>
-        <div class="panel-body">
-            <div class="btn-group" role="group">
-                <button id="btn-reboot" type="button" class="btn btn-default">Reboot</button>
-                %if cpe.customs['_TECH'] == 'gpon':
-                <button id="btn-factrestore" type="button" class="btn btn-default">Factory restore</button>
-                <button id="btn-unprovision" type="button" class="btn btn-default">Unprovision</button>
-                %end
-            </div>
         </div>
     </div>
 
