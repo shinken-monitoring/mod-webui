@@ -152,7 +152,7 @@ function createTimeline(min_date, max_date) {
         start: new Date(new Date().setDate(max_date.getDate() - 3)),
         end: max_date,
         min: min_date,
-        max: max_date,
+        max: new Date(new Date().setDate(max_date.getDate() + 1)),
         zoomMin: 1000 * 60 * 30, // 30 min
         stack: false
     };
