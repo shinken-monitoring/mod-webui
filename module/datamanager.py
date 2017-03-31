@@ -426,12 +426,29 @@ class WebUIDataManager(DataManager):
                 _append_host_and_its_services(new_items, i)
 
 
-        def _filter_item(item):
+        def _filter_item(i):
             if pat.search(i.get_full_name()) or pat.search(i.output):
                 return True
             for v in i.customs.values():
                 if pat.search(v):
                     return True
+
+            try:
+                h = i if i.__class__.my_type == 'host' else i.host
+                if h.cpe_address and pat.search(h.cpe_address):
+                    return True
+                if h.cpe_registration_host and pat.search(h.cpe_registration_host):
+                    return True
+                if h.cpe_registration_id and pat.search(h.cpe_registration_id):
+                    return True
+                if h.cpe_registration_state and pat.search(h.cpe_registration_state):
+                    return True
+                if h.cpe_ipleases and pat.search(h.cpe_ipleases):
+                    return True
+            except Exception, exc:
+                logger.warning("[WebUI - datamanager] _filter_item: (%s) - %s / %s", exc, type(h.cpe_ipleases), h.cpe_ipleases)
+
+
             return False
 
         # Make user an User object ... simple protection.

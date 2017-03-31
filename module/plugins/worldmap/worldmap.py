@@ -73,8 +73,14 @@ def search_hosts_with_coordinates(search, user):
     # :COMMENT:maethor:150810: If you want default coordinates, just put them
     # in the 'generic-host' template.
     valid_hosts = []
-    for h in items:
-        logger.debug("[WebUI-worldmap] found host '%s'", h.get_name())
+    for x in items:
+        logger.info("[WebUI-worldmap] found item '%s'", x.get_name())
+        if x.__class__.my_type == 'host':
+            h = x
+        else:
+            h = x.host
+
+        logger.info("[WebUI-worldmap] found host '%s'", h.get_name())
 
         if h.business_impact not in params['hosts_level']:
             continue
