@@ -85,6 +85,7 @@ cpe_metrics.push({
                         %if cpe.customs['_TECH'] == 'gpon':
                         <button id="btn-factrestore" type="button" class="btn btn-default">Factory restore</button>
                         <button id="btn-unprovision" type="button" class="btn btn-default">Unprovision</button>
+                        <button id="btn-tr069" type="button" class="btn btn-default">Force TR069</button>
                         %end
                     </div>
                 </div>

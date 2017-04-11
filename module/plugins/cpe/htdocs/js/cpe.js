@@ -424,6 +424,10 @@ function on_page_refresh() {
         launch('/action/UNPROVISION_HOST/'+cpe_name, 'Unprovision ordered');
     });
 
+    $('#btn-tr069').click(function (e) {
+        launch('/action/SCHEDULE_FORCED_SVC_CHECK/'+cpe_name+'/tr069/$NOW$', 'Forced TR069 check');
+    });
+
 }
 
 on_page_refresh();
