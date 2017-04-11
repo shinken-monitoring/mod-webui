@@ -23,7 +23,7 @@ Invalid element name
 %cpe_name = cpe.host_name if cpe_type=='host' else cpe.host.host_name+'/'+cpe.service_description
 %cpe_display_name = cpe_host.display_name if cpe_type=='host' else cpe_service.display_name+' on '+cpe_host.display_name
 %cpe_metrics = PerfDatas(cpe.perf_data)
-
+%cpe_graphs = helper.get_graphs_for_cpe(cpe_host.address, cpe.customs['_TECH']);
 %# Replace MACROS in display name ...
 %if hasattr(cpe, 'get_data_for_checks'):
     %cpe_display_name = MacroResolver().resolve_simple_macros_in_string(cpe_display_name, cpe.get_data_for_checks())
@@ -49,6 +49,7 @@ var cpe = {
 };
 var cpe_name = '{{cpe_name}}';
 var cpe_metrics = [];
+var cpe_graphs = JSON.parse('{{!json.dumps(cpe_graphs)}}');
 var services = [];
 %for metric in cpe_metrics:
 cpe_metrics.push({
@@ -84,6 +85,7 @@ cpe_metrics.push({
                         %if cpe.customs['_TECH'] == 'gpon':
                         <button id="btn-factrestore" type="button" class="btn btn-default">Factory restore</button>
                         <button id="btn-unprovision" type="button" class="btn btn-default">Unprovision</button>
+                        %end
                     </div>
                 </div>
                 <div class="panel-body">
@@ -169,6 +171,19 @@ cpe_metrics.push({
 
 </div>
 <div class="row container-fluid">
+    %for graph in cpe_graphs:
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading"><h4 class="panel-title">{{graph['title']}}</h4></div>
+            <div class="panel-body">
+                <div id="{{graph['title']}}_dashboard">
+                    <div id="{{graph['title']}}_chart" class="dashboard-chart"></div>
+                    <div id="{{graph['title']}}_control" class="dashboard-control"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    %end
     %for metric in cpe_metrics:
     <div class="col-md-6">
         <div class="panel panel-default">

@@ -1003,4 +1003,136 @@ class Helper(object):
             return classes[state]
         else:
             return 'default'
+
+    def get_graphs_for_cpe(self, cpe, tech):
+        return self.get_graphs_bw(cpe) + self.get_service_graphs_for_tech(cpe, tech)
+
+    def get_graphs_bw(self, cpe):
+        graphs = [{
+            'title': 'CPE bandwidth',
+            'metrics': [
+                {
+                    'name': 'Up Bandwidth',
+                    'graphite_name': '%s.__HOST__.upbw' % (cpe)
+                },
+                {
+                    'name': 'Down Bandwidth',
+                    'graphite_name': '%s.__HOST__.dnbw' % (cpe)
+                }
+            ],
+            'uom': 'bps'
+        }]
+        return graphs
+
+    def get_service_graphs_for_tech(self, cpe, tech):
+        if tech == 'gpon':
+            return self.get_service_graphs_gpon(cpe)
+        if tech == 'docsis':
+            return self.get_service_graphs_docsis(cpe)
+        return self.get_service_graphs_wimax(cpe)
+
+    def get_service_graphs_gpon(self, cpe):
+        graphs = [
+        {
+            'title': 'TxRx',
+            'metrics': [
+                {
+                    'name': 'Dn Rx',
+                    'graphite_name': '%s.txrx.dnrx' % (cpe)
+                },
+                {
+                    'name': 'Up Tx',
+                    'graphite_name': '%s.txrx.uptx' % (cpe)
+                }
+            ],
+            'uom': 'dBm'
+        },
+        {
+            'title': 'Attrition',
+            'metrics': [
+                {
+                    'name': 'Down Attrition',
+                    'graphite_name': '%s.txrx.dnatt' % (cpe)
+                },
+                {
+                    'name': 'Up Attrition',
+                    'graphite_name': '%s.txrx.upatt' % (cpe)
+                }
+            ],
+            'uom': 'dB'
+        }]
+        return graphs
+
+    def get_service_graphs_docsis(self, cpe):
+        graphs = [
+        {
+            'title': 'SNR',
+            'metrics': [
+                {
+                    'name': 'Down SNR',
+                    'graphite_name': '%s.downstream.dnsnr' % (cpe)
+                },
+                {
+                    'name': 'Up SNR',
+                    'graphite_name': '%s.upstream.upsnr' % (cpe)
+                }
+            ],
+            'uom': 'dB'
+        },
+        {
+            'title': 'TxRx',
+            'metrics': [
+                {
+                    'name': 'Down Rx',
+                    'graphite_name': '%s.downstream.dnrx' % (cpe)
+                },
+                {
+                    'name': 'Up Tx',
+                    'graphite_name': '%s.upstream.uptx' % (cpe)
+                }
+            ],
+            'uom': 'dBm'
+        },
+        {
+            'title': 'Attrition',
+            'metrics': [
+                {
+                    'name': 'Down Attrition',
+                    'graphite_name': '%s.downstream.dnatt' % (cpe)
+                },
+                {
+                    'name': 'Up Attrition',
+                    'graphite_name': '%s.upstream.upatt' % (cpe)
+                }
+            ],
+            'uom': 'dB'
+        },
+        {
+            'title': 'Paquetes corregidos y fallidos (%)',
+            'metrics': [
+                {
+                    'name': 'DN Corregidos',
+                    'graphite_name': '%s.qos.dncorr' % (cpe)
+                },
+                {
+                    'name': 'DN Fallidos',
+                    'graphite_name': '%s.upstream.dnko' % (cpe)
+                },
+                {
+                    'name': 'UP Corregidos',
+                    'graphite_name': '%s.qos.upcorr' % (cpe)
+                },
+                {
+                    'name': 'UP Fallidos',
+                    'graphite_name': '%s.upstream.upko' % (cpe)
+                }
+            ],
+            'uom': '%'
+        }]
+        return graphs
+
+    def get_service_graphs_wimax(self, cpe):
+        return []
+
+
 helper = Helper()

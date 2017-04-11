@@ -192,22 +192,37 @@ function drawTimeline(logs, min_date, max_date) {
  * Draws a graphic for every metric in this host using data from Graphite
  */
 function drawDashboard() {
-    cpe_metrics.forEach(function (metric){
-        // Get graphite data in JSON
-        $.getJSON('http://'+window.location.hostname+':4288/render/?width=588&height=310&_salt=1487262913.012&target='+metric.name+'&from=-7d&format=json&jsonp=?', function(result) {
-            var data = result[0].datapoints;
-            data = data.filter(function (e) {
-                return e[0] !== null;
+    cpe_graphs.forEach(function (graph){
+        var graphite_uri='http://'+window.location.hostname+':4288/render/?';
+        graph.metrics.forEach(function (metric){
+            graphite_uri+='target='+metric.graphite_name+'&';
+        });
+        graphite_uri+='from=-7d&format=json&jsonp=?';
+
+        $.getJSON(graphite_uri, function(result) {
+            console.log(result);
+            var data = new google.visualization.DataTable();
+            data.addColumn('datetime', 'Time');
+            graph.metrics.forEach(function (metric) {
+                data.addColumn('number', metric.name);
             });
-            data.forEach(cleanData);
-            data.unshift([{label: 'Time', id: 'Time', type: 'datetime'},
-                {label: metric.name, id: metric.name, type: 'number'}]);
-            var dataTable = google.visualization.arrayToDataTable(data);
+            result.forEach(function (target) {
+                target.datapoints = target.datapoints.filter(function (e) {
+                    return e[0] !== null;
+                });
+            });
+            data.addRows(result[0].datapoints.length);
+            result.forEach(function (target, target_index) {
+                target.datapoints.forEach(function (point, point_index) {
+                    data.setCell(point_index, target_index+1, point[0]);
+                    data.setCell(point_index, 0, new Date(point[1]*1000));
+                });
+            });
             var options = {
                 //title: result[0].target,
                 legend: { position: 'top' },
                 vAxis: {
-                    title: metric.uom,
+                    title: graph.uom,
                     minValue: 0,
                     format: 'short'
                 },
@@ -217,10 +232,10 @@ function drawDashboard() {
                     width: '80%'
                 }
             };
-            var dashboard = new google.visualization.Dashboard(document.getElementById(metric.name+'_dashboard'));
+            var dashboard = new google.visualization.Dashboard(document.getElementById(graph.title+'_dashboard'));
             var rangeFilter = new google.visualization.ControlWrapper({
                 controlType: 'ChartRangeFilter',
-                containerId: metric.name+'_control',
+                containerId: graph.title+'_control',
                 options: {
                     filterColumnLabel: 'Time',
                     ui: {
@@ -237,15 +252,14 @@ function drawDashboard() {
 
             var chart = new google.visualization.ChartWrapper({
                 'chartType': 'LineChart',
-                'containerId': metric.name+'_chart',
+                'containerId': graph.title+'_chart',
                 'options': options
             });
             dashboard.bind(rangeFilter, chart);
-            dashboard.draw(dataTable);
+            dashboard.draw(data);
         });
-
-
     });
+
 }
 
 function getStateIcon(state, state_type, type) {
