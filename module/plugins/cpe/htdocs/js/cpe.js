@@ -200,7 +200,6 @@ function drawDashboard() {
         graphite_uri+='from=-7d&format=json&jsonp=?';
 
         $.getJSON(graphite_uri, function(result) {
-            console.log(result);
             var data = new google.visualization.DataTable();
             data.addColumn('datetime', 'Time');
             graph.metrics.forEach(function (metric) {
