@@ -66,6 +66,7 @@ var services = [];
                     <div class="btn-group pull-right" role="group">
                         %if cpe.customs['_TECH'] != 'wimax':
                         <button id="btn-reboot" type="button" class="btn btn-default">Reboot</button>
+                        %end
                         %if cpe.customs['_TECH'] == 'gpon':
                         <button id="btn-factrestore" type="button" class="btn btn-default">Factory restore</button>
                         <button id="btn-unprovision" type="button" class="btn btn-default">Unprovision</button>
