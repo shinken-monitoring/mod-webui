@@ -22,7 +22,6 @@ Invalid element name
 %cpe_host = cpe if cpe_type=='host' else cpe.host
 %cpe_name = cpe.host_name if cpe_type=='host' else cpe.host.host_name+'/'+cpe.service_description
 %cpe_display_name = cpe_host.display_name if cpe_type=='host' else cpe_service.display_name+' on '+cpe_host.display_name
-%cpe_metrics = PerfDatas(cpe.perf_data)
 %cpe_graphs = helper.get_graphs_for_cpe(cpe_host.address, cpe.customs['_TECH']);
 %# Replace MACROS in display name ...
 %if hasattr(cpe, 'get_data_for_checks'):
@@ -56,13 +55,6 @@ var services = [];
     state: '{{service.state}}',
     last_state_change: '{{service.last_state_change}}'
   });
-  %for metric in PerfDatas(service.perf_data):
-    cpe_metrics.push({
-      'name': '{{cpe_name}}.{{service.display_name}}.{{metric.name}}',
-      'uom': '{{metric.uom}}',
-      'value': {{metric.value}}
-    })
-  %end
 %end
 </script>
 
