@@ -347,7 +347,7 @@ function drawEventsTable(events) {
  * Check this CPE's hostevents for DHCP leases and draw them in the timeline
  */
 function addLeasesTimeline(events, min_date) {
-    events.filter(function(e) { // Show only ipleases valid in the last X days
+    events = events.filter(function(e) { // Show only ipleases valid in the last X days
         return e.source == 'iplease' && e.data.ends > min_date.getTime();  // min_date is a Date object
     });
     events.forEach(function(e) {
