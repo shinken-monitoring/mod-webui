@@ -851,7 +851,7 @@ class Helper(object):
 
         return tree
 
-    def print_aggregation_tree(self, tree, html_id, expanded=False, max_sons=5):
+    def print_aggregation_tree(self, tree, html_id, expanded=False, max_sons=5, show_output=False):
         path = tree['path']
         full_path = tree['full_path']
         sons = tree['sons']
@@ -899,6 +899,8 @@ class Helper(object):
                     s += "(" + self.get_business_impact_text(svc.business_impact) + ")"
                 s += """ is <span class="font-%s"><strong>%s</strong></span>""" % (svc.state.lower(), svc.state)
                 s += " since %s" % self.print_duration(svc.last_state_change, just_duration=True, x_elts=2)
+                if show_output:
+                    s += ": %s" % (svc.output)
                 s += "</li>"
             s += "</ul></li>"
         else:

@@ -48,16 +48,8 @@ var cpe = {
     last_state_change: '{{cpe_host.last_state_change}}'
 };
 var cpe_name = '{{cpe_name}}';
-var cpe_metrics = [];
 var cpe_graphs = JSON.parse('{{!json.dumps(cpe_graphs)}}');
 var services = [];
-%for metric in cpe_metrics:
-cpe_metrics.push({
-  'name': '{{cpe_name}}.__HOST__.{{metric.name}}',
-  'uom': '{{metric.uom}}',
-  'value': {{metric.value}}
-});
-%end
 %for service in cpe.services:
   services.push({
     name: '{{service.display_name}}',
@@ -165,7 +157,7 @@ cpe_metrics.push({
                 </a>
                     <!-- Show our own services  -->
                 <div>
-                    {{!helper.print_aggregation_tree(helper.get_host_service_aggregation_tree(cpe, app), helper.get_html_id(cpe))}}
+                    {{!helper.print_aggregation_tree(helper.get_host_service_aggregation_tree(cpe, app), helper.get_html_id(cpe), show_output=True)}}
                 </div>
         </div>
     </div>
@@ -184,38 +176,6 @@ cpe_metrics.push({
             </div>
         </div>
     </div>
-    %end
-    %for metric in cpe_metrics:
-    <div class="col-md-6">
-        <div class="panel panel-default">
-            <div class="panel-heading"><h4 class="panel-title">{{metric.name}}</h4></div>
-            <div class="panel-body">
-                <div id="{{cpe_name}}.__HOST__.{{metric.name}}_dashboard">
-                    <div id="{{cpe_name}}.__HOST__.{{metric.name}}_chart" class="dashboard-chart"></div>
-                    <div id="{{cpe_name}}.__HOST__.{{metric.name}}_control" class="dashboard-control"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-    %end
-    %for service in cpe.services:
-        %service_perf = PerfDatas(service.perf_data)
-        %if service_perf:
-        <h2>{{service.display_name}}</h2>
-        %for metric in service_perf:
-        <div class="col-md-6">
-            <div class="panel panel-default">
-                <div class="panel-heading"><h4 class="panel-title">{{metric.name}}</h4></div>
-                <div class="panel-body">
-                    <div id="{{cpe_name}}.{{service.display_name}}.{{metric.name}}_dashboard">
-                        <div id="{{cpe_name}}.{{service.display_name}}.{{metric.name}}_chart" class="dashboard-chart"></div>
-                        <div id="{{cpe_name}}.{{service.display_name}}.{{metric.name}}_control" class="dashboard-control"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        %end
-        %end
     %end
 </div>
 <div class="row container-fluid">
