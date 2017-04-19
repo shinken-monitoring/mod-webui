@@ -205,17 +205,21 @@ function drawDashboard() {
             graph.metrics.forEach(function (metric) {
                 data.addColumn('number', metric.name);
             });
-            result.forEach(function (target) {
-                target.datapoints = target.datapoints.filter(function (e) {
-                    return e[0] !== null;
+            var nrows = 0;
+            result[0].datapoints.forEach(function (point, point_index) {
+                // Check none of the targets is null for this timestamp
+                var valid = result.every(function (e) {
+                    return e.datapoints[point_index][0] !== null;
                 });
-            });
-            data.addRows(result[0].datapoints.length);
-            result.forEach(function (target, target_index) {
-                target.datapoints.forEach(function (point, point_index) {
-                    data.setCell(point_index, target_index+1, point[0]);
-                    data.setCell(point_index, 0, new Date(point[1]*1000));
+                if (!valid)
+                    return;
+                // Add row to DataTable
+                data.addRow();
+                data.setCell(nrows, 0, new Date(point[1]*1000));
+                result.forEach(function(target, target_index) {
+                    data.setCell(nrows, target_index+1, target.datapoints[point_index][0]);
                 });
+                nrows += 1;
             });
             var options = {
                 //title: result[0].target,
