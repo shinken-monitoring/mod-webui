@@ -93,6 +93,10 @@ Invalid element name
          %end
       </div>
       %end
+         <div class="pull-right">&nbsp;&nbsp;</div>
+      <div class="btn-group pull-right">
+         <a role="button" class="btn btn-primary btn-xs" href="/cpe/{{elt_host.host_name}}"/>Ficha</a>
+      </div>
    </div>
    %end
 

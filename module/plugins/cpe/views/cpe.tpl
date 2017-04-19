@@ -22,7 +22,7 @@ Invalid element name
 %cpe_host = cpe if cpe_type=='host' else cpe.host
 %cpe_name = cpe.host_name if cpe_type=='host' else cpe.host.host_name+'/'+cpe.service_description
 %cpe_display_name = cpe_host.display_name if cpe_type=='host' else cpe_service.display_name+' on '+cpe_host.display_name
-%cpe_graphs = helper.get_graphs_for_cpe(cpe_host.address, cpe.customs['_TECH']);
+%cpe_graphs = helper.get_graphs_for_cpe(cpe_host.host_name, cpe.customs['_TECH']);
 %# Replace MACROS in display name ...
 %if hasattr(cpe, 'get_data_for_checks'):
     %cpe_display_name = MacroResolver().resolve_simple_macros_in_string(cpe_display_name, cpe.get_data_for_checks())
@@ -42,7 +42,7 @@ Invalid element name
 
 <script>
 var cpe = {
-    name: '{{cpe_host.address}}',
+    name: '{{cpe_host.host_name}}',
     state: '{{cpe_host.state}}',
     last_state_change: '{{cpe_host.last_state_change}}'
 };
