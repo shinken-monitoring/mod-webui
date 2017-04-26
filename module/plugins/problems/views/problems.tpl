@@ -99,6 +99,7 @@
                </td>
                <td class="font-{{pb.state.lower()}}"><strong><small>{{ pb.state }}</small></strong></td>
                <td title="Since {{time.strftime("%d %b %Y %H:%M:%S", time.localtime(pb.last_state_change))}}">
+                 <a href="/cpe/{{pb.host_name}}" target="_blank" title="who is gershom?">
                  {{!helper.print_duration(pb.last_state_change, just_duration=True, x_elts=2)}}
                </td>
                <td class="row hidden-sm hidden-xs">
