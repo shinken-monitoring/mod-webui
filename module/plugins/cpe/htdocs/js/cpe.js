@@ -140,47 +140,47 @@ function labelToColor(label) {
     return 'blue'; // UNKNOWN
 }
 
-function createTimeline() {
+function createTimeline(min_date, max_date) {
     var container = document.getElementById('timeline');
     var groups = [];
-    var now = new Date();
-    var min_date = new Date(new Date().setDate(now.getDate() - 7));
     groups.push({id: cpe.name, content: cpe.name});
     services.forEach(function(service) {
         groups.push({id: service.name, content: service.name});
     });
     //groups.push({id: 'iplease', content: 'iplease'});
     var options = {
+        start: new Date(new Date().setDate(max_date.getDate() - 3)),
+        end: max_date,
         min: min_date,
-        max: now,
+        max: new Date(new Date().setDate(max_date.getDate() + 1)),
+        zoomMin: 1000 * 60 * 30, // 30 min
         stack: false
     };
     timeline = new vis.Timeline(container,[],groups, options);
 }
 
 /*
- * Draws a timeline for this host state and its service
+ * Draws a timeline for this host state and its service. Also adds a point item
+ * with the current state
  */
-function drawTimeline(logs) {
+function drawTimeline(logs, min_date, max_date) {
     var items = [];
     var groups = [];
-    var now = new Date();
-    var min_date = new Date(new Date().setDate(now.getDate() - 7));
     // Current status
-    items = items.concat(generateTimelineServiceRows(logs, cpe_name, cpe, min_date, now));
+    items = items.concat(generateTimelineServiceRows(logs, cpe_name, cpe, min_date, max_date));
     items.push({
         group: cpe.name,
         content: '',
-        start: now,
+        start: max_date,
         className: 'point-'+labelToColor(cpe.state),
         type: 'point'
     });
     services.forEach(function(service) {
-        items = items.concat(generateTimelineServiceRows(logs, cpe_name, service, min_date, now));
+        items = items.concat(generateTimelineServiceRows(logs, cpe_name, service, min_date, max_date));
         items.push({
             group: service.name,
             content: '',
-            start: now,
+            start: max_date,
             className: 'point-'+labelToColor(service.state),
             type: 'point'
         });
@@ -192,22 +192,40 @@ function drawTimeline(logs) {
  * Draws a graphic for every metric in this host using data from Graphite
  */
 function drawDashboard() {
-    cpe_metrics.forEach(function (metric){
-        // Get graphite data in JSON
-        $.getJSON('http://'+window.location.hostname+':4288/render/?width=588&height=310&_salt=1487262913.012&target='+metric.name+'&from=-7d&format=json&jsonp=?', function(result) {
-            var data = result[0].datapoints;
-            data = data.filter(function (e) {
-                return e[0] !== null;
+    cpe_graphs.forEach(function (graph){
+        var graphite_uri='http://'+window.location.hostname+':4288/render/?';
+        graph.metrics.forEach(function (metric){
+            graphite_uri+='target='+metric.graphite_name+'&';
+        });
+        graphite_uri+='from=-7d&format=json&jsonp=?';
+
+        $.getJSON(graphite_uri, function(result) {
+            var data = new google.visualization.DataTable();
+            data.addColumn('datetime', 'Time');
+            graph.metrics.forEach(function (metric) {
+                data.addColumn('number', metric.name);
             });
-            data.forEach(cleanData);
-            data.unshift([{label: 'Time', id: 'Time', type: 'datetime'},
-                {label: metric.name, id: metric.name, type: 'number'}]);
-            var dataTable = google.visualization.arrayToDataTable(data);
+            var nrows = 0;
+            result[0].datapoints.forEach(function (point, point_index) {
+                // Check none of the targets is null for this timestamp
+                var valid = result.every(function (e) {
+                    return e.datapoints[point_index][0] !== null;
+                });
+                if (!valid)
+                    return;
+                // Add row to DataTable
+                data.addRow();
+                data.setCell(nrows, 0, new Date(point[1]*1000));
+                result.forEach(function(target, target_index) {
+                    data.setCell(nrows, target_index+1, target.datapoints[point_index][0]);
+                });
+                nrows += 1;
+            });
             var options = {
                 //title: result[0].target,
                 legend: { position: 'top' },
                 vAxis: {
-                    title: metric.uom,
+                    title: graph.uom,
                     minValue: 0,
                     format: 'short'
                 },
@@ -217,10 +235,10 @@ function drawDashboard() {
                     width: '80%'
                 }
             };
-            var dashboard = new google.visualization.Dashboard(document.getElementById(metric.name+'_dashboard'));
+            var dashboard = new google.visualization.Dashboard(document.getElementById(graph.title+'_dashboard'));
             var rangeFilter = new google.visualization.ControlWrapper({
                 controlType: 'ChartRangeFilter',
-                containerId: metric.name+'_control',
+                containerId: graph.title+'_control',
                 options: {
                     filterColumnLabel: 'Time',
                     ui: {
@@ -237,15 +255,14 @@ function drawDashboard() {
 
             var chart = new google.visualization.ChartWrapper({
                 'chartType': 'LineChart',
-                'containerId': metric.name+'_chart',
+                'containerId': graph.title+'_chart',
                 'options': options
             });
             dashboard.bind(rangeFilter, chart);
-            dashboard.draw(dataTable);
+            dashboard.draw(data);
         });
-
-
     });
+
 }
 
 function getStateIcon(state, state_type, type) {
@@ -329,35 +346,39 @@ function drawEventsTable(events) {
     } );
 }
 
-function addLeasesTimeline(events) {
-    events.filter(function(e) {
-        return e.source == 'iplease';
+/*
+ * Check this CPE's hostevents for DHCP leases and draw them in the timeline
+ */
+function addLeasesTimeline(events, min_date) {
+    events.forEach(function(e) {
+        e.data.ends = new Date(e.data.ends.replace("/", " ")); // Date is in format YYYY-MM-DD/hh:mm:ss
+        e.data.starts = new Date(e.data.starts.replace("/", " ")); // Date is in format YYYY-MM-DD/hh:mm:ss
     });
-
+    events = events.filter(function(e) { // Show only ipleases valid in the last X days
+        return e.source == 'iplease' && e.data.ends > min_date;  // min_date is a Date object
+    });
     events.sort(function(a,b) {
         if (a.data.leased_address > b.data.leased_address)
             return 1;
         if (a.data.leased_address < b.data.leased_address)
             return -1;
-        var date_a = new Date(a.data.starts.replace("/", " ")); // Date is in format YYYY-MM-DD/hh:mm:ss
-        var date_b = new Date(b.data.starts.replace("/", " ")); // Date is in format YYYY-MM-DD/hh:mm:ss
-        return date_a - date_b;
+        return a.data.starts - b.data.starts;
     });
 
     var leases = [];
     events.forEach(function(lease, index, array){
         var event_end;
-        if (index + 1 >= array.length || array[index + 1].data.leased_address != lease.data.leased_address)
-            event_end = new Date(lease.data.ends.replace("/", " ")); // Date is in format YYYY-MM-DD/hh:mm:ss
+        if (index + 1 >= array.length || array[index + 1].data.leased_address != lease.data.leased_address && array[index + 1].data.starts < lease.data.ends)
+            event_end = lease.data.ends;
         else
-            event_end = new Date(array[index + 1].data.starts.replace("/", " "));
+            event_end = array[index + 1].data.starts;
         leases.push({
-            start: new Date(lease.data.starts.replace("/", " ")),
+            start: lease.data.starts,
             end: event_end,
             content: lease.data.leased_address,
             type: 'range',
             group: 'dhcp',
-            subgroup: lease.data.leased_address    // To avoid overlapping https://github.com/almende/vis/issues/620
+            subgroup: lease.data.leased_address    // To avoid overlapping. See https://github.com/almende/vis/issues/620
         });
     });
 
@@ -369,17 +390,19 @@ function addLeasesTimeline(events) {
  * Function called when the page is loaded and on each page refresh ...
  */
 function on_page_refresh() {
-    createTimeline();
+    var max_date = new Date();
+    var min_date = new Date(new Date().setDate(max_date.getDate() - 7));
+    createTimeline(min_date, max_date);
     // Get host logs
     $.getJSON(window.location.origin + '/logs/host/'+cpe_name, function(result) {
         drawLogsTable(result);
-        drawTimeline(result);
+        drawTimeline(result, min_date, max_date);
     });
 
     // Get host events
     $.getJSON(window.location.origin+'/events/host/'+cpe_name, function(result) {
         drawEventsTable(result);
-        addLeasesTimeline(result);
+        addLeasesTimeline(result, min_date);
     });
 
     google.charts.load('current', {'packages':['corechart', 'controls']});
@@ -402,6 +425,10 @@ function on_page_refresh() {
 
     $('#btn-unprovision').click(function (e) {
         launch('/action/UNPROVISION_HOST/'+cpe_name, 'Unprovision ordered');
+    });
+
+    $('#btn-tr069').click(function (e) {
+        launch('/action/SCHEDULE_FORCED_SVC_CHECK/'+cpe_name+'/tr069/$NOW$', 'Forced TR069 check');
     });
 
 }

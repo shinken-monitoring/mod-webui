@@ -22,8 +22,7 @@ Invalid element name
 %cpe_host = cpe if cpe_type=='host' else cpe.host
 %cpe_name = cpe.host_name if cpe_type=='host' else cpe.host.host_name+'/'+cpe.service_description
 %cpe_display_name = cpe_host.display_name if cpe_type=='host' else cpe_service.display_name+' on '+cpe_host.display_name
-%cpe_metrics = PerfDatas(cpe.perf_data)
-
+%cpe_graphs = helper.get_graphs_for_cpe(cpe_host.host_name, cpe.customs['_TECH']);
 %# Replace MACROS in display name ...
 %if hasattr(cpe, 'get_data_for_checks'):
     %cpe_display_name = MacroResolver().resolve_simple_macros_in_string(cpe_display_name, cpe.get_data_for_checks())
@@ -43,46 +42,41 @@ Invalid element name
 
 <script>
 var cpe = {
-    name: '{{cpe_host.address}}',
+    name: '{{cpe_host.host_name}}',
     state: '{{cpe_host.state}}',
     last_state_change: '{{cpe_host.last_state_change}}'
 };
 var cpe_name = '{{cpe_name}}';
-var cpe_metrics = [];
+var cpe_graphs = JSON.parse('{{!json.dumps(cpe_graphs)}}');
 var services = [];
-%for metric in cpe_metrics:
-cpe_metrics.push({
-  'name': '{{cpe_name}}.__HOST__.{{metric.name}}',
-  'uom': '{{metric.uom}}',
-  'value': {{metric.value}}
-});
-%end
 %for service in cpe.services:
   services.push({
     name: '{{service.display_name}}',
     state: '{{service.state}}',
     last_state_change: '{{service.last_state_change}}'
   });
-  %for metric in PerfDatas(service.perf_data):
-    cpe_metrics.push({
-      'name': '{{cpe_name}}.{{service.display_name}}.{{metric.name}}',
-      'uom': '{{metric.uom}}',
-      'value': {{metric.value}}
-    })
-  %end
 %end
 </script>
 
 <div id="element" class="row container-fluid">
 
-            <div class="col-md-6 panel panel-default">
-	        <div class="panel-heading"><h2 class="panel-title">CPE Info</h2></div>
+            <div class="col-md-12 panel panel-default">
+	        <div class="panel-heading clearfix">
+                    <h2 class="panel-title pull-left">{{cpe_display_name}}</h2>
+                    <div class="btn-group pull-right" role="group">
+                        %if cpe.customs['_TECH'] != 'wimax':
+                        <button id="btn-reboot" type="button" class="btn btn-default">Reboot</button>
+                        %end
+                        %if cpe.customs['_TECH'] == 'gpon':
+                        <button id="btn-factrestore" type="button" class="btn btn-default">Factory restore</button>
+                        <button id="btn-unprovision" type="button" class="btn btn-default">Unprovision</button>
+                        <button id="btn-tr069" type="button" class="btn btn-default">Force TR069</button>
+                        %end
+                    </div>
+                </div>
                 <div class="panel-body">
-                <dl class="col-sm-6 dl-horizontal">
-                    <dt>CPE alias</dt>
-           	    <dd>{{cpe_host.address}}</dd>
-            	    <dt>Model</dt>
-                    <dd>{{cpe.customs['_CPE_MODEL']}}</dd>
+                <div class="col-sm-6">
+                <dl class="dl-horizontal">
 	            <dt>Serial Number</dt>
                     <dd>{{cpe.customs['_SN']}}</dd>
                     %if cpe.customs['_DSN']:
@@ -97,6 +91,8 @@ cpe_metrics.push({
                     %end
                     <dt>CPE IP Address</dt>
 	            <dd>{{cpe.cpe_address}}</dd>
+                </dl>
+                <dl id="more-info" class="dl-horizontal collapse">
 	            <dt>Registration host</dt>
 	            <dd>{{cpe.cpe_registration_host}}</dd>
 	            <dt>Registration ID</dt>
@@ -122,13 +118,9 @@ cpe_metrics.push({
                     <dt>IP Leases</dt>
                     <dd>N/A</dd>
                     %end
-
-	        </dl>
+                </dl>
+                <button class="btn btn-default btn-xs center-block" data-toggle="collapse" data-target="#more-info">More</button>
                 </div>
-            </div>
-            <div class="col-md-6 panel panel-default">
-            <div class="panel-heading"><h2 class="panel-title">Customer info</h2></div>
-            <div class="panel-body">
                 <dl class="col-sm-6 dl-horizontal">
                     <dt>Name</dt>
                     <dd>{{cpe.customs['_CUSTOMER_NAME']}}</dd>
@@ -144,74 +136,39 @@ cpe_metrics.push({
             </div>
 </div>
 <div class="row container-fluid">
-    <div class="col-md-9 panel panel-default">
+    <div class="col-md-6 panel panel-default">
         <div class="panel-heading"><h4 class="panel-title">Timeline</h4></div>
         <div class="panel-body">
         <div id="timeline"></div>
         </div>
     </div>
-    <div class="col-md-3 panel panel-default">
+    <div class="col-md-6 panel panel-default">
         <div class="panel-heading"><h4 class="panel-title">Current status</h4></div>
         <div class="panel-body">
                 <a href="/all?search={{cpe.host_name}}">
                 {{! helper.get_fa_icon_state(obj=cpe, label='title')}}
                 </a>
                     <!-- Show our own services  -->
-                <h4>My services:</h4>
                 <div>
-                    {{!helper.print_aggregation_tree(helper.get_host_service_aggregation_tree(cpe, app), helper.get_html_id(cpe))}}
+                    {{!helper.print_aggregation_tree(helper.get_host_service_aggregation_tree(cpe, app), helper.get_html_id(cpe), show_output=True)}}
                 </div>
         </div>
     </div>
 
 </div>
 <div class="row container-fluid">
-    <div class="panel panel-default">
-        <div class="panel-heading"><h4 class="panel-title">CPE actions</h4></div>
-        <div class="panel-body">
-            <div class="btn-group" role="group">
-                <button id="btn-reboot" type="button" class="btn btn-default">Reboot</button>
-                %if cpe.customs['_TECH'] == 'gpon':
-                <button id="btn-factrestore" type="button" class="btn btn-default">Factory restore</button>
-                <button id="btn-unprovision" type="button" class="btn btn-default">Unprovision</button>
-                %end
-            </div>
-        </div>
-    </div>
-
-</div>
-<div class="row container-fluid">
-    %for metric in cpe_metrics:
+    %for graph in cpe_graphs:
     <div class="col-md-6">
         <div class="panel panel-default">
-            <div class="panel-heading"><h4 class="panel-title">{{metric.name}}</h4></div>
+            <div class="panel-heading"><h4 class="panel-title">{{graph['title']}}</h4></div>
             <div class="panel-body">
-                <div id="{{cpe_name}}.__HOST__.{{metric.name}}_dashboard">
-                    <div id="{{cpe_name}}.__HOST__.{{metric.name}}_chart" class="dashboard-chart"></div>
-                    <div id="{{cpe_name}}.__HOST__.{{metric.name}}_control" class="dashboard-control"></div>
+                <div id="{{graph['title']}}_dashboard">
+                    <div id="{{graph['title']}}_chart" class="dashboard-chart"></div>
+                    <div id="{{graph['title']}}_control" class="dashboard-control"></div>
                 </div>
             </div>
         </div>
     </div>
-    %end
-    %for service in cpe.services:
-        %service_perf = PerfDatas(service.perf_data)
-        %if service_perf:
-        <h2>{{service.display_name}}</h2>
-        %for metric in service_perf:
-        <div class="col-md-6">
-            <div class="panel panel-default">
-                <div class="panel-heading"><h4 class="panel-title">{{metric.name}}</h4></div>
-                <div class="panel-body">
-                    <div id="{{cpe_name}}.{{service.display_name}}.{{metric.name}}_dashboard">
-                        <div id="{{cpe_name}}.{{service.display_name}}.{{metric.name}}_chart" class="dashboard-chart"></div>
-                        <div id="{{cpe_name}}.{{service.display_name}}.{{metric.name}}_control" class="dashboard-control"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        %end
-        %end
     %end
 </div>
 <div class="row container-fluid">

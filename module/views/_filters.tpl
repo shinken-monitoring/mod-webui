@@ -11,7 +11,7 @@
 
 %search_string = app.get_search_string()
 
-<form class="navbar-form navbar-left hidden-xs" method="get" action="{{ search_action }}">
+<form class="navbar-form navbar-left" method="get" action="{{ search_action }}">
   <div class="dropdown form-group text-left">
     <button class="btn btn-default dropdown-toggle" type="button" id="filters_menu" data-toggle="dropdown" aria-expanded="true"><i class="fa fa-filter"></i><span class="hidden-sm hidden-xs hidden-md"> Filters</span> <span class="caret"></span></button>
     <ul class="dropdown-menu" role="menu" aria-labelledby="filters_menu">
