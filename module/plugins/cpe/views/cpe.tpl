@@ -23,6 +23,10 @@ Invalid element name
 %cpe_name = cpe.host_name if cpe_type=='host' else cpe.host.host_name+'/'+cpe.service_description
 %cpe_display_name = cpe_host.display_name if cpe_type=='host' else cpe_service.display_name+' on '+cpe_host.display_name
 %cpe_graphs = helper.get_graphs_for_cpe(cpe_host.host_name, cpe.customs['_TECH']);
+
+%reboot_available = cpe.cpe_registration_host and cpe.cpe_registration_id
+%tr069_available = cpe.cpe_connection_request_url
+
 %# Replace MACROS in display name ...
 %if hasattr(cpe, 'get_data_for_checks'):
     %cpe_display_name = MacroResolver().resolve_simple_macros_in_string(cpe_display_name, cpe.get_data_for_checks())
@@ -65,12 +69,12 @@ var services = [];
                     <h2 class="panel-title pull-left">{{cpe_display_name}}</h2>
                     <div class="btn-group pull-right" role="group">
                         %if cpe.customs['_TECH'] != 'wimax':
-                        <button id="btn-reboot" type="button" class="btn btn-default">Reboot</button>
+                        <button id="btn-reboot" type="button" class="btn btn-default" {{'disabled' if not reboot_available else ''}} >Reboot</button>
                         %end
                         %if cpe.customs['_TECH'] == 'gpon':
-                        <button id="btn-factrestore" type="button" class="btn btn-default">Factory restore</button>
-                        <button id="btn-unprovision" type="button" class="btn btn-default">Unprovision</button>
-                        <button id="btn-tr069" type="button" class="btn btn-default">Force TR069</button>
+                        <button id="btn-factrestore" type="button" class="btn btn-default" {{'disabled' if not reboot_available else ''}} >Factory restore</button>
+                        <button id="btn-unprovision" type="button" class="btn btn-default" {{'disabled' if not reboot_available else ''}} >Unprovision</button>
+                        <button id="btn-tr069" type="button" class="btn btn-default" {{'disabled' if not tr069_available else ''}} >Force TR069</button>
                         %end
                     </div>
                 </div>
