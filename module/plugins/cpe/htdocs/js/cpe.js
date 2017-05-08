@@ -321,7 +321,8 @@ function drawLogsTable(logs) {
             { data: 'service' },
             { data: 'message' }
         ],
-        order: [[0, 'desc']]
+        order: [[0, 'desc']],
+        responsive: true
     } );
 }
 
@@ -342,7 +343,8 @@ function drawEventsTable(events) {
               }
             }
         ],
-        order: [[0, 'desc']]
+        order: [[0, 'desc']],
+        responsive: true
     } );
 }
 
