@@ -1276,7 +1276,7 @@ Invalid element name
                         %uris = dict()
                         %uris['4h'] = app.graphs_module.get_graph_uris(elt, duration=     4*3600)
                         %uris['1d'] = app.graphs_module.get_graph_uris(elt, duration=    24*3600)
-                        %uris['1w'] = app.graphs_module.get_graph_uris(elt, duration=  7*24*3600)
+                        %uris['1w'] = app.graphs_module.get_graph_uris(elt, duration=  7*24*3599)
                         %uris['1m'] = app.graphs_module.get_graph_uris(elt, duration= 31*24*3600)
                         %uris['1y'] = app.graphs_module.get_graph_uris(elt, duration=365*24*3600)
 
