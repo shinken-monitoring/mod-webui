@@ -49,6 +49,11 @@ class AuthMetaModule(MetaModule):
         self._authenticator = None
         self._session = None
         self._user_info = None
+
+        if not username:
+            logger.warning("[WebUI] No user username specified")
+            return None
+
         logger.info("[WebUI] Authenticating user '%s'", username)
 
         if self.modules:
