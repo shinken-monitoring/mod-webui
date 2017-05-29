@@ -415,9 +415,8 @@
 </script>
 %end
 
-%synthesis = app.datamgr.get_synthesis()
-%s = synthesis['services']
-%h = synthesis['hosts']
+%s = app.datamgr.get_services_synthesis(None, user)
+%h = app.datamgr.get_hosts_synthesis(None, user)
 
 %if username != 'anonymous':
 <div class="container-fluid">
