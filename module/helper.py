@@ -755,7 +755,7 @@ class Helper(object):
                     <div title="%s" class="ellipsis progress-bar progress-bar-%s" role="progressbar"
                         aria-valuenow="%s" aria-valuemin="0" aria-valuemax="100" style="width:%s%%">
                     </div>
-                    <font size="2" color="%s">  %s
+                    <font size="2" color="%s">  %s</font>
                     </div>''' % (title, metrics[0][0], metrics[0][1], metrics[0][1], color, title)
 
 
