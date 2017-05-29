@@ -297,8 +297,8 @@
 
     $(document).ready(function(){
         // Date / time
-        $('#clock').jclock({ format: '%H:%M:%S' });
-        $('#date').jclock({ format: '%A, %B %d' });
+        $('#clock').jclock({ hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: false });
+        $('#date').jclock({ weekday:'long',year:'numeric',month:'long',day:'numeric' });
 
         on_page_refresh();
 
