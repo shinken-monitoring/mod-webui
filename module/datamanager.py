@@ -471,11 +471,15 @@ class WebUIDataManager(DataManager):
                 pat = re.compile(s, re.IGNORECASE)
                 new_items = []
                 for i in items:
-                    if pat.search(i.get_full_name()):
+                    if (pat.search(i.get_full_name()) or
+                        (i.__class__.my_type == 'host' and
+                         i.alias and pat.search(i.alias))):
                         new_items.append(i)
                     else:
                         for j in (i.impacts + i.source_problems):
-                            if pat.search(j.get_full_name()):
+                            if (pat.search(j.get_full_name()) or
+                                (j.__class__.my_type == 'host' and
+                                 j.alias and pat.search(j.alias))):
                                 new_items.append(i)
 
                 if not new_items:

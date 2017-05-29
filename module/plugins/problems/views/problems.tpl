@@ -69,10 +69,13 @@
                         %group = groups[0] if groups else None
                         %title = 'Member of %s' % (group.alias if group.alias else group.get_name()) if group else ''
                      %else:
+                        %if pb.alias and pb.alias != pb.get_name():
+                            %title = 'Aka %s' % pb.alias
+                        %end
                         %groups = pb.hostgroups
                         %#groups = sorted(pb.hostgroups, key=lambda x:x.level, reverse=True)
                         %group = groups[0] if groups else None
-                        %title = 'Member of %s' % (group.alias if group.alias else group.get_name()) if group else ''
+                        %title = title + ((' - ' if title else '') + 'Member of %s' % (group.alias if group.alias else group.get_name()) if group else '')
                      %end
                      <a href="/host/{{pb.host_name}}" title="{{title}}">
                      %if pb.__class__.my_type == 'service':
