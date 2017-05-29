@@ -32,10 +32,10 @@
       %hosts = groupby(bi_pbs, key=lambda x: x.host_name)
    <div class="panel panel-default">
    <div class="panel-body">
-      <button type="button" class="btn btn-default btn-xs pull-left" data-type="business-impact" data-business-impact="{{business_impact}}" data-state="off">Select all elements</button>
+      <button type="button" class="btn btn-default btn-xs pull-left" data-type="business-impact" data-business-impact="{{business_impact}}" data-state="off">Select all</button>
 
       <i class="pull-right small">{{len(list(bi_pbs))}} elements</i>
-      <h3 class="text-center">Business impact: {{!helper.get_business_impact_text(business_impact, text=True)}}</h3>
+      <h3 class="text-center"><span class="hidden-xs">Business impact: </span>{{!helper.get_business_impact_text(business_impact, text=True)}}</h3>
 
       <table class="table table-condensed" style="table-layout:fixed; width:100%;">
          <thead><tr>
@@ -131,11 +131,16 @@
                <td colspan="8" class="hiddenRow">
                   <div class="accordion-body collapse" id="details-{{helper.get_html_id(pb)}}">
                      <table class="table table-condensed" style="margin:0;">
+                       <tr class="hidden-md hidden-lg">
+                         <td colspan="3">
+                           {{ pb.output }}
+                         </td>
+                       </tr>
                         <tr>
                            <td align="center" class="visible-lg">Realm {{pb.get_realm()}}</td>
                            %if pb.passive_checks_enabled:
                            <td align="left">
-                              <i class="fa fa-arrow-left" title="Passive checks are enabled."></i>
+                              <i class="fa fa-arrow-left hidden-xs" title="Passive checks are enabled."></i>
                               %if (pb.check_freshness):
                               <i title="Freshness check is enabled">(Freshness threshold: {{pb.freshness_threshold}} seconds)</i>
                               %end
@@ -143,7 +148,7 @@
                            %end
                            %if pb.active_checks_enabled:
                            <td align="left">
-                              <i class="fa fa-arrow-right" title="Active checks are enabled."></i>
+                              <i class="fa fa-arrow-right hidden-xs" title="Active checks are enabled."></i>
                               <i>Last check <strong>{{!helper.print_duration(pb.last_chk, just_duration=True, x_elts=2)}} ago</strong>, next check in <strong>{{!helper.print_duration(pb.next_chk, just_duration=True, x_elts=2)}}</strong>, attempt <strong>{{pb.attempt}}/{{pb.max_check_attempts}}</strong></i>
                            </td>
                            %end

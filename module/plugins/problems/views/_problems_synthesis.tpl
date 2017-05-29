@@ -6,7 +6,7 @@
 %s = app.datamgr.get_services_synthesis(user=user, elts=all_pbs)
 %h = app.datamgr.get_hosts_synthesis(user=user, elts=all_pbs)
 
-<div class="panel panel-default">
+<div class="panel panel-default hidden-xs">
    <div class="panel-body">
       <table class="table table-invisible table-condensed">
          <tbody>

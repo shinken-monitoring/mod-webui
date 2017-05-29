@@ -8,9 +8,9 @@
 
 
 <!-- Header Navbar -->
-<nav class="header navbar navbar-default navbar-static-top" style="margin-bottom:0px;">
+<nav class="header navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom:0px;">
    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
          <span class="sr-only">Toggle navigation</span>
          <span class="icon-bar"></span>
          <span class="icon-bar"></span>
@@ -21,16 +21,17 @@
       </a>
    </div>
 
-   <ul class="nav navbar-nav">
+   <ul class="nav navbar-nav hidden-xs">
       <!-- Page filtering ... -->
       %include("_filters.tpl")
    </ul>
 
-   <!-- Right part ... -->
-   %s = app.datamgr.get_services_synthesis(user=user)
-   %h = app.datamgr.get_hosts_synthesis(user=user)
-   <div id="hosts-states-popover-content" class="hidden">
-      <table class="table table-invisible table-condensed">
+   <ul class="nav navbar-top-links navbar-right">
+     <!-- Right part ... -->
+     %s = app.datamgr.get_services_synthesis(user=user)
+     %h = app.datamgr.get_hosts_synthesis(user=user)
+     <div id="hosts-states-popover-content" class="hidden">
+       <table class="table table-invisible table-condensed">
          <tbody>
             <tr>
                %for state in "up", "unreachable", "down", "pending", "unknown", "ack", "downtime":
@@ -47,10 +48,10 @@
                %end
             </tr>
          </tbody>
-      </table>
-   </div>
-   <div id="services-states-popover-content" class="hidden">
-      <table class="table table-invisible table-condensed">
+       </table>
+     </div>
+     <div id="services-states-popover-content" class="hidden">
+       <table class="table table-invisible table-condensed">
          <tbody>
             <tr>
                %for state in "ok", "warning", "critical", "pending", "unknown", "ack", "downtime":
@@ -67,10 +68,9 @@
                %end
             </tr>
          </tbody>
-      </table>
-   </div>
+       </table>
+     </div>
 
-   <ul class="nav navbar-top-links navbar-right">
       <!-- Do not remove the next comment!
          Everything between 'begin-hosts-states' comment and 'end-hosts-states' comment
          may be used by the layout page refresh.
@@ -174,15 +174,28 @@
 
   <!--SIDEBAR-->
   <div class="navbar-default sidebar" role="navigation">
-    <div class="sidebar-nav">
+    <div class="sidebar-nav navbar-collapse collapse">
       <ul class="nav" id="sidebar-menu">
+        <li class="sidebar-search visible-xs">
+          <form class="navbar-form navbar-left" method="get" action="/all">
+            <div class="input-group custom-search-form">
+              <input class="form-control" type="search" id="search" name="search" value="{{ app.get_search_string() }}">
+              <span class="input-group-btn">
+                <button class="btn btn-default" type="submit">
+                  <i class="fa fa-search"></i>
+                </button>
+              </span>
+            </div>
+          </form>
+        </li>
+      <!--%include("_filters.tpl")-->
         %if app:
         <li> <a href="{{ app.get_url('Dashboard') }}"> <span class="fa fa-dashboard"></span>
-        <span class="hidden-xs">Dashboard</span> </a> </li>
+        Dashboard</a> </li>
         <li> <a href="{{ app.get_url('Problems') }}"> <span class="fa fa-ambulance"></span>
-        <span class="hidden-xs">Problems</span> </a> </li>
+        Problems</a> </li>
         <li> <a href="#"><i class="fa fa-sitemap"></i>
-        <span class="hidden-xs">Groups and tags</span> <i class="fa arrow"></i></a>
+        Groups and tags<i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
             <li> <a href="{{ app.get_url('HostsGroups') }}"> <span class="fa fa-sitemap"></span> Hosts groups </a> </li>
             <li> <a href="{{ app.get_url('ServicesGroups') }}"> <span class="fa fa-sitemap"></span> Services groups </a> </li>
@@ -191,7 +204,7 @@
           </ul>
         </li>
         <li> <a href="#"><i class="fa fa-bar-chart"></i>
-        <span class="hidden-xs">Tactical views</span> <i class="fa arrow"></i></a>
+        Tactical views<i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
             <li> <a href="{{ app.get_url('Impacts') }}"> <span class="fa fa-bolt"></span> Impacts </a> </li>
             <li> <a href="{{ app.get_url('Minemap') }}"> <span class="fa fa-table"></span> Minemap </a> </li>
@@ -204,7 +217,7 @@
         </li>
         %if user.is_administrator():
         <li> <a href="#"><i class="fa fa-gears"></i>
-        <span class="hidden-xs">System</span> <i class="fa arrow"></i></a>
+        System<i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
             <li> <a href="{{ app.get_url('System') }}"> <span class="fa fa-heartbeat"></span> Status </a> </li>
             %if app.logs_module.is_available():
@@ -213,7 +226,7 @@
           </ul>
         </li>
         <li> <a href="#"><i class="fa fa-wrench"></i>
-        <span class="hidden-xs">Configuration</span> <i class="fa arrow"></i></a>
+        Configuration<i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
             <li> <a href="{{ app.get_url('Parameters') }}"> <span class="fa fa-gears"></span> Parameters </a> </li>
             <li> <a href="{{ app.get_url('Contacts') }}"> <span class="fa fa-user"></span> Contacts </a> </li>
@@ -226,7 +239,7 @@
         %other_uis = app.get_ui_external_links()
         %if len(other_uis) > 0:
         <li> <a href="#"><i class="fa fa-rocket"></i>
-        <span class="hidden-xs">External</span> <i class="fa arrow"></i></a>
+        External<i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
             %for c in other_uis:
             <li>
