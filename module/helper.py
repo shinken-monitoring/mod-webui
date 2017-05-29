@@ -312,12 +312,6 @@ class Helper(object):
         #safe_print("get_all_linked_elts::Give elements", my)
         return my
 
-    def get_synthesis(self, elts):
-        logger.info("Helper - get_synthesis, %d elements", len(elts))
-
-        return None
-
-    # Return a button with text, image, id and class (if need)
 ###
 ###
 ## To be removed ... html code will be more clean !

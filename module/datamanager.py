@@ -379,11 +379,6 @@ class WebUIDataManager(DataManager):
                 return self.get_contact(name=name, user=user)
             return host
 
-    def get_synthesis(self, elts=None):
-        logger.debug("[WebUI - datamanager] get_synthesis")
-
-        return {'hosts': self.get_hosts_synthesis(elts), 'services': self.get_services_synthesis(elts)}
-
     ##
     # Searching
     ##
