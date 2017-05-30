@@ -556,10 +556,10 @@ class WebUIDataManager(DataManager):
                 if not group:
                     return []
                 # Items have a item.get_groupnames() method that returns a comma+space separated string ... strange format!
-                for item in items:
-                    for contact in item.contacts:
-                        if group.get_name() in contact.get_groupnames().split(', '):
-                            logger.debug("[WebUI - datamanager] => contact %s is a known member!", contact.get_name())
+                #for item in items:
+                #    for contact in item.contacts:
+                #        if group.get_name() in contact.get_groupnames().split(', '):
+                #            logger.debug("[WebUI - datamanager] => contact %s is a known member!", contact.get_name())
 
                 contacts = [c for c in self.get_contacts(user=user) if c in group.members]
                 items = list(set(itertools.chain(*[self._only_related_to(items, self.rg.contacts.find_by_name(c)) for c in contacts])))
