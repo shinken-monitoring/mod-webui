@@ -9,8 +9,6 @@
 %search_name = ''
 %end
 
-%search_string = app.get_search_string()
-
 <form class="navbar-form navbar-left" method="get" action="{{ search_action }}">
   <div class="dropdown form-group text-left">
     <button class="btn btn-default dropdown-toggle" type="button" id="filters_menu" data-toggle="dropdown" aria-expanded="true"><i class="fa fa-filter"></i><span class="hidden-sm hidden-xs hidden-md"> Filters</span> <span class="caret"></span></button>
@@ -42,7 +40,7 @@
     <label class="sr-only" for="search">Filter</label>
     <div class="input-group">
       <span class="input-group-addon hidden-xs hidden-sm"><i class="fa fa-search"></i> {{ search_name }}</span>
-      <input class="form-control" type="search" id="search" name="search" value="{{ search_string }}">
+      <input class="form-control" type="search" id="search" name="search" value="{{ app.get_search_string() }}">
     </div>
   </div>
   <div class="dropdown form-group text-left">

@@ -22,12 +22,7 @@
          -->
          %if app.can_action():
          <nav id="actions" class="navbar navbar-default navbar-element dropup" role="navigation" style="display:none;">
-            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-               <span class="caret"></span>
-               <span class="fa fa-bolt"></span>
-               <span>Execute an action</span>
-            </button>
-            <ul class="dropdown-menu" role="menu" aria-labelledby="Actions bar menu">
+           <ul class="nav">
                %if elt:
                   %elt_type = elt.__class__.my_type
                   <li> <a href="#" action="add-comment" title="Add a comment for this {{elt_type}}"
@@ -74,25 +69,25 @@
                   %end
                %else:
                   <li> <a href="#" action="event-handler" title="Try to fix the selected problems">
-                     <i class="fa fa-magic"></i> Try to fix
+                      <i class="fa fa-magic"></i> <span class="hidden-xs">Try to fix</span>
                   </a> </li>
                   <li> <a href="#" action="recheck" title="Launch the check command for selected problems">
-                     <i class="fa fa-refresh"></i> Recheck
+                      <i class="fa fa-refresh"></i> <span class="hidden-xs">Recheck</span>
                   </a> </li>
                   <li> <a href="#" action="check-result" title="Set the selected problems as OK/UP">
-                     <i class="fa fa-share"></i> Set Ok
+                      <i class="fa fa-share"></i> <span class="hidden-xs">Set Ok</span>
                   </a> </li>
                   <li> <a href="#" action="add-acknowledge" title="Acknowledge the selected problems">
-                     <i class="fa fa-check"></i> Acknowledge
+                      <i class="fa fa-check"></i> <span class="hidden-xs">Acknowledge</span>
                   </a> </li>
                   <li> <a href="#" action="schedule-downtime" title="Schedule a one day downtime for the selected problems">
-                     <i class="fa fa-ambulance"></i> Schedule a downtime
+                      <i class="fa fa-ambulance"></i> <span class="hidden-xs">Schedule a downtime</span>
                   </a> </li>
                   <li> <a href="#" action="ignore-checks" title="Remove the selected problems from the problems list">
-                     <i class="fa fa-eraser"></i> Uncheck
+                      <i class="fa fa-eraser"></i> <span class="hidden-xs">Uncheck</span>
                   </a> </li>
                %end
-            </ul>
+           </ul>
          </nav>
          %end
 

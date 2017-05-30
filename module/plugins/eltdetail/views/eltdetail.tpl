@@ -302,8 +302,7 @@ Invalid element name
    %end
 
    %if elt_type=='host':
-   %synthesis = app.datamgr.get_synthesis(elt.services)
-   %s = synthesis['services']
+   %s = app.datamgr.get_services_synthesis(elt.services, user)
    <div class="panel panel-default">
      <div class="panel-body">
        <table class="table table-invisible table-condensed">

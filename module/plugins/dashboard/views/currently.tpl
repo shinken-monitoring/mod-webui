@@ -297,8 +297,8 @@
 
     $(document).ready(function(){
         // Date / time
-        $('#clock').jclock({ format: '%H:%M:%S' });
-        $('#date').jclock({ format: '%A, %B %d' });
+        $('#clock').jclock({ hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: false });
+        $('#date').jclock({ weekday:'long',year:'numeric',month:'long',day:'numeric' });
 
         on_page_refresh();
 
@@ -621,7 +621,7 @@
                         </div>
                         %end
                         %known_problems=s['nb_ack']+s['nb_downtime']+s['nb_unknown']
-                        %pct_known_problems=round(100.0 * known_problems / s['nb_elts'], 2)
+                        %pct_known_problems=round(100.0 * known_problems / s['nb_elts'], 2) if s['nb_elts'] else 0
                         <div class="col-xs-4 col-sm-4 text-center">
                             <a role="button" href="/all?search=type:service is:ack" class="font-unknown">
                                 <span class="services-count" data-count="{{ s['nb_' + state] }}" data-state="{{ state }}" style="font-size: 1.8em;">{{ pct_known_problems }}%</span>

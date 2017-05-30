@@ -116,21 +116,21 @@ html, body {
         width: 200px;
     }
 }
-@media (max-width: 768px) {
-    #sidebar-menu > li  {
-        float:left;
-    }
-    #sidebar-menu {
-        height: 50px;
-        max-width: none;
-    }
-}
+/*@media (max-width: 768px) {*/
+    /*#sidebar-menu > li  {*/
+        /*float:left;*/
+    /*}*/
+    /*#sidebar-menu {*/
+        /*height: 50px;*/
+        /*max-width: none;*/
+    /*}*/
+/*}*/
 
-@media(max-height:600px) {
-    .sidebar li  a {
-        height: 30px;
-    }
-}
+/*@media(max-height:600px) {*/
+    /*.sidebar li  a {*/
+        /*height: 30px;*/
+    /*}*/
+/*}*/
 
 /*
  * Navigation bar, company logo
@@ -210,7 +210,7 @@ html, body {
  * Footer - make footer bar smaller than usual ...
  */
 footer nav {
-    height: 25px;
+    /*height: 25px;*/
     min-height: 25px !important;
 }
 
@@ -221,9 +221,52 @@ footer nav.navbar-dashboard {
 }
 
 footer nav.navbar-element {
-    position: absolute;
+    position: fixed;
     width: 200px;
-    left: 0px; bottom: 30px;
+    left: 0;
+    bottom: 0%;
+    /*left: 0px; bottom: 30px;*/
+}
+footer nav.navbar-element li {
+    border-bottom: 1px solid #e7e7e7;
+}
+@media(max-width:768px) {
+    /*footer nav.navbar-element {*/
+        /*z-index: 1;*/
+        /*position: absolute;*/
+        /*width: 250px;*/
+        /*margin-top: 51px;*/
+    /*}*/
+    footer container {
+        border: none;
+    }
+
+    footer nav.navbar-element {
+        width: 100%;
+        border: none;
+        background: none;
+        text-align: center;
+    }
+
+    footer nav.navbar-element ul {
+        list-style: none;
+        /*width: initial;*/
+        /*background: red;*/
+        /*margin: auto;*/
+    }
+
+    footer nav.navbar-element li {
+        border: 1px solid #e7e7e7;
+        background: #f9f9f9;
+        display: inline;
+        margin: 2px;
+        padding: 5px;
+        font-size: 16px;
+    }
+
+    footer nav.navbar-element li a {
+        display: inline;
+    }
 }
 /*
  * Breadcrumb

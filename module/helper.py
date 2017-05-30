@@ -312,12 +312,6 @@ class Helper(object):
         #safe_print("get_all_linked_elts::Give elements", my)
         return my
 
-    def get_synthesis(self, elts):
-        logger.info("Helper - get_synthesis, %d elements", len(elts))
-
-        return None
-
-    # Return a button with text, image, id and class (if need)
 ###
 ###
 ## To be removed ... html code will be more clean !
@@ -755,7 +749,7 @@ class Helper(object):
                     <div title="%s" class="ellipsis progress-bar progress-bar-%s" role="progressbar"
                         aria-valuenow="%s" aria-valuemin="0" aria-valuemax="100" style="width:%s%%">
                     </div>
-                    <font size="2" color="%s">  %s
+                    <font size="2" color="%s">  %s</font>
                     </div>''' % (title, metrics[0][0], metrics[0][1], metrics[0][1], color, title)
 
 
