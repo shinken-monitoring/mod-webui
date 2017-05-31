@@ -1028,7 +1028,7 @@ Invalid element name
                      </button>
                      %if elt.downtimes:
                      <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm"
-                           data-type="action" action="delete-downtimes"
+                           data-type="action" action="delete-all-downtimes"
                            data-toggle="tooltip" data-placement="bottom" title="Delete all the downtimes of this {{elt_type}}"
                            data-element="{{helper.get_uri_name(elt)}}"
                            >

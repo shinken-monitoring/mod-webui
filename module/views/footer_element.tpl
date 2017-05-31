@@ -1,6 +1,7 @@
 %from shinken.bin import VERSION
 %setdefault('elt', None)
 %setdefault('user', None)
+%setdefault('all_pbs', None)
 
 %username = 'anonymous'
 %if user is not None:
@@ -61,6 +62,12 @@
                      data-element="{{helper.get_uri_name(elt)}}" >
                      <i class="fa fa-ambulance"></i> Schedule a downtime
                   </a> </li>
+                  %if elt.downtimes:
+                  <li> <a href="#" action="delete-all-downtimes" title="Delete all downtimes for this {{elt_type}}"
+                     data-element="{{helper.get_uri_name(elt)}}" >
+                     <i class="fa fa-ambulance"></i> Delete all downtimes
+                  </a> </li>
+                  %end
                   %if elt_type=='host' and app.helpdesk_module.is_available():
                   <li> <a href="#" action="create-ticket" title="Create a ticket for this {{elt_type}}"
                      data-element="{{helper.get_uri_name(elt)}}" >
@@ -68,6 +75,9 @@
                   </a> </li>
                   %end
                %else:
+                  <!-- :TODO:maethor:170531: Kind of ugly to do it here, but I will cleanup all this file later -->
+                  %s = app.datamgr.get_services_synthesis(user=user, elts=all_pbs)
+                  %h = app.datamgr.get_hosts_synthesis(user=user, elts=all_pbs)
                   <li> <a href="#" action="event-handler" title="Try to fix the selected problems">
                       <i class="fa fa-magic"></i> <span class="hidden-xs">Try to fix</span>
                   </a> </li>
@@ -83,9 +93,19 @@
                   <li> <a href="#" action="schedule-downtime" title="Schedule a one day downtime for the selected problems">
                       <i class="fa fa-ambulance"></i> <span class="hidden-xs">Schedule a downtime</span>
                   </a> </li>
-                  <li> <a href="#" action="ignore-checks" title="Remove the selected problems from the problems list">
-                      <i class="fa fa-eraser"></i> <span class="hidden-xs">Uncheck</span>
+                  %if s and s['nb_ack']:
+                  <li> <a href="#" action="remove-acknowledge" class="text-danger" title="Remove the acknowledge for the selected problems">
+                      <i class="fa fa-check text-danger"></i> <span class="hidden-xs">Unacknowledge</span>
                   </a> </li>
+                  %end
+                  %if s and s['nb_downtime']:
+                  <li> <a href="#" action="delete-all-downtimes" class="text-danger" title="Delete all downtimes for the selected problems">
+                      <i class="fa fa-ambulance"></i> <span class="hidden-xs">Delete all downtimes</span>
+                  </a> </li>
+                  %end
+                  <!--<li> <a href="#" action="ignore-checks" title="Remove the selected problems from the problems list">-->
+                      <!--<i class="fa fa-eraser"></i> <span class="hidden-xs">Uncheck</span>-->
+                  <!--</a> </li>-->
                %end
            </ul>
          </nav>
@@ -137,6 +157,7 @@
 </footer>
 
 <script>
+%if app.can_action():
    /* We keep an array of all selected elements */
    var selected_elements = [];
    var eltdetail_logs=false;
@@ -220,10 +241,14 @@
    });
 
    // Delete all downtimes
-   $('body').on("click", '[action="delete-downtimes"]', function () {
+   $('body').on("click", '[action="delete-all-downtimes"]', function () {
       var elt = $(this).data('element');
       if (! elt) {
-         if (eltdetail_logs) console.error("Unavailable delete all downtimes for a list of problems!")
+         $.each(selected_elements, function(idx, name){
+            if (eltdetail_logs) console.debug("Delete all downtimes for: ", name)
+            delete_all_downtimes(name);
+         });
+         flush_selected_elements();
       } else {
          if (eltdetail_logs) console.debug("Delete all downtimes for: ", elt)
 
@@ -252,7 +277,11 @@
    $('body').on("click", '[action="remove-acknowledge"]', function () {
       var elt = $(this).data('element');
       if (! elt) {
-         if (eltdetail_logs) console.error("Unavailable delete acknowledge for a list of problems!")
+         $.each(selected_elements, function(idx, name){
+            if (eltdetail_logs) console.debug("Delete acknowledge for: ", name)
+            delete_acknowledge(name);
+         });
+         flush_selected_elements();
       } else {
          if (eltdetail_logs) console.debug("Delete an acknowledge for: ", elt)
 
@@ -346,6 +375,7 @@
          display_modal("/helpdesk/ticket_followup/add/"+elt+'?ticket='+ticket+'&status='+status);
       }
    });
+%end
 
    // Add a widget
    $('body').on("click", '[action="add-widget"]', function () {
