@@ -5,6 +5,8 @@
 %if header:
 %s = app.datamgr.get_services_synthesis(user=user, elts=all_pbs)
 %h = app.datamgr.get_hosts_synthesis(user=user, elts=all_pbs)
+%s_all = app.datamgr.get_services_synthesis(user=user)
+%h_all = app.datamgr.get_hosts_synthesis(user=user)
 
 <div class="panel panel-default hidden-xs">
    <div class="panel-body">
@@ -25,7 +27,7 @@
                <td>
                  %label = "%s hosts %s (%s%%)" % (h['nb_' + state], state, h['pct_' + state])
                  <a style="text-decoration: none;" href="/all?search=type:host is:{{state}} isnot:ack isnot:downtime" title="{{label}}">
-                 {{! helper.get_fa_icon_state_and_label(cls='host', state=state, label=h['nb_' + state], useTitle=False, disabled=(not h['nb_' + state]))}}
+                   {{! helper.get_fa_icon_state_and_label(cls='host', state=state, label="%s<small> / %s</small>" % (h['nb_' + state], h_all['nb_'+state]), useTitle=False, disabled=(not h['nb_' + state]))}}
                  </a>
                </td>
                %end
@@ -34,7 +36,7 @@
                <td>
                  %label = "%s hosts %s (%s%%)" % (h['nb_' + state], state, h['pct_' + state])
                  <a style="text-decoration: none;" href="/all?search=type:host is:{{state}}" title="{{label}}">
-                 {{! helper.get_fa_icon_state_and_label(cls='host', state=state, label=h['nb_' + state], useTitle=False, disabled=(not h['nb_' + state]))}}
+                   {{! helper.get_fa_icon_state_and_label(cls='host', state=state, label="%s<small> / %s</small>" % (h['nb_' + state], h_all['nb_'+state]), useTitle=False, disabled=(not h['nb_' + state]))}}
                  </a>
                </td>
                %end
@@ -56,7 +58,7 @@
                <td>
                  %label = "%s services %s (%s%%)" % (s['nb_' + state], state, s['pct_' + state])
                  <a style="text-decoration: none;" href="/all?search=type:service is:{{state}} isnot:ack isnot:downtime" title="{{label}}">
-                 {{!helper.get_fa_icon_state_and_label(cls='service', state=state, label=s['nb_' + state], useTitle=False, disabled=(not s['nb_' + state]))}}
+                   {{!helper.get_fa_icon_state_and_label(cls='service', state=state, label="%s<small> / %s</small>" % (s['nb_' + state], s_all['nb_'+state]), useTitle=False, disabled=(not s['nb_' + state]))}}
                  </a>
                </td>
                %end
@@ -65,7 +67,7 @@
                <td>
                  %label = "%s services %s (%s%%)" % (s['nb_' + state], state, s['pct_' + state])
                  <a style="text-decoration: none;" href="/all?search=type:service is:{{state}}" title="{{label}}">
-                 {{!helper.get_fa_icon_state_and_label(cls='service', state=state, label=s['nb_' + state], useTitle=False, disabled=(not s['nb_' + state]))}}
+                   {{!helper.get_fa_icon_state_and_label(cls='service', state=state, label="%s<small> / %s</small>" % (s['nb_' + state], s_all['nb_'+state]), useTitle=False, disabled=(not s['nb_' + state]))}}
                  </a>
                </td>
                %end
