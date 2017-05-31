@@ -11,18 +11,22 @@
 
 <!-- Problems filtering and display -->
 <div id="problems">
-   %if not pbs:
-   <center>
-     %if search_string:
-     <h3>What a bummer! We couldn't find anything.</h3>
-     Use the filters or the bookmarks to find what you are looking for, or try a new search query.
-     %else:
-     <h3>No host or service.</h3>
-     %end
-   </center>
-   %else:
 
    %include("_problems_synthesis.tpl", pbs=pbs, search_string=app.get_search_string())
+
+   %if not pbs:
+   <center>
+     <div class="page-header">
+       %if search_string:
+       <h3>What a bummer! We couldn't find anything.</h3>
+       <h3><small>Use the filters, the bookmarks, click on the links above, or try a new search query to find what you are looking for.</small></h3>
+       %else:
+       <h3>No host or service.</h3>
+       %end
+     </div>
+   </center>
+
+   %else:
 
    %from itertools import groupby
    %pbs = sorted(pbs, key=lambda x: x.business_impact, reverse=True)
