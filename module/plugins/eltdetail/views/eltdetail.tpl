@@ -952,8 +952,9 @@ Invalid element name
                                </tr>
                             </thead>
                             <tbody>
-                            %for s in elt.services:
-                            %for c in sorted(s.comments, key=lambda x: x.entry_time, reverse=True):
+                            %setdefault('servicecomments', None)
+                            %servicecomments = [c for sublist in [s.comments for s in elt.services] for c in sublist]
+                            %for c in sorted(servicecomments, key=lambda x: x.entry_time, reverse=True):
                                <tr>
                                   <td>{{s.get_name()}}</td>
                                   <td>{{c.author}}</td>
@@ -969,7 +970,6 @@ Invalid element name
                                      </button>
                                   </td>
                                </tr>
-                            %end
                             %end
                             </tbody>
                          </table>
