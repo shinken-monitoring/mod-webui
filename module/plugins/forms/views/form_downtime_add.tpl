@@ -72,8 +72,10 @@
 <div class="modal-body">
    <form name="input_form" role="form">
       %if elt.__class__.my_type=='host':
-      <div class="form-group">
-         <input name="dwn_services" id="dwn_services" type="checkbox" checked="checked">Same downtime period for all services of the host?</input>
+      <div class="checkbox">
+        <label>
+          <input name="dwn_services" id="dwn_services" type="checkbox" checked="checked"> Apply the same downtime on all the services of this host</input>
+        </label>
       </div>
       %end
 
