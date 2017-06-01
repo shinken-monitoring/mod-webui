@@ -33,6 +33,12 @@ td .ellipsis > .long-output {
     display:none;
 }
 
+.btn-copy {
+    border: 0;
+    padding: 0;
+    background-color: transparent;
+}
+
 /*
  * Problems table, responsive table columns
  */
