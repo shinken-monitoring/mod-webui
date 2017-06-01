@@ -128,20 +128,12 @@ function raise_message_ko(text){
 /*
  * Get element information
  */
-function get_elements(name, contact) {
+function get_elements(name) {
    var elts = name.split('/');
    var elt = {
       type : 'UNKNOWN',
       namevalue : 'NOVALUE'
    };
-   // Specific for contact
-   if (contact !== undefined) {
-      elt.type = 'CONTACT';
-      elt.namevalue = elts[0];
-      elt.nameslash = elts[0];
-
-      return elt;
-   }
    if (elts.length == 1){
       // 1 element means HOST
       elt.type = 'HOST';
@@ -435,23 +427,23 @@ function delete_all_comments(name) {
  Set the "trigger_id" argument to zero (0) if the downtime for the
  specified host should not be triggered by another downtime entry.
 */
-function do_schedule_downtime(name, start_time, end_time, user, comment, contact, shinken_downtime_fixed, shinken_downtime_trigger, shinken_downtime_duration){
-   var elts = get_elements(name, contact);
+function do_schedule_downtime(name, start_time, end_time, user, comment, shinken_downtime_fixed, shinken_downtime_trigger, shinken_downtime_duration){
+   var elts = get_elements(name);
    var url = '/action/SCHEDULE_'+elts.type+'_DOWNTIME/'+elts.nameslash+'/'+start_time+'/'+end_time+'/'+shinken_downtime_fixed+'/'+shinken_downtime_trigger+'/'+shinken_downtime_duration+'/'+user+'/'+comment;
    launch(url, capitalize(elts.type)+': '+name+', downtime scheduled');
 }
 
 /* The command that will delete a downtime */
-function delete_downtime(name, i, contact) {
-   var elts = get_elements(name, contact);
+function delete_downtime(name, i) {
+   var elts = get_elements(name);
    var url = '/action/DEL_'+elts.type+'_DOWNTIME/'+i;
    // We can launch it :)
    launch(url, capitalize(elts.type)+': '+name+', downtime deleted');
 }
 
 /* The command that will delete all downtimes */
-function delete_all_downtimes(name, contact) {
-   var elts = get_elements(name, contact);
+function delete_all_downtimes(name) {
+   var elts = get_elements(name);
    var url = '/action/DEL_ALL_'+elts.type+'_DOWNTIMES/'+elts.nameslash;
    // We can launch it :)
    launch(url, capitalize(elts.type)+': '+name+', all downtimes deleted');
