@@ -24,12 +24,6 @@
 
 var actions_logs=false;
 
-// Utility function
-function capitalize (text) {
-   return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
-}
-
-
 /**
  * Get current user preference value:
  * - key
@@ -159,38 +153,9 @@ function try_to_fix(name) {
    var elt = get_element(name);
    var url = '/action/LAUNCH_'+elt.type+'_EVENT_HANDLER/'+elt.name;
    // We can launch it :)
-   launch(url, capitalize(elt.type)+': '+name+', event handler activated');
+   launch(url, elt.type+': '+name+', event handler activated');
 }
 
-
-
-/*
- * Remove an element from WebUI
- */
-function do_remove(name, text, user){
-  var elt = get_element(name);
-
-  /* A Remove is in fact some several commands :
-     DISABLE_SVC_NOTIFICATIONS
-     DISABLE_SVC_EVENT_HANDLER
-     PROCESS_SERVICE_CHECK_RESULT
-     DISABLE_SVC_CHECK
-     DISABLE_PASSIVE_SVC_CHECKS
-   */
-
-   disable_notifications(elt);
-   disable_event_handlers(elt);
-   add_comment(name, user, text);
-   submit_check(name, 0, text);
-   // WARNING : Disable passive checks make the set not push,
-   // so we only disable active checks
-   disable_checks(elt, false);
-
-   // And later after (10s), we push a full disable, so passive too
-   setTimeout(function(){
-      disable_checks(elt, true);
-   }, 10000);
-}
 
 
 /*
@@ -210,7 +175,7 @@ function submit_check(name, return_code, output){
    var elt = get_element(name);
    var url = '/action/PROCESS_'+elt.type+'_HOST_CHECK_RESULT/'+elt.name+'/'+return_code+'/'+output;
    // We can launch it :)
-   launch(url, capitalize(elt.type)+': '+name+', check result submitted');
+   launch(url, elt.type+': '+name+', check result submitted');
 }
 
 
@@ -221,7 +186,7 @@ function change_custom_var(name, custom_var, value){
    var elt = get_element(name);
    var url = '/action/CHANGE_CUSTOM_'+elt.type+'_VAR/'+elt.name+'/'+custom_var+'/'+value;
    // We can launch it :)
-   launch(url, capitalize(elt.type)+': '+name+', custom variable changed');
+   launch(url, elt.type+': '+name+', custom variable changed');
 }
 
 
@@ -233,7 +198,7 @@ function recheck_now(name) {
    var now = '$NOW$';
    var url = '/action/SCHEDULE_FORCED_'+elt.type+'_CHECK/'+elt.name+'/'+now;
    // We can launch it :)
-   launch(url, capitalize(elt.type)+': '+name+', check forced');
+   launch(url, elt.type+': '+name+', check forced');
 }
 
 
@@ -310,15 +275,11 @@ function toggle_notifications(name, b){
    // Inverse the active check or not for the element
    if (b) { // go disable
       var url = '/action/DISABLE_'+elt.type+'_NOTIFICATIONS/'+elt.name;
-      launch(url, capitalize(elt.type)+', notifications disabled');
+      launch(url, elt.type+', notifications disabled');
    } else { // Go enable
       var url = '/action/ENABLE_'+elt.type+'_NOTIFICATIONS/'+elt.name;
-      launch(url, capitalize(elt.type)+', notifications enabled');
+      launch(url, elt.type+', notifications enabled');
    }
-}
-function disable_notifications(elt){
-   var url = '/action/DISABLE_'+elt.type+'_NOTIFICATIONS/'+elt.name;
-   launch(url, capitalize(elt.type)+', notifications disabled');
 }
 
 
@@ -330,15 +291,11 @@ function toggle_event_handlers(name, b){
    // Inverse the event handler or not for the element
    if (b) { // go disable
       var url = '/action/DISABLE_'+elt.type+'_EVENT_HANDLER/'+elt.name;
-      launch(url, capitalize(elt.type)+', event handler disabled');
+      launch(url, elt.type+', event handler disabled');
    } else { // Go enable
       var url = '/action/ENABLE_'+elt.type+'_EVENT_HANDLER/'+elt.name;
-      launch(url, capitalize(elt.type)+', event handler enabled');
+      launch(url, elt.type+', event handler enabled');
    }
-}
-function disable_event_handlers(elt){
-   var url = '/action/DISABLE_'+elt.type+'_EVENT_HANDLER/'+elt.name;
-   launch(url, capitalize(elt.type)+', event handler disabled');
 }
 
 
@@ -352,10 +309,10 @@ function toggle_flap_detection(name, b){
    // Inverse the flap detection for the element
    if (b) { //go disable
       var url = '/action/DISABLE_'+elt.type+'_FLAP_DETECTION/'+elt.name;
-      launch(url, capitalize(elt.type)+', flapping detection disabled');
+      launch(url, elt.type+', flapping detection disabled');
    } else {
       var url = '/action/ENABLE_'+elt.type+'_FLAP_DETECTION/'+elt.name;
-      launch(url, capitalize(elt.type)+', flapping detection enabled');
+      launch(url, elt.type+', flapping detection enabled');
    }
 }
 
@@ -375,7 +332,7 @@ function add_comment(name, user, comment){
    var elt = get_element(name);
    var url = '/action/ADD_'+elt.type+'_COMMENT/'+elt.name+'/'+shinken_comment_persistent+'/'+user+'/'+comment;
    // We can launch it :)
-   launch(url, capitalize(elt.type)+': '+name+', comment added');
+   launch(url, elt.type+': '+name+', comment added');
 }
 
 
@@ -384,7 +341,7 @@ function delete_comment(name, i) {
    var elt = get_element(name);
    var url = '/action/DEL_'+elt.type+'_COMMENT/'+i;
    // We can launch it :)
-   launch(url, capitalize(elt.type)+': '+name+', comment deleted');
+   launch(url, elt.type+': '+name+', comment deleted');
 }
 
 
@@ -393,7 +350,7 @@ function delete_all_comments(name) {
    var elt = get_element(name);
    var url = '/action/DEL_ALL_'+elt.type+'_COMMENTS/'+elt.name;
    // We can launch it :)
-   launch(url, capitalize(elt.type)+': '+name+', all comments deleted');
+   launch(url, elt.type+': '+name+', all comments deleted');
 }
 
 
@@ -417,7 +374,7 @@ function delete_all_comments(name) {
 function do_schedule_downtime(name, start_time, end_time, user, comment, shinken_downtime_fixed, shinken_downtime_trigger, shinken_downtime_duration){
    var elt = get_element(name);
    var url = '/action/SCHEDULE_'+elt.type+'_DOWNTIME/'+elt.name+'/'+start_time+'/'+end_time+'/'+shinken_downtime_fixed+'/'+shinken_downtime_trigger+'/'+shinken_downtime_duration+'/'+user+'/'+comment;
-   launch(url, capitalize(elt.type)+': '+name+', downtime scheduled');
+   launch(url, elt.type+': '+name+', downtime scheduled');
 }
 
 /* The command that will delete a downtime */
@@ -425,7 +382,7 @@ function delete_downtime(name, i) {
    var elt = get_element(name);
    var url = '/action/DEL_'+elt.type+'_DOWNTIME/'+i;
    // We can launch it :)
-   launch(url, capitalize(elt.type)+': '+name+', downtime deleted');
+   launch(url, elt.type+': '+name+', downtime deleted');
 }
 
 /* The command that will delete all downtimes */
@@ -433,7 +390,7 @@ function delete_all_downtimes(name) {
    var elt = get_element(name);
    var url = '/action/DEL_ALL_'+elt.type+'_DOWNTIMES/'+elt.name;
    // We can launch it :)
-   launch(url, capitalize(elt.type)+': '+name+', all downtimes deleted');
+   launch(url, elt.type+': '+name+', all downtimes deleted');
 }
 
 
@@ -458,7 +415,7 @@ are disabled.
 function do_acknowledge(name, text, user, shinken_acknowledge_sticky, shinken_acknowledge_notify, shinken_acknowledge_persistent){
    var elt = get_element(name);
    var url = '/action/ACKNOWLEDGE_'+elt.type+'_PROBLEM/'+elt.name+'/'+shinken_acknowledge_sticky+'/'+shinken_acknowledge_notify+'/'+shinken_acknowledge_persistent+'/'+user+'/'+text;
-   launch(url, capitalize(elt.type)+': '+name+', acknowledged');
+   launch(url, elt.type+': '+name+', acknowledged');
 }
 
 /* The command that will delete an acknowledge */
@@ -466,5 +423,5 @@ function delete_acknowledge(name) {
    var elt = get_element(name);
    var url = '/action/REMOVE_'+elt.type+'_ACKNOWLEDGEMENT/'+elt.name;
    // We can launch it :)
-   launch(url, capitalize(elt.type)+': '+name+', acknowledge deleted');
+   launch(url, elt.type+': '+name+', acknowledge deleted');
 }

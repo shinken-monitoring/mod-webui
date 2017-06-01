@@ -103,9 +103,6 @@
                       <i class="fa fa-ambulance"></i> <span class="hidden-xs">Delete all downtimes</span>
                   </a> </li>
                   %end
-                  <!--<li> <a href="#" action="ignore-checks" title="Remove the selected problems from the problems list">-->
-                      <!--<i class="fa fa-eraser"></i> <span class="hidden-xs">Uncheck</span>-->
-                  <!--</a> </li>-->
                %end
            </ul>
          </nav>
@@ -334,23 +331,6 @@
          if (eltdetail_logs) console.debug("Try to fix: ", elt)
 
          try_to_fix(elt);
-      }
-   });
-
-   // Ignore checks
-   $('body').on("click", '[action="ignore-checks"]', function () {
-      var elt = $(this).data('element');
-      var user = '{{username}}';
-      if (! elt) {
-         $.each(selected_elements, function(idx, name){
-            if (eltdetail_logs) console.debug("Remove for: ", name)
-            do_remove(name, 'Removed by '+user, user);
-         });
-         flush_selected_elements();
-      } else {
-         if (problems_logs) console.debug("Remove for: ", elt)
-
-         do_remove(elt, 'Removed by '+user, user);
       }
    });
 
