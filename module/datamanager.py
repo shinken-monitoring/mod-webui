@@ -372,7 +372,7 @@ class WebUIDataManager(DataManager):
             :name: Must be "host" or "host/service"
         """
         if '/' in name:
-            return self.get_service(name.split('/')[0], name.split('/')[1], user)
+            return self.get_service(name.split('/')[0], '/'.join(name.split('/')[1:]), user)
         else:
             host = self.get_host(name, user)
             if not host:

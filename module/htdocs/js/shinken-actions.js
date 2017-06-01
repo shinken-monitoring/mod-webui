@@ -485,7 +485,7 @@ function do_acknowledge(name, text, user, shinken_acknowledge_sticky, shinken_ac
 /* The command that will delete an acknowledge */
 function delete_acknowledge(name) {
    var elts = get_elements(name);
-   var url = '/action/REMOVE_'+elts.type+'_ACKNOWLEDGEMENT/'+name;
+   var url = '/action/REMOVE_'+elts.type+'_ACKNOWLEDGEMENT/'+elts.nameslash;
    // We can launch it :)
    launch(url, capitalize(elts.type)+': '+name+', acknowledge deleted');
 }
