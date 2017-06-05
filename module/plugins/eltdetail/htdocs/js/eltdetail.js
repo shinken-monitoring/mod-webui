@@ -32,9 +32,6 @@ var elt_name = '{{elt.get_full_name()}}';
  * Function called when the page is loaded and on each page refresh ...
  */
 function on_page_refresh() {
-   // Show actions bar
-   show_actions();
-
    // Buttons tooltips
    $('button').tooltip();
 
@@ -270,9 +267,6 @@ function on_page_refresh() {
 
    // Restore previously selected tab
    bootstrap_tab_bookmark();
-
-   // Show actions bar
-   show_actions();
 }
 
 

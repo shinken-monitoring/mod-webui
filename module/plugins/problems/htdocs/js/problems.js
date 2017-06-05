@@ -42,7 +42,7 @@ function add_element(name){
    selected_elements.push(name);
 
    if (selected_elements.length > 0) {
-      show_actions();
+      $('#action-menu').show();
       
       // Stop page refresh
       stop_refresh();
@@ -58,7 +58,7 @@ function remove_element(name){
    selected_elements.splice($.inArray(name, selected_elements),1);
 
    if (selected_elements.length == 0){
-      hide_actions();
+      $('#action-menu').hide();
 
       // Restart page refresh timer
       start_refresh();

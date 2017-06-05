@@ -225,20 +225,16 @@ footer nav {
     min-height: 25px !important;
 }
 
-footer nav.navbar-dashboard {
-    position: absolute;
-    width: 200px;
-    left: 0px; bottom: 30px;
-}
-
-footer nav.navbar-element {
+#action-menu, #action-btn {
+    margin: 0;
+    margin-bottom: 25px;
     position: fixed;
     width: 200px;
     left: 0;
     bottom: 0%;
     /*left: 0px; bottom: 30px;*/
 }
-footer nav.navbar-element li {
+#action-menu li {
     border-bottom: 1px solid #e7e7e7;
 }
 @media(max-width:768px) {
@@ -248,25 +244,25 @@ footer nav.navbar-element li {
         /*width: 250px;*/
         /*margin-top: 51px;*/
     /*}*/
-    footer container {
+    #action-menu container {
         border: none;
     }
 
-    footer nav.navbar-element {
+    #action-menu {
         width: 100%;
         border: none;
         background: none;
         text-align: center;
     }
 
-    footer nav.navbar-element ul {
+    #action-menu ul {
         list-style: none;
         /*width: initial;*/
         /*background: red;*/
         /*margin: auto;*/
     }
 
-    footer nav.navbar-element li {
+    #action-menu li {
         border: 1px solid #e7e7e7;
         background: #f9f9f9;
         display: inline;
@@ -275,7 +271,7 @@ footer nav.navbar-element li {
         font-size: 16px;
     }
 
-    footer nav.navbar-element li a {
+    #action-menu li a {
         display: inline;
     }
 }

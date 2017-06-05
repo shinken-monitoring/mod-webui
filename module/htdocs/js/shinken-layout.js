@@ -60,30 +60,6 @@ function loadjscssfile(filename, filetype){
 
 
 /**
- *  Actions bar related code
- */
-function hide_actions(part){
-   if (layout_logs) console.debug('Hiding actions bar');
-
-   if (part !== undefined) {
-      $('#'+part).hide();
-   } else {
-      $('#actions').hide();
-   }
-}
-
-function show_actions(part){
-   if (layout_logs) console.debug('Showing actions bar');
-
-   if (part !== undefined) {
-      $('#'+part).show();
-   } else {
-      $('#actions').show();
-   }
-}
-
-
-/**
  * Display the layout modal form
  */
 function display_modal(inner_url) {
@@ -103,8 +79,6 @@ $(document).ready(function(){
    $('#modal').on('hidden.bs.modal', function () {
       // Show sidebar menu ...
       $('.sidebar').show();
-      // Show actions bar ...
-      $('.actionbar').show();
 
       // Clean modal box content ...
       $(this).removeData('bs.modal');
@@ -114,14 +88,9 @@ $(document).ready(function(){
    $('#modal').on('shown.bs.modal', function () {
       // Hide sidebar menu ...
       $('.sidebar').hide();
-      // Hide actions bar ...
-      $('.actionbar').hide();
    });
 
    // Sidebar menu
    $('#sidebar-menu').metisMenu();
-
-   // Actions bar menu
-   $('.actions-menu').metisMenu();
 
 });
