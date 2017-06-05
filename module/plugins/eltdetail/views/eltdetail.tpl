@@ -49,7 +49,7 @@ Invalid element name
 
 
    <!-- First row : tags and actions ... -->
-   %if elt.action_url or tags or groups:
+   %if tags or groups:
    <div>
       %if groups:
       <div class="btn-group pull-right">
@@ -61,19 +61,6 @@ Invalid element name
             <a href="/{{elt_type}}s-group/{{g.get_name()}}">{{g.level if g.level else '0'}} - {{g.alias if g.alias else g.get_name()}}</a>
             </li>
          %end
-         </ul>
-      </div>
-      <div class="pull-right">&nbsp;&nbsp;</div>
-      %end
-      %if elt.action_url != '':
-      <div class="btn-group pull-right">
-         %action_urls = elt.action_url.split('|')
-         <button class="btn btn-info btn-xs"><i class="fa fa-external-link"></i> {{'Action' if len(action_urls) == 1 else 'Actions'}}</button>
-         <button class="btn btn-info btn-xs dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>
-         <ul class="dropdown-menu pull-right">
-            %for action_url in helper.get_element_actions_url(elt, default_title="Url", default_icon="globe", popover=True):
-            <li>{{!action_url}}</li>
-            %end
          </ul>
       </div>
       <div class="pull-right">&nbsp;&nbsp;</div>
@@ -185,13 +172,6 @@ Invalid element name
             %else:
             <dd>(none)</dd>
             %end
-
-            <dt>Notes:</dt>
-            <dd>
-            %for note_url in helper.get_element_notes_url(elt, default_title="Note", default_icon="tag", popover=True):
-               <button class="btn btn-default btn-xs">{{! note_url}}</button>
-            %end
-            </dd>
          </dl>
          %else:
          <dl class="col-sm-6 dl-horizontal">
@@ -222,7 +202,7 @@ Invalid element name
             %elif elt.notes == '' and elt.notes_url != '':
             <dd><a href="{{elt.notes_url}}" target=_blank>{{elt.notes_url}}</a></dd>
             %elif elt.notes != '' and elt.notes_url == '':
-            <dd>{{elt.notes}}</dd>
+          <dd>{{elt.notes}}</dd>
             %else:
             <dd>(none)</dd>
             %end
@@ -419,7 +399,7 @@ Invalid element name
                                        data-title="{{elt.get_full_name()}} check output"
                                        data-content=" {{elt.output}}{{'<br/>'+elt.long_output.replace('\n', '<br/>') if elt.long_output else ''}}"
                                        >
-                                  {{!helper.strip_html_output(elt.output) if app.allow_html_output else elt.output}}
+                                  {{! elt.output}}
                                     </span>
                                  </td>
                               </tr>
@@ -800,7 +780,7 @@ Invalid element name
                         <div class='host-services'>
                            %s = ""
                            <ul>
-                           %for svc in helper.get_impacts_sorted(elt):
+                           %for svc in helper.sort_elements(elt.impacts):
                               %s += "<li>"
                               %s += helper.get_fa_icon_state(svc)
                               %s += helper.get_link(svc, short=True)

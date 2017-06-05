@@ -115,10 +115,10 @@
                   </div>
                   %end
                   <div class="ellipsis output">
-                     {{!helper.strip_html_output(pb.output) if app.allow_html_output else pb.output}}
+                     {{! pb.output}}
                      %if pb.long_output:
                      <div class="long-output">
-                        {{!helper.strip_html_output(pb.long_output) if app.allow_html_output else pb.long_output}}
+                        {{! pb.long_output}}
                      </div>
                      %end
                   </div>
@@ -225,10 +225,10 @@
                                     <td align="center">{{!helper.print_duration(i.last_state_change, just_duration=True, x_elts=2)}}</td>
                                     <td class="row hidden-sm hidden-xs">
                                        <div class="ellipsis output">
-                                          {{!helper.strip_html_output(i.output) if app.allow_html_output else i.output}}
+                                          {{! i.output}}
                                           %if i.long_output:
                                           <div class="long-output">
-                                             {{!helper.strip_html_output(i.long_output) if app.allow_html_output else i.long_output}}
+                                             {{! i.long_output}}
                                           </div>
                                           %end
                                        </div>

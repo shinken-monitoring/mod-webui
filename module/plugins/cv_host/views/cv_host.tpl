@@ -151,12 +151,14 @@
             <dd>(none)</dd>
             %end
 
+            %if elt.notes_url:
             <dt>Notes:</dt>
             <dd>
-            %for note_url in app.helper.get_element_notes_url(elt, default_title="Note", default_icon="tag", popover=True):
+            %for note_url in elt.notes_url:
                <button class="btn btn-default btn-xs">{{! note_url}}</button>
             %end
             </dd>
+            %end
          </dl>
       </div>
    </div>
