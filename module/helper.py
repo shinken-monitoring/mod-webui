@@ -343,6 +343,10 @@ class Helper(object):
         t.sort(hst_srv_sort)
         return t
 
+    def sort_elements(self, elements):
+        l = copy.copy(elements)
+        l.sort(hst_srv_sort)
+        return l
 
     # Mockup helper
     # User: Frescha

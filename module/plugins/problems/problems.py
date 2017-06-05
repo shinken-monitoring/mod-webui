@@ -40,6 +40,8 @@ def get_all():
     user = app.bottle.request.environ['USER']
     # Fetch elements per page preference for user, default is 25
     elts_per_page = app.prefs_module.get_ui_user_preference(user, 'elts_per_page', 25)
+    display_impacts = app.prefs_module.get_ui_user_preference(user, 'display_impacts', True)
+    display_impacts = display_impacts and display_impacts != 'false'
 
     # Fetch sound preference for user, default is 'no'
     sound_pref = app.prefs_module.get_ui_user_preference(user, 'sound', 'yes' if app.play_sound else 'no')
@@ -62,22 +64,26 @@ def get_all():
     title = app.request.GET.get('title', 'All problems')
 
     search = ' '.join(app.request.GET.getall('search')) or ""
-    items = app.datamgr.search_hosts_and_services(search, user)
+    items = list(app.datamgr.search_hosts_and_services(search, user))
 
-    # Now sort it!
-    # @mohierf: sorting is really necessary ?
-    items.sort(hst_srv_sort)
+    pbs = list(sorted(items, hst_srv_sort))
 
-    total = len(items)
+    if not display_impacts:
+        # Remove impacts when source of impact (dependancy) is in list
+        for pb in pbs:
+            if pb.impacts:
+                for i in pb.impacts:
+                    if i in pbs and i != pb and i.business_impact <= pb.business_impact:
+                        pbs.remove(i)
+
     # If we overflow, came back as normal
-    if start > total:
+    if start > len(pbs):
         start = 0
         end = start + step
 
-    navi = app.helper.get_navi(total, start, step=step)
-    pbs = items[start:end]
+    navi = app.helper.get_navi(len(pbs), start, step=step)
 
-    return {'pbs': pbs, 'all_pbs': items, 'navi': navi, 'title': title, 'bookmarks': app.prefs_module.get_user_bookmarks(user), 'bookmarksro': app.prefs_module.get_common_bookmarks(), 'sound': sound_pref, 'elts_per_page': elts_per_page}
+    return {'pbs': pbs[start:end], 'all_pbs': items, 'navi': navi, 'title': title, 'bookmarks': app.prefs_module.get_user_bookmarks(user), 'bookmarksro': app.prefs_module.get_common_bookmarks(), 'sound': sound_pref, 'elts_per_page': elts_per_page, 'display_impacts': display_impacts}
 
 
 def get_pbs_widget():
