@@ -3,7 +3,7 @@
 %datamgr = app.datamgr
 %search_string = app.get_search_string()
 
-%rebase("layout", title=title, js=['problems/js/problems.js', 'problems/js/actions.js'], css=['problems/css/problems.css'], navi=navi, page="/all", elts_per_page=elts_per_page)
+%rebase("layout", title=title, js=['js/shinken-actions.js', 'problems/js/problems.js', 'problems/js/actions.js'], css=['problems/css/problems.css'], navi=navi, page="/all", elts_per_page=elts_per_page)
 
 <script type="text/javascript">
    var actions_enabled = {{'true' if app.can_action() else 'false'}};
@@ -153,52 +153,38 @@
                            <td align="right">
                               <div class="btn-group" role="group" data-type="actions" aria-label="Actions">
                                  %if pb.event_handler_enabled and pb.event_handler:
-                                 <button class="btn btn-default btn-xs"
-                                       data-type="action" action="event-handler"
-                                       data-toggle="tooltip" data-placement="bottom" title="Try to fix (launch event handler)"
+                                 <button class="btn btn-default btn-xs js-try-to-fix"
+                                       title="Try to fix (launch event handler)"
                                        data-element="{{helper.get_uri_name(pb)}}"
                                        >
                                     <i class="fa fa-magic"></i><span class="hidden-sm hidden-xs"> Try to fix</span>
                                  </button>
                                  %end
-                                 <button class="btn btn-default btn-xs"
-                                       data-type="action" action="recheck"
-                                       data-toggle="tooltip" data-placement="bottom" title="Launch the check command"
+                                 <button class="btn btn-default btn-xs js-recheck"
+                                       title="Launch the check command"
                                        data-element="{{helper.get_uri_name(pb)}}"
                                        >
-                                    <i class="fa fa-refresh"></i><span class="hidden-sm hidden-xs"> Refresh</span>
+                                    <i class="fa fa-refresh"></i><span class="hidden-sm hidden-xs"> Recheck</span>
                                  </button>
-                                 <button class="btn btn-default btn-xs"
-                                       data-type="action" action="check-result"
-                                       data-toggle="tooltip" data-placement="bottom" title="Submit a check result"
+                                 <button class="btn btn-default btn-xs js-submit-ok"
+                                       title="Submit a check result"
                                        data-element="{{helper.get_uri_name(pb)}}"
-                                       data-user="{{user}}"
                                        >
-                                    <i class="fa fa-share"></i><span class="hidden-sm hidden-xs"> Submit check result</span>
+                                    <i class="fa fa-share"></i><span class="hidden-sm hidden-xs"> Set OK</span>
                                  </button>
                                  %if pb.state != pb.ok_up and not pb.problem_has_been_acknowledged:
-                                 <button class="btn btn-default btn-xs"
-                                       data-type="action" action="add-acknowledge"
-                                       data-toggle="tooltip" data-placement="bottom" title="Acknowledge this problem"
-                                       data-element="{{helper.get_uri_name(pb)}}"
-                                       >
-                                    <i class="fa fa-check"></i><span class="hidden-sm hidden-xs"> Acknowledge</span>
+                                 <button class="btn btn-default btn-xs js-add-acknowledge"
+                                   title="Acknowledge this problem"
+                                   data-element="{{helper.get_uri_name(pb)}}"
+                                   >
+                                   <i class="fa fa-check"></i><span class="hidden-sm hidden-xs"> Acknowledge</span>
                                  </button>
                                  %end
-                                 <button class="btn btn-default btn-xs"
-                                       data-type="action" action="schedule-downtime"
-                                       data-toggle="tooltip" data-placement="bottom" title="Schedule a downtime for this problem"
+                                 <button class="btn btn-default btn-xs js-schedule-downtime"
+                                       title="Schedule a downtime for this problem"
                                        data-element="{{helper.get_uri_name(pb)}}"
                                        >
                                   <i class="fa fa-ambulance"></i><span class="hidden-sm hidden-xs"> Downtime</span>
-                                 </button>
-                                 <button class="btn btn-default btn-xs"
-                                       data-type="action" action="ignore-checks"
-                                       data-toggle="tooltip" data-placement="bottom" title="Ignore checks for the service (disable checks, notifications, event handlers and force Ok)"
-                                       data-element="{{helper.get_uri_name(pb)}}"
-                                       data-user="{{user}}"
-                                       >
-                                    <i class="fa fa-eraser"></i><span class="hidden-sm hidden-xs"> Remove</span>
                                  </button>
                               </div>
                            </td>

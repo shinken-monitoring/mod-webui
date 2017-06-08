@@ -123,7 +123,7 @@
 
       %if app.play_sound:
       <li class="hidden-sm hidden-xs hidden-md">
-         <a class="quickinfo" action="toggle-sound-alert" data-original-title='Sound alerting' href="#">
+         <a class="quickinfo js-toggle-sound-alert" data-original-title='Sound alerting' href="#">
             <span id="sound_alerting" class="fa-stack">
               <i class="fa fa-music fa-stack-1x"></i>
               <i class="fa fa-ban fa-stack-2x text-danger"></i>
@@ -278,7 +278,7 @@
    } else {
       $('#sound_alerting i.fa-ban').removeClass('hidden');
    }
-   $('[action="toggle-sound-alert"]').on('click', function (e, data) {
+   $('.js-toggle-sound-alert').on('click', function (e, data) {
       if (sessionStorage.getItem("sound_play") == '1') {
          sessionStorage.setItem("sound_play", "0");
          $('#sound_alerting i.fa-ban').removeClass('hidden');

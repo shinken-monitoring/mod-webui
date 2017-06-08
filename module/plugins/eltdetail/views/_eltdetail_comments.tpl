@@ -18,9 +18,8 @@
             <td>{{c.comment}}</td>
             <td>{{helper.print_date(c.entry_time)}}</td>
             <td>
-              <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm"
-                data-type="action" action="delete-comment"
-                data-toggle="tooltip" data-placement="bottom" title="Delete this comment"
+              <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm js-delete-comment"
+                title="Delete this comment"
                 data-element="{{helper.get_uri_name(elt)}}" data-comment="{{c.id}}"
                 >
                 <i class="fa fa-trash-o"></i>
@@ -37,17 +36,15 @@
       </div>
       %end
 
-      <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm"
-        data-type="action" action="add-comment"
-        data-toggle="tooltip" data-placement="bottom" title="Add a comment for this {{elt_type}}"
+      <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm js-add-comment"
+        title="Add a comment for this {{elt_type}}"
         data-element="{{helper.get_uri_name(elt)}}"
         >
         <i class="fa fa-plus"></i> Add a comment
       </button>
       %if elt.comments:
-      <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm"
-        data-type="action" action="delete-comments"
-        data-toggle="tooltip" data-placement="bottom" title="Delete all the comments of this {{elt_type}}"
+      <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm js-delete-all-comments"
+        title="Delete all the comments of this {{elt_type}}"
         data-element="{{helper.get_uri_name(elt)}}"
         >
         <i class="fa fa-minus"></i> Delete all comments
@@ -76,9 +73,8 @@
             <td>{{c.comment}}</td>
             <td>{{helper.print_date(c.entry_time)}}</td>
             <td>
-              <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm"
-                data-type="action" action="delete-comment"
-                data-toggle="tooltip" data-placement="bottom" title="Delete this comment"
+              <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm js-delete-comment"
+                title="Delete this comment"
                 data-element="{{helper.get_uri_name(elt)}}" data-comment="{{c.id}}"
                 >
                 <i class="fa fa-trash-o"></i>

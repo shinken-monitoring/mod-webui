@@ -113,7 +113,6 @@
       <script src="/static/js/shinken-refresh.js"></script>
       %end
 
-      <script src="/static/js/shinken-actions.js"></script>
       <script src="/static/js/shinken-layout.js"></script>
       <script src="/static/js/shinken-bookmarks.js"></script>
    </head>

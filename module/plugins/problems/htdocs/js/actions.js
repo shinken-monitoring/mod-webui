@@ -3,7 +3,7 @@ var selected_elements = [];
 var eltdetail_logs=false;
 
 // Schedule a downtime ...
-$('body').on("click", '[action="schedule-downtime"]', function () {
+$('body').on("click", '.js-schedule-downtime-elts', function () {
     if (selected_elements.length == 1) {
         var elt = selected_elements[0];
         if (eltdetail_logs) console.debug("Schedule a downtime for: ", elt);
@@ -23,7 +23,7 @@ $('body').on("click", '[action="schedule-downtime"]', function () {
 });
 
 // Delete all downtimes
-$('body').on("click", '[action="delete-all-downtimes"]', function () {
+$('body').on("click", '.js-delete-all-downtimes-elts', function () {
     $.each(selected_elements, function(idx, name){
         if (eltdetail_logs) console.debug("Delete all downtimes for: ", name);
         delete_all_downtimes(name);
@@ -32,7 +32,7 @@ $('body').on("click", '[action="delete-all-downtimes"]', function () {
 });
 
 // Add an acknowledge
-$('body').on("click", '[action="add-acknowledge"]', function () {
+$('body').on("click", '.js-add-acknowledge-elts', function () {
     $.each(selected_elements, function(idx, name){
         if (eltdetail_logs) console.debug("Add acknowledge for: ", name);
         do_acknowledge(name, 'Acknowledged by '+user, user, default_ack_sticky, default_ack_notify, default_ack_persistent);
@@ -41,7 +41,7 @@ $('body').on("click", '[action="add-acknowledge"]', function () {
 });
 
 // Delete an acknowledge
-$('body').on("click", '[action="remove-acknowledge"]', function () {
+$('body').on("click", '.js-remove-acknowledge-elts', function () {
     $.each(selected_elements, function(idx, name){
         if (eltdetail_logs) console.debug("Delete acknowledge for: ", name);
         delete_acknowledge(name);
@@ -50,7 +50,7 @@ $('body').on("click", '[action="remove-acknowledge"]', function () {
 });
 
 // Recheck
-$('body').on("click", '[action="recheck"]', function () {
+$('body').on("click", '.js-recheck-elts', function () {
     $.each(selected_elements, function(idx, name){
         if (eltdetail_logs) console.debug("Recheck for: ", name);
         recheck_now(name);
@@ -59,7 +59,7 @@ $('body').on("click", '[action="recheck"]', function () {
 });
 
 // Check result
-$('body').on("click", '[action="check-result"]', function () {
+$('body').on("click", '.js-submit-ok-elts', function () {
     $.each(selected_elements, function(idx, name){
         if (eltdetail_logs) console.debug("Submit check for: ", name);
         submit_check(name, '0', 'Forced OK/UP by '+user);
@@ -68,7 +68,7 @@ $('body').on("click", '[action="check-result"]', function () {
 });
 
 // Event handler
-$('body').on("click", '[action="event-handler"]', function () {
+$('body').on("click", '.js-try-to-fix-elts', function () {
     $.each(selected_elements, function(idx, name){
         if (eltdetail_logs) console.debug("Try to fix for: ", name);
         try_to_fix(name);

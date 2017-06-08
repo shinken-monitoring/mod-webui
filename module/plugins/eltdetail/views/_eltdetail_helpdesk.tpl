@@ -5,9 +5,8 @@
       <div id="inner_helpdesk" data-element='{{elt.get_full_name()}}'>
       </div>
 
-      <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm"
-        data-type="action" action="create-ticket"
-        data-toggle="tooltip" data-placement="bottom" title="Create a ticket for this {{elt_type}}"
+      <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm js-create-ticket"
+        title="Create a ticket for this {{elt_type}}"
         data-element="{{helper.get_uri_name(elt)}}"
         >
         <i class="fa fa-medkit"></i> Create a ticket

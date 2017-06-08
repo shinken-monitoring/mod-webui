@@ -304,16 +304,16 @@
 
         // Fullscreen management
         if (screenfull.enabled) {
-            $('a[action="fullscreen-request"]').on('click', function() {
+            $('.js-fullscreen-request').on('click', function() {
                 screenfull.request();
             });
 
             // Fullscreen changed event
             document.addEventListener(screenfull.raw.fullscreenchange, function () {
                 if (screenfull.isFullscreen) {
-                    $('a[action="fullscreen-request"]').hide();
+                    $('.js-fullscreen-request').hide();
                 } else {
-                    $('a[action="fullscreen-request"]').show();
+                    $('.js-fullscreen-request').show();
                 }
             });
         }
@@ -403,7 +403,7 @@
    } else {
       $('#sound_alerting i.fa-ban').removeClass('hidden');
    }
-   $('body').on('click', '[action="toggle-sound-alert"]', function (e, data) {
+   $('body').on('click', '.js-toggle-sound-alert', function (e, data) {
       if (sessionStorage.getItem("sound_play") == '1') {
          sessionStorage.setItem("sound_play", "0");
          $('#sound_alerting i.fa-ban').removeClass('hidden');
@@ -433,7 +433,7 @@
                     </a>
                 </li>
                 <li>
-                    <a tabindex="0" class="font-darkgrey" role="button" title="Got to fullscreen" href="#" action="fullscreen-request">
+                    <a tabindex="0" class="font-darkgrey js-fullscreen-request" role="button" title="Got to fullscreen" href="#">
                         <span id="go-fullscreen" class="fa-stack">
                             <i class="fa fa-desktop fa-stack-1x"></i>
                             <i class="fa fa-ban fa-stack-2x hidden"></i>
@@ -442,7 +442,7 @@
                 </li>
                 %if app.play_sound:
                 <li>
-                    <a tabindex="0" class="font-darkgrey" role="button" title="Sound alerting" href="#" action="toggle-sound-alert">
+                    <a tabindex="0" class="font-darkgrey js-toggle-sound-alert" role="button" title="Sound alerting" href="#">
                         <span id="sound_alerting" class="fa-stack">
                             <i class="fa fa-music fa-stack-1x"></i>
                             <i class="fa fa-ban fa-stack-2x text-danger hidden"></i>

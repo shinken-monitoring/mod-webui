@@ -425,3 +425,74 @@ function delete_acknowledge(name) {
    // We can launch it :)
    launch(url, elt.type+': '+name+', acknowledge deleted');
 }
+
+// Join the method to some html classes
+$("body").on("click", ".js-add-comment", function () {
+    var elt = $(this).data('element');
+    var comment = $(this).data('comment');
+    display_modal("/forms/comment/add/" + elt);
+});
+
+$("body").on("click", ".js-delete-comment", function () {
+    var elt = $(this).data('element');
+    var comment = $(this).data('comment');
+    display_modal("/forms/comment/delete/"+elt+"?comment="+comment);
+});
+
+$("body").on("click", ".js-delete-all-comments", function () {
+    var elt = $(this).data('element');
+    display_modal("/forms/comment/delete_all/"+elt);
+});
+
+$("body").on("click", ".js-schedule-downtime", function () {
+    var elt = $(this).data('element');
+    display_modal("/forms/downtime/add/"+elt);
+});
+
+$("body").on("click", ".js-delete-downtime", function () {
+    var elt = $(this).data('element');
+    var downtime = $(this).data('downtime');
+    display_modal("/forms/downtime/delete/"+elt+"?downtime="+downtime);
+});
+
+$("body").on("click", ".js-delete-all-downtimes", function () {
+    var elt = $(this).data('element');
+    display_modal("/forms/downtime/delete_all/"+elt);
+});
+
+$("body").on("click", ".js-add-acknowledge", function () {
+    var elt = $(this).data('element');
+    display_modal("/forms/acknowledge/add/"+elt);
+});
+
+$("body").on("click", ".js-remove-acknowledge", function () {
+    var elt = $(this).data('element');
+    display_modal("/forms/acknowledge/remove/"+elt);
+});
+
+$("body").on("click", ".js-recheck", function () {
+    var elt = $(this).data('element');
+    recheck_now(elt);
+});
+
+$("body").on("click", ".js-submit-ok", function () {
+    var elt = $(this).data('element');
+    display_modal("/forms/submit_check/"+elt);
+});
+
+$("body").on("click", ".js-try-to-fix", function () {
+    var elt = $(this).data('element');
+    try_to_fix(elt);
+});
+
+$("body").on("click", ".js-create-ticket", function () {
+    var elt = $(this).data('element');
+    display_modal("/helpdesk/ticket/add/"+elt);
+});
+
+$("body").on("click", ".js-create-ticket-followup", function () {
+    var elt = $(this).data('element');
+    var ticket = $(this).data('ticket');
+    var status = $(this).data('status');
+    display_modal("/helpdesk/ticket_followup/add/"+elt+'?ticket='+ticket+'&status='+status);
+});

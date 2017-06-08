@@ -23,7 +23,7 @@ Invalid element name
 %breadcrumb += [[elt.display_name, '/service/'+helper.get_uri_name(elt)]]
 %end
 
-%js=['availability/js/justgage.js', 'availability/js/raphael-2.1.4.min.js', 'cv_host/js/flot/jquery.flot.min.js', 'cv_host/js/flot/jquery.flot.tickrotor.js', 'cv_host/js/flot/jquery.flot.resize.min.js', 'cv_host/js/flot/jquery.flot.pie.min.js', 'cv_host/js/flot/jquery.flot.categories.min.js', 'cv_host/js/flot/jquery.flot.time.min.js', 'cv_host/js/flot/jquery.flot.stack.min.js', 'cv_host/js/flot/jquery.flot.valuelabels.js',  'eltdetail/js/jquery.color.js', 'eltdetail/js/bootstrap-switch.min.js', 'eltdetail/js/custom_views.js', 'eltdetail/js/eltdetail.js', 'eltdetail/js/actions.js']
+%js=['js/shinken-actions.js', 'availability/js/justgage.js', 'availability/js/raphael-2.1.4.min.js', 'cv_host/js/flot/jquery.flot.min.js', 'cv_host/js/flot/jquery.flot.tickrotor.js', 'cv_host/js/flot/jquery.flot.resize.min.js', 'cv_host/js/flot/jquery.flot.pie.min.js', 'cv_host/js/flot/jquery.flot.categories.min.js', 'cv_host/js/flot/jquery.flot.time.min.js', 'cv_host/js/flot/jquery.flot.stack.min.js', 'cv_host/js/flot/jquery.flot.valuelabels.js',  'eltdetail/js/jquery.color.js', 'eltdetail/js/bootstrap-switch.min.js', 'eltdetail/js/custom_views.js', 'eltdetail/js/eltdetail.js']
 %css=['eltdetail/css/bootstrap-switch.min.css', 'eltdetail/css/eltdetail.css', 'cv_host/css/cv_host.css']
 
 %rebase("layout", js=js, css=css, breadcrumb=breadcrumb, title=elt_type.title()+' detail: ' + elt.get_full_name())
@@ -33,9 +33,9 @@ Invalid element name
    %disabled_ack = '' if not elt.problem_has_been_acknowledged else 'disabled'
    %disabled_fix = '' if elt.event_handler_enabled and elt.event_handler else 'disabled'
    <div class="alert alert-danger"><i class="fa fa-warning"></i> This element has an important impact on your business, you may
-     <a href="#" action="add-acknowledge" class="{{disabled_ack}} btn btn-primary btn-xs" title="Acknowledge this {{elt_type}} problem" data-element="{{helper.get_uri_name(elt)}}"><i class="fa fa-check"></i> acknowledge it</a>
+     <a href="#" class="{{disabled_ack}} btn btn-primary btn-xs js-add-acknowledge" title="Acknowledge this {{elt_type}} problem" data-element="{{helper.get_uri_name(elt)}}"><i class="fa fa-check"></i> acknowledge it</a>
      or
-     <a href="#" action="event-handler" class="{{disabled_fix}} btn btn-primary btn-xs" title="Launch the event handler for this {{elt_type}}" data-element="{{helper.get_uri_name(elt)}}"><i class="fa fa-magic"></i> try to fix it</a>.</div>
+     <a href="#" class="{{disabled_fix}} btn btn-primary btn-xs js-try-to-fix" title="Launch the event handler for this {{elt_type}}" data-element="{{helper.get_uri_name(elt)}}"><i class="fa fa-magic"></i> try to fix it</a>.</div>
    %end
 
    %if elt.get_check_command().startswith('bp_rule'):

@@ -18,9 +18,8 @@
             <td>{{dt.comment}}</td>
             <td>{{helper.print_date(dt.start_time)}} - {{helper.print_date(dt.end_time)}}</td>
             <td>
-              <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm"
-                data-type="action" action="delete-downtime"
-                data-toggle="tooltip" data-placement="bottom" title="Delete the downtime '{{dt.id}}' for this {{elt_type}}"
+              <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm js-delete-downtime"
+                title="Delete the downtime '{{dt.id}}' for this {{elt_type}}"
                 data-element="{{helper.get_uri_name(elt)}}" data-downtime="{{dt.id}}"
                 >
                 <i class="fa fa-trash-o"></i>
@@ -36,17 +35,15 @@
       </div>
       %end
 
-      <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm"
-        data-type="action" action="schedule-downtime"
-        data-toggle="tooltip" data-placement="bottom" title="Schedule a downtime for this {{elt_type}}"
+      <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm js-schedule-downtime"
+        title="Schedule a downtime for this {{elt_type}}"
         data-element="{{helper.get_uri_name(elt)}}"
         >
         <i class="fa fa-plus"></i> Schedule a downtime
       </button>
       %if elt.downtimes:
-      <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm"
-        data-type="action" action="delete-all-downtimes"
-        data-toggle="tooltip" data-placement="bottom" title="Delete all the downtimes of this {{elt_type}}"
+      <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm js-delete-all-downtimes"
+        title="Delete all the downtimes of this {{elt_type}}"
         data-element="{{helper.get_uri_name(elt)}}"
         >
         <i class="fa fa-minus"></i> Delete all downtimes
@@ -75,9 +72,8 @@
             <td>{{dt.comment}}</td>
             <td>{{helper.print_date(dt.start_time)}} - {{helper.print_date(dt.end_time)}}</td>
             <td>
-              <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm"
-                data-type="action" action="delete-downtime"
-                data-toggle="tooltip" data-placement="bottom" title="Delete this downtime"
+              <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm js-delete-downtime"
+                title="Delete this downtime"
                 data-element="{{helper.get_uri_name(s)}}" data-downtime="{{dt.id}}"
                 >
                 <i class="fa fa-trash-o"></i>
