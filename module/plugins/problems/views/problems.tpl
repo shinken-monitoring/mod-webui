@@ -108,7 +108,8 @@
                         <a style="text-decoration: none;" role="button" tabindex="0" data-toggle="popover"
                            title="{{ pb.get_full_name() }}" data-html="true"
                            data-content="<img src='{{ graphs[0]['img_src'] }}' width='600px' height='200px'>"
-                           data-trigger="hover" data-placement="left">
+                           data-trigger="hover" data-placement="left"
+                           href="{{!helper.get_link_dest(pb)}}#graphs">
                            {{!helper.get_perfometer(pb)}}
                         </a>
                      %end
