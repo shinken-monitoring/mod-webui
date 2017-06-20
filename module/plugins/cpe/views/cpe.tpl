@@ -111,7 +111,11 @@ var services = [];
                     %try:
                     %cpe_ipleases = ast.literal_eval(cpe.cpe_ipleases) or {'foo': 'bar'}
                     %for ip,lease in cpe_ipleases.iteritems():
+                    %if app.proxy_sufix:
+                    <dt><a href="http://{{ip}}.{{app.proxy_sufix}}" target=_blank>{{ip}}</a></dt>
+                    %else:
                     <dt>{{ip}}</dt>
+                    %end
                     <dd>{{lease}}</dd>
                     %end
                     %except Exception, exc:
@@ -120,7 +124,11 @@ var services = [];
                     %end
                     %else:
                     <dt>IP Leases</dt>
-                    <dd>N/A</dd>
+                    %if app.proxy_sufix:
+                    <dt><a href="http://10.11.12.13.{{app.proxy_sufix}}" target=_blank>N/A</a></dt>
+                    %else:
+                    <dt>N/A</dt>
+                    %end
                     %end
                 </dl>
                 <button class="btn btn-default btn-xs center-block" data-toggle="collapse" data-target="#more-info">More</button>

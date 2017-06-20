@@ -287,6 +287,8 @@ class Webui_broker(BaseModule, Daemon):
         self.app_copyright = getattr(modconf, 'about_copyright', WEBUI_COPYRIGHT)
         self.app_release = getattr(modconf, 'about_release', WEBUI_RELEASENOTES)
 
+        self.proxy_sufix = getattr(modconf, 'proxy_sufix', None)
+
         # We will save all widgets
         self.widgets = {}
 
