@@ -80,6 +80,9 @@ def search_hosts_with_coordinates(search, user):
         else:
             h = x.host
 
+        if h in valid_hosts:
+            continue
+
         logger.info("[WebUI-worldmap] found host '%s'", h.get_name())
 
         if h.business_impact not in params['hosts_level']:
