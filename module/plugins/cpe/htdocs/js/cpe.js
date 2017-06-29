@@ -352,12 +352,15 @@ function drawEventsTable(events) {
  * Check this CPE's hostevents for DHCP leases and draw them in the timeline
  */
 function addLeasesTimeline(events, min_date) {
+    events = events.filter(function(e) { // Show only ipleases
+        return e.source == 'iplease'
+    });
     events.forEach(function(e) {
         e.data.ends = new Date(e.data.ends.replace("/", " ")); // Date is in format YYYY-MM-DD/hh:mm:ss
         e.data.starts = new Date(e.data.starts.replace("/", " ")); // Date is in format YYYY-MM-DD/hh:mm:ss
     });
     events = events.filter(function(e) { // Show only ipleases valid in the last X days
-        return e.source == 'iplease' && e.data.ends > min_date;  // min_date is a Date object
+        return e.data.ends > min_date;  // min_date is a Date object
     });
     events.sort(function(a,b) {
         if (a.data.leased_address > b.data.leased_address)
