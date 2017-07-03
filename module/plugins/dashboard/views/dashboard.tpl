@@ -1,4 +1,4 @@
-%rebase("layout", js=['js/jquery-ui-1.11.4.min.js', 'dashboard/js/widgets.js', 'dashboard/js/jquery.easywidgets.js', 'dashboard/js/actions.js'], css=['dashboard/css/dashboard.css'], title='Dashboard')
+%rebase("layout", js=['js/shinken-actions.js', 'js/jquery-ui-1.11.4.min.js', 'dashboard/js/widgets.js', 'dashboard/js/jquery.easywidgets.js', 'dashboard/js/actions.js'], css=['dashboard/css/dashboard.css'], title='Dashboard')
 
 %from shinken.bin import VERSION
 %helper = app.helper
