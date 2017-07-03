@@ -1,14 +1,5 @@
 # Shinken Web User Interface, version 2
 
-## Important information
-
-As you may have noticed, the activity on the Shinken framework is very low since several months :/ Because of these, I do not want to invest more effort for releasing new Web UI versions. I had to take this decision because, for my own needs, I decided to migrate to another monitoring framework.
- 
- As of today, I realize that I do not have enough time to maintain the Shinken WebUI with an aceceptable quality. Hence, I prefer to abandon the maintenance of this project. I am sincerely sorry for the inconvenience this may cause to you.
-
-*I will try to find some time to build a release with the most recent fixes, but I do not know yet when I have time for this :/*
- 
-
 ## Description
 Shinken Web User Interface
 
