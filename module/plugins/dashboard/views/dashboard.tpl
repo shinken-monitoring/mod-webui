@@ -1,4 +1,4 @@
-%rebase("layout", js=['js/jquery-ui-1.11.4.min.js', 'dashboard/js/widgets.js', 'dashboard/js/jquery.easywidgets.js'], css=['dashboard/css/dashboard.css'], title='Dashboard')
+%rebase("layout", js=['js/shinken-actions.js', 'js/jquery-ui-1.11.4.min.js', 'dashboard/js/widgets.js', 'dashboard/js/jquery.easywidgets.js', 'dashboard/js/actions.js'], css=['dashboard/css/dashboard.css'], title='Dashboard')
 
 %from shinken.bin import VERSION
 %helper = app.helper
@@ -53,7 +53,8 @@
 </table>
 
 %if app.prefs_module.is_available():
-   <div class="panel panel-default" id="propose-widgets" style="display:none">
+%if not len(widgets):
+   <div class="panel panel-default">
       <div class="panel-heading" style="padding-bottom: -10">
          <center>
             <h3>You don't have any widget yet ...</h3>
@@ -64,6 +65,7 @@
          <p>Click the <strong>Add widget</strong> button on top of the description to include the widget in your dashboard.</p>
       </div>
    </div>
+%end
 %else:
    <div class="panel panel-default">
       <div class="panel-heading" style="padding-bottom: -10">
@@ -92,6 +94,8 @@
         <div class="widget-place col-xs-12 col-sm-12 col-lg-4" id="widget-place-3"> </div>
     </div>
 </div>
+
+%include("_dashboard_action-menu.tpl")
 
 <script type="text/javascript">
     var dashboard_logs = false;
@@ -148,14 +152,6 @@
 
    $(function () {
       on_page_refresh();
-
-      %if not len(widgets):
-         // display the widgets proposal area.
-         $('#propose-widgets').show();
-      %end
-
-      // Show actions bar ...
-      show_actions('dashboard-actions');
 
       // ... and load all widgets.
       %for w in widgets:

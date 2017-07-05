@@ -8,9 +8,9 @@
 
 
 <!-- Header Navbar -->
-<nav class="header navbar navbar-default navbar-static-top" style="margin-bottom:0px;">
+<nav class="header navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom:0px;">
    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
          <span class="sr-only">Toggle navigation</span>
          <span class="icon-bar"></span>
          <span class="icon-bar"></span>
@@ -21,44 +21,56 @@
       </a>
    </div>
 
-   <ul class="nav navbar-nav">
+   <ul class="nav navbar-nav hidden-xs">
       <!-- Page filtering ... -->
       %include("_filters.tpl")
    </ul>
 
-   <!-- Right part ... -->
-   %s = app.datamgr.get_services_synthesis(user=user)
-   %h = app.datamgr.get_hosts_synthesis(user=user)
-   <div id="hosts-states-popover-content" class="hidden">
-      <table class="table table-invisible table-condensed">
+   <ul class="nav navbar-top-links navbar-right">
+     <!-- Right part ... -->
+     %s = app.datamgr.get_services_synthesis(user=user)
+     %h = app.datamgr.get_hosts_synthesis(user=user)
+     <div id="hosts-states-popover-content" class="hidden">
+       <table class="table table-invisible table-condensed">
          <tbody>
             <tr>
                %for state in "up", "unreachable", "down", "pending", "unknown", "ack", "downtime":
                <td>
                  %label = "%s <i>(%s%%)</i>" % (h["nb_" + state], h["pct_" + state])
+                 %if state in ['ack', 'downtime']:
+                 <a href="/all?search=type:host is:{{state}}">
+                 %else:
+                 <a href="/all?search=type:host is:{{state}} isnot:ack isnot:downtime">
+                 %end
                  {{!helper.get_fa_icon_state_and_label(cls="host", state=state, label=label, disabled=(not h["nb_" + state]))}}
+                 </a>
                </td>
                %end
             </tr>
          </tbody>
-      </table>
-   </div>
-   <div id="services-states-popover-content" class="hidden">
-      <table class="table table-invisible table-condensed">
+       </table>
+     </div>
+     <div id="services-states-popover-content" class="hidden">
+       <table class="table table-invisible table-condensed">
          <tbody>
             <tr>
                %for state in "ok", "warning", "critical", "pending", "unknown", "ack", "downtime":
                <td>
                  %label = "%s <i>(%s%%)</i>" % (s["nb_" + state], s["pct_" + state])
+                 %if state in ['ack', 'downtime']:
+                 <a href="/all?search=type:service is:{{state}}">
+                 %else:
+                 <a href="/all?search=type:service is:{{state}} isnot:ack isnot:downtime">
+                 %end
                  {{!helper.get_fa_icon_state_and_label(cls="service", state=state, label=label, disabled=(not s["nb_" + state]))}}
+                 </a>
                </td>
                %end
             </tr>
          </tbody>
-      </table>
-   </div>
+       </table>
+     </div>
 
-   <ul class="nav navbar-top-links navbar-right">
       <!-- Do not remove the next comment!
          Everything between 'begin-hosts-states' comment and 'end-hosts-states' comment
          may be used by the layout page refresh.
@@ -70,7 +82,7 @@
          <a id="hosts-states-popover"
             class="hosts-all" data-count="{{ h['nb_elts'] }}" data-problems="{{ h['nb_problems'] }}"
             href="/all?search=type:host"
-            data-original-title="Hosts states" data-toggle="popover popover-hosts" title="Overall hosts states: {{h['nb_elts']}} hosts, {{h["nb_problems"]}} problems" data-html="true" data-trigger="hover">
+            data-original-title="Hosts states" data-toggle="popover popover-hosts" title="Overall hosts states: {{h['nb_elts']}} hosts, {{h["nb_problems"]}} problems" data-html="true">
             <i class="fa fa-server"></i>
             <span class="label label-as-badge label-{{label}}">{{h["nb_problems"]}}</span>
          </a>
@@ -88,7 +100,7 @@
          <a id="services-states-popover"
             class="services-all" data-count="{{ s['nb_elts'] }}" data-problems="{{ s['nb_problems'] }}"
             href="/all?search=type:service"
-            data-original-title="Services states" data-toggle="popover popover-services" title="Overall services states: {{s['nb_elts']}} services, {{s["nb_problems"]}} problems" data-html="true" data-trigger="hover">
+            data-original-title="Services states" data-toggle="popover popover-services" title="Overall services states: {{s['nb_elts']}} services, {{s["nb_problems"]}} problems" data-html="true">
             <i class="fa fa-bars"></i>
             <span class="label label-as-badge label-{{label}}">{{s["nb_problems"]}}</span>
          </a>
@@ -111,7 +123,7 @@
 
       %if app.play_sound:
       <li class="hidden-sm hidden-xs hidden-md">
-         <a class="quickinfo" action="toggle-sound-alert" data-original-title='Sound alerting' href="#">
+         <a class="quickinfo js-toggle-sound-alert" data-original-title='Sound alerting' href="#">
             <span id="sound_alerting" class="fa-stack">
               <i class="fa fa-music fa-stack-1x"></i>
               <i class="fa fa-ban fa-stack-2x text-danger"></i>
@@ -162,15 +174,28 @@
 
   <!--SIDEBAR-->
   <div class="navbar-default sidebar" role="navigation">
-    <div class="sidebar-nav">
+    <div class="sidebar-nav navbar-collapse collapse">
       <ul class="nav" id="sidebar-menu">
+        <li class="sidebar-search visible-xs">
+          <form class="navbar-form navbar-left" method="get" action="/all">
+            <div class="input-group custom-search-form">
+              <input class="form-control" type="search" id="search" name="search" value="{{ app.get_search_string() }}">
+              <span class="input-group-btn">
+                <button class="btn btn-default" type="submit">
+                  <i class="fa fa-search"></i>
+                </button>
+              </span>
+            </div>
+          </form>
+        </li>
+      <!--%include("_filters.tpl")-->
         %if app:
         <li> <a href="{{ app.get_url('Dashboard') }}"> <span class="fa fa-dashboard"></span>
-        <span class="hidden-xs">Dashboard</span> </a> </li>
+        Dashboard</a> </li>
         <li> <a href="{{ app.get_url('Problems') }}"> <span class="fa fa-ambulance"></span>
-        <span class="hidden-xs">Problems</span> </a> </li>
+        Problems</a> </li>
         <li> <a href="#"><i class="fa fa-sitemap"></i>
-        <span class="hidden-xs">Groups and tags</span> <i class="fa arrow"></i></a>
+        Groups and tags<i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
             <li> <a href="{{ app.get_url('HostsGroups') }}"> <span class="fa fa-sitemap"></span> Hosts groups </a> </li>
             <li> <a href="{{ app.get_url('ServicesGroups') }}"> <span class="fa fa-sitemap"></span> Services groups </a> </li>
@@ -179,7 +204,7 @@
           </ul>
         </li>
         <li> <a href="#"><i class="fa fa-bar-chart"></i>
-        <span class="hidden-xs">Tactical views</span> <i class="fa arrow"></i></a>
+        Tactical views<i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
             <li> <a href="{{ app.get_url('Impacts') }}"> <span class="fa fa-bolt"></span> Impacts </a> </li>
             <li> <a href="{{ app.get_url('Minemap') }}"> <span class="fa fa-table"></span> Minemap </a> </li>
@@ -192,7 +217,7 @@
         </li>
         %if user.is_administrator():
         <li> <a href="#"><i class="fa fa-gears"></i>
-        <span class="hidden-xs">System</span> <i class="fa arrow"></i></a>
+        System<i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
             <li> <a href="{{ app.get_url('System') }}"> <span class="fa fa-heartbeat"></span> Status </a> </li>
             %if app.logs_module.is_available():
@@ -201,7 +226,7 @@
           </ul>
         </li>
         <li> <a href="#"><i class="fa fa-wrench"></i>
-        <span class="hidden-xs">Configuration</span> <i class="fa arrow"></i></a>
+        Configuration<i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
             <li> <a href="{{ app.get_url('Parameters') }}"> <span class="fa fa-gears"></span> Parameters </a> </li>
             <li> <a href="{{ app.get_url('Contacts') }}"> <span class="fa fa-user"></span> Contacts </a> </li>
@@ -214,7 +239,7 @@
         %other_uis = app.get_ui_external_links()
         %if len(other_uis) > 0:
         <li> <a href="#"><i class="fa fa-rocket"></i>
-        <span class="hidden-xs">External</span> <i class="fa arrow"></i></a>
+        External<i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
             %for c in other_uis:
             <li>
@@ -253,7 +278,7 @@
    } else {
       $('#sound_alerting i.fa-ban').removeClass('hidden');
    }
-   $('[action="toggle-sound-alert"]').on('click', function (e, data) {
+   $('.js-toggle-sound-alert').on('click', function (e, data) {
       if (sessionStorage.getItem("sound_play") == '1') {
          sessionStorage.setItem("sound_play", "0");
          $('#sound_alerting i.fa-ban').removeClass('hidden');
@@ -269,20 +294,48 @@
    // Activate the popover ...
    $('#hosts-states-popover').popover({
       placement: 'bottom',
-      animation: true,
+      trigger: 'manual',
+      animation: false,
       template: '<div class="popover img-popover"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
       content: function() {
          return $('#hosts-states-popover-content').html();
       }
+   }).on("mouseenter", function () {
+      var _this = this;
+      $(this).popover("show");
+      $(this).siblings(".popover").on("mouseleave", function () {
+          $(_this).popover('hide');
+      });
+   }).on("mouseleave", function () {
+      var _this = this;
+      setTimeout(function () {
+          if (!$(".popover:hover").length) {
+              $(_this).popover("hide");
+          }
+      }, 100);
    });
 
    // Activate the popover ...
    $('#services-states-popover').popover({
       placement: 'bottom',
-      animation: true,
+      trigger: 'manual',
+      animation: false,
       template: '<div class="popover img-popover"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
       content: function() {
          return $('#services-states-popover-content').html();
       }
+   }).on("mouseenter", function () {
+      var _this = this;
+      $(this).popover("show");
+      $(this).siblings(".popover").on("mouseleave", function () {
+          $(_this).popover('hide');
+      });
+   }).on("mouseleave", function () {
+      var _this = this;
+      setTimeout(function () {
+          if (!$(".popover:hover").length) {
+              $(_this).popover("hide");
+          }
+      }, 100);
    });
 </script>

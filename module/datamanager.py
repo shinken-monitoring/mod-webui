@@ -44,81 +44,7 @@ from shinken.objects.contactgroup import Contactgroup, Contactgroups
 from shinken.objects.notificationway import NotificationWay, NotificationWays
 from shinken.objects.timeperiod import Timeperiod, Timeperiods
 from shinken.objects.command import Command, Commands
-
-
-# Sort hosts and services by impact, states and co
-def hst_srv_sort(s1, s2):
-    if s1.business_impact > s2.business_impact:
-        return -1
-    if s2.business_impact > s1.business_impact:
-        return 1
-
-    # Ok, we compute a importance value so
-    # For host, the order is UP, UNREACH, DOWN
-    # For service: OK, UNKNOWN, WARNING, CRIT
-    # And DOWN is before CRITICAL (potential more impact)
-    tab = {'host': {0: 0, 1: 4, 2: 1},
-           'service': {0: 0, 1: 2, 2: 3, 3: 1}
-           }
-    state1 = tab[s1.__class__.my_type].get(s1.state_id, 0)
-    state2 = tab[s2.__class__.my_type].get(s2.state_id, 0)
-    # ok, here, same business_impact
-    # Compare warn and crit state
-    if state1 > state2:
-        return -1
-    if state2 > state1:
-        return 1
-
-    # Ok, so by name...
-    if s1.get_full_name() > s2.get_full_name():
-        return 1
-    else:
-        return -1
-
-
-# Sort hosts and services by impact, states and co
-def worse_first(s1, s2):
-    # Ok, we compute a importance value so
-    # For host, the order is UP, UNREACH, DOWN
-    # For service: OK, UNKNOWN, WARNING, CRIT
-    # And DOWN is before CRITICAL (potential more impact)
-    tab = {'host': {0: 0, 1: 4, 2: 1},
-           'service': {0: 0, 1: 2, 2: 3, 3: 1}
-           }
-    state1 = tab[s1.__class__.my_type].get(s1.state_id, 0)
-    state2 = tab[s2.__class__.my_type].get(s2.state_id, 0)
-
-    # ok, here, same business_impact
-    # Compare warn and crit state
-    if state1 > state2:
-        return -1
-    if state2 > state1:
-        return 1
-
-    # Same? ok by business impact
-    if s1.business_impact > s2.business_impact:
-        return -1
-    if s2.business_impact > s1.business_impact:
-        return 1
-
-    # Ok, so by name...
-    # Ok, so by name...
-    if s1.get_full_name() > s2.get_full_name():
-        return -1
-    else:
-        return 1
-
-
-# Sort hosts and services by last_state_change time
-def last_state_change_earlier(s1, s2):
-    # ok, here, same business_impact
-    # Compare warn and crit state
-    if s1.last_state_change > s2.last_state_change:
-        return -1
-    if s1.last_state_change < s2.last_state_change:
-        return 1
-
-    return 0
+from shinken.misc.sorter import worse_first, last_state_change_earlier
 
 
 class WebUIDataManager(DataManager):
@@ -300,7 +226,7 @@ class WebUIDataManager(DataManager):
 
             return None
 
-        services = self.search_hosts_and_services('type:service host:^%s$ service:^%s$' % (hname, sname), user=user)
+        services = self.search_hosts_and_services('type:service host:^%s$ service:"%s"' % (hname, sname), user=user)
         return services[0] if services else None
 
     def get_percentage_service_state(self, user=None, problem=False):
@@ -372,17 +298,12 @@ class WebUIDataManager(DataManager):
             :name: Must be "host" or "host/service"
         """
         if '/' in name:
-            return self.get_service(name.split('/')[0], name.split('/')[1], user)
+            return self.get_service(name.split('/')[0], '/'.join(name.split('/')[1:]), user)
         else:
             host = self.get_host(name, user)
             if not host:
                 return self.get_contact(name=name, user=user)
             return host
-
-    def get_synthesis(self, elts=None):
-        logger.debug("[WebUI - datamanager] get_synthesis")
-
-        return {'hosts': self.get_hosts_synthesis(elts), 'services': self.get_services_synthesis(elts)}
 
     ##
     # Searching
@@ -471,11 +392,15 @@ class WebUIDataManager(DataManager):
                 pat = re.compile(s, re.IGNORECASE)
                 new_items = []
                 for i in items:
-                    if pat.search(i.get_full_name()):
+                    if (pat.search(i.get_full_name()) or
+                        (i.__class__.my_type == 'host' and
+                         i.alias and pat.search(i.alias))):
                         new_items.append(i)
                     else:
                         for j in (i.impacts + i.source_problems):
-                            if pat.search(j.get_full_name()):
+                            if (pat.search(j.get_full_name()) or
+                                (j.__class__.my_type == 'host' and
+                                 j.alias and pat.search(j.alias))):
                                 new_items.append(i)
 
                 if not new_items:
@@ -546,9 +471,9 @@ class WebUIDataManager(DataManager):
                     return []
                 # Items have a item.get_groupnames() method that returns a comma+space separated string ... strange format!
                 for item in items:
-                    if group.get_name() in item.get_groupnames().split(', '):
+                    if group.get_name() in item.get_groupnames().split(','):
                         logger.debug("[WebUI - datamanager] => item %s is a known member!", item.get_name())
-                items = [i for i in items if group.get_name() in i.get_groupnames().split(', ')]
+                items = [i for i in items if group.get_name() in i.get_groupnames().split(',')]
 
             #@mohierf: to be refactored!
             if (t == 'cg' or t == 'cgroup') and s.lower() != 'all':
@@ -557,10 +482,10 @@ class WebUIDataManager(DataManager):
                 if not group:
                     return []
                 # Items have a item.get_groupnames() method that returns a comma+space separated string ... strange format!
-                for item in items:
-                    for contact in item.contacts:
-                        if group.get_name() in contact.get_groupnames().split(', '):
-                            logger.debug("[WebUI - datamanager] => contact %s is a known member!", contact.get_name())
+                #for item in items:
+                #    for contact in item.contacts:
+                #        if group.get_name() in contact.get_groupnames().split(', '):
+                #            logger.debug("[WebUI - datamanager] => contact %s is a known member!", contact.get_name())
 
                 contacts = [c for c in self.get_contacts(user=user) if c in group.members]
                 items = list(set(itertools.chain(*[self._only_related_to(items, self.rg.contacts.find_by_name(c)) for c in contacts])))

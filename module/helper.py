@@ -55,7 +55,7 @@ class Helper(object):
     # For a unix time return something like
     # Tue Aug 16 13:56:08 2011
     def print_date(self, t, format='%Y-%m-%d %H:%M:%S'):
-        if t == 0 or t == None:
+        if t == 0 or t is None:
             return 'N/A'
 
         if format:
@@ -71,7 +71,7 @@ class Helper(object):
     # in 1h 30m 22s
     # Or in 1h 30m (no sec, if we ask only_x_elements=2, 0 means all)
     def print_duration(self, t, just_duration=False, x_elts=0):
-        if t == 0 or t == None:
+        if t == 0 or t is None:
             return 'N/A'
 
         # Get the difference between now and the time of the user
@@ -136,15 +136,7 @@ class Helper(object):
         else:
             return ' '.join(duration) + ' ago'
 
-    def hms_string(self, sec_elapsed):
-        '''
-            Receiving an elapsed time in seconds, returns a human readable formatted string
-        '''
-        h = int(sec_elapsed / (60 * 60))
-        m = int((sec_elapsed % (60 * 60)) / 60)
-        s = sec_elapsed % 60.
-        return "{}:{:>02}:{:>05.2f}".format(h, m, s)
-
+# DEP GRAPH HELPERS {{{
     # Need to create a X level higher and lower to the element
     def create_json_dep_graph(self, elt, levels=3):
         t0 = time.time()
@@ -160,7 +152,7 @@ class Helper(object):
         return j
 
     def get_all_nodes_from_aggregation_node(self, tree):
-        res = [{'path' : tree['path'], 'services': tree['services'], 'state': tree['state'], 'full_path': tree['full_path']}]
+        res = [{'path': tree['path'], 'services': tree['services'], 'state': tree['state'], 'full_path': tree['full_path']}]
         for s in tree['sons']:
             r = self.get_all_nodes_from_aggregation_node(s)
             for n in r:
@@ -177,13 +169,13 @@ class Helper(object):
         for n in all_nodes:
             d = {'id': self.strip_html_id(hname+n['full_path']), 'name': n['full_path'],
                  'data': {'$type': 'custom',
-                          'business_impact': 2,#elt.business_impact,
+                          'business_impact': 2,
                           'img_src': '/static/images/icons/state_%s.png' % n['state'],
                           },
                  'adjacencies': []
                  }
             # Set the right info panel
-            d['data']['infos'] = ''#r''' %s ''' % self.strip_html_id(n['full_path'])
+            d['data']['infos'] = ''
             d['data']['elt_type'] = 'service'
             d['data']['is_problem'] = False
             d['data']['state_id'] = 1
@@ -202,7 +194,6 @@ class Helper(object):
             if len(agg_parts) > 1:
                 pre_path = '/'+'/'.join(agg_parts[:-1])
                 father = self.strip_html_id(elt.get_dbg_name()+pre_path)
-
 
             pd = {'nodeTo': father,
                   'data': {"$type": "line", "$direction": [self.strip_html_id(d['id']), elt.get_dbg_name()]
@@ -239,7 +230,6 @@ class Helper(object):
             for n in nodes:
                 res.append(n)
 
-
         # Set the right info panel
         d['data']['infos']  = helper.get_fa_icon_state(elt)
         d['data']['infos'] += self.get_link(elt, short=False)
@@ -260,7 +250,6 @@ class Helper(object):
             d['data']['circle'] = 'orange'
         else:
             d['data']['circle'] = 'none'
-
 
         # Now put in adj our parents
         for p in elt.parent_dependencies:
@@ -290,7 +279,6 @@ class Helper(object):
         # that will link us
         return res
 
-
     # Return all linked elements of this elt, and 2 level
     # higher and lower :)
     def get_all_linked_elts(self, elt, levels=3):
@@ -312,85 +300,19 @@ class Helper(object):
         #safe_print("get_all_linked_elts::Give elements", my)
         return my
 
-    def get_synthesis(self, elts):
-        logger.info("Helper - get_synthesis, %d elements", len(elts))
-
-        return None
-
-    # Return a button with text, image, id and class (if need)
-###
-###
-## To be removed ... html code will be more clean !
-###
-###
-    def get_button(self, text, img=None, id=None, cls=None):
-        #s = '<div class="buttons">\n'
-        s = '<div class="btn">\n'
-        if cls and not id:
-            s += '<div class="%s">\n' % cls
-        elif id and not cls:
-            s += '<div id="%s">\n' % id
-        elif id and cls:
-            s += '<div class="%s" id="%s">\n' % (cls, id)
+    # For an object, return the path of the icons
+    def get_icon_state(self, obj):
+        ico = self.get_small_icon_state(obj)
+        if getattr(obj, 'icon_set', '') != '':
+            return '/static/images/sets/%s/state_%s.png' % (obj.icon_set, ico)
         else:
-            s += '<div>\n'
-        if img:
-            s += '<img src="%s" alt=""/>\n' % img
-        s += "%s" % text
-        s += ''' </div>
-            </div>\n'''
+            return '/static/images/icons/state_%s.png' % ico
+# }}}
 
-        return s
-
-    # For and host, return the services sorted by business
-    # impact, then state, then desc
-    def get_host_services_sorted(self, host):
-        t = copy.copy(host.services)
-        t.sort(hst_srv_sort)
-        return t
-
-
-    # Mockup helper
-    # User: Frescha
-    # Date: 08.01.2012
-    def print_business_tree(self, tree, level=0):
-        #safe_print("Should print tree", tree)
-        node = tree['node']
-        name = node.get_full_name()
-        fathers = tree['fathers']
-        fathers = sorted(fathers, key=lambda dict: dict['node'].get_full_name())
-        s = ''
-        # Do not print the node if it's the root one, we already know its state!
-        if level != 0:
-            s += "%s is %s since %s\n" % (self.get_link(node), node.state, self.print_duration(node.last_state_change, just_duration=True))
-
-        # If we got no parents, no need to print the expand icon
-        if len(fathers) > 0:
-            # We look if the below tree is goodor not
-            tree_is_good = (node.state_id == 0)
-
-            # If the tree is good, we will use an expand image
-            # and hide the tree
-            if tree_is_good:
-                display = 'none'
-                img = 'expand.png'
-            else:  # we will already show the tree, and use a reduce image
-                display = 'block'
-                img = 'reduce.png'
-
-            # If we are the root, we already got this
-            if level != 0:
-                s += """<a id="togglelink-%s" href="javascript:toggleBusinessElt('%s')"><img id="business-parents-img-%s" src="/static/images/%s" alt="toggle"> </a> \n""" % (name, name, name, img)
-
-            s += """<ul id="business-parents-%s" class="treeview" style="display: %s; ">""" % (name, display)
-
-            for n in fathers:
-                sub_node = n['node']
-                sub_s = self.print_business_rules(n, level=level+1)
-                s += '<li class="%s">%s</li>' % (self.get_small_icon_state(sub_node), sub_s)
-            s += "</ul>"
-        #safe_print("Returning s:", s)
-        return s
+    def sort_elements(self, elements):
+        l = copy.copy(elements)
+        l.sort(hst_srv_sort)
+        return l
 
     # Get the small state for host/service icons
     # and satellites ones
@@ -449,12 +371,6 @@ class Helper(object):
         else:
             return '''<i title="%s" class="glyphicon glyphicon-remove font-red">%s</i>''' % (title, message)
 
-    # Return the impacts as a business sorted list
-    def get_impacts_sorted(self, obj):
-        t = copy.copy(obj.impacts)
-        t.sort(hst_srv_sort)
-        return t
-
     def get_link(self, obj, short=False):
         if obj.__class__.my_type == 'service':
             if short:
@@ -467,118 +383,9 @@ class Helper(object):
         # if not service, host
         return '<a href="/host/%s"> %s </a>' % (obj.get_full_name(), obj.get_full_name())
 
-
     # Give only the /service/blabla or /host blabla string, like for buttons inclusion
     def get_link_dest(self, obj):
         return "/%s/%s" % (obj.__class__.my_type, obj.get_full_name())
-
-    # For an host, give it's own link, for a services, give the link of its host
-    def get_host_link(self, obj):
-        if obj.__class__.my_type == 'service':
-            return self.get_link(obj.host)
-        return self.get_link(obj)
-
-    # For an object, return the path of the icons
-    def get_icon_state(self, obj):
-        ico = self.get_small_icon_state(obj)
-        if getattr(obj, 'icon_set', '') != '':
-            return '/static/images/sets/%s/state_%s.png' % (obj.icon_set, ico)
-        else:
-            return '/static/images/icons/state_%s.png' % ico
-
-    def get_urls(self, obj, url, default_title="Url", default_icon="globe", popover=False):
-        '''
-        Returns formatted HTML for an element URL
-
-        url string may contain a list of urls separated by |
-
-        Each url may be formatted as:
-            - url,,description
-            - title::description,,url
-            - title,,icon::description,,url
-
-        description is optional
-
-        If title is not specified, default_title is used as title
-        If icon is not specified, default_icon is used as icon
-
-        If popover is true, a bootstrap popover is built, else a standard link ...
-        '''
-        logger.debug("[WebUI] get_urls: %s / %s / %s / %d", url, default_title, default_icon, popover)
-
-        result = []
-        for item in url.split('|'):
-            try:
-                (title, url) = item.split('::')
-            except:
-                title = "%s,,%s" %(default_title, default_icon)
-                url = item
-
-            try:
-                (title, icon) = title.split(',,')
-            except:
-                icon = default_icon
-
-
-            try:
-                (description, real_url) = url.split(',,')
-            except:
-                description = 'No description provided'
-                real_url = url
-
-            # Replace MACROS in url and description
-            if hasattr(obj, 'get_data_for_checks'):
-                url = MacroResolver().resolve_simple_macros_in_string(real_url, obj.get_data_for_checks())
-                description = MacroResolver().resolve_simple_macros_in_string(description, obj.get_data_for_checks())
-
-            logger.debug("[WebUI] get_urls, found: %s / %s / %s / %s", title, icon, url, description)
-
-            if popover:
-                if url != '':
-                    result.append('''<a href="%s" target="_blank" role="button" data-toggle="popover medium" data-html="true" data-content="%s" data-trigger="hover focus" data-placement="bottom"><i class="fa fa-%s"></i>&nbsp;%s</a>''' % (url, description, icon, title))
-                else:
-                    result.append('''<span data-toggle="popover medium" data-html="true" data-content="%s" data-trigger="hover focus" data-placement="bottom"><i class="fa fa-%s"></i>&nbsp;%s</span>''' % (description, icon, title))
-            else:
-                if url != '':
-                    result.append('''<a href="%s" target="_blank" title="%s"><i class="fa fa-%s"></i>&nbsp;%s</a>''' % (url, description, icon, title))
-                else:
-                    result.append('''<span title="%s"><i class="fa fa-%s"></i>&nbsp;%s</span>''' % (description, icon, title))
-
-        return result
-
-    def get_element_actions_url(self, obj, default_title="Url", default_icon="globe", popover=False):
-        '''
-        Return list of element action urls
-        '''
-
-        if obj is not None:
-            return self.get_urls(obj, obj.action_url, default_title=default_title, default_icon=default_icon, popover=popover)
-
-        return None
-
-    def get_element_notes_url(self, obj, default_title="Url", default_icon="globe", popover=False):
-        '''
-        Return list of element notes urls
-        '''
-
-        if obj is not None and obj.notes:
-            notes = []
-            i=0
-            for item in obj.notes.split('|'):
-                if not obj.notes_url:
-                    notes.append("%s,," % (item))
-                else:
-                    notes_url = obj.notes_url.split('|')
-                    if len(notes_url) > i:
-                        notes.append("%s,,%s" % (item, notes_url[i]))
-                    else:
-                        notes.append("%s,," % (item))
-                i=i+1
-                logger.debug("[WebUI] get_element_notes_url, note: %s", notes)
-
-            return self.get_urls(obj, '|'.join(notes), default_title=default_title, default_icon=default_icon, popover=popover)
-
-        return []
 
     def get_fa_icon_state(self, obj=None, cls='host', state='UP', disabled=False, label='', useTitle=True):
         '''
@@ -755,7 +562,7 @@ class Helper(object):
                     <div title="%s" class="ellipsis progress-bar progress-bar-%s" role="progressbar"
                         aria-valuenow="%s" aria-valuemin="0" aria-valuemax="100" style="width:%s%%">
                     </div>
-                    <font size="2" color="%s">  %s
+                    <font size="2" color="%s">  %s</font>
                     </div>''' % (title, metrics[0][0], metrics[0][1], metrics[0][1], color, title)
 
 
@@ -766,11 +573,6 @@ class Helper(object):
             return s
 
         return ''
-
-    # TODO: Will look at the string s, and return a clean output without
-    # danger for the browser
-    def strip_html_output(self, s):
-        return s
 
     # We want the html id of an host or a service. It's basically
     # the full_name with / changed as -- (because in html, / is not valid :) )
@@ -993,14 +795,5 @@ class Helper(object):
 
         return content
 
-    def state_to_class(self, state):
-        '''Convert a Shinken state to a bootstrap3 class'''
-        classes = {"OK": 'success', "UP": 'success',
-                  "DOWN": 'danger', "CRITICAL": 'danger',
-                  "WARNING": 'warning',
-                  "UNKNOWN": 'info'}
-        if state in classes:
-            return classes[state]
-        else:
-            return 'default'
+
 helper = Helper()
