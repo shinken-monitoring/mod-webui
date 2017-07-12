@@ -361,6 +361,8 @@ class Webui_broker(BaseModule, Daemon):
         self.logs_module = LogsMetaModule(LogsMetaModule.find_modules(self.modules_manager.get_internal_instances()), self)
         self.graphs_module = GraphsMetaModule(GraphsMetaModule.find_modules(self.modules_manager.get_internal_instances()), self)
         self.helpdesk_module = HelpdeskMetaModule(HelpdeskMetaModule.find_modules(self.modules_manager.get_internal_instances()), self)
+        # KrillUI
+        self.krillui_module = KrillUIMetaModule(KrillUIMetaModule.find_modules(self.modules_manager.get_internal_instances()), self) # @jgomez
 
         # Data manager
         self.datamgr = WebUIDataManager(self.rg, self.frontend, self.alignak_backend_objects)
