@@ -83,6 +83,7 @@ from submodules.auth import AuthMetaModule
 from submodules.logs import LogsMetaModule
 from submodules.graphs import GraphsMetaModule
 from submodules.helpdesk import HelpdeskMetaModule
+from submodules.krillui import KrillUIMetaModule
 
 try:
     from frontend import FrontEnd
