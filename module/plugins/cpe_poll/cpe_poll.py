@@ -44,7 +44,7 @@ def show_test():
     
 pages = {
     json_cpe: {
-        'name': 'CPE-JSON', 'route': '/cpe/:cpe_name.json', 'view': None, 'static': True
+        'name': 'CPE-JSON', 'route': '/cpe_poll/:cpe_name', 'view': None, 'static': True
     }
 }
 
