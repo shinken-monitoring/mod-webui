@@ -136,6 +136,7 @@
                      %if navi:
                      %include("pagination_element", navi=navi, page=page, elts_per_page=elts_per_page, display_steps_form=True)
                      %end
+                     <!--
                      <h3 class="page-header" style="margin-top: 10px">
                        <ol class="breadcrumb" style="margin:0px">
                          <li><a href="/">Home</a></li>
@@ -154,7 +155,7 @@
                          %end
                        </ol>
                      </h3>
-
+                    -->
                   </section>
 
                   <!-- Page content -->
