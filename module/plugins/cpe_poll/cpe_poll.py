@@ -2,6 +2,7 @@
 
 # -*- coding: utf-8 -*-
 
+
 import time
 
 from shinken.log import logger
