@@ -149,11 +149,11 @@ function createTimeline(min_date, max_date) {
     });
     //groups.push({id: 'iplease', content: 'iplease'});
     var options = {
-        start: new Date(new Date().setDate(max_date.getDate() - 1)),
+        start: new Date(new Date().setDate(max_date.getDate() - 3)),
         end: max_date,
         min: min_date,
-        max: new Date(new Date().setDate(max_date.getDate() /* + 1 */ )), //@jgomez
-        zoomMin: 1000 * 60 * 60, // 30 min
+        max: new Date(new Date().setDate(max_date.getDate() + 1)),
+        zoomMin: 1000 * 60 * 30, // 30 min
         stack: false
     };
     timeline = new vis.Timeline(container,[],groups, options);
@@ -352,8 +352,6 @@ function drawEventsTable(events) {
  * Check this CPE's hostevents for DHCP leases and draw them in the timeline
  */
 function addLeasesTimeline(events, min_date) {
-    if(!events) {return}
-    
     events = events.filter(function(e) { // Show only ipleases
         return e.source == 'iplease'
     });

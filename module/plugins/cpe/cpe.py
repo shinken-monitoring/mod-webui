@@ -27,6 +27,7 @@
 import time
 
 from shinken.log import logger
+from shinken.external_command import ExternalCommand, ExternalCommandManager
 
 # Will be populated by the UI with it's own value
 app = None
@@ -47,12 +48,12 @@ def show_cpe(cpe_name):
     # Get graph data. By default, show last 4 hours
     maxtime = int(time.time())
     mintime = maxtime - 7 * 24 * 3600
+    
 
     return {'cpe': cpe, 'mintime': mintime, 'maxtime': maxtime}
-
-
+    
 pages = {
     show_cpe: {
         'name': 'CPE', 'route': '/cpe/:cpe_name', 'view': 'cpe', 'static': True
-    }
+    }    
 }
