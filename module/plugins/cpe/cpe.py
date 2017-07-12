@@ -37,8 +37,6 @@ def show_cpe(cpe_name):
     ''' Mostrar la ficha del CPE con nombre cpe_name.'''
     # Ok, we can lookup it
     user = app.bottle.request.environ['USER']
-    if not cpe_name.startswith('cpe'):
-        app.redirect404()
     cpe = app.datamgr.get_host(cpe_name, user) or app.redirect404()
 
     # Set hostgroups level ...
