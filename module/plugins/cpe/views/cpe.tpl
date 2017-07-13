@@ -147,7 +147,7 @@ var realtimeTimer = window.setInterval(function(){
             }
             
             dibujar.push([
-                new Date(), -parseInt(data.upbw), parseInt(data.dnbw)
+                new Date(), parseInt(data.upbw), parseInt(data.dnbw)
             ])
             drawLineColors()
             
@@ -190,6 +190,8 @@ function drawLineColors() {
 
     var chart = new google.visualization.LineChart(document.getElementById('realtimegraph'));
     chart.draw(data, options);
+    
+    data = null
 }
 
 
