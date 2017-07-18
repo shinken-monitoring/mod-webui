@@ -54,6 +54,7 @@ var cpe = {
     state: '{{cpe_host.state}}',
     last_state_change: '{{cpe_host.last_state_change}}'
 };
+
 var cpe_name = '{{cpe_name}}';
 var cpe_graphs = JSON.parse('{{!json.dumps(cpe_graphs)}}');
 var services = [];
@@ -118,8 +119,9 @@ dibujar.push()
 
 var realtimeTimer = window.setInterval(function(){
     $.getJSON('/cpe_poll/{{cpe_host.host_name}}', function(data){
+        
+        if(data && data.status) {
 
-        if(data && data.status && data.status != 'polling') {
             data.status = data.status.replace(/\W+/g, '').toUpperCase()
             $('#status').html(data.status)
             $('#upbw').html(humanBytes(data.upbw))
