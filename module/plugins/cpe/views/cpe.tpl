@@ -22,7 +22,7 @@ Invalid element name
 %cpe_host = cpe if cpe_type=='host' else cpe.host
 %cpe_name = cpe.host_name if cpe_type=='host' else cpe.host.host_name+'/'+cpe.service_description
 %cpe_display_name = cpe_host.display_name if cpe_type=='host' else cpe_service.display_name+' on '+cpe_host.display_name
-%cpe_graphs = helper.get_graphs_for_cpe(cpe_host.host_name, cpe.customs['_TECH']);
+%cpe_graphs = helper.get_graphs_for_cpe(cpe_host.host_name, cpe.customs.get('_TECH'));
 
 %reboot_available = cpe.cpe_registration_host and cpe.cpe_registration_id
 %tr069_available = cpe.cpe_connection_request_url
@@ -61,7 +61,9 @@ var services = [];
   services.push({
     name: '{{service.display_name}}',
     state: '{{service.state}}',
-    last_state_change: '{{service.last_state_change}}'
+    state_id: '{{service.state_id}}',
+    last_state_change: '{{service.last_state_change}}',
+    url: '/service/{{cpe_host.host_name}}/{{service.display_name}}'
   });
 %end
 
@@ -110,27 +112,27 @@ function notify(msg) {
     });
   }
 };
-            
+
 var dibujar = []
 dibujar.push()
-      
+
 var realtimeTimer = window.setInterval(function(){
-    $.getJSON('/cpe/{{cpe_host.host_name}}.json', function(data){
-        
-        if(data && data.status) {
+    $.getJSON('/cpe_poll/{{cpe_host.host_name}}', function(data){
+
+        if(data && data.status && data.status != 'polling') {
             data.status = data.status.replace(/\W+/g, '').toUpperCase()
             $('#status').html(data.status)
             $('#upbw').html(humanBytes(data.upbw))
             $('#dnbw').html(humanBytes(data.dnbw))
             $('#dnrx').html(data.dnrx)
             $('#uprx').html(data.uprx)
-            
+
             d1 = Date.parse(data.uptime)
             d2 = new Date()
             delta = (d2 - d1) / 1000
-            
+
             $('#uptime').html(toHHMMSS(delta))
-            
+
             if(data.status == "UP") {
                 $('#status').css('color','#8BC34A');
                 $('#status').html('<span class="fa fa-thumbs-up">UP</span>');
@@ -138,22 +140,22 @@ var realtimeTimer = window.setInterval(function(){
                 $('#status').css('color','#FF7043');
                 $('#status').html('<span class="fa fa-thumbs-down">DOWN</span>');
             }
-            
+
 
             if (data.status && data.status != cpe.state) {
                 notify("{{cpe_host.host_name}} is " + data.status);
                 cpe.state = data.status;
             }
-            
+
             dibujar.push([
-                new Date(), -parseInt(data.upbw), parseInt(data.dnbw)
+                new Date(), parseInt(data.upbw), parseInt(data.dnbw)
             ])
             drawLineColors()
-            
+
         }
-        
+
     });
-}, 1000);
+}, 2000);
 
 
 
@@ -182,56 +184,57 @@ function drawLineColors() {
     data.addColumn('datetime', 'X');
     data.addColumn('number', 'upbw');
     data.addColumn('number', 'dnbw');
-    
+
 
     data.addRows(dibujar);
 
 
     var chart = new google.visualization.LineChart(document.getElementById('realtimegraph'));
     chart.draw(data, options);
+
+    data = null
 }
-
-
-
-
-
-
-
-
-
-
 
 </script>
 <style>
 .panel-default {
-    padding-left: 0px !important;
-    padding-right: 0px !important;    
+    padding-left:  0px !important;
+    padding-right: 0px !important;
 }
 
 .content{
     padding-top: 1em;
 }
+
+.vis-group {
+     /*height: 20px !important; */
+}
 </style>
 
-<div>
+<div class="row">
+    <div class="col-md-8">
         <div style="float: left; padding: 10px; border-right: 2px solid black; margin-right: 10px">
             <div style="font-size: 32px"><a href="/host/{{ cpe.host_name }}">{{ cpe.host_name }}</a></div>
-            <div style="font-size: 18px; text-align: right">{{cpe.customs['_CPE_MODEL']}}</div>
+            <div style="font-size: 18px; text-align: right">{{cpe.customs.get('_CPE_MODEL')}}</div>
         </div>
         <div>
-            <div style="font-size: 28px">{{ cpe.customs['_CUSTOMER_NAME']}} {{cpe.customs['_CUSTOMER_SURNAME']}}</div>
+            <div style="font-size: 28px">{{ cpe.customs.get('_CUSTOMER_NAME')}} {{cpe.customs.get('_CUSTOMER_SURNAME')}}</div>
             <div style="font-size: 24px; color: #666;">
-                <a href="https://www.google.es/maps?q={{ cpe.customs['_CUSTOMER_ADDRESS']}} {{cpe.customs['_CUSTOMER_CITY']}}" target="_blank">{{cpe.customs['_CUSTOMER_ADDRESS']}} {{cpe.customs['_CUSTOMER_CITY']}}</a>
+                <!--
+                                <a href="https://www.google.es/maps?q={{ cpe.customs.get('_CUSTOMER_ADDRESS')}} {{cpe.customs.get('_CUSTOMER_CITY')}}" target="_blank">{{cpe.customs.get('_CUSTOMER_ADDRESS')}} {{cpe.customs.get('_CUSTOMER_CITY')}}</a>
+                -->
+                <a href="/host/{{ cpe.cpe_registration_host }}" data-type="host">{{ cpe.cpe_registration_host }}</a><span>/</span><a href="/all?search=type:host {{cpe.cpe_registration_host}}">{{ cpe.cpe_registration_id }}</a>
+
             </div>
             <div style="font-size: 18px; color: #999;">
                 %if cpe.customs.get('_ACCESS') == '1':
                 <span style="color: #64DD17"><i class="fa fa-globe"></i>Internet access</span>
                 %else:
                 <span style="color: #E65100"><i class="fa fa-globe text-danger"></i>Disabled Internet access</span>
-                %end            
-                <span style="color: #8BC34A"><i class="fa fa-arrow-circle-o-down"></i>{{cpe.customs['_DOWNSTREAM']}}</span>
-                <span style="color: #FF9800"><i class="fa fa-arrow-circle-o-up"></i>{{cpe.customs['_UPSTREAM']}}</span>
-                
+                %end
+                <span style="color: #8BC34A"><i class="fa fa-arrow-circle-o-down"></i>{{cpe.customs.get('_DOWNSTREAM')}}</span>
+                <span style="color: #FF9800"><i class="fa fa-arrow-circle-o-up"></i>{{cpe.customs.get('_UPSTREAM')}}</span>
+
                 %if cpe.customs.get('_VOICE1_CLI'):
                  | <span style="color: #607D8B">1<i class="fa fa-phone" aria-hidden="true"></i> {{ cpe.customs.get('_VOICE1_CLI') }}</span>
                 %end
@@ -239,63 +242,100 @@ function drawLineColors() {
                  | <span style="color: #607D8B">2<i class="fa fa-phone" aria-hidden="true"></i> {{ cpe.customs.get('_VOICE2_CLI') }}</span>
                 %end
             </div>
-            
-           
+
+
         </div>
-</div>
-        
-<div class="row">
-    <div class="btn-group pull-right" role="group">
-        %if cpe.customs['_TECH'] != 'wimax':
-        <button id="btn-reboot" type="button" class="btn btn-default" {{'disabled' if not reboot_available else ''}} >Reboot</button>
-        %end
-        %if cpe.customs['_TECH'] == 'gpon':
-        <button id="btn-factrestore" type="button" class="btn btn-default" {{'disabled' if not reboot_available else ''}} >Factory restore</button>
-        <button id="btn-unprovision" type="button" class="btn btn-default" {{'disabled' if not reboot_available else ''}} >Unprovision</button>
-        <button id="btn-tr069" type="button" class="btn btn-default" {{'disabled' if not tr069_available else ''}} >Force TR069</button>
-        %end
+    </div>
+
+    <div class="col-md-4 panel">
+        <div class="btn-group pull-right" role="group">
+            %if cpe.customs.get('_TECH') == 'wimax':
+            <button id="btn-update" type="button" class="btn btn-default">Update</button>
+            <button id="btn-reboot" type="button" class="btn btn-default" {{'disabled' if not reboot_available else ''}} >Reboot</button>
+            <button id="btn-backup" type="button" class="btn btn-default">Backup</button>
+            %end
+            %if cpe.customs.get('_TECH') == 'gpon':
+            <button id="btn-reboot" type="button" class="btn btn-default" {{'disabled' if not reboot_available else ''}} >
+            Reboot</button>
+            <button id="btn-factrestore" type="button" class="btn btn-default" {{'disabled' if not reboot_available else ''}} >Factory</button>
+            <button id="btn-unprovision" type="button" class="btn btn-default" {{'disabled' if not reboot_available else ''}} >Unprovision</button>
+            <button id="btn-tr069" type="button" class="btn btn-default" {{'disabled' if not tr069_available else ''}} >TR069</button>
+            %end
+        </div>
     </div>
 </div>
 
-    <div class="col-md-7 panel panel-default">
+<br />
+
+    <div class="col-md-6">
+        <div id="timeline"></div>
+    </div>
+
+
+    <div class="col-md-6">
+          {{!helper.print_aggregation_tree(helper.get_host_service_aggregation_tree(cpe, app), helper.get_html_id(cpe), show_output=True)}}
+    </div>
+
+
+<!--
+    <div class="col-md-12 panel panel-default">
         <div class="panel-heading"><h4 class="panel-title">Timeline</h4></div>
         <div class="panel-body">
-        <div id="timeline"></div>
+        <!--<div id="timeline"></div>-->
+<!--        </div>
+    </div>
+-->
+<!--
+<div class="col-md-4 panel panel-default">
+    <div class="panel-heading"><h4 class="panel-title">Current status</h4></div>
+    <div class="panel-body">
+        <!--<a href="/all?search={{cpe.host_name}}">
+        {{! helper.get_fa_icon_state(obj=cpe, label='title')}}
+        </a>-->
+            <!-- Show our own services  -->
+<!--            {{!helper.print_aggregation_tree(helper.get_host_service_aggregation_tree(cpe, app), helper.get_html_id(cpe), show_output=True)}}
         </div>
     </div>
-    
-    
-<div class="col-md-5 panel panel-default">
-<div class="panel-heading clearfix">
-        <h2 class="panel-title pull-left">Info</h2>
+</div>-->
 
-    </div>
-    <div class="panel-body">
-    <div class="col-sm-6">
-    <dl class="dl-horizontal">
-    
-        <dt>Serial Number</dt><dd>{{ cpe.customs['_SN'].upper() }}</dd>
-        %if cpe.customs['_DSN']:
-        <dt>DSN</dt><dd>{{ cpe.customs['_DSN'] }}</dd>
+<div class="col-md-12 panel panel-default">
+<div class="panel-heading clearfix">
+    <h2 class="panel-title pull-left">Info</h2>
+    <span class="pull-right btn btn-primary btn-xs" data-toggle="collapse" data-target="#info-panel">+</span>
+</div>
+    <div id="info-panel" class="panel-body collapse">
+
+
+
+    <div class="col-sm-4">
+      <dl class="dl-horizontal">
+        <dt>Serial Number</dt><dd>{{ cpe.customs.get('_SN', '').upper() }}</dd>
+        %if cpe.customs.get('_DSN'):
+        <dt>DSN</dt><dd>{{ cpe.customs.get('_DSN') }}</dd>
         %end
-        %if cpe.customs['_MAC'] and len(cpe.customs['_MAC']):
-        <dt>MAC Address</dt><dd>{{cpe.customs['_MAC']}}</dd>
+        %if cpe.customs.get('_MAC') and len(cpe.customs.get('_MAC')):
+        <dt>MAC Address</dt><dd>{{cpe.customs.get('_MAC','00:00:00:00:00:00')}}</dd>
         %end
-        %if cpe.customs['_MTAMAC'] and len(cpe.customs['_MTAMAC']):
-        <dt>MTA MAC</dt><dd>{{cpe.customs['_MTAMAC']}}</dd>
+        %if cpe.customs.get('_MTAMAC') and len(cpe.customs.get('_MTAMAC')):
+        <dt>MTA MAC</dt><dd>{{cpe.customs.get('_MTAMAC')}}</dd>
         %end
         <dt>CPE IP Address</dt><dd>{{cpe.cpe_address}}</dd>
-    
-        <dt>Registration host</dt><dd>{{cpe.cpe_registration_host}}
+
+        <dt>Registration host</dt><dd>{{ cpe.cpe_registration_host }}
             <a href="/all?search=type:host {{cpe.cpe_registration_host}}"><i class="fa fa-search"></i></a></dd>
         <dt>Registration ID</dt><dd>{{cpe.cpe_registration_id}}
             <a href="/all?search=type:host {{cpe.cpe_registration_host}} {{cpe.cpe_registration_id[:-1]}}"><i class="fa fa-search"></i></a></dd>
-            
+
         <dt>Registration state</dt><dd id="status">{{cpe.cpe_registration_state}}</dd>
         <dt>Registration tags</dt><dd>{{cpe.cpe_registration_tags}}</dd>
-    
-    <dt>Configuration URL</dt>
-    
+      </dl>
+    </div>
+
+
+    <div class="col-sm-4">
+      <dl class="dl-horizontal">
+        <dt>Configuration URL</dt>
+
     <dd>{{cpe.cpe_connection_request_url}}</dd>
         %if cpe.cpe_ipleases:
         %try:
@@ -321,43 +361,48 @@ function drawLineColors() {
         %end
         %end
 
-    <!-- <button class="btn btn-default btn-xs center-block" data-toggle="collapse" data-target="#more-info">More</button>-->
+     <!--<button class="btn btn-default btn-xs center-block" data-toggle="collapse" data-target="#more-info">More</button>-->
 
-    <!--
-    <dl class="col-sm-6 dl-horizontal">
+   </dl>
+ </div>
+<div>
+<div class="col-sm-4 dl-horizontal">
+    <dl >
         <dt>Name</dt>
-        <dd>{{cpe.customs['_CUSTOMER_NAME']}}</dd><dt>Surname</dt>
-        <dd>{{cpe.customs['_CUSTOMER_SURNAME']}}</dd><dt>Address</dt>
-        <dd>{{cpe.customs['_CUSTOMER_ADDRESS']}}</dd><dt>City</dt>
-        <dd>{{cpe.customs['_CUSTOMER_CITY']}}</dd></dl>
+        <dd>{{cpe.customs.get('_CUSTOMER_NAME')}}</dd><dt>Surname</dt>
+        <dd>{{cpe.customs.get('_CUSTOMER_SURNAME')}}</dd><dt>Address</dt>
+        <dd>{{cpe.customs.get('_CUSTOMER_ADDRESS')}}</dd><dt>City</dt>
+        <dd>{{cpe.customs.get('_CUSTOMER_CITY')}}</dd></dl>
     </dl>
-    -->    
-        
+</div>
+
 </div>
 </div>
 </div>
-    
+
 <br />
 <br />
-    
-    
-    
-    
+
+
+
+
 <div class="col-md-10 panel panel-default">
-    <div class="panel-heading"><h4 class="panel-title">Realtime Graph</h4></div>
+    <div class="panel-heading"><h4 class="panel-title">Graph</h4>
+    </div>
     <div class="panel-body">
         <div id="realtimegraph"></div>
     </div>
 </div>
-    
-    
-    
+
+
+
+
 <div class="col-md-2 panel panel-default">
     <div class="panel-heading"><h4 class="panel-title">Realtime Info</h4></div>
     <div style="font-size: 20px;" class="panel-body">
         <span class="fa fa-calendar"></span> <span id="uptime">-</span></span><br/>
         <span class="fa fa-dashboard"></span> <span id="dnbw">-</span>/<span id="upbw">-</span><br/>
-        <span class="fa fa-signal"></span> <span id="uprx">-</span>/<span id="dnrx">-</span><br/>
+        <span class="fa fa-signal"></span> <span id="uprx">-</span>/<span id="dnrx">-</span>dbm<br/>
     </dl>
     </div>
 </div>
@@ -404,18 +449,7 @@ function drawLineColors() {
 </div>
 <div class="row container-fluid">
 
-    <div class="col-md-6 panel panel-default">
-        <div class="panel-heading"><h4 class="panel-title">Current status</h4></div>
-        <div class="panel-body">
-            <!--<a href="/all?search={{cpe.host_name}}">
-            {{! helper.get_fa_icon_state(obj=cpe, label='title')}}
-            </a>-->
-                <!-- Show our own services  -->
-            <div>
-                {{!helper.print_aggregation_tree(helper.get_host_service_aggregation_tree(cpe, app), helper.get_html_id(cpe), show_output=True)}}
-            </div>
-        </div>
-    </div>
+
 
 </div>
 <div class="row container-fluid">
@@ -436,3 +470,22 @@ function drawLineColors() {
 
 %#End of the element exist or not case
 %end
+
+
+<script>
+$("[data-type='host']").each(function(key, value){
+    item = $(value)
+    $.getJSON('/quick/'+item.html(), function(data){
+        //console.log(data)
+        if (data.last_state_id == 0) {
+            item.addClass('font-up')
+        } else if (data.last_state_id == 1) {
+            item.addClass('font-unreachable')
+        } else if (data.last_state_id == 2) {
+           item.addClass('font-down')
+        }
+    });
+});
+
+
+</script>

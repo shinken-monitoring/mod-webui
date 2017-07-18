@@ -127,6 +127,7 @@
 
          <!-- Page footer -->
          <div>
+            <a class="btn btn-default btn-sm" id="menu-toggler" href="#"><i class="fa fa-bars"></i></a>
             <img src="/static/images/default_company_xxs.png" alt="Shinken Logo"/>
             <small><em class="text-muted">
                Shinken {{VERSION}} &mdash; Web User Interface {{app.app_version}}, &copy;2011-2016
@@ -135,6 +136,44 @@
       </div>
    </nav>
 </footer>
+
+<script>
+
+Store_set = function(key, val) {
+    localStorage.setItem(key,JSON.stringify(val));
+    return Store_get(key);
+};
+
+Store_get = function(key) {
+    try {
+        return JSON.parse(localStorage.getItem(key));
+    } catch(e) {
+        return localStorage.getItem(key);
+    }
+};
+
+
+function checkNavigation(){
+    if( Store_get('settings') && Store_get('settings')['menu'] == 'hidden' ) {
+        $("div[role='navigation']").hide();
+        $("#page-wrapper").css('margin-left', 0);
+    } else {
+        $("div[role='navigation']").show();
+        $("#page-wrapper").css('margin-left', '200px');
+    }
+}
+
+$("#menu-toggler").on("click", function(){
+    if( Store_get('settings') && Store_get('settings')['menu'] == 'hidden' ) {
+        Store_set('settings', {'menu': 'visible'})
+    } else {
+        Store_set('settings', {'menu': 'hidden'})
+    }
+    checkNavigation();
+});
+
+checkNavigation();
+</script>
 
 <script>
    /* We keep an array of all selected elements */

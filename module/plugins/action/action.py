@@ -95,9 +95,9 @@ def get_page(cmd=None):
     except UnicodeDecodeError as e:
         extcmd = "[%s] %s" % (now, ';'.join(elts))
 
+    logger.info("[JUAN-DEBUG] %s.", extcmd)
     # Expand macros
     extcmd = expand_macros(extcmd)
-    logger.info("[WebUI-actions] external command: %s.", extcmd)
     e = ExternalCommand(extcmd)
     app.push_external_command(e)
 

@@ -7,18 +7,30 @@
 %end
 
 
+<style>
+.navbar-top-links li a {
+    padding: 10px;
+    min-height: 0;
+}
+</style>
+
 <!-- Header Navbar -->
 <nav class="header navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom:0px;">
    <div class="navbar-header">
+      
       <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
          <span class="sr-only">Toggle navigation</span>
          <span class="icon-bar"></span>
          <span class="icon-bar"></span>
          <span class="icon-bar"></span>
       </button>
-      <a onclick="display_modal('/modal/about')" class="logo navbar-brand">
+      
+      
+      <!--<a onclick="display_modal('/modal/about')" class="logo navbar-brand">-->
+      <a href="/" class="logo navbar-brand">
          <img src="/static/logo/{{app.company_logo}}" alt="Company logo" />
       </a>
+
    </div>
 
    <ul class="nav navbar-nav hidden-xs">
@@ -168,11 +180,15 @@
           <form class="navbar-form navbar-left" method="get" action="/all">
             <div class="input-group custom-search-form">
               <input class="form-control" type="search" id="search" name="search" value="{{ app.get_search_string() }}">
+              
               <span class="input-group-btn">
                 <button class="btn btn-default" type="submit">
                   <i class="fa fa-search"></i>
                 </button>
               </span>
+                          
+              
+              
             </div>
           </form>
         </li>

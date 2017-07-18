@@ -1,28 +1,26 @@
 /* Copyright (C) 2009-2015:
-   Gabes Jean, naparuba@gmail.com
-   Gerhard Lausser, Gerhard.Lausser@consol.de
-   Gregory Starck, g.starck@gmail.com
-   Hartmut Goebel, h.goebel@goebel-consult.de
-   Andreas Karfusehr, andreas@karfusehr.de
-   Frederic Mohier, frederic.mohier@gmail.com
 
-   This file is part of Shinken.
-
-   Shinken is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Affero General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Shinken is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Affero General Public License for more details.
-
-   You should have received a copy of the GNU Affero General Public License
-   along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
    */
 'use strict';
 var timeline;
+
+var ICON_OK       = '<span class="fa-stack" title="service is OK"><i class="fa fa-circle fa-stack-2x font-ok"></i><i class="fa fa-arrow-up fa-stack-1x fa-inverse"></i></span>';
+var ICON_WARNING  = '<span class="fa-stack" title="service is WARNING"><i class="fa fa-circle fa-stack-2x font-warning"></i><i class="fa fa-exclamation fa-stack-1x fa-inverse"></i></span>';
+var ICON_CRITICAL = '<span class="fa-stack" "=""><i class="fa fa-circle fa-stack-2x font-critical"></i><i class="fa fa-arrow-down fa-stack-1x fa-inverse"></i></span>';
+var ICON_UNKONWN  = '<span class="fa-stack" title="service is UNKNOWN"><i class="fa fa-circle fa-stack-2x font-unknown"></i><i class="fa fa-question fa-stack-1x fa-inverse"></i></span>';
+
+function getHTMLState(val) {
+	if(val == 0) {
+		return ICON_OK;
+	} else if ( val == 1 ) {
+		return ICON_WARNING;
+	} else if ( val == 2 ) {
+		return ICON_CRITICAL;
+	} else if ( val == 3 ) {
+		return ICON_UNKONWN;
+	}
+
+}
 
 /*
  * Clean graphite raw data for using with Google Charts
@@ -35,7 +33,7 @@ function cleanData(element, index, array) {
 
 
 /*
- * Returns an array with the alert logs of the service/host combination ordered by time
+ * Returns an array with the alert logs of the ice/host combination ordered by time
  */
 function getServiceAlerts(logs, hostname, service_name, min_date) {
     if (logs === null)
@@ -140,12 +138,15 @@ function labelToColor(label) {
     return 'blue'; // UNKNOWN
 }
 
+
+
+//@jgomez
 function createTimeline(min_date, max_date) {
     var container = document.getElementById('timeline');
     var groups = [];
     groups.push({id: cpe.name, content: cpe.name});
     services.forEach(function(service) {
-        groups.push({id: service.name, content: service.name});
+        groups.push({id: service.name, content: getHTMLState(service.state_id) + '<a href="'+service.url+'">'+service.name+'</a>'});
     });
     //groups.push({id: 'iplease', content: 'iplease'});
     var options = {
@@ -312,7 +313,7 @@ function drawLogsTable(logs) {
                 return getStateIcon(data, row.state_type, row.type);
               }
             },
-            { data: 'timestamp', 
+            { data: 'timestamp',
               render: function ( data, type, row ) {
                 var date = new Date(data * 1000);
                 return date.toLocaleString();
@@ -330,7 +331,7 @@ function drawEventsTable(events) {
     $('#inner_events').DataTable( {
         data: events,
         columns: [
-            { data: 'timestamp', 
+            { data: 'timestamp',
               render: function ( data, type, row ) {
                 var date = new Date(data * 1000);
                 return date.toLocaleString();
@@ -353,7 +354,7 @@ function drawEventsTable(events) {
  */
 function addLeasesTimeline(events, min_date) {
     if(!events) {return}
-    
+
     events = events.filter(function(e) { // Show only ipleases
         return e.source == 'iplease'
     });
@@ -423,24 +424,24 @@ function on_page_refresh() {
 
     // CPE Action buttons
     $('#btn-reboot').click(function (e) {
-        launch('/action/REBOOT_HOST/'+cpe_name, 'Host reboot ordered');
+        launch('/cpe_poll/reboot/'+cpe_name, 'Host reboot ordered');
     });
 
     $('#btn-factrestore').click(function (e) {
-        launch('/action/RESTORE_FACTORY_HOST/'+cpe_name, 'Factory reset ordered');
+        launch('/action/factory/'+cpe_name, 'Factory reset ordered');
     });
 
     $('#btn-unprovision').click(function (e) {
-        launch('/action/UNPROVISION_HOST/'+cpe_name, 'Unprovision ordered');
+        launch('/action/unprovision/'+cpe_name, 'Unprovision ordered');
     });
 
     $('#btn-tr069').click(function (e) {
-        launch('/action/SCHEDULE_FORCED_SVC_CHECK/'+cpe_name+'/tr069/$NOW$', 'Forced TR069 check');
+        launch('/action/tr069/'+cpe_name, 'Forced TR069 check');
     });
-    
+
     //launch('/action/CPE_POLLING_HOST/'+cpe_name+'/tr069/$NOW$', 'Cpe Polling');
-    
-    
+
+
 
 }
 
