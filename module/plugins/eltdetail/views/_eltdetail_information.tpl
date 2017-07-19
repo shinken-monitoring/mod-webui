@@ -1,17 +1,13 @@
 <div class="tab-pane fade {{_go_active}} {{_go_fadein}}" id="information">
-  <div class="panel panel-default">
+  <div class="panel panel-default" style="border-top:none; border-radius:0;">
     <div class="panel-body">
       <div class="col-lg-6">
+        <h4 class="page-header">Status</h4>
         <table class="table table-condensed">
           <colgroup>
             <col style="width: 40%" />
             <col style="width: 60%" />
           </colgroup>
-          <thead>
-            <tr>
-              <th colspan="2">Status:</th>
-            </tr>
-          </thead>
           <tbody style="font-size:x-small;">
             <tr>
               <td><strong>Status:</strong></td>
@@ -39,16 +35,12 @@
           </tbody>
         </table>
 
+        <h4 class="page-header">Last check</h4>
         <table class="table table-condensed table-nowrap">
           <colgroup>
             <col style="width: 40%" />
             <col style="width: 60%" />
           </colgroup>
-          <thead>
-            <tr>
-              <th colspan="2">Last check:</th>
-            </tr>
-          </thead>
           <tbody style="font-size:x-small;">
             <tr>
               <td><strong>Last Check:</strong></td>
@@ -98,16 +90,12 @@
           </tbody>
         </table>
 
+        <h4 class="page-header">Checks configuration</h4>
         <table class="table table-condensed">
           <colgroup>
             <col style="width: 40%" />
             <col style="width: 60%" />
           </colgroup>
-          <thead>
-            <tr>
-              <th colspan="2">Checks configuration:</th>
-            </tr>
-          </thead>
           <tbody style="font-size:x-small;">
             %if hasattr(elt, "check_period") and hasattr(elt.check_period, "get_name"):
             <tr>
@@ -209,16 +197,31 @@
             </tr>
           </tbody>
         </table>
+      </div>
+
+      <div class="col-lg-6">
+        %if elt.notes_url or elt.action_url or elt.notes:
+        <h4 class="page-header">Notes</h4>
+        %if elt.notes != '':
+        <p>{{ elt.notes }}</p>
+        %end
+        <div>
+          %if elt.notes_url != '':
+          <a class="btn btn-info" href="{{elt.notes_url}}" target=_blank><i class="fa fa-external-link-square"></i> More notes</a>
+          %end
+          %if elt.action_url != '':
+          <a class="btn btn-warning" href="{{elt.action_url}}" target=_blank title="{{ elt.action_url }}"><i class="fa fa-cogs"></i> Launch custom action</a>
+          %end
+        </div>
+        %end
+
+        %if elt.event_handler:
+        <h4 class="page-header">Event handler</h4>
         <table class="table table-condensed">
           <colgroup>
             <col style="width: 40%" />
             <col style="width: 60%" />
           </colgroup>
-          <thead>
-            <tr>
-              <th colspan="2">Event handler:</th>
-            </tr>
-          </thead>
           <tbody style="font-size:x-small;">
             <tr>
               <td><strong>Event handler enabled:</strong></td>
@@ -234,34 +237,22 @@
                 >
               </td>
             </tr>
-            %if elt.event_handler_enabled and elt.event_handler:
             <tr>
               <td><strong>Event handler:</strong></td>
               <td>
                 <a href="/commands#{{elt.event_handler.get_name()}}">{{ elt.event_handler.get_name() }}</a>
               </td>
             </tr>
-            %end
-            %if elt.event_handler_enabled and not elt.event_handler:
-            <tr>
-              <td></td>
-              <td><strong>No event handler defined!</strong></td>
-            </tr>
-            %end
           </tbody>
         </table>
-      </div>
-      <div class="col-lg-6">
+        %end
+
+        <h4 class="page-header">Flapping detection</h4>
         <table class="table table-condensed">
           <colgroup>
             <col style="width: 40%" />
             <col style="width: 60%" />
           </colgroup>
-          <thead>
-            <tr>
-              <th colspan="2">Flapping detection:</th>
-            </tr>
-          </thead>
           <tbody style="font-size:x-small;">
             <tr>
               <td><strong>Flapping detection:</strong></td>
@@ -295,16 +286,12 @@
         </table>
 
         %if elt.stalking_options and elt.stalking_options[0]:
+        <h4 class="page-header">Stalking options</h4>
         <table class="table table-condensed">
           <colgroup>
             <col style="width: 40%" />
             <col style="width: 60%" />
           </colgroup>
-          <thead>
-            <tr>
-              <th colspan="2">Stalking options:</th>
-            </tr>
-          </thead>
           <tbody style="font-size:x-small;">
             <tr>
               <td><strong>Options:</strong></td>
@@ -314,16 +301,12 @@
         </table>
         %end
 
+        <h4 class="page-header">Notifications</h4>
         <table class="table table-condensed">
           <colgroup>
             <col style="width: 40%" />
             <col style="width: 60%" />
           </colgroup>
-          <thead>
-            <tr>
-              <th colspan="2">Notifications:</th>
-            </tr>
-          </thead>
           <tbody style="font-size:x-small;">
             <tr>
               <td><strong>Notifications:</strong></td>
@@ -414,17 +397,6 @@
           %#<a href="/services-group/{{sg.get_name()}}" class="link">{{sg.alias}} ({{sg.get_name()}})</a>
           %#%end
           %#</dd>
-        %#%else:
-        %#<dd>(none)</dd>
-        %#%end
-
-        %#<dt>Notes: </dt>
-        %#%if elt.notes != '' and elt.notes_url != '':
-        %#<dd><a href="{{elt.notes_url}}" target=_blank>{{elt.notes}}</a></dd>
-        %#%elif elt.notes == '' and elt.notes_url != '':
-        %#<dd><a href="{{elt.notes_url}}" target=_blank>{{elt.notes_url}}</a></dd>
-        %#%elif elt.notes != '' and elt.notes_url == '':
-        <d%#d>{{elt.notes}}</dd>
         %#%else:
         %#<dd>(none)</dd>
         %#%end
