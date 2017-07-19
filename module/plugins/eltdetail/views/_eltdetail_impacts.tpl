@@ -1,5 +1,5 @@
 <div class="tab-pane fade" id="impacts">
-  <div class="panel panel-default">
+  <div class="panel panel-default" style="border-top:none; border-radius:0;">
     <div class="panel-body">
       <div class="{{'col-lg-6'}} if elt_type =='host' else 'col-lg-12'">
         %displayed_services=False

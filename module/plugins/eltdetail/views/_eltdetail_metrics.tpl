@@ -1,6 +1,6 @@
 %from shinken.misc.perfdata import PerfDatas
 <div class="tab-pane fade" id="metrics">
-  <div class="panel panel-default">
+  <div class="panel panel-default" style="border-top:none; border-radius:0;">
     <div class="panel-body">
       <table class="table table-condensed">
         <thead>

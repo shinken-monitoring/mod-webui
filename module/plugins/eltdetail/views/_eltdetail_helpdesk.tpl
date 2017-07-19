@@ -1,6 +1,6 @@
 %if app.helpdesk_module.is_available():
 <div class="tab-pane fade" id="helpdesk">
-  <div class="panel panel-default">
+  <div class="panel panel-default" style="border-top:none; border-radius:0;">
     <div class="panel-body">
       <div id="inner_helpdesk" data-element='{{elt.get_full_name()}}'>
       </div>

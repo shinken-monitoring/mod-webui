@@ -1,5 +1,5 @@
 <div class="tab-pane fade" id="comments">
-  <div class="panel panel-default">
+  <div class="panel panel-default" style="border-top:none; border-radius:0;">
     <div class="panel-body">
       %if elt.comments:
       <table class="table table-condensed table-hover">

@@ -1,6 +1,6 @@
 %if user.is_administrator() and elt.customs:
 <div class="tab-pane fade" id="configuration">
-  <div class="panel panel-default">
+  <div class="panel panel-default" style="border-top:none; border-radius:0;">
     <div class="panel-body">
       <table class="table table-condensed table-bordered">
         <colgroup>

@@ -6,7 +6,7 @@
 var graphend={{graphend}};
 </script>
 <div class="tab-pane fade" id="graphs">
-  <div class="panel panel-default">
+  <div class="panel panel-default" style="border-top:none; border-radius:0;">
     <div class="panel-body">
       %# Set source as '' or module ui-graphite will try to fetch templates from default 'detail'
       %uris = app.graphs_module.get_graph_uris(elt, graphstart, graphend)
