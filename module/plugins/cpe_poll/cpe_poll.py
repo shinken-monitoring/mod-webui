@@ -33,7 +33,7 @@ def json_cpe(cpe_name):
     result = app.krillui_module.get_data(cpe_name)
 
     if not bool(result) or not result.get('last_pollresquest_time') or (result.get('last_pollresquest_time') and (time.time() - result.get('last_pollresquest_time')) > 5 ):
-        logger.info("====[cpe_poll] pollrequest! cpe=%s" % cpe_name)
+        logger.info("[WebUI:cpe_poll] pollrequest! cpe=%s" % cpe_name)
         result.update({'last_pollresquest_time': time.time()})
         b = Brok(type='pollrequest', data=data)
         app.from_q.put(b)
@@ -42,6 +42,7 @@ def json_cpe(cpe_name):
 
 
 def cpe_reboot(name):
+    logger.info("[WebUI:cpe_poll] cpe_reboot! cpe=%s" % cpe_name)
     try:
         user = app.bottle.request.environ['USER']
         cpe = app.datamgr.get_host(cpe_name, user)
@@ -52,6 +53,7 @@ def cpe_reboot(name):
         return {'result': 'fail'}
 
 def cpe_factory(name):
+    logger.info("[WebUI:cpe_poll] cpe_factory! cpe=%s" % cpe_name)
     try:
         user = app.bottle.request.environ['USER']
         cpe = app.datamgr.get_host(cpe_name, user)
@@ -62,6 +64,7 @@ def cpe_factory(name):
         return {'result': 'fail'}
 
 def cpe_tr069(name):
+    logger.info("[WebUI:tr069] cpe_tr069! cpe=%s" % cpe_name)
     try:
         user = app.bottle.request.environ['USER']
         cpe = app.datamgr.get_host(cpe_name, user)
@@ -72,6 +75,7 @@ def cpe_tr069(name):
         return {'result': 'fail'}
 
 def cpe_unprovision(name):
+    logger.info("[WebUI:cpe_poll] cpe_unprovision! cpe=%s" % cpe_name)
     try:
         user = app.bottle.request.environ['USER']
         cpe = app.datamgr.get_host(cpe_name, user)
