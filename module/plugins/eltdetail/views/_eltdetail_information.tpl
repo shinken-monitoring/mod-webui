@@ -119,6 +119,7 @@
             %if elt.maintenance_period is not None:
             <tr>
               <td><strong>Maintenance period:</strong></td>
+              %tp=app.datamgr.get_timeperiod(elt.maintenance_period.get_name())
               <td name="maintenance_period" class="popover-dismiss"
                 data-html="true" data-toggle="popover" data-placement="left"
                 data-title='{{tp.alias if hasattr(tp, "alias") else tp.timeperiod_name}}'
