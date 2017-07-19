@@ -297,23 +297,23 @@
 
     $(document).ready(function(){
         // Date / time
-        $('#clock').jclock({ format: '%H:%M:%S' });
-        $('#date').jclock({ format: '%A, %B %d' });
+        $('#clock').jclock({ hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: false });
+        $('#date').jclock({ weekday:'long',year:'numeric',month:'long',day:'numeric' });
 
         on_page_refresh();
 
         // Fullscreen management
         if (screenfull.enabled) {
-            $('a[action="fullscreen-request"]').on('click', function() {
+            $('.js-fullscreen-request').on('click', function() {
                 screenfull.request();
             });
 
             // Fullscreen changed event
             document.addEventListener(screenfull.raw.fullscreenchange, function () {
                 if (screenfull.isFullscreen) {
-                    $('a[action="fullscreen-request"]').hide();
+                    $('.js-fullscreen-request').hide();
                 } else {
-                    $('a[action="fullscreen-request"]').show();
+                    $('.js-fullscreen-request').show();
                 }
             });
         }
@@ -403,7 +403,7 @@
    } else {
       $('#sound_alerting i.fa-ban').removeClass('hidden');
    }
-   $('body').on('click', '[action="toggle-sound-alert"]', function (e, data) {
+   $('body').on('click', '.js-toggle-sound-alert', function (e, data) {
       if (sessionStorage.getItem("sound_play") == '1') {
          sessionStorage.setItem("sound_play", "0");
          $('#sound_alerting i.fa-ban').removeClass('hidden');
@@ -415,9 +415,8 @@
 </script>
 %end
 
-%synthesis = app.datamgr.get_synthesis()
-%s = synthesis['services']
-%h = synthesis['hosts']
+%s = app.datamgr.get_services_synthesis(None, user)
+%h = app.datamgr.get_hosts_synthesis(None, user)
 
 %if username != 'anonymous':
 <div class="container-fluid">
@@ -434,7 +433,7 @@
                     </a>
                 </li>
                 <li>
-                    <a tabindex="0" class="font-darkgrey" role="button" title="Got to fullscreen" href="#" action="fullscreen-request">
+                    <a tabindex="0" class="font-darkgrey js-fullscreen-request" role="button" title="Got to fullscreen" href="#">
                         <span id="go-fullscreen" class="fa-stack">
                             <i class="fa fa-desktop fa-stack-1x"></i>
                             <i class="fa fa-ban fa-stack-2x hidden"></i>
@@ -443,7 +442,7 @@
                 </li>
                 %if app.play_sound:
                 <li>
-                    <a tabindex="0" class="font-darkgrey" role="button" title="Sound alerting" href="#" action="toggle-sound-alert">
+                    <a tabindex="0" class="font-darkgrey js-toggle-sound-alert" role="button" title="Sound alerting" href="#">
                         <span id="sound_alerting" class="fa-stack">
                             <i class="fa fa-music fa-stack-1x"></i>
                             <i class="fa fa-ban fa-stack-2x text-danger hidden"></i>
@@ -622,7 +621,7 @@
                         </div>
                         %end
                         %known_problems=s['nb_ack']+s['nb_downtime']+s['nb_unknown']
-                        %pct_known_problems=round(100.0 * known_problems / s['nb_elts'], 2)
+                        %pct_known_problems=round(100.0 * known_problems / s['nb_elts'], 2) if s['nb_elts'] else 0
                         <div class="col-xs-4 col-sm-4 text-center">
                             <a role="button" href="/all?search=type:service is:ack" class="font-unknown">
                                 <span class="services-count" data-count="{{ s['nb_' + state] }}" data-state="{{ state }}" style="font-size: 1.8em;">{{ pct_known_problems }}%</span>

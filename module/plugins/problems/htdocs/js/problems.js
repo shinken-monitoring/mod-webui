@@ -42,7 +42,7 @@ function add_element(name){
    selected_elements.push(name);
 
    if (selected_elements.length > 0) {
-      show_actions();
+      $('#action-menu').show();
       
       // Stop page refresh
       stop_refresh();
@@ -58,7 +58,7 @@ function remove_element(name){
    selected_elements.splice($.inArray(name, selected_elements),1);
 
    if (selected_elements.length == 0){
-      hide_actions();
+      $('#action-menu').hide();
 
       // Restart page refresh timer
       start_refresh();
@@ -110,7 +110,7 @@ $('body').on('click', 'button[data-type="business-impact"]', function (e) {
       $('input[type=checkbox][data-type="problem"][data-business-impact="'+$(this).data('business-impact')+'"]').each(function() {
          add_element($(this).data('item'));
       })
-      $(this).html("Unselect all elements").data('state', 'on');
+      $(this).html("Unselect all").data('state', 'on');
    } else {
       if (problems_logs) console.log('Unselect all elements ...', $(this).data('business-impact'));
          
@@ -118,7 +118,7 @@ $('body').on('click', 'button[data-type="business-impact"]', function (e) {
       $('input[type=checkbox][data-type="problem"][data-business-impact="'+$(this).data('business-impact')+'"]').each(function() {
          remove_element($(this).data('item'));
       })
-      $(this).html("Select all elements").data('state', 'off');
+      $(this).html("Select all").data('state', 'off');
    }
    
 });

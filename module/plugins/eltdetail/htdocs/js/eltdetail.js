@@ -32,9 +32,6 @@ var elt_name = '{{elt.get_full_name()}}';
  * Function called when the page is loaded and on each page refresh ...
  */
 function on_page_refresh() {
-   // Show actions bar
-   show_actions();
-
    // Buttons tooltips
    $('button').tooltip();
 
@@ -45,12 +42,23 @@ function on_page_refresh() {
 //   $('[data-toggle="popover"]').popover();
 
    $('[data-toggle="popover"]').popover({
-      trigger: "hover",
-      container: "body",
-      placement: 'bottom',
-      toggle : "popover",
+      trigger: 'manual',
+      animation: false,
 
       template: '<div class="popover popover-large"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>'
+   }).on("mouseenter", function () {
+      var _this = this;
+      $(this).popover("show");
+      $(this).siblings(".popover").on("mouseleave", function () {
+          $(_this).popover('hide');
+      });
+   }).on("mouseleave", function () {
+      var _this = this;
+      setTimeout(function () {
+          if (!$(_this).siblings(".popover").is(":hover")) {
+              $(_this).popover("hide");
+          }
+      }, 100);
    });
 
    /*
@@ -259,9 +267,6 @@ function on_page_refresh() {
 
    // Restore previously selected tab
    bootstrap_tab_bookmark();
-
-   // Show actions bar
-   show_actions();
 }
 
 

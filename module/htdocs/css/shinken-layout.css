@@ -116,21 +116,21 @@ html, body {
         width: 200px;
     }
 }
-@media (max-width: 768px) {
-    #sidebar-menu > li  {
-        float:left;
-    }
-    #sidebar-menu {
-        height: 50px;
-        max-width: none;
-    }
-}
+/*@media (max-width: 768px) {*/
+    /*#sidebar-menu > li  {*/
+        /*float:left;*/
+    /*}*/
+    /*#sidebar-menu {*/
+        /*height: 50px;*/
+        /*max-width: none;*/
+    /*}*/
+/*}*/
 
-@media(max-height:600px) {
-    .sidebar li  a {
-        height: 30px;
-    }
-}
+/*@media(max-height:600px) {*/
+    /*.sidebar li  a {*/
+        /*height: 30px;*/
+    /*}*/
+/*}*/
 
 /*
  * Navigation bar, company logo
@@ -175,6 +175,17 @@ html, body {
 }
 
 /*
+ * Navigation bar, state displays
+ */
+.navbar-top-links li .popover a {
+    padding: 0px;
+}
+
+.navbar-top-links li .popover a:hover {
+    text-decoration: none;
+}
+
+/*
  * Navigation bar, user menu
  */
 .user-menu > .dropdown-menu {
@@ -210,26 +221,96 @@ html, body {
  * Footer - make footer bar smaller than usual ...
  */
 footer nav {
-    height: 25px;
+    /*height: 25px;*/
     min-height: 25px !important;
 }
 
-footer nav.navbar-dashboard {
-    position: absolute;
+#action-menu, #action-btn {
+    margin: 0;
+    margin-bottom: 25px;
+    position: fixed;
     width: 200px;
-    left: 0px; bottom: 30px;
+    left: 0;
+    bottom: 0%;
+    /*left: 0px; bottom: 30px;*/
 }
+#action-menu li {
+    border-bottom: 1px solid #e7e7e7;
+}
+@media(max-width:768px) {
+    /*footer nav.navbar-element {*/
+        /*z-index: 1;*/
+        /*position: absolute;*/
+        /*width: 250px;*/
+        /*margin-top: 51px;*/
+    /*}*/
+    #action-menu container {
+        border: none;
+    }
 
-footer nav.navbar-element {
-    position: absolute;
-    width: 200px;
-    left: 0px; bottom: 30px;
+    #action-menu {
+        width: 100%;
+        border: none;
+        background: none;
+        text-align: center;
+    }
+
+    #action-menu ul {
+        list-style: none;
+        /*width: initial;*/
+        /*background: red;*/
+        /*margin: auto;*/
+    }
+
+    #action-menu li {
+        border: 1px solid #e7e7e7;
+        background: #f9f9f9;
+        display: inline;
+        margin: 2px;
+        padding: 5px;
+        font-size: 16px;
+    }
+
+    #action-menu li a {
+        display: inline;
+    }
 }
 /*
  * Breadcrumb
  */
 .breadcrumb {
   background: none;
+}
+
+/*
+ * Login page
+ */
+.form-signin {
+  max-width: 330px;
+  padding: 15px;
+  margin: 0 auto;
+}
+.form-signin .form-control {
+  position: relative;
+  height: auto;
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+  padding: 10px;
+  font-size: 16px;
+}
+.form-signin .form-control:focus {
+  z-index: 2;
+}
+.form-signin input[name="login"] {
+  margin-bottom: -1px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.form-signin input[name="password"] {
+  margin-bottom: 10px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
 }
 
 /*

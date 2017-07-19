@@ -6,6 +6,7 @@
    <head>
       <meta charset="utf-8">
       <title>Shinken WebUI Login page</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
 
       <!--
          This file is a part of Shinken.
@@ -35,41 +36,31 @@
 
    <body>
       <div class="container" style="padding-top: 100px;">
-         <div class="col-md-4 col-md-offset-4">
+         <div class="col-md-4 col-md-offset-4 col-sm-8 col-sm-offset-2">
             <div class="login-panel panel panel-default">
                <div class="panel-heading">
-                  <h2>Shinken <small>version {{VERSION}}</small></h2>
                   <center>
                      <img src="/static/logo/{{company_logo}}" alt="Company logo" style="width: 80%"/>
                   </center>
                </div>
                <div class="panel-body">
-                  <form role="form" method="post" action="/user/auth">
-                     <fieldset>
-                        <div class="form-group">
-                           <input class="form-control" placeholder="username" name="login" type="text" autofocus>
-                        </div>
-                        <div class="form-group">
-                           <input class="form-control" placeholder="Password" name="password" type="password" value="">
-                        </div>
-
-                        <button class="btn btn-lg btn-success btn-block" type="submit"><i class="fa fa-sign-in"></i> Login</button>
-                     </fieldset>
-                  </form>
-               </div>
-               <div class="panel-footer">
+                  <form role="form" class="form-signin" method="post" action="/user/auth">
+                    <!--<h2>Please sign in</h2>-->
                   %if msg_text:
                   <div class="alert alert-danger" role="alert">
                      <strong>Warning!</strong>
                      {{msg_text}}
                   </div>
                   %end
-                  <div style="min-height: 100px;">
-                     <img src="/static/images/shinken.png" style="position: relative; top:-30px; left:-12px; width: 120px;" class="pull-left"/>
-                     %if login_text:
-                     <h3>{{login_text}}</h3>
-                     %end
-                  </div>
+                    <!--<div class="form-group">-->
+                      <input class="form-control" placeholder="Username" name="login" type="text" required autofocus>
+                    <!--</div>-->
+                    <!--<div class="form-group">-->
+                      <input class="form-control" placeholder="Password" name="password" type="password" value="" required>
+                    <!--</div>-->
+
+                    <button class="btn btn-lg btn-success btn-block" type="submit"><i class="fa fa-sign-in"></i> Login</button>
+                  </form>
                </div>
             </div>
          </div>

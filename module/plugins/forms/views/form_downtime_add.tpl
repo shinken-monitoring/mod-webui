@@ -6,16 +6,12 @@
 
    function submit_local_form(){
       // Launch downtime request and bailout this modal view
-      %if elt.__class__.my_type=='contact':
-        do_schedule_downtime("{{name}}", downtime_start.format('X'), downtime_stop.format('X'), '{{user.get_name()}}', $('#reason').val(), 'contact', '{{app.shinken_downtime_fixed}}', '{{app.shinken_downtime_trigger}}', '{{app.shinken_downtime_duration}}');
-      %else:
-        do_schedule_downtime("{{name}}", downtime_start.format('X'), downtime_stop.format('X'), '{{user.get_name()}}', $('#reason').val(), undefined, '{{app.shinken_downtime_fixed}}', '{{app.shinken_downtime_trigger}}', '{{app.shinken_downtime_duration}}');
-      %end
+     do_schedule_downtime("{{name}}", downtime_start.format('X'), downtime_stop.format('X'), '{{user.get_name()}}', $('#reason').val(), '{{app.shinken_downtime_fixed}}', '{{app.shinken_downtime_trigger}}', '{{app.shinken_downtime_duration}}');
 
       %if elt.__class__.my_type=='host':
       if ($('#dwn_services').is(":checked")) {
       %for service in elt.services:
-         do_schedule_downtime("{{name}}/{{service.get_name()}}", downtime_start.format('X'), downtime_stop.format('X'), '{{user.get_name()}}', $('#reason').val(), undefined, '{{app.shinken_downtime_fixed}}', '{{app.shinken_downtime_trigger}}', '{{app.shinken_downtime_duration}}');
+         do_schedule_downtime("{{name}}/{{service.get_name()}}", downtime_start.format('X'), downtime_stop.format('X'), '{{user.get_name()}}', $('#reason').val(), '{{app.shinken_downtime_fixed}}', '{{app.shinken_downtime_trigger}}', '{{app.shinken_downtime_duration}}');
       %end
       }
       %end
@@ -72,8 +68,10 @@
 <div class="modal-body">
    <form name="input_form" role="form">
       %if elt.__class__.my_type=='host':
-      <div class="form-group">
-         <input name="dwn_services" id="dwn_services" type="checkbox" checked="checked">Same downtime period for all services of the host?</input>
+      <div class="checkbox">
+        <label>
+          <input name="dwn_services" id="dwn_services" type="checkbox" checked="checked"> Apply the same downtime on all the services of this host</input>
+        </label>
       </div>
       %end
 
