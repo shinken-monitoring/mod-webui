@@ -6,9 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" >
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" >
-
-
-
   </head>
 <body>
 
@@ -82,7 +79,7 @@
 
        console.log(timelineData)
 
-       createTimeline(timelineData2);
+       createTimeline();
 
      }); //getJSON
 
@@ -95,17 +92,21 @@
 
   }
 
-  var width = 800;
+  var width = 1024;
+  var chart = null;
+  var svg = null;
 
-  function createTimeline(data) {
-    var chart = d3.timeline()
+  function createTimeline() {
+    data = timelineData2
+
+    chart = d3.timeline()
       .tickFormat({
-            format: function(d) { return d3.time.format("%x")(d) },
-            tickTime: d3.time.hours,
-            tickInterval: 60,
-            tickSize: 15,
+            format: function(d) { return d3.time.format("%d/%m %H:%M")(d) },
+            tickTime: d3.time.minute,
+            tickInterval: 10,
+            tickSize: 5,
       })
-      .width(width * 4)
+      .width(width * 100)
       .stack().background('#fff')
       .margin({left:70, right:30, top:0, bottom:0})
       .hover(function (d, i, datum) {
@@ -123,8 +124,25 @@
         console.log(scale.invert(x) + " to " + scale.invert(x+width));
       });
 
-      var svg = d3.select("#timeline").append("svg").attr("width", width).datum(data).call(chart);
+      svg = d3.select("#timeline").append("svg").attr("width", width).datum(data).call(chart);
   }
+
+function f1(){
+   svg.call(chart.tickFormat({
+          format: function(d) { return d3.time.format("%d/%m %H:%M")(d) },
+          tickTime: d3.time.minute,
+          tickInterval: 10,
+          tickSize: 5,
+    }))
+}
+function f2(){
+   svg.call(chart.tickFormat({
+          format: function(d) { return d3.time.format("%d/%m %H:%M")(d) },
+          tickTime: d3.time.hour,
+          tickInterval: 60,
+          tickSize: 5,
+    }))
+}
 </script>
 </body>
 </html>

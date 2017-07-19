@@ -144,7 +144,7 @@ function labelToColor(label) {
 function createTimeline(min_date, max_date) {
     var container = document.getElementById('timeline');
     var groups = [];
-    groups.push({id: cpe.name, content: cpe.name});
+    groups.push({id: cpe.name, content: '<span id="status2">'+getHTMLState(cpe.state_id)+'</span>' + '<a href="'+cpe.url+'">'+cpe.name+'</a>'});
     services.forEach(function(service) {
         groups.push({id: service.name, content: getHTMLState(service.state_id) + '<a href="'+service.url+'">'+service.name+'</a>'});
     });
@@ -423,23 +423,32 @@ function on_page_refresh() {
     //$('input.switch').bootstrapSwitch();
 
     // CPE Action buttons
-    $('#btn-reboot').click(function (e) {
-        launch('/cpe_poll/reboot/'+cpe_name, 'Host reboot ordered');
+
+    $('#btn-reboot').click(function(e) {
+        $.getJSON('/cpe_poll/reboot/'+cpe_name, function(data){
+		raise_message_ok('Host reboot ordered, result: ' + data.result) 
+	});
     });
 
-    $('#btn-factrestore').click(function (e) {
-        launch('/action/factory/'+cpe_name, 'Factory reset ordered');
+    $('#btn-factrestore').click(function(e) {
+      	$.getJSON('/cpe_poll/factory/'+cpe_name, function(data){
+		raise_message_ok('Factory reset ordered result: ' + data.result) 
+	});
     });
 
-    $('#btn-unprovision').click(function (e) {
-        launch('/action/unprovision/'+cpe_name, 'Unprovision ordered');
+    $('#btn-unprovision').click(function(e) {
+      	$.getJSON('/cpe_poll/unprovision/'+cpe_name, function(data){
+		raise_message_ok('Unprovision ordered, result: ' + data.result) 
+	});
     });
 
-    $('#btn-tr069').click(function (e) {
-        launch('/action/tr069/'+cpe_name, 'Forced TR069 check');
+    $('#btn-tr069').click(function(e) {
+      	$.getJSON('/cpe_poll/tr069/'+cpe_name, function(data){
+		raise_message_ok('Forced TR069 check, result: ' + data.result) 
+	});
     });
 
-    //launch('/action/CPE_POLLING_HOST/'+cpe_name+'/tr069/$NOW$', 'Cpe Polling');
+
 
 
 

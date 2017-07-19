@@ -25,8 +25,8 @@ def json_cpe(cpe_name):
         type='null',
         ts=int(time.time()),
         data={
-            'cpe_registration_host': cpe.cpe_registration_host,
-            'cpe_registration_id': cpe.cpe_registration_id
+            'cpe_registration_host': cpe.cpe_registration_host or None,
+            'cpe_registration_id': cpe.cpe_registration_id or None
         },
     )
 
@@ -42,48 +42,40 @@ def json_cpe(cpe_name):
 
 
 def cpe_reboot(name):
-    logger.info("[WebUI:cpe_poll] cpe_reboot! cpe=%s" % cpe_name)
+    logger.info("[WebUI:cpe_poll] cpe_reboot! cpe=%s" % name)
     try:
-        user = app.bottle.request.environ['USER']
-        cpe = app.datamgr.get_host(cpe_name, user)
-        b = Brok('reboot_host', {'host_name': host})
+        b = Brok('reboot_host', {'host_name': name})
         app.from_q.put(b)
         return {'result': 'ok'}
-    except:
-        return {'result': 'fail'}
+    except Exception as e:
+        return {'result': 'fail', 'msg': str(e)}
 
 def cpe_factory(name):
-    logger.info("[WebUI:cpe_poll] cpe_factory! cpe=%s" % cpe_name)
+    logger.info("[WebUI:cpe_poll] cpe_factory! cpe=%s" % name)
     try:
-        user = app.bottle.request.environ['USER']
-        cpe = app.datamgr.get_host(cpe_name, user)
-        b = Brok('restore_factory_host', {'host_name': host})
+        b = Brok('restore_factory_host', {'host_name': name})
         app.from_q.put(b)
         return {'result': 'ok'}
-    except:
-        return {'result': 'fail'}
+    except Exception as e:
+        return {'result': 'fail', 'msg': str(e)}
 
 def cpe_tr069(name):
-    logger.info("[WebUI:tr069] cpe_tr069! cpe=%s" % cpe_name)
+    logger.info("[WebUI:tr069] cpe_tr069! cpe=%s" % name)
     try:
-        user = app.bottle.request.environ['USER']
-        cpe = app.datamgr.get_host(cpe_name, user)
-        b = Brok('restore_factory_host', {'host_name': host})
+        b = Brok('restore_factory_host', {'host_name': name})
         app.from_q.put(b)
         return {'result': 'ok'}
-    except:
-        return {'result': 'fail'}
+    except Exception as e:
+        return {'result': 'fail', 'msg': str(e)}
 
 def cpe_unprovision(name):
-    logger.info("[WebUI:cpe_poll] cpe_unprovision! cpe=%s" % cpe_name)
+    logger.info("[WebUI:cpe_poll] cpe_unprovision! cpe=%s" % name)
     try:
-        user = app.bottle.request.environ['USER']
-        cpe = app.datamgr.get_host(cpe_name, user)
-        b = Brok('unprovision_host', {'host_name': host})
+        b = Brok('unprovision_host', {'host_name': name})
         app.from_q.put(b)
         return {'result': 'ok'}
-    except:
-        return {'result': 'fail'}
+    except Exception as e:
+        return {'result': 'fail', 'msg': str(e)}
 
 def cpe_test(name):
     return {'result': 'ok'}

@@ -52,7 +52,9 @@ Invalid element name
 var cpe = {
     name: '{{cpe_host.host_name}}',
     state: '{{cpe_host.state}}',
-    last_state_change: '{{cpe_host.last_state_change}}'
+    state_id: '{{cpe_host.state_id}}',
+    last_state_change: '{{cpe_host.last_state_change}}',
+    url: '/host/{{cpe_host.host_name}}'
 };
 
 var cpe_name = '{{cpe_name}}';
@@ -119,7 +121,7 @@ dibujar.push()
 
 var realtimeTimer = window.setInterval(function(){
     $.getJSON('/cpe_poll/{{cpe_host.host_name}}', function(data){
-        
+
         if(data && data.status) {
 
             data.status = data.status.replace(/\W+/g, '').toUpperCase()
@@ -138,9 +140,11 @@ var realtimeTimer = window.setInterval(function(){
             if(data.status == "UP") {
                 $('#status').css('color','#8BC34A');
                 $('#status').html('<span class="fa fa-thumbs-up">UP</span>');
-            } else {
+		$('#status2').html(getHTMLState(0))
+            } else if (data.status == "DOWN")  {
                 $('#status').css('color','#FF7043');
                 $('#status').html('<span class="fa fa-thumbs-down">DOWN</span>');
+		$('#status2').html(getHTMLState(2))
             }
 
 
@@ -157,7 +161,7 @@ var realtimeTimer = window.setInterval(function(){
         }
 
     });
-}, 2000);
+}, 5000);
 
 
 
@@ -249,7 +253,7 @@ function drawLineColors() {
         </div>
     </div>
 
-    <div class="col-md-4 panel">
+    <div class="col-md-4">
         <div class="btn-group pull-right" role="group">
             %if cpe.customs.get('_TECH') == 'wimax':
             <button id="btn-update" type="button" class="btn btn-default">Update</button>
