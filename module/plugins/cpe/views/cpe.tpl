@@ -103,7 +103,7 @@ var realtimeTimer = window.setInterval(function(){
         if(data && data.status) {
 
             data.status = data.status.replace(/\W+/g, '').toUpperCase()
-            $('#status').html(data.status)
+            $('#registration_state').html(data.status)
             $('#upbw').html(humanBytes(data.upbw))
             $('#dnbw').html(humanBytes(data.dnbw))
             $('#dnrx').html(data.dnrx)
@@ -115,15 +115,25 @@ var realtimeTimer = window.setInterval(function(){
 
             $('#uptime').html(toHHMMSS(delta))
 
+            $('#registration_state').html('<span>'+data.status+'</span>');
+
             if(data.status == "UP") {
-                $('#status').css('color','#8BC34A');
-                $('#status').html('<span class="fa fa-thumbs-up">UP</span>');
-		$('#status2').html(getHTMLState(0))
+                $('#registration_state').css('color','#8BC34A');
+		            $('#status2').html(getHTMLState(0))
             } else if (data.status == "DOWN")  {
-                $('#status').css('color','#FF7043');
-                $('#status').html('<span class="fa fa-thumbs-down">DOWN</span>');
-		$('#status2').html(getHTMLState(2))
+                $('#registration_state').css('color','#FF7043');
+		            $('#status2').html(getHTMLState(2))
+            } else {
+                $('#registration_state').css('color','#FAA732');
+                $('#status2').html(getHTMLState(1))
             }
+
+            line = ""
+            $.each(data.service_ports, function(k,v){
+               line = line + v.user_vlan + '/'+ v.service_vlan + " "
+            })
+
+            $('#service_ports').html(line)
 
 
             if (data.status && data.status != cpe.state) {
@@ -157,13 +167,24 @@ var realtimeTimer = window.setInterval(function(){
 .vis-group {
      /*height: 20px !important; */
 }
+
+.font-fixed {
+  font-family: "Courier New", Courier, "Lucida Sans Typewriter", "Lucida Typewriter", monospace;
+}
+
+.right {
+  text-align: right;
+}
+
 </style>
 
 <div class="row">
     <div class="col-md-8">
         <div style="float: left; padding: 10px; border-right: 2px solid black; margin-right: 10px">
-            <div style="font-size: 32px"><a href="/host/{{ cpe.host_name }}">{{ cpe.host_name }}</a></div>
-            <div style="font-size: 18px; text-align: right">{{cpe.customs.get('_CPE_MODEL')}}</div>
+            <div class="right" style="font-size: 32px"><a href="/host/{{ cpe.host_name }}">{{ cpe.host_name }}</a></div>
+            <div class="right" style="font-size: 18px; ">{{cpe.customs.get('_CPE_MODEL')}}</div>
+            <div class="font-fixed" style="font-size: 18px; text-align: right; color: #9E9E9E;">{{ cpe.customs.get('_SN', '').upper() }}{{ cpe.customs.get('_MAC', '').upper() }}</div>
+
         </div>
         <div>
             <div style="font-size: 28px">{{ cpe.customs.get('_CUSTOMER_NAME')}} {{cpe.customs.get('_CUSTOMER_SURNAME')}}</div>
@@ -171,8 +192,11 @@ var realtimeTimer = window.setInterval(function(){
                 <!--
                                 <a href="https://www.google.es/maps?q={{ cpe.customs.get('_CUSTOMER_ADDRESS')}} {{cpe.customs.get('_CUSTOMER_CITY')}}" target="_blank">{{cpe.customs.get('_CUSTOMER_ADDRESS')}} {{cpe.customs.get('_CUSTOMER_CITY')}}</a>
                 -->
-                <a href="/host/{{ cpe.cpe_registration_host }}" data-type="host">{{ cpe.cpe_registration_host }}</a><span>/</span><a href="/all?search=type:host {{cpe.cpe_registration_host}}">{{ cpe.cpe_registration_id }}</a>
-
+                <a href="/host/{{ cpe.cpe_registration_host }}" data-type="host">{{ cpe.cpe_registration_host }}</a>
+                <span>/</span>
+                <a href="/all?search=type:host {{cpe.cpe_registration_host}}">{{ cpe.cpe_registration_id }}</a>
+                <span>:</span>
+                <span id="registration_state"> <i class="fa fa-spinner fa-spin"></i> <!--{{cpe.cpe_registration_state}}--></span>
             </div>
             <div style="font-size: 18px; color: #999;">
                 %if cpe.customs.get('_ACCESS') == '1':
@@ -180,8 +204,8 @@ var realtimeTimer = window.setInterval(function(){
                 %else:
                 <span style="color: #E65100"><i class="fa fa-globe text-danger"></i>Disabled Internet access</span>
                 %end
-                <span style="color: #8BC34A"><i class="fa fa-arrow-circle-o-down"></i>{{cpe.customs.get('_DOWNSTREAM')}}</span>
-                <span style="color: #FF9800"><i class="fa fa-arrow-circle-o-up"></i>{{cpe.customs.get('_UPSTREAM')}}</span>
+                <span style="color: #9E9E9E"><i class="fa fa-arrow-circle-o-down"></i>{{cpe.customs.get('_DOWNSTREAM')}}</span>
+                <span style="color: #9E9E9E"><i class="fa fa-arrow-circle-o-up"></i>{{cpe.customs.get('_UPSTREAM')}}</span>
 
                 %if cpe.customs.get('_VOICE1_CLI'):
                  | <span style="color: #607D8B">1<i class="fa fa-phone" aria-hidden="true"></i> {{ cpe.customs.get('_VOICE1_CLI') }}</span>
@@ -211,7 +235,10 @@ var realtimeTimer = window.setInterval(function(){
             <button id="btn-tr069" type="button" class="btn btn-default" {{'disabled' if not tr069_available else ''}} >TR069</button>
             %end
         </div>
+
     </div>
+
+
 </div>
 
 <br />
@@ -228,106 +255,113 @@ var realtimeTimer = window.setInterval(function(){
     <div class="col-md-12 panel panel-default">
         <div class="panel-heading">
 
-        <div class="pull-right">
-          <span>Summary: </span>
-          <span class="fa fa-calendar"></span> <span id="uptime">-</span></span>
-          <span class="fa fa-dashboard"></span> <span id="dnbw">-</span>/<span id="upbw">-</span>
-          <span class="fa fa-signal"></span> <span id="uprx">-</span>/<span id="dnrx">-</span>dbm
-        </div>
-        <h4 class="panel-title">Realtime Graphs</h4>
+          <div class="pull-right">
+            <span>Summary: </span>
+            <span class="fa fa-calendar"></span> <span id="uptime">-</span></span>
+            <span class="fa fa-dashboard"></span> <span id="dnbw">-</span>/<span id="upbw">-</span>
+            <span class="fa fa-signal"></span> <span id="uprx">-</span>/<span id="dnrx">-</span>dbm
+            <span class="fa fa-reorder"></span> <span id="service_ports"></span>
+            <span>&nbsp;</span>
+            <span class="btn btn-primary btn-xs" data-toggle="collapse" data-target="#info-panel">+</span>
+          </div>
+
+        <h4 class="panel-title">Realtime</h4>
 
         </div>
         <div class="panel-body">
-            <div class="col-md-6">
+          <div class="col-md-6">
             <div id="bw" style="width: 100%; height: 120px;"></div>
-          </div><div class="col-md-6">
+          </div>
+          <div class="col-md-6">
             <div id="rx" style="width: 100%; height: 120px;"></div>
-                  </div>
-                  <!--<div class="col-md-4"></div>-->
-
+          </div>
         </div>
+
+        <div id="info-panel" class="panel-body collapse">
+
+        <div class="col-sm-4">
+          <dl class="dl-horizontal">
+            <dt>Serial Number</dt><dd>{{ cpe.customs.get('_SN', '').upper() }}</dd>
+            %if cpe.customs.get('_DSN'):
+            <dt>DSN</dt><dd>{{ cpe.customs.get('_DSN') }}</dd>
+            %end
+            %if cpe.customs.get('_MAC') and len(cpe.customs.get('_MAC')):
+            <dt>MAC Address</dt><dd>{{cpe.customs.get('_MAC','00:00:00:00:00:00')}}</dd>
+            %end
+            %if cpe.customs.get('_MTAMAC') and len(cpe.customs.get('_MTAMAC')):
+            <dt>MTA MAC</dt><dd>{{cpe.customs.get('_MTAMAC')}}</dd>
+            %end
+            <dt>CPE IP Address</dt><dd>{{cpe.cpe_address}}</dd>
+
+            <dt>Registration host</dt><dd>{{ cpe.cpe_registration_host }}
+                <a href="/all?search=type:host {{cpe.cpe_registration_host}}"><i class="fa fa-search"></i></a></dd>
+            <dt>Registration ID</dt><dd>{{cpe.cpe_registration_id}}
+                <a href="/all?search=type:host {{cpe.cpe_registration_host}} {{cpe.cpe_registration_id[:-1]}}"><i class="fa fa-search"></i></a></dd>
+
+            <!--<dt>Registration state</dt><dd id="status">{{cpe.cpe_registration_state}}</dd>-->
+            <dt>Registration tags</dt><dd>{{cpe.cpe_registration_tags}}</dd>
+          </dl>
+        </div>
+
+
+        <div class="col-sm-4">
+          <dl class="dl-horizontal">
+            <dt>Configuration URL</dt>
+
+        <dd>{{cpe.cpe_connection_request_url}}</dd>
+            %if cpe.cpe_ipleases:
+            %try:
+            %cpe_ipleases = ast.literal_eval(cpe.cpe_ipleases) or {'foo': 'bar'}
+            %for ip,lease in cpe_ipleases.iteritems():
+            %if app.proxy_sufix:
+            <dt><a href="http://{{ip}}.{{app.proxy_sufix}}" target=_blank>{{ip}}</a></dt>
+            %else:
+            <dt>{{ip}}</dt>
+            %end
+            <dd>{{lease}}</dd>
+            %end
+            %except Exception, exc:
+            <dt>{{cpe.cpe_ipleases}}</dt>
+            <dd>{{exc}}</dd>
+            %end
+            %else:
+            <dt>IP Leases</dt>
+            %if app.proxy_sufix:
+            <dt><a href="http://10.11.12.13.{{app.proxy_sufix}}" target=_blank>N/A</a></dt>
+            %else:
+            <dt>N/A</dt>
+            %end
+            %end
+
+         <!--<button class="btn btn-default btn-xs center-block" data-toggle="collapse" data-target="#more-info">More</button>-->
+
+       </dl>
+     </div>
+    <div>
+    <div class="col-sm-4 dl-horizontal">
+        <dl >
+            <dt>Name</dt>
+            <dd>{{cpe.customs.get('_CUSTOMER_NAME')}}</dd><dt>Surname</dt>
+            <dd>{{cpe.customs.get('_CUSTOMER_SURNAME')}}</dd><dt>Address</dt>
+            <dd>{{cpe.customs.get('_CUSTOMER_ADDRESS')}}</dd><dt>City</dt>
+            <dd>{{cpe.customs.get('_CUSTOMER_CITY')}}</dd></dl>
+        </dl>
+    </div>
+
+    </div>
     </div>
 
 
-<div class="col-md-12 panel panel-default">
+    </div>
+
+
+<!--<div class="col-md-12 panel panel-default">
 <div class="panel-heading clearfix">
     <h2 class="panel-title pull-left">Info</h2>
-    <span class="pull-right btn btn-primary btn-xs" data-toggle="collapse" data-target="#info-panel">+</span>
-</div>
-    <div id="info-panel" class="panel-body collapse">
-
-    <div class="col-sm-4">
-      <dl class="dl-horizontal">
-        <dt>Serial Number</dt><dd>{{ cpe.customs.get('_SN', '').upper() }}</dd>
-        %if cpe.customs.get('_DSN'):
-        <dt>DSN</dt><dd>{{ cpe.customs.get('_DSN') }}</dd>
-        %end
-        %if cpe.customs.get('_MAC') and len(cpe.customs.get('_MAC')):
-        <dt>MAC Address</dt><dd>{{cpe.customs.get('_MAC','00:00:00:00:00:00')}}</dd>
-        %end
-        %if cpe.customs.get('_MTAMAC') and len(cpe.customs.get('_MTAMAC')):
-        <dt>MTA MAC</dt><dd>{{cpe.customs.get('_MTAMAC')}}</dd>
-        %end
-        <dt>CPE IP Address</dt><dd>{{cpe.cpe_address}}</dd>
-
-        <dt>Registration host</dt><dd>{{ cpe.cpe_registration_host }}
-            <a href="/all?search=type:host {{cpe.cpe_registration_host}}"><i class="fa fa-search"></i></a></dd>
-        <dt>Registration ID</dt><dd>{{cpe.cpe_registration_id}}
-            <a href="/all?search=type:host {{cpe.cpe_registration_host}} {{cpe.cpe_registration_id[:-1]}}"><i class="fa fa-search"></i></a></dd>
-
-        <dt>Registration state</dt><dd id="status">{{cpe.cpe_registration_state}}</dd>
-        <dt>Registration tags</dt><dd>{{cpe.cpe_registration_tags}}</dd>
-      </dl>
-    </div>
-
-
-    <div class="col-sm-4">
-      <dl class="dl-horizontal">
-        <dt>Configuration URL</dt>
-
-    <dd>{{cpe.cpe_connection_request_url}}</dd>
-        %if cpe.cpe_ipleases:
-        %try:
-        %cpe_ipleases = ast.literal_eval(cpe.cpe_ipleases) or {'foo': 'bar'}
-        %for ip,lease in cpe_ipleases.iteritems():
-        %if app.proxy_sufix:
-        <dt><a href="http://{{ip}}.{{app.proxy_sufix}}" target=_blank>{{ip}}</a></dt>
-        %else:
-        <dt>{{ip}}</dt>
-        %end
-        <dd>{{lease}}</dd>
-        %end
-        %except Exception, exc:
-        <dt>{{cpe.cpe_ipleases}}</dt>
-        <dd>{{exc}}</dd>
-        %end
-        %else:
-        <dt>IP Leases</dt>
-        %if app.proxy_sufix:
-        <dt><a href="http://10.11.12.13.{{app.proxy_sufix}}" target=_blank>N/A</a></dt>
-        %else:
-        <dt>N/A</dt>
-        %end
-        %end
-
-     <!--<button class="btn btn-default btn-xs center-block" data-toggle="collapse" data-target="#more-info">More</button>-->
-
-   </dl>
- </div>
-<div>
-<div class="col-sm-4 dl-horizontal">
-    <dl >
-        <dt>Name</dt>
-        <dd>{{cpe.customs.get('_CUSTOMER_NAME')}}</dd><dt>Surname</dt>
-        <dd>{{cpe.customs.get('_CUSTOMER_SURNAME')}}</dd><dt>Address</dt>
-        <dd>{{cpe.customs.get('_CUSTOMER_ADDRESS')}}</dd><dt>City</dt>
-        <dd>{{cpe.customs.get('_CUSTOMER_CITY')}}</dd></dl>
-    </dl>
-</div>
 
 </div>
-</div>
-</div>
+
+</div>-->
 
 <br />
 
