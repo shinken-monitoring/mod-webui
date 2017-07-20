@@ -46,7 +46,10 @@ Invalid element name
 %css=['cpe/css/bootstrap-switch.min.css', 'cpe/css/datatables.min.css', 'cpe/css/vis.min.css', 'cpe/css/cpe.css']
 %rebase("layout", js=js, css=css, breadcrumb=breadcrumb, title=title)
 
-<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<!--<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>-->
+
+<script src="http://www.flotcharts.org/flot/jquery.flot.js" charset="utf-8"></script>
+<script src="/static/cpe/js/plots.js" charset="utf-8"></script>
 
 <script>
 var cpe = {
@@ -69,30 +72,6 @@ var services = [];
     url: '/service/{{cpe_host.host_name}}/{{service.display_name}}'
   });
 %end
-
-function humanBytes(fileSizeInBytes) {
-
-    var i = -1;
-    var byteUnits = ['kb', 'Mb', 'Gb', 'Tb', 'Pb', 'Eb', 'Zb', 'Yb'];
-    do {
-        fileSizeInBytes = fileSizeInBytes / 1024;
-        i++;
-    } while (fileSizeInBytes > 1024);
-
-    return Math.max(fileSizeInBytes, 0.1).toFixed(1) + byteUnits[i];
-};
-
-function toHHMMSS(num) {
-    var sec_num = parseInt(num, 10); // don't forget the second param
-    var hours   = Math.floor(sec_num / 3600);
-    var minutes = Math.floor((sec_num - (hours * 3600)) / 60);
-    var seconds = sec_num - (hours * 3600) - (minutes * 60);
-
-    if (hours   < 10) {hours   = "0"+hours;}
-    if (minutes < 10) {minutes = "0"+minutes;}
-    if (seconds < 10) {seconds = "0"+seconds;}
-    return hours+':'+minutes+':'+seconds;
-};
 
 function notify(msg) {
   // Let's check if the browser supports notifications
@@ -117,7 +96,6 @@ function notify(msg) {
 };
 
 var dibujar = []
-dibujar.push()
 
 var realtimeTimer = window.setInterval(function(){
     $.getJSON('/cpe_poll/{{cpe_host.host_name}}', function(data){
@@ -153,10 +131,8 @@ var realtimeTimer = window.setInterval(function(){
                 cpe.state = data.status;
             }
 
-            dibujar.push([
-                new Date(), parseInt(data.upbw), parseInt(data.dnbw)
-            ])
-            drawLineColors()
+            updateGraphs(data)
+
 
         }
 
@@ -166,40 +142,6 @@ var realtimeTimer = window.setInterval(function(){
 
 
 
-google.charts.load('current', {packages: ['corechart', 'line']});
-google.charts.setOnLoadCallback(drawLineColors);
-
-function drawLineColors() {
-    var options = {
-          width: '100%',
-      height: 100,
-          animation:{
-            duration: 1000,
-            easing: 'out',
-          },
-        hAxis: {
-          title: 'Time'
-        },
-        vAxis: {
-          title: 'Bandwidth',
-          format: 'short'
-        },
-        colors: ['#a52714', '#097138']
-    };
-    var data = new google.visualization.DataTable();
-    data.addColumn('datetime', 'X');
-    data.addColumn('number', 'upbw');
-    data.addColumn('number', 'dnbw');
-
-
-    data.addRows(dibujar);
-
-
-    var chart = new google.visualization.LineChart(document.getElementById('realtimegraph'));
-    chart.draw(data, options);
-
-    data = null
-}
 
 </script>
 <style>
@@ -253,6 +195,7 @@ function drawLineColors() {
         </div>
     </div>
 
+
     <div class="col-md-4">
         <div class="btn-group pull-right" role="group">
             %if cpe.customs.get('_TECH') == 'wimax':
@@ -277,32 +220,34 @@ function drawLineColors() {
         <div id="timeline"></div>
     </div>
 
-
     <div class="col-md-6">
           {{!helper.print_aggregation_tree(helper.get_host_service_aggregation_tree(cpe, app), helper.get_html_id(cpe), show_output=True)}}
     </div>
 
 
-<!--
     <div class="col-md-12 panel panel-default">
-        <div class="panel-heading"><h4 class="panel-title">Timeline</h4></div>
+        <div class="panel-heading">
+
+        <div class="pull-right">
+          <span>Summary: </span>
+          <span class="fa fa-calendar"></span> <span id="uptime">-</span></span>
+          <span class="fa fa-dashboard"></span> <span id="dnbw">-</span>/<span id="upbw">-</span>
+          <span class="fa fa-signal"></span> <span id="uprx">-</span>/<span id="dnrx">-</span>dbm
+        </div>
+        <h4 class="panel-title">Realtime Graphs</h4>
+
+        </div>
         <div class="panel-body">
-        <!--<div id="timeline"></div>-->
-<!--        </div>
-    </div>
--->
-<!--
-<div class="col-md-4 panel panel-default">
-    <div class="panel-heading"><h4 class="panel-title">Current status</h4></div>
-    <div class="panel-body">
-        <!--<a href="/all?search={{cpe.host_name}}">
-        {{! helper.get_fa_icon_state(obj=cpe, label='title')}}
-        </a>-->
-            <!-- Show our own services  -->
-<!--            {{!helper.print_aggregation_tree(helper.get_host_service_aggregation_tree(cpe, app), helper.get_html_id(cpe), show_output=True)}}
+            <div class="col-md-6">
+            <div id="bw" style="width: 100%; height: 120px;"></div>
+          </div><div class="col-md-6">
+            <div id="rx" style="width: 100%; height: 120px;"></div>
+                  </div>
+                  <!--<div class="col-md-4"></div>-->
+
         </div>
     </div>
-</div>-->
+
 
 <div class="col-md-12 panel panel-default">
 <div class="panel-heading clearfix">
@@ -310,8 +255,6 @@ function drawLineColors() {
     <span class="pull-right btn btn-primary btn-xs" data-toggle="collapse" data-target="#info-panel">+</span>
 </div>
     <div id="info-panel" class="panel-body collapse">
-
-
 
     <div class="col-sm-4">
       <dl class="dl-horizontal">
@@ -387,31 +330,8 @@ function drawLineColors() {
 </div>
 
 <br />
-<br />
 
 
-
-
-<div class="col-md-10 panel panel-default">
-    <div class="panel-heading"><h4 class="panel-title">Graph</h4>
-    </div>
-    <div class="panel-body">
-        <div id="realtimegraph"></div>
-    </div>
-</div>
-
-
-
-
-<div class="col-md-2 panel panel-default">
-    <div class="panel-heading"><h4 class="panel-title">Realtime Info</h4></div>
-    <div style="font-size: 20px;" class="panel-body">
-        <span class="fa fa-calendar"></span> <span id="uptime">-</span></span><br/>
-        <span class="fa fa-dashboard"></span> <span id="dnbw">-</span>/<span id="upbw">-</span><br/>
-        <span class="fa fa-signal"></span> <span id="uprx">-</span>/<span id="dnrx">-</span>dbm<br/>
-    </dl>
-    </div>
-</div>
 
 
 

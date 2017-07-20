@@ -442,10 +442,8 @@ function on_page_refresh() {
 	});
     });
 
-    $('#btn-tr069').click(function(e) {
-      	$.getJSON('/cpe_poll/tr069/'+cpe_name, function(data){
-		raise_message_ok('Forced TR069 check, result: ' + data.result) 
-	});
+    $('#btn-tr069').click(function (e) {
+        launch('/action/SCHEDULE_FORCED_SVC_CHECK/'+cpe_name+'/tr069/$NOW$', 'Forced TR069 check');
     });
 
 

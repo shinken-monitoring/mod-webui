@@ -25,8 +25,8 @@ def json_cpe(cpe_name):
         type='null',
         ts=int(time.time()),
         data={
-            'cpe_registration_host': cpe.cpe_registration_host or None,
-            'cpe_registration_id': cpe.cpe_registration_id or None
+            # 'cpe_registration_host': cpe.cpe_registration_host or None,
+            # 'cpe_registration_id': cpe.cpe_registration_id or None
         },
     )
 
@@ -62,7 +62,7 @@ def cpe_factory(name):
 def cpe_tr069(name):
     logger.info("[WebUI:tr069] cpe_tr069! cpe=%s" % name)
     try:
-        b = Brok('restore_factory_host', {'host_name': name})
+        b = Brok('restore_tr069_host', {'host_name': name})
         app.from_q.put(b)
         return {'result': 'ok'}
     except Exception as e:
