@@ -52,6 +52,12 @@ Invalid element name
 <script src="/static/cpe/js/plots.js" charset="utf-8"></script>
 
 <script>
+%if app.proxy_sufix:
+var proxy_sufix = "{{app.proxy_sufix}}";
+%else:
+var proxy_sufix = "";
+%end
+
 var cpe = {
     name: '{{cpe_host.host_name}}',
     state: '{{cpe_host.state}}',
@@ -95,13 +101,10 @@ function notify(msg) {
   }
 };
 
-var dibujar = []
-
-var realtimeTimer = window.setInterval(function(){
-    $.getJSON('/cpe_poll/{{cpe_host.host_name}}', function(data){
+function poll_cpe() {
+  $.getJSON('/cpe_poll/{{cpe_host.host_name}}', function(data){
 
         if(data && data.status) {
-
             data.status = data.status.replace(/\W+/g, '').toUpperCase()
             $('#registration_state').html(data.status)
             $('#upbw').html(humanBytes(data.upbw))
@@ -117,7 +120,7 @@ var realtimeTimer = window.setInterval(function(){
 
             $('#registration_state').html('<span>'+data.status+'</span>');
 
-            if(data.status == "UP") {
+            if(data.status == "UP" || data.status == "WORKING") {
                 $('#registration_state').css('color','#8BC34A');
 		            $('#status2').html(getHTMLState(0))
             } else if (data.status == "DOWN")  {
@@ -137,16 +140,19 @@ var realtimeTimer = window.setInterval(function(){
 
 
             if (data.status && data.status != cpe.state) {
-                notify("{{cpe_host.host_name}} is " + data.status);
+                //notify("{{cpe_host.host_name}} is " + data.status);
                 cpe.state = data.status;
             }
 
             updateGraphs(data)
 
-
         }
 
     });
+}
+
+var realtimeTimer = window.setInterval(function(){
+  poll_cpe()
 }, 5000);
 
 
@@ -181,14 +187,14 @@ var realtimeTimer = window.setInterval(function(){
 <div class="row">
     <div class="col-md-8">
         <div style="float: left; padding: 10px; border-right: 2px solid black; margin-right: 10px">
-            <div class="right" style="font-size: 32px"><a href="/host/{{ cpe.host_name }}">{{ cpe.host_name }}</a></div>
-            <div class="right" style="font-size: 18px; ">{{cpe.customs.get('_CPE_MODEL')}}</div>
-            <div class="font-fixed" style="font-size: 18px; text-align: right; color: #9E9E9E;">{{ cpe.customs.get('_SN', '').upper() }}{{ cpe.customs.get('_MAC', '').upper() }}</div>
+            <div class="right" style="font-size: 22px"><a href="/host/{{ cpe.host_name }}">{{ cpe.host_name }}</a></div>
+            <div class="right" style="font-size: 10px; ">{{cpe.customs.get('_CPE_MODEL')}}</div>
+            <div class="font-fixed" style="font-size: 12px; text-align: right; color: #9E9E9E;">{{ cpe.customs.get('_SN', '').upper() }}{{ cpe.customs.get('_MAC', '').upper() }}</div>
 
         </div>
         <div>
-            <div style="font-size: 28px">{{ cpe.customs.get('_CUSTOMER_NAME')}} {{cpe.customs.get('_CUSTOMER_SURNAME')}}</div>
-            <div style="font-size: 24px; color: #666;">
+            <div style="font-size: 22px">{{ cpe.customs.get('_CUSTOMER_NAME')}} {{cpe.customs.get('_CUSTOMER_SURNAME')}}</div>
+            <div style="font-size: 18px; color: #666;">
                 <!--
                                 <a href="https://www.google.es/maps?q={{ cpe.customs.get('_CUSTOMER_ADDRESS')}} {{cpe.customs.get('_CUSTOMER_CITY')}}" target="_blank">{{cpe.customs.get('_CUSTOMER_ADDRESS')}} {{cpe.customs.get('_CUSTOMER_CITY')}}</a>
                 -->
@@ -200,9 +206,9 @@ var realtimeTimer = window.setInterval(function(){
             </div>
             <div style="font-size: 18px; color: #999;">
                 %if cpe.customs.get('_ACCESS') == '1':
-                <span style="color: #64DD17"><i class="fa fa-globe"></i>Internet access</span>
+                <span style="color: #64DD17"><i class="fa fa-globe"></i><!--Internet access--></span>
                 %else:
-                <span style="color: #E65100"><i class="fa fa-globe text-danger"></i>Disabled Internet access</span>
+                <span style="color: #E65100"><i class="fa fa-globe text-danger"></i><!--Disabled Internet access--></span>
                 %end
                 <span style="color: #9E9E9E"><i class="fa fa-arrow-circle-o-down"></i>{{cpe.customs.get('_DOWNSTREAM')}}</span>
                 <span style="color: #9E9E9E"><i class="fa fa-arrow-circle-o-up"></i>{{cpe.customs.get('_UPSTREAM')}}</span>

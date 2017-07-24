@@ -383,7 +383,7 @@ function addLeasesTimeline(events, min_date) {
         leases.push({
             start: lease.data.starts,
             end: event_end,
-            content: lease.data.leased_address,
+            content: '<a href="http://'+lease.data.leased_address+''+proxy_sufix'">'+lease.data.leased_address+'</a>',
             type: 'range',
             group: 'dhcp',
             subgroup: lease.data.leased_address    // To avoid overlapping. See https://github.com/almende/vis/issues/620
