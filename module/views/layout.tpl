@@ -110,12 +110,12 @@
       <script>
       var app_refresh_period = {{app.refresh_period}};
       </script>
-      <script src="/static/js/shinken-refresh.js"></script>
+      <script src="/static/js/shinken-refresh.js?1"></script>
       %end
 
-      <script src="/static/js/shinken-actions.js"></script>
-      <script src="/static/js/shinken-layout.js"></script>
-      <script src="/static/js/shinken-bookmarks.js"></script>
+      <script src="/static/js/shinken-actions.js?1"></script>
+      <script src="/static/js/shinken-layout.js?1"></script>
+      <script src="/static/js/shinken-bookmarks.js?1"></script>
    </head>
 
    <body>
