@@ -32,7 +32,7 @@ if (! localStorage.getItem("refresh_active")) {
    if (refresh_logs) console.debug("Refresh active storage does not exist");
    // Store default value ...
    //localStorage.setItem("refresh_active", refresh_timeout==0 ? '0' : '1');
-   localStorage.setItem("refresh_active", '0';
+   localStorage.setItem("refresh_active", '0');
 }
 if (refresh_logs) console.debug("Refresh active is ", localStorage.getItem("refresh_active"));
 if (localStorage.getItem("refresh_active") == '1') {
