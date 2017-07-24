@@ -4,6 +4,8 @@
 'use strict';
 var timeline;
 
+$.fn.dataTable.ext.errMode = 'none';
+
 var ICON_OK       = '<span class="fa-stack" title="service is OK"><i class="fa fa-circle fa-stack-2x font-ok"></i><i class="fa fa-arrow-up fa-stack-1x fa-inverse"></i></span>';
 var ICON_WARNING  = '<span class="fa-stack" title="service is WARNING"><i class="fa fa-circle fa-stack-2x font-warning"></i><i class="fa fa-exclamation fa-stack-1x fa-inverse"></i></span>';
 var ICON_CRITICAL = '<span class="fa-stack" "=""><i class="fa fa-circle fa-stack-2x font-critical"></i><i class="fa fa-arrow-down fa-stack-1x fa-inverse"></i></span>';
