@@ -42,7 +42,7 @@ Invalid element name
 
 %title = cpe_type.title()+' detail: ' + cpe_display_name
 
-%js=['cpe/js/bootstrap-switch.min.js', 'cpe/js/datatables.min.js', 'cpe/js/google-charts.min.js', 'cpe/js/vis.min.js', 'cpe/js/cpe.js']
+%js=['cpe/js/bootstrap-switch.min.js', 'cpe/js/datatables.min.js', 'cpe/js/google-charts.min.js', 'cpe/js/vis.min.js', 'cpe/js/cpe.js?1234']
 %css=['cpe/css/bootstrap-switch.min.css', 'cpe/css/datatables.min.css', 'cpe/css/vis.min.css', 'cpe/css/cpe.css']
 %rebase("layout", js=js, css=css, breadcrumb=breadcrumb, title=title)
 
@@ -214,9 +214,9 @@ var realtimeTimer = window.setInterval(function(){
             </div>
             <div style="font-size: 18px; color: #999;">
                 %if cpe.customs.get('_ACCESS') == '1':
-                <span style="color: #64DD17"><i class="fa fa-globe"></i><!--Internet access--></span>
+                <span style="color: #64DD17" alt="Enabled Internet access" title="Enabled Internet access"><i class="fa fa-globe"></i><!--Internet access--></span>
                 %else:
-                <span style="color: #E65100"><i class="fa fa-globe text-danger"></i><!--Disabled Internet access--></span>
+                <span style="color: #E65100" alt="Disabled Internet access" title="Disabled Internet access"><i class="fa fa-globe text-danger"></i><!--Disabled Internet access--></span>
                 %end
                 <span style="color: #9E9E9E"><i class="fa fa-arrow-circle-o-down"></i>{{cpe.customs.get('_DOWNSTREAM')}}</span>
                 <span style="color: #9E9E9E"><i class="fa fa-arrow-circle-o-up"></i>{{cpe.customs.get('_UPSTREAM')}}</span>
