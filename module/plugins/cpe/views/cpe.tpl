@@ -58,6 +58,14 @@ var proxy_sufix = "{{app.proxy_sufix}}";
 var proxy_sufix = "";
 %end
 
+%if str(cpe.customs.get('_SN', 'ffffffff').upper())[0:8].decode("hex") ==  'HWTC':
+var proxy_prefix = "h";
+%else:
+var proxy_prefix = "";
+%end
+
+
+
 var cpe = {
     name: '{{cpe_host.host_name}}',
     state: '{{cpe_host.state}}',
