@@ -383,7 +383,7 @@ function addLeasesTimeline(events, min_date) {
         leases.push({
             start: lease.data.starts,
             end: event_end,
-            content: '<a href="http://'+lease.data.leased_address+''+proxy_sufix'">'+lease.data.leased_address+'</a>',
+            content: '<a href="http://'+lease.data.leased_address+''+proxy_sufix+'">'+lease.data.leased_address+'</a>',
             type: 'range',
             group: 'dhcp',
             subgroup: lease.data.leased_address    // To avoid overlapping. See https://github.com/almende/vis/issues/620
@@ -426,19 +426,19 @@ function on_page_refresh() {
 
     $('#btn-reboot').click(function(e) {
         $.getJSON('/cpe_poll/reboot/'+cpe_name, function(data){
-		raise_message_ok('Host reboot ordered, result: ' + data.result) 
+		raise_message_ok('Host reboot ordered, result: ' + data.result)
 	});
     });
 
     $('#btn-factrestore').click(function(e) {
       	$.getJSON('/cpe_poll/factory/'+cpe_name, function(data){
-		raise_message_ok('Factory reset ordered result: ' + data.result) 
+		raise_message_ok('Factory reset ordered result: ' + data.result)
 	});
     });
 
     $('#btn-unprovision').click(function(e) {
       	$.getJSON('/cpe_poll/unprovision/'+cpe_name, function(data){
-		raise_message_ok('Unprovision ordered, result: ' + data.result) 
+		raise_message_ok('Unprovision ordered, result: ' + data.result)
 	});
     });
 
