@@ -248,6 +248,10 @@ var realtimeTimer = window.setInterval(function(){
             <button id="btn-unprovision" type="button" class="btn btn-default" {{'disabled' if not reboot_available else ''}} >Unprovision</button>
             <button id="btn-tr069" type="button" class="btn btn-default" {{'disabled' if not tr069_available else ''}} >TR069</button>
             %end
+            %if cpe.customs.get('_TECH') == 'docsis':
+            <button id="btn-reboot" type="button" class="btn btn-default" {{'disabled' if not reboot_available else ''}} >
+            Reboot</button>
+            %end
         </div>
 
     </div>
