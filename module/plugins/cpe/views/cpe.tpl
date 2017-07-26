@@ -213,11 +213,19 @@ var realtimeTimer = window.setInterval(function(){
                 <span id="registration_state"> <i class="fa fa-spinner fa-spin"></i> <!--{{cpe.cpe_registration_state}}--></span>
             </div>
             <div style="font-size: 18px; color: #999;">
-                %if cpe.customs.get('_ACCESS') == '1':
-                <span style="color: #64DD17" alt="Enabled Internet access" title="Enabled Internet access"><i class="fa fa-globe"></i><!--Internet access--></span>
+
+
+                %if cpe.customs.get('_ACTIVE') == '1':
+                <span style="color: #64DD17" alt="Enabled Internet access" title="CPE Enabled"><i class="fa fa-thumbs-up"></i></span>
+                    %if cpe.customs.get('_ACCESS') == '1':
+                    <span style="color: #64DD17" alt="Enabled Internet access" title="Enabled Internet access"><i class="fa fa-globe"></i><!--Internet access--></span>
+                    %else:
+                    <span style="color: #E65100" alt="Disabled Internet access" title="Disabled Internet access"><i class="fa fa-globe text-danger"></i><!--Disabled Internet access--></span>
+                    %end
                 %else:
-                <span style="color: #E65100" alt="Disabled Internet access" title="Disabled Internet access"><i class="fa fa-globe text-danger"></i><!--Disabled Internet access--></span>
+                <span style="color: #E65100" alt="Disabled Internet access" title="CPE disabled"><i class="fa fa-thumbs-down text-danger"></i><!--Disabled Internet access--></span>
                 %end
+
                 <span style="color: #9E9E9E"><i class="fa fa-arrow-circle-o-down"></i>{{cpe.customs.get('_DOWNSTREAM')}}</span>
                 <span style="color: #9E9E9E"><i class="fa fa-arrow-circle-o-up"></i>{{cpe.customs.get('_UPSTREAM')}}</span>
 
@@ -286,6 +294,7 @@ var realtimeTimer = window.setInterval(function(){
         <h4 class="panel-title">Realtime</h4>
 
         </div>
+
         <div class="panel-body">
           <div class="col-md-6">
             <div id="bw" style="width: 100%; height: 120px;"></div>
