@@ -226,7 +226,7 @@ class WebUIDataManager(DataManager):
 
             return None
 
-        services = self.search_hosts_and_services('type:service host:^%s$ service:"%s"' % (hname, sname), user=user)
+        services = self.search_hosts_and_services('type:service host:^%s$ service:"^%s$"' % (hname, sname), user=user)
         return services[0] if services else None
 
     def get_percentage_service_state(self, user=None, problem=False):
