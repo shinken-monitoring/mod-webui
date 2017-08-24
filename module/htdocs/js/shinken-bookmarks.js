@@ -40,6 +40,11 @@ function save_bookmarksro(){
    });
 }
 
+// String handling
+function safe_string(string) {
+   return String(string).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
 // Create bookmaks lists ...
 function declare_bookmark(name, uri){
    var exists=false;
@@ -132,12 +137,12 @@ function delete_bookmarkro(name){
 
 var search_string='';
 $(document).ready(function(){
-   search_string = $('#search').val();
+   search_string = safe_string($('#search').val());
    refresh_bookmarks(search_string);
    
    // Display modal to add a new bookmark ...
    $('body').on("click", '[action="display-add-bookmark"]', function (e, data) {
-      search_string = $(this).data('filter');
+      search_string = safe_string($(this).data('filter'));
       display_modal('/modal/newbookmark');
    });
 
@@ -145,7 +150,7 @@ $(document).ready(function(){
    $('body').on("click", '[action="add-bookmark"]', function (e, data) {
       var bkm_type = $(this).data('bookmark_type');
       
-      var name = $('#new_bookmark_name').val();
+      var name = safe_string($('#new_bookmark_name').val());
       if (name=='') return;
 
       // Do not save the bm if there is already one with this name
