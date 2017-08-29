@@ -89,8 +89,8 @@ def form_downtime_delete(name):
 
 def form_downtime_delete_all(name):
     user = app.request.environ['USER']
-    app.datamgr.get_element(name, user) or app.redirect404()
-    return {'name': name}
+    elt = app.datamgr.get_element(name, user) or app.redirect404()
+    return {'elt': elt, 'name': name}
 
 
 pages = {

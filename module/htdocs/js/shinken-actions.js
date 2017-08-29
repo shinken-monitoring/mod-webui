@@ -24,12 +24,6 @@
 
 var actions_logs=false;
 
-// Utility function
-function capitalize (text) {
-   return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
-}
-
-
 /**
  * Get current user preference value:
  * - key
@@ -128,35 +122,24 @@ function raise_message_ko(text){
 /*
  * Get element information
  */
-function get_elements(name, contact) {
-   var elts = name.split('/');
+function get_element(name) {
+   var parts = name.split('/');
    var elt = {
       type : 'UNKNOWN',
-      namevalue : 'NOVALUE'
+      name : 'NOVALUE'
    };
-   // Specific for contact
-   if (contact !== undefined) {
-      elt.type = 'CONTACT';
-      elt.namevalue = elts[0];
-      elt.nameslash = elts[0];
-
-      return elt;
-   }
-   if (elts.length == 1){
+   if (parts.length == 1){
       // 1 element means HOST
       elt.type = 'HOST';
-      elt.namevalue = elts[0];
-      elt.nameslash = elts[0];
+      elt.name = parts[0];
    } else {
       // 2 means Service
       elt.type = 'SVC';
-      elt.namevalue = elts[0]+';'+elts[1];
-      elt.nameslash = elts[0]+'/'+elts[1];
+      elt.name = parts[0]+'/'+parts[1];
 
       // And now for all elements, change the / into a $SLASH$ macro
-      for (var i=2; i<elts.length; i++){
-         elt.namevalue = elt.namevalue+ '$SLASH$'+ elts[i];
-         elt.nameslash = elt.nameslash+ '$SLASH$'+ elts[i];
+      for (var i=2; i<parts.length; i++){
+         elt.name = elt.name+ '$SLASH$'+ parts[i];
       }
    }
    return elt
@@ -167,41 +150,12 @@ function get_elements(name, contact) {
  */
 /* The command that will launch an event handler */
 function try_to_fix(name) {
-   var elts = get_elements(name);
-   var url = '/action/LAUNCH_'+elts.type+'_EVENT_HANDLER/'+elts.namevalue;
+   var elt = get_element(name);
+   var url = '/action/LAUNCH_'+elt.type+'_EVENT_HANDLER/'+elt.name;
    // We can launch it :)
-   launch(url, capitalize(elts.type)+': '+name+', event handler activated');
+   launch(url, elt.type+': '+name+', event handler activated');
 }
 
-
-
-/*
- * Remove an element from WebUI
- */
-function do_remove(name, text, user){
-  var elts = get_elements(name);
-
-  /* A Remove is in fact some several commands :
-     DISABLE_SVC_NOTIFICATIONS
-     DISABLE_SVC_EVENT_HANDLER
-     PROCESS_SERVICE_CHECK_RESULT
-     DISABLE_SVC_CHECK
-     DISABLE_PASSIVE_SVC_CHECKS
-   */
-
-   disable_notifications(elts);
-   disable_event_handlers(elts);
-   add_comment(name, user, text);
-   submit_check(name, 0, text);
-   // WARNING : Disable passive checks make the set not push,
-   // so we only disable active checks
-   disable_checks(elts, false);
-
-   // And later after (10s), we push a full disable, so passive too
-   setTimeout(function(){
-      disable_checks(elts, true);
-   }, 10000);
-}
 
 
 /*
@@ -218,15 +172,10 @@ The "plugin_output" field contains text output from the service
 check, along with optional performance data.
 */
 function submit_check(name, return_code, output){
-   var elts = get_elements(name);
-   var url = '/action/PROCESS_';
-   if (elts.type == 'HOST'){
-      url += 'HOST_CHECK_RESULT/'+elts.nameslash+'/'+return_code+'/'+output;
-   } else {
-      url += 'SERVICE_CHECK_RESULT/'+elts.nameslash+'/'+return_code+'/'+output;
-   }
+   var elt = get_element(name);
+   var url = '/action/PROCESS_'+elt.type+'_HOST_CHECK_RESULT/'+elt.name+'/'+return_code+'/'+output;
    // We can launch it :)
-   launch(url, capitalize(elts.type)+': '+name+', check result submitted');
+   launch(url, elt.type+': '+name+', check result submitted');
 }
 
 
@@ -234,15 +183,10 @@ function submit_check(name, return_code, output){
  * Changes the value of a custom host variable.
  */
 function change_custom_var(name, custom_var, value){
-   var elts = get_elements(name);
-   var url = '/action/CHANGE_CUSTOM_';
-   if (elts.type == 'HOST'){
-      url += 'HOST_VAR/'+elts.nameslash+'/'+custom_var+'/'+value;
-   } else {
-      url += 'SVC_VAR/'+elts.nameslash+'/'+custom_var+'/'+value;
-   }
+   var elt = get_element(name);
+   var url = '/action/CHANGE_CUSTOM_'+elt.type+'_VAR/'+elt.name+'/'+custom_var+'/'+value;
    // We can launch it :)
-   launch(url, capitalize(elts.type)+': '+name+', custom variable changed');
+   launch(url, elt.type+': '+name+', custom variable changed');
 }
 
 
@@ -250,11 +194,11 @@ function change_custom_var(name, custom_var, value){
  * Launch the check_command
  */
 function recheck_now(name) {
-   var elts = get_elements(name);
+   var elt = get_element(name);
    var now = '$NOW$';
-   var url = '/action/SCHEDULE_FORCED_'+elts.type+'_CHECK/'+elts.nameslash+'/'+now;
+   var url = '/action/SCHEDULE_FORCED_'+elt.type+'_CHECK/'+elt.name+'/'+now;
    // We can launch it :)
-   launch(url, capitalize(elts.type)+': '+name+', check forced');
+   launch(url, elt.type+': '+name+', check forced');
 }
 
 
@@ -263,42 +207,42 @@ function recheck_now(name) {
  * See #226
  */
 function toggle_active_checks(name, b){
-   var elts = get_elements(name);
+   var elt = get_element(name);
 
    if (actions_logs) console.debug("Toggle active checks for: ", name, ", currently: ", b)
 
    if (b) {
-      var url = '/action/DISABLE_' + elts.type + '_CHECK/' + elts.nameslash;
+      var url = '/action/DISABLE_' + elt.type + '_CHECK/' + elt.name;
       launch(url, 'Active checks disabled');
    } else {
-      var url = '/action/ENABLE_' + elts.type + '_CHECK/' + elts.nameslash;
+      var url = '/action/ENABLE_' + elt.type + '_CHECK/' + elt.name;
       launch(url, 'Active checks enabled');
    }
 }
 function toggle_passive_checks(name, b){
-   var elts = get_elements(name);
+   var elt = get_element(name);
 
    if (actions_logs) console.debug("Toggle passive checks for: ", name, ", currently: ", b)
 
    if (b) {
-      var url = '/action/DISABLE_PASSIVE_' + elts.type + '_CHECKS/' + elts.nameslash;
+      var url = '/action/DISABLE_PASSIVE_' + elt.type + '_CHECKS/' + elt.name;
       launch(url, 'Passive checks disabled');
    } else {
-      var url = '/action/ENABLE_PASSIVE_' + elts.type + '_CHECKS/' + elts.nameslash;
+      var url = '/action/ENABLE_PASSIVE_' + elt.type + '_CHECKS/' + elt.name;
       launch(url, 'Passive checks enabled');
    }
 }
 function toggle_host_checks(name, b){
-   var elts = get_elements(name);
+   var elt = get_element(name);
 
-   if (elts.type == 'HOST') {
+   if (elt.type == 'HOST') {
       if (actions_logs) console.debug("Toggle host checks for: ", name, ", currently: ", b);
 
       if (b) {
-          var url = '/action/DISABLE_HOST_SVC_CHECKS/' + elts.nameslash;
+          var url = '/action/DISABLE_HOST_SVC_CHECKS/' + elt.name;
           launch(url, 'Host services checks disabled');
       } else {
-          var url = '/action/ENABLE_HOST_SVC_CHECKS/' + elts.nameslash;
+          var url = '/action/ENABLE_HOST_SVC_CHECKS/' + elt.name;
           launch(url, 'Host services checks enabled');
       }
    }
@@ -327,19 +271,15 @@ function toggle_all_notifications(b){
 function toggle_notifications(name, b){
    if (actions_logs) console.debug("Toggle notifications for: ", name, ", currently: ", b)
 
-   var elts = get_elements(name);
+   var elt = get_element(name);
    // Inverse the active check or not for the element
    if (b) { // go disable
-      var url = '/action/DISABLE_'+elts.type+'_NOTIFICATIONS/'+elts.nameslash;
-      launch(url, capitalize(elts.type)+', notifications disabled');
+      var url = '/action/DISABLE_'+elt.type+'_NOTIFICATIONS/'+elt.name;
+      launch(url, elt.type+', notifications disabled');
    } else { // Go enable
-      var url = '/action/ENABLE_'+elts.type+'_NOTIFICATIONS/'+elts.nameslash;
-      launch(url, capitalize(elts.type)+', notifications enabled');
+      var url = '/action/ENABLE_'+elt.type+'_NOTIFICATIONS/'+elt.name;
+      launch(url, elt.type+', notifications enabled');
    }
-}
-function disable_notifications(elts){
-   var url = '/action/DISABLE_'+elts.type+'_NOTIFICATIONS/'+elts.nameslash;
-   launch(url, capitalize(elts.type)+', notifications disabled');
 }
 
 
@@ -347,19 +287,15 @@ function disable_notifications(elts){
  * Enable/disable host/service event handler
  */
 function toggle_event_handlers(name, b){
-   var elts = get_elements(name);
+   var elt = get_element(name);
    // Inverse the event handler or not for the element
    if (b) { // go disable
-      var url = '/action/DISABLE_'+elts.type+'_EVENT_HANDLER/'+elts.nameslash;
-      launch(url, capitalize(elts.type)+', event handler disabled');
+      var url = '/action/DISABLE_'+elt.type+'_EVENT_HANDLER/'+elt.name;
+      launch(url, elt.type+', event handler disabled');
    } else { // Go enable
-      var url = '/action/ENABLE_'+elts.type+'_EVENT_HANDLER/'+elts.nameslash;
-      launch(url, capitalize(elts.type)+', event handler enabled');
+      var url = '/action/ENABLE_'+elt.type+'_EVENT_HANDLER/'+elt.name;
+      launch(url, elt.type+', event handler enabled');
    }
-}
-function disable_event_handlers(elts){
-   var url = '/action/DISABLE_'+elts.type+'_EVENT_HANDLER/'+elts.nameslash;
-   launch(url, capitalize(elts.type)+', event handler disabled');
 }
 
 
@@ -369,14 +305,14 @@ function disable_event_handlers(elts){
 function toggle_flap_detection(name, b){
    if (actions_logs) console.debug("Toggle flapping detection for: ", name, ", currently: ", b)
 
-   var elts = get_elements(name);
+   var elt = get_element(name);
    // Inverse the flap detection for the element
    if (b) { //go disable
-      var url = '/action/DISABLE_'+elts.type+'_FLAP_DETECTION/'+elts.nameslash;
-      launch(url, capitalize(elts.type)+', flapping detection disabled');
+      var url = '/action/DISABLE_'+elt.type+'_FLAP_DETECTION/'+elt.name;
+      launch(url, elt.type+', flapping detection disabled');
    } else {
-      var url = '/action/ENABLE_'+elts.type+'_FLAP_DETECTION/'+elts.nameslash;
-      launch(url, capitalize(elts.type)+', flapping detection enabled');
+      var url = '/action/ENABLE_'+elt.type+'_FLAP_DETECTION/'+elt.name;
+      launch(url, elt.type+', flapping detection enabled');
    }
 }
 
@@ -393,28 +329,28 @@ function toggle_flap_detection(name, b){
 var shinken_comment_persistent = '1';
 /* The command that will add a persistent comment */
 function add_comment(name, user, comment){
-   var elts = get_elements(name);
-   var url = '/action/ADD_'+elts.type+'_COMMENT/'+elts.nameslash+'/'+shinken_comment_persistent+'/'+user+'/'+comment;
+   var elt = get_element(name);
+   var url = '/action/ADD_'+elt.type+'_COMMENT/'+elt.name+'/'+shinken_comment_persistent+'/'+user+'/'+comment;
    // We can launch it :)
-   launch(url, capitalize(elts.type)+': '+name+', comment added');
+   launch(url, elt.type+': '+name+', comment added');
 }
 
 
 /* The command that will delete a comment */
 function delete_comment(name, i) {
-   var elts = get_elements(name);
-   var url = '/action/DEL_'+elts.type+'_COMMENT/'+i;
+   var elt = get_element(name);
+   var url = '/action/DEL_'+elt.type+'_COMMENT/'+i;
    // We can launch it :)
-   launch(url, capitalize(elts.type)+': '+name+', comment deleted');
+   launch(url, elt.type+': '+name+', comment deleted');
 }
 
 
 /* The command that will delete all comments */
 function delete_all_comments(name) {
-   var elts = get_elements(name);
-   var url = '/action/DEL_ALL_'+elts.type+'_COMMENTS/'+elts.nameslash;
+   var elt = get_element(name);
+   var url = '/action/DEL_ALL_'+elt.type+'_COMMENTS/'+elt.name;
    // We can launch it :)
-   launch(url, capitalize(elts.type)+': '+name+', all comments deleted');
+   launch(url, elt.type+': '+name+', all comments deleted');
 }
 
 
@@ -435,26 +371,26 @@ function delete_all_comments(name) {
  Set the "trigger_id" argument to zero (0) if the downtime for the
  specified host should not be triggered by another downtime entry.
 */
-function do_schedule_downtime(name, start_time, end_time, user, comment, contact, shinken_downtime_fixed, shinken_downtime_trigger, shinken_downtime_duration){
-   var elts = get_elements(name, contact);
-   var url = '/action/SCHEDULE_'+elts.type+'_DOWNTIME/'+elts.nameslash+'/'+start_time+'/'+end_time+'/'+shinken_downtime_fixed+'/'+shinken_downtime_trigger+'/'+shinken_downtime_duration+'/'+user+'/'+comment;
-   launch(url, capitalize(elts.type)+': '+name+', downtime scheduled');
+function do_schedule_downtime(name, start_time, end_time, user, comment, shinken_downtime_fixed, shinken_downtime_trigger, shinken_downtime_duration){
+   var elt = get_element(name);
+   var url = '/action/SCHEDULE_'+elt.type+'_DOWNTIME/'+elt.name+'/'+start_time+'/'+end_time+'/'+shinken_downtime_fixed+'/'+shinken_downtime_trigger+'/'+shinken_downtime_duration+'/'+user+'/'+comment;
+   launch(url, elt.type+': '+name+', downtime scheduled');
 }
 
 /* The command that will delete a downtime */
-function delete_downtime(name, i, contact) {
-   var elts = get_elements(name, contact);
-   var url = '/action/DEL_'+elts.type+'_DOWNTIME/'+i;
+function delete_downtime(name, i) {
+   var elt = get_element(name);
+   var url = '/action/DEL_'+elt.type+'_DOWNTIME/'+i;
    // We can launch it :)
-   launch(url, capitalize(elts.type)+': '+name+', downtime deleted');
+   launch(url, elt.type+': '+name+', downtime deleted');
 }
 
 /* The command that will delete all downtimes */
-function delete_all_downtimes(name, contact) {
-   var elts = get_elements(name, contact);
-   var url = '/action/DEL_ALL_'+elts.type+'_DOWNTIMES/'+elts.nameslash;
+function delete_all_downtimes(name) {
+   var elt = get_element(name);
+   var url = '/action/DEL_ALL_'+elt.type+'_DOWNTIMES/'+elt.name;
    // We can launch it :)
-   launch(url, capitalize(elts.type)+': '+name+', all downtimes deleted');
+   launch(url, elt.type+': '+name+', all downtimes deleted');
 }
 
 
@@ -477,15 +413,86 @@ are disabled.
  If not, the comment will be deleted the next time Shinken restarts.
 */
 function do_acknowledge(name, text, user, shinken_acknowledge_sticky, shinken_acknowledge_notify, shinken_acknowledge_persistent){
-   var elts = get_elements(name);
-   var url = '/action/ACKNOWLEDGE_'+elts.type+'_PROBLEM/'+elts.nameslash+'/'+shinken_acknowledge_sticky+'/'+shinken_acknowledge_notify+'/'+shinken_acknowledge_persistent+'/'+user+'/'+text;
-   launch(url, capitalize(elts.type)+': '+name+', acknowledged');
+   var elt = get_element(name);
+   var url = '/action/ACKNOWLEDGE_'+elt.type+'_PROBLEM/'+elt.name+'/'+shinken_acknowledge_sticky+'/'+shinken_acknowledge_notify+'/'+shinken_acknowledge_persistent+'/'+user+'/'+text;
+   launch(url, elt.type+': '+name+', acknowledged');
 }
 
 /* The command that will delete an acknowledge */
 function delete_acknowledge(name) {
-   var elts = get_elements(name);
-   var url = '/action/REMOVE_'+elts.type+'_ACKNOWLEDGEMENT/'+name;
+   var elt = get_element(name);
+   var url = '/action/REMOVE_'+elt.type+'_ACKNOWLEDGEMENT/'+elt.name;
    // We can launch it :)
-   launch(url, capitalize(elts.type)+': '+name+', acknowledge deleted');
+   launch(url, elt.type+': '+name+', acknowledge deleted');
 }
+
+// Join the method to some html classes
+$("body").on("click", ".js-add-comment", function () {
+    var elt = $(this).data('element');
+    var comment = $(this).data('comment');
+    display_modal("/forms/comment/add/" + elt);
+});
+
+$("body").on("click", ".js-delete-comment", function () {
+    var elt = $(this).data('element');
+    var comment = $(this).data('comment');
+    display_modal("/forms/comment/delete/"+elt+"?comment="+comment);
+});
+
+$("body").on("click", ".js-delete-all-comments", function () {
+    var elt = $(this).data('element');
+    display_modal("/forms/comment/delete_all/"+elt);
+});
+
+$("body").on("click", ".js-schedule-downtime", function () {
+    var elt = $(this).data('element');
+    display_modal("/forms/downtime/add/"+elt);
+});
+
+$("body").on("click", ".js-delete-downtime", function () {
+    var elt = $(this).data('element');
+    var downtime = $(this).data('downtime');
+    display_modal("/forms/downtime/delete/"+elt+"?downtime="+downtime);
+});
+
+$("body").on("click", ".js-delete-all-downtimes", function () {
+    var elt = $(this).data('element');
+    display_modal("/forms/downtime/delete_all/"+elt);
+});
+
+$("body").on("click", ".js-add-acknowledge", function () {
+    var elt = $(this).data('element');
+    display_modal("/forms/acknowledge/add/"+elt);
+});
+
+$("body").on("click", ".js-remove-acknowledge", function () {
+    var elt = $(this).data('element');
+    display_modal("/forms/acknowledge/remove/"+elt);
+});
+
+$("body").on("click", ".js-recheck", function () {
+    var elt = $(this).data('element');
+    recheck_now(elt);
+});
+
+$("body").on("click", ".js-submit-ok", function () {
+    var elt = $(this).data('element');
+    display_modal("/forms/submit_check/"+elt);
+});
+
+$("body").on("click", ".js-try-to-fix", function () {
+    var elt = $(this).data('element');
+    try_to_fix(elt);
+});
+
+$("body").on("click", ".js-create-ticket", function () {
+    var elt = $(this).data('element');
+    display_modal("/helpdesk/ticket/add/"+elt);
+});
+
+$("body").on("click", ".js-create-ticket-followup", function () {
+    var elt = $(this).data('element');
+    var ticket = $(this).data('ticket');
+    var status = $(this).data('status');
+    display_modal("/helpdesk/ticket_followup/add/"+elt+'?ticket='+ticket+'&status='+status);
+});

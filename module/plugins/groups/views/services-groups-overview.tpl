@@ -194,13 +194,12 @@
 
             <section class="col-md-4 col-sm-6 col-xs-6">
                <section class="col-sm-12 col-xs-12">
-                  %notes = helper.get_element_notes_url(group, default_title="Comment", default_icon="comment", popover=True)
-                  %if len(notes):
+                  %if group.notes_url:
                   <ul class="list-group">
                      <li class="list-group-item">
                         <strong>Notes:</strong>
                      </li>
-                     %for note_url in notes:
+                     %for note_url in group.notes_url:
                      <li class="list-group-item">
                         <button class="btn btn-default btn-xs">{{! note_url}}</button>
                      </li>

@@ -1,10 +1,10 @@
 {
   "name": "webui2",
   "types": ["module"],
-  "version": "2.4.2c",
+  "version": "2.5.3",
   "homepage": "https://github.com/shinken-monitoring/mod-webui/wiki",
   "author": "Frédéric MOHIER",
-  "description": "Web User Interface for Shinken, version 2.4.2c",
+  "description": "Web User Interface for Shinken",
   "contributors": [
     {
       "name": "Frederic Mohier",

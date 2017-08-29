@@ -25,18 +25,8 @@
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 
 
-WEBUI_VERSION = "2.4.2c"
-WEBUI_COPYRIGHT = "(c) 2009-2016 - License GNU AGPL as published by the FSF, minimum version 3 of the License."
-WEBUI_RELEASENOTES = """
-Worlmap based on OSM/Leaflet
-Dashboard currently view
-Global notifications enable/disable widget
-Use Alignak backend (experimental)
-Fix bugs found in 2.3.2
-Groups (hosts, services, contacts) management
-Element availability graphs tab
-Hosts nad services SLA panels in dashboard currently
-"""
+WEBUI_VERSION = "2.5.3"
+WEBUI_COPYRIGHT = "(c) 2009-2017 - License GNU AGPL as published by the FSF, minimum version 3 of the License."
 
 
 """
@@ -95,7 +85,6 @@ except ImportError:
     )
     frontend_available = False
 
-# Default bottle app
 root_app = bottle.default_app()
 # WebUI application
 webui_app = bottle.Bottle()
@@ -286,7 +275,6 @@ class Webui_broker(BaseModule, Daemon):
         # Web UI information
         self.app_version = getattr(modconf, 'about_version', WEBUI_VERSION)
         self.app_copyright = getattr(modconf, 'about_copyright', WEBUI_COPYRIGHT)
-        self.app_release = getattr(modconf, 'about_release', WEBUI_RELEASENOTES)
 
         self.proxy_sufix = getattr(modconf, 'proxy_sufix', None)
 
