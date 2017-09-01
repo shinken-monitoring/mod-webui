@@ -4,6 +4,9 @@
 'use strict';
 var timeline;
 
+// Controla el desplazamiento en horas del timeline
+var INCREASE_TIMELINE_IN_HOUR = 1;
+
 $.fn.dataTable.ext.errMode = 'none';
 
 var ICON_OK       = '<span class="fa-stack" title="service is OK"><i class="fa fa-circle fa-stack-2x font-ok"></i><i class="fa fa-arrow-up fa-stack-1x fa-inverse"></i></span>';
@@ -155,7 +158,7 @@ function createTimeline(min_date, max_date) {
         start: new Date(new Date().setDate(max_date.getDate() - 1)),
         end: max_date,
         min: min_date,
-        max: new Date(new Date().setDate(max_date.getDate() /* + 1 */ )), //@jgomez
+        max: new Date(new Date().setDate(max_date.getDate() + INCREASE_TIMELINE_IN_HOUR )), //@jgomez
         zoomMin: 1000 * 60 * 60, // 30 min
         stack: false
     };
