@@ -409,6 +409,7 @@ class Helper(object):
         flapping = (obj and obj.is_flapping) or state=='FLAPPING'
         ack = (obj and obj.problem_has_been_acknowledged) or state=='ACK'
         downtime = (obj and obj.in_scheduled_downtime) or state=='DOWNTIME'
+        hard = (obj and obj.state_type == 'HARD')
 
         # Icons depending upon element and real state ...
         icons = { 'host':
@@ -438,22 +439,27 @@ class Helper(object):
             back += '''<i class="fa fa-circle fa-stack-1x font-%s"></i>''' % (state.lower() if not disabled else 'greyed')
 
         title = "%s is %s" % (cls, state)
+
         if flapping:
             icon_color = 'fa-inverse' if not disabled else 'font-greyed'
             title += " and is flapping"
         else:
             icon_color = 'fa-inverse'
+
+        if downtime or ack or not hard:
+            icon_style = 'style="opacity: 0.5"'
+        else:
+            icon_style = ""
+
         if downtime:
             icon = icons[cls]['DOWNTIME']
             title += " and in scheduled downtime"
-            icon_style = 'style="opacity: 0.5"'
         elif ack:
             icon = icons[cls]['ACK']
             title += " and acknowledged"
-            icon_style = 'style="opacity: 0.5"'
         else:
             icon = icons[cls].get(state, 'UNKNOWN')
-            icon_style = ""
+
         front = '''<i class="fa fa-%s fa-stack-1x %s"></i>''' % (icon, icon_color)
 
         if useTitle:
