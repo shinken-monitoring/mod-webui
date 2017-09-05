@@ -448,7 +448,9 @@ function on_page_refresh() {
     });
 
     $('#btn-tr069').click(function (e) {
-        launch('/action/SCHEDULE_FORCED_SVC_CHECK/'+cpe_name+'/tr069/$NOW$', 'Forced TR069 check');
+      	$.getJSON('/action/SCHEDULE_FORCED_SVC_CHECK/'+cpe_name+'/tr069/$NOW$', function(data){
+		raise_message_ok('Unprovision ordered, result: ' + data.result)
+	});
     });
 
 
