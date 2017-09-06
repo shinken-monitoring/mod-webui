@@ -958,7 +958,7 @@ class Helper(object):
             'title': 'QoS',
             'metrics': [
                 {
-                    'name': 'CCQ',
+                    'name': 'CCQ (%)',
                     'graphite_name': '%s.qos.ccq' % (cpe)
                 }, {
                     'name': 'Up Latency',

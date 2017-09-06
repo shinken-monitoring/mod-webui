@@ -249,8 +249,8 @@ function drawDashboard() {
                     filterColumnLabel: 'Time',
                     ui: {
                         chartOptions: {
-                            height: 50,
-                            width: 600,
+                            height: 25,
+                            width: '100%',
                             chartArea: {
                                 width: '80%'
                             }
