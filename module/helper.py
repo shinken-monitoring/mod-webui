@@ -942,6 +942,19 @@ class Helper(object):
     def get_service_graphs_wimax(self, cpe):
         graphs = [
         {
+            'title': 'Signal Level (dbm)',
+            'metrics': [
+                {
+                    'name': 'uprx',
+                    'graphite_name': '%s.upstream.uprx' % (cpe)
+                }, {
+                    'name': 'dnrx',
+                    'graphite_name': '%s.downstream.dnrx' % (cpe)
+                }
+            ],
+            'uom': 'dbm'
+        },
+        {
             'title': 'QoS',
             'metrics': [
                 {
