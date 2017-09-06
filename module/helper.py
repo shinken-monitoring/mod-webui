@@ -957,6 +957,7 @@ class Helper(object):
             ],
             'uom': 'ms'
         }
+        ]
         return graphs
 
 
