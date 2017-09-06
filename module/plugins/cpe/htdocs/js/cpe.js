@@ -235,8 +235,8 @@ function drawDashboard() {
                     minValue: 0,
                     format: 'short'
                 },
-                height: 400,
-                width: 600,
+                height: 200,
+                width: '100%',
                 chartArea: {
                     width: '80%'
                 }
