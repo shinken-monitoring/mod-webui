@@ -946,7 +946,7 @@ class Helper(object):
             'metrics': [
                 {
                     'name': 'CCQ',
-                    'graphite_name': '%s.qos.ccw' % (cpe)
+                    'graphite_name': '%s.qos.ccq' % (cpe)
                 }, {
                     'name': 'Up Latency',
                     'graphite_name': '%s.qos.uptxlatency' % (cpe)
