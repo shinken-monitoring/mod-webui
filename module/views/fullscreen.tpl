@@ -83,7 +83,6 @@
       <script src="/static/js/shinken-refresh.js"></script>
       %end
       <script src="/static/js/screenfull.js"></script>
-      <script src="/static/js/shinken-actions.js"></script>
 
       %# End of classic js import. Now call for specific ones ...
       %for p in js:

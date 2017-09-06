@@ -74,65 +74,6 @@
             </div>
 
             <div class="user-body">
-               %if contact.downtimes:
-               <table class="table table-condensed col-sm-12" style="table-layout: fixed; word-wrap: break-word;">
-                  <colgroup>
-                     <col style="width: 30%" />
-                     <col style="width: 70%" />
-                  </colgroup>
-                  <thead>
-                     <tr>
-                       <th>Author</th>
-                       <th>Reason</th>
-                       <th>Period</th>
-                       <th></th>
-                     </tr>
-                  </thead>
-                  <tbody style="font-size:x-small;">
-                        %for dt in sorted(contact.downtimes, key=lambda dt: dt.entry_time, reverse=True):
-                           <tr>
-                              <td>{{dt.author}}</td>
-                           </tr>
-                        %end
-                        %for dt in sorted(contact.downtimes, key=lambda dt: dt.entry_time, reverse=True):
-                           <tr>
-                              <td>{{dt.author}}</td>
-                              <td>{{dt.comment}}</td>
-                              <td>{{helper.print_date(dt.start_time)}} - {{helper.print_date(dt.end_time)}}</td>
-                              <td>
-                                 <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm"
-                                       data-type="action" action="delete-downtime"
-                                       data-toggle="tooltip" data-placement="bottom" title="Delete the downtime '{{dt.id}}' for this {{elt_type}}"
-                                       data-element="{{helper.get_uri_name(contact)}}" data-downtime="{{dt.id}}"
-                                       >
-                                    <i class="fa fa-trash-o"></i>
-                                 </button>
-                              </td>
-                           </tr>
-                        %end
-                  </tbody>
-               </table>
-               %end
-
-               <!--
-               <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm"
-                       data-type="action" action="schedule-downtime"
-                       data-toggle="tooltip" data-placement="bottom" title="Schedule a downtime for this contact"
-                       data-element="{{contact.contact_name}}"
-                       >
-                    <i class="fa fa-plus"></i> Schedule a downtime
-               </button>
-               %if contact.downtimes:
-               <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm"
-                       data-type="action" action="delete-downtimes"
-                       data-toggle="tooltip" data-placement="bottom" title="Delete all the downtimes of this contact"
-                       data-element="{{contact.contact_name}}"
-                       >
-                    <i class="fa fa-minus"></i> Delete all downtimes
-               </button>
-               %end
-               -->
-
                <table class="table table-condensed col-sm-12" style="table-layout: fixed; word-wrap: break-word;">
                   <colgroup>
                      <col style="width: 30%" />

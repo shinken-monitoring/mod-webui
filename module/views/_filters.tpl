@@ -10,6 +10,46 @@
 %end
 
 <form class="navbar-form navbar-left" method="get" action="{{ search_action }}">
+
+  <div class="form-group">
+    <label class="sr-only" for="search">Filter</label>
+    <div class="input-group">
+      <span class="input-group-addon hidden-xs hidden-sm" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <i class="fa fa-search"></i><span>{{ search_name }}</span></span>
+      
+      <ul class="dropdown-menu dropdown-menu-left" role="menu">
+        <li><a role="menuitem" href="/all?search={{ app.get_search_string() }}"><span class="btn fa fa-search"></span>All</a></li>
+        <li><a role="menuitem" href="/impacts?search={{ app.get_search_string() }}"><span class="btn fa fa-bolt"></span>Impacts</a></li>
+        <li><a role="menuitem" href="/worldmap?search={{ app.get_search_string() }}"><span class="btn fa fa-map"></span>Worldmap</a></li>
+        <li><a role="menuitem" href="/minemap?search={{ app.get_search_string() }}"><span class="btn fa fa-table"></span>Minemap</a></li>
+        <li><a role="menuitem" href="/wall?search={{ app.get_search_string() }}"><span class="btn fa fa-th-large"></span>Wall</a></li>
+        <li><a role="menuitem" href="/availability?search={{ app.get_search_string() }}"><span class="btn fa fa-bar-chart"></span>Availability</a></li>
+      </ul>
+      
+      <input class="form-control" type="search" id="search" name="search" value="{{ app.get_search_string() }}">
+      
+      
+
+    </div>
+    
+
+    
+    
+  </div>
+  <div class="dropdown form-group text-left">
+    <button class="btn btn-default dropdown-toggle" type="button" id="bookmarks_menu" data-toggle="dropdown" aria-expanded="true"><i class="fa fa-bookmark"></i><span class="hidden-sm hidden-xs hidden-md"> Bookmarks</span> <span class="caret"></span></button>
+    <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="bookmarks_menu">
+      <script type="text/javascript">
+         %for b in user_bookmarks:
+            declare_bookmark("{{!b['name']}}","{{!b['uri']}}");
+         %end
+         %for b in common_bookmarks:
+            declare_bookmarksro("{{!b['name']}}","{{!b['uri']}}");
+         %end
+      </script>
+    </ul>
+  </div>
+  
   <div class="dropdown form-group text-left">
     <button class="btn btn-default dropdown-toggle" type="button" id="filters_menu" data-toggle="dropdown" aria-expanded="true"><i class="fa fa-filter"></i><span class="hidden-sm hidden-xs hidden-md"> Filters</span> <span class="caret"></span></button>
     <ul class="dropdown-menu" role="menu" aria-labelledby="filters_menu">
@@ -36,24 +76,6 @@
       <li role="presentation"><a role="menuitem" onclick="display_modal('/modal/helpsearch')"><strong><i class="fa fa-question-circle"></i> Search syntax</strong></a></li>
     </ul>
   </div>
-  <div class="form-group">
-    <label class="sr-only" for="search">Filter</label>
-    <div class="input-group">
-      <span class="input-group-addon hidden-xs hidden-sm"><i class="fa fa-search"></i> {{ search_name }}</span>
-      <input class="form-control" type="search" id="search" name="search" value="{{ app.get_search_string() }}">
-    </div>
-  </div>
-  <div class="dropdown form-group text-left">
-    <button class="btn btn-default dropdown-toggle" type="button" id="bookmarks_menu" data-toggle="dropdown" aria-expanded="true"><i class="fa fa-bookmark"></i><span class="hidden-sm hidden-xs hidden-md"> Bookmarks</span> <span class="caret"></span></button>
-    <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="bookmarks_menu">
-      <script type="text/javascript">
-         %for b in user_bookmarks:
-            declare_bookmark("{{!b['name']}}","{{!b['uri']}}");
-         %end
-         %for b in common_bookmarks:
-            declare_bookmarksro("{{!b['name']}}","{{!b['uri']}}");
-         %end
-      </script>
-    </ul>
-  </div>
+  
+  
 </form>

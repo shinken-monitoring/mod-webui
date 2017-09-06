@@ -28,13 +28,14 @@ var refresh_logs=false;
 /* By default, we set the page to reload each period defined in WebUI configuration */
 var refresh_timeout = app_refresh_period;
 var nb_refresh_try = 0;
-if (! sessionStorage.getItem("refresh_active")) {
+if (! localStorage.getItem("refresh_active")) {
    if (refresh_logs) console.debug("Refresh active storage does not exist");
    // Store default value ...
-   sessionStorage.setItem("refresh_active", refresh_timeout==0 ? '0' : '1');
+   //localStorage.setItem("refresh_active", refresh_timeout==0 ? '0' : '1');
+   localStorage.setItem("refresh_active", '0');
 }
-if (refresh_logs) console.debug("Refresh active is ", sessionStorage.getItem("refresh_active"));
-if (sessionStorage.getItem("refresh_active") == '1') {
+if (refresh_logs) console.debug("Refresh active is ", localStorage.getItem("refresh_active"));
+if (localStorage.getItem("refresh_active") == '1') {
    $('#header_loading').removeClass('font-greyed');
 } else {
    $('#header_loading').addClass('font-greyed');
@@ -57,7 +58,7 @@ function playAlertSound() {
    var canPlay = audio && !!audio.canPlayType && audio.canPlayType('audio/wav') != "";
    if (canPlay) {
       audio.play();
-      sessionStorage.setItem("sound_play", "1");
+      localStorage.setItem("sound_play", "1");
       $('#sound_alerting i.fa-ban').addClass('hidden');
    }
 }
@@ -209,12 +210,12 @@ function do_refresh(forced){
    })
    .always(function() {
       // Set refresh icon ...
-      if (sessionStorage.getItem("refresh_active") == '1') {
+      if (localStorage.getItem("refresh_active") == '1') {
          $('#header_loading').removeClass('font-greyed');
       } else {
          $('#header_loading').addClass('font-greyed');
       }
-      if (refresh_logs) console.debug("Refresh active is ", sessionStorage.getItem("refresh_active"));
+      if (refresh_logs) console.debug("Refresh active is ", localStorage.getItem("refresh_active"));
 
       // Refresh is finished
       $('#header_loading').removeClass('fa-spin');
@@ -231,7 +232,7 @@ function check_UI_backend(){
       method: "GET"
    })
    .done(function( data, textStatus, jqXHR ) {
-      if (sessionStorage.getItem("refresh_active") == '1') {
+      if (localStorage.getItem("refresh_active") == '1') {
          // Go Refresh
          do_refresh();
       }
@@ -268,14 +269,14 @@ function reinit_refresh(){
 function stop_refresh() {
    if (refresh_logs) console.debug("Stop refresh");
    $('#header_loading').addClass('font-greyed');
-   sessionStorage.setItem("refresh_active", '0');
+   localStorage.setItem("refresh_active", '0');
 }
 
 
 function start_refresh() {
    if (refresh_logs) console.debug("Stop refresh");
    $('#header_loading').removeClass('font-greyed');
-   sessionStorage.setItem("refresh_active", '1');
+   localStorage.setItem("refresh_active", '1');
 }
 
 
@@ -284,7 +285,7 @@ $(document).ready(function(){
    // Start refresh periodical check ...
    setInterval("check_refresh();", 1000);
 
-   if (sessionStorage.getItem("refresh_active") == '1') {
+   if (localStorage.getItem("refresh_active") == '1') {
       $('#header_loading').removeClass('font-greyed');
    } else {
       $('#header_loading').addClass('font-greyed');
@@ -292,12 +293,12 @@ $(document).ready(function(){
 
    // Toggle refresh ...
    $('body').on("click", '[action="toggle-page-refresh"]', function (e, data) {
-      if (sessionStorage.getItem("refresh_active") == '1') {
+      if (localStorage.getItem("refresh_active") == '1') {
          stop_refresh();
       } else {
          start_refresh();
       }
-      if (refresh_logs) console.debug("Refresh active is ", sessionStorage.getItem("refresh_active"));
+      if (refresh_logs) console.debug("Refresh active is ", localStorage.getItem("refresh_active"));
    });
 
 });

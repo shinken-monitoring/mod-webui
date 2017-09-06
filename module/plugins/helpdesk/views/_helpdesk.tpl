@@ -159,18 +159,16 @@
                %if elt and ticket['status'] not in ('5', '6', '7', '8', '9', '10', '11', '12'):
                <div class="panel-heading">
                   <div class="btn-group btn-group-xs" role="group" aria-label="Ticket actions">
-                     <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary"
-                        data-type="action" action="create-ticket-followup"
-                        data-toggle="tooltip" data-placement="bottom" title="Create a follow-up for this ticket"
+                     <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary create-ticket-followup"
+                        title="Create a follow-up for this ticket"
                         data-element="{{app.helper.get_uri_name(elt)}}"
                         data-ticket="{{ticket['id']}}"
                         data-status="{{ticket['status']}}"
                         >
                         <i class="fa fa-medkit"></i> Add a follow-up
                      </button>
-                     <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary"
-                        data-type="action" action="create-ticket-followup"
-                        data-toggle="tooltip" data-placement="bottom" title="Create a follow-up for this ticket"
+                     <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary create-ticket-followup"
+                        title="Create a follow-up for this ticket"
                         data-element="{{app.helper.get_uri_name(elt)}}"
                         data-ticket="{{ticket['id']}}"
                         data-status="{{ticket['status']}}"

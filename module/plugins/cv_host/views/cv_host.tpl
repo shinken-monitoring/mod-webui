@@ -21,7 +21,7 @@
 </script>
 
 <div view="cv_host" conf="{{config}}">
-   <div class="row" name="host_layout">
+   <div class="row" name="host_layout" style="min-height: 180px;">
       <div class="col-sm-2" name="host_container">
          <canvas name="host_canvas" width="150" height="150"> </canvas>
          <h3 class="hostname">{{elt.get_name()}}</h3>
@@ -68,19 +68,6 @@
 
          var linePos = 200;
       </script>
-      <div class="col-sm-10 pull-right" name="host_tags">
-         %if hasattr(elt, 'get_host_tags') and len(elt.get_host_tags()) != 0:
-         <div class="btn-group pull-right">
-            %i=0
-            %for t in sorted(elt.get_host_tags()):
-               <a href="/all?search=htag:{{t}}">
-                  <button class="btn btn-default btn-xs"><i class="fa fa-tag"></i> {{t.lower()}}</button>
-               </a>
-               %i=i+1
-            %end
-         </div>
-         %end
-      </div>
       <div class="col-sm-10" name="host_information">
          <dl class="dl-horizontal">
             <dt>Alias:</dt>
@@ -94,50 +81,50 @@
          </dl>
 
          <dl class="dl-horizontal">
-            <dt>Depends upon:</dt>
             %if elt.parent_dependencies:
+            <dt>Depends upon:</dt>
             <dd>
             %parents=['<a href="/host/'+parent.host_name+'" class="link">'+parent.display_name+'</a>' for parent in sorted(elt.parent_dependencies,key=lambda x:x.display_name)]
             {{!','.join(parents)}}
             </dd>
-            %else:
-            <dd>(none)</dd>
             %end
 
-            <dt>Parents:</dt>
             %if len(elt.parents) > 0:
+            <dt>Parents:</dt>
             <dd>
             %for parent in elt.parents:
             <a href="/host/{{parent.get_name()}}" class="link">{{parent.alias}} ({{parent.get_name()}})</a>
             %end
             </dd>
-            %else:
-            <dd>(none)</dd>
             %end
 
-            <dt>Depends upon me:</dt>
-            %if elt.child_dependencies:
-            <dd>
-            %children=['<a href="/host/'+child.host_name+'" class="link">'+child.display_name+'</a>' for child in sorted(elt.child_dependencies,key=lambda x:x.display_name) if child.__class__.my_type=='host']
-            {{!','.join(children)}}
-            </dd>
-            %else:
-            <dd>(none)</dd>
-            %end
+            %#%if elt.child_dependencies:
+            %#<dt>Depends upon me:</dt>
+            %#<dd>
+            %#%children=['<a href="/host/'+child.host_name+'" class="link">'+child.display_name+'</a>' for child in sorted(elt.child_dependencies,key=lambda x:x.display_name) if child.__class__.my_type=='host']
+            %#{{!','.join(children)}}
+            %#</dd>
+            %#%end
 
-            <dt>Children:</dt>
             %if elt.childs:
+            <dt>Children:</dt>
             <dd>
             %children=['<a href="/host/'+child.host_name+'" class="link">'+child.display_name+'</a>' for child in sorted(elt.childs,key=lambda x:x.display_name)]
             {{!','.join(children)}}
             </dd>
-            %else:
-            <dd>(none)</dd>
             %end
          </dl>
-
          <dl class="dl-horizontal">
-            <dt>Member of:</dt>
+            <dt>Tags:</dt>
+            <dd>
+              %for t in sorted(elt.get_host_tags()):
+              <a href="/all?search=htag:{{t}}">
+                <button class="btn btn-default btn-xs"><i class="fa fa-tag"></i> {{t.lower()}}</button>
+              </a>
+              %end
+            </dd>
+
+            <dt>Groups:</dt>
             %if len(elt.hostgroups) > 0:
             <dd>
             %i=0
@@ -151,12 +138,14 @@
             <dd>(none)</dd>
             %end
 
+            %if elt.notes_url:
             <dt>Notes:</dt>
             <dd>
-            %for note_url in app.helper.get_element_notes_url(elt, default_title="Note", default_icon="tag", popover=True):
+            %for note_url in elt.notes_url:
                <button class="btn btn-default btn-xs">{{! note_url}}</button>
             %end
             </dd>
+            %end
          </dl>
       </div>
    </div>

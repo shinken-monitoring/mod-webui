@@ -3,7 +3,7 @@
 %datamgr = app.datamgr
 %search_string = app.get_search_string()
 
-%rebase("layout", title=title, js=['problems/js/problems.js'], css=['problems/css/problems.css'], navi=navi, page="/all", elts_per_page=elts_per_page)
+%rebase("layout", title=title, js=['js/shinken-actions.js', 'problems/js/problems.js', 'problems/js/actions.js'], css=['problems/css/problems.css'], navi=navi, page="/all", elts_per_page=elts_per_page)
 
 <script type="text/javascript">
    var actions_enabled = {{'true' if app.can_action() else 'false'}};
@@ -11,30 +11,32 @@
 
 <!-- Problems filtering and display -->
 <div id="problems">
-   %if not pbs:
-   <center>
-     %if search_string:
-     <h3>What a bummer! We couldn't find anything.</h3>
-     Use the filters or the bookmarks to find what you are looking for, or try a new search query.
-     %else:
-     <h3>No host or service.</h3>
-     %end
-   </center>
-   %else:
 
    %include("_problems_synthesis.tpl", pbs=pbs, search_string=app.get_search_string())
 
+   %if not pbs:
+   <center>
+     <div class="page-header">
+       %if search_string:
+       <h3>What a bummer! We couldn't find anything.</h3>
+       <h3><small>Use the filters, the bookmarks, click on the links above, or try a new search query to find what you are looking for.</small></h3>
+       %else:
+       <h3>No host or service.</h3>
+       %end
+     </div>
+   </center>
+
+   %else:
+
    %from itertools import groupby
    %pbs = sorted(pbs, key=lambda x: x.business_impact, reverse=True)
-   %for business_impact, bi_pbs in groupby(pbs, key=lambda x: x.business_impact):
-      %# Sort problems, hosts first, then orders by state_id and by host
-      %bi_pbs = sorted(sorted(sorted(bi_pbs, key=lambda x: x.host_name), key=lambda x: x.state_id, reverse=True), key=lambda x: x.__class__.my_type)
-      %hosts = groupby(bi_pbs, key=lambda x: x.host_name)
+   %for business_impact, bi_pbs in groupby(helper.sort_elements(pbs), key=lambda x: x.business_impact):
+   %bi_pbs = list(bi_pbs)
    <div class="panel panel-default">
    <div class="panel-body">
       <button type="button" class="btn btn-default btn-xs pull-left" data-type="business-impact" data-business-impact="{{business_impact}}" data-state="off">Select all</button>
 
-      <i class="pull-right small">{{len(list(bi_pbs))}} elements</i>
+      <i class="pull-right small">{{len(bi_pbs)}} elements</i>
       <h3 class="text-center"><span class="hidden-xs">Business impact: </span>{{!helper.get_business_impact_text(business_impact, text=True)}}</h3>
 
       <table class="table table-condensed" style="table-layout:fixed; width:100%;">
@@ -49,10 +51,8 @@
          </tr></thead>
 
          <tbody>
-         %for host_name, host_pbs in hosts:
-         %for i, pb in enumerate(host_pbs):
-
-            %# Host information ...
+         %previous_pb_host_name=None
+         %for pb in bi_pbs:
             <tr data-toggle="collapse" data-target="#details-{{helper.get_html_id(pb)}}" class="accordion-toggle">
                <td>
                   <input type="checkbox" class="input-sm" value="" id="selector-{{helper.get_html_id(pb)}}" data-type="problem" data-business-impact="{{business_impact}}" data-item="{{pb.get_full_name()}}">
@@ -62,11 +62,10 @@
                   </a>
                </td>
                <td>
-                  %if i == 0:
+                  %if pb.host_name != previous_pb_host_name:
                      %title = ''
                      %if pb.__class__.my_type == 'service':
                         %groups = pb.host.hostgroups
-                        %#groups = sorted(pb.host.hostgroups, key=lambda x:x.level, reverse=True)
                         %group = groups[0] if groups else None
                         %title = 'Member of %s' % (group.alias if group.alias else group.get_name()) if group else ''
                      %else:
@@ -74,7 +73,6 @@
                             %title = 'Aka %s' % pb.alias
                         %end
                         %groups = pb.hostgroups
-                        %#groups = sorted(pb.hostgroups, key=lambda x:x.level, reverse=True)
                         %group = groups[0] if groups else None
                         %title = title + ((' - ' if title else '') + 'Member of %s' % (group.alias if group.alias else group.get_name()) if group else '')
                      %end
@@ -95,7 +93,6 @@
                   %if pb.__class__.my_type == 'service':
                   {{!helper.get_link(pb, short=True)}}
                   %end
-                  %# Impacts
                   %if len(pb.impacts) > 0:
                   <button class="btn btn-danger btn-xs"><i class="fa fa-plus"></i> {{ len(pb.impacts) }} impacts</button>
                   %end
@@ -113,17 +110,18 @@
                         <a style="text-decoration: none;" role="button" tabindex="0" data-toggle="popover"
                            title="{{ pb.get_full_name() }}" data-html="true"
                            data-content="<img src='{{ graphs[0]['img_src'] }}' width='600px' height='200px'>"
-                           data-trigger="hover" data-placement="left">
+                           data-trigger="hover" data-placement="left"
+                           href="{{!helper.get_link_dest(pb)}}#graphs">
                            {{!helper.get_perfometer(pb)}}
                         </a>
                      %end
                   </div>
                   %end
                   <div class="ellipsis output">
-                     {{!helper.strip_html_output(pb.output) if app.allow_html_output else pb.output}}
+                     {{! pb.output}}
                      %if pb.long_output:
                      <div class="long-output">
-                        {{!helper.strip_html_output(pb.long_output) if app.allow_html_output else pb.long_output}}
+                        {{! pb.long_output}}
                      </div>
                      %end
                   </div>
@@ -158,52 +156,38 @@
                            <td align="right">
                               <div class="btn-group" role="group" data-type="actions" aria-label="Actions">
                                  %if pb.event_handler_enabled and pb.event_handler:
-                                 <button class="btn btn-default btn-xs"
-                                       data-type="action" action="event-handler"
-                                       data-toggle="tooltip" data-placement="bottom" title="Try to fix (launch event handler)"
+                                 <button class="btn btn-default btn-xs js-try-to-fix"
+                                       title="Try to fix (launch event handler)"
                                        data-element="{{helper.get_uri_name(pb)}}"
                                        >
                                     <i class="fa fa-magic"></i><span class="hidden-sm hidden-xs"> Try to fix</span>
                                  </button>
                                  %end
-                                 <button class="btn btn-default btn-xs"
-                                       data-type="action" action="recheck"
-                                       data-toggle="tooltip" data-placement="bottom" title="Launch the check command"
+                                 <button class="btn btn-default btn-xs js-recheck"
+                                       title="Launch the check command"
                                        data-element="{{helper.get_uri_name(pb)}}"
                                        >
-                                    <i class="fa fa-refresh"></i><span class="hidden-sm hidden-xs"> Refresh</span>
+                                    <i class="fa fa-refresh"></i><span class="hidden-sm hidden-xs"> Recheck</span>
                                  </button>
-                                 <button class="btn btn-default btn-xs"
-                                       data-type="action" action="check-result"
-                                       data-toggle="tooltip" data-placement="bottom" title="Submit a check result"
+                                 <button class="btn btn-default btn-xs js-submit-ok"
+                                       title="Submit a check result"
                                        data-element="{{helper.get_uri_name(pb)}}"
-                                       data-user="{{user}}"
                                        >
-                                    <i class="fa fa-share"></i><span class="hidden-sm hidden-xs"> Submit check result</span>
+                                    <i class="fa fa-share"></i><span class="hidden-sm hidden-xs"> Set OK</span>
                                  </button>
                                  %if pb.state != pb.ok_up and not pb.problem_has_been_acknowledged:
-                                 <button class="btn btn-default btn-xs"
-                                       data-type="action" action="add-acknowledge"
-                                       data-toggle="tooltip" data-placement="bottom" title="Acknowledge this problem"
-                                       data-element="{{helper.get_uri_name(pb)}}"
-                                       >
-                                    <i class="fa fa-check"></i><span class="hidden-sm hidden-xs"> Acknowledge</span>
+                                 <button class="btn btn-default btn-xs js-add-acknowledge"
+                                   title="Acknowledge this problem"
+                                   data-element="{{helper.get_uri_name(pb)}}"
+                                   >
+                                   <i class="fa fa-check"></i><span class="hidden-sm hidden-xs"> Acknowledge</span>
                                  </button>
                                  %end
-                                 <button class="btn btn-default btn-xs"
-                                       data-type="action" action="schedule-downtime"
-                                       data-toggle="tooltip" data-placement="bottom" title="Schedule a downtime for this problem"
+                                 <button class="btn btn-default btn-xs js-schedule-downtime"
+                                       title="Schedule a downtime for this problem"
                                        data-element="{{helper.get_uri_name(pb)}}"
                                        >
                                   <i class="fa fa-ambulance"></i><span class="hidden-sm hidden-xs"> Downtime</span>
-                                 </button>
-                                 <button class="btn btn-default btn-xs"
-                                       data-type="action" action="ignore-checks"
-                                       data-toggle="tooltip" data-placement="bottom" title="Ignore checks for the service (disable checks, notifications, event handlers and force Ok)"
-                                       data-element="{{helper.get_uri_name(pb)}}"
-                                       data-user="{{user}}"
-                                       >
-                                    <i class="fa fa-eraser"></i><span class="hidden-sm hidden-xs"> Remove</span>
                                  </button>
                               </div>
                            </td>
@@ -215,10 +199,12 @@
                         <div class="col-sm-10">
                            <div class="panel panel-default align-center">
                            <div class="panel-body" style="margin-left: 20px;">
+                             <div class="pull-right"><input type="checkbox" id="display-impacts" {{ "checked" if display_impacts else '' }}> Display impacts in main table</div>
                               <h4>{{ len(pb.impacts) }} impacts</h4>
                               <table class="table table-condensed" style="table-layout:fixed;width:100%;">
-                                 %for i in helper.get_impacts_sorted(pb):
-                                 %if i.state_id != 0:
+                                %for business_impact, bi_pbs in groupby(helper.sort_elements(pb.impacts), key=lambda x: x.business_impact):
+                                <tr class="hidden-sm hidden-xs"><td colspan=5 style="text-align:center;"><strong>Business impact: </strong>{{!helper.get_business_impact_text(business_impact, text=True)}}</td></tr>
+                                 %for i in bi_pbs:
                                  <tr>
                                     <td align=center>
                                        {{!helper.get_fa_icon_state(i)}}
@@ -228,10 +214,10 @@
                                     <td align="center">{{!helper.print_duration(i.last_state_change, just_duration=True, x_elts=2)}}</td>
                                     <td class="row hidden-sm hidden-xs">
                                        <div class="ellipsis output">
-                                          {{!helper.strip_html_output(i.output) if app.allow_html_output else i.output}}
+                                          {{! i.output}}
                                           %if i.long_output:
                                           <div class="long-output">
-                                             {{!helper.strip_html_output(i.long_output) if app.allow_html_output else i.long_output}}
+                                             {{! i.long_output}}
                                           </div>
                                           %end
                                        </div>
@@ -249,19 +235,32 @@
                </td>
             </tr>
 
-         %# End for i, pb in enumerate(host_pbs):
-         %end
+         %previous_pb_host_name=pb.host_name
          %end
          </tbody>
       </table>
-   %#end panel-body
    </div>
    </div>
 
-   %# Close problems div ...
    %end
  </div>
 
+ %include("_problems_action-menu.tpl")
+
  <script>
+   // Configuration for actions.js
+   var user='{{ user.alias if hasattr(user, "alias") and user.alias != "none" else user.get_name() }}';
+   var shinken_downtime_fixed='{{ app.shinken_downtime_fixed}}';
+   var shinken_downtime_trigger='{{ app.shinken_downtime_trigger }}';
+   var shinken_downtime_duration='{{ app.shinken_downtime_duration }}';
+   var default_ack_persistent='{{ app.default_ack_persistent }}';
+   var default_ack_notify='{{ app.default_ack_notify }}';
+   var default_ack_sticky='{{ app.default_ack_sticky }}';
+
    $('a[href="/problems"]').addClass('active');
+
+   $('#display-impacts').click(function() {
+     save_user_preference('display_impacts', $('#display-impacts').is(':checked'));
+     location.reload();
+   });
  </script>

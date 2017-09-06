@@ -6,6 +6,15 @@
       if ($('#reason').val()) {
          add_comment("{{name}}", '{{user.get_name()}}', $('#reason').val());
       }
+
+      %if elt.__class__.my_type=='host':
+      if ($('#dwn_services').is(":checked")) {
+      %for service in elt.services:
+         delete_all_downtimes("{{name}}/{{service.get_name()}}");
+      %end
+      }
+      %end
+
       start_refresh();
       $('#modal').modal('hide');
    }
@@ -18,6 +27,14 @@
 
 <div class="modal-body">
    <form name="input_form" role="form">
+      %if elt.__class__.my_type=='host':
+      <div class="checkbox">
+        <label>
+          <input name="dwn_services" id="dwn_services" type="checkbox"> Also delete on all services</input>
+        </label>
+      </div>
+      %end
+
       <div class="form-group">
          <textarea name="reason" id="reason" class="form-control" rows="5" placeholder="Comment…">All dowtimes deleted for {{name}} by {{user.get_name()}}.</textarea>
       </div>

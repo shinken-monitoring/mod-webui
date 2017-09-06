@@ -129,52 +129,39 @@
 
                <div class="btn-group" role="group" aria-label="Actions">
                   %disabled='' if pb.event_handler_enabled and pb.event_handler else 'disabled'
-                  <button class="btn btn-default btn-xs {{disabled}}" 
-                        action="event-handler"
-                        data-toggle="tooltip" data-placement="bottom" title="Try to fix (launch event handler)"
+                  <button class="btn btn-default btn-xs {{disabled}} js-try-to-fix"
+                        title="Try to fix (launch event handler)"
                         data-element="{{helper.get_uri_name(pb)}}" 
                         >
                      <i class="fa fa-magic"></i><span class="hidden-sm hidden-xs"> Try to fix</span>
                   </button>
                   %disabled='' if pb.active_checks_enabled else 'disabled'
-                  <button class="btn btn-default btn-xs {{disabled}}" 
-                        action="recheck"
-                        data-toggle="tooltip" data-placement="bottom" title="Launch the check command"
+                  <button class="btn btn-default btn-xs {{disabled}} js-recheck"
+                        title="Launch the check command"
                         data-element="{{helper.get_uri_name(pb)}}" 
                         >
                      <i class="fa fa-refresh"></i><span class="hidden-sm hidden-xs"> Refresh</span>
                   </button>
-                  <button class="btn btn-default btn-xs" 
-                        action="check-result"
-                        data-toggle="tooltip" data-placement="bottom" title="Submit a check result"
+                  <button class="btn btn-default btn-xs js-submit-ok"
+                        title="Submit a check result"
                         data-element="{{helper.get_uri_name(pb)}}" 
                         data-user="{{user}}" 
                         >
                      <i class="fa fa-share"></i><span class="hidden-sm hidden-xs"> Submit check result</span>
                   </button>
                   %disabled='' if pb.state != pb.ok_up and not pb.problem_has_been_acknowledged else 'disabled'
-                  <button class="btn btn-default btn-xs {{disabled}}" 
-                        action="add-acknowledge"
-                        data-toggle="tooltip" data-placement="bottom" title="Acknowledge this problem"
+                  <button class="btn btn-default btn-xs {{disabled}} js-add-acknowledge"
+                        title="Acknowledge this problem"
                         data-element="{{helper.get_uri_name(pb)}}" 
                         >
                      <i class="fa fa-check"></i><span class="hidden-sm hidden-xs"> Acknowledge</span>
                   </button>
 
-                  <button class="btn btn-default btn-xs" 
-                        action="schedule-downtime"
-                        data-toggle="tooltip" data-placement="bottom" title="Schedule a downtime for this problem"
+                  <button class="btn btn-default btn-xs js-schedule-downtime"
+                        title="Schedule a downtime for this problem"
                         data-element="{{helper.get_uri_name(pb)}}" 
                         >
                    <i class="fa fa-ambulance"></i><span class="hidden-sm hidden-xs"> Downtime</span>
-                  </button>
-                  <button class="btn btn-default btn-xs" 
-                        action="ignore-checks"
-                        data-toggle="tooltip" data-placement="bottom" title="Ignore checks for the service (disable checks, notifications, event handlers and force Ok)"
-                        data-element="{{helper.get_uri_name(pb)}}" 
-                        data-user="{{user}}" 
-                        >
-                     <i class="fa fa-eraser"></i><span class="hidden-sm hidden-xs"> Remove</span>
                   </button>
                </div>
             </li>

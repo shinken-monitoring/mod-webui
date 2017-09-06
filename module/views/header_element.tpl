@@ -7,18 +7,27 @@
 %end
 
 
+<style>
+.navbar-top-links li a {
+    padding: 10px;
+    min-height: 0;
+}
+</style>
+
 <!-- Header Navbar -->
 <nav class="header navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom:0px;">
    <div class="navbar-header">
+      
       <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
          <span class="sr-only">Toggle navigation</span>
          <span class="icon-bar"></span>
          <span class="icon-bar"></span>
          <span class="icon-bar"></span>
       </button>
-      <a onclick="display_modal('/modal/about')" class="logo navbar-brand">
+      <a href="/" class="logo navbar-brand">
          <img src="/static/logo/{{app.company_logo}}" alt="Company logo" />
       </a>
+
    </div>
 
    <ul class="nav navbar-nav hidden-xs">
@@ -111,7 +120,7 @@
 
       %if app.play_sound:
       <li class="hidden-sm hidden-xs hidden-md">
-         <a class="quickinfo" action="toggle-sound-alert" data-original-title='Sound alerting' href="#">
+         <a class="quickinfo js-toggle-sound-alert" data-original-title='Sound alerting' href="#">
             <span id="sound_alerting" class="fa-stack">
               <i class="fa fa-music fa-stack-1x"></i>
               <i class="fa fa-ban fa-stack-2x text-danger"></i>
@@ -168,11 +177,15 @@
           <form class="navbar-form navbar-left" method="get" action="/all">
             <div class="input-group custom-search-form">
               <input class="form-control" type="search" id="search" name="search" value="{{ app.get_search_string() }}">
+              
               <span class="input-group-btn">
                 <button class="btn btn-default" type="submit">
                   <i class="fa fa-search"></i>
                 </button>
               </span>
+                          
+              
+              
             </div>
           </form>
         </li>
@@ -266,7 +279,7 @@
    } else {
       $('#sound_alerting i.fa-ban').removeClass('hidden');
    }
-   $('[action="toggle-sound-alert"]').on('click', function (e, data) {
+   $('.js-toggle-sound-alert').on('click', function (e, data) {
       if (sessionStorage.getItem("sound_play") == '1') {
          sessionStorage.setItem("sound_play", "0");
          $('#sound_alerting i.fa-ban').removeClass('hidden');

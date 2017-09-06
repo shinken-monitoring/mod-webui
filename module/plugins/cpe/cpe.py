@@ -27,6 +27,7 @@
 import time
 
 from shinken.log import logger
+from shinken.external_command import ExternalCommand, ExternalCommandManager
 
 # Will be populated by the UI with it's own value
 app = None
@@ -34,10 +35,24 @@ app = None
 
 # Our page
 def show_cpe(cpe_name):
+
+    cpe = None
+    parent = None
+
     ''' Mostrar la ficha del CPE con nombre cpe_name.'''
     # Ok, we can lookup it
     user = app.bottle.request.environ['USER']
+<<<<<<< HEAD
+=======
+    
+    # if not cpe_name.startswith('cpe'):
+        # app.redirect404()
+        
+>>>>>>> e1292b72865d345e0e9d94d17d0c2506822d9576
     cpe = app.datamgr.get_host(cpe_name, user) or app.redirect404()
+    
+    if cpe.cpe_registration_host:
+        parent = app.datamgr.get_host(cpe.cpe_registration_host, user)
 
     # Set hostgroups level ...
     app.datamgr.set_hostgroups_level(user)
@@ -45,12 +60,12 @@ def show_cpe(cpe_name):
     # Get graph data. By default, show last 4 hours
     maxtime = int(time.time())
     mintime = maxtime - 7 * 24 * 3600
+    
 
-    return {'cpe': cpe, 'mintime': mintime, 'maxtime': maxtime}
-
-
+    return {'cpe': cpe, 'parent': parent, 'mintime': mintime, 'maxtime': maxtime}
+    
 pages = {
     show_cpe: {
         'name': 'CPE', 'route': '/cpe/:cpe_name', 'view': 'cpe', 'static': True
-    }
+    }    
 }

@@ -303,7 +303,7 @@ class WebUIDataManager(DataManager):
 
             return None
 
-        services = self.search_hosts_and_services('type:service host:^%s$ service:"%s"' % (hname, sname), user=user)
+        services = self.search_hosts_and_services('type:service host:^%s$ service:"^%s$"' % (hname, sname), user=user)
         return services[0] if services else None
 
     def get_percentage_service_state(self, user=None, problem=False):
@@ -375,7 +375,7 @@ class WebUIDataManager(DataManager):
             :name: Must be "host" or "host/service"
         """
         if '/' in name:
-            return self.get_service(name.split('/')[0], name.split('/')[1], user)
+            return self.get_service(name.split('/')[0], '/'.join(name.split('/')[1:]), user)
         else:
             host = self.get_host(name, user)
             if not host:
