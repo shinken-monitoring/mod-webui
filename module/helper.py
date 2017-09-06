@@ -1027,10 +1027,11 @@ class Helper(object):
             return self.get_service_graphs_docsis(cpe)
         return self.get_service_graphs_wimax(cpe)
 
+
     def get_service_graphs_gpon(self, cpe):
         graphs = [
         {
-            'title': 'TxRx',
+            'title': 'Signal Level (dbm)',
             'metrics': [
                 {
                     'name': 'Dn Rx',
@@ -1044,14 +1045,14 @@ class Helper(object):
             'uom': 'dBm'
         },
         {
-            'title': 'Attrition',
+            'title': 'Attenuation (dB)',
             'metrics': [
                 {
-                    'name': 'Down Attrition',
+                    'name': 'Dn Att',
                     'graphite_name': '%s.txrx.dnatt' % (cpe)
                 },
                 {
-                    'name': 'Up Attrition',
+                    'name': 'Up Att',
                     'graphite_name': '%s.txrx.upatt' % (cpe)
                 }
             ],
@@ -1076,10 +1077,10 @@ class Helper(object):
             'uom': 'dB'
         },
         {
-            'title': 'TxRx',
+            'title': 'Signal Level (dbm)',
             'metrics': [
                 {
-                    'name': 'Down Rx',
+                    'name': 'Dn Rx',
                     'graphite_name': '%s.downstream.dnrx' % (cpe)
                 },
                 {
@@ -1090,14 +1091,14 @@ class Helper(object):
             'uom': 'dBm'
         },
         {
-            'title': 'Attrition',
+            'title': 'Attenuation (dB)',
             'metrics': [
                 {
-                    'name': 'Down Attrition',
+                    'name': 'Dn Att',
                     'graphite_name': '%s.downstream.dnatt' % (cpe)
                 },
                 {
-                    'name': 'Up Attrition',
+                    'name': 'Up Att',
                     'graphite_name': '%s.upstream.upatt' % (cpe)
                 }
             ],
@@ -1128,7 +1129,24 @@ class Helper(object):
         return graphs
 
     def get_service_graphs_wimax(self, cpe):
-        return []
+        graphs = [
+        {
+            'title': 'QoS',
+            'metrics': [
+                {
+                    'name': 'CCQ',
+                    'graphite_name': '%s.qos.ccw' % (cpe)
+                }, {
+                    'name': 'Up Latency',
+                    'graphite_name': '%s.qos.uptxlatency' % (cpe)
+                }, {
+                    'name': 'Dn Latency',
+                    'graphite_name': '%s.qos.dntxlatency' % (cpe)
+                }
+            ],
+            'uom': 'ms'
+        }
+        return graphs
 
 
 helper = Helper()
