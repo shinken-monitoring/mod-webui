@@ -93,6 +93,7 @@
       <script src="/static/js/alertify.js"></script>
       <script src="/static/js/typeahead.bundle.min.js"></script>
       <script src="/static/js/screenfull.js"></script>
+      <script src="https://omnipotent.net/jquery.sparkline/2.1.2/jquery.sparkline.min.js"></script>
 
       <!--
        Shinken globals ...

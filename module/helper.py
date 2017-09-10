@@ -40,12 +40,8 @@ except ImportError:
         print "Error: you need the json or simplejson module"
         raise
 
-from shinken.util import safe_print
-from shinken.misc.perfdata import PerfDatas
 from shinken.misc.sorter import hst_srv_sort
-from shinken.log import logger
-from perfdata_guess import get_perfometer_table_values
-from shinken.macroresolver import MacroResolver
+from shinken.misc.perfdata import PerfDatas
 
 
 class Helper(object):
@@ -536,52 +532,64 @@ class Helper(object):
 
         return res
 
-    # Get a perfometer part for html printing
-    def get_perfometer(self, elt, metric=None):
-        if elt.perf_data:
-            r = get_perfometer_table_values(elt, metric=metric)
-            if r is None:
-                return ''
+    def get_perfdata_pie(self, p):
+        if p.max is not None:
+            title = "%s %s%s" % (p.name, p.value, p.uom)
+            if p.uom != '%':
+                title += " (%s%s)" % (p.max, p.uom)
+            used_value = p.value - (p.min or 0)
+            unused_value = p.max - (p.min or 0) - used_value
+            color = "#44bb77"
+            if p.warning < p.critical:
+                if p.value > p.warning:
+                    color = "#ffaa44"
+                if p.value > p.critical:
+                    color = "#ff5566"
+            else:
+                # inverted thresholds : OK > WARNING > CRITICAL
+                if p.value < p.warning:
+                    color = "#ffaa44"
+                if p.value < p.critical:
+                    color = "#ff5566"
+            return '<span class="sparkline piechart" title="%s" role="img" sparkType="pie" sparkSliceColors="[%s,#ddccdd]" values="%s,%s"></span>' % (title, color, used_value, unused_value)
+        return ""
 
-            #lnk = r['lnk']
-            metrics = r['metrics']
-            title = r['title']
-            s = ''
-            if r['lnk'] != '#':
-                s += '<a href="%s">' % lnk
-            if metrics:
-                # metrics[0][0] is the color associated to the current state
-                # metrics[0][1] is a percentage:
-                #   - real percentage between min and max (if defined)
-                #   - else 100
+    def get_perfdata_pies(self, elt):
+        return " ".join([self.get_perfdata_pie(p) for p in PerfDatas(elt.perf_data)])
 
-                # Thanks to @medismail
-                base = {'success': 'green', 'warning': 'orange', 'danger': 'red', 'info': 'blue'}
-                color = base.get(metrics[0][0], 'blue')
-                logger.debug("[WebUI] get_perfometer: %s, %s / %s", elt.get_name(), metrics[0][0], metrics[0][1])
-                if metrics[0][1] > 9:
-                    s += '''<div class="progress" style="min-width:100px;">
-                    <div title="%s" class="ellipsis progress-bar progress-bar-%s" role="progressbar"
-                        aria-valuenow="%s" aria-valuemin="0" aria-valuemax="100" style="min-width: 40px; width:%s%%">
-                    %s
-                    </div>
-                    </div>''' % (title, metrics[0][0], metrics[0][1], metrics[0][1], title)
-                else:
-                    s += '''<div class="progress" style="min-width:100px;">
-                    <div title="%s" class="ellipsis progress-bar progress-bar-%s" role="progressbar"
-                        aria-valuenow="%s" aria-valuemin="0" aria-valuemax="100" style="width:%s%%">
-                    </div>
-                    <font size="2" color="%s">  %s</font>
-                    </div>''' % (title, metrics[0][0], metrics[0][1], metrics[0][1], color, title)
+    def get_perfdata_table(self, elt):
+        perfdatas = PerfDatas(elt.perf_data)
+        display_min = any(p.min for p in perfdatas)
+        display_max = any(p.max is not None for p in perfdatas)
+        display_warning = any(p.warning is not None for p in perfdatas)
+        display_critical = any(p.critical is not None for p in perfdatas)
 
+        s = '<table class="table table-condensed">'
+        s += '<tr><th></th><th>Label</th><th>Value</th>'
+        if display_min:
+            s += '<th>Min</th>'
+        if display_max:
+            s += '<th>Max</th>'
+        if display_warning:
+            s += '<th>Warning</th>'
+        if display_critical:
+            s += '<th>Critical</th>'
+        s += '</tr>'
 
+        for p in perfdatas:
+            s += '<tr><td>%s</td><td>%s</td><td>%s %s</td>' % (self.get_perfdata_pie(p), p.name, p.value, p.uom)
+            if display_min:
+                s += '<td>%s %s</td>' % (p.min if p.min is not None else '', p.uom)
+            if display_max:
+                s += '<td>%s %s</td>' % (p.max if p.max is not None else '', p.uom)
+            if display_warning:
+                s += '<td>%s %s</td>' % (p.warning if p.warning is not None else '', p.uom)
+            if display_critical:
+                s += '<td>%s %s</td>' % (p.critical if p.critical is not None else '', p.uom)
+            s += '</tr>'
+        s += '</table>'
 
-            if r['lnk'] != '#':
-                s += '</a>'
-
-            return s
-
-        return ''
+        return s
 
     # We want the html id of an host or a service. It's basically
     # the full_name with / changed as -- (because in html, / is not valid :) )

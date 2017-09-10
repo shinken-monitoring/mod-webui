@@ -3,7 +3,7 @@
 %datamgr = app.datamgr
 %search_string = app.get_search_string()
 
-%rebase("layout", title=title, js=['js/shinken-actions.js', 'problems/js/problems.js', 'problems/js/actions.js'], css=['problems/css/problems.css'], navi=navi, page="/all", elts_per_page=elts_per_page)
+%rebase("layout", title=title, js=['js/shinken-actions.js', 'js/shinken-charts.js', 'problems/js/problems.js', 'problems/js/actions.js'], css=['problems/css/problems.css'], navi=navi, page="/all", elts_per_page=elts_per_page)
 
 <script type="text/javascript">
    var actions_enabled = {{'true' if app.can_action() else 'false'}};
@@ -101,20 +101,21 @@
                  {{!helper.print_duration(pb.last_state_change, just_duration=True, x_elts=2)}}
                </td>
                <td class="row hidden-sm hidden-xs">
-                  %if app.graphs_module.is_available():
                   <div class="pull-right">
+                     {{!helper.get_perfdata_pies(pb)}}
+                     %if app.graphs_module.is_available():
                      %graphs = app.graphs_module.get_graph_uris(pb, duration=12*3600)
                      %if len(graphs) > 0:
-                        <a style="text-decoration: none;" role="button" tabindex="0" data-toggle="popover"
+                        <a style="text-decoration: none; color: #333;" role="button" tabindex="0" data-toggle="popover"
                            title="{{ pb.get_full_name() }}" data-html="true"
                            data-content="<img src='{{ graphs[0]['img_src'] }}' width='600px' height='200px'>"
                            data-trigger="hover" data-placement="left"
                            href="{{!helper.get_link_dest(pb)}}#graphs">
-                           {{!helper.get_perfometer(pb)}}
+                           <i class="fa fa-line-chart"></i>
                         </a>
                      %end
+                     %end
                   </div>
-                  %end
                   <div class="ellipsis output">
                      {{! pb.output}}
                      %if pb.long_output:

@@ -90,6 +90,9 @@
           </tbody>
         </table>
 
+        <h4 class="page-header">Performance data</h4>
+          {{!helper.get_perfdata_table(elt)}}
+
         <h4 class="page-header">Checks configuration</h4>
         <table class="table table-condensed">
           <colgroup>

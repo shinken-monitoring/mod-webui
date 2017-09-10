@@ -106,7 +106,7 @@ function do_refresh(forced){
        */
       var $response = $('<div />').html(html);
       // Refresh current page content ...
-      $('#page-content').html($response.find('#page-content').html());
+      chartsge-content').html($response.find('#page-content').html());
 
       // Refresh header bar hosts/services state ...
       if ($('#overall-hosts-states').length > 0) {
@@ -183,6 +183,11 @@ function do_refresh(forced){
       if (typeof on_page_refresh !== 'undefined' && $.isFunction(on_page_refresh)) {
          if (refresh_logs) console.debug('Calling page refresh function ...');
          on_page_refresh(forced);
+      }
+
+      if (typeof display_charts !== 'undefined' && $.isFunction(display_charts)) {
+         if (refresh_logs) console.debug('Calling display charts function ...');
+         display_charts();
       }
 
       /*
