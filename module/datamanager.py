@@ -165,10 +165,10 @@ class WebUIDataManager(DataManager):
 
             for state in 'up', 'pending':
                 h['nb_' + state] = sum(1 for host in hosts if host.state == state.upper())
-                h['pct_' + state] = round(100.0 * h['nb_' + state] / h['nb_elts'], 2)
+                h['pct_' + state] = round(100.0 * h['nb_' + state] / h['nb_elts'], 1)
             for state in 'down', 'unreachable', 'unknown':
                 h['nb_' + state] = sum(1 for host in hosts if host.state == state.upper()  and not (host.problem_has_been_acknowledged or host.in_scheduled_downtime))
-                h['pct_' + state] = round(100.0 * h['nb_' + state] / h['nb_elts'], 2)
+                h['pct_' + state] = round(100.0 * h['nb_' + state] / h['nb_elts'], 1)
 
             # h['nb_problems'] = sum(1 for host in hosts if host.is_problem and not host.problem_has_been_acknowledged)
             # Shinken does not always reflect the "problem" state ... to make UI more consistent, build our own problems counter!
@@ -178,11 +178,11 @@ class WebUIDataManager(DataManager):
                     h['nb_problems'] += 1
                     logger.debug("[WebUI - datamanager] get_hosts_synthesis: %s: %s, %s, %s", host.get_name(), host.state, host.is_problem, host.problem_has_been_acknowledged)
 
-            h['pct_problems'] = round(100.0 * h['nb_problems'] / h['nb_elts'], 2)
+            h['pct_problems'] = round(100.0 * h['nb_problems'] / h['nb_elts'], 1)
             h['nb_ack'] = sum(1 for host in hosts if host.is_problem and host.problem_has_been_acknowledged)
-            h['pct_ack'] = round(100.0 * h['nb_ack'] / h['nb_elts'], 2)
+            h['pct_ack'] = round(100.0 * h['nb_ack'] / h['nb_elts'], 1)
             h['nb_downtime'] = sum(1 for host in hosts if host.in_scheduled_downtime)
-            h['pct_downtime'] = round(100.0 * h['nb_downtime'] / h['nb_elts'], 2)
+            h['pct_downtime'] = round(100.0 * h['nb_downtime'] / h['nb_elts'], 1)
         else:
             h['bi'] = 0
             for state in 'up', 'down', 'unreachable', 'pending', 'unknown', 'ack', 'downtime', 'problems':
@@ -263,10 +263,10 @@ class WebUIDataManager(DataManager):
 
             for state in 'ok', 'pending':
                 s['nb_' + state] = sum(1 for service in services if service.state == state.upper())
-                s['pct_' + state] = round(100.0 * s['nb_' + state] / s['nb_elts'], 2)
+                s['pct_' + state] = round(100.0 * s['nb_' + state] / s['nb_elts'], 1)
             for state in 'warning', 'critical', 'unknown':
                 s['nb_' + state] = sum(1 for service in services if service.state == state.upper()  and not (service.problem_has_been_acknowledged or service.in_scheduled_downtime))
-                s['pct_' + state] = round(100.0 * s['nb_' + state] / s['nb_elts'], 2)
+                s['pct_' + state] = round(100.0 * s['nb_' + state] / s['nb_elts'], 1)
 
             # s['nb_problems'] = sum(1 for service in services if service.is_problem and not service.problem_has_been_acknowledged)
             # Shinken does not always reflect the "problem" state ... to make UI more consistent, build our own problems counter!
@@ -276,11 +276,11 @@ class WebUIDataManager(DataManager):
                     s['nb_problems'] += 1
                     logger.debug("[WebUI - datamanager] get_services_synthesis: %s: %s, %s, %s", service.get_name(), service.state, service.is_problem, service.problem_has_been_acknowledged)
 
-            s['pct_problems'] = round(100.0 * s['nb_problems'] / s['nb_elts'], 2)
+            s['pct_problems'] = round(100.0 * s['nb_problems'] / s['nb_elts'], 1)
             s['nb_ack'] = sum(1 for service in services if service.is_problem and service.problem_has_been_acknowledged)
-            s['pct_ack'] = round(100.0 * s['nb_ack'] / s['nb_elts'], 2)
+            s['pct_ack'] = round(100.0 * s['nb_ack'] / s['nb_elts'], 1)
             s['nb_downtime'] = sum(1 for service in services if service.in_scheduled_downtime)
-            s['pct_downtime'] = round(100.0 * s['nb_downtime'] / s['nb_elts'], 2)
+            s['pct_downtime'] = round(100.0 * s['nb_downtime'] / s['nb_elts'], 1)
         else:
             s['bi'] = 0
             for state in 'ok', 'warning', 'critical', 'pending', 'unknown', 'ack', 'downtime', 'problems':
