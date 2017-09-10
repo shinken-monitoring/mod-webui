@@ -405,7 +405,7 @@ class Helper(object):
         flapping = (obj and obj.is_flapping) or state=='FLAPPING'
         ack = (obj and obj.problem_has_been_acknowledged) or state=='ACK'
         downtime = (obj and obj.in_scheduled_downtime) or state=='DOWNTIME'
-        hard = (obj and obj.state_type == 'HARD')
+        hard = (not obj or obj.state_type == 'HARD')
 
         # Icons depending upon element and real state ...
         icons = { 'host':
