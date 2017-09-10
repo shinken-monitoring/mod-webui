@@ -346,7 +346,7 @@ class Helper(object):
         txts = {0: 'None', 1: 'Low', 2: 'Normal',
                 3: 'Important', 4: 'Very important', 5: 'Business critical'}
         nb_stars = max(0, business_impact - 2)
-        stars = '<i class="fa fa-star text-primary"></i>' * nb_stars
+        stars = '<small style="vertical-align: middle;"><i class="fa fa-star"></i></small>' * nb_stars
 
         if text:
             res = "%s %s" % (txts.get(business_impact, 'Unknown'), stars)
