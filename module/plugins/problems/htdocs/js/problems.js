@@ -135,7 +135,7 @@ $('body').on('click', 'input[type=checkbox][data-type="problem"]', function (e) 
    // Add/remove element from selection
    add_remove_elements($(this).data('item'));
 });
-
+1.2
 $('body').on('click', '.js-select-elt', function(e) {
     if (e.ctrlKey) {
         e.stopPropagation();
@@ -180,9 +180,18 @@ function on_page_refresh(){
    // Graphs popover
    $('[data-toggle="popover"]').popover({
       html: true,
-      template: '<div class="popover img-popover"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
+      content: function() {
+          var div_id =  "tmp-id-" + $.now();
+          $.ajax({url: '/graphs/' + $(this).data('item'),
+                  dataType: 'html',
+                  success: function(response) {
+                      $('#'+div_id).html(response);
+                  }
+          });
+          return "<div id='" + div_id + "'>Loading…</div>";
+      },
+      template: '<div class="popover img-popover"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div style="width: 620px;" class="popover-content"><p></p></div></div></div>',
    });
-
 }
 
 // First page loading ...
