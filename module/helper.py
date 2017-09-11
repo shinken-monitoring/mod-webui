@@ -534,11 +534,6 @@ class Helper(object):
 
     def get_perfdata_pie(self, p):
         if p.max is not None:
-            title = "%s %s%s" % (p.name, p.value, p.uom)
-            if p.uom != '%':
-                title += " (%s%s)" % (p.max, p.uom)
-            used_value = p.value - (p.min or 0)
-            unused_value = p.max - (p.min or 0) - used_value
             color = "#44bb77"
             if p.warning < p.critical:
                 if p.value > p.warning:
@@ -551,6 +546,18 @@ class Helper(object):
                     color = "#ffaa44"
                 if p.value < p.critical:
                     color = "#ff5566"
+
+            used_value = p.value - (p.min or 0)
+            unused_value = p.max - (p.min or 0) - used_value
+            if (unused_value + used_value):
+                used_pct = (float(used_value) / float(unused_value + used_value)) * 100
+            else:
+                used_pct = None
+
+            title = "%s %s%s" % (p.name, p.value, p.uom)
+            if p.uom != '%' and used_pct is not None:
+                title += " ({:.2f}%)".format(used_pct)
+
             return '<span class="sparkline piechart" title="%s" role="img" sparkType="pie" sparkSliceColors="[%s,#ddccdd]" values="%s,%s"></span>' % (title, color, used_value, unused_value)
         return ""
 
