@@ -3,7 +3,7 @@
 %datamgr = app.datamgr
 %search_string = app.get_search_string()
 
-%rebase("layout", title=title, js=['js/shinken-actions.js', 'js/shinken-charts.js', 'problems/js/problems.js', 'problems/js/actions.js'], css=['problems/css/problems.css'], navi=navi, page="/all", elts_per_page=elts_per_page)
+%rebase("layout", title=title, js=['js/shinken-actions.js', 'js/jquery.sparkline.min.js', 'js/shinken-charts.js', 'problems/js/problems.js', 'problems/js/actions.js'], css=['problems/css/problems.css'], navi=navi, page="/all", elts_per_page=elts_per_page)
 
 <script type="text/javascript">
    var actions_enabled = {{'true' if app.can_action() else 'false'}};
