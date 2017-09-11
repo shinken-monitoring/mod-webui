@@ -586,13 +586,25 @@ class Helper(object):
         for p in perfdatas:
             s += '<tr><td>%s</td><td>%s</td><td>%s %s</td>' % (self.get_perfdata_pie(p), p.name, p.value, p.uom)
             if display_min:
-                s += '<td>%s %s</td>' % (p.min if p.min is not None else '', p.uom)
+                if p.min is not None:
+                    s += '<td>%s %s</td>' % (p.min, p.uom)
+                else:
+                    s += '<td></td>'
             if display_max:
-                s += '<td>%s %s</td>' % (p.max if p.max is not None else '', p.uom)
+                if p.max is not None:
+                    s += '<td>%s %s</td>' % (p.max, p.uom)
+                else:
+                    s += '<td></td>'
             if display_warning:
-                s += '<td>%s %s</td>' % (p.warning if p.warning is not None else '', p.uom)
+                if p.warning is not None:
+                    s += '<td>%s %s</td>' % (p.warning, p.uom)
+                else:
+                    s += '<td></td>'
             if display_critical:
-                s += '<td>%s %s</td>' % (p.critical if p.critical is not None else '', p.uom)
+                if p.critical is not None:
+                    s += '<td>%s %s</td>' % (p.critical, p.uom)
+                else:
+                    s += '<td></td>'
             s += '</tr>'
         s += '</table>'
 
