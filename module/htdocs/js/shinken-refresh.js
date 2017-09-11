@@ -106,7 +106,7 @@ function do_refresh(forced){
        */
       var $response = $('<div />').html(html);
       // Refresh current page content ...
-      chartsge-content').html($response.find('#page-content').html());
+      $('#page-content').html($response.find('#page-content').html());
 
       // Refresh header bar hosts/services state ...
       if ($('#overall-hosts-states').length > 0) {
