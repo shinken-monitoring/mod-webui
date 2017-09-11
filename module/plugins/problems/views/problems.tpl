@@ -42,12 +42,12 @@
       <table class="table table-condensed" style="table-layout:fixed; width:100%;">
          <thead><tr>
             <th width="20px"></th>
-            <th width="40px"></th>
-            <th class="host-column">Host</th>
-            <th class="service-column">Service</th>
-            <th class="state-column">State</th>
-            <th class="duration-column">Duration</th>
-            <th class="hidden-sm hidden-xs" width="100%">Output</th>
+            <!--<th width="40px"></th>-->
+            <th width="130px">State</th>
+            <th class="host-column hidden-sm hidden-xs hidden-md">Host</th>
+            <th class="service-column hidden-sm hidden-xs">Service</th>
+            <!--<th class="duration-column">Duration</th>-->
+            <th width="100%">Output</th>
          </tr></thead>
 
          <tbody>
@@ -57,10 +57,29 @@
                <td>
                   <input type="checkbox" class="input-sm" value="" id="selector-{{helper.get_html_id(pb)}}" data-type="problem" data-business-impact="{{business_impact}}" data-item="{{pb.get_full_name()}}">
                </td>
-               <td title="{{pb.get_name()}} - {{pb.output}} - Since {{helper.print_duration(pb.last_state_change)}} - Last check: {{helper.print_duration(pb.last_chk)}}" class="align-center">
-                  {{!helper.get_fa_icon_state(pb, useTitle=False)}}
+               <!--<td title="{{pb.get_name()}} - {{pb.output}} - Since {{helper.print_duration(pb.last_state_change)}} - Last check: {{helper.print_duration(pb.last_chk)}}"  class="text-center">-->
+                  <!--{{!helper.get_fa_icon_state(pb, useTitle=False)}}-->
+               <!--</td>-->
+               <td title="{{pb.get_name()}} - {{pb.output}} - Since {{helper.print_duration(pb.last_state_change)}} - Last check: {{helper.print_duration(pb.last_chk)}}"
+                 class="font-{{pb.state.lower()}} text-center">
+                   <div style="display: table-cell; vertical-align: middle; padding-right: 10px;">
+                     {{!helper.get_fa_icon_state(pb, useTitle=False)}}
+                   </div>
+                   <div style="display: table-cell; vertical-align: middle;">
+                     <small>
+                       <strong>{{ pb.state }}</strong><br>
+                       <span title="Since {{time.strftime("%d %b %Y %H:%M:%S", time.localtime(pb.last_state_change))}}">
+                         %if pb.state_type == 'HARD':
+                         {{!helper.print_duration(pb.last_state_change, just_duration=True, x_elts=2)}}
+                         %else:
+                         attempt {{pb.attempt}}/{{pb.max_check_attempts}}
+                         <!--soft state-->
+                         %end
+                       </span>
+                     </small>
+                   </div>
                </td>
-               <td>
+               <td class="hidden-sm hidden-xs hidden-md">
                   %if pb.host_name != previous_pb_host_name:
                      %title = ''
                      %if pb.__class__.my_type == 'service':
@@ -88,7 +107,18 @@
                      </a>
                   %end
                </td>
-               <td>
+               <td class="hidden-sm hidden-xs">
+                  <a href="/host/{{pb.host_name}}" title="{{title}}" class="hidden-lg">
+                    %if pb.__class__.my_type == 'service':
+                    %if pb.host:
+                    {{pb.host.get_name() if pb.host.display_name == '' else pb.host.display_name}}:
+                    %else:
+                    {{pb.host_name}}:
+                    %end
+                    %else:
+                    {{pb.get_name() if pb.display_name == '' else pb.display_name}}:
+                    %end
+                  </a>
                   %if pb.__class__.my_type == 'service':
                   {{!helper.get_link(pb, short=True)}}
                   %end
@@ -96,13 +126,12 @@
                   <button class="btn btn-danger btn-xs"><i class="fa fa-plus"></i> {{ len(pb.impacts) }} impacts</button>
                   %end
                </td>
-               <td class="font-{{pb.state.lower()}}"><strong><small>{{ pb.state }}</small></strong></td>
-               <td title="Since {{time.strftime("%d %b %Y %H:%M:%S", time.localtime(pb.last_state_change))}}">
-                 {{!helper.print_duration(pb.last_state_change, just_duration=True, x_elts=2)}}
-               </td>
-               <td class="row hidden-sm hidden-xs">
+               <!--<td title="Since {{time.strftime("%d %b %Y %H:%M:%S", time.localtime(pb.last_state_change))}}">-->
+                 <!--{{!helper.print_duration(pb.last_state_change, just_duration=True, x_elts=2)}}-->
+               <!--</td>-->
+               <td class="row">
                   <div class="pull-right">
-                     {{!helper.get_perfdata_pies(pb)}}
+                     {{!helper.get_perfdata_pies(pb)}}&nbsp;
                      %if app.graphs_module.is_available():
                      %graphs = app.graphs_module.get_graph_uris(pb, duration=12*3600)
                      %if len(graphs) > 0:
@@ -121,7 +150,31 @@
                      %end
                   </div>
                   <div class="ellipsis output">
-                     {{! pb.output}}
+                  <!--<div class="ellipsis output" style='font-family: "Liberation Mono", "Lucida Console", Courier, monospace; color=#7f7f7f; font-size:0.917em;'>-->
+                    <div class="hidden-md hidden-lg">
+                      <a href="/host/{{pb.host_name}}" title="{{title}}">
+                        %if pb.__class__.my_type == 'service':
+                        %if pb.host:
+                        {{pb.host.get_name() if pb.host.display_name == '' else pb.host.display_name}}:
+                        %else:
+                        {{pb.host_name}}:
+                        %end
+                        %else:
+                        {{pb.get_name() if pb.display_name == '' else pb.display_name}}:
+                        %end
+                      </a>
+                      %if pb.__class__.my_type == 'service':
+                      {{!helper.get_link(pb, short=True)}}
+                      %end
+                      %if len(pb.impacts) > 0:
+                      <button class="btn btn-danger btn-xs"><i class="fa fa-plus"></i> {{ len(pb.impacts) }} impacts</button>
+                      %end
+                    </div>
+
+                     <!--<br>-->
+
+                    <samp style="font-size:0.95em;">{{! pb.output}}</samp>
+                    <!--{{! pb.output}}-->
                      %if pb.long_output:
                      <div class="long-output">
                         {{! pb.long_output}}
