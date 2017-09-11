@@ -37,6 +37,8 @@ function add_remove_elements(name){
 function add_element(name){
    // Force to check the checkbox
    $('td input[type=checkbox][data-item="'+name+'"]').prop("checked", true);
+
+   $('td input[type=checkbox][data-item="'+name+'"]').closest('tr').addClass('active');
    
    if (problems_logs) console.log('Select element: ', name)
    selected_elements.push(name);
@@ -53,6 +55,8 @@ function add_element(name){
 function remove_element(name){
    // Force to uncheck the checkbox
    $('td input[type=checkbox][data-item="'+name+'"]').prop("checked", false);
+
+   $('td input[type=checkbox][data-item="'+name+'"]').closest('tr').removeClass('active');
    
    if (problems_logs) console.log('Unselect element: ', name)
    selected_elements.splice($.inArray(name, selected_elements),1);
@@ -131,6 +135,26 @@ $('body').on('click', 'input[type=checkbox][data-type="problem"]', function (e) 
    // Add/remove element from selection
    add_remove_elements($(this).data('item'));
 });
+
+$('body').on('click', '.js-select-elt', function(e) {
+    if (e.ctrlKey) {
+        e.stopPropagation();
+        if (problems_logs) console.log('Clicked: ', $(this).data('item'))
+        //alert($(this).data('item'));
+        add_remove_elements($(this).data('item'));
+    }
+});
+
+// :TODO:maethor:170911: 
+//$('body').on('click', '.js-select-elt', function(e) {
+//    if (e.shiftKey) {
+//        e.stopPropagation();
+//        if (problems_logs) console.log('Clicked: ', $(this).data('item'))
+//        //alert($(this).data('item'));
+//        add_remove_elements($(this).data('item'));
+//    }
+//});
+
 
 function on_page_refresh(){
    if (problems_logs) console.log('Problems page - on_page_refresh')

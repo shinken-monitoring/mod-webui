@@ -347,6 +347,10 @@ footer nav {
   }
 }
 
+.info {
+    cursor: help;
+}
+
 /*
  * Shinken basics
  */

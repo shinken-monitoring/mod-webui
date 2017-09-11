@@ -53,9 +53,9 @@
          <tbody>
          %previous_pb_host_name=None
          %for pb in bi_pbs:
-            <tr data-toggle="collapse" data-target="#details-{{helper.get_html_id(pb)}}" class="accordion-toggle">
+            <tr data-toggle="collapse" data-target="#details-{{helper.get_html_id(pb)}}" data-item="{{pb.get_full_name()}}" class="accordion-toggle js-select-elt">
                <td>
-                  <input type="checkbox" class="input-sm" value="" id="selector-{{helper.get_html_id(pb)}}" data-type="problem" data-business-impact="{{business_impact}}" data-item="{{pb.get_full_name()}}">
+                  <input type="checkbox" class="input-sm info" value="" id="selector-{{helper.get_html_id(pb)}}" data-type="problem" data-business-impact="{{business_impact}}" data-item="{{pb.get_full_name()}}" title="Press and hold Ctrl key while clicking on rows to select multiple rows">
                </td>
                <!--<td title="{{pb.get_name()}} - {{pb.output}} - Since {{helper.print_duration(pb.last_state_change)}} - Last check: {{helper.print_duration(pb.last_chk)}}"  class="text-center">-->
                   <!--{{!helper.get_fa_icon_state(pb, useTitle=False)}}-->
