@@ -46,6 +46,14 @@ html, body {
     margin:0;
 }
 
+.table-w-condensed {
+    width: auto !important;
+}
+
+.table-w-condensed td {
+    padding: 5px 10px !important;
+}
+
 /*
  * ------------------------------------------------------------------------
  * Page layout
@@ -311,6 +319,32 @@ footer nav {
   margin-bottom: 10px;
   border-top-left-radius: 0;
   border-top-right-radius: 0;
+}
+
+/*
+ * Status lead
+ */
+
+.status-lead {
+    margin-bottom: 20px;
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 1.4;
+}
+.status-lead samp {
+    font-size: 80%;
+    color: #777;
+}
+.status-lead a {
+    color: #333;
+}
+.status-lead a:hover {
+    text-decoration: underline;
+}
+@media (min-width: 768px) {
+  .status-lead {
+    font-size: 16px;
+  }
 }
 
 /*

@@ -571,7 +571,7 @@ class Helper(object):
         display_warning = any(p.warning is not None for p in perfdatas)
         display_critical = any(p.critical is not None for p in perfdatas)
 
-        s = '<table class="table table-condensed">'
+        s = '<table class="table table-condensed table-w-condensed">'
         s += '<tr><th></th><th>Label</th><th>Value</th>'
         if display_min:
             s += '<th>Min</th>'
