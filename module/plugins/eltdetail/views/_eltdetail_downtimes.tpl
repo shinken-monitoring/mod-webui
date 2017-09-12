@@ -19,7 +19,7 @@
         <h3>No downtime available on this {{ elt_type }}</h3>
       </div>
 
-      <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm js-add-downtime"
+      <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm js-schedule-downtime"
         title="Schedule a downtime for this {{elt_type}}"
         data-element="{{helper.get_uri_name(elt)}}"
         >
