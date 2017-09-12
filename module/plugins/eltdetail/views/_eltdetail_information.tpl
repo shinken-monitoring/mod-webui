@@ -13,7 +13,7 @@
               %if elt.state_type == 'HARD':
               {{!helper.print_duration(elt.last_state_change, just_duration=True, x_elts=2)}}
               %else:
-              attempt {{pb.attempt}}/{{elt.max_check_attempts}}
+              attempt {{elt.attempt}}/{{elt.max_check_attempts}}
               <!--soft state-->
               %end
             </span>

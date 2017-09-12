@@ -132,6 +132,10 @@ class Helper(object):
         else:
             return ' '.join(duration) + ' ago'
 
+    # Prints the duration with the date as title
+    def print_duration_and_date(self, t, just_duration=False, x_elts=2):
+        return "<span title='%s'>%s</span>" % (self.print_date(t, format="%d %b %Y %H:%M:%S"), self.print_duration(t, just_duration, x_elts=x_elts))
+
 # DEP GRAPH HELPERS {{{
     # Need to create a X level higher and lower to the element
     def create_json_dep_graph(self, elt, levels=3):
@@ -532,21 +536,36 @@ class Helper(object):
 
         return res
 
+    def get_html_color(self, state):
+        colors = {'CRITICAL': "#d9534f",
+                  'DOWN': "#d9534f",
+                  'WARNING': "#f0ad4e",
+                  'WARNING': "#f0ad4e",
+                  'OK': "#5cb85c",
+                  'UP': "#5cb85c",
+                  'PENDING': '#49AFCD',
+                  'UNKNOWN': '#49AFCD'}
+
+        if state in colors:
+            return colors[state]
+        else:
+            return colors['UNKNOWN']
+
     def get_perfdata_pie(self, p):
         if p.max is not None:
-            color = "#5cb85c"
+            color = self.get_html_color('OK')
             if p.warning or p.critical:
                 if p.warning <= p.critical:
                     if p.value >= p.warning:
-                        color = "#f0ad4e"
+                        color = self.get_html_color('WARNING')
                     if p.value >= p.critical:
-                        color = "#d9534f"
+                        color = self.get_html_color('CRITICAL')
                 else:
                     # inverted thresholds : OK > WARNING > CRITICAL
                     if p.value <= p.warning:
-                        color = "#f0ad4e"
+                        color = self.get_html_color('WARNING')
                     if p.value <= p.critical:
-                        color = "#d9534f"
+                        color = self.get_html_color('CRITICAL')
 
             used_value = p.value - (p.min or 0)
             unused_value = p.max - (p.min or 0) - used_value
