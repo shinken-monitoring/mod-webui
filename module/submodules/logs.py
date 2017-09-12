@@ -171,19 +171,8 @@ class MongoDBLogs():
 
         records = []
         try:
-            for log in self.db[self.logs_collection].find(query).sort(
-                    [("time", pymongo.DESCENDING)]).limit(limit):
-                message = log['message']
-                m = re.search(r"\[(\d+)\] (.*)", message)
-                if m and m.group(2):
-                    message = m.group(2)
-
-                records.append({
-                    "timestamp":    int(log["time"]),
-                    "host":         log['host_name'],
-                    "service":      log['service_description'],
-                    "message":      message
-                })
+            records = self.db[self.logs_collection].find(query).sort(
+                    [("time", pymongo.DESCENDING)]).limit(limit)
 
             logger.debug("[mongo-logs] %d records fetched from database.", len(records))
         except Exception, exp:
