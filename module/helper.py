@@ -535,17 +535,18 @@ class Helper(object):
     def get_perfdata_pie(self, p):
         if p.max is not None:
             color = "#5cb85c"
-            if p.warning < p.critical:
-                if p.value > p.warning:
-                    color = "#f0ad4e"
-                if p.value > p.critical:
-                    color = "#d9534f"
-            else:
-                # inverted thresholds : OK > WARNING > CRITICAL
-                if p.value < p.warning:
-                    color = "#f0ad4e"
-                if p.value < p.critical:
-                    color = "#d9534f"
+            if p.warning or p.critical:
+                if p.warning <= p.critical:
+                    if p.value >= p.warning:
+                        color = "#f0ad4e"
+                    if p.value >= p.critical:
+                        color = "#d9534f"
+                else:
+                    # inverted thresholds : OK > WARNING > CRITICAL
+                    if p.value <= p.warning:
+                        color = "#f0ad4e"
+                    if p.value <= p.critical:
+                        color = "#d9534f"
 
             used_value = p.value - (p.min or 0)
             unused_value = p.max - (p.min or 0) - used_value
