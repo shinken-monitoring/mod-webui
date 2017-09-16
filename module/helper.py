@@ -554,6 +554,8 @@ class Helper(object):
     def get_perfdata_pie(self, p):
         if p.max is not None:
             color = self.get_html_color('OK')
+            used_value = p.value - (p.min or 0)
+            unused_value = p.max - (p.min or 0) - used_value
             if p.warning or p.critical:
                 if p.warning <= p.critical:
                     if p.value >= p.warning:
@@ -566,6 +568,7 @@ class Helper(object):
                         color = self.get_html_color('WARNING')
                     if p.value <= p.critical:
                         color = self.get_html_color('CRITICAL')
+                    used_value, unused_value = unused_value, used_value
 
             used_value = p.value - (p.min or 0)
             unused_value = p.max - (p.min or 0) - used_value
