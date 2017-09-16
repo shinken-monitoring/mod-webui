@@ -56,7 +56,7 @@
       <!-- Stylesheets
       ================================================== -->
       <link href="/static/css/bootstrap.min.css" rel="stylesheet">
-      <link href="/static/css/bootstrap-theme.min.css" rel="stylesheet">
+      <!--<link href="/static/css/bootstrap-theme.min.css" rel="stylesheet">-->
       <link href="/static/css/font-awesome.min.css" rel="stylesheet">
       <link href="/static/css/metisMenu.min.css" rel="stylesheet">
       <link href="/static/css/sb-admin-2.css" rel="stylesheet">

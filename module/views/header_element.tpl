@@ -8,7 +8,7 @@
 
 
 <!-- Header Navbar -->
-<nav class="header navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom:0px;">
+<nav class="header navbar navbar-static-top navbar-inverse" role="navigation">
    <div class="navbar-header">
       <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
          <span class="sr-only">Toggle navigation</span>
@@ -17,7 +17,7 @@
          <span class="icon-bar"></span>
       </button>
       <a href="/" class="logo navbar-brand">
-         <img src="/static/logo/{{app.company_logo}}" alt="Company logo" />
+         <img src="/static/logo/{{app.company_logo}}" alt="Company logo" style="padding: 7px;" />
       </a>
    </div>
 
@@ -26,7 +26,7 @@
       %include("_filters.tpl")
    </ul>
 
-   <ul class="nav navbar-top-links navbar-right">
+   <ul class="nav navbar-nav navbar-top-links navbar-right">
      <!-- Right part ... -->
      %s = app.datamgr.get_services_synthesis(user=user)
      %h = app.datamgr.get_hosts_synthesis(user=user)
@@ -78,13 +78,15 @@
       <!--begin-hosts-states-->
       <li id="overall-hosts-states">
          %state = app.datamgr.get_percentage_hosts_state(user, False)
-         %label = 'danger' if state <= app.hosts_states_warning else 'warning' if state <= app.hosts_states_critical else 'success'
+         %color = 'font-critical' if state <= app.hosts_states_warning else 'font-warning' if state <= app.hosts_states_critical else ''
          <a id="hosts-states-popover"
-            class="hosts-all" data-count="{{ h['nb_elts'] }}" data-problems="{{ h['nb_problems'] }}"
+            class="btn btn-primary hosts-all" data-count="{{ h['nb_elts'] }}" data-problems="{{ h['nb_problems'] }}"
             href="/all?search=type:host"
             data-original-title="Hosts states" data-toggle="popover popover-hosts" title="Overall hosts states: {{h['nb_elts']}} hosts, {{h["nb_problems"]}} problems" data-html="true">
-            <i class="fa fa-server"></i>
-            <span class="label label-as-badge label-{{label}}">{{h["nb_problems"]}}</span>
+            <i class="fa fa-server {{ color }}"></i>
+            %if color:
+            <span class="badge">{{h["nb_problems"]}}</span>
+            %end
          </a>
       </li>
       <!--end-hosts-states-->
@@ -94,49 +96,50 @@
          may be used by the layout page refresh.
       -->
       <!--begin-services-states-->
-      <li id="overall-services-states">
+      <li id="overall-services-states" style="margin-right: 15px;">
          %state = app.datamgr.get_percentage_service_state(user, False)
-         %label = 'danger' if state <= app.services_states_warning else 'warning' if state <= app.services_states_critical else 'success'
+         %color = 'font-critical' if state <= app.services_states_warning else 'font-warning' if state <= app.services_states_critical else ''
          <a id="services-states-popover"
-            class="services-all" data-count="{{ s['nb_elts'] }}" data-problems="{{ s['nb_problems'] }}"
+            class="btn btn-primary services-all" data-count="{{ s['nb_elts'] }}" data-problems="{{ s['nb_problems'] }}"
             href="/all?search=type:service"
             data-original-title="Services states" data-toggle="popover popover-services" title="Overall services states: {{s['nb_elts']}} services, {{s["nb_problems"]}} problems" data-html="true">
-            <i class="fa fa-bars"></i>
-            <span class="label label-as-badge label-{{label}}">{{s["nb_problems"]}}</span>
+            <i class="fa fa-hdd-o {{ color }}"></i>
+            %if color:
+            <span class="badge label-{{label}}">{{s["nb_problems"]}}</span>
+            %end
          </a>
       </li>
       <!--end-services-states-->
 
       <li>
-         <a class="quickinfo" data-original-title='Currently' href="/dashboard/currently" title="Dashboard currently">
+         <a class="btn btn-ico" data-original-title='Currently' href="/dashboard/currently" title="Dashboard currently">
             <i class="fa fa-eye"></i>
          </a>
       </li>
 
       %if refresh:
       <li>
-         <a class="quickinfo" action="toggle-page-refresh" data-original-title='Refreshing' href="#">
+         <button class="btn btn-ico js-toggle-page-refresh" data-original-title='Refreshing'>
             <i id="header_loading" class="fa fa-refresh"></i>
-         </a>
+         </button>
       </li>
       %end
 
       %if app.play_sound:
       <li class="hidden-sm hidden-xs hidden-md">
-         <a class="quickinfo js-toggle-sound-alert" data-original-title='Sound alerting' href="#">
+         <button class="btn btn-ico js-toggle-sound-alert" data-original-title='Sound alerting' href="#">
             <span id="sound_alerting" class="fa-stack">
               <i class="fa fa-music fa-stack-1x"></i>
               <i class="fa fa-ban fa-stack-2x text-danger"></i>
             </span>
-         </a>
+         </button>
       </li>
       %end
 
       <!-- User info -->
       <li class="dropdown user user-menu">
-         <a href="#" class="dropdown-toggle" data-original-title='User menu' data-toggle="dropdown">
-            <i class="fa fa-user"></i>
-            <span><span class="username hidden-sm hidden-xs hidden-md">{{username}}</span> <i class="caret"></i></span>
+         <a href="#" class="btn btn-ico btn-user dropdown-toggle" data-original-title='User menu' data-toggle="dropdown">
+           <i class="fa fa-user" title="{{ username }}"></i>
          </a>
 
          <ul class="dropdown-menu">

@@ -35,9 +35,9 @@ if (! sessionStorage.getItem("refresh_active")) {
 }
 if (refresh_logs) console.debug("Refresh active is ", sessionStorage.getItem("refresh_active"));
 if (sessionStorage.getItem("refresh_active") == '1') {
-   $('#header_loading').removeClass('font-greyed');
+    start_refresh();
 } else {
-   $('#header_loading').addClass('font-greyed');
+    stop_refresh();
 }
 
 function postpone_refresh(){
@@ -215,9 +215,9 @@ function do_refresh(forced){
    .always(function() {
       // Set refresh icon ...
       if (sessionStorage.getItem("refresh_active") == '1') {
-         $('#header_loading').removeClass('font-greyed');
+         start_refresh();
       } else {
-         $('#header_loading').addClass('font-greyed');
+         stop_refresh();
       }
       if (refresh_logs) console.debug("Refresh active is ", sessionStorage.getItem("refresh_active"));
 
@@ -272,14 +272,16 @@ function reinit_refresh(){
 
 function stop_refresh() {
    if (refresh_logs) console.debug("Stop refresh");
-   $('#header_loading').addClass('font-greyed');
+   $('#header_loading').addClass('fa-striked');
+   $('#header_loading').prop('title', "Click to enable auto-refresh");
    sessionStorage.setItem("refresh_active", '0');
 }
 
 
 function start_refresh() {
    if (refresh_logs) console.debug("Stop refresh");
-   $('#header_loading').removeClass('font-greyed');
+   $('#header_loading').removeClass('fa-striked');
+   $('#header_loading').prop('title', "Click to disable auto-refresh");
    sessionStorage.setItem("refresh_active", '1');
 }
 
@@ -290,13 +292,13 @@ $(document).ready(function(){
    setInterval("check_refresh();", 1000);
 
    if (sessionStorage.getItem("refresh_active") == '1') {
-      $('#header_loading').removeClass('font-greyed');
+       start_refresh();
    } else {
-      $('#header_loading').addClass('font-greyed');
+       stop_refresh();
    }
 
    // Toggle refresh ...
-   $('body').on("click", '[action="toggle-page-refresh"]', function (e, data) {
+   $('body').on("click", '.js-toggle-page-refresh', function (e, data) {
       if (sessionStorage.getItem("refresh_active") == '1') {
          stop_refresh();
       } else {
