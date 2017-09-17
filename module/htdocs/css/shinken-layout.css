@@ -54,6 +54,7 @@ html, body {
     padding: 5px 10px !important;
 }
 
+
 /*
  * ------------------------------------------------------------------------
  * Page layout
@@ -100,6 +101,14 @@ html, body {
    white-space: nowrap;
    overflow: hidden;
    text-overflow: ellipsis;
+}
+
+td .ellipsis {
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+
+td .ellipsis > .long-output {
+    display:none;
 }
 
 /*

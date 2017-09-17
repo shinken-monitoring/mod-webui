@@ -25,14 +25,6 @@ td .progress {
     margin-bottom:0px !important;
 }
 
-td .ellipsis {
-    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-}
-
-td .ellipsis > .long-output {
-    display:none;
-}
-
 /*
  * Problems table, responsive table columns
  */
