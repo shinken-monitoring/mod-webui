@@ -26,7 +26,7 @@
       %include("_filters.tpl")
    </ul>
 
-   <ul class="nav navbar-nav navbar-top-links navbar-right">
+   <ul class="nav navbar-nav navbar-top-links navbar-right hidden-xs">
      <!-- Right part ... -->
      %s = app.datamgr.get_services_synthesis(user=user)
      %h = app.datamgr.get_hosts_synthesis(user=user)
@@ -234,6 +234,9 @@
         </li>
         %end
         %end
+        <li class="visible-xs">
+           <a href="/user/logout" data-toggle="modal" data-target="/user/logout"><i class="fa fa-sign-out"></i> Logout</a>
+        </li>
 
       </ul>
     </div>
