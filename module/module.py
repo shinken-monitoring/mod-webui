@@ -660,6 +660,7 @@ class Webui_broker(BaseModule, Daemon):
                 widget_desc = entry.get('widget_desc', None)
                 widget_name = entry.get('widget_name', None)
                 widget_picture = entry.get('widget_picture', None)
+                deprecated = entry.get('deprecated', False)
                 if widget_name and widget_desc and widget_lst != [] and route:
                     for place in widget_lst:
                         if place not in self.widgets:
@@ -668,7 +669,8 @@ class Webui_broker(BaseModule, Daemon):
                             'widget_name': widget_name,
                             'widget_desc': widget_desc,
                             'base_uri': route,
-                            'widget_picture': widget_picture
+                            'widget_picture': widget_picture,
+                            'deprecated': deprecated
                         })
 
             # And we add the views dir of this plugin in our TEMPLATE

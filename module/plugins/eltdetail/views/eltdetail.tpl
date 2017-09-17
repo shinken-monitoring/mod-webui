@@ -100,7 +100,7 @@ Invalid element name
             %if app.graphs_module.is_available():
             <li><a href="#graphs" data-toggle="tab">Graphs</a></li>
             %end
-            <li><a href="#depgraph" data-toggle="tab">Impact graph</a></li>
+            <!--<li><a href="#depgraph" data-toggle="tab">Impact graph</a></li>-->
             %if app.logs_module.is_available():
             <li><a href="#history" data-toggle="tab">History</a></li>
             %end
@@ -144,7 +144,7 @@ Invalid element name
             %include("_eltdetail_graphs.tpl")
             %#include("_eltdetail_timeline.tpl")
             %include("_eltdetail_history.tpl")
-            %include("_eltdetail_depgraph.tpl")
+            <!--%include("_eltdetail_depgraph.tpl")-->
             %include("_eltdetail_availability.tpl")
             %include("_eltdetail_helpdesk.tpl")
 

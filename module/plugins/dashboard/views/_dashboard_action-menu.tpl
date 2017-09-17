@@ -1,8 +1,10 @@
 <nav id="action-menu" class="navbar navbar-default navbar-element hidden-xs" role="navigation">
   <ul class="nav">
     %for w in app.get_widgets_for('dashboard'):
+    %if not w['deprecated']:
     <li>
       <a href="#"
+        title="Add widget {{w['widget_name']}}"
         class="dashboard-widget"
         data-widget-title="
         <button href='#' role='button'
@@ -18,6 +20,7 @@
         <span class="fa fa-plus"></span> {{w['widget_name']}}
       </a>
     </li>
+    %end
     %end
   </ul>
 </nav>
