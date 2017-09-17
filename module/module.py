@@ -842,7 +842,7 @@ class Webui_broker(BaseModule, Daemon):
         if not contact:
             return None
 
-        user = User.from_contact(contact, self.gravatar)
+        user = User.from_contact(contact)
         return user
 
     ##
@@ -851,7 +851,7 @@ class Webui_broker(BaseModule, Daemon):
     ##
     def can_action(self, username=None):
         if username:
-            user = User.from_contact(self.datamgr.get_contact(name=username), self.gravatar)
+            user = User.from_contact(self.datamgr.get_contact(name=username))
         else:
             user = request.environ.get('USER', None)
 
@@ -966,7 +966,7 @@ def login_required():
     if not contact:
         bottle.redirect(app.get_url("GetLogin"))
 
-    user = User.from_contact(contact, app.gravatar)
+    user = User.from_contact(contact)
     if app.user_session and app.user_info:
         user.set_information(app.user_session, app.user_info)
     app.datamgr.set_logged_in_user(user)

@@ -277,6 +277,19 @@ td .ellipsis > .long-output {
     border-radius: 17px;
 }
 
+.user-avatar > a {
+    color: inherit;
+}
+
+.user-avatar > a:hover {
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.user-avatar > a:hover > img {
+    opacity: 0.8;
+}
+
 /*
  * Navigation bar, responsive input field
  */

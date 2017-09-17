@@ -1,5 +1,7 @@
 %rebase("layout", title='All contacts (%d contacts)' % len(contacts))
 
+%helper = app.helper
+
 <div id="contacts">
 
    <table class="table table-condensed table-striped">
@@ -23,7 +25,7 @@
          %for contact in contacts:
          <tr>
            <td>
-             <a href="/contact/{{contact.contact_name}}" ><strong>{{contact.contact_name}}</strong></a>
+             {{ !helper.get_contact_avatar(contact) }}
              %if contact.is_admin:
              <i class="fa font-warning fa-star" title="This user is admin"></i>
              %elif app.can_action(contact.contact_name):

@@ -22,11 +22,12 @@
       %if with_service_name:
       {{!helper.get_link(c.ref, short=True)}}
       %else:
-      {{ c.author }}
+      {{ !helper.get_contact_avatar(c.author) }}
       %end
       <span class="comment-time">
         %if with_service_name:
-        by {{ c.author }} 
+        by 
+        {{ !helper.get_contact_avatar(c.author) }}
         %else:
         commented
         %end

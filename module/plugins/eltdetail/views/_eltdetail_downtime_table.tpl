@@ -16,11 +16,12 @@
       %if with_service_name:
       {{!helper.get_link(d.ref, short=True)}}
       %else:
-      {{ d.author }}
+      {{ !helper.get_contact_avatar(d.author) }}
       %end
       <span class="comment-time">
         %if with_service_name:
-        by {{ d.author }} 
+        by
+        {{ !helper.get_contact_avatar(d.author) }}
         %else:
         created
         %end
