@@ -475,8 +475,7 @@ class Helper(object):
                 label=title
             return '''
               <span class="font-%s">
-                 %s
-                 <span class="num">%s</span>
+                 %s&nbsp;<span class="num">%s</span>
               </span>
               ''' % (color,
                      icon_text,
@@ -487,8 +486,7 @@ class Helper(object):
         color = state.lower() if not disabled else 'greyed'
         return '''
           <span class="font-%s">
-             %s
-             <span class="num">%s</span>
+             %s&nbsp;<span class="num">%s</span>
           </span>
           ''' % (color,
                  self.get_fa_icon_state(obj=obj, cls=cls, state=state, disabled=disabled, useTitle=useTitle),

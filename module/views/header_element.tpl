@@ -35,8 +35,8 @@
          <tbody>
             <tr>
                %for state in "up", "unreachable", "down", "pending", "unknown", "ack", "downtime":
-               <td>
-                 %label = "%s <i>(%s%%)</i>" % (h["nb_" + state], h["pct_" + state])
+               <td title="{{ h["pct_" + state] }}% {{ state }}">
+                 %label = "%s" % h["nb_" + state]
                  %if state in ['ack', 'downtime']:
                  <a href="/all?search=type:host is:{{state}}">
                  %else:
@@ -55,8 +55,8 @@
          <tbody>
             <tr>
                %for state in "ok", "warning", "critical", "pending", "unknown", "ack", "downtime":
-               <td>
-                 %label = "%s <i>(%s%%)</i>" % (s["nb_" + state], s["pct_" + state])
+               <td title="{{ s["pct_" + state] }}% {{ state }}">
+                 %label = "%s" % s["nb_" + state]
                  %if state in ['ack', 'downtime']:
                  <a href="/all?search=type:service is:{{state}}">
                  %else:
@@ -305,6 +305,7 @@
    // Activate the popover ...
    $('#hosts-states-popover').popover({
       placement: 'bottom',
+      container: 'body',
       trigger: 'manual',
       animation: false,
       template: '<div class="popover img-popover"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
@@ -329,6 +330,7 @@
    // Activate the popover ...
    $('#services-states-popover').popover({
       placement: 'bottom',
+      container: 'body',
       trigger: 'manual',
       animation: false,
       template: '<div class="popover img-popover"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
