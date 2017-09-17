@@ -32,7 +32,7 @@ from shinken.log import logger
 
 
 class User(Contact):
-    picture = None
+    avatar = None
     session = None
 
     def set_information(self, session, *information):
@@ -47,9 +47,6 @@ class User(Contact):
 
     def get_session(self):
         return getattr(self, 'session', None)
-
-    def get_picture(self):
-        return self.picture
 
     def get_username(self):
         if getattr(self, 'contact_name', None):
@@ -165,18 +162,20 @@ class User(Contact):
         return False
 
     @classmethod
-    def from_contact(cls, contact, picture="", use_gravatar=False):
+    def from_contact(cls, contact, use_gravatar=False):
         user = contact
         try:
             user.__class__ = User
         except Exception:
             raise Exception(user)
-        if not picture:
-            user.picture = '/static/photos/%s' % user.get_username()
-            if use_gravatar:
-                gravatar = cls.get_gravatar(user.email)
-                if gravatar:
-                    user.picture = gravatar
+
+        # :TODO:maethor:170917: Make this possible again ?
+        # user.avatar = '/static/photos/%s' % user.get_username()
+        user.avatar = '/avatar/%s' % user.get_username()
+        if use_gravatar:
+            gravatar = cls.get_gravatar(user.email)
+            if gravatar:
+                user.avatar = gravatar
 
         return user
 

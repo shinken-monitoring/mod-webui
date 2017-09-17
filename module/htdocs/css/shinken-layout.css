@@ -157,8 +157,8 @@ html, body {
     content: "/";
     font-weight: bold;
     font-size: 1.7em;
-    left: 17px;
-    top: 12px;
+    left: 16px;
+    top: 11px;
 }
 
 .navbar-inverse {
@@ -256,11 +256,11 @@ html, body {
 }
 
 .navbar-nav > li > .btn-ico {
-    font-size: 15px;
-    width: 33px;
-    height: 33px;
+    font-size: 16px;
+    width: 32px;
+    height: 32px;
     text-align: center;
-    padding: 6px 10px;
+    padding: 5px 8px;
     line-height: 1.33;
 }
 
@@ -311,34 +311,34 @@ html, body {
 /*
  * Navigation bar, user menu
  */
-.user-menu > .dropdown-menu {
-  -webkit-border-radius: 0;
-  -moz-border-radius: 0;
-  border-radius: 0;
-  padding: 1px 0 0 0;
-  border-top-width: 0;
-  width: 280px;
-}
-.user-menu > .dropdown-menu:after {
-  bottom: 100%;
-  right: 10px;
-  border: solid transparent;
-  content: " ";
-  height: 0;
-  width: 0;
-  position: absolute;
-  pointer-events: none;
-  border-color: rgba(255, 255, 255, 0);
-  border-bottom-color: #ffffff;
-  border-width: 10px;
-  margin-left: -10px;
-}
-.user-menu > .dropdown-menu > li.user-header {
-  height: auto;
-  padding: 10px;
-  background: #eeeeee;
-  text-align: center;
-}
+/*.user-menu > .dropdown-menu {*/
+  /*-webkit-border-radius: 0;*/
+  /*-moz-border-radius: 0;*/
+  /*border-radius: 0;*/
+  /*padding: 1px 0 0 0;*/
+  /*border-top-width: 0;*/
+  /*width: 280px;*/
+/*}*/
+/*.user-menu > .dropdown-menu:after {*/
+  /*bottom: 100%;*/
+  /*right: 10px;*/
+  /*border: solid transparent;*/
+  /*content: " ";*/
+  /*height: 0;*/
+  /*width: 0;*/
+  /*position: absolute;*/
+  /*pointer-events: none;*/
+  /*border-color: rgba(255, 255, 255, 0);*/
+  /*border-bottom-color: #ffffff;*/
+  /*border-width: 10px;*/
+  /*margin-left: -10px;*/
+/*}*/
+/*.user-menu > .dropdown-menu > li.user-header {*/
+  /*height: auto;*/
+  /*padding: 10px;*/
+  /*background: #eeeeee;*/
+  /*text-align: center;*/
+/*}*/
 
 /*
  * Footer - make footer bar smaller than usual ...

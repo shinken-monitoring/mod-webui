@@ -137,39 +137,47 @@
       %end
 
       <!-- User info -->
-      <li class="dropdown user user-menu">
-         <a href="#" class="btn btn-ico btn-user dropdown-toggle" data-original-title='User menu' data-toggle="dropdown">
-           <i class="fa fa-user" title="{{ username }}"></i>
+      <li class="dropdown">
+        <a href="#" class="btn btn-ico btn-user dropdown-toggle" data-original-title='User menu' data-toggle="dropdown" style="background-image: url({{user.avatar}}); background-size: 33px 33px;" title="{{ username }}">
+           <!--<img src="/avatar/{{ username }}" class="img-circle" size="32px">-->
+           <!--<i class="fa fa-user" title="{{ username }}"></i>-->
          </a>
 
          <ul class="dropdown-menu">
-            <li class="user-header">
-               <div class="panel panel-info" id="user_info">
-                  <div class="panel-body panel-default">
-                     <!-- User image / name -->
-                     <p class="username">{{username}}</p>
-                     %if app.can_action():
-                     <p class="usercategory">
-                        <small>{{'Administrator' if user.is_administrator() else 'User'}}</small>
-                     </p>
-                     %end
-                     <img src="{{user.get_picture()}}" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}">
-                  </div>
-                  <div class="panel-footer">
-                     <!-- User actions -->
-                     <div class="btn-group" role="group">
-                        <a href="https://github.com/shinken-monitoring/mod-webui/wiki" target="_blank" class="btn btn-default btn-flat"><i class="fa fa-book"></i> </a>
-                     </div>
-                     <div class="btn-group" role="group">
-                        <a href="#actions" data-toggle="modal" class="btn btn-default btn-flat disabled"><span class="fa fa-gear"></span> </a>
-                        <a href="/user/pref" data-toggle="modal" class="btn btn-default btn-flat"><span class="fa fa-pencil"></span> </a>
-                     </div>
-                     <div class="btn-group" role="group">
-                        <a href="/user/logout" class="btn btn-default btn-flat" data-toggle="modal" data-target="/user/logout"><span class="fa fa-sign-out"></span> </a>
-                     </div>
-                  </div>
-               </div>
-            </li>
+           <li class="dropdown-header">{{ username }}</li>
+           <li class="divider"></li>
+           <li><a href="https://github.com/shinken-monitoring/mod-webui/wiki" target="_blank">Documentation</a></li>
+           <li class="disabled"><a href="#actions" data-toggle="modal">Actions</a></li>
+           <li><a href="/user/pref" data-toggle="modal">Preferences</a></li>
+           <li class="divider"></li>
+           <li><a href="/user/logout" data-toggle="modal" data-target="/user/logout"><i class="fa fa-sign-out"></i> Logout</a></li>
+            <!--<li class="user-header">-->
+               <!--<div class="panel panel-info" id="user_info">-->
+                  <!--<div class="panel-body panel-default">-->
+                     <!--[> User image / name <]-->
+                     <!--<p class="username">{{username}}</p>-->
+                     <!--%if app.can_action():-->
+                     <!--<p class="usercategory">-->
+                        <!--<small>{{'Administrator' if user.is_administrator() else 'User'}}</small>-->
+                     <!--</p>-->
+                     <!--%end-->
+                     <!--<img src="{{user.avatar}}" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}">-->
+                  <!--</div>-->
+                  <!--<div class="panel-footer">-->
+                     <!--[> User actions <]-->
+                     <!--<div class="btn-group" role="group">-->
+                        <!--<a href="https://github.com/shinken-monitoring/mod-webui/wiki" target="_blank" class="btn btn-default btn-flat"><i class="fa fa-book"></i> </a>-->
+                     <!--</div>-->
+                     <!--<div class="btn-group" role="group">-->
+                        <!--<a href="#actions" data-toggle="modal" class="btn btn-default btn-flat disabled"><span class="fa fa-gear"></span> </a>-->
+                        <!--<a href="/user/pref" data-toggle="modal" class="btn btn-default btn-flat"><span class="fa fa-pencil"></span> </a>-->
+                     <!--</div>-->
+                     <!--<div class="btn-group" role="group">-->
+                        <!--<a href="/user/logout" class="btn btn-default btn-flat" data-toggle="modal" data-target="/user/logout"><span class="fa fa-sign-out"></span> </a>-->
+                     <!--</div>-->
+                  <!--</div>-->
+               <!--</div>-->
+            <!--</li>-->
          </ul>
       </li>
    </ul>

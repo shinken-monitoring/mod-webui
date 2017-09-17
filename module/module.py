@@ -244,7 +244,6 @@ class Webui_broker(BaseModule, Daemon):
         logger.info("[WebUI] Photo dir: %s", self.photo_dir)
 
         # User information
-        self.user_picture = ''
         self.user_session = None
         self.user_info = None
 
@@ -792,7 +791,6 @@ class Webui_broker(BaseModule, Daemon):
     # :TODO:maethor:150727: Remove this method - @mohierf: why?
     def check_authentication(self, username, password):
         logger.info("[WebUI] Checking authentication for user: %s", username)
-        self.user_picture = None
         self.user_session = None
         self.user_info = None
 
@@ -808,9 +806,6 @@ class Webui_broker(BaseModule, Daemon):
 
             user = User.from_contact(c)
 
-            # user = User.from_contact(c, picture=self.user_picture, use_gravatar=self.gravatar)
-            self.user_picture = user.picture
-            logger.info("[WebUI] User picture: %s", self.user_picture)
             self.user_session = self.auth_module.get_session()
             logger.info("[WebUI] User session: %s", self.user_session)
             self.user_info = self.auth_module.get_user_info()
@@ -826,7 +821,6 @@ class Webui_broker(BaseModule, Daemon):
     ##
     def get_user_auth(self):
         logger.warning("[WebUI] Deprecated - Getting authenticated user ...")
-        self.user_picture = None
         self.user_session = None
         self.user_info = None
 
@@ -848,8 +842,7 @@ class Webui_broker(BaseModule, Daemon):
         if not contact:
             return None
 
-        user = User.from_contact(contact, self.user_picture, self.gravatar)
-        self.user_picture = user.picture
+        user = User.from_contact(contact, self.gravatar)
         return user
 
     ##
@@ -973,10 +966,9 @@ def login_required():
     if not contact:
         bottle.redirect(app.get_url("GetLogin"))
 
-    user = User.from_contact(contact, app.user_picture, app.gravatar)
+    user = User.from_contact(contact, app.gravatar)
     if app.user_session and app.user_info:
         user.set_information(app.user_session, app.user_info)
-    app.user_picture = user.get_picture()
     app.datamgr.set_logged_in_user(user)
 
     logger.debug("[WebUI] update current user: %s", user)
