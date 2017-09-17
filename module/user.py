@@ -169,18 +169,22 @@ class User(Contact):
         except Exception:
             raise Exception(user)
 
-        # :TODO:maethor:170917: Make this possible again ?
-        # user.avatar = '/static/photos/%s' % user.get_username()
-        user.avatar = '/avatar/%s' % user.get_username()
-        if use_gravatar:
-            gravatar = cls.get_gravatar(user.email)
-            if gravatar:
-                user.avatar = gravatar
+        user.avatar = cls.get_avatar_url(user, use_gravatar)
 
         return user
 
     @staticmethod
-    def get_gravatar(email, size=64, default='404'):
+    def get_avatar_url(contact, use_gravatar):
+        # :TODO:maethor:170917: Make this possible again ?
+        # user.avatar = '/static/photos/%s' % user.get_username()
+        if use_gravatar:
+            gravatar = User.get_gravatar(contact.email)
+            if gravatar:
+                return gravatar
+        return '/avatar/%s' % contact.get_username()
+
+    @staticmethod
+    def get_gravatar_url(email, size=64, default='404'):
         logger.debug("[WebUI] get Gravatar, email: %s, size: %d, default: %s",
                      email, size, default)
 
