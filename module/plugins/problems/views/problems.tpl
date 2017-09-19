@@ -53,6 +53,11 @@
          <tbody>
          %previous_pb_host_name=None
          %for pb in bi_pbs:
+            %if pb.__class__.my_type == 'service':
+            %pb_host = pb.host
+            %else:
+            %pb_host = pb
+            %end
             <tr data-toggle="collapse" data-target="#details-{{helper.get_html_id(pb)}}" data-item="{{pb.get_full_name()}}" class="accordion-toggle js-select-elt">
                <td>
                   <input type="checkbox" class="input-sm info" value="" id="selector-{{helper.get_html_id(pb)}}" data-type="problem" data-business-impact="{{business_impact}}" data-item="{{pb.get_full_name()}}" title="Press and hold Ctrl key while clicking on rows to select multiple rows">
@@ -60,7 +65,9 @@
                <!--<td title="{{pb.get_name()}} - {{pb.output}} - Since {{helper.print_duration(pb.last_state_change)}} - Last check: {{helper.print_duration(pb.last_chk)}}"  class="text-center">-->
                   <!--{{!helper.get_fa_icon_state(pb, useTitle=False)}}-->
                <!--</td>-->
-               <td title="{{pb.get_name()}} - {{pb.output}} - Since {{helper.print_duration(pb.last_state_change)}} - Last check: {{helper.print_duration(pb.last_chk)}}"
+             <td title="{{pb.get_name()}} - {{pb.state}}<br> Since {{helper.print_date(pb.last_state_change, format="%d %b %Y %H:%M:%S")}}<br> Last check {{helper.print_duration(pb.last_chk)}}<br> Next check {{helper.print_duration(pb.next_chk)}}"
+                 data-placement="right"
+                 data-container="body"
                  class="font-{{pb.state.lower()}} text-center">
                    <div style="display: table-cell; vertical-align: middle; padding-right: 10px;">
                      {{!helper.get_fa_icon_state(pb, useTitle=False)}}
@@ -68,57 +75,37 @@
                    <div style="display: table-cell; vertical-align: middle;">
                      <small>
                        <strong>{{ pb.state }}</strong><br>
-                       <span title="Since {{time.strftime("%d %b %Y %H:%M:%S", time.localtime(pb.last_state_change))}}">
+                       <!--<span title="Since {{time.strftime("%d %b %Y %H:%M:%S", time.localtime(pb.last_state_change))}}">-->
                          %if pb.state_type == 'HARD':
                          {{!helper.print_duration(pb.last_state_change, just_duration=True, x_elts=2)}}
                          %else:
                          attempt {{pb.attempt}}/{{pb.max_check_attempts}}
                          <!--soft state-->
                          %end
-                       </span>
+                       <!--</span>-->
                      </small>
                    </div>
                </td>
+               %aka = ''
+               %if pb_host.alias and not pb_host.alias.startswith(pb_host.get_name()):
+                 %aka = 'Aka %s' % pb_host.alias.replace(' ', '<br>')
+               %end
                <td class="hidden-sm hidden-xs hidden-md">
                   %if pb.host_name != previous_pb_host_name:
-                     %title = ''
-                     %if pb.__class__.my_type == 'service':
-                        %groups = pb.host.hostgroups
-                        %group = groups[0] if groups else None
-                        %title = 'Member of %s' % (group.alias if group.alias else group.get_name()) if group else ''
-                     %else:
-                        %if pb.alias and pb.alias != pb.get_name():
-                            %title = 'Aka %s' % pb.alias
-                        %end
-                        %groups = pb.hostgroups
-                        %group = groups[0] if groups else None
-                        %title = title + ((' - ' if title else '') + 'Member of %s' % (group.alias if group.alias else group.get_name()) if group else '')
-                     %end
-                     <a href="/host/{{pb.host_name}}" title="{{title}}">
-                     %if pb.__class__.my_type == 'service':
-                        %if pb.host:
-                        {{pb.host.get_name() if pb.host.display_name == '' else pb.host.display_name}}
-                        %else:
-                        {{pb.host_name}}
-                        %end
-                     %else:
-                        {{pb.get_name() if pb.display_name == '' else pb.display_name}}
-                     %end
+                     <a href="/host/{{pb.host_name}}" title="{{!aka}}">
+                       {{ pb_host.get_name() if pb_host.display_name == '' else pb_host.display_name }}
                      </a>
                   %end
                </td>
                <td class="hidden-sm hidden-xs">
-                  <a href="/host/{{pb.host_name}}" title="{{title}}" class="hidden-lg">
-                    %if pb.__class__.my_type == 'service':
-                    %if pb.host:
-                    {{pb.host.get_name() if pb.host.display_name == '' else pb.host.display_name}}:
-                    %else:
-                    {{pb.host_name}}:
-                    %end
-                    %else:
-                    {{pb.get_name() if pb.display_name == '' else pb.display_name}}:
-                    %end
-                  </a>
+                 <span class="hidden-lg">
+                   <a href="/host/{{pb.host_name}}" title="{{!aka}}">
+                     {{ pb_host.get_name() if pb_host.display_name == '' else pb_host.display_name }}
+                   </a>
+                   %if pb.__class__.my_type == 'service':
+                   /
+                   %end
+                 </span>
                   %if pb.__class__.my_type == 'service':
                   {{!helper.get_link(pb, short=True)}}
                   %end
@@ -135,7 +122,7 @@
                      %if app.graphs_module.is_available():
                      %if pb.perf_data:
                         <a style="text-decoration: none; color: #333;" role="button" tabindex="0" data-toggle="popover"
-                           title="{{ pb.get_full_name() }}" data-html="true"
+                           data-title="{{ pb.get_full_name() }}" data-html="true"
                            data-trigger="hover" data-placement="left"
                            data-item="{{pb.get_full_name()}}"
                            href="{{!helper.get_link_dest(pb)}}#graphs">
@@ -147,19 +134,11 @@
                   <div class="ellipsis output">
                   <!--<div class="ellipsis output" style='font-family: "Liberation Mono", "Lucida Console", Courier, monospace; color=#7f7f7f; font-size:0.917em;'>-->
                     <div class="hidden-md hidden-lg">
-                      <a href="/host/{{pb.host_name}}" title="{{title}}">
-                        %if pb.__class__.my_type == 'service':
-                        %if pb.host:
-                        {{pb.host.get_name() if pb.host.display_name == '' else pb.host.display_name}}:
-                        %else:
-                        {{pb.host_name}}:
-                        %end
-                        %else:
-                        {{pb.get_name() if pb.display_name == '' else pb.display_name}}:
-                        %end
+                      <a href="/host/{{pb.host_name}}" title="{{!aka}}">
+                        {{ pb_host.get_name() if pb_host.display_name == '' else pb_host.display_name }}
                       </a>
                       %if pb.__class__.my_type == 'service':
-                      {{!helper.get_link(pb, short=True)}}
+                      / {{!helper.get_link(pb, short=True)}}
                       %end
                       %if len(pb.impacts) > 0:
                       <button class="btn btn-danger btn-xs"><i class="fa fa-plus"></i> {{ len(pb.impacts) }} impacts</button>
@@ -200,7 +179,7 @@
                            %if pb.active_checks_enabled:
                            <td align="left">
                               <i class="fa fa-arrow-right hidden-xs" title="Active checks are enabled."></i>
-                              <i>Last check <strong>{{!helper.print_duration(pb.last_chk, just_duration=True, x_elts=2)}} ago</strong>, next check in <strong>{{!helper.print_duration(pb.next_chk, just_duration=True, x_elts=2)}}</strong>, attempt <strong>{{pb.attempt}}/{{pb.max_check_attempts}}</strong></i>
+                              <i>Last check <strong>{{!helper.print_duration_and_date(pb.last_chk, just_duration=True, x_elts=2)}} ago</strong>, next check in <strong>{{!helper.print_duration_and_date(pb.next_chk, just_duration=True, x_elts=2)}}</strong>, attempt <strong>{{pb.attempt}}/{{pb.max_check_attempts}}</strong></i>
                            </td>
                            %end
                            %if app.can_action():
@@ -262,7 +241,7 @@
                                     </td>
                                     <td>{{!helper.get_link(i, short=True)}}</td>
                                     <td align="center" class="font-{{i.state.lower()}}"><strong>{{ i.state }}</strong></td>
-                                    <td align="center">{{!helper.print_duration(i.last_state_change, just_duration=True, x_elts=2)}}</td>
+                                    <td align="center">{{!helper.print_duration_and_date(i.last_state_change, just_duration=True, x_elts=2)}}</td>
                                     <td class="row hidden-sm hidden-xs">
                                        <div class="ellipsis output">
                                           {{! i.output}}

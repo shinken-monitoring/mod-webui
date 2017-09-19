@@ -82,7 +82,7 @@
          <a id="hosts-states-popover"
             class="btn btn-primary hosts-all" data-count="{{ h['nb_elts'] }}" data-problems="{{ h['nb_problems'] }}"
             href="/all?search=type:host"
-            data-original-title="Hosts states" data-toggle="popover popover-hosts" title="Overall hosts states: {{h['nb_elts']}} hosts, {{h["nb_problems"]}} problems" data-html="true">
+            data-toggle="popover popover-hosts" data-title="Overall hosts states: {{h['nb_elts']}} hosts, {{h["nb_problems"]}} problems" data-html="true">
             <i class="fa fa-server {{ color }}"></i>
             %if color:
             <span class="badge">{{h["nb_problems"]}}</span>
@@ -102,7 +102,7 @@
          <a id="services-states-popover"
             class="btn btn-primary services-all" data-count="{{ s['nb_elts'] }}" data-problems="{{ s['nb_problems'] }}"
             href="/all?search=type:service"
-            data-original-title="Services states" data-toggle="popover popover-services" title="Overall services states: {{s['nb_elts']}} services, {{s["nb_problems"]}} problems" data-html="true">
+            data-toggle="popover popover-services" data-title="Overall services states: {{s['nb_elts']}} services, {{s["nb_problems"]}} problems" data-html="true">
             <i class="fa fa-hdd-o {{ color }}"></i>
             %if color:
             <span class="badge label-{{label}}">{{s["nb_problems"]}}</span>
@@ -112,14 +112,14 @@
       <!--end-services-states-->
 
       <li>
-         <a class="btn btn-ico" data-original-title='Currently' href="/dashboard/currently" title="Dashboard currently">
+         <a class="btn btn-ico" href="/dashboard/currently" title="Dashboard currently">
             <i class="fa fa-eye"></i>
          </a>
       </li>
 
       %if refresh:
       <li>
-         <button class="btn btn-ico js-toggle-page-refresh" data-original-title='Refreshing'>
+         <button class="btn btn-ico js-toggle-page-refresh">
             <i id="header_loading" class="fa fa-refresh"></i>
          </button>
       </li>
@@ -127,7 +127,7 @@
 
       %if app.play_sound:
       <li class="hidden-sm hidden-xs hidden-md">
-         <button class="btn btn-ico js-toggle-sound-alert" data-original-title='Sound alerting' href="#">
+         <button class="btn btn-ico js-toggle-sound-alert" href="#">
             <span id="sound_alerting" class="fa-stack">
               <i class="fa fa-music fa-stack-1x"></i>
               <i class="fa fa-ban fa-stack-2x text-danger"></i>
@@ -138,7 +138,7 @@
 
       <!-- User info -->
       <li class="dropdown">
-        <a href="#" class="btn btn-ico btn-user dropdown-toggle" data-original-title='User menu' data-toggle="dropdown" style="background-image: url({{ user.avatar_url }}?s=33;" title="{{ username }}">
+        <a href="#" class="btn btn-ico btn-user dropdown-toggle" data-toggle="dropdown" style="background-image: url({{ user.avatar_url }}?s=33;" title="{{ username }}">
            <!--<img src="/avatar/{{ username }}" class="img-circle" size="32px">-->
            <!--<i class="fa fa-user" title="{{ username }}"></i>-->
          </a>
@@ -251,80 +251,4 @@
    Your browser does not support the <code>HTML5 Audio</code> element.
    <EMBED src="/static/sound/alert.wav" autostart=true loop=false volume=100 >
 </audio>
-
-<script type="text/javascript">
-   // Set alerting sound icon ...
-   if (! sessionStorage.getItem("sound_play")) {
-      // Default is to play ...
-      sessionStorage.setItem("sound_play", {{'1' if app.play_sound else '0'}});
-   }
-
-   // Toggle sound ...
-   if (sessionStorage.getItem("sound_play") == '1') {
-      $('#sound_alerting i.fa-ban').addClass('hidden');
-   } else {
-      $('#sound_alerting i.fa-ban').removeClass('hidden');
-   }
-   $('.js-toggle-sound-alert').on('click', function (e, data) {
-      if (sessionStorage.getItem("sound_play") == '1') {
-         sessionStorage.setItem("sound_play", "0");
-         $('#sound_alerting i.fa-ban').removeClass('hidden');
-      } else {
-         playAlertSound();
-         $('#sound_alerting i.fa-ban').addClass('hidden');
-      }
-   });
-</script>
 %end
-
-<script type="text/javascript">
-   // Activate the popover ...
-   $('#hosts-states-popover').popover({
-      placement: 'bottom',
-      container: 'body',
-      trigger: 'manual',
-      animation: false,
-      template: '<div class="popover img-popover"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
-      content: function() {
-         return $('#hosts-states-popover-content').html();
-      }
-   }).on("mouseenter", function () {
-      var _this = this;
-      $(this).popover("show");
-      $(this).siblings(".popover").on("mouseleave", function () {
-          $(_this).popover('hide');
-      });
-   }).on("mouseleave", function () {
-      var _this = this;
-      setTimeout(function () {
-          if (!$(".popover:hover").length) {
-              $(_this).popover("hide");
-          }
-      }, 100);
-   });
-
-   // Activate the popover ...
-   $('#services-states-popover').popover({
-      placement: 'bottom',
-      container: 'body',
-      trigger: 'manual',
-      animation: false,
-      template: '<div class="popover img-popover"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
-      content: function() {
-         return $('#services-states-popover-content').html();
-      }
-   }).on("mouseenter", function () {
-      var _this = this;
-      $(this).popover("show");
-      $(this).siblings(".popover").on("mouseleave", function () {
-          $(_this).popover('hide');
-      });
-   }).on("mouseleave", function () {
-      var _this = this;
-      setTimeout(function () {
-          if (!$(".popover:hover").length) {
-              $(_this).popover("hide");
-          }
-      }, 100);
-   });
-</script>

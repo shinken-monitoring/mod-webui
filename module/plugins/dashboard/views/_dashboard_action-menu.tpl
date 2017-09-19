@@ -4,7 +4,8 @@
     %if not w['deprecated']:
     <li>
       <a href="#"
-        title="Add widget {{w['widget_name']}}"
+        title="Add widget {{w['widget_name']}} to the dashboard"
+        data-placement="right"
         class="dashboard-widget"
         data-widget-title="
         <button href='#' role='button'

@@ -190,6 +190,8 @@ function do_refresh(forced){
          display_charts();
       }
 
+      tooltips();
+
       /*
       // Refresh bindings of actions buttons ...
       if (typeof bind_actions !== 'undefined' && $.isFunction(bind_actions)) {
@@ -273,7 +275,7 @@ function reinit_refresh(){
 function stop_refresh() {
    if (refresh_logs) console.debug("Stop refresh");
    $('#header_loading').addClass('fa-striked');
-   $('#header_loading').prop('title', "Click to enable auto-refresh");
+   $('#header_loading').parent().prop('title', "Click to enable auto-refresh");
    sessionStorage.setItem("refresh_active", '0');
 }
 
@@ -281,7 +283,7 @@ function stop_refresh() {
 function start_refresh() {
    if (refresh_logs) console.debug("Stop refresh");
    $('#header_loading').removeClass('fa-striked');
-   $('#header_loading').prop('title', "Click to disable auto-refresh");
+   $('#header_loading').parent().prop('title', "Click to disable auto-refresh");
    sessionStorage.setItem("refresh_active", '1');
 }
 

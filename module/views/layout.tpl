@@ -82,37 +82,6 @@
       <!-- Scripts
       ================================================== -->
       <script src="/static/js/jquery-1.12.0.min.js"></script>
-      <script src="/static/js/bootstrap.min.js"></script>
-      <script src="/static/js/bootstrap-tab-bookmark.js"></script>
-      <script src="/static/js/metisMenu.min.js"></script>
-      <script src="/static/js/sb-admin-2.js"></script>
-      <script src="/static/js/moment.min.js"></script>
-      <script src="/static/js/daterangepicker.js"></script>
-      <script src="/static/js/jquery.jclock.js"></script>
-      <script src="/static/js/jquery.jTruncate.js"></script>
-      <script src="/static/js/alertify.js"></script>
-      <script src="/static/js/typeahead.bundle.min.js"></script>
-      <script src="/static/js/screenfull.js"></script>
-
-      <!--
-       Shinken globals ...
-      -->
-      <script>
-      var dashboard_currently = false;
-      </script>
-
-      <!--
-       Shinken scripts ...
-      -->
-      %if refresh:
-      <script>
-      var app_refresh_period = {{app.refresh_period}};
-      </script>
-      <script src="/static/js/shinken-refresh.js"></script>
-      %end
-
-      <script src="/static/js/shinken-layout.js"></script>
-      <script src="/static/js/shinken-bookmarks.js"></script>
    </head>
 
    <body>
@@ -194,6 +163,40 @@
       <!--
        Shinken scripts ...
       -->
+
+      <script src="/static/js/bootstrap.min.js"></script>
+      <script src="/static/js/bootstrap-tab-bookmark.js"></script>
+      <script src="/static/js/metisMenu.min.js"></script>
+      <script src="/static/js/sb-admin-2.js"></script>
+      <script src="/static/js/moment.min.js"></script>
+      <script src="/static/js/daterangepicker.js"></script>
+      <script src="/static/js/jquery.jclock.js"></script>
+      <script src="/static/js/jquery.jTruncate.js"></script>
+      <script src="/static/js/alertify.js"></script>
+      <script src="/static/js/typeahead.bundle.min.js"></script>
+      <script src="/static/js/screenfull.js"></script>
+
+      <!--
+       Shinken globals ...
+      -->
+      <script>
+      var dashboard_currently = false;
+      </script>
+
+      <!--
+       Shinken scripts ...
+      -->
+      %if refresh:
+      <script>
+      var app_refresh_period = {{app.refresh_period}};
+      </script>
+      <script src="/static/js/shinken-refresh.js"></script>
+      %end
+
+      <script src="/static/js/shinken-layout.js"></script>
+      <script src="/static/js/shinken-bookmarks.js"></script>
+      <script src="/static/js/shinken-tooltip.js"></script>
+
       %# Include specific Js files ...
       %for p in js:
       <script type="text/javascript" src="/static/{{p}}"></script>

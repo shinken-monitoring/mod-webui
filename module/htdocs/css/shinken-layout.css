@@ -54,6 +54,10 @@ html, body {
     padding: 5px 10px !important;
 }
 
+.tooltip-inner {
+    white-space:pre;
+    max-width:none;
+}
 
 /*
  * ------------------------------------------------------------------------
