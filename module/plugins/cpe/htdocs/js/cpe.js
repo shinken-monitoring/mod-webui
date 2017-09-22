@@ -401,7 +401,7 @@ function addLeasesTimeline(events, min_date) {
  */
 function on_page_refresh() {
     var max_date = new Date();
-    var min_date = new Date(new Date().setDate(max_date.getDate() - 7));
+    var min_date = new Date(new Date().setDate(max_date.getDate() - 15));
     createTimeline(min_date, max_date);
     // Get host logs
     $.getJSON(window.location.origin + '/logs/host/'+cpe_name, function(result) {
