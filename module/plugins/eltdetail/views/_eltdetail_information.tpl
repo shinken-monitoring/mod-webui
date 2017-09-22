@@ -12,7 +12,9 @@
             <tr>
               <td><strong>Status:</strong></td>
               <td>
+                <a href="/all?search={{elt.host_name}}">
                 {{! helper.get_fa_icon_state(obj=elt, label='title')}}
+                </a>
               </td>
             </tr>
             <tr>

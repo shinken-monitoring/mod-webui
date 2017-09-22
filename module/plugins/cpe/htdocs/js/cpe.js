@@ -4,6 +4,9 @@
 'use strict';
 var timeline;
 
+// Controla el desplazamiento en horas del timeline
+var INCREASE_TIMELINE_IN_HOUR = 1;
+
 $.fn.dataTable.ext.errMode = 'none';
 
 var ICON_OK       = '<span class="fa-stack" title="service is OK"><i class="fa fa-circle fa-stack-2x font-ok"></i><i class="fa fa-arrow-up fa-stack-1x fa-inverse"></i></span>';
@@ -155,7 +158,7 @@ function createTimeline(min_date, max_date) {
         start: new Date(new Date().setDate(max_date.getDate() - 1)),
         end: max_date,
         min: min_date,
-        max: new Date(new Date().setDate(max_date.getDate() /* + 1 */ )), //@jgomez
+        max: new Date(new Date().setDate(max_date.getDate() + INCREASE_TIMELINE_IN_HOUR )), //@jgomez
         zoomMin: 1000 * 60 * 60, // 30 min
         stack: false
     };
@@ -232,8 +235,8 @@ function drawDashboard() {
                     minValue: 0,
                     format: 'short'
                 },
-                height: 400,
-                width: 600,
+                height: 200,
+                width: '100%',
                 chartArea: {
                     width: '80%'
                 }
@@ -246,8 +249,8 @@ function drawDashboard() {
                     filterColumnLabel: 'Time',
                     ui: {
                         chartOptions: {
-                            height: 50,
-                            width: 600,
+                            height: 25,
+                            width: '100%',
                             chartArea: {
                                 width: '80%'
                             }
@@ -445,7 +448,9 @@ function on_page_refresh() {
     });
 
     $('#btn-tr069').click(function (e) {
-        launch('/action/SCHEDULE_FORCED_SVC_CHECK/'+cpe_name+'/tr069/$NOW$', 'Forced TR069 check');
+      	$.getJSON('/action/SCHEDULE_FORCED_SVC_CHECK/'+cpe_name+'/tr069/$NOW$', function(data){
+		raise_message_ok('Unprovision ordered, result: ' + data.result)
+	});
     });
 
 
