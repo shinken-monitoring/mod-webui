@@ -18,7 +18,7 @@
       <span class="input-group-addon">
         <span class="hidden-addons">
           <div class="dropdown form-group text-left">
-            <a href="#" class="dropdown-toggle" type="button" id="filters_menu" data-toggle="dropdown" aria-expanded="true" title="Filters"><i class="fa fa-filter"></i><span class="hidden-sm hidden-xs hidden-md"></a>
+            <a href="#" class="dropdown-toggle" type="button" id="filters_menu" data-toggle="dropdown" aria-expanded="false" title="Filters"><i class="fa fa-filter"></i><span class="hidden-sm hidden-xs hidden-md"></a>
             <ul class="dropdown-menu" role="menu" aria-labelledby="filters_menu">
               <li role="presentation"><a role="menuitem" href="/all?search=&title=All resources">All resources</a></li>
               <li role="presentation"><a role="menuitem" href="/all?search=type:host&title=All hosts">All hosts</a></li>
@@ -39,7 +39,7 @@
             </ul>
           </div>
           <div class="dropdown form-group text-left">
-            <a href="#" class="dropdown-toggle" type="button" id="bookmarks_menu" data-toggle="dropdown" aria-expanded="true" title="Bookmarks"><i class="fa fa-bookmark-o"></i><span class="hidden-sm hidden-xs hidden-md"></a>
+            <a href="#" class="dropdown-toggle" type="button" id="bookmarks_menu" data-toggle="dropdown" aria-expanded="false" title="Bookmarks"><i class="fa fa-bookmark-o"></i><span class="hidden-sm hidden-xs hidden-md"></a>
             <ul class="dropdown-menu" role="menu" aria-labelledby="bookmarks_menu">
               <script type="text/javascript">
                 %for b in user_bookmarks:

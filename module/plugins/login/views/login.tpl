@@ -23,15 +23,15 @@
 
       <!-- Stylesheets
       ================================================== -->
-      <link href="/static/css/bootstrap.min.css" rel="stylesheet">
-      <link href="/static/css/bootstrap-theme.min.css" rel="stylesheet">
-      <link href="/static/css/font-awesome.min.css" rel="stylesheet">
-      <link href="/static/css/shinken-layout.css" rel="stylesheet">
+      <link href="/static/css/bootstrap.min.css?v={{app.app_version}}" rel="stylesheet">
+      <link href="/static/css/bootstrap-theme.min.css?v={{app.app_version}}" rel="stylesheet">
+      <link href="/static/css/font-awesome.min.css?v={{app.app_version}}" rel="stylesheet">
+      <link href="/static/css/shinken-layout.css?v={{app.app_version}}" rel="stylesheet">
 
       <!-- Scripts
       ================================================== -->
       <script src="/static/js/jquery-1.12.0.min.js"></script>
-      <script src="/static/js/bootstrap.min.js"></script>
+      <script src="/static/js/bootstrap.min.js?v={{app.app_version}}"></script>
    </head>
 
    <body>
@@ -40,7 +40,7 @@
             <div class="login-panel panel panel-default">
                <div class="panel-heading">
                   <center>
-                     <img src="/static/logo/{{company_logo}}" alt="Company logo" style="width: 80%"/>
+                     <img src="/static/logo/{{company_logo}}?v={{app.app_version}}" alt="Company logo" style="width: 80%"/>
                   </center>
                </div>
                <div class="panel-body">

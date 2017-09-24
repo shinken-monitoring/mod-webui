@@ -17,7 +17,7 @@
          <span class="icon-bar"></span>
       </button>
       <a href="/" class="logo navbar-brand">
-         <img src="/static/logo/{{app.company_logo}}" alt="Company logo" style="padding: 7px;" />
+         <img src="/static/logo/{{app.company_logo}}?v={{app.app_version}}" alt="Company logo" style="padding: 7px;" />
       </a>
    </div>
 

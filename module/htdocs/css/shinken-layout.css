@@ -235,14 +235,16 @@ td .ellipsis > .long-output {
     background-color: transparent;
 }
 
-.navbar-nav #search-group .hidden-addons a {
+/*:TODO:maethor:170924: Make it work*/
+/*.navbar-nav #search-group .hidden-addons a {*/
     /*display: none;*/
-}
+/*}*/
 
-.navbar-nav #search:focus + .input-group-addon .hidden-addons a,
-.navbar-nav #search:active + .input-group-addon .hidden-addons a {
+/*.navbar-nav #search:focus + .input-group-addon .hidden-addons a,*/
+/*.navbar-nav #search:active + .input-group-addon .hidden-addons a,*/
+/*.navbar-nav .hidden-addons a:active {*/
     /*display: inline;*/
-}
+/*}*/
 
 .navbar-nav .btn {
     background-color: #4D95BE;
