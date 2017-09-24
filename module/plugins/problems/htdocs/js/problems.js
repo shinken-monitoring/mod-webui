@@ -41,6 +41,7 @@ function add_element(name){
    $('td input[type=checkbox][data-item="'+name+'"]').closest('tr').addClass('active');
    
    if (problems_logs) console.log('Select element: ', name)
+
    selected_elements.push(name);
 
    if (selected_elements.length > 0) {
@@ -89,27 +90,12 @@ $('body').on('hide.bs.collapse', '.collapse', function () {
     $(this).closest('tr').prev().find('.output').addClass("ellipsis", {duration:200});
 });
 
-// :DEBUG:maethor:150811: This can make things very buggy if the output is long.
-//$('body').on('mouseenter', '.ellipsis', function () {
-   //var $this = $(this);
-   //if (this.offsetWidth < this.scrollWidth && !$this.attr('title')) {
-      //$this.tooltip({
-         //title: $this.text(),
-         //placement: "bottom"
-      //});
-      //$this.tooltip('show');
-   //}
-//});
 
 // Business impact selection buttons
 $('body').on('click', 'button[data-type="business-impact"]', function (e) {
    if ($(this).data('state')=='off') {
       if (problems_logs) console.log('Select all elements ...', $(this).data('business-impact'));
 
-      // Remove elements from selection
-      $('input[type=checkbox][data-type="problem"][data-business-impact="'+$(this).data('business-impact')+'"]').each(function() {
-         remove_element($(this).data('item'));
-      })
       // Add elements to selection
       $('input[type=checkbox][data-type="problem"][data-business-impact="'+$(this).data('business-impact')+'"]').each(function() {
          add_element($(this).data('item'));
@@ -135,25 +121,39 @@ $('body').on('click', 'input[type=checkbox][data-type="problem"]', function (e) 
    // Add/remove element from selection
    add_remove_elements($(this).data('item'));
 });
-1.2
+
 $('body').on('click', '.js-select-elt', function(e) {
+    document.onselectstart = function() {
+        return false;
+    }
     if (e.ctrlKey) {
         e.stopPropagation();
-        if (problems_logs) console.log('Clicked: ', $(this).data('item'))
-        //alert($(this).data('item'));
+        if (problems_logs) console.log('CTRL-Clicked: ', $(this).data('item'))
+        $(this).focus(); // This is used to avoid text selection
         add_remove_elements($(this).data('item'));
     }
+    if (e.shiftKey) {
+        e.stopPropagation();
+        if (problems_logs) console.log('Shift-Clicked: ', $(this).data('item'))
+        $(this).focus(); // This is used to avoid text selection
+        if ($(this).closest('table').find('tr.active').length == 0) {
+            add_remove_elements($(this).data('item'));
+        } else {
+            //$(this).closest('table').children('tr:first').hide();
+            //$(this).closest('.js-select-elt').addClass('success')
+            var first = $(this).closest('table').find('tr.active:first');
+            if ($(this).prevAll().filter($(first)).length !== 0) {
+                $(this).prevUntil(first, 'tr.js-select-elt').andSelf().not('.active').each(function(i, e) {
+                    add_remove_elements($(e).data('item'));
+                });
+            } else {
+                $(this).nextUntil(first, 'tr.js-select-elt').andSelf().not('.active').each(function(i, e) {
+                    add_remove_elements($(e).data('item'));
+                });
+            }
+        }
+    }
 });
-
-// :TODO:maethor:170911: 
-//$('body').on('click', '.js-select-elt', function(e) {
-//    if (e.shiftKey) {
-//        e.stopPropagation();
-//        if (problems_logs) console.log('Clicked: ', $(this).data('item'))
-//        //alert($(this).data('item'));
-//        add_remove_elements($(this).data('item'));
-//    }
-//});
 
 
 function on_page_refresh(){
