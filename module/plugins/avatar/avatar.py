@@ -110,7 +110,7 @@ def get_avatar(name):
     user = app.request.environ['USER']
     contact = User.from_contact(app.datamgr.get_contact(name=name, user=user) or app.redirect404())
 
-    app.response.set_header("Cache-Control", "public, max-age=86400")
+    app.response.set_header("Cache-Control", "public, max-age=3200")
 
     size = int(app.request.GET.get('s', 256))
 

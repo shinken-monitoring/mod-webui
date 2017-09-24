@@ -121,7 +121,7 @@
                      {{!helper.get_perfdata_pies(pb)}}&nbsp;
                      %if app.graphs_module.is_available():
                      %if pb.perf_data:
-                        <a style="text-decoration: none; color: #333;" role="button" tabindex="0" data-toggle="popover"
+                        <a style="text-decoration: none; color: #333;" role="button" tabindex="0" data-toggle="popover-elt-graphs"
                            data-title="{{ pb.get_full_name() }}" data-html="true"
                            data-trigger="hover" data-placement="left"
                            data-item="{{pb.get_full_name()}}"

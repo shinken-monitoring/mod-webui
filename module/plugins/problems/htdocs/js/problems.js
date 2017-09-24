@@ -176,19 +176,20 @@ function on_page_refresh(){
          $(this).prop("disabled", true).hide();
       });
    }
-   
+
    // Graphs popover
-   $('[data-toggle="popover"]').popover({
+   $('[data-toggle="popover-elt-graphs"]').popover({
       html: true,
       content: function() {
-          var div_id =  "tmp-id-" + $.now();
           $.ajax({url: '/graphs/' + $(this).data('item'),
                   dataType: 'html',
+                  elt: $(this),
                   success: function(response) {
-                      $('#'+div_id).html(response);
+                      this.elt.data('bs.popover').options.content = response;
+                      this.elt.popover('show');
                   }
           });
-          return "<div id='" + div_id + "'>Loading…</div>";
+          return "<div>Loading…</div>";
       },
       template: '<div class="popover img-popover"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div style="width: 620px;" class="popover-content"><p></p></div></div></div>',
    });
