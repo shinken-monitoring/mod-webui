@@ -3,7 +3,7 @@
       // Launch add a comment request and bailout this modal view
       add_comment("{{name}}", '{{user.get_name()}}', $('#comment').val());
       // add_comment("{{name}}", '{{user.get_name()}}', encodeURI( $('#comment').val() ));
-      start_refresh();
+      enable_refresh();
       $('#modal').modal('hide');
    }
 </script>

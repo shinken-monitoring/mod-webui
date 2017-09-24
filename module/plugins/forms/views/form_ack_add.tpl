@@ -13,7 +13,7 @@
       }
       %end
 
-      start_refresh();
+      enable_refresh();
       $('#modal').modal('hide');
    }
 </script>

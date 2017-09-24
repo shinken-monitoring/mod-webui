@@ -346,46 +346,46 @@
 
         // Panels collapse state
         $('body').on('hidden.bs.collapse', '.panel', function () {
-            stop_refresh();
+            disable_refresh();
             panels[$(this).parent().attr('id')].collapsed = true;
             $(this).find('.fa-minus-square').removeClass('fa-minus-square').addClass('fa-plus-square');
             save_user_preference('panels', JSON.stringify(panels), function() {
-                start_refresh();
+                enable_refresh();
                 do_refresh(true);
             });
         });
         $('body').on('shown.bs.collapse', '.panel', function () {
-            stop_refresh();
+            disable_refresh();
             panels[$(this).parent().attr('id')].collapsed = false;
             $(this).find('.fa-plus-square').removeClass('fa-plus-square').addClass('fa-minus-square');
             save_user_preference('panels', JSON.stringify(panels), function() {
-                start_refresh();
+                enable_refresh();
                 do_refresh();
             });
         });
 
         // Graphs options
         $('body').on('click', '[data-action="toggle-title"]', function () {
-            stop_refresh();
+            disable_refresh();
             graphs[$(this).data('graph')].title = ! graphs[$(this).data('graph')].title;
             save_user_preference('graphs', JSON.stringify(graphs), function() {
-                start_refresh();
+                enable_refresh();
                 do_refresh(true);
             });
         });
         $('body').on('click', '[data-action="toggle-legend"]', function () {
-            stop_refresh();
+            disable_refresh();
             graphs[$(this).data('graph')].legend = ! graphs[$(this).data('graph')].legend;
             save_user_preference('graphs', JSON.stringify(graphs), function() {
-                start_refresh();
+                enable_refresh();
                 do_refresh(true);
             });
         });
         $('body').on('click', '[data-action="toggle-state"]', function () {
-            stop_refresh();
+            disable_refresh();
             graphs[$(this).data('graph')]['display_states'][$(this).data('state')] = ! graphs[$(this).data('graph')]['display_states'][$(this).data('state')];
             save_user_preference('graphs', JSON.stringify(graphs), function() {
-                start_refresh();
+                enable_refresh();
                 do_refresh(true);
             });
         });

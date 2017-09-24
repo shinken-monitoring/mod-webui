@@ -47,7 +47,7 @@ function add_element(name){
       $('#action-menu').show();
       
       // Stop page refresh
-      stop_refresh();
+      disable_refresh();
    }
 }
 
@@ -65,7 +65,7 @@ function remove_element(name){
       $('#action-menu').hide();
 
       // Restart page refresh timer
-      start_refresh();
+      enable_refresh();
    }
 }
 

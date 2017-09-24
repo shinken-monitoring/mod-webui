@@ -35,7 +35,7 @@
          <tbody>
             <tr>
                %for state in "up", "unreachable", "down", "pending", "unknown", "ack", "downtime":
-               <td title="{{ h["pct_" + state] }}% {{ state }}">
+               <td data-title="{{ h["pct_" + state] }}% {{ state }}">
                  %label = "%s" % h["nb_" + state]
                  %if state in ['ack', 'downtime']:
                  <a href="/all?search=type:host is:{{state}}">
@@ -55,7 +55,7 @@
          <tbody>
             <tr>
                %for state in "ok", "warning", "critical", "pending", "unknown", "ack", "downtime":
-               <td title="{{ s["pct_" + state] }}% {{ state }}">
+               <td data-title="{{ s["pct_" + state] }}% {{ state }}">
                  %label = "%s" % s["nb_" + state]
                  %if state in ['ack', 'downtime']:
                  <a href="/all?search=type:service is:{{state}}">

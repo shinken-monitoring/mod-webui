@@ -64,7 +64,7 @@ function loadjscssfile(filename, filetype){
  */
 function display_modal(inner_url) {
    if (layout_logs) console.debug('Displaying modal: ', inner_url);
-   stop_refresh();
+   disable_refresh();
    $('#modal').modal({
       keyboard: true,
       show: true,
@@ -73,52 +73,7 @@ function display_modal(inner_url) {
    });
 }
 
-
-$(document).ready(function(){
-   // When modal box is hidden ...
-   $('#modal').on('hidden.bs.modal', function () {
-      // Show sidebar menu ...
-      $('.sidebar').show();
-
-      // Clean modal box content ...
-      $(this).removeData('bs.modal');
-   });
-
-   // When modal box is displayed ...
-   $('#modal').on('shown.bs.modal', function () {
-      // Hide sidebar menu ...
-      $('.sidebar').hide();
-   });
-
-   // Sidebar menu
-   $('#sidebar-menu').metisMenu();
-
-
-  // Sound
-  if ($("#alert-audio").length) {
-    // Set alerting sound icon ...
-    if (! sessionStorage.getItem("sound_play")) {
-      // Default is to play ...
-      sessionStorage.setItem("sound_play", 1);
-    }
-
-    // Toggle sound ...
-    if (sessionStorage.getItem("sound_play") == '1') {
-      $('#sound_alerting i.fa-ban').addClass('hidden');
-    } else {
-      $('#sound_alerting i.fa-ban').removeClass('hidden');
-    }
-    $('.js-toggle-sound-alert').on('click', function (e, data) {
-      if (sessionStorage.getItem("sound_play") == '1') {
-        sessionStorage.setItem("sound_play", "0");
-        $('#sound_alerting i.fa-ban').removeClass('hidden');
-      } else {
-        playAlertSound();
-        $('#sound_alerting i.fa-ban').addClass('hidden');
-      }
-    });
-  }
-
+function headerPopovers() {
   // Topbar hosts popover
    $('#hosts-states-popover').popover({
       placement: 'bottom',
@@ -168,4 +123,53 @@ $(document).ready(function(){
           }
       }, 100);
    });
+}
+
+
+$(document).ready(function(){
+   // When modal box is hidden ...
+   $('#modal').on('hidden.bs.modal', function () {
+      // Show sidebar menu ...
+      $('.sidebar').show();
+
+      // Clean modal box content ...
+      $(this).removeData('bs.modal');
+   });
+
+   // When modal box is displayed ...
+   $('#modal').on('shown.bs.modal', function () {
+      // Hide sidebar menu ...
+      $('.sidebar').hide();
+   });
+
+   // Sidebar menu
+   $('#sidebar-menu').metisMenu();
+
+
+  // Sound
+  if ($("#alert-audio").length) {
+    // Set alerting sound icon ...
+    if (! sessionStorage.getItem("sound_play")) {
+      // Default is to play ...
+      sessionStorage.setItem("sound_play", 1);
+    }
+
+    // Toggle sound ...
+    if (sessionStorage.getItem("sound_play") == '1') {
+      $('#sound_alerting i.fa-ban').addClass('hidden');
+    } else {
+      $('#sound_alerting i.fa-ban').removeClass('hidden');
+    }
+    $('.js-toggle-sound-alert').on('click', function (e, data) {
+      if (sessionStorage.getItem("sound_play") == '1') {
+        sessionStorage.setItem("sound_play", "0");
+        $('#sound_alerting i.fa-ban').removeClass('hidden');
+      } else {
+        playAlertSound();
+        $('#sound_alerting i.fa-ban').addClass('hidden');
+      }
+    });
+  }
+
+  headerPopovers();
 });

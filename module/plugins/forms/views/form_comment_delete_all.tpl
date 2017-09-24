@@ -6,7 +6,7 @@
       if ($('#reason').val()) {
          add_comment("{{name}}", '{{user.get_name()}}', $('#reason').val());
       }
-      start_refresh();
+      enable_refresh();
       $('#modal').modal('hide');
    }
 </script>
