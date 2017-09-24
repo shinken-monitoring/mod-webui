@@ -57,6 +57,10 @@ class WebUIDataManager(DataManager):
         self.logged_in_user = None
         self.alignak = alignak if self.fe else False
 
+    @property
+    def is_initialized(self):
+        return len(self.get_contacts()) > 0
+
     @staticmethod
     def _is_related_to(item, user):
         """

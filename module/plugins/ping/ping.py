@@ -50,10 +50,7 @@ def get_gotfirstdata():
     app.response.content_type = 'application/json'
     callback = app.request.query.get('callback', None)
 
-    # TODO: really necessary to get all contacts from data manager ?
-    # This can be unuseful loading ...
-    user = app.request.environ['USER']
-    if len(app.datamgr.get_contacts(user=user)) > 0:
+    if app.datamgr.is_initialized:
         return forge_response(callback, 200, '1')
     else:
         return forge_response(callback, 200, '0')
