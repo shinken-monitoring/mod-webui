@@ -25,7 +25,7 @@
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 
 
-WEBUI_VERSION = "2.5.4"
+WEBUI_VERSION = "2.6.0"
 WEBUI_COPYRIGHT = "(c) 2009-2017 - License GNU AGPL as published by the FSF, minimum version 3 of the License."
 
 

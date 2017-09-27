@@ -1,18 +1,18 @@
 {
   "name": "webui2",
   "types": ["module"],
-  "version": "2.5.4",
+  "version": "2.6.0",
   "homepage": "https://github.com/shinken-monitoring/mod-webui/wiki",
-  "author": "Frédéric MOHIER",
+  "author": "Guillaume Subiron",
   "description": "Web User Interface for Shinken",
   "contributors": [
     {
-      "name": "Frederic Mohier",
-      "email": "frederic.mohier@gmail.com"
-    },
-    {
       "name": "Guillaume Subiron",
       "email": "maethor@subiron.org"
+    },
+    {
+      "name": "Frederic Mohier",
+      "email": "frederic.mohier@gmail.com"
     }
   ],
   "repository": "https://github.com/shinken-monitoring/mod-webui",
