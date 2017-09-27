@@ -39,7 +39,7 @@
       <i class="pull-right small">{{len(bi_pbs)}} elements</i>
       <h3 class="text-center"><span class="hidden-xs">Business impact: </span>{{!helper.get_business_impact_text(business_impact, text=True)}}</h3>
 
-      <table class="table table-condensed" style="table-layout:fixed; width:100%;">
+      <table class="table table-condensed table-hover problems-table">
          <thead><tr>
             <th width="20px"></th>
             <!--<th width="40px"></th>-->
@@ -60,12 +60,20 @@
             %end
             <tr data-toggle="collapse" data-target="#details-{{helper.get_html_id(pb)}}" data-item="{{pb.get_full_name()}}" class="accordion-toggle js-select-elt">
                <td>
-                  <input type="checkbox" class="input-sm info" value="" id="selector-{{helper.get_html_id(pb)}}" data-type="problem" data-business-impact="{{business_impact}}" data-item="{{pb.get_full_name()}}" title="Press and hold Ctrl key while clicking on rows to select multiple rows">
+                 <input type="checkbox" class="input-sm info" value="" id="selector-{{helper.get_html_id(pb)}}" data-type="problem" data-business-impact="{{business_impact}}" data-item="{{pb.get_full_name()}}" title="Ctrl+key on rows to select multiple rows<br>Shift+key on two rows to select a range of rows">
                </td>
                <!--<td title="{{pb.get_name()}} - {{pb.output}} - Since {{helper.print_duration(pb.last_state_change)}} - Last check: {{helper.print_duration(pb.last_chk)}}"  class="text-center">-->
                   <!--{{!helper.get_fa_icon_state(pb, useTitle=False)}}-->
                <!--</td>-->
-             <td title="{{pb.get_name()}} - {{pb.state}}<br> Since {{helper.print_date(pb.last_state_change, format="%d %b %Y %H:%M:%S")}}<br> Last check {{helper.print_duration(pb.last_chk)}}<br> Next check {{helper.print_duration(pb.next_chk)}}"
+             <td title="{{pb.get_name()}} - {{pb.state}}
+Since {{helper.print_date(pb.last_state_change, format="%d %b %Y %H:%M:%S")}}
+
+Last check <strong>{{helper.print_duration(pb.last_chk)}}</strong>
+Next check <strong>{{helper.print_duration(pb.next_chk)}}</strong>
+%if (pb.check_freshness):
+(Freshness threshold: {{pb.freshness_threshold}} seconds)
+%end
+"
                  data-placement="right"
                  data-container="body"
                  class="font-{{pb.state.lower()}} text-center">
@@ -112,6 +120,10 @@
                   %if len(pb.impacts) > 0:
                   <button class="btn btn-danger btn-xs"><i class="fa fa-plus"></i> {{ len(pb.impacts) }} impacts</button>
                   %end
+                  <!--:TODO:maethor:170924: -->
+                  <!--<div class="pull-right problem-actions">-->
+                    <!--<i class="fa fa-plus"></i>-->
+                  <!--</div>-->
                </td>
                <!--<td title="Since {{time.strftime("%d %b %Y %H:%M:%S", time.localtime(pb.last_state_change))}}">-->
                  <!--{{!helper.print_duration(pb.last_state_change, just_duration=True, x_elts=2)}}-->
@@ -167,21 +179,21 @@
                          </td>
                        </tr>
                         <tr>
-                           <td align="center" class="visible-lg">Realm {{pb.get_realm()}}</td>
-                           %if pb.passive_checks_enabled:
-                           <td align="left">
-                              <i class="fa fa-arrow-left hidden-xs" title="Passive checks are enabled."></i>
-                              %if (pb.check_freshness):
-                              <i title="Freshness check is enabled">(Freshness threshold: {{pb.freshness_threshold}} seconds)</i>
-                              %end
-                           </td>
-                           %end
-                           %if pb.active_checks_enabled:
-                           <td align="left">
-                              <i class="fa fa-arrow-right hidden-xs" title="Active checks are enabled."></i>
-                              <i>Last check <strong>{{!helper.print_duration_and_date(pb.last_chk, just_duration=True, x_elts=2)}} ago</strong>, next check in <strong>{{!helper.print_duration_and_date(pb.next_chk, just_duration=True, x_elts=2)}}</strong>, attempt <strong>{{pb.attempt}}/{{pb.max_check_attempts}}</strong></i>
-                           </td>
-                           %end
+                           <!--<td align="center" class="visible-lg">Realm {{pb.get_realm()}}</td>-->
+                           <!--%if pb.passive_checks_enabled:-->
+                           <!--<td align="left">-->
+                              <!--<i class="fa fa-arrow-left hidden-xs" title="Passive checks are enabled."></i>-->
+                              <!--%if (pb.check_freshness):-->
+                              <!--<i title="Freshness check is enabled">(Freshness threshold: {{pb.freshness_threshold}} seconds)</i>-->
+                              <!--%end-->
+                           <!--</td>-->
+                           <!--%end-->
+                           <!--%if pb.active_checks_enabled:-->
+                           <!--<td align="left">-->
+                              <!--<i class="fa fa-arrow-right hidden-xs" title="Active checks are enabled."></i>-->
+                              <!--<i>Last check <strong>{{!helper.print_duration_and_date(pb.last_chk, just_duration=True, x_elts=2)}} ago</strong>, next check in <strong>{{!helper.print_duration_and_date(pb.next_chk, just_duration=True, x_elts=2)}}</strong>, attempt <strong>{{pb.attempt}}/{{pb.max_check_attempts}}</strong></i>-->
+                           <!--</td>-->
+                           <!--%end-->
                            %if app.can_action():
                            <td align="right">
                               <div class="btn-group" role="group" data-type="actions" aria-label="Actions">
