@@ -178,6 +178,7 @@ class Webui_broker(BaseModule, Daemon):
         #self.max_output_length = int(getattr(modconf, 'max_output_length', '100'))
         # TODO : common preferences
         self.refresh_period = int(getattr(modconf, 'refresh_period', '60'))
+        self.refresh = False if self.refresh_period == 0 else True
         # Use element tag as image or use text
         self.tag_as_image = to_bool(getattr(modconf, 'tag_as_image', '0'))
 

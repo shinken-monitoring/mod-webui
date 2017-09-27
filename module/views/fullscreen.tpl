@@ -7,15 +7,13 @@
 %setdefault('css', [])
 %setdefault('title', 'Untitled ...')
 
-%# Current page may be refreshed or not
-%setdefault('refresh', True)
-
 %setdefault('user', None)
 %setdefault('app', None)
 
 %from shinken.bin import VERSION
 %if app is not None:
 %helper = app.helper
+%refresh = app.refresh
 %end
 
 <html lang="en">
