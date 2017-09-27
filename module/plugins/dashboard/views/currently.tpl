@@ -1,6 +1,7 @@
 %rebase("fullscreen", css=['dashboard/css/currently.css'], js=['js/shinken-actions.js', 'dashboard/js/Chart.js'], title='Shinken currently')
 %import json
 
+%user = app.get_user()
 %setdefault('panels', None)
 %create_panels_preferences = False
 %if not 'panel_counters_hosts' in panels:

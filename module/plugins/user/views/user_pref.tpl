@@ -1,5 +1,5 @@
 %setdefault('app', None)
-%setdefault('user', None)
+%user = app.get_user()
 
 %import json
 

@@ -8,7 +8,7 @@
 Invalid element name
 
 %else:
-
+%user = app.get_user()
 %helper = app.helper
 
 %from shinken.macroresolver import MacroResolver

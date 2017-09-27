@@ -1,5 +1,6 @@
 %rebase("layout", title='All contacts (%d contacts)' % len(contacts))
 
+%user = app.get_user()
 %helper = app.helper
 
 <div id="contacts">
