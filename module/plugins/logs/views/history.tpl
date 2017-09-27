@@ -1,13 +1,17 @@
 %import time
+%helper = app.helper
 
 %date_format='%Y-%m-%d %H:%M:%S'
 %elt_type = elt.__class__.my_type
 
 %if hasattr(records,"__iter__"):
+%for daterange, logs in helper.group_by_daterange(records, key=lambda x: x['time']).items():
+%if logs:
+<div class="daterange-title">{{ daterange }}</div>
    <table class="table table-condensed">
       <tbody style="font-size:small;">
-         %for log in records:
-         <tr title="{{ log['message'] }}">
+         %for log in logs:
+         <tr>
            <td width="150px" style="vertical-align: middle;">{{time.strftime(date_format, time.localtime(log['time']))}}</td>
            %if log['logclass'] == 1 and log['state_type'] in ['SOFT', 'HARD']:
            %state = log['message'].split(';')[2]
@@ -73,6 +77,8 @@
          %end
       </tbody>
    </table>
+%end
+%end
 %else:
    No logs found
 %end

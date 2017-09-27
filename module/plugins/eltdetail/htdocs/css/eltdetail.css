@@ -41,7 +41,11 @@
 }
 
 .comment-table > tbody > tr:first-child > td {
-    border-top: none !important;
+    /*border-top: none !important;*/
+}
+
+.comment-table > tbody > tr:last-child > td {
+    /*border-bottom: 1px solid #ddd;*/
 }
 
 /* OLD */

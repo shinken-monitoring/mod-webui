@@ -1,7 +1,10 @@
 %setdefault('with_service_name', False)
 
+%for daterange, dr_comments in helper.group_by_daterange(sorted(comments, key=lambda x: x.entry_time, reverse=True), key=lambda x: x.entry_time).items():
+%if dr_comments:
+<div class="daterange-title">{{ daterange }}</div>
 <table class="table table-hover comment-table">
-  %for c in sorted(comments, key=lambda x: x.entry_time, reverse=True):
+  %for c in dr_comments:
   <tr>
     <td width="30px" class="text-center" style="vertical-align: middle;">
       %setdefault('comment_icon', 'fa-comment')
@@ -56,3 +59,5 @@
   </tr>
   %end
 </table>
+%end
+%end

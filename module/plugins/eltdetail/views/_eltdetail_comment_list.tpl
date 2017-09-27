@@ -1,5 +1,8 @@
+%for daterange, comments in helper.group_by_daterange(sorted(elt.comments, key=lambda x: x.entry_time, reverse=True), key=lambda x: x['time']).items():
+%if comments:
+{{ daterange }}
 <dl class="comment-list">
-  %for c in sorted(elt.comments, key=lambda x: x.entry_time, reverse=True):
+  %for c in comments:
   <dt>{{ c.author }} 
     <span class="comment-time">
       commented
@@ -27,3 +30,5 @@
   <dd>{{ c.comment }}</dd>
   %end
 </dl>
+%end
+%end

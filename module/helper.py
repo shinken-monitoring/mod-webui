@@ -24,10 +24,13 @@
 
 
 import time
+import datetime
 import copy
 import math
 import operator
 import re
+
+from collections import OrderedDict
 
 try:
     import json
@@ -140,6 +143,39 @@ class Helper(object):
         l = copy.copy(elements)
         l.sort(hst_srv_sort)
         return l
+
+    def group_by_daterange(self, l, key):
+        today = datetime.datetime.now().date()
+
+        groups = OrderedDict([
+                  ('In the future', []),
+                  ('Today', []),
+                  ('Yesterday', []),
+                  ('This month', [])])
+
+        for e in l:
+            d = datetime.datetime.fromtimestamp(key(e)).date()
+            if d > today:
+                groups['In the future'].append(e)
+            elif d == today:
+                groups['Today'].append(e)
+            elif d.year == today.year and d.month == today.month and d.day == today.day - 1:
+                groups['Yesterday'].append(e)
+            elif d.year == today.year and d.month == today.month:
+                groups['This month'].append(e)
+            elif d.year == today.year:
+                month = d.strftime("%B")
+                if month not in groups:
+                    groups[month] = []
+                groups[month].append(e)
+            else:
+                if d.year not in groups:
+                    groups[d.year] = []
+                groups[d.year].append(e)
+
+        return groups
+
+
 
     # Get the small state for host/service icons
     # and satellites ones

@@ -617,3 +617,11 @@ footer nav {
   color: #000 !important;
   background-color: #fff !important;
 }
+
+
+.daterange-title {
+    margin: 20px 0 8px;
+    padding: 0 24px;
+    color: #777;
+    line-height: 24px;
+}
