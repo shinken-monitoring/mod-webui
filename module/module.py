@@ -905,6 +905,8 @@ class Webui_broker(BaseModule, Daemon):
     def redirect403(self, msg="Forbidden"):
         raise self.bottle.HTTPError(403, msg)
 
+    def get_user(self):
+        return request.environ['USER']
 
 @webui_app.hook('before_request')
 def login_required():
@@ -975,5 +977,4 @@ def login_required():
 
     logger.debug("[WebUI] update current user: %s", user)
     request.environ['USER'] = user
-    bottle.BaseTemplate.defaults['user'] = user
 

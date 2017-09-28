@@ -1,3 +1,4 @@
+%user = app.get_user()
 %groupname = 'all'
 %groupalias = 'All hosts'
 %title = 'Minemap for all hosts'

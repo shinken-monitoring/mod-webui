@@ -1,3 +1,4 @@
+%user = app.get_user()
 <script type="text/javascript">
    function submit_local_form() {
       submit_check("{{name}}", $('#return_code').val(), $('#output').val());

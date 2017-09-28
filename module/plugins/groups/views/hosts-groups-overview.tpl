@@ -2,6 +2,7 @@
 
 %rebase("layout", title='Hosts groups overview')
 
+%user = app.get_user()
 %helper = app.helper
 %h = app.datamgr.get_hosts_synthesis(user=user)
 
