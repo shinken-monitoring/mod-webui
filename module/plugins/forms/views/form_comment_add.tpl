@@ -1,3 +1,4 @@
+%user = app.get_user()
 <script type="text/javascript">
    function submit_local_form() {
       // Launch add a comment request and bailout this modal view

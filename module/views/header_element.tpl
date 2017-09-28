@@ -2,6 +2,7 @@
 %setdefault('user', None)
 
 %username = 'anonymous'
+%user = app.get_user()
 %if user is not None:
 %username = user.get_name()
 %end

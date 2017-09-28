@@ -1,4 +1,5 @@
 %import time
+%user = app.get_user()
 %helper = app.helper
 %datamgr = app.datamgr
 %search_string = app.get_search_string()
