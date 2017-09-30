@@ -9,7 +9,7 @@
     <li>
       <form id="elts_per_page" class="pull-left">
        <div class="input-group" style="width:120px">
-         <div class="input-group-btn">
+         <div class="input-group-btn dropup">
            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">#&nbsp;<span class="caret"></span></button>
            <ul class="dropdown-menu" role="menu">
              <li><a href="#" data-elts="5">5 elements</a></li>
@@ -84,7 +84,7 @@
     %query['start'] = start
     %query['end'] = end
     %query_string = urlencode(query)
-    <li><a href="{{page}}?{{query_string}}">{{name}}</a></li>
+    <li><a href="{{page}}?{{query_string}}" title="Page {{ name }}">{{name}}</a></li>
     %end
     %end
   </ul>

@@ -39,6 +39,42 @@ td .progress {
 }
 
 
+.item-checkbox {
+    display: none;
+    width: 2em;
+    margin-top: 3px !important;
+    margin-left: 3px !important;
+    margin-right: 1px !important;
+    cursor: pointer;
+}
+
+tr.selected {
+    background-color: #D9EDF7;
+}
+
+tr.selected .item-icon,
+.item-state:hover .item-icon {
+    display: none;
+}
+
+tr.selected .item-checkbox,
+.item-state:hover .item-checkbox {
+    display: inline;
+}
+
+.js-select-all .onhover-label {
+    display: none;
+}
+
+.js-select-all:hover .onhover-label {
+    display: inline-block;
+    width: 200px;
+}
+
+.js-select-all:hover .original-label {
+    display: none;
+}
+
 
 /*
  * Problems table, responsive table columns

@@ -33,23 +33,38 @@
    %pbs = sorted(pbs, key=lambda x: x.business_impact, reverse=True)
    %for business_impact, bi_pbs in groupby(helper.sort_elements(pbs), key=lambda x: x.business_impact):
    %bi_pbs = list(bi_pbs)
-   <div class="panel panel-default">
-   <div class="panel-body">
-      <button type="button" class="btn btn-default btn-xs pull-left" data-type="business-impact" data-business-impact="{{business_impact}}" data-state="off">Select all</button>
 
-      <i class="pull-right small">{{len(bi_pbs)}} elements</i>
-      <h3 class="text-center"><span class="hidden-xs">Business impact: </span>{{!helper.get_business_impact_text(business_impact, text=True)}}</h3>
+   <h4 class="table-title">
+     <a class="js-select-all" data-business-impact="{{ business_impact }}" data-state="off">
+       <span class="original-label">
+         <span class="hidden-xs">Business impact: </span>
+         {{!helper.get_business_impact_text(business_impact, text=True)}}
+       </span>
+       <span class="onhover-label">
+         <i class="fa fa-check"></i> Select all {{len(bi_pbs)}} elements
+       </span>
+     </a>
+   </h4>
+
+   <div class="panel panel-default">
+   <!--<div class="panel-body">-->
 
       <table class="table table-condensed table-hover problems-table">
-         <thead><tr>
-            <th width="20px"></th>
-            <!--<th width="40px"></th>-->
-            <th width="130px">State</th>
-            <th class="host-column hidden-sm hidden-xs hidden-md">Host</th>
-            <th class="service-column hidden-sm hidden-xs">Service</th>
-            <!--<th class="duration-column">Duration</th>-->
-            <th width="100%">Output</th>
-         </tr></thead>
+        <colgroup>
+            <col style="width: 150px;"/>
+            <col class="host-column hidden-sm hidden-xs hidden-md"/>
+            <col class="service-column hidden-sm hidden-xs"/>
+            <col style="width: 100%;"/>
+        </colgroup>
+         <!--<thead><tr>-->
+            <!--<th width="20px"></th>-->
+            <!--[><th width="40px"></th><]-->
+            <!--<th width="130px">State</th>-->
+            <!--<th class="host-column hidden-sm hidden-xs hidden-md">Host</th>-->
+            <!--<th class="service-column hidden-sm hidden-xs">Service</th>-->
+            <!--[><th class="duration-column">Duration</th><]-->
+            <!--<th width="100%">Output</th>-->
+         <!--</tr></thead>-->
 
          <tbody>
          %previous_pb_host_name=None
@@ -60,12 +75,6 @@
             %pb_host = pb
             %end
             <tr data-toggle="collapse" data-target="#details-{{helper.get_html_id(pb)}}" data-item="{{pb.get_full_name()}}" class="accordion-toggle js-select-elt">
-               <td>
-                 <input type="checkbox" class="input-sm info" value="" id="selector-{{helper.get_html_id(pb)}}" data-type="problem" data-business-impact="{{business_impact}}" data-item="{{pb.get_full_name()}}" title="Ctrl+key on rows to select multiple rows<br>Shift+key on two rows to select a range of rows">
-               </td>
-               <!--<td title="{{pb.get_name()}} - {{pb.output}} - Since {{helper.print_duration(pb.last_state_change)}} - Last check: {{helper.print_duration(pb.last_chk)}}"  class="text-center">-->
-                  <!--{{!helper.get_fa_icon_state(pb, useTitle=False)}}-->
-               <!--</td>-->
              <td title="{{pb.get_name()}} - {{pb.state}}
 Since {{helper.print_date(pb.last_state_change, format="%d %b %Y %H:%M:%S")}}
 
@@ -77,9 +86,12 @@ Next check <strong>{{helper.print_duration(pb.next_chk)}}</strong>
 "
                  data-placement="right"
                  data-container="body"
-                 class="font-{{pb.state.lower()}} text-center">
+                 class="item-state font-{{pb.state.lower()}} text-center">
                    <div style="display: table-cell; vertical-align: middle; padding-right: 10px;">
-                     {{!helper.get_fa_icon_state(pb, useTitle=False)}}
+                     <input type="checkbox" class="input-sm item-checkbox" value="" id="selector-{{helper.get_html_id(pb)}}" data-type="problem" data-business-impact="{{business_impact}}" data-item="{{pb.get_full_name()}}">
+                     <div class="item-icon">
+                       {{!helper.get_fa_icon_state(pb, useTitle=False)}}
+                     </div>
                    </div>
                    <div style="display: table-cell; vertical-align: middle;">
                      <small>
@@ -119,7 +131,7 @@ Next check <strong>{{helper.print_duration(pb.next_chk)}}</strong>
                   {{!helper.get_link(pb, short=True)}}
                   %end
                   %if len(pb.impacts) > 0:
-                  <button class="btn btn-danger btn-xs"><i class="fa fa-plus"></i> {{ len(pb.impacts) }} impacts</button>
+                  <span class="label label-danger" title="This service has impacts">+ {{ len(pb.impacts) }}</span>
                   %end
                   <!--:TODO:maethor:170924: -->
                   <!--<div class="pull-right problem-actions">-->
@@ -154,7 +166,7 @@ Next check <strong>{{helper.print_duration(pb.next_chk)}}</strong>
                       / {{!helper.get_link(pb, short=True)}}
                       %end
                       %if len(pb.impacts) > 0:
-                      <button class="btn btn-danger btn-xs"><i class="fa fa-plus"></i> {{ len(pb.impacts) }} impacts</button>
+                      <span class="label label-danger" title="This service has impacts">+ {{ len(pb.impacts) }}</span>
                       %end
                     </div>
 
@@ -282,7 +294,7 @@ Next check <strong>{{helper.print_duration(pb.next_chk)}}</strong>
          %end
          </tbody>
       </table>
-   </div>
+   <!--</div>-->
    </div>
 
    %end

@@ -38,7 +38,7 @@ function add_element(name){
    // Force to check the checkbox
    $('td input[type=checkbox][data-item="'+name+'"]').prop("checked", true);
 
-   $('td input[type=checkbox][data-item="'+name+'"]').closest('tr').addClass('active');
+   $('td input[type=checkbox][data-item="'+name+'"]').closest('tr').addClass('selected');
    
    if (problems_logs) console.log('Select element: ', name)
 
@@ -57,7 +57,7 @@ function remove_element(name){
    // Force to uncheck the checkbox
    $('td input[type=checkbox][data-item="'+name+'"]').prop("checked", false);
 
-   $('td input[type=checkbox][data-item="'+name+'"]').closest('tr').removeClass('active');
+   $('td input[type=checkbox][data-item="'+name+'"]').closest('tr').removeClass('selected');
    
    if (problems_logs) console.log('Unselect element: ', name)
    selected_elements.splice($.inArray(name, selected_elements),1);
@@ -90,9 +90,8 @@ $('body').on('hide.bs.collapse', '.collapse', function () {
     $(this).closest('tr').prev().find('.output').addClass("ellipsis", {duration:200});
 });
 
-
 // Business impact selection buttons
-$('body').on('click', 'button[data-type="business-impact"]', function (e) {
+$('body').on('click', '.js-select-all', function (e) {
    if ($(this).data('state')=='off') {
       if (problems_logs) console.log('Select all elements ...', $(this).data('business-impact'));
 
@@ -100,7 +99,8 @@ $('body').on('click', 'button[data-type="business-impact"]', function (e) {
       $('input[type=checkbox][data-type="problem"][data-business-impact="'+$(this).data('business-impact')+'"]').each(function() {
          add_element($(this).data('item'));
       })
-      $(this).html("Unselect all").data('state', 'on');
+      $(this).data('original-label', $(this).html());
+      $(this).html('Unselect all').data('state', 'on');
    } else {
       if (problems_logs) console.log('Unselect all elements ...', $(this).data('business-impact'));
          
@@ -108,7 +108,7 @@ $('body').on('click', 'button[data-type="business-impact"]', function (e) {
       $('input[type=checkbox][data-type="problem"][data-business-impact="'+$(this).data('business-impact')+'"]').each(function() {
          remove_element($(this).data('item'));
       })
-      $(this).html("Select all").data('state', 'off');
+      $(this).html($(this).data('original-label')).data('state', 'off');
    }
    
 });
@@ -136,18 +136,18 @@ $('body').on('click', '.js-select-elt', function(e) {
         e.stopPropagation();
         if (problems_logs) console.log('Shift-Clicked: ', $(this).data('item'))
         $(this).focus(); // This is used to avoid text selection
-        if ($(this).closest('table').find('tr.active').length == 0) {
+        if ($(this).closest('table').find('tr.selected').length == 0) {
             add_remove_elements($(this).data('item'));
         } else {
             //$(this).closest('table').children('tr:first').hide();
             //$(this).closest('.js-select-elt').addClass('success')
-            var first = $(this).closest('table').find('tr.active:first');
+            var first = $(this).closest('table').find('tr.selected:first');
             if ($(this).prevAll().filter($(first)).length !== 0) {
-                $(this).prevUntil(first, 'tr.js-select-elt').andSelf().not('.active').each(function(i, e) {
+                $(this).prevUntil(first, 'tr.js-select-elt').andSelf().not('.selected').each(function(i, e) {
                     add_remove_elements($(e).data('item'));
                 });
             } else {
-                $(this).nextUntil(first, 'tr.js-select-elt').andSelf().not('.active').each(function(i, e) {
+                $(this).nextUntil(first, 'tr.js-select-elt').andSelf().not('.selected').each(function(i, e) {
                     add_remove_elements($(e).data('item'));
                 });
             }
