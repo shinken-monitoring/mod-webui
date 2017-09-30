@@ -1,16 +1,17 @@
 %rebase("layout", breadcrumb=[ ['System parameters', '/system-parameters'] ], title='System parameters')
 
+<div class="panel panel-default">
 %if not configs:
 <center>
   <h3>No system information is available.</h3>
 </center>
 %else:
-<table class="table table-condensed col-sm-12" style="table-layout: fixed; word-wrap: break-word;">
+<table class="table table-condensed" style="table-layout: fixed; word-wrap: break-word;">
   <colgroup>
     <col style="width: 30%" />
     <col style="width: 70%" />
   </colgroup>
-  <tbody style="font-size:x-small;">
+  <tbody style="font-size:small;">
     %for key, value in configs:
     <tr>
       <td>{{key}}</td>
@@ -26,3 +27,4 @@
   </tbody>
 </table>
 %end
+</div>

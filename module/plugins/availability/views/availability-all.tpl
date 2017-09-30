@@ -6,7 +6,8 @@
 
 %states = ['Up', 'down', 'unreachable', 'unknown', 'unchecked']
 
-<div id="availability">
+<div id="availability" class="panel panel-default">
+  <div class="panel-body">
    <div class="row row-fluid">
       <div class="col-md-6">
          <!--<div class="btn-group pull-left">-->
@@ -143,4 +144,5 @@
          $('#range_end').val(range_end.unix());
       });
    </script>
+ </div>
 </div>

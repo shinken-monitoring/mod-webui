@@ -696,8 +696,7 @@
                 <div id="p_panel_pie_graph_hosts" class="panel-collapse collapse {{'in' if not panels['panel_pie_graph_hosts']['collapsed'] else ''}}">
                     <div class="panel-body">
                         <!-- Chart -->
-                        <div id="pie-graph-hosts">
-                            <div class="well">
+                        <div id="pie-graph-hosts" style="padding: 15px;">
                                 <canvas></canvas>
                                 <div class="row title" style="display:none">
                                     <div class="text-center">
@@ -710,7 +709,6 @@
                                         <span class="legend hidden-sm hidden-xs"></span>
                                     </div>
                                 </div>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -756,8 +754,7 @@
                 <div id="p_panel_pie_graph_services" class="panel-collapse collapse {{'in' if not panels['panel_pie_graph_services']['collapsed'] else ''}}">
                     <div class="panel-body">
                         <!-- Chart -->
-                        <div id="pie-graph-services">
-                            <div class="well">
+                        <div id="pie-graph-services" style="padding: 15px;">
                                 <canvas></canvas>
                                 <div class="row title" style="display:none">
                                     <div class="text-center">
@@ -770,7 +767,6 @@
                                         <span class="legend hidden-sm hidden-xs"></span>
                                     </div>
                                 </div>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -816,8 +812,7 @@
                 <div id="p_panel_line_graph_hosts" class="panel-collapse collapse {{'in' if not panels['panel_line_graph_hosts']['collapsed'] else ''}}">
                     <div class="panel-body">
                         <!-- Chart -->
-                        <div id="line-graph-hosts">
-                            <div class="well">
+                        <div id="line-graph-hosts" style="padding: 15px;">
                                 <canvas></canvas>
                                 <div class="row title" style="display:none">
                                     <div class="text-center">
@@ -830,7 +825,6 @@
                                         <span class="legend hidden-sm hidden-xs"></span>
                                     </div>
                                 </div>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -876,8 +870,7 @@
                 <div id="p_panel_line_graph_services" class="panel-collapse collapse {{'in' if not panels['panel_line_graph_services']['collapsed'] else ''}}">
                     <div class="panel-body">
                         <!-- Chart -->
-                        <div id="line-graph-services">
-                            <div class="well">
+                        <div id="line-graph-services" style="padding: 15px;">
                                 <canvas></canvas>
                                 <div class="row title" style="display:none">
                                     <div class="text-center">
@@ -890,7 +883,6 @@
                                         <span class="legend hidden-sm hidden-xs"></span>
                                     </div>
                                 </div>
-                            </div>
                         </div>
                     </div>
                 </div>

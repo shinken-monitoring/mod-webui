@@ -97,6 +97,8 @@
   }
 </script>
 
+<div class="panel panel-default">
+  <div class="panel-body">
    <script type="text/javascript">
       // Initial start/stop range ...
       var range_start = moment.unix({{range_start}}, 'YYYY-MM-DD');
@@ -185,4 +187,5 @@
       });
    </script>
 
+  </div>
 </div>

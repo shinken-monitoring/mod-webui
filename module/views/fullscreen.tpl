@@ -44,7 +44,7 @@
       <!-- Stylesheets
       ================================================== -->
       <link href="/static/css/bootstrap.min.css?v={{app.app_version}}" rel="stylesheet">
-      <link href="/static/css/bootstrap-theme.min.css?v={{app.app_version}}" rel="stylesheet">
+      <!--<link href="/static/css/bootstrap-theme.min.css?v={{app.app_version}}" rel="stylesheet">-->
       <link href="/static/css/font-awesome.min.css?v={{app.app_version}}" rel="stylesheet">
 
       <link href="/static/css/shinken-layout.css?v={{app.app_version}}" rel="stylesheet">

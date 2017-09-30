@@ -15,7 +15,8 @@
    </center>
    %else:
 
-   <div class="impacts-panel col-sm-5">
+   <div class="panel impacts-panel col-sm-5">
+     <div class="panel-body">
       %# " We look for separate bad and good elements, so we remember last state"
       %last_was_bad = False
       %# " By default we won't expand an impact."
@@ -59,6 +60,7 @@
       </div>
       %# end of the for imp_id in impacts:
       %end
+    </div>
    </div>
 
    %# "#######    Now we will output right panel with all root problems"

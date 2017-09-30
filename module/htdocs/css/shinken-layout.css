@@ -32,7 +32,7 @@
  *
  */
 html, body {
-    background: #f9f9f9;
+    background: #f8f8f8;
 }
 .table-invisible > thead > tr > th,
 .table-invisible > tbody > tr > th,
@@ -124,19 +124,34 @@ td .ellipsis > .long-output {
 /*
  * Side bar menu - width 200px
  */
+
+#page-wrapper {
+    background-color: #F8F8F8;
+    border-left: 0;
+    padding: 0 15px;
+    /*padding: 0 15px;*/
+}
+
 @media(min-width:768px) {
    #page-wrapper {
-      margin: 0 0 0 200px;
+      margin: 0 0 0 220px;
+      padding: 0 50px;
    }
    #page-wrapper.fullscreen {
       margin: 0 0 0 0;
    }
+   .navbar-brand-div {
+       width:220px;
+       padding: 0 15px;
+       margin-right: 20px;
+   }
 }
 @media(min-width:768px) {
     .sidebar {
-        width: 200px;
+        width: 220px;
     }
 }
+
 /*@media (max-width: 768px) {*/
     /*#sidebar-menu > li  {*/
         /*float:left;*/
@@ -152,6 +167,36 @@ td .ellipsis > .long-output {
         /*height: 30px;*/
     /*}*/
 /*}*/
+
+.sidebar .sidebar-icon {
+    font-size: 18px;
+    padding: 0 15px;
+}
+
+#sidebar-menu {
+    padding-top: 10px;
+}
+
+.sidebar ul li {
+    border-bottom: 0 !important;
+}
+
+.sidebar ul li.divider {
+    border-bottom: 1px solid #e7e7e7 !important;
+    margin: 10px;
+}
+
+.sidebar ul li a {
+    color: inherit;
+}
+
+.sidebar ul li a:hover {
+    cursor: pointer;
+}
+
+.sidebar ul li a.active {
+    font-weight: bold;
+}
 
 /*
  * Navigation bar, company logo
@@ -384,13 +429,17 @@ footer nav {
     margin: 0;
     margin-bottom: 25px;
     position: fixed;
-    width: 200px;
+    width: 220px;
     left: 0;
     bottom: 0%;
     /*left: 0px; bottom: 30px;*/
 }
 #action-menu li {
     border-bottom: 1px solid #e7e7e7;
+}
+#action-menu li .fa {
+    padding: 0 15px;
+    font-size: 18px;
 }
 @media(max-width:768px) {
     /*footer nav.navbar-element {*/
@@ -419,7 +468,7 @@ footer nav {
 
     #action-menu li {
         border: 1px solid #e7e7e7;
-        background: #f9f9f9;
+        background: #f8f8f8;
         display: inline;
         margin: 2px;
         padding: 5px;

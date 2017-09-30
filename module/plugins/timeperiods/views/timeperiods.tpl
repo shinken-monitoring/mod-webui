@@ -3,30 +3,18 @@
 %import time
 %import operator
 
-<div id="timeperiods">
-   <table class="table table-condensed">
-      <colgroup>
-         <col style="width: 20%" />
-         <col style="width: 60%" />
-      </colgroup>
-      <tbody style="font-size:x-small;">
-      %for timeperiod in timeperiods:
-         <tr>
-            <td>
-               <h3>{{timeperiod.timeperiod_name}}</h3>
-            </td>
-         </tr>
-         <tr>
+<div id="timeperiods" class="row-fluid">
+  %for timeperiod in timeperiods:
+  <div class="col-md-6">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      {{timeperiod.timeperiod_name}}
+    </div>
             <table class="table table-condensed">
               <colgroup>
                 <col style="width: 20%" />
                 <col style="width: 60%" />
               </colgroup>
-              <thead>
-                <tr>
-                  <th colspan="2"></td>
-                </tr>
-              </thead>
               <tbody style="font-size:x-small;">
                 %if hasattr(timeperiod, 'alias'):
                 <tr>
@@ -76,8 +64,7 @@
                 </tr>
               </tbody>
             </table>
-         </tr>
-      %end
-      </tbody>
-   </table>
+  </div>
+  </div>
+  %end
 </div>

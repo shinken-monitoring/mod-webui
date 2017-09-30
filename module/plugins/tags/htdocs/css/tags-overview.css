@@ -28,7 +28,7 @@
     ------------------------------------------------------- */
 
 ul.list { list-style: none; width: 100%; padding-left: 15px; }
-ul.list li { display: block; background: #F9F9F9; padding: 10px 15px; }
+ul.list li { display: block; background: #fff; padding: 10px 15px; }
 
 ul.list li.alt { background: #FFF; }
 
@@ -50,7 +50,7 @@ ul.list li section.right a.firstbtn { margin-right: 7px; }
     ------------------------------------------------------- */
 
 ul.grid { list-style: none; margin: 0 auto; padding-left: 25px; }
-ul.grid li { position: relative; display: block; float: left; width: auto; height: 130px; border-right: 1px solid #b6bdbe; border-bottom: 1px solid #b6bdbe; padding: 5px 22px; margin-bottom: 20px; margin-left: 10px; box-sizing: border-box; -moz-box-sizing: border-box; -webkit-box-sizing: border-box; }
+ul.grid li { position: relative; display: block; float: left; width: auto; height: 130px; border-right: 1px solid #b6bdbe; border-bottom: 1px solid #b6bdbe; padding: 5px 22px; margin-bottom: 20px; margin-left: 10px; box-sizing: border-box; -moz-box-sizing: border-box; -webkit-box-sizing: border-box; background: #fff; }
 ul.grid li.third { border: 0; }
 
 ul.grid li section.left { position: relative; }

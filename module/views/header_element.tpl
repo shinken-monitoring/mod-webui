@@ -17,9 +17,11 @@
          <span class="icon-bar"></span>
          <span class="icon-bar"></span>
       </button>
-      <a href="/" class="logo navbar-brand">
-         <img src="/static/logo/{{app.company_logo}}?v={{app.app_version}}" alt="Company logo" style="padding: 7px;" />
-      </a>
+      <div class="navbar-brand-div">
+        <a href="/" class="logo navbar-brand">
+           <img src="/static/logo/{{app.company_logo}}?v={{app.app_version}}" alt="Company logo" style="padding: 7px;" />
+        </a>
+      </div>
    </div>
 
    <ul class="nav navbar-nav hidden-xs">
@@ -175,11 +177,13 @@
         </li>
       <!--%include("_filters.tpl")-->
         %if app:
-        <li> <a href="{{ app.get_url('Dashboard') }}"> <span class="fa fa-dashboard"></span>
+        <li> <a href="{{ app.get_url('Dashboard') }}"> <span class="fa fa-dashboard sidebar-icon font-unknown"></span>
         Dashboard</a> </li>
-        <li> <a href="{{ app.get_url('Problems') }}"> <span class="fa fa-ambulance"></span>
+        <li> <a href="{{ app.get_url('Problems') }}"> <span class="fa fa-exclamation-circle sidebar-icon font-critical"></span>
         Problems</a> </li>
-        <li> <a href="#"><i class="fa fa-sitemap"></i>
+        <li class="divider"></li>
+        <!--<li>Groups and tags</li>-->
+        <li> <a href="#"><i class="fa fa-sitemap sidebar-icon"></i>
         Groups and tags<i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
             <li> <a href="{{ app.get_url('HostsGroups') }}"> <span class="fa fa-sitemap"></span> Hosts groups </a> </li>
@@ -188,7 +192,7 @@
             <li> <a href="{{ app.get_url('ServicesTags') }}"> <span class="fa fa-tags"></span> Services tags </a> </li>
           </ul>
         </li>
-        <li> <a href="#"><i class="fa fa-bar-chart"></i>
+        <li> <a href="#"><i class="fa fa-bar-chart sidebar-icon"></i>
         Tactical views<i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
             <li> <a href="{{ app.get_url('Impacts') }}"> <span class="fa fa-bolt"></span> Impacts </a> </li>
@@ -201,7 +205,7 @@
           </ul>
         </li>
         %if user.is_administrator():
-        <li> <a href="#"><i class="fa fa-gears"></i>
+        <li> <a href="#"><i class="fa fa-gears sidebar-icon"></i>
         System<i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
             <li> <a href="{{ app.get_url('System') }}"> <span class="fa fa-heartbeat"></span> Status </a> </li>
@@ -210,7 +214,7 @@
             %end
           </ul>
         </li>
-        <li> <a href="#"><i class="fa fa-wrench"></i>
+        <li> <a href="#"><i class="fa fa-wrench sidebar-icon"></i>
         Configuration<i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
             <li> <a href="{{ app.get_url('Parameters') }}"> <span class="fa fa-gears"></span> Parameters </a> </li>
@@ -223,7 +227,7 @@
         %end
         %other_uis = app.get_ui_external_links()
         %if len(other_uis) > 0:
-        <li> <a href="#"><i class="fa fa-rocket"></i>
+        <li> <a href="#"><i class="fa fa-rocket sidebar-icon"></i>
         External<i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
             %for c in other_uis:
@@ -236,7 +240,7 @@
         %end
         %end
         <li class="visible-xs">
-           <a href="/user/logout" data-toggle="modal" data-target="/user/logout"><i class="fa fa-sign-out"></i> Logout</a>
+           <a href="/user/logout" data-toggle="modal" data-target="/user/logout"><i class="fa fa-sign-out sidebar-icon"></i> Logout</a>
         </li>
 
       </ul>

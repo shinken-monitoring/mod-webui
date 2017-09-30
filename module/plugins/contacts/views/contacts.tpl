@@ -3,9 +3,9 @@
 %user = app.get_user()
 %helper = app.helper
 
-<div id="contacts">
+<div id="contacts" class="panel panel-default">
 
-   <table class="table table-condensed table-striped">
+   <table class="table table-hover">
       <!--<colgroup>-->
          <!--<col style="width: 20%;"></col>-->
          <!--<col style="width: 20%;"></col>-->

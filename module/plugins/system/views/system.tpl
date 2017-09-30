@@ -3,7 +3,8 @@
 %from shinken.bin import VERSION
 %helper = app.helper
 
-<div class="col-sm-12">
+<div class="col-sm-12 panel panel-default">
+  <div class="panel-body">
    %daemons = [ ('scheduler', schedulers), ('poller', pollers), ('broker', brokers), ('reactionner', reactionners), ('receiver', receivers)]
    %present = sum(1 for (type, satellites) in daemons if satellites)
    %if not present:
@@ -58,4 +59,5 @@
        </table>
        %end
     %end
+  </div>
 </div>
