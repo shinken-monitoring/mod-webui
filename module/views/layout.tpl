@@ -82,6 +82,7 @@
       <!-- Scripts
       ================================================== -->
       <script src="/static/js/jquery-1.12.0.min.js"></script>
+      <script src="/static/js/shinken-bookmarks.js?v={{app.app_version}}"></script>
    </head>
 
    <body>
@@ -194,7 +195,6 @@
       %end
 
       <script src="/static/js/shinken-layout.js?v={{app.app_version}}"></script>
-      <script src="/static/js/shinken-bookmarks.js?v={{app.app_version}}"></script>
       <script src="/static/js/shinken-tooltip.js?v={{app.app_version}}"></script>
 
       %# Include specific Js files ...
