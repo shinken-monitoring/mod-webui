@@ -254,6 +254,10 @@ td .ellipsis > .long-output {
     border-bottom: none;
 }
 
+.navbar-inverse-2 {
+    background-color: #D9EDF7 !important;
+}
+
 .navbar-inverse .navbar-top-links>li>a {
     color: white;
 }
@@ -341,6 +345,14 @@ td .ellipsis > .long-output {
 .navbar-nav > li > .btn:active,
 .navbar-nav > li > .btn.active {
   color: #fff;
+  background-color: #4188b1;
+}
+
+.navbar-nav > li > a.btn:hover,
+.navbar-nav > li > a.btn:focus,
+.navbar-nav > li > a.btn.focus,
+.navbar-nav > li > a.btn:active,
+.navbar-nav > li > a.btn.active {
   background-color: #4188b1 !important;
 }
 
@@ -355,6 +367,28 @@ td .ellipsis > .long-output {
 /** remove padding for button with .fa-stack as child */
 .navbar-nav > li > .btn-ico.js-toggle-sound-alert {
     padding: 0;
+}
+
+.navbar-inverse-2 .btn {
+    background-color: #555;
+}
+
+.navbar-inverse-2 .btn-action {
+    background: none;
+    color: #555;
+}
+
+.navbar-inverse-2 .btn-action:hover,
+.navbar-inverse-2 .btn-action:active,
+.navbar-inverse-2 .btn-action.active,
+.navbar-inverse-2 .btn-action:focus,
+.navbar-inverse-2 .btn-action.focus {
+    background: none !important;
+    color: #000 !important;
+}
+
+.navbar-inverse-2 .btn-action .fa {
+    font-size: 22px;
 }
 
 .navbar-nav > li > .btn-user {

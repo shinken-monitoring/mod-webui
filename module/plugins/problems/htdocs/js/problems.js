@@ -25,6 +25,18 @@
 var problems_logs=false;
 
 
+function display_nav_actions() {
+    $('#nav-filters').addClass('hidden');
+    $('#nav-actions').removeClass('hidden');
+    $('.navbar-inverse').addClass('navbar-inverse-2');
+}
+
+function hide_nav_actions() {
+    $('#nav-actions').addClass('hidden');
+    $('#nav-filters').removeClass('hidden');
+    $('.navbar-inverse').removeClass('navbar-inverse-2');
+}
+
 function add_remove_elements(name){
    if (selected_elements.indexOf(name) != -1) {
       remove_element(name);
@@ -44,8 +56,11 @@ function add_element(name){
 
    selected_elements.push(name);
 
+   $('#js-nb-selected-elts').html(selected_elements.length);
+
    if (selected_elements.length > 0) {
       $('#action-menu').show();
+      display_nav_actions();
       
       // Stop page refresh
       disable_refresh();
@@ -62,8 +77,11 @@ function remove_element(name){
    if (problems_logs) console.log('Unselect element: ', name)
    selected_elements.splice($.inArray(name, selected_elements),1);
 
+   $('js-nb-selected-elts').html(selected_elements.length);
+
    if (selected_elements.length == 0){
       $('#action-menu').hide();
+      hide_nav_actions();
 
       // Restart page refresh timer
       enable_refresh();

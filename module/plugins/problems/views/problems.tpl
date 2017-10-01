@@ -302,6 +302,10 @@ Next check <strong>{{helper.print_duration(pb.next_chk)}}</strong>
 
  %include("_problems_action-menu.tpl")
 
+ <ul class='nav navbar-nav hidden-xs hidden' id='nav-actions'>
+   %include('_problems_actions-navbar.tpl')
+ </ul>
+
  <script>
    // Configuration for actions.js
    var user='{{ user.alias if hasattr(user, "alias") and user.alias != "none" else user.get_name() }}';
@@ -318,4 +322,5 @@ Next check <strong>{{helper.print_duration(pb.next_chk)}}</strong>
      save_user_preference('display_impacts', $('#display-impacts').is(':checked'));
      location.reload();
    });
+   $("#nav-actions").insertAfter("#nav-filters");
  </script>

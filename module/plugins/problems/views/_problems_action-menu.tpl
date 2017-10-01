@@ -1,5 +1,5 @@
 %if app.can_action():
-<nav id="action-menu" class="navbar navbar-default navbar-element" role="navigation" style="display:none;">
+<nav id="action-menu" class="navbar navbar-default navbar-element visible-xs" role="navigation" style="display:none;">
   <ul class="nav">
     %s = app.datamgr.get_services_synthesis(user=user, elts=all_pbs)
     %h = app.datamgr.get_hosts_synthesis(user=user, elts=all_pbs)
