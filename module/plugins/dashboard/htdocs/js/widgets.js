@@ -264,14 +264,14 @@ $(function(){
             if (widgets_logs) console.debug("Edit widget: ", widget);
 
             // Stop page refresh
-            stop_refresh();
+            disable_refresh();
             return true;
          },
          onCancelEditQuery : function(link, widget){
             if (widgets_logs) console.debug("Cancelled widget edition: ", widget);
 
             // Start page refresh
-            start_refresh();
+            enable_refresh();
             return true;
          }
       }

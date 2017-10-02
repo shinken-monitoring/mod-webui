@@ -2,7 +2,7 @@
    function submit_local_form() {
       // Launch comment deletion and bailout this modal view
       delete_comment('{{name}}', '{{comment}}');
-      start_refresh();
+      enable_refresh();
       $('#modal').modal('hide');
    }
 </script>

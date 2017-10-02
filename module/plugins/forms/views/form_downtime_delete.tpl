@@ -1,3 +1,4 @@
+%user = app.get_user()
 <script type="text/javascript">
    function submit_local_form() {
       // Launch downtimes deletion request and bailout this modal view
@@ -6,7 +7,7 @@
       if ($('#reason').val()) {
          add_comment("{{name}}", '{{user.get_name()}}', $('#reason').val());
       }
-      start_refresh();
+      enable_refresh();
       $('#modal').modal('hide');
    }
 </script>

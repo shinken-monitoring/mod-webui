@@ -40,6 +40,7 @@ def proxy_graph():
         route should not be usefull anywhere else.
     '''
     url = app.request.GET.get('url', '')
+
     try:
         r = requests.get(url)
         if r.status_code != 200:
@@ -58,8 +59,35 @@ def proxy_graph():
             {'status': 'ko', 'message': str(e)}
         )
 
-    app.bottle.response.content_type = str(r.headers['content-type'])
+    app.response.content_type = str(r.headers['content-type'])
+    app.response.set_header("Cache-Control", "public, max-age=300")
     return r.content
+
+
+def get_service_graphs(host_name, service):
+    user = app.bottle.request.environ['USER']
+    elt = app.datamgr.get_service(host_name, service, user) or app.redirect404()
+    s = ""
+    if app.graphs_module.is_available():
+        graphs = app.graphs_module.get_graph_uris(elt, duration=12*3600)
+        for g in graphs:
+            s += "<p><img src='%s' width='600px'></p>" % g['img_src']
+
+    app.response.set_header("Cache-Control", "public, max-age=60")
+    return s
+
+
+def get_host_graphs(host_name):
+    user = app.bottle.request.environ['USER']
+    elt = app.datamgr.get_host(host_name, user) or app.redirect404()
+    s = ""
+    if app.graphs_module.is_available():
+        graphs = app.graphs_module.get_graph_uris(elt, duration=12*3600)
+        for g in graphs:
+            s += "<p><img src='%s' width='600px'></p>" % g['img_src']
+
+    app.response.set_header("Cache-Control", "public, max-age=60")
+    return s
 
 
 # Our page
@@ -136,5 +164,11 @@ pages = {
     },
     get_graphs_widget: {
         'name': 'wid_Graph', 'route': '/widget/graphs', 'view': 'widget_graphs', 'static': True, 'widget': ['dashboard'], 'widget_desc': widget_desc, 'widget_name': 'graphs', 'widget_picture': '/static/graphs/img/widget_graphs.png'
+    },
+    get_service_graphs: {
+        'name': 'GetServiceGraphs', 'route': '/graphs/:host_name/:service#.+#'
+    },
+    get_host_graphs: {
+        'name': 'GetHostGraphs', 'route': '/graphs/:host_name'
     }
 }

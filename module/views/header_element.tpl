@@ -2,6 +2,7 @@
 %setdefault('user', None)
 
 %username = 'anonymous'
+%user = app.get_user()
 %if user is not None:
 %username = user.get_name()
 %end
@@ -15,7 +16,7 @@
 </style>
 
 <!-- Header Navbar -->
-<nav class="header navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom:0px;">
+<nav class="header navbar navbar-static-top navbar-inverse" role="navigation">
    <div class="navbar-header">
       
       <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -25,7 +26,7 @@
          <span class="icon-bar"></span>
       </button>
       <a href="/" class="logo navbar-brand">
-         <img src="/static/logo/{{app.company_logo}}" alt="Company logo" />
+         <img src="/static/logo/{{app.company_logo}}?v={{app.app_version}}" alt="Company logo" style="padding: 7px;" />
       </a>
 
    </div>
@@ -35,7 +36,7 @@
       %include("_filters.tpl")
    </ul>
 
-   <ul class="nav navbar-top-links navbar-right">
+   <ul class="nav navbar-nav navbar-top-links navbar-right hidden-xs">
      <!-- Right part ... -->
      %s = app.datamgr.get_services_synthesis(user=user)
      %h = app.datamgr.get_hosts_synthesis(user=user)
@@ -44,8 +45,14 @@
          <tbody>
             <tr>
                %for state in "up", "unreachable", "down", "pending", "unknown", "ack", "downtime":
-               <td>
+               <td data-title="{{ h["pct_" + state] }}% {{ state }}">
+                 %label = "%s" % h["nb_" + state]
                  %label = "%s <i>(%s%%)</i>" % (h["nb_" + state], h["pct_" + state])
+                 %if state in ['ack', 'downtime']:
+                 <a href="/all?search=type:host is:{{state}}">
+                 %else:
+                 <a href="/all?search=type:host is:{{state}} isnot:ack isnot:downtime">
+                 %end
                  {{!helper.get_fa_icon_state_and_label(cls="host", state=state, label=label, disabled=(not h["nb_" + state]))}}
                </td>
                %end
@@ -58,8 +65,14 @@
          <tbody>
             <tr>
                %for state in "ok", "warning", "critical", "pending", "unknown", "ack", "downtime":
-               <td>
+               <td data-title="{{ s["pct_" + state] }}% {{ state }}">
+                 %label = "%s" % s["nb_" + state]
                  %label = "%s <i>(%s%%)</i>" % (s["nb_" + state], s["pct_" + state])
+                 %if state in ['ack', 'downtime']:
+                 <a href="/all?search=type:service is:{{state}}">
+                 %else:
+                 <a href="/all?search=type:service is:{{state}} isnot:ack isnot:downtime">
+                 %end
                  {{!helper.get_fa_icon_state_and_label(cls="service", state=state, label=label, disabled=(not s["nb_" + state]))}}
                </td>
                %end
@@ -75,13 +88,15 @@
       <!--begin-hosts-states-->
       <li id="overall-hosts-states">
          %state = app.datamgr.get_percentage_hosts_state(user, False)
-         %label = 'danger' if state <= app.hosts_states_warning else 'warning' if state <= app.hosts_states_critical else 'success'
+         %color = 'font-critical' if state <= app.hosts_states_warning else 'font-warning' if state <= app.hosts_states_critical else ''
          <a id="hosts-states-popover"
-            class="hosts-all" data-count="{{ h['nb_elts'] }}" data-problems="{{ h['nb_problems'] }}"
+            class="btn btn-primary hosts-all" data-count="{{ h['nb_elts'] }}" data-problems="{{ h['nb_problems'] }}"
             href="/all?search=type:host"
-            data-original-title="Hosts states" data-toggle="popover popover-hosts" title="Overall hosts states: {{h['nb_elts']}} hosts, {{h["nb_problems"]}} problems" data-html="true">
-            <i class="fa fa-server"></i>
-            <span class="label label-as-badge label-{{label}}">{{h["nb_problems"]}}</span>
+            data-toggle="popover popover-hosts" data-title="Overall hosts states: {{h['nb_elts']}} hosts, {{h["nb_problems"]}} problems" data-html="true">
+            <i class="fa fa-server {{ color }}"></i>
+            %if color:
+            <span class="badge">{{h["nb_problems"]}}</span>
+            %end
          </a>
       </li>
       <!--end-hosts-states-->
@@ -91,79 +106,61 @@
          may be used by the layout page refresh.
       -->
       <!--begin-services-states-->
-      <li id="overall-services-states">
+      <li id="overall-services-states" style="margin-right: 15px;">
          %state = app.datamgr.get_percentage_service_state(user, False)
-         %label = 'danger' if state <= app.services_states_warning else 'warning' if state <= app.services_states_critical else 'success'
+         %color = 'font-critical' if state <= app.services_states_warning else 'font-warning' if state <= app.services_states_critical else ''
          <a id="services-states-popover"
-            class="services-all" data-count="{{ s['nb_elts'] }}" data-problems="{{ s['nb_problems'] }}"
+            class="btn btn-primary services-all" data-count="{{ s['nb_elts'] }}" data-problems="{{ s['nb_problems'] }}"
             href="/all?search=type:service"
-            data-original-title="Services states" data-toggle="popover popover-services" title="Overall services states: {{s['nb_elts']}} services, {{s["nb_problems"]}} problems" data-html="true">
-            <i class="fa fa-bars"></i>
-            <span class="label label-as-badge label-{{label}}">{{s["nb_problems"]}}</span>
+            data-toggle="popover popover-services" data-title="Overall services states: {{s['nb_elts']}} services, {{s["nb_problems"]}} problems" data-html="true">
+            <i class="fa fa-hdd-o {{ color }}"></i>
+            %if color:
+            <span class="badge label-{{label}}">{{s["nb_problems"]}}</span>
+            %end
          </a>
       </li>
       <!--end-services-states-->
 
       <li>
-         <a class="quickinfo" data-original-title='Currently' href="/dashboard/currently" title="Dashboard currently">
+         <a class="btn btn-ico" href="/dashboard/currently" title="Dashboard currently">
             <i class="fa fa-eye"></i>
          </a>
       </li>
 
       %if refresh:
       <li>
-         <a class="quickinfo" action="toggle-page-refresh" data-original-title='Refreshing' href="#">
+         <button class="btn btn-ico js-toggle-page-refresh">
             <i id="header_loading" class="fa fa-refresh"></i>
-         </a>
+         </button>
       </li>
       %end
 
       %if app.play_sound:
       <li class="hidden-sm hidden-xs hidden-md">
-         <a class="quickinfo js-toggle-sound-alert" data-original-title='Sound alerting' href="#">
+         <button class="btn btn-ico js-toggle-sound-alert" href="#">
             <span id="sound_alerting" class="fa-stack">
               <i class="fa fa-music fa-stack-1x"></i>
               <i class="fa fa-ban fa-stack-2x text-danger"></i>
             </span>
-         </a>
+         </button>
       </li>
       %end
 
       <!-- User info -->
-      <li class="dropdown user user-menu">
-         <a href="#" class="dropdown-toggle" data-original-title='User menu' data-toggle="dropdown">
-            <i class="fa fa-user"></i>
-            <span><span class="username hidden-sm hidden-xs hidden-md">{{username}}</span> <i class="caret"></i></span>
+      <li class="dropdown">
+        <a href="#" class="btn btn-ico btn-user dropdown-toggle" data-toggle="dropdown" style="background-image: url({{ user.avatar_url }}?s=33;" title="{{ username }}">
+           <!--<img src="/avatar/{{ username }}" class="img-circle" size="32px">-->
+           <!--<i class="fa fa-user" title="{{ username }}"></i>-->
          </a>
 
          <ul class="dropdown-menu">
-            <li class="user-header">
-               <div class="panel panel-info" id="user_info">
-                  <div class="panel-body panel-default">
-                     <!-- User image / name -->
-                     <p class="username">{{username}}</p>
-                     %if app.can_action():
-                     <p class="usercategory">
-                        <small>{{'Administrator' if user.is_administrator() else 'User'}}</small>
-                     </p>
-                     %end
-                     <img src="{{user.get_picture()}}" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}">
-                  </div>
-                  <div class="panel-footer">
-                     <!-- User actions -->
-                     <div class="btn-group" role="group">
-                        <a href="https://github.com/shinken-monitoring/mod-webui/wiki" target="_blank" class="btn btn-default btn-flat"><i class="fa fa-book"></i> </a>
-                     </div>
-                     <div class="btn-group" role="group">
-                        <a href="#actions" data-toggle="modal" class="btn btn-default btn-flat disabled"><span class="fa fa-gear"></span> </a>
-                        <a href="/user/pref" data-toggle="modal" class="btn btn-default btn-flat"><span class="fa fa-pencil"></span> </a>
-                     </div>
-                     <div class="btn-group" role="group">
-                        <a href="/user/logout" class="btn btn-default btn-flat" data-toggle="modal" data-target="/user/logout"><span class="fa fa-sign-out"></span> </a>
-                     </div>
-                  </div>
-               </div>
-            </li>
+           <li class="dropdown-header">{{ username }}</li>
+           <li class="divider"></li>
+           <li><a href="https://github.com/shinken-monitoring/mod-webui/wiki" target="_blank">Documentation</a></li>
+           <li class="disabled"><a href="#actions" data-toggle="modal">Actions</a></li>
+           <li><a href="/user/pref" data-toggle="modal">Preferences</a></li>
+           <li class="divider"></li>
+           <li><a href="/user/logout" data-toggle="modal" data-target="/user/logout"><i class="fa fa-sign-out"></i> Logout</a></li>
          </ul>
       </li>
    </ul>
@@ -251,6 +248,9 @@
         </li>
         %end
         %end
+        <li class="visible-xs">
+           <a href="/user/logout" data-toggle="modal" data-target="/user/logout"><i class="fa fa-sign-out"></i> Logout</a>
+        </li>
 
       </ul>
     </div>
@@ -265,50 +265,4 @@
    Your browser does not support the <code>HTML5 Audio</code> element.
    <EMBED src="/static/sound/alert.wav" autostart=true loop=false volume=100 >
 </audio>
-
-<script type="text/javascript">
-   // Set alerting sound icon ...
-   if (! sessionStorage.getItem("sound_play")) {
-      // Default is to play ...
-      sessionStorage.setItem("sound_play", {{'1' if app.play_sound else '0'}});
-   }
-
-   // Toggle sound ...
-   if (sessionStorage.getItem("sound_play") == '1') {
-      $('#sound_alerting i.fa-ban').addClass('hidden');
-   } else {
-      $('#sound_alerting i.fa-ban').removeClass('hidden');
-   }
-   $('.js-toggle-sound-alert').on('click', function (e, data) {
-      if (sessionStorage.getItem("sound_play") == '1') {
-         sessionStorage.setItem("sound_play", "0");
-         $('#sound_alerting i.fa-ban').removeClass('hidden');
-      } else {
-         playAlertSound();
-         $('#sound_alerting i.fa-ban').addClass('hidden');
-      }
-   });
-</script>
 %end
-
-<script type="text/javascript">
-   // Activate the popover ...
-   $('#hosts-states-popover').popover({
-      placement: 'bottom',
-      animation: true,
-      template: '<div class="popover img-popover"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
-      content: function() {
-         return $('#hosts-states-popover-content').html();
-      }
-   });
-
-   // Activate the popover ...
-   $('#services-states-popover').popover({
-      placement: 'bottom',
-      animation: true,
-      template: '<div class="popover img-popover"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
-      content: function() {
-         return $('#services-states-popover-content').html();
-      }
-   });
-</script>

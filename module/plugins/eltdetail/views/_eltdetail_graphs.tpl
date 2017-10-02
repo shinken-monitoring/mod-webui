@@ -9,7 +9,7 @@ var graphend={{graphend}};
   <div class="panel panel-default" style="border-top:none; border-radius:0;">
     <div class="panel-body">
       %# Set source as '' or module ui-graphite will try to fetch templates from default 'detail'
-      %uris = app.graphs_module.get_graph_uris(elt, graphstart, graphend)
+      %uris = app.graphs_module.get_graph_uris(elt, graphstart=graphstart, graphend=graphend)
       %if uris:
       <div class='well'>
         <!-- 5 standard time ranges to display ...  -->

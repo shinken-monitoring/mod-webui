@@ -25,13 +25,20 @@ td .progress {
     margin-bottom:0px !important;
 }
 
-td .ellipsis {
-    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+.problems-table {
+    table-layout:fixed;
+    width:100%;
 }
 
-td .ellipsis > .long-output {
-    display:none;
+.problem-actions {
+    display: none;
 }
+
+.problems-table tr:hover .problem-actions {
+    display: inline;
+}
+
+
 
 /*
  * Problems table, responsive table columns

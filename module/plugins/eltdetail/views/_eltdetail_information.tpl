@@ -2,40 +2,31 @@
   <div class="panel panel-default" style="border-top:none; border-radius:0;">
     <div class="panel-body">
       <div class="col-lg-6">
-        <h4 class="page-header">Status</h4>
-        <table class="table table-condensed">
-          <colgroup>
-            <col style="width: 40%" />
-            <col style="width: 60%" />
-          </colgroup>
-          <tbody style="font-size:x-small;">
-            <tr>
-              <td><strong>Status:</strong></td>
-              <td>
-                <a href="/all?search={{elt.host_name}}">
-                {{! helper.get_fa_icon_state(obj=elt, label='title')}}
-                </a>
-              </td>
-            </tr>
-            <tr>
-              <td><strong>Since:</strong></td>
-              <td><span class="popover-dismiss"
-                  data-html="true" data-toggle="popover" data-placement="bottom"
-                  data-title="{{elt.get_full_name()}} last state change date"
-                  data-content=" {{time.strftime('%d %b %Y %H:%M:%S', time.localtime(elt.last_state_change))}} "
-                  >
-                  {{! helper.print_duration(elt.last_state_change, just_duration=True, x_elts=2)}}
-                </span>
-              </td>
-            </tr>
-            <tr>
-              <td><strong>Importance:</strong></td>
-              <td>
-                {{!helper.get_business_impact_text(elt.business_impact, True)}}
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="status-lead" style="margin-top: 20px;">
+          <div style="display: table-cell; vertical-align: middle; padding-right: 10px;">
+            <a href="/all?search={{elt.host_name}}">
+            {{!helper.get_fa_icon_state(elt, useTitle=False)}}
+            </a>
+          </div>
+          <div style="display: table-cell; vertical-align: middle; padding-right: 10px;" class="font-{{elt.state.lower()}} text-center">
+            <strong>{{ elt.state }}</strong><br>
+            <span title="Since {{time.strftime("%d %b %Y %H:%M:%S", time.localtime(elt.last_state_change))}}">
+              %if elt.state_type == 'HARD':
+              {{!helper.print_duration(elt.last_state_change, just_duration=True, x_elts=2)}}
+              %else:
+              attempt {{elt.attempt}}/{{elt.max_check_attempts}}
+              <!--soft state-->
+              %end
+            </span>
+          </div>
+          <div style="display: table-cell; vertical-align: middle;">
+            %if elt_type == 'service':
+            <a href="{{'/host/'+elt.host_name }}">{{ elt.host.display_name if elt.host.display_name else elt.host.get_name() }}</a>:
+            %end
+            {{ elt.display_name }}<br>
+            <samp>{{! elt.output}}</samp></small>
+        </div>
+      </div>
 
         <h4 class="page-header">Last check</h4>
         <table class="table table-condensed table-nowrap">
@@ -43,11 +34,12 @@
             <col style="width: 40%" />
             <col style="width: 60%" />
           </colgroup>
-          <tbody style="font-size:x-small;">
+          <tbody class="small">
             <tr>
               <td><strong>Last Check:</strong></td>
               <td><span class="popover-dismiss" data-html="true" data-toggle="popover" data-placement="bottom" data-content="Last check was at {{time.asctime(time.localtime(elt.last_chk))}}">was {{helper.print_duration(elt.last_chk)}}</span></td>
             </tr>
+            <!--
             <tr>
               <td><strong>Output:</strong></td>
               <td><span class="popover-dismiss popover-large"
@@ -70,6 +62,7 @@
                 </span>
               </td>
             </tr>
+            -->
             <tr>
               <td><strong>Check latency / duration:</strong></td>
               <td>
@@ -92,13 +85,20 @@
           </tbody>
         </table>
 
+        %if elt.perf_data:
+        <h4 class="page-header">Performance data</h4>
+        <div>
+          {{!helper.get_perfdata_table(elt)}}
+        </div>
+        %end
+
         <h4 class="page-header">Checks configuration</h4>
         <table class="table table-condensed">
           <colgroup>
             <col style="width: 40%" />
             <col style="width: 60%" />
           </colgroup>
-          <tbody style="font-size:x-small;">
+          <tbody class="small">
             %if hasattr(elt, "check_period") and hasattr(elt.check_period, "get_name"):
             <tr>
               <td><strong>Check period:</strong></td>
@@ -225,7 +225,7 @@
             <col style="width: 40%" />
             <col style="width: 60%" />
           </colgroup>
-          <tbody style="font-size:x-small;">
+          <tbody class="small">
             <tr>
               <td><strong>Event handler enabled:</strong></td>
               <td>
@@ -256,7 +256,7 @@
             <col style="width: 40%" />
             <col style="width: 60%" />
           </colgroup>
-          <tbody style="font-size:x-small;">
+          <tbody class="small">
             <tr>
               <td><strong>Flapping detection:</strong></td>
               <td>
@@ -295,7 +295,7 @@
             <col style="width: 40%" />
             <col style="width: 60%" />
           </colgroup>
-          <tbody style="font-size:x-small;">
+          <tbody class="small">
             <tr>
               <td><strong>Options:</strong></td>
               <td>{{', '.join(elt.stalking_options)}}</td>
@@ -310,7 +310,13 @@
             <col style="width: 40%" />
             <col style="width: 60%" />
           </colgroup>
-          <tbody style="font-size:x-small;">
+          <tbody class="small">
+            <tr>
+              <td><strong>Importance:</strong></td>
+              <td>
+                {{!helper.get_business_impact_text(elt.business_impact, True)}}
+              </td>
+            </tr>
             <tr>
               <td><strong>Notifications:</strong></td>
               <td>

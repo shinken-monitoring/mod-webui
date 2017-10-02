@@ -25,14 +25,11 @@
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 
 
-import hashlib
-
 from shinken.objects import Contact
 from shinken.log import logger
 
 
 class User(Contact):
-    picture = None
     session = None
 
     def set_information(self, session, *information):
@@ -47,9 +44,6 @@ class User(Contact):
 
     def get_session(self):
         return getattr(self, 'session', None)
-
-    def get_picture(self):
-        return self.picture
 
     def get_username(self):
         if getattr(self, 'contact_name', None):
@@ -164,39 +158,16 @@ class User(Contact):
         logger.debug("[WebUI - relation] user is not related to item")
         return False
 
+    @property
+    def avatar_url(self):
+        return '/avatar/%s' % self.get_username()
+
     @classmethod
-    def from_contact(cls, contact, picture="", use_gravatar=False):
+    def from_contact(cls, contact):
         user = contact
         try:
             user.__class__ = User
         except Exception:
             raise Exception(user)
-        if not picture:
-            user.picture = '/static/photos/%s' % user.get_username()
-            if use_gravatar:
-                gravatar = cls.get_gravatar(user.email)
-                if gravatar:
-                    user.picture = gravatar
 
         return user
-
-    @staticmethod
-    def get_gravatar(email, size=64, default='404'):
-        logger.debug("[WebUI] get Gravatar, email: %s, size: %d, default: %s",
-                     email, size, default)
-
-        try:
-            import urllib2
-            import urllib
-
-            parameters = {'s': size, 'd': default}
-            url = "https://secure.gravatar.com/avatar/%s?%s" % (
-                hashlib.md5(email.lower()).hexdigest(), urllib.urlencode(parameters)
-            )
-            ret = urllib2.urlopen(url)
-            if ret.code == 200:
-                return url
-        except:
-            pass
-
-        return None

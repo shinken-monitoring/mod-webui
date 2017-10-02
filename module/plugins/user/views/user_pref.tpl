@@ -1,5 +1,5 @@
 %setdefault('app', None)
-%setdefault('user', None)
+%user = app.get_user()
 
 %import json
 
@@ -20,7 +20,7 @@
             <!-- User image -->
             <div class="user-header bg-light-blue">
                <script>
-                  $('<img src="{{app.user_picture}}" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}" style="display:none">')
+                  $('<img src="{{user.avatar_url}}" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}" style="display:none">')
                      .load(function() { $(this).show(); })
                      .error(function() {
                         $(this).remove();
