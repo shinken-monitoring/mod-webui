@@ -27,14 +27,7 @@
       </ul>
       
       <input class="form-control" type="search" id="search" name="search" value="{{ app.get_search_string() }}">
-      
-      
-
     </div>
-    
-
-    
-    
   </div>
   <div class="dropdown form-group text-left">
     <button class="btn btn-default dropdown-toggle" type="button" id="bookmarks_menu" data-toggle="dropdown" aria-expanded="true"><i class="fa fa-bookmark"></i><span class="hidden-sm hidden-xs hidden-md"> Bookmarks</span> <span class="caret"></span></button>
@@ -76,6 +69,4 @@
       <li role="presentation"><a role="menuitem" onclick="display_modal('/modal/helpsearch')"><strong><i class="fa fa-question-circle"></i> Search syntax</strong></a></li>
     </ul>
   </div>
-  
-  
 </form>

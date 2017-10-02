@@ -23,65 +23,16 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 
-import time
-import random
-import urllib
-
 ### Will be populated by the UI with it's own value
 app = None
 
-# :TODO:maethor:150821: These function needs huge rewrite.
-
-def depgraph_host(name):
-    # Ok we are in a detail page but the user ask for a specific search
-    search = app.request.GET.get('global_search', '')
-    loop = bool(int(app.request.GET.get('loop', '0')))
-    loop_time = int(app.request.GET.get('loop_time', '10'))
-
-    user = app.request.environ['USER']
-
-    if search:
-        new_h = app.datamgr.get_host(search, user)
-        if new_h:
-            app.bottle.redirect("/depgraph/" + search)
-
-    else:
-        # Ok look for the first host we can find
-        hosts = app.datamgr.get_hosts(user)
-        for h in hosts:
-            search = h.get_name()
-            break
-
-    h = app.datamgr.get_host(name, user) or app.redirect404()
-
-    graphId = "graph_%d" % random.randint(1, 9999)
-
-    return {'elt': h, 'graphId': graphId, 'loop' : loop, 'loop_time' : loop_time}
-
-
-def depgraph_service(hname, desc):
-    loop = bool(int(app.request.GET.get('loop', '0')))
-    loop_time = int(app.request.GET.get('loop_time', '10'))
-
-    user = app.request.environ['USER']
-
-    # Ok we are in a detail page but the user ask for a specific search
-    search = app.request.GET.get('global_search', None)
-    if search:
-        new_h = app.datamgr.get_host(search, user)
-        if new_h:
-            app.bottle.redirect("/depgraph/" + search)
-
-    s = app.datamgr.get_service(hname, desc, user)
-
-    graphId = "graph_%d" % random.randint(1, 9999)
-
-    return {'elt': s, 'graphId': graphId, 'loop' : loop, 'loop_time' : loop_time}
-
+import time
 
 def get_depgraph_widget():
     search = app.request.GET.get('search', '').strip()
     user = app.request.environ['USER']
+
+    elt = app.datamgr.get_element(search, user) or app.redirect404()
 
     if not search:
         # Ok look for the first host we can find
@@ -89,8 +40,6 @@ def get_depgraph_widget():
         for h in hosts:
             search = h.get_name()
             break
-
-    elt = app.datamgr.get_element(search, user) or app.redirect404()
 
     wid = app.request.query.get('wid', 'widget_depgraph_' + str(int(time.time())))
     collapsed = (app.request.query.get('collapsed', 'False') == 'True')
@@ -100,39 +49,15 @@ def get_depgraph_widget():
 
     title = 'Relation graph for %s' % search
 
-    graphId = "graph_%d" % random.randint(1, 9999)
-
-    return {'elt': elt, 'graphId': graphId,
+    return { 'elt': elt,
             'wid': wid, 'collapsed': collapsed, 'options': options, 'base_url': '/widget/depgraph', 'title': title,
             }
-
-
-def get_depgraph_inner(name):
-    user = app.request.environ['USER']
-    name = urllib.unquote(name)
-    elt = app.datamgr.get_element(name, user) or app.redirect404()
-
-    graphId = "graph_%d" % random.randint(1, 9999)
-
-    return {'elt': elt, 'graphId': graphId}
 
 widget_desc = '''<h4>Relation graph</h4>
 Displays a dependeny graph for the selected object
 '''
 
 pages = {
-    depgraph_host:{
-        'name': 'DepgraphHost',
-        'route': '/depgraph/:name',
-        'view': 'depgraph',
-        'static': True
-    },
-    depgraph_service:{
-        'name': 'DepgraphService',
-        'route': '/depgraph/:hname/:desc',
-        'view': 'depgraph',
-        'static': True
-    },
     get_depgraph_widget:{
         'name': 'wid_Depgraph',
         'route': '/widget/depgraph',
@@ -141,12 +66,7 @@ pages = {
         'widget': ['dashboard'],
         'widget_desc': widget_desc,
         'widget_name': 'depgraph',
-        'widget_picture': '/static/depgraph/img/widget_depgraph.png'
-    },
-    get_depgraph_inner:{
-        'name': 'DepgraphInner',
-        'route': '/inner/depgraph/:name#.+#',
-        'view': 'inner_depgraph',
-        'static': True
+        'widget_picture': '/static/depgraph/img/widget_depgraph.png',
+        'deprecated': True
     }
 }

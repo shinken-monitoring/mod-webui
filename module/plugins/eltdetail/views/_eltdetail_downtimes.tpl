@@ -2,38 +2,22 @@
   <div class="panel panel-default" style="border-top:none; border-radius:0;">
     <div class="panel-body">
       %if elt.downtimes:
-      <table class="table table-condensed table-hover">
-        <thead>
-          <tr>
-            <th>Author</th>
-            <th>Reason</th>
-            <th>Period</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          %for dt in sorted(elt.downtimes, key=lambda dt: dt.entry_time, reverse=True):
-          <tr>
-            <td>{{dt.author}}</td>
-            <td>{{dt.comment}}</td>
-            <td>{{helper.print_date(dt.start_time)}} - {{helper.print_date(dt.end_time)}}</td>
-            <td>
-              <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm js-delete-downtime"
-                title="Delete the downtime '{{dt.id}}' for this {{elt_type}}"
-                data-element="{{helper.get_uri_name(elt)}}" data-downtime="{{dt.id}}"
-                >
-                <i class="fa fa-trash-o"></i>
-              </button>
-            </td>
-          </tr>
-          %end
-        </tbody>
-      </table>
-      %else:
-      <div class="alert alert-info">
-        <p class="font-blue">No downtimes available.</p>
+
+      %include("_eltdetail_downtime_table.tpl", downtimes=elt.downtimes)
+
+      <div class="text-right">
+        <button class="{{'disabled' if not app.can_action() else ''}} btn btn-default btn-sm js-delete-all-downtimes"
+          title="Delete all the downtimes of this {{elt_type}}"
+          data-element="{{helper.get_uri_name(elt)}}"
+          >
+          <i class="fa fa-minus"></i> Delete all downtimes
+        </button>
       </div>
-      %end
+
+      %else:
+      <div class="page-header">
+        <h3>No downtime available on this {{ elt_type }}</h3>
+      </div>
 
       <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm js-schedule-downtime"
         title="Schedule a downtime for this {{elt_type}}"
@@ -41,50 +25,18 @@
         >
         <i class="fa fa-plus"></i> Schedule a downtime
       </button>
-      %if elt.downtimes:
-      <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm js-delete-all-downtimes"
-        title="Delete all the downtimes of this {{elt_type}}"
-        data-element="{{helper.get_uri_name(elt)}}"
-        >
-        <i class="fa fa-minus"></i> Delete all downtimes
-      </button>
       %end
 
       %if elt_type=='host' and elt.services:
       <br/><br/>
-      <h4>Current host services downtimes:</h4>
-      <table class="table table-condensed table-hover">
-        <thead>
-          <tr>
-            <th>Service</th>
-            <th>Author</th>
-            <th>Reason</th>
-            <th>Period</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          %for s in elt.services:
-          %for dt in sorted(s.downtimes, key=lambda dt: dt.entry_time, reverse=True):
-          <tr>
-            <td>{{s.get_name()}}</td>
-            <td>{{dt.author}}</td>
-            <td>{{dt.comment}}</td>
-            <td>{{helper.print_date(dt.start_time)}} - {{helper.print_date(dt.end_time)}}</td>
-            <td>
-              <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm js-delete-downtime"
-                title="Delete this downtime"
-                data-element="{{helper.get_uri_name(s)}}" data-downtime="{{dt.id}}"
-                >
-                <i class="fa fa-trash-o"></i>
-              </button>
-            </td>
-          </tr>
-          %end
-          %end
-        </tbody>
-      </table>
+      <h4 class="page-header">Downtimes on {{ elt.get_name() }} services</h4>
+
+      %setdefault('servicedowntimes', None)
+      %servicedowntimes = [d for sublist in [s.downtimes for s in elt.services] for d in sublist]
+      %include("_eltdetail_downtime_table.tpl", downtimes=servicedowntimes, with_service_name=True)
+
       %end
     </div>
+
   </div>
 </div>

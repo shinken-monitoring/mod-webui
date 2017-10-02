@@ -1,3 +1,4 @@
+%user = app.get_user()
 <script type="text/javascript">
    function submit_local_form() {
       // Launch acknowledge removal request and bailout this modal view
@@ -20,7 +21,7 @@
       }
       %end
 
-      start_refresh();
+      enable_refresh();
       $('#modal').modal('hide');
    }
 </script>

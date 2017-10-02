@@ -1,3 +1,4 @@
+%user = app.get_user()
 %setdefault("user_bookmarks", app.prefs_module.get_user_bookmarks(user))
 %setdefault("common_bookmarks", app.prefs_module.get_common_bookmarks())
 

@@ -37,15 +37,18 @@ function add_remove_elements(name){
 function add_element(name){
    // Force to check the checkbox
    $('td input[type=checkbox][data-item="'+name+'"]').prop("checked", true);
+
+   $('td input[type=checkbox][data-item="'+name+'"]').closest('tr').addClass('active');
    
    if (problems_logs) console.log('Select element: ', name)
+
    selected_elements.push(name);
 
    if (selected_elements.length > 0) {
       $('#action-menu').show();
       
       // Stop page refresh
-      stop_refresh();
+      disable_refresh();
    }
 }
 
@@ -53,6 +56,8 @@ function add_element(name){
 function remove_element(name){
    // Force to uncheck the checkbox
    $('td input[type=checkbox][data-item="'+name+'"]').prop("checked", false);
+
+   $('td input[type=checkbox][data-item="'+name+'"]').closest('tr').removeClass('active');
    
    if (problems_logs) console.log('Unselect element: ', name)
    selected_elements.splice($.inArray(name, selected_elements),1);
@@ -61,7 +66,7 @@ function remove_element(name){
       $('#action-menu').hide();
 
       // Restart page refresh timer
-      start_refresh();
+      enable_refresh();
    }
 }
 
@@ -85,27 +90,12 @@ $('body').on('hide.bs.collapse', '.collapse', function () {
     $(this).closest('tr').prev().find('.output').addClass("ellipsis", {duration:200});
 });
 
-// :DEBUG:maethor:150811: This can make things very buggy if the output is long.
-//$('body').on('mouseenter', '.ellipsis', function () {
-   //var $this = $(this);
-   //if (this.offsetWidth < this.scrollWidth && !$this.attr('title')) {
-      //$this.tooltip({
-         //title: $this.text(),
-         //placement: "bottom"
-      //});
-      //$this.tooltip('show');
-   //}
-//});
 
 // Business impact selection buttons
 $('body').on('click', 'button[data-type="business-impact"]', function (e) {
    if ($(this).data('state')=='off') {
       if (problems_logs) console.log('Select all elements ...', $(this).data('business-impact'));
 
-      // Remove elements from selection
-      $('input[type=checkbox][data-type="problem"][data-business-impact="'+$(this).data('business-impact')+'"]').each(function() {
-         remove_element($(this).data('item'));
-      })
       // Add elements to selection
       $('input[type=checkbox][data-type="problem"][data-business-impact="'+$(this).data('business-impact')+'"]').each(function() {
          add_element($(this).data('item'));
@@ -132,6 +122,40 @@ $('body').on('click', 'input[type=checkbox][data-type="problem"]', function (e) 
    add_remove_elements($(this).data('item'));
 });
 
+$('body').on('click', '.js-select-elt', function(e) {
+    document.onselectstart = function() {
+        return false;
+    }
+    if (e.ctrlKey) {
+        e.stopPropagation();
+        if (problems_logs) console.log('CTRL-Clicked: ', $(this).data('item'))
+        $(this).focus(); // This is used to avoid text selection
+        add_remove_elements($(this).data('item'));
+    }
+    if (e.shiftKey) {
+        e.stopPropagation();
+        if (problems_logs) console.log('Shift-Clicked: ', $(this).data('item'))
+        $(this).focus(); // This is used to avoid text selection
+        if ($(this).closest('table').find('tr.active').length == 0) {
+            add_remove_elements($(this).data('item'));
+        } else {
+            //$(this).closest('table').children('tr:first').hide();
+            //$(this).closest('.js-select-elt').addClass('success')
+            var first = $(this).closest('table').find('tr.active:first');
+            if ($(this).prevAll().filter($(first)).length !== 0) {
+                $(this).prevUntil(first, 'tr.js-select-elt').andSelf().not('.active').each(function(i, e) {
+                    add_remove_elements($(e).data('item'));
+                });
+            } else {
+                $(this).nextUntil(first, 'tr.js-select-elt').andSelf().not('.active').each(function(i, e) {
+                    add_remove_elements($(e).data('item'));
+                });
+            }
+        }
+    }
+});
+
+
 function on_page_refresh(){
    if (problems_logs) console.log('Problems page - on_page_refresh')
       
@@ -152,13 +176,23 @@ function on_page_refresh(){
          $(this).prop("disabled", true).hide();
       });
    }
-   
-   // Graphs popover
-   $('[data-toggle="popover"]').popover({
-      html: true,
-      template: '<div class="popover img-popover"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
-   });
 
+   // Graphs popover
+   $('[data-toggle="popover-elt-graphs"]').popover({
+      html: true,
+      content: function() {
+          $.ajax({url: '/graphs/' + $(this).data('item'),
+                  dataType: 'html',
+                  elt: $(this),
+                  success: function(response) {
+                      this.elt.data('bs.popover').options.content = response;
+                      this.elt.popover('show');
+                  }
+          });
+          return "<div>Loading…</div>";
+      },
+      template: '<div class="popover img-popover"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div style="width: 620px;" class="popover-content"><p></p></div></div></div>',
+   });
 }
 
 // First page loading ...

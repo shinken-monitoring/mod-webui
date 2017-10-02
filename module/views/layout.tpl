@@ -16,9 +16,6 @@
 %# - breadcrumb=[ ['Groups', '/servicegroups'], [groupalias, '/servicegroup/'+groupname] ]
 %setdefault('breadcrumb', '')
 
-%# Current page may be refreshed or not (default is True)
-%setdefault('refresh', True)
-
 %setdefault('user', None)
 %setdefault('app', None)
 
@@ -28,6 +25,7 @@
 %from shinken.bin import VERSION
 %if app is not None:
 %helper = app.helper
+%refresh = app.refresh
 %end
 
 <html lang="en">
@@ -57,24 +55,24 @@
 
       <!-- Stylesheets
       ================================================== -->
-      <link href="/static/css/bootstrap.min.css" rel="stylesheet">
-      <link href="/static/css/bootstrap-theme.min.css" rel="stylesheet">
-      <link href="/static/css/font-awesome.min.css" rel="stylesheet">
-      <link href="/static/css/metisMenu.min.css" rel="stylesheet">
-      <link href="/static/css/sb-admin-2.css" rel="stylesheet">
-      <link href="/static/css/typeahead.css" rel="stylesheet">
-      <link href="/static/css/daterangepicker.css" rel="stylesheet">
-      <link href="/static/css/shinken-layout.css" rel="stylesheet">
-      <link href="/static/css/alertify.css" rel="stylesheet">
+      <link href="/static/css/bootstrap.min.css?v={{app.app_version}}" rel="stylesheet">
+      <!--<link href="/static/css/bootstrap-theme.min.css" rel="stylesheet">-->
+      <link href="/static/css/font-awesome.min.css?v={{app.app_version}}" rel="stylesheet">
+      <link href="/static/css/metisMenu.min.css?v={{app.app_version}}" rel="stylesheet">
+      <link href="/static/css/sb-admin-2.css?v={{app.app_version}}" rel="stylesheet">
+      <link href="/static/css/typeahead.css?v={{app.app_version}}" rel="stylesheet">
+      <link href="/static/css/daterangepicker.css?v={{app.app_version}}" rel="stylesheet">
+      <link href="/static/css/shinken-layout.css?v={{app.app_version}}" rel="stylesheet">
+      <link href="/static/css/alertify.css?v={{app.app_version}}" rel="stylesheet">
 
       <!-- css3 effect for pulse is not available on IE It's not real comment, if so it will not work. -->
       <!--[IF !IE]> -->
-      <link href="/static/css/pulse.css" rel="stylesheet">
+      <link href="/static/css/pulse.css?v={{app.app_version}}" rel="stylesheet">
       <!-- <![ENDIF]-->
 
       %# And now for css files
       %for p in css:
-      <link rel="stylesheet" type="text/css" href="/static/{{p}}">
+      <link rel="stylesheet" type="text/css" href="/static/{{p}}?v={{app.app_version}}">
       %end
 
       <!-- Opensearch
@@ -84,37 +82,7 @@
       <!-- Scripts
       ================================================== -->
       <script src="/static/js/jquery-1.12.0.min.js"></script>
-      <script src="/static/js/bootstrap.min.js"></script>
-      <script src="/static/js/bootstrap-tab-bookmark.js"></script>
-      <script src="/static/js/metisMenu.min.js"></script>
-      <script src="/static/js/sb-admin-2.js"></script>
-      <script src="/static/js/moment.min.js"></script>
-      <script src="/static/js/daterangepicker.js"></script>
-      <script src="/static/js/jquery.jclock.js"></script>
-      <script src="/static/js/jquery.jTruncate.js"></script>
-      <script src="/static/js/alertify.js"></script>
-      <script src="/static/js/typeahead.bundle.min.js"></script>
-      <script src="/static/js/screenfull.js"></script>
-
-      <!--
-       Shinken globals ...
-      -->
-      <script>
-      var dashboard_currently = false;
-      </script>
-
-      <!--
-       Shinken scripts ...
-      -->
-      %if refresh:
-      <script>
-      var app_refresh_period = {{app.refresh_period}};
-      </script>
-      <script src="/static/js/shinken-refresh.js?1"></script>
-      %end
-
-      <script src="/static/js/shinken-layout.js"></script>
-      <script src="/static/js/shinken-bookmarks.js"></script>
+      <script src="/static/js/shinken-bookmarks.js?v={{app.app_version}}"></script>
    </head>
 
    <body>
@@ -197,9 +165,42 @@
       <!--
        Shinken scripts ...
       -->
+
+      <script src="/static/js/bootstrap.min.js?v={{app.app_version}}"></script>
+      <script src="/static/js/bootstrap-tab-bookmark.js?v={{app.app_version}}"></script>
+      <script src="/static/js/metisMenu.min.js?v={{app.app_version}}"></script>
+      <script src="/static/js/sb-admin-2.js?v={{app.app_version}}"></script>
+      <script src="/static/js/moment.min.js?v={{app.app_version}}"></script>
+      <script src="/static/js/daterangepicker.js?v={{app.app_version}}"></script>
+      <script src="/static/js/jquery.jclock.js?v={{app.app_version}}"></script>
+      <script src="/static/js/jquery.jTruncate.js?v={{app.app_version}}"></script>
+      <script src="/static/js/alertify.js?v={{app.app_version}}"></script>
+      <script src="/static/js/typeahead.bundle.min.js?v={{app.app_version}}"></script>
+      <script src="/static/js/screenfull.js?v={{app.app_version}}"></script>
+
+      <!--
+       Shinken globals ...
+      -->
+      <script>
+      var dashboard_currently = false;
+      </script>
+
+      <!--
+       Shinken scripts ...
+      -->
+      %if refresh:
+      <script>
+      var app_refresh_period = {{app.refresh_period}};
+      </script>
+      <script src="/static/js/shinken-refresh.js?v={{app.app_version}}"></script>
+      %end
+
+      <script src="/static/js/shinken-layout.js?v={{app.app_version}}"></script>
+      <script src="/static/js/shinken-tooltip.js?v={{app.app_version}}"></script>
+
       %# Include specific Js files ...
       %for p in js:
-      <script type="text/javascript" src="/static/{{p}}"></script>
+      <script type="text/javascript" src="/static/{{p}}?v={{app.app_version}}"></script>
       %end
    </body>
 </html>

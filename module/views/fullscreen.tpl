@@ -7,15 +7,13 @@
 %setdefault('css', [])
 %setdefault('title', 'Untitled ...')
 
-%# Current page may be refreshed or not
-%setdefault('refresh', True)
-
 %setdefault('user', None)
 %setdefault('app', None)
 
 %from shinken.bin import VERSION
 %if app is not None:
 %helper = app.helper
+%refresh = app.refresh
 %end
 
 <html lang="en">
@@ -45,28 +43,28 @@
 
       <!-- Stylesheets
       ================================================== -->
-      <link href="/static/css/bootstrap.min.css" rel="stylesheet">
-      <link href="/static/css/bootstrap-theme.min.css" rel="stylesheet">
-      <link href="/static/css/font-awesome.min.css" rel="stylesheet">
+      <link href="/static/css/bootstrap.min.css?v={{app.app_version}}" rel="stylesheet">
+      <link href="/static/css/bootstrap-theme.min.css?v={{app.app_version}}" rel="stylesheet">
+      <link href="/static/css/font-awesome.min.css?v={{app.app_version}}" rel="stylesheet">
 
-      <link href="/static/css/shinken-layout.css" rel="stylesheet">
-      <link href="/static/css/alertify.css" rel="stylesheet">
+      <link href="/static/css/shinken-layout.css?v={{app.app_version}}" rel="stylesheet">
+      <link href="/static/css/alertify.css?v={{app.app_version}}" rel="stylesheet">
 
       %# And now for css files
       %for p in css:
-      <link rel="stylesheet" type="text/css" href="/static/{{p}}">
+      <link rel="stylesheet" type="text/css" href="/static/{{p}}?v={{app.app_version}}">
       %end
 
       <!-- Scripts
       ================================================== -->
-      <script src="/static/js/jquery-1.12.0.min.js"></script>
-      <script src="/static/js/jquery-ui-1.11.4.min.js"></script>
-      <script src="/static/js/bootstrap.min.js"></script>
+      <script src="/static/js/jquery-1.12.0.min.js?v={{app.app_version}}"></script>
+      <script src="/static/js/jquery-ui-1.11.4.min.js?v={{app.app_version}}"></script>
+      <script src="/static/js/bootstrap.min.js?v={{app.app_version}}"></script>
 
-      <script src="/static/js/moment.min.js"></script>
+      <script src="/static/js/moment.min.js?v={{app.app_version}}"></script>
 
-      <script src="/static/js/jquery.jclock.js"></script>
-      <script src="/static/js/alertify.js"></script>
+      <script src="/static/js/jquery.jclock.js?v={{app.app_version}}"></script>
+      <script src="/static/js/alertify.js?v={{app.app_version}}"></script>
 
       <!--
        Shinken globals ...
@@ -80,13 +78,13 @@
       <script>
       var app_refresh_period = {{app.refresh_period}};
       </script>
-      <script src="/static/js/shinken-refresh.js"></script>
+      <script src="/static/js/shinken-refresh.js?v={{app.app_version}}"></script>
       %end
-      <script src="/static/js/screenfull.js"></script>
+      <script src="/static/js/screenfull.js?v={{app.app_version}}"></script>
 
       %# End of classic js import. Now call for specific ones ...
       %for p in js:
-      <script type="text/javascript" src="/static/{{p}}"></script>
+      <script type="text/javascript" src="/static/{{p}}?v={{app.app_version}}"></script>
       %end
    </head>
 

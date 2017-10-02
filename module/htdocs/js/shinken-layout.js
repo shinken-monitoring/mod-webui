@@ -64,12 +64,64 @@ function loadjscssfile(filename, filetype){
  */
 function display_modal(inner_url) {
    if (layout_logs) console.debug('Displaying modal: ', inner_url);
-   stop_refresh();
+   disable_refresh();
    $('#modal').modal({
       keyboard: true,
       show: true,
       backdrop: 'static',
       remote: inner_url
+   });
+}
+
+function headerPopovers() {
+  // Topbar hosts popover
+   $('#hosts-states-popover').popover({
+      placement: 'bottom',
+      container: 'body',
+      trigger: 'manual',
+      animation: false,
+      template: '<div class="popover img-popover"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
+      content: function() {
+         return $('#hosts-states-popover-content').html();
+      }
+   }).on("mouseenter", function () {
+      var _this = this;
+      $(this).popover("show");
+      $(this).siblings(".popover").on("mouseleave", function () {
+          $(_this).popover('hide');
+      });
+   }).on("mouseleave", function () {
+      var _this = this;
+      setTimeout(function () {
+          if (!$(".popover:hover").length) {
+              $(_this).popover("hide");
+          }
+      }, 100);
+   });
+
+  // Topbar services popover
+   $('#services-states-popover').popover({
+      placement: 'bottom',
+      container: 'body',
+      trigger: 'manual',
+      animation: false,
+      template: '<div class="popover img-popover"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
+      content: function() {
+         return $('#services-states-popover-content').html();
+      }
+   }).on("mouseenter", function () {
+      var _this = this;
+      $(this).popover("show");
+      $(this).siblings(".popover").on("mouseleave", function () {
+          $(_this).popover('hide');
+      });
+   }).on("mouseleave", function () {
+      var _this = this;
+      setTimeout(function () {
+          if (!$(".popover:hover").length) {
+              $(_this).popover("hide");
+          }
+      }, 100);
    });
 }
 
@@ -93,4 +145,31 @@ $(document).ready(function(){
    // Sidebar menu
    $('#sidebar-menu').metisMenu();
 
+
+  // Sound
+  if ($("#alert-audio").length) {
+    // Set alerting sound icon ...
+    if (! sessionStorage.getItem("sound_play")) {
+      // Default is to play ...
+      sessionStorage.setItem("sound_play", 1);
+    }
+
+    // Toggle sound ...
+    if (sessionStorage.getItem("sound_play") == '1') {
+      $('#sound_alerting i.fa-ban').addClass('hidden');
+    } else {
+      $('#sound_alerting i.fa-ban').removeClass('hidden');
+    }
+    $('.js-toggle-sound-alert').on('click', function (e, data) {
+      if (sessionStorage.getItem("sound_play") == '1') {
+        sessionStorage.setItem("sound_play", "0");
+        $('#sound_alerting i.fa-ban').removeClass('hidden');
+      } else {
+        playAlertSound();
+        $('#sound_alerting i.fa-ban').addClass('hidden');
+      }
+    });
+  }
+
+  headerPopovers();
 });
