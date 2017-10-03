@@ -213,8 +213,7 @@ function check_refresh(){
 function disable_refresh() {
    if (refresh_logs) console.debug("Stop refresh");
    $('#header_loading').addClass('fa-striked');
-   $('#header_loading').parent().tooltip('hide')
-                                .data('tooltip', false)
+   $('#header_loading').parent().data('tooltip', false)
                                 .attr('data-original-title', "Enable auto-refresh")
                                 .tooltip({html: 'true', placement: 'bottom'});
    //$('#header_loading').parent().prop('title', "Enable auto-refresh");
@@ -225,8 +224,7 @@ function disable_refresh() {
 function enable_refresh() {
    if (refresh_logs) console.debug("Stop refresh");
    $('#header_loading').removeClass('fa-striked');
-   $('#header_loading').parent().tooltip('hide')
-                                .data('tooltip', false)
+   $('#header_loading').parent().data('tooltip', false)
                                 .attr('data-original-title', "Disable auto-refresh")
                                 .tooltip({html: 'true', placement: 'bottom'});
    sessionStorage.setItem("refresh_enabled", '1');
