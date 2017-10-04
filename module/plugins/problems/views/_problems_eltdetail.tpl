@@ -38,6 +38,13 @@
   %end
 </div>
 
+  %if pb.notes or pb.notes_url:
+  <blockquote style="font-size: 14px;">
+    {{ pb.notes }}<br>
+    <a href="{{ pb.notes_url }}" target="_blank"><i class="fa fa-external-link"></i> {{ pb.notes_url }}</a>
+  </blockquote>
+  %end
+
   %if pb.perf_data:
   <h4 class="page-header">Performance data</h4>
   <div>
