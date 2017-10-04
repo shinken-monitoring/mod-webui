@@ -7,6 +7,7 @@
 %end
 
 %helper = app.helper
+%user = app.get_user()
 
 %username = 'anonymous'
 %if hasattr(contact, 'alias') and contact.alias != 'none':
@@ -61,7 +62,7 @@
          <div class="panel-body">
             <!-- User image / user name / user category -->
             <div class="user-header bg-light-blue">
-               <img src="{{contact.avatar}}" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}">
+              {{ !helper.get_contact_avatar(contact) }}
 
                <p class="username">
                  {{username}}
@@ -332,17 +333,6 @@
                            <tr>
                               <td>{{var}}</td>
                               <td>{{contact.customs[var]}}</td>
-                              %if app.can_action():
-                              <td>
-                                 <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm"
-                                       data-type="action" action="change-variable"
-                                       data-toggle="tooltip" data-placement="bottom" title="Change a custom variable for this {{elt_type}}"
-                                       data-element="{{helper.get_uri_name(contact)}}" data-variable="{{var}}" data-value="{{contact.customs[var]}}"
-                                       >
-                                    <i class="fa fa-gears"></i> Change
-                                 </button>
-                              </td>
-                              %end
                            </tr>
                         %end
                   </tbody>

@@ -208,7 +208,6 @@ Next check <strong>{{helper.print_duration(pb.next_chk)}}</strong>
 
  <script>
    // Configuration for actions.js
-   var user='{{ user.alias if hasattr(user, "alias") and user.alias != "none" else user.get_name() }}';
    var shinken_downtime_fixed='{{ app.shinken_downtime_fixed}}';
    var shinken_downtime_trigger='{{ app.shinken_downtime_trigger }}';
    var shinken_downtime_duration='{{ app.shinken_downtime_duration }}';

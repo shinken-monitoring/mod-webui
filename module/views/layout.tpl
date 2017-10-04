@@ -181,7 +181,9 @@
        Shinken globals ...
       -->
       <script>
+      %user = app.get_user()
       var dashboard_currently = false;
+      var user='{{ user.alias if hasattr(user, "alias") and user.alias != "none" else user.get_name() }}';
       </script>
 
       <!--

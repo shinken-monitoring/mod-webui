@@ -35,21 +35,6 @@ def form_submit_check(name):
 
     return {'name': name, 'obj_type': t}
 
-
-def form_change_var(name):
-    variable = app.request.GET.get('variable', '')
-    value = app.request.GET.get('value', '')
-
-    user = app.request.environ['USER']
-    elt = app.datamgr.get_element(name, user) or app.redirect404()
-
-    return {'elt': elt, 'name': name, 'variable': variable, 'value': value}
-
-def form_var(name):
-    user = app.request.environ['USER']
-    elt = app.datamgr.get_element(name, user) or app.redirect404()
-    return {'elt': elt, 'name': name}
-
 def form_ack_add(name):
     user = app.request.environ['USER']
     elt = app.datamgr.get_element(name, user) or app.redirect404()
@@ -60,32 +45,10 @@ def form_ack_remove(name):
     elt = app.datamgr.get_element(name, user) or app.redirect404()
     return {'elt': elt, 'name': name}
 
-def form_comment_add(name):
-    user = app.request.environ['USER']
-    app.datamgr.get_element(name, user) or app.redirect404()
-    return {'name': name}
-
-def form_comment_delete(name):
-    user = app.request.environ['USER']
-    app.datamgr.get_element(name, user) or app.redirect404()
-    comment = app.request.GET.get('comment', '-1')
-    return {'name': name, 'comment': comment}
-
-def form_comment_delete_all(name):
-    user = app.request.environ['USER']
-    app.datamgr.get_element(name, user) or app.redirect404()
-    return {'name': name}
-
 def form_downtime_add(name):
     user = app.request.environ['USER']
     elt = app.datamgr.get_element(name, user) or app.redirect404()
     return {'elt': elt, 'name': name, 'default_downtime_hours': app.default_downtime_hours}
-
-def form_downtime_delete(name):
-    user = app.request.environ['USER']
-    elt = app.datamgr.get_element(name, user) or app.redirect404()
-    downtime = app.request.GET.get('downtime', '-1')
-    return {'elt': elt, 'name': name, 'downtime': downtime}
 
 def form_downtime_delete_all(name):
     user = app.request.environ['USER']
@@ -96,14 +59,8 @@ def form_downtime_delete_all(name):
 pages = {
     form_submit_check:          {'name': 'SubmitCheck', 'route': '/forms/submit_check/<name:path>',             'view': 'form_submit_check'},
 
-    form_change_var:            {'name': 'ChangeVar', 'route': '/forms/change_var/<name:path>',               'view': 'form_change_var'},
-
-    form_comment_add:           {'name': 'CommentAdd', 'route': '/forms/comment/add/<name:path>',              'view': 'form_comment_add'},
-    form_comment_delete:        {'name': 'CommentDelete', 'route': '/forms/comment/delete/<name:path>',           'view': 'form_comment_delete'},
-    form_comment_delete_all:    {'name': 'CommentDeleteAll', 'route': '/forms/comment/delete_all/<name:path>',       'view': 'form_comment_delete_all'},
 
     form_downtime_add:          {'name': 'DowntimeAdd', 'route': '/forms/downtime/add/<name:path>',             'view': 'form_downtime_add'},
-    form_downtime_delete:       {'name': 'DowntimeDelete', 'route': '/forms/downtime/delete/<name:path>',          'view': 'form_downtime_delete'},
     form_downtime_delete_all:   {'name': 'DowntimeDeleteAll', 'route': '/forms/downtime/delete_all/<name:path>',      'view': 'form_downtime_delete_all'},
 
     form_ack_add:               {'name': 'AckAdd', 'route': '/forms/acknowledge/add/<name:path>',          'view': 'form_ack_add'},

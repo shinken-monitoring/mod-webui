@@ -108,16 +108,6 @@ function on_page_refresh() {
    /*
     * Commands buttons
     */
-   // Change a custom variable
-   $('button[action="change-variable"]').click(function () {
-      var elt = $(this).data('element');
-      var variable = $(this).data('variable');
-      var value = $(this).data('value');
-      if (eltdetail_logs) console.debug("Button - set custom variable '"+variable+"'="+value+" for: ", elt)
-
-      display_modal("/forms/change_var/"+elt+"?variable="+variable+"&value="+value);
-   });
-
    // Toggles ...
    $('.js-toggle-parameter').on('change', function (e, data) {
       var elt = $(this).data('element');

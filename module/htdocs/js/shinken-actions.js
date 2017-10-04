@@ -180,17 +180,6 @@ function submit_check(name, return_code, output){
 
 
 /*
- * Changes the value of a custom host variable.
- */
-function change_custom_var(name, custom_var, value){
-   var elt = get_element(name);
-   var url = '/action/CHANGE_CUSTOM_'+elt.type+'_VAR/'+elt.name+'/'+custom_var+'/'+value;
-   // We can launch it :)
-   launch(url, elt.type+': '+name+', custom variable changed');
-}
-
-
-/*
  * Launch the check_command
  */
 function recheck_now(name) {
@@ -335,22 +324,12 @@ function add_comment(name, user, comment){
    launch(url, elt.type+': '+name+', comment added');
 }
 
-
 /* The command that will delete a comment */
 function delete_comment(name, i) {
    var elt = get_element(name);
    var url = '/action/DEL_'+elt.type+'_COMMENT/'+i;
    // We can launch it :)
    launch(url, elt.type+': '+name+', comment deleted');
-}
-
-
-/* The command that will delete all comments */
-function delete_all_comments(name) {
-   var elt = get_element(name);
-   var url = '/action/DEL_ALL_'+elt.type+'_COMMENTS/'+elt.name;
-   // We can launch it :)
-   launch(url, elt.type+': '+name+', all comments deleted');
 }
 
 function submit_comment_form(id){
@@ -433,21 +412,15 @@ function delete_acknowledge(name) {
 }
 
 // Join the method to some html classes
-$("body").on("click", ".js-add-comment", function () {
-    var elt = $(this).data('element');
-    var comment = $(this).data('comment');
-    display_modal("/forms/comment/add/" + elt);
-});
-
 $("body").on("click", ".js-delete-comment", function () {
     var elt = $(this).data('element');
     var comment = $(this).data('comment');
-    display_modal("/forms/comment/delete/"+elt+"?comment="+comment);
-});
 
-$("body").on("click", ".js-delete-all-comments", function () {
-    var elt = $(this).data('element');
-    display_modal("/forms/comment/delete_all/"+elt);
+    var strconfirm = confirm("Are you sure you want to delete this comment?");
+
+    if (strconfirm == true) {
+        delete_comment(elt, comment);
+    }
 });
 
 $("body").on("click", ".js-schedule-downtime", function () {
@@ -458,7 +431,14 @@ $("body").on("click", ".js-schedule-downtime", function () {
 $("body").on("click", ".js-delete-downtime", function () {
     var elt = $(this).data('element');
     var downtime = $(this).data('downtime');
-    display_modal("/forms/downtime/delete/"+elt+"?downtime="+downtime);
+    //display_modal("/forms/downtime/delete/"+elt+"?downtime="+downtime);
+
+    var strconfirm = confirm("Are you sure you want to delete this downtime?");
+
+    if (strconfirm == true) {
+        delete_downtime(elt, downtime);
+        add_comment(elt, user, "Dowtime "+ downtime + " for " + elt + " deleted by " + user);
+    }
 });
 
 $("body").on("click", ".js-delete-all-downtimes", function () {

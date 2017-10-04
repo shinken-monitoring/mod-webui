@@ -9,25 +9,6 @@
       <div class="page-header">
         <h3>No comment available on this {{ elt_type }}</h3>
       </div>
-
-      <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm js-add-comment"
-        title="Add a comment for this {{elt_type}}"
-        data-element="{{helper.get_uri_name(elt)}}"
-        >
-        <i class="fa fa-plus"></i> Add a comment
-      </button>
-      %end
-
-
-      %if elt.comments:
-      <div class="text-right">
-        <button class="{{'disabled' if not app.can_action() else ''}} btn btn-default btn-sm js-delete-all-comments"
-          title="Delete all the comments of this {{elt_type}}"
-          data-element="{{helper.get_uri_name(elt)}}"
-          >
-          <i class="fa fa-minus"></i> Delete all comments
-        </button>
-      </div>
       %end
 
       %if elt_type=='host' and elt.services:

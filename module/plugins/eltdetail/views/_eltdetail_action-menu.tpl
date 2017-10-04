@@ -1,11 +1,6 @@
 %if app.can_action():
 <nav id="action-menu" class="navbar navbar-default navbar-element dropup" role="navigation">
   <ul class="nav">
-    <li> <a href="#" class="js-add-comment" title="Add a comment for this {{elt_type}}"
-        data-placement="right"
-        data-element="{{helper.get_uri_name(elt)}}" >
-        <i class="fa fa-plus"></i> <span class="hidden-xs">Add a comment</span>
-    </a> </li>
     %if elt.is_problem and elt.event_handler_enabled and elt.event_handler:
     <li> <a href="#" class="js-try-to-fix" title="Try to fix the current problem for this {{elt_type}}"
         data-placement="right"
