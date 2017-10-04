@@ -1,6 +1,41 @@
 <div class="eltdetail-content">
   <div class="text-right" style="margin-right: 20px;">
   %if app.can_action():
+    <button class="btn btn-lg btn-ico btn-action js-recheck"
+      title="Launch the check command"
+      data-element="{{helper.get_uri_name(pb)}}"
+      >
+      <i class="fa fa-refresh"></i>
+    </button>
+    %if pb.state != pb.ok_up and not pb.problem_has_been_acknowledged:
+    <button class="btn btn-lg btn-ico btn-action js-add-acknowledge"
+      title="Acknowledge this problem"
+      data-element="{{helper.get_uri_name(pb)}}"
+      >
+      <i class="fa fa-check"></i>
+    </button>
+    %end
+    <div class="dropdown" style="display: inline;">
+      <button class="btn btn-lg btn-ico btn-action dropdown-toggle" type="button" id="dropdown-downtime-{{ helper.get_html_id(pb) }}" data-toggle="dropdown"
+        title="Schedule a downtime for this problem"
+        data-element="{{helper.get_uri_name(pb)}}"
+        >
+        <i class="fa fa-ambulance"></i>
+      </button>
+      <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdown-downtime-{{ helper.get_html_id(pb) }}" style="margin-top: 15px;">
+        <li class="dropdown-header">Set a downtime for…</li>
+        <li role="separator" class="divider"></li>
+        <li class="disabled"><a href="#" data-element="{{helper.get_uri_name(pb)}}">1 hour</a></li>
+        <li class="disabled"><a href="#" data-element="{{helper.get_uri_name(pb)}}">3 hours</a></li>
+        <li class="disabled"><a href="#" data-element="{{helper.get_uri_name(pb)}}">12 hours</a></li>
+        <li class="disabled"><a href="#" data-element="{{helper.get_uri_name(pb)}}">24 hours</a></li>
+        <li class="disabled"><a href="#" data-element="{{helper.get_uri_name(pb)}}">3 days</a></li>
+        <li class="disabled"><a href="#" data-element="{{helper.get_uri_name(pb)}}">7 days</a></li>
+        <li class="disabled"><a href="#" data-element="{{helper.get_uri_name(pb)}}">30 days</a></li>
+        <li role="separator" class="divider"></li>
+        <li><a href="#" class="js-schedule-downtime" data-element="{{helper.get_uri_name(pb)}}">Custom timeperiod</a></li>
+      </ul>
+    </div>
     %if pb.event_handler_enabled and pb.event_handler:
     <button class="btn btn-ico btn-action js-try-to-fix"
       title="Try to fix (launch event handler)"
@@ -9,32 +44,30 @@
       <i class="fa fa-magic"></i>
     </button>
     %end
-    <button class="btn btn-ico btn-action js-recheck"
-      title="Launch the check command"
-      data-element="{{helper.get_uri_name(pb)}}"
-      >
-      <i class="fa fa-refresh"></i>
-    </button>
-    <button class="btn btn-ico btn-action js-submit-ok"
+    <button class="btn btn-lg btn-ico btn-action js-submit-ok"
       title="Submit a check result"
       data-element="{{helper.get_uri_name(pb)}}"
       >
       <i class="fa fa-share"></i>
     </button>
-    %if pb.state != pb.ok_up and not pb.problem_has_been_acknowledged:
-    <button class="btn btn-ico btn-action js-add-acknowledge"
-      title="Acknowledge this problem"
-      data-element="{{helper.get_uri_name(pb)}}"
-      >
-      <i class="fa fa-check"></i>
-    </button>
-    %end
-    <button class="btn btn-ico btn-action js-schedule-downtime"
-      title="Schedule a downtime for this problem"
-      data-element="{{helper.get_uri_name(pb)}}"
-      >
-      <i class="fa fa-ambulance"></i>
-    </button>
+    <div class="dropdown" style="display: inline;">
+      <button class="btn btn-lg btn-ico btn-action dropdown-toggle" type="button" id="dropdown-others-{{ helper.get_html_id(pb) }}" data-toggle="dropdown"
+        >
+        <i class="fa fa-ellipsis-v"></i>
+      </button>
+      <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdown-others-{{ helper.get_html_id(pb) }}" style="margin-top: 15px;">
+        <li><a href="{{!helper.get_link_dest(pb)}}">Details</a></li>
+        %if app.graphs_module.is_available() and pb.perf_data:
+        <li><a href="{{!helper.get_link_dest(pb)}}#graphs">Graphs</a></li>
+        %end
+        %if app.logs_module.is_available():
+        <li><a href="{{!helper.get_link_dest(pb)}}#history">History</a></li>
+        %end
+        %if app.helpdesk_module.is_available():
+        <li><a href="{{!helper.get_link_dest(pb)}}#helpdesk">Helpdesk</a></li>
+        %end
+      </ul>
+    </div>
   %end
 </div>
 

@@ -91,7 +91,7 @@ Invalid element name
 
             <li class="{{_go_active}}"><a href="#information" data-toggle="tab">Information</a></li>
             <li><a href="#impacts" data-toggle="tab">{{'Services' if elt_type == 'host' else 'Impacts'}}</a></li>
-            %if user.is_administrator() and elt.customs:
+            %if elt.customs:
             <li><a href="#configuration" data-toggle="tab">Configuration</a></li>
             %end
             <li><a href="#comments" data-toggle="tab">Comments</a></li>
