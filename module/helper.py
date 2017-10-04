@@ -716,19 +716,24 @@ class Helper(object):
         return content
 
     def get_contact_avatar(self, contact, size=24, with_name=True, with_link=True):
-        if type(contact) is unicode or type(contact) is str:
-            name = contact
+        if contact == '(Nagios Process)':
+            name = "Nagios Process"
             title = name
+            s = '<i class="fa fa-server"></i>'
         else:
-            name = contact.contact_name
-            title = name
+            if type(contact) is unicode or type(contact) is str:
+                name = contact
+                title = name
+            else:
+                name = contact.contact_name
+                title = name
+            s = '<img src="/avatar/%s?s=%s" class="img-circle">' % (name, size)
 
-        s = '<img src="/avatar/%s?s=%s" class="img-circle">' % (name, size)
         if with_name:
             s += '&nbsp;'
             s += name
 
-        if with_link:
+        if with_link and contact != '(Nagios Process)':
             s = '<a href="/contact/%s">%s</a>' % (name, s)
 
         s = '<span class="user-avatar" title="%s">%s</span>' % (title, s)
