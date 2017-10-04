@@ -25,14 +25,12 @@
 ### Will be populated by the UI with it's own value
 app = None
 
-from webui2.user import User
-
 # Contact page
 def show_contact(name):
     user = app.request.environ['USER']
     contact = app.datamgr.get_contact(name=name, user=user) or app.redirect404()
 
-    return {'contact': User.from_contact(contact)}
+    return {'contact': contact}
 
 # All contacts
 def show_contacts():

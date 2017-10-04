@@ -1,10 +1,9 @@
 %import time
-%user = app.get_user()
 %helper = app.helper
 %datamgr = app.datamgr
 %search_string = app.get_search_string()
 
-%rebase("layout", title=title, js=['js/shinken-actions.js', 'js/jquery.sparkline.min.js', 'js/shinken-charts.js', 'problems/js/problems.js', 'problems/js/actions.js'], css=['problems/css/problems.css'], navi=navi, page="/all", elts_per_page=elts_per_page)
+%rebase("layout", title=title, js=['js/shinken-actions.js', 'problems/js/problems.js', 'problems/js/actions.js'], css=['problems/css/problems.css'], navi=navi, page="/all", elts_per_page=elts_per_page)
 
 <script type="text/javascript">
    var actions_enabled = {{'true' if app.can_action() else 'false'}};
@@ -40,128 +39,86 @@
       <i class="pull-right small">{{len(bi_pbs)}} elements</i>
       <h3 class="text-center"><span class="hidden-xs">Business impact: </span>{{!helper.get_business_impact_text(business_impact, text=True)}}</h3>
 
-      <table class="table table-condensed table-hover problems-table">
+      <table class="table table-condensed" style="table-layout:fixed; width:100%;">
          <thead><tr>
             <th width="20px"></th>
-            <!--<th width="40px"></th>-->
-            <th width="130px">State</th>
-            <th class="host-column hidden-sm hidden-xs hidden-md">Host</th>
-            <th class="service-column hidden-sm hidden-xs">Service</th>
-            <!--<th class="duration-column">Duration</th>-->
-            <th width="100%">Output</th>
+            <th width="40px"></th>
+            <th class="host-column">Host</th>
+            <th class="service-column">Service</th>
+            <th class="state-column">State</th>
+            <th class="duration-column">Duration</th>
+            <th class="hidden-sm hidden-xs" width="100%">Output</th>
          </tr></thead>
 
          <tbody>
          %previous_pb_host_name=None
          %for pb in bi_pbs:
-            %if pb.__class__.my_type == 'service':
-            %pb_host = pb.host
-            %else:
-            %pb_host = pb
-            %end
-            <tr data-toggle="collapse" data-target="#details-{{helper.get_html_id(pb)}}" data-item="{{pb.get_full_name()}}" class="accordion-toggle js-select-elt">
+            <tr data-toggle="collapse" data-target="#details-{{helper.get_html_id(pb)}}" class="accordion-toggle">
                <td>
-                 <input type="checkbox" class="input-sm info" value="" id="selector-{{helper.get_html_id(pb)}}" data-type="problem" data-business-impact="{{business_impact}}" data-item="{{pb.get_full_name()}}" title="Ctrl+key on rows to select multiple rows<br>Shift+key on two rows to select a range of rows">
+                  <input type="checkbox" class="input-sm" value="" id="selector-{{helper.get_html_id(pb)}}" data-type="problem" data-business-impact="{{business_impact}}" data-item="{{pb.get_full_name()}}">
                </td>
-               <!--<td title="{{pb.get_name()}} - {{pb.output}} - Since {{helper.print_duration(pb.last_state_change)}} - Last check: {{helper.print_duration(pb.last_chk)}}"  class="text-center">-->
-                  <!--{{!helper.get_fa_icon_state(pb, useTitle=False)}}-->
-               <!--</td>-->
-             <td title="{{pb.get_name()}} - {{pb.state}}
-Since {{helper.print_date(pb.last_state_change, format="%d %b %Y %H:%M:%S")}}
-
-Last check <strong>{{helper.print_duration(pb.last_chk)}}</strong>
-Next check <strong>{{helper.print_duration(pb.next_chk)}}</strong>
-%if (pb.check_freshness):
-(Freshness threshold: {{pb.freshness_threshold}} seconds)
-%end
-"
-                 data-placement="right"
-                 data-container="body"
-                 class="font-{{pb.state.lower()}} text-center">
-                   <div style="display: table-cell; vertical-align: middle; padding-right: 10px;">
-                     {{!helper.get_fa_icon_state(pb, useTitle=False)}}
-                   </div>
-                   <div style="display: table-cell; vertical-align: middle;">
-                     <small>
-                       <strong>{{ pb.state }}</strong><br>
-                       <!--<span title="Since {{time.strftime("%d %b %Y %H:%M:%S", time.localtime(pb.last_state_change))}}">-->
-                         %if pb.state_type == 'HARD':
-                         {{!helper.print_duration(pb.last_state_change, just_duration=True, x_elts=2)}}
-                         %else:
-                         attempt {{pb.attempt}}/{{pb.max_check_attempts}}
-                         <!--soft state-->
-                         %end
-                       <!--</span>-->
-                     </small>
-                   </div>
+               <td> <a href="/all?search={{pb.host_name}}" title="{{pb.get_name()}} - {{pb.output}} - Since {{helper.print_duration(pb.last_state_change)}} - Last check: {{helper.print_duration(pb.last_chk)}}" class="align-center">
+                  {{!helper.get_fa_icon_state(pb, useTitle=False)}}
+                  </a>
                </td>
-               %aka = ''
-               %if pb_host.alias and not pb_host.alias.startswith(pb_host.get_name()):
-                 %aka = 'Aka %s' % pb_host.alias.replace(' ', '<br>')
-               %end
-               <td class="hidden-sm hidden-xs hidden-md">
+               <td>
                   %if pb.host_name != previous_pb_host_name:
-                     <a href="/host/{{pb.host_name}}" title="{{!aka}}">
-                       {{ pb_host.get_name() if pb_host.display_name == '' else pb_host.display_name }}
+                     %title = ''
+                     %if pb.__class__.my_type == 'service':
+                        %groups = pb.host.hostgroups
+                        %group = groups[0] if groups else None
+                        %title = 'Member of %s' % (group.alias if group.alias else group.get_name()) if group else ''
+                     %else:
+                        %if pb.alias and pb.alias != pb.get_name():
+                            %title = 'Aka %s' % pb.alias
+                        %end
+                        %groups = pb.hostgroups
+                        %group = groups[0] if groups else None
+                        %title = title + ((' - ' if title else '') + 'Member of %s' % (group.alias if group.alias else group.get_name()) if group else '')
+                     %end
+                     <a href="/host/{{pb.host_name}}" title="{{title}}">
+                     %if pb.__class__.my_type == 'service':
+                        %if pb.host:
+                        {{pb.host.get_name() if pb.host.display_name == '' else pb.host.display_name}}
+                        %else:
+                        {{pb.host_name}}
+                        %end
+                     %else:
+                        {{pb.get_name() if pb.display_name == '' else pb.display_name}}
+                     %end
                      </a>
                   %end
                </td>
-               <td class="hidden-sm hidden-xs">
-                 <span class="hidden-lg">
-                   <a href="/host/{{pb.host_name}}" title="{{!aka}}">
-                     {{ pb_host.get_name() if pb_host.display_name == '' else pb_host.display_name }}
-                   </a>
-                   %if pb.__class__.my_type == 'service':
-                   /
-                   %end
-                 </span>
+               <td>
                   %if pb.__class__.my_type == 'service':
                   {{!helper.get_link(pb, short=True)}}
                   %end
                   %if len(pb.impacts) > 0:
                   <button class="btn btn-danger btn-xs"><i class="fa fa-plus"></i> {{ len(pb.impacts) }} impacts</button>
                   %end
-                  <!--:TODO:maethor:170924: -->
-                  <!--<div class="pull-right problem-actions">-->
-                    <!--<i class="fa fa-plus"></i>-->
-                  <!--</div>-->
                </td>
-               <!--<td title="Since {{time.strftime("%d %b %Y %H:%M:%S", time.localtime(pb.last_state_change))}}">-->
-                 <!--{{!helper.print_duration(pb.last_state_change, just_duration=True, x_elts=2)}}-->
-               <!--</td>-->
-               <td class="row">
+               <td class="font-{{pb.state.lower()}}"><strong><small>{{ pb.state }}</small></strong></td>
+               <td title="Since {{time.strftime("%d %b %Y %H:%M:%S", time.localtime(pb.last_state_change))}}">
+                 <a href="/cpe/{{pb.host_name}}" target="_blank" title="who is gershom?">
+                 {{!helper.print_duration(pb.last_state_change, just_duration=True, x_elts=2)}}
+               </td>
+               <td class="row hidden-sm hidden-xs">
+                  %if app.graphs_module.is_available():
                   <div class="pull-right">
-                     {{!helper.get_perfdata_pies(pb)}}&nbsp;
-                     %if app.graphs_module.is_available():
-                     %if pb.perf_data:
-                        <a style="text-decoration: none; color: #333;" role="button" tabindex="0" data-toggle="popover-elt-graphs"
-                           data-title="{{ pb.get_full_name() }}" data-html="true"
+                     %graphs = app.graphs_module.get_graph_uris(pb, duration=12*3600)
+                     %if len(graphs) > 0:
+                        <a style="text-decoration: none;" role="button" tabindex="0" data-toggle="popover"
+                           title="{{ pb.get_full_name() }}" data-html="true"
+                           data-content="<img src='{{ graphs[0]['img_src'] }}' width='600px' height='200px'>"
                            data-trigger="hover" data-placement="left"
-                           data-item="{{pb.get_full_name()}}"
                            href="{{!helper.get_link_dest(pb)}}#graphs">
-                           <i class="fa fa-line-chart"></i>
+                           {{!helper.get_perfometer(pb)}}
                         </a>
                      %end
-                     %end
                   </div>
+                  %end
                   <div class="ellipsis output">
-                  <!--<div class="ellipsis output" style='font-family: "Liberation Mono", "Lucida Console", Courier, monospace; color=#7f7f7f; font-size:0.917em;'>-->
-                    <div class="hidden-md hidden-lg">
-                      <a href="/host/{{pb.host_name}}" title="{{!aka}}">
-                        {{ pb_host.get_name() if pb_host.display_name == '' else pb_host.display_name }}
-                      </a>
-                      %if pb.__class__.my_type == 'service':
-                      / {{!helper.get_link(pb, short=True)}}
-                      %end
-                      %if len(pb.impacts) > 0:
-                      <button class="btn btn-danger btn-xs"><i class="fa fa-plus"></i> {{ len(pb.impacts) }} impacts</button>
-                      %end
-                    </div>
-
-                     <!--<br>-->
-
-                    <samp style="font-size:0.95em;">{{! pb.output}}</samp>
-                    <!--{{! pb.output}}-->
+                     {{! pb.output}}
                      %if pb.long_output:
                      <div class="long-output">
                         {{! pb.long_output}}
@@ -180,21 +137,21 @@ Next check <strong>{{helper.print_duration(pb.next_chk)}}</strong>
                          </td>
                        </tr>
                         <tr>
-                           <!--<td align="center" class="visible-lg">Realm {{pb.get_realm()}}</td>-->
-                           <!--%if pb.passive_checks_enabled:-->
-                           <!--<td align="left">-->
-                              <!--<i class="fa fa-arrow-left hidden-xs" title="Passive checks are enabled."></i>-->
-                              <!--%if (pb.check_freshness):-->
-                              <!--<i title="Freshness check is enabled">(Freshness threshold: {{pb.freshness_threshold}} seconds)</i>-->
-                              <!--%end-->
-                           <!--</td>-->
-                           <!--%end-->
-                           <!--%if pb.active_checks_enabled:-->
-                           <!--<td align="left">-->
-                              <!--<i class="fa fa-arrow-right hidden-xs" title="Active checks are enabled."></i>-->
-                              <!--<i>Last check <strong>{{!helper.print_duration_and_date(pb.last_chk, just_duration=True, x_elts=2)}} ago</strong>, next check in <strong>{{!helper.print_duration_and_date(pb.next_chk, just_duration=True, x_elts=2)}}</strong>, attempt <strong>{{pb.attempt}}/{{pb.max_check_attempts}}</strong></i>-->
-                           <!--</td>-->
-                           <!--%end-->
+                           <td align="center" class="visible-lg">Realm {{pb.get_realm()}}</td>
+                           %if pb.passive_checks_enabled:
+                           <td align="left">
+                              <i class="fa fa-arrow-left hidden-xs" title="Passive checks are enabled."></i>
+                              %if (pb.check_freshness):
+                              <i title="Freshness check is enabled">(Freshness threshold: {{pb.freshness_threshold}} seconds)</i>
+                              %end
+                           </td>
+                           %end
+                           %if pb.active_checks_enabled:
+                           <td align="left">
+                              <i class="fa fa-arrow-right hidden-xs" title="Active checks are enabled."></i>
+                              <i>Last check <strong>{{!helper.print_duration(pb.last_chk, just_duration=True, x_elts=2)}} ago</strong>, next check in <strong>{{!helper.print_duration(pb.next_chk, just_duration=True, x_elts=2)}}</strong>, attempt <strong>{{pb.attempt}}/{{pb.max_check_attempts}}</strong></i>
+                           </td>
+                           %end
                            %if app.can_action():
                            <td align="right">
                               <div class="btn-group" role="group" data-type="actions" aria-label="Actions">
@@ -254,8 +211,7 @@ Next check <strong>{{helper.print_duration(pb.next_chk)}}</strong>
                                     </td>
                                     <td>{{!helper.get_link(i, short=True)}}</td>
                                     <td align="center" class="font-{{i.state.lower()}}"><strong>{{ i.state }}</strong></td>
-                                    <td align="center"><a href="/cpe/{{pb.host_name}}" target="_blank" title="who is gershom?">{{!helper.print_duration_and_date(i.last_state_change, just_duration=True, x_elts=2)}}</td></a>
-
+                                    <td align="center">{{!helper.print_duration(i.last_state_change, just_duration=True, x_elts=2)}}</td>
                                     <td class="row hidden-sm hidden-xs">
                                        <div class="ellipsis output">
                                           {{! i.output}}

@@ -1,4 +1,3 @@
-%user = app.get_user()
 %helper = app.helper
 %datamgr = app.datamgr
 

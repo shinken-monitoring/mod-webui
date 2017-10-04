@@ -1,9 +1,7 @@
 %rebase("layout", js=['js/shinken-actions.js', 'js/jquery-ui-1.11.4.min.js', 'dashboard/js/widgets.js', 'dashboard/js/jquery.easywidgets.js', 'dashboard/js/actions.js'], css=['dashboard/css/dashboard.css'], title='Dashboard')
 
 %from shinken.bin import VERSION
-%user = app.get_user()
 %helper = app.helper
-%refresh = app.refresh
 
 <script type="text/javascript">
    /* We are saving the global context for the widgets */
@@ -129,43 +127,23 @@
             }
         }
         if (old_hosts_problems < hosts_problems) {
-            var message = (hosts_problems - old_hosts_problems) + " more " + ((hosts_problems - old_hosts_problems)==1 ? "hosts problem" : "hosts problems")
-            %if refresh:
-            message += " since last " + app_refresh_period + " seconds."
-            %else:
-            message += " since last refresh."
-            %end
+            var message = (hosts_problems - old_hosts_problems) + " more " + ((hosts_problems - old_hosts_problems)==1 ? "hosts problem" : "hosts problems") + " since last "+app_refresh_period+" seconds."
             alertify.log(message, "error", 5000);
             if (dashboard_logs) console.debug(message);
         }
         if (hosts_problems < old_hosts_problems) {
-            var message = (old_hosts_problems - hosts_problems) + " less " + ((old_hosts_problems - hosts_problems)==1 ? "hosts problem" : "hosts problems")
-            %if refresh:
-            message += " since last " + app_refresh_period + " seconds."
-            %else:
-            message += " since last refresh."
-            %end
+            var message = (old_hosts_problems - hosts_problems) + " less " + ((old_hosts_problems - hosts_problems)==1 ? "hosts problem" : "hosts problems") + " since last "+app_refresh_period+" seconds."
             alertify.log(message, "success", 5000);
             if (dashboard_logs) console.debug(message);
         }
         sessionStorage.setItem("hosts_problems", hosts_problems);
         if (old_services_problems < services_problems) {
-            var message = (services_problems - old_services_problems) + " more " + ((services_problems - old_services_problems)==1 ? "services problem" : "services problems")
-            %if refresh:
-            message += " since last " + app_refresh_period + " seconds."
-            %else:
-            message += " since last refresh."
-            %end
+            var message = (services_problems - old_services_problems) + " more " + ((services_problems - old_services_problems)==1 ? "services problem" : "services problems") + " since last "+app_refresh_period+" seconds."
             alertify.log(message, "error", 5000);
             if (dashboard_logs) console.debug(message);
         }
         if (services_problems < old_services_problems) {
-            var message = (old_services_problems - services_problems) + " less " + ((old_services_problems - services_problems)==1 ? "services problem" : "services problems")
-            %if refresh:
-            message += " since last " + app_refresh_period + " seconds."
-            %else:
-            message += " since last refresh."
-            %end
+            var message = (old_services_problems - services_problems) + " less " + ((old_services_problems - services_problems)==1 ? "services problem" : "services problems") + " since last "+app_refresh_period+" seconds."
             alertify.log(message, "success", 5000);
             if (dashboard_logs) console.debug(message);
         }

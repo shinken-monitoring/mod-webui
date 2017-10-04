@@ -1,6 +1,5 @@
 %rebase("layout", css=['groups/css/groups-overview.css'], title='Hosts groups dashboard')
 
-%user = app.get_user()
 %helper = app.helper
 %h = app.datamgr.get_hosts_synthesis(user=user)
 

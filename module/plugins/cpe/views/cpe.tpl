@@ -399,13 +399,8 @@ var realtimeTimer = window.setInterval(function(){
 <div class="row container-fluid">
     %if app.logs_module.is_available():
     <div class="col-md-6 panel panel-default">
-        <div class="panel-heading">
-          <div class="pull-right">
-            <a class="btn btn-primary btn-xs" data-toggle="collapse" href="#logHistory">+</a>
-          </div>
-          <h4 class="panel-title">Log History</h4>
-        </div>
-        <div id="logHistory" class="panel-body panel-collapse collapse">
+        <div class="panel-heading"><h4 class="panel-title">Log History</h4></div>
+        <div class="panel-body">
             <table id="inner_history" class="table" data-element='{{cpe.get_full_name()}}'>
                 <thead>
                     <tr>
@@ -419,13 +414,8 @@ var realtimeTimer = window.setInterval(function(){
         </div>
     </div>
     <div class="col-md-6 panel panel-default">
-        <div class="panel-heading">
-          <div class="pull-right">
-            <a class="btn btn-primary btn-xs" data-toggle="collapse" href="#eventHistory">+</a>
-          </div>
-          <h4 class="panel-title">Event History</h4>
-        </div>
-        <div id="eventHistory" class="panel-body panel-collapse collapse">
+        <div class="panel-heading"><h4 class="panel-title">Event History</h4></div>
+        <div class="panel-body">
             <table id="inner_events" class="table" data-element='{{cpe.get_full_name()}}'>
                 <thead>
                     <tr>
@@ -451,7 +441,7 @@ var realtimeTimer = window.setInterval(function(){
 </div>
 <div class="row container-fluid">
     %for graph in cpe_graphs:
-    <div class="col-md-12">
+    <div class="col-md-6">
         <div class="panel panel-default">
             <div class="panel-heading"><h4 class="panel-title">{{graph['title']}}</h4></div>
             <div class="panel-body">

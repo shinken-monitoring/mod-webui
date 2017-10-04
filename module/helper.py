@@ -24,13 +24,10 @@
 
 
 import time
-import datetime
 import copy
 import math
 import operator
 import re
-
-from collections import OrderedDict
 
 try:
     import json
@@ -43,8 +40,12 @@ except ImportError:
         print "Error: you need the json or simplejson module"
         raise
 
-from shinken.misc.sorter import hst_srv_sort
+from shinken.util import safe_print
 from shinken.misc.perfdata import PerfDatas
+from shinken.misc.sorter import hst_srv_sort
+from shinken.log import logger
+from perfdata_guess import get_perfometer_table_values
+from shinken.macroresolver import MacroResolver
 
 
 class Helper(object):
@@ -135,47 +136,183 @@ class Helper(object):
         else:
             return ' '.join(duration) + ' ago'
 
-    # Prints the duration with the date as title
-    def print_duration_and_date(self, t, just_duration=False, x_elts=2):
-        return "<span title='%s'>%s</span>" % (self.print_date(t, format="%d %b %Y %H:%M:%S"), self.print_duration(t, just_duration, x_elts=x_elts))
+# DEP GRAPH HELPERS {{{
+    # Need to create a X level higher and lower to the element
+    def create_json_dep_graph(self, elt, levels=3):
+        t0 = time.time()
+        # First we need ALL elements
+        all_elts = self.get_all_linked_elts(elt, levels=levels)
+
+        dicts = []
+        for i in all_elts:
+            ds = self.get_dep_graph_struct(i)
+            for d in ds:
+                dicts.append(d)
+        j = json.dumps(dicts)
+        return j
+
+    def get_all_nodes_from_aggregation_node(self, tree):
+        res = [{'path': tree['path'], 'services': tree['services'], 'state': tree['state'], 'full_path': tree['full_path']}]
+        for s in tree['sons']:
+            r = self.get_all_nodes_from_aggregation_node(s)
+            for n in r:
+                res.append(n)
+        return res
+
+    def create_dep_graph_aggregation_node(self, elt):
+        # {'path' : '/', 'sons' : [], 'services':[], 'state':'unknown', 'full_path':'/'}
+        hname = elt.get_name()
+        tree = self.get_host_service_aggregation_tree(elt)
+        all_nodes = self.get_all_nodes_from_aggregation_node(tree)
+
+        res = []
+        for n in all_nodes:
+            d = {'id': self.strip_html_id(hname+n['full_path']), 'name': n['full_path'],
+                 'data': {'$type': 'custom',
+                          'business_impact': 2,
+                          'img_src': '/static/images/icons/state_%s.png' % n['state'],
+                          },
+                 'adjacencies': []
+                 }
+            # Set the right info panel
+            d['data']['infos'] = ''
+            d['data']['elt_type'] = 'service'
+            d['data']['is_problem'] = False
+            d['data']['state_id'] = 1
+            d['data']['circle'] = 'none'
+
+            # by default the father linkis the host
+            father =  elt.get_dbg_name()
+            # But if the aggregation is a level1+ it must be the level-1 one
+            agg_parts = [s for s in self.get_aggregation_paths(n['full_path']) if s]
+
+            # Root, no block for it
+            if len(agg_parts) == 0:
+                continue
+            # For 1, it'smeans first agg level, so our father is the host
+            # but it's already set. For >1, the father is the agg level before
+            if len(agg_parts) > 1:
+                pre_path = '/'+'/'.join(agg_parts[:-1])
+                father = self.strip_html_id(elt.get_dbg_name()+pre_path)
+
+            pd = {'nodeTo': father,
+                  'data': {"$type": "line", "$direction": [self.strip_html_id(d['id']), elt.get_dbg_name()]
+                           }
+                  }
+            if n['state'].lower() in ['warning', 'critical']:
+                pd['data']["$color"] = 'Tomato'
+            else:
+                pd['data']["$color"] = 'PaleGreen'
+            d['adjacencies'].append(pd)
+
+            res.append(d)
+
+        return res
+
+    def get_dep_graph_struct(self, elt):
+        t = elt.__class__.my_type
+
+        # We set the values for webui/plugins/depgraph/htdocs/js/eltdeps.js
+        # so a node with important data for rendering
+        # type = custom, business_impact and img_src.
+        d = {'id': elt.get_dbg_name(), 'name': elt.get_dbg_name(),
+             'data': {'$type': 'custom',
+                       'business_impact': elt.business_impact,
+                       'img_src': self.get_icon_state(elt),
+                       },
+             'adjacencies': []
+             }
+        res = [d]
+
+        # if we got an host, compute the aggregation part
+        if t == 'host':
+            nodes = self.create_dep_graph_aggregation_node(elt)
+            for n in nodes:
+                res.append(n)
+
+        # Set the right info panel
+        d['data']['infos']  = helper.get_fa_icon_state(elt)
+        d['data']['infos'] += self.get_link(elt, short=False)
+        if elt.business_impact > 2:
+            d['data']['infos'] += "(" + self.get_business_impact_text(elt.business_impact) + ")"
+        d['data']['infos'] += """ is <span class="font-%s"><strong>%s</strong></span>""" % (elt.state.lower(), elt.state)
+        d['data']['infos'] += " since %s" % self.print_duration(elt.last_state_change, just_duration=True, x_elts=2)
+
+        d['data']['elt_type'] = elt.__class__.my_type
+        d['data']['is_problem'] = elt.is_problem
+        d['data']['state_id'] = elt.state_id
+
+        if elt.state in ['OK', 'UP', 'PENDING']:
+            d['data']['circle'] = 'none'
+        elif elt.state in ['DOWN', 'CRITICAL']:
+            d['data']['circle'] = 'red'
+        elif elt.state in ['WARNING', 'UNREACHABLE']:
+            d['data']['circle'] = 'orange'
+        else:
+            d['data']['circle'] = 'none'
+
+        # Now put in adj our parents
+        for p in elt.parent_dependencies:
+            # The link service-> host can be squize by aggregations if set
+            if t == 'service' and elt.aggregation and p == elt.host:
+                agg_name = '/'.join(self.get_aggregation_paths(elt.aggregation))
+                agg_id = self.strip_html_id(p.get_dbg_name()+agg_name)
+                pd = {'nodeTo': agg_id,
+                      'data': {"$type": "line", "$direction": [elt.get_dbg_name(), agg_id]
+                               }
+                      }
+            else: # Ok a basic link with the element and elt so
+                pd = {'nodeTo': p.get_dbg_name(),
+                      'data': {"$type": "line", "$direction": [elt.get_dbg_name(), p.get_dbg_name()]
+                               }
+                      }
+
+            # Naive way of looking at impact
+            if elt.state_id != 0 and p.state_id != 0:
+                pd['data']["$color"] = 'Tomato'
+            # If OK, show host->service as a green link
+            elif elt.__class__.my_type != p.__class__.my_type:
+                pd['data']["$color"] = 'PaleGreen'
+            d['adjacencies'].append(pd)
+
+        # The sons case is now useful, it will be done by our sons
+        # that will link us
+        return res
+
+    # Return all linked elements of this elt, and 2 level
+    # higher and lower :)
+    def get_all_linked_elts(self, elt, levels=3):
+        if levels == 0:
+            return set()
+
+        my = set()
+        for i in elt.child_dependencies:
+            my.add(i)
+            child_elts = self.get_all_linked_elts(i, levels=levels - 1)
+            for c in child_elts:
+                my.add(c)
+        for i in elt.parent_dependencies:
+            my.add(i)
+            par_elts = self.get_all_linked_elts(i, levels=levels - 1)
+            for c in par_elts:
+                my.add(c)
+
+        #safe_print("get_all_linked_elts::Give elements", my)
+        return my
+
+    # For an object, return the path of the icons
+    def get_icon_state(self, obj):
+        ico = self.get_small_icon_state(obj)
+        if getattr(obj, 'icon_set', '') != '':
+            return '/static/images/sets/%s/state_%s.png' % (obj.icon_set, ico)
+        else:
+            return '/static/images/icons/state_%s.png' % ico
+# }}}
 
     def sort_elements(self, elements):
         l = copy.copy(elements)
         l.sort(hst_srv_sort)
         return l
-
-    def group_by_daterange(self, l, key):
-        today = datetime.datetime.now().date()
-
-        groups = OrderedDict([
-                  ('In the future', []),
-                  ('Today', []),
-                  ('Yesterday', []),
-                  ('This month', [])])
-
-        for e in l:
-            d = datetime.datetime.fromtimestamp(key(e)).date()
-            if d > today:
-                groups['In the future'].append(e)
-            elif d == today:
-                groups['Today'].append(e)
-            elif d.year == today.year and d.month == today.month and d.day == today.day - 1:
-                groups['Yesterday'].append(e)
-            elif d.year == today.year and d.month == today.month:
-                groups['This month'].append(e)
-            elif d.year == today.year:
-                month = d.strftime("%B")
-                if month not in groups:
-                    groups[month] = []
-                groups[month].append(e)
-            else:
-                if d.year not in groups:
-                    groups[d.year] = []
-                groups[d.year].append(e)
-
-        return groups
-
-
 
     # Get the small state for host/service icons
     # and satellites ones
@@ -213,7 +350,7 @@ class Helper(object):
         txts = {0: 'None', 1: 'Low', 2: 'Normal',
                 3: 'Important', 4: 'Very important', 5: 'Business critical'}
         nb_stars = max(0, business_impact - 2)
-        stars = '<small style="vertical-align: middle;"><i class="fa fa-star"></i></small>' * nb_stars
+        stars = '<i class="fa fa-star text-primary"></i>' * nb_stars
 
         if text:
             res = "%s %s" % (txts.get(business_impact, 'Unknown'), stars)
@@ -272,7 +409,6 @@ class Helper(object):
         flapping = (obj and obj.is_flapping) or state=='FLAPPING'
         ack = (obj and obj.problem_has_been_acknowledged) or state=='ACK'
         downtime = (obj and obj.in_scheduled_downtime) or state=='DOWNTIME'
-        hard = (not obj or obj.state_type == 'HARD')
 
         # Icons depending upon element and real state ...
         icons = { 'host':
@@ -302,27 +438,22 @@ class Helper(object):
             back += '''<i class="fa fa-circle fa-stack-1x font-%s"></i>''' % (state.lower() if not disabled else 'greyed')
 
         title = "%s is %s" % (cls, state)
-
         if flapping:
             icon_color = 'fa-inverse' if not disabled else 'font-greyed'
             title += " and is flapping"
         else:
             icon_color = 'fa-inverse'
-
-        if downtime or ack or not hard:
-            icon_style = 'style="opacity: 0.5"'
-        else:
-            icon_style = ""
-
         if downtime:
             icon = icons[cls]['DOWNTIME']
             title += " and in scheduled downtime"
+            icon_style = 'style="opacity: 0.5"'
         elif ack:
             icon = icons[cls]['ACK']
             title += " and acknowledged"
+            icon_style = 'style="opacity: 0.5"'
         else:
             icon = icons[cls].get(state, 'UNKNOWN')
-
+            icon_style = ""
         front = '''<i class="fa fa-%s fa-stack-1x %s"></i>''' % (icon, icon_color)
 
         if useTitle:
@@ -338,7 +469,8 @@ class Helper(object):
                 label=title
             return '''
               <span class="font-%s">
-                 %s&nbsp;<span class="num">%s</span>
+                 %s
+                 <span class="num">%s</span>
               </span>
               ''' % (color,
                      icon_text,
@@ -349,7 +481,8 @@ class Helper(object):
         color = state.lower() if not disabled else 'greyed'
         return '''
           <span class="font-%s">
-             %s&nbsp;<span class="num">%s</span>
+             %s
+             <span class="num">%s</span>
           </span>
           ''' % (color,
                  self.get_fa_icon_state(obj=obj, cls=cls, state=state, disabled=disabled, useTitle=useTitle),
@@ -397,102 +530,52 @@ class Helper(object):
 
         return res
 
-    def get_html_color(self, state):
-        colors = {'CRITICAL': "#d9534f",
-                  'DOWN': "#d9534f",
-                  'WARNING': "#f0ad4e",
-                  'WARNING': "#f0ad4e",
-                  'OK': "#5cb85c",
-                  'UP': "#5cb85c",
-                  'PENDING': '#49AFCD',
-                  'UNKNOWN': '#49AFCD'}
+    # Get a perfometer part for html printing
+    def get_perfometer(self, elt, metric=None):
+        if elt.perf_data:
+            r = get_perfometer_table_values(elt, metric=metric)
+            if r is None:
+                return ''
 
-        if state in colors:
-            return colors[state]
-        else:
-            return colors['UNKNOWN']
+            #lnk = r['lnk']
+            metrics = r['metrics']
+            title = r['title']
+            s = ''
+            if r['lnk'] != '#':
+                s += '<a href="%s">' % lnk
+            if metrics:
+                # metrics[0][0] is the color associated to the current state
+                # metrics[0][1] is a percentage:
+                #   - real percentage between min and max (if defined)
+                #   - else 100
 
-    def get_perfdata_pie(self, p):
-        if p.max is not None:
-            color = self.get_html_color('OK')
-            used_value = p.value - (p.min or 0)
-            unused_value = p.max - (p.min or 0) - used_value
-            if p.warning or p.critical:
-                if p.warning <= p.critical:
-                    if p.value >= p.warning:
-                        color = self.get_html_color('WARNING')
-                    if p.value >= p.critical:
-                        color = self.get_html_color('CRITICAL')
+                # Thanks to @medismail
+                base = {'success': 'green', 'warning': 'orange', 'danger': 'red', 'info': 'blue'}
+                color = base.get(metrics[0][0], 'blue')
+                logger.debug("[WebUI] get_perfometer: %s, %s / %s", elt.get_name(), metrics[0][0], metrics[0][1])
+                if metrics[0][1] > 9:
+                    s += '''<div class="progress" style="min-width:100px;">
+                    <div title="%s" class="ellipsis progress-bar progress-bar-%s" role="progressbar"
+                        aria-valuenow="%s" aria-valuemin="0" aria-valuemax="100" style="min-width: 40px; width:%s%%">
+                    %s
+                    </div>
+                    </div>''' % (title, metrics[0][0], metrics[0][1], metrics[0][1], title)
                 else:
-                    # inverted thresholds : OK > WARNING > CRITICAL
-                    if p.value <= p.warning:
-                        color = self.get_html_color('WARNING')
-                    if p.value <= p.critical:
-                        color = self.get_html_color('CRITICAL')
-                    used_value, unused_value = unused_value, used_value
+                    s += '''<div class="progress" style="min-width:100px;">
+                    <div title="%s" class="ellipsis progress-bar progress-bar-%s" role="progressbar"
+                        aria-valuenow="%s" aria-valuemin="0" aria-valuemax="100" style="width:%s%%">
+                    </div>
+                    <font size="2" color="%s">  %s</font>
+                    </div>''' % (title, metrics[0][0], metrics[0][1], metrics[0][1], color, title)
 
-            used_value = p.value - (p.min or 0)
-            unused_value = p.max - (p.min or 0) - used_value
-            if (unused_value + used_value):
-                used_pct = (float(used_value) / float(unused_value + used_value)) * 100
-            else:
-                used_pct = None
 
-            title = "%s %s%s" % (p.name, p.value, p.uom)
-            if p.uom != '%' and used_pct is not None:
-                title += " ({:.2f}%)".format(used_pct)
 
-            return '<span class="sparkline piechart" title="%s" role="img" sparkType="pie" sparkBorderWidth="0" sparkSliceColors="[%s,#f5f5f5]" values="%s,%s"></span>' % (title, color, used_value, unused_value)
-        return ""
+            if r['lnk'] != '#':
+                s += '</a>'
 
-    def get_perfdata_pies(self, elt):
-        return " ".join([self.get_perfdata_pie(p) for p in PerfDatas(elt.perf_data)])
+            return s
 
-    def get_perfdata_table(self, elt):
-        perfdatas = PerfDatas(elt.perf_data)
-        display_min = any(p.min for p in perfdatas)
-        display_max = any(p.max is not None for p in perfdatas)
-        display_warning = any(p.warning is not None for p in perfdatas)
-        display_critical = any(p.critical is not None for p in perfdatas)
-
-        s = '<table class="table table-condensed table-w-condensed">'
-        s += '<tr><th></th><th>Label</th><th>Value</th>'
-        if display_min:
-            s += '<th>Min</th>'
-        if display_max:
-            s += '<th>Max</th>'
-        if display_warning:
-            s += '<th>Warning</th>'
-        if display_critical:
-            s += '<th>Critical</th>'
-        s += '</tr>'
-
-        for p in perfdatas:
-            s += '<tr><td>%s</td><td>%s</td><td>%s %s</td>' % (self.get_perfdata_pie(p), p.name, p.value, p.uom)
-            if display_min:
-                if p.min is not None:
-                    s += '<td>%s %s</td>' % (p.min, p.uom)
-                else:
-                    s += '<td></td>'
-            if display_max:
-                if p.max is not None:
-                    s += '<td>%s %s</td>' % (p.max, p.uom)
-                else:
-                    s += '<td></td>'
-            if display_warning:
-                if p.warning is not None:
-                    s += '<td>%s %s</td>' % (p.warning, p.uom)
-                else:
-                    s += '<td></td>'
-            if display_critical:
-                if p.critical is not None:
-                    s += '<td>%s %s</td>' % (p.critical, p.uom)
-                else:
-                    s += '<td></td>'
-            s += '</tr>'
-        s += '</table>'
-
-        return s
+        return ''
 
     # We want the html id of an host or a service. It's basically
     # the full_name with / changed as -- (because in html, / is not valid :) )
@@ -755,11 +838,10 @@ class Helper(object):
             return self.get_service_graphs_docsis(cpe)
         return self.get_service_graphs_wimax(cpe)
 
-
     def get_service_graphs_gpon(self, cpe):
         graphs = [
         {
-            'title': 'Signal Level (dbm)',
+            'title': 'TxRx',
             'metrics': [
                 {
                     'name': 'Dn Rx',
@@ -773,14 +855,14 @@ class Helper(object):
             'uom': 'dBm'
         },
         {
-            'title': 'Attenuation (dB)',
+            'title': 'Attrition',
             'metrics': [
                 {
-                    'name': 'Dn Att',
+                    'name': 'Down Attrition',
                     'graphite_name': '%s.txrx.dnatt' % (cpe)
                 },
                 {
-                    'name': 'Up Att',
+                    'name': 'Up Attrition',
                     'graphite_name': '%s.txrx.upatt' % (cpe)
                 }
             ],
@@ -805,10 +887,10 @@ class Helper(object):
             'uom': 'dB'
         },
         {
-            'title': 'Signal Level (dbm)',
+            'title': 'TxRx',
             'metrics': [
                 {
-                    'name': 'Dn Rx',
+                    'name': 'Down Rx',
                     'graphite_name': '%s.downstream.dnrx' % (cpe)
                 },
                 {
@@ -819,14 +901,14 @@ class Helper(object):
             'uom': 'dBm'
         },
         {
-            'title': 'Attenuation (dB)',
+            'title': 'Attrition',
             'metrics': [
                 {
-                    'name': 'Dn Att',
+                    'name': 'Down Attrition',
                     'graphite_name': '%s.downstream.dnatt' % (cpe)
                 },
                 {
-                    'name': 'Up Att',
+                    'name': 'Up Attrition',
                     'graphite_name': '%s.upstream.upatt' % (cpe)
                 }
             ],
@@ -857,58 +939,7 @@ class Helper(object):
         return graphs
 
     def get_service_graphs_wimax(self, cpe):
-        graphs = [
-        {
-            'title': 'Signal Level (dbm)',
-            'metrics': [
-                {
-                    'name': 'uprx',
-                    'graphite_name': '%s.upstream.uprx' % (cpe)
-                }, {
-                    'name': 'dnrx',
-                    'graphite_name': '%s.downstream.dnrx' % (cpe)
-                }
-            ],
-            'uom': 'dbm'
-        },
-        {
-            'title': 'QoS',
-            'metrics': [
-                {
-                    'name': 'CCQ (%)',
-                    'graphite_name': '%s.qos.ccq' % (cpe)
-                }, {
-                    'name': 'Up Latency',
-                    'graphite_name': '%s.qos.uptxlatency' % (cpe)
-                }, {
-                    'name': 'Dn Latency',
-                    'graphite_name': '%s.qos.dntxlatency' % (cpe)
-                }
-            ],
-            'uom': 'ms'
-        }
-        ]
-        return graphs
-
-    def get_contact_avatar(self, contact, size=24, with_name=True, with_link=True):
-        if type(contact) is unicode or type(contact) is str:
-            name = contact
-            title = name
-        else:
-            name = contact.contact_name
-            title = name
-
-        s = '<img src="/avatar/%s?s=%s" class="img-circle">' % (name, size)
-        if with_name:
-            s += '&nbsp;'
-            s += name
-
-        if with_link:
-            s = '<a href="/contact/%s">%s</a>' % (name, s)
-
-        s = '<span class="user-avatar" title="%s">%s</span>' % (title, s)
-
-        return s
+        return []
 
 
 helper = Helper()

@@ -25,7 +25,7 @@
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 
 
-WEBUI_VERSION = "2.6.0"
+WEBUI_VERSION = "2.5.3"
 WEBUI_COPYRIGHT = "(c) 2009-2017 - License GNU AGPL as published by the FSF, minimum version 3 of the License."
 
 
@@ -179,7 +179,6 @@ class Webui_broker(BaseModule, Daemon):
         #self.max_output_length = int(getattr(modconf, 'max_output_length', '100'))
         # TODO : common preferences
         self.refresh_period = int(getattr(modconf, 'refresh_period', '60'))
-        self.refresh = False if self.refresh_period == 0 else True
         # Use element tag as image or use text
         self.tag_as_image = to_bool(getattr(modconf, 'tag_as_image', '0'))
 
@@ -245,6 +244,7 @@ class Webui_broker(BaseModule, Daemon):
         logger.info("[WebUI] Photo dir: %s", self.photo_dir)
 
         # User information
+        self.user_picture = ''
         self.user_session = None
         self.user_info = None
 
@@ -665,7 +665,6 @@ class Webui_broker(BaseModule, Daemon):
                 widget_desc = entry.get('widget_desc', None)
                 widget_name = entry.get('widget_name', None)
                 widget_picture = entry.get('widget_picture', None)
-                deprecated = entry.get('deprecated', False)
                 if widget_name and widget_desc and widget_lst != [] and route:
                     for place in widget_lst:
                         if place not in self.widgets:
@@ -674,8 +673,7 @@ class Webui_broker(BaseModule, Daemon):
                             'widget_name': widget_name,
                             'widget_desc': widget_desc,
                             'base_uri': route,
-                            'widget_picture': widget_picture,
-                            'deprecated': deprecated
+                            'widget_picture': widget_picture
                         })
 
             # And we add the views dir of this plugin in our TEMPLATE
@@ -798,6 +796,7 @@ class Webui_broker(BaseModule, Daemon):
     # :TODO:maethor:150727: Remove this method - @mohierf: why?
     def check_authentication(self, username, password):
         logger.info("[WebUI] Checking authentication for user: %s", username)
+        self.user_picture = None
         self.user_session = None
         self.user_info = None
 
@@ -813,6 +812,9 @@ class Webui_broker(BaseModule, Daemon):
 
             user = User.from_contact(c)
 
+            # user = User.from_contact(c, picture=self.user_picture, use_gravatar=self.gravatar)
+            self.user_picture = user.picture
+            logger.info("[WebUI] User picture: %s", self.user_picture)
             self.user_session = self.auth_module.get_session()
             logger.info("[WebUI] User session: %s", self.user_session)
             self.user_info = self.auth_module.get_user_info()
@@ -828,6 +830,7 @@ class Webui_broker(BaseModule, Daemon):
     ##
     def get_user_auth(self):
         logger.warning("[WebUI] Deprecated - Getting authenticated user ...")
+        self.user_picture = None
         self.user_session = None
         self.user_info = None
 
@@ -849,7 +852,8 @@ class Webui_broker(BaseModule, Daemon):
         if not contact:
             return None
 
-        user = User.from_contact(contact)
+        user = User.from_contact(contact, self.user_picture, self.gravatar)
+        self.user_picture = user.picture
         return user
 
     ##
@@ -858,7 +862,7 @@ class Webui_broker(BaseModule, Daemon):
     ##
     def can_action(self, username=None):
         if username:
-            user = User.from_contact(self.datamgr.get_contact(name=username))
+            user = User.from_contact(self.datamgr.get_contact(name=username), self.gravatar)
         else:
             user = request.environ.get('USER', None)
 
@@ -910,8 +914,6 @@ class Webui_broker(BaseModule, Daemon):
     def redirect403(self, msg="Forbidden"):
         raise self.bottle.HTTPError(403, msg)
 
-    def get_user(self):
-        return request.environ['USER']
 
 @webui_app.hook('before_request')
 def login_required():
@@ -975,11 +977,13 @@ def login_required():
     if not contact:
         bottle.redirect(app.get_url("GetLogin"))
 
-    user = User.from_contact(contact)
+    user = User.from_contact(contact, app.user_picture, app.gravatar)
     if app.user_session and app.user_info:
         user.set_information(app.user_session, app.user_info)
+    app.user_picture = user.get_picture()
     app.datamgr.set_logged_in_user(user)
 
     logger.debug("[WebUI] update current user: %s", user)
     request.environ['USER'] = user
+    bottle.BaseTemplate.defaults['user'] = user
 

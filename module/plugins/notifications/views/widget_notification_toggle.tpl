@@ -1,4 +1,4 @@
-%user = app.get_user()
+
 %rebase("widget")
 
 %js=['eltdetail/js/bootstrap-switch.min.js', 'notifications/js/notifications.js']

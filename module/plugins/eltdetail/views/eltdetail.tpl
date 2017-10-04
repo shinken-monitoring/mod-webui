@@ -9,7 +9,7 @@
 Invalid element name
 
 %else:
-%user = app.get_user()
+
 %helper = app.helper
 
 %from shinken.macroresolver import MacroResolver
@@ -28,7 +28,7 @@ Invalid element name
 %breadcrumb += [[elt.display_name, '/service/'+helper.get_uri_name(elt)]]
 %end
 
-%js=['js/shinken-actions.js', 'js/jquery.sparkline.min.js', 'js/shinken-charts.js', 'availability/js/justgage.js', 'availability/js/raphael-2.1.4.min.js', 'cv_host/js/flot/jquery.flot.min.js', 'cv_host/js/flot/jquery.flot.tickrotor.js', 'cv_host/js/flot/jquery.flot.resize.min.js', 'cv_host/js/flot/jquery.flot.pie.min.js', 'cv_host/js/flot/jquery.flot.categories.min.js', 'cv_host/js/flot/jquery.flot.time.min.js', 'cv_host/js/flot/jquery.flot.stack.min.js', 'cv_host/js/flot/jquery.flot.valuelabels.js',  'eltdetail/js/jquery.color.js', 'eltdetail/js/bootstrap-switch.min.js', 'eltdetail/js/custom_views.js', 'eltdetail/js/eltdetail.js']
+%js=['js/shinken-actions.js', 'availability/js/justgage.js', 'availability/js/raphael-2.1.4.min.js', 'cv_host/js/flot/jquery.flot.min.js', 'cv_host/js/flot/jquery.flot.tickrotor.js', 'cv_host/js/flot/jquery.flot.resize.min.js', 'cv_host/js/flot/jquery.flot.pie.min.js', 'cv_host/js/flot/jquery.flot.categories.min.js', 'cv_host/js/flot/jquery.flot.time.min.js', 'cv_host/js/flot/jquery.flot.stack.min.js', 'cv_host/js/flot/jquery.flot.valuelabels.js',  'eltdetail/js/jquery.color.js', 'eltdetail/js/bootstrap-switch.min.js', 'eltdetail/js/custom_views.js', 'eltdetail/js/eltdetail.js']
 %css=['eltdetail/css/bootstrap-switch.min.css', 'eltdetail/css/eltdetail.css', 'cv_host/css/cv_host.css']
 %rebase("layout", js=js, css=css, breadcrumb=breadcrumb, title=elt_type.title()+' detail: ' + elt.get_full_name())
 
@@ -315,10 +315,11 @@ Invalid element name
             <li><a href="#comments" data-toggle="tab">Comments</a></li>
             <li><a href="#downtimes" data-toggle="tab">Downtimes</a></li>
             <!--<li class="timeline_pane"><a href="#timeline" data-toggle="tab">Timeline</a></li>-->
+            <li><a href="#metrics" data-toggle="tab">Metrics</a></li>
             %if app.graphs_module.is_available():
             <li><a href="#graphs" data-toggle="tab">Graphs</a></li>
             %end
-            <!--<li><a href="#depgraph" data-toggle="tab">Impact graph</a></li>-->
+            <li><a href="#depgraph" data-toggle="tab">Impact graph</a></li>
             %if app.logs_module.is_available():
             <li><a href="#history" data-toggle="tab">History</a></li>
             %end
@@ -359,10 +360,11 @@ Invalid element name
             %include("_eltdetail_configuration.tpl")
             %include("_eltdetail_comments.tpl")
             %include("_eltdetail_downtimes.tpl")
+            %include("_eltdetail_metrics.tpl")
             %include("_eltdetail_graphs.tpl")
             %#include("_eltdetail_timeline.tpl")
             %include("_eltdetail_history.tpl")
-            <!--%include("_eltdetail_depgraph.tpl")-->
+            %include("_eltdetail_depgraph.tpl")
             %include("_eltdetail_availability.tpl")
             %include("_eltdetail_helpdesk.tpl")
 

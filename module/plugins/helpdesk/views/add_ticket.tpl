@@ -1,6 +1,5 @@
 %import json
 
-%user = app.get_user()
 <script type="text/javascript">
    // Initial start/stop for downtime, do not consider seconds ...
    var downtime_start = moment().seconds(0);
@@ -60,7 +59,7 @@
          }
       }
 
-      enable_refresh();
+      start_refresh();
       $('#modal').modal('hide');
    });
 

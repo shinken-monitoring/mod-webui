@@ -9,7 +9,7 @@
    <nav class="navbar navbar-default navbar-fixed-bottom">
       <div class="container-fluid">
          <div onclick="display_modal('/modal/about')">
-            <!--<img src="/static/images/default_company_xxs.png" alt="Shinken Logo"/>-->
+            <img src="/static/images/default_company_xxs.png" alt="Shinken Logo"/>
             <small><em class="text-muted">
                Shinken {{VERSION}} &mdash; Web User Interface {{app.app_version}}, &copy;2011-2016
             </em></small>

@@ -1,6 +1,5 @@
 %import json
 
-%user = app.get_user()
 <script type="text/javascript">
    var helpdesk_configuration = {{! json.dumps(app.helpdesk_module.get_ui_helpdesk_configuration())}};
 
@@ -39,7 +38,7 @@
          raise_message_ko(textStatus);
       });
 
-      enable_refresh();
+      start_refresh();
       $('#modal').modal('hide');
    });
 

@@ -25,8 +25,8 @@
                %end
                %for state in states:
                <td>
-                 %label = "%s hosts %s (%s%%)<br>%s with current filter" % (h_all['nb_' + state], state, h_all['pct_' + state], h['nb_' + state])
-                 <a style="text-decoration: none;" href="/all?search=type:host is:{{state}} isnot:ack isnot:downtime" title="{{!label}}">
+                 %label = "%s hosts %s (%s%%)\n%s with current filter" % (h_all['nb_' + state], state, h_all['pct_' + state], h['nb_' + state])
+                 <a style="text-decoration: none;" href="/all?search=type:host is:{{state}} isnot:ack isnot:downtime" title="{{label}}">
                    {{! helper.get_fa_icon_state_and_label(cls='host', state=state, label="%s<small class='hidden-sm'> / %s</small>" % (h['nb_' + state], h_all['nb_'+state]), useTitle=False, disabled=(not h['nb_' + state]))}}
                  </a>
                </td>
@@ -34,8 +34,8 @@
                %if not widget:
                %for state in 'ack', 'downtime':
                <td>
-                 %label = "%s hosts %s (%s%%)<br>%s with current filter" % (h_all['nb_' + state], state, h_all['pct_' + state], h['nb_' + state])
-                 <a style="text-decoration: none;" href="/all?search=type:host is:{{state}}" title="{{!label}}">
+                 %label = "%s hosts %s (%s%%)\n%s with current filter" % (h_all['nb_' + state], state, h_all['pct_' + state], h['nb_' + state])
+                 <a style="text-decoration: none;" href="/all?search=type:host is:{{state}}" title="{{label}}">
                    {{! helper.get_fa_icon_state_and_label(cls='host', state=state, label="%s<small class='hidden-sm'> / %s</small>" % (h['nb_' + state], h_all['nb_'+state]), useTitle=False, disabled=(not h['nb_' + state]))}}
                  </a>
                </td>
@@ -56,8 +56,8 @@
                %end
                %for state in states:
                <td>
-                 %label = "%s services %s (%s%%)<br>%s with current filter" % (s_all['nb_' + state], state, s_all['pct_' + state], s['nb_' + state])
-                 <a style="text-decoration: none;" href="/all?search=type:service is:{{state}} isnot:ack isnot:downtime" title="{{!label}}">
+                 %label = "%s services %s (%s%%)\n%s with current filter" % (s_all['nb_' + state], state, s_all['pct_' + state], s['nb_' + state])
+                 <a style="text-decoration: none;" href="/all?search=type:service is:{{state}} isnot:ack isnot:downtime" title="{{label}}">
                    {{!helper.get_fa_icon_state_and_label(cls='service', state=state, label="%s<small class='hidden-sm'> / %s</small>" % (s['nb_' + state], s_all['nb_'+state]), useTitle=False, disabled=(not s['nb_' + state]))}}
                  </a>
                </td>
@@ -65,8 +65,8 @@
                %if not widget:
                %for state in 'ack', 'downtime':
                <td>
-                 %label = "%s services %s (%s%%)<br>%s with current filter" % (s_all['nb_' + state], state, s_all['pct_' + state], s['nb_' + state])
-                 <a style="text-decoration: none;" href="/all?search=type:service is:{{state}}" title="{{!label}}">
+                 %label = "%s services %s (%s%%)\n%s with current filter" % (s_all['nb_' + state], state, s_all['pct_' + state], s['nb_' + state])
+                 <a style="text-decoration: none;" href="/all?search=type:service is:{{state}}" title="{{label}}">
                    {{!helper.get_fa_icon_state_and_label(cls='service', state=state, label="%s<small class='hidden-sm'> / %s</small>" % (s['nb_' + state], s_all['nb_'+state]), useTitle=False, disabled=(not s['nb_' + state]))}}
                  </a>
                </td>

@@ -1,7 +1,8 @@
-%rebase("fullscreen", css=['dashboard/css/currently.css'], js=['js/shinken-actions.js', 'dashboard/js/Chart.js'], title='Shinken currently')
+%setdefault('refresh', True)
+%rebase("fullscreen", css=['dashboard/css/currently.css'], js=['dashboard/js/Chart.js'], title='Shinken currently')
+
 %import json
 
-%user = app.get_user()
 %setdefault('panels', None)
 %create_panels_preferences = False
 %if not 'panel_counters_hosts' in panels:
@@ -51,7 +52,6 @@
 
 
 %helper = app.helper
-%refresh = app.refresh
 
 <script type="text/javascript">
     var dashboard_logs = false;
@@ -102,43 +102,23 @@
                     }
                 }
                 if (old_hosts_problems < hosts_problems) {
-                    var message = (hosts_problems - old_hosts_problems) + " more " + ((hosts_problems - old_hosts_problems)==1 ? "host problem" : "host problems")
-                    %if refresh:
-                    message += " in the last " + app_refresh_period + " seconds."
-                    %else:
-                    message += " in the last refresh."
-                    %end
+                    var message = (hosts_problems - old_hosts_problems) + " more " + ((hosts_problems - old_hosts_problems)==1 ? "host problem" : "host problems") + " in the last "+app_refresh_period+" seconds."
                     alertify.log(message, "error", 5000);
                     if (dashboard_logs) console.debug(message);
                 }
                 if (hosts_problems < old_hosts_problems) {
-                    var message = (old_hosts_problems - hosts_problems) + " fewer " + ((old_hosts_problems - hosts_problems)==1 ? "host problem" : "host problems")
-                    %if refresh:
-                    message += " in the last " + app_refresh_period + " seconds."
-                    %else:
-                    message += " in the last refresh."
-                    %end
+                    var message = (old_hosts_problems - hosts_problems) + " fewer " + ((old_hosts_problems - hosts_problems)==1 ? "host problem" : "host problems") + " in the last "+app_refresh_period+" seconds."
                     alertify.log(message, "success", 5000);
                     if (dashboard_logs) console.debug(message);
                 }
                 sessionStorage.setItem("hosts_problems", hosts_problems);
                 if (old_services_problems < services_problems) {
-                    var message = (services_problems - old_services_problems) + " more " + ((services_problems - old_services_problems)==1 ? "service problem" : "service problems")
-                    %if refresh:
-                    message += " in the last " + app_refresh_period + " seconds."
-                    %else:
-                    message += " in the last refresh."
-                    %end
+                    var message = (services_problems - old_services_problems) + " more " + ((services_problems - old_services_problems)==1 ? "service problem" : "service problems") + " in the last "+app_refresh_period+" seconds."
                     alertify.log(message, "error", 5000);
                     if (dashboard_logs) console.debug(message);
                 }
                 if (services_problems < old_services_problems) {
-                    var message = (old_services_problems - services_problems) + " fewer " + ((old_services_problems - services_problems)==1 ? "service problem" : "service problems")
-                    %if refresh:
-                    message += " in the last " + app_refresh_period + " seconds."
-                    %else:
-                    message += " in the last refresh."
-                    %end
+                    var message = (old_services_problems - services_problems) + " fewer " + ((old_services_problems - services_problems)==1 ? "service problem" : "service problems") + " in the last "+app_refresh_period+" seconds."
                     alertify.log(message, "success", 5000);
                     if (dashboard_logs) console.debug(message);
                 }
@@ -347,46 +327,46 @@
 
         // Panels collapse state
         $('body').on('hidden.bs.collapse', '.panel', function () {
-            disable_refresh();
+            stop_refresh();
             panels[$(this).parent().attr('id')].collapsed = true;
             $(this).find('.fa-minus-square').removeClass('fa-minus-square').addClass('fa-plus-square');
             save_user_preference('panels', JSON.stringify(panels), function() {
-                enable_refresh();
+                start_refresh();
                 do_refresh(true);
             });
         });
         $('body').on('shown.bs.collapse', '.panel', function () {
-            disable_refresh();
+            stop_refresh();
             panels[$(this).parent().attr('id')].collapsed = false;
             $(this).find('.fa-plus-square').removeClass('fa-plus-square').addClass('fa-minus-square');
             save_user_preference('panels', JSON.stringify(panels), function() {
-                enable_refresh();
+                start_refresh();
                 do_refresh();
             });
         });
 
         // Graphs options
         $('body').on('click', '[data-action="toggle-title"]', function () {
-            disable_refresh();
+            stop_refresh();
             graphs[$(this).data('graph')].title = ! graphs[$(this).data('graph')].title;
             save_user_preference('graphs', JSON.stringify(graphs), function() {
-                enable_refresh();
+                start_refresh();
                 do_refresh(true);
             });
         });
         $('body').on('click', '[data-action="toggle-legend"]', function () {
-            disable_refresh();
+            stop_refresh();
             graphs[$(this).data('graph')].legend = ! graphs[$(this).data('graph')].legend;
             save_user_preference('graphs', JSON.stringify(graphs), function() {
-                enable_refresh();
+                start_refresh();
                 do_refresh(true);
             });
         });
         $('body').on('click', '[data-action="toggle-state"]', function () {
-            disable_refresh();
+            stop_refresh();
             graphs[$(this).data('graph')]['display_states'][$(this).data('state')] = ! graphs[$(this).data('graph')]['display_states'][$(this).data('state')];
             save_user_preference('graphs', JSON.stringify(graphs), function() {
-                enable_refresh();
+                start_refresh();
                 do_refresh(true);
             });
         });

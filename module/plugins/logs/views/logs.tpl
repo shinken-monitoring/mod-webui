@@ -134,7 +134,7 @@
          <tbody style="font-size:x-small;">
             %for log in records:
             <tr>
-               <td>{{time.strftime(date_format, time.localtime(log['time']))}}</td>
+               <td>{{time.strftime(date_format, time.localtime(log['timestamp']))}}</td>
                <td>{{log['message']}}</td>
             </tr>
             %end

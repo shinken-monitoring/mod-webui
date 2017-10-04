@@ -1,10 +1,9 @@
-%user = app.get_user()
 <script type="text/javascript">
    function submit_local_form() {
       // Launch add a comment request and bailout this modal view
       add_comment("{{name}}", '{{user.get_name()}}', $('#comment').val());
       // add_comment("{{name}}", '{{user.get_name()}}', encodeURI( $('#comment').val() ));
-      enable_refresh();
+      start_refresh();
       $('#modal').modal('hide');
    }
 </script>

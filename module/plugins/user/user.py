@@ -35,7 +35,6 @@ except ImportError:
         print "Error: you need the json or simplejson module"
         raise
 
-
 ### Will be populated by the UI with it's own value
 app = None
 

@@ -1,4 +1,3 @@
-%user = app.get_user()
 <script type="text/javascript">
    function submit_local_form() {
       // Launch downtimes deletion request and bailout this modal view
@@ -16,7 +15,7 @@
       }
       %end
 
-      enable_refresh();
+      start_refresh();
       $('#modal').modal('hide');
    }
 </script>

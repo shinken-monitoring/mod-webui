@@ -1,4 +1,3 @@
-%user = app.get_user()
 %services = []
 %for s in app.datamgr.get_services(user):
 	%if not s.get_name() in services:

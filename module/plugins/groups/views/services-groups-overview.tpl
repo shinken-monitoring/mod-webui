@@ -1,6 +1,5 @@
 %setdefault('debug', False)
 
-%user = app.get_user()
 %rebase("layout", title='Services groups overview')
 
 %helper = app.helper
