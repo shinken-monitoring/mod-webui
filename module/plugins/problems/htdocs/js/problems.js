@@ -187,12 +187,15 @@ function bootstrap_accordion_bookmark (selector) {
             // Check if elt is visible, or scroll to it
             var docViewTop = $(window).scrollTop();
             var docViewBottom = docViewTop + $(window).height();
-            var elemTop = $('tr[data-target="' + location.hash + '"]').offset().top;
+            var elt = $('tr[data-target="' + location.hash + '"]')
+            if (elt.length) {
+                var elemTop = elt.offset().top;
 
-            if  ((elemTop < docViewTop) || (elemTop > docViewBottom)) {
-                $('html,body').animate({
-                    scrollTop: elemTop - $(window).height() /5
-                });
+                if  ((elemTop < docViewTop) || (elemTop > docViewBottom)) {
+                    $('html,body').animate({
+                        scrollTop: elemTop - $(window).height() /5
+                    });
+                }
             }
         }
     });

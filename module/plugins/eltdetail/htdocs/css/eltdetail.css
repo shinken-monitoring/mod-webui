@@ -35,19 +35,6 @@
     margin: 0 0 1em 0;
 }
 
-.comment-time {
-    color: #7F7F7F;
-    font-size: 0.917em;
-}
-
-.comment-table > tbody > tr:first-child > td {
-    /*border-top: none !important;*/
-}
-
-.comment-table > tbody > tr:last-child > td {
-    /*border-bottom: 1px solid #ddd;*/
-}
-
 /* OLD */
 
 #inner_depgraph {

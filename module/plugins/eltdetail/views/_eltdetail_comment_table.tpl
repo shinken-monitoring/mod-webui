@@ -59,7 +59,7 @@
       </span>
       <span class="pull-right">
         %if c.persistent:
-        <i class="fa fa-flag-o" title="This comment is persistent"></i>&nbsp;
+        <i class="fa fa-sticky-note-o" title="This comment is persistent"></i>&nbsp;
         %end
         %if app.can_action():
         <a class="{{'disabled' if not app.can_action() else ''}} js-delete-comment text-danger"
