@@ -101,6 +101,8 @@ function flush_selected_elements(){
 
 // Text ellipsis in tables ...
 $('body').on('show.bs.collapse', '.collapse', function () {
+    // Close other stuff that my be expanded
+    $('.collapse').collapse('hide');
     $(this).closest('tr').prev().find('.output').removeClass("ellipsis", {duration:200});
 });
 
@@ -173,6 +175,35 @@ $('body').on('click', '.js-select-elt', function(e) {
     }
 });
 
+function bootstrap_accordion_bookmark (selector) {
+    if (selector == undefined) {
+        selector = "";
+    }
+
+    $(document).ready(function() {
+        if (location.hash) {
+            $(location.hash).collapse('show');
+
+            // Check if elt is visible, or scroll to it
+            var docViewTop = $(window).scrollTop();
+            var docViewBottom = docViewTop + $(window).height();
+            var elemTop = $('tr[data-target="' + location.hash + '"]').offset().top;
+
+            if  ((elemTop < docViewTop) || (elemTop > docViewBottom)) {
+                $('html,body').animate({
+                    scrollTop: elemTop - $(window).height() /5
+                });
+            }
+        }
+    });
+
+    var update_location = function (event) {
+        document.location.hash = this.id;
+    }
+
+    $('body').on('show.bs.collapse', '.collapse', update_location);
+}
+
 
 function on_page_refresh(){
    if (problems_logs) console.log('Problems page - on_page_refresh')
@@ -194,6 +225,8 @@ function on_page_refresh(){
          $(this).prop("disabled", true).hide();
       });
    }
+
+   bootstrap_accordion_bookmark();
 
    // Graphs popover
    $('[data-toggle="popover-elt-graphs"]').popover({

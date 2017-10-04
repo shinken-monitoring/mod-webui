@@ -353,7 +353,13 @@ function delete_all_comments(name) {
    launch(url, elt.type+': '+name+', all comments deleted');
 }
 
+function submit_comment_form(id){
+    var user = $('#user_' + id).val();
+    var name = $('#name_' + id).val();
+    var comment = $('#comment_' + id).val();
 
+    add_comment(name, user, comment);
+}
 
 /*
  * Downtimes

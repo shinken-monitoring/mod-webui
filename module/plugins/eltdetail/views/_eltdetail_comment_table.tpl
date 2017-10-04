@@ -1,5 +1,22 @@
 %setdefault('with_service_name', False)
 
+<form class="form-horizontal" class="js-comment-form" action="javascript:submit_comment_form('{{ helper.get_html_id(elt) }}');">
+  <input type="hidden" id="user_{{ helper.get_html_id(elt) }}" value="{{ user.get_name() }}">
+  <input type="hidden" id="name_{{ helper.get_html_id(elt) }}" value="{{ helper.get_uri_name(elt) }}">
+  <div class="form-group">
+    <label for="comment" class="col-sm-1 hidden-xs control-label">{{ !helper.get_contact_avatar(user, with_name=False, with_link=False, size=32) }}</label>
+    <div class="col-sm-10">
+      <textarea class="form-control" id="comment_{{ helper.get_html_id(elt) }}" placeholder="Write a comment…" rows="3"></textarea>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-sm-offset-1 col-sm-10">
+      <input type="submit" class="btn btn-default" value="Save">
+    </div>
+  </div>
+</form>
+
+<div id="comments_{{ helper.get_html_id(elt) }}">
 %for daterange, dr_comments in helper.group_by_daterange(sorted(comments, key=lambda x: x.entry_time, reverse=True), key=lambda x: x.entry_time).items():
 %if dr_comments:
 <div class="daterange-title">{{ daterange }}</div>
@@ -61,3 +78,4 @@
 </table>
 %end
 %end
+</div>

@@ -1,7 +1,43 @@
-.hiddenRow {
+.hiddenRow > td {
     padding: 0 !important;
     border: 0 !important;
 }
+
+.panel > table tr.hiddenRow > td {
+    padding-left: 0px !important;
+}
+
+.panel > table tr.hiddenRow > td {
+    padding-right: 0px !important;
+}
+
+.panel > table > tbody > tr:not(.collapsed) > td:first-child {
+    border-left: 4px solid #4D95BE;
+    /*margin-left: 2px;*/
+    padding-left: 18px !important;
+}
+
+.panel > table > tbody > tr:not(.collapsed) + tr.hiddenRow {
+    border-left: 4px solid #4D95BE;
+    border-top: 1px solid #eee;
+    padding-left: 0px;
+    /*border-right: 1px solid #CCC;*/
+    /*border-bottom: 1px solid #CCC;*/
+}
+
+tr.hiddenRow td {
+    border-color: transparent !important;
+}
+
+tr.hiddenRow:hover {
+    background-color: white !important;
+}
+
+
+.panel > table > tbody > tr:not(.collapsed) + tr.hiddenRow td {
+    border-top: 0px;
+}
+
 
 td, th {
     vertical-align: middle !important;
@@ -73,6 +109,11 @@ tr.selected .item-checkbox,
 
 .js-select-all:hover .original-label {
     display: none;
+}
+
+.eltdetail-content {
+    font-size: 14px;
+    padding: 20px;
 }
 
 

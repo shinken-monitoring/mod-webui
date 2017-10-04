@@ -181,6 +181,10 @@ td .ellipsis > .long-output {
     }
 }
 
+#page-content {
+    padding-bottom: 30px;
+}
+
 /*@media (max-width: 768px) {*/
     /*#sidebar-menu > li  {*/
         /*float:left;*/
@@ -373,7 +377,16 @@ td .ellipsis > .long-output {
     background-color: #555;
 }
 
-.navbar-inverse-2 .btn-action {
+.btn-ico {
+    font-size: 16px;
+    width: 32px;
+    height: 32px;
+    text-align: center;
+    line-height: 1.33;
+}
+
+.navbar-inverse-2 .btn-action,
+.btn-action {
     background: none;
     color: #555;
 }
@@ -382,12 +395,18 @@ td .ellipsis > .long-output {
 .navbar-inverse-2 .btn-action:active,
 .navbar-inverse-2 .btn-action.active,
 .navbar-inverse-2 .btn-action:focus,
-.navbar-inverse-2 .btn-action.focus {
+.navbar-inverse-2 .btn-action.focus,
+.btn-action:hover,
+.btn-action:active,
+.btn-action.active,
+.btn-action:focus,
+.btn-action.focus {
     background: none !important;
     color: #000 !important;
 }
 
-.navbar-inverse-2 .btn-action .fa {
+.navbar-inverse-2 .btn-action .fa,
+.btn-action .fa {
     font-size: 22px;
 }
 

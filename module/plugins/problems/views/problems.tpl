@@ -74,7 +74,7 @@
             %else:
             %pb_host = pb
             %end
-            <tr data-toggle="collapse" data-target="#details-{{helper.get_html_id(pb)}}" data-item="{{pb.get_full_name()}}" class="accordion-toggle js-select-elt">
+            <tr data-toggle="collapse" data-target="#details-{{helper.get_html_id(pb)}}" data-item="{{pb.get_full_name()}}" class="accordion-toggle js-select-elt collapsed">
              <td title="{{pb.get_name()}} - {{pb.state}}
 Since {{helper.print_date(pb.last_state_change, format="%d %b %Y %H:%M:%S")}}
 
@@ -182,110 +182,10 @@ Next check <strong>{{helper.print_duration(pb.next_chk)}}</strong>
                   </div>
                </td>
             </tr>
-            <tr>
-               <td colspan="8" class="hiddenRow">
+            <tr class="hiddenRow">
+               <td colspan="8">
                   <div class="accordion-body collapse" id="details-{{helper.get_html_id(pb)}}">
-                     <table class="table table-condensed" style="margin:0;">
-                       <tr class="hidden-md hidden-lg">
-                         <td colspan="3">
-                           {{ pb.output }}
-                         </td>
-                       </tr>
-                        <tr>
-                           <!--<td align="center" class="visible-lg">Realm {{pb.get_realm()}}</td>-->
-                           <!--%if pb.passive_checks_enabled:-->
-                           <!--<td align="left">-->
-                              <!--<i class="fa fa-arrow-left hidden-xs" title="Passive checks are enabled."></i>-->
-                              <!--%if (pb.check_freshness):-->
-                              <!--<i title="Freshness check is enabled">(Freshness threshold: {{pb.freshness_threshold}} seconds)</i>-->
-                              <!--%end-->
-                           <!--</td>-->
-                           <!--%end-->
-                           <!--%if pb.active_checks_enabled:-->
-                           <!--<td align="left">-->
-                              <!--<i class="fa fa-arrow-right hidden-xs" title="Active checks are enabled."></i>-->
-                              <!--<i>Last check <strong>{{!helper.print_duration_and_date(pb.last_chk, just_duration=True, x_elts=2)}} ago</strong>, next check in <strong>{{!helper.print_duration_and_date(pb.next_chk, just_duration=True, x_elts=2)}}</strong>, attempt <strong>{{pb.attempt}}/{{pb.max_check_attempts}}</strong></i>-->
-                           <!--</td>-->
-                           <!--%end-->
-                           %if app.can_action():
-                           <td align="right">
-                              <div class="btn-group" role="group" data-type="actions" aria-label="Actions">
-                                 %if pb.event_handler_enabled and pb.event_handler:
-                                 <button class="btn btn-default btn-xs js-try-to-fix"
-                                       title="Try to fix (launch event handler)"
-                                       data-element="{{helper.get_uri_name(pb)}}"
-                                       >
-                                    <i class="fa fa-magic"></i><span class="hidden-sm hidden-xs"> Try to fix</span>
-                                 </button>
-                                 %end
-                                 <button class="btn btn-default btn-xs js-recheck"
-                                       title="Launch the check command"
-                                       data-element="{{helper.get_uri_name(pb)}}"
-                                       >
-                                    <i class="fa fa-refresh"></i><span class="hidden-sm hidden-xs"> Recheck</span>
-                                 </button>
-                                 <button class="btn btn-default btn-xs js-submit-ok"
-                                       title="Submit a check result"
-                                       data-element="{{helper.get_uri_name(pb)}}"
-                                       >
-                                    <i class="fa fa-share"></i><span class="hidden-sm hidden-xs"> Set OK</span>
-                                 </button>
-                                 %if pb.state != pb.ok_up and not pb.problem_has_been_acknowledged:
-                                 <button class="btn btn-default btn-xs js-add-acknowledge"
-                                   title="Acknowledge this problem"
-                                   data-element="{{helper.get_uri_name(pb)}}"
-                                   >
-                                   <i class="fa fa-check"></i><span class="hidden-sm hidden-xs"> Acknowledge</span>
-                                 </button>
-                                 %end
-                                 <button class="btn btn-default btn-xs js-schedule-downtime"
-                                       title="Schedule a downtime for this problem"
-                                       data-element="{{helper.get_uri_name(pb)}}"
-                                       >
-                                  <i class="fa fa-ambulance"></i><span class="hidden-sm hidden-xs"> Downtime</span>
-                                 </button>
-                              </div>
-                           </td>
-                           %end
-                        </tr>
-                     </table>
-                     %if len(pb.impacts) > 0:
-                        <div class="col-sm-1"></div>
-                        <div class="col-sm-10">
-                           <div class="panel panel-default align-center">
-                           <div class="panel-body" style="margin-left: 20px;">
-                             <div class="pull-right"><input type="checkbox" id="display-impacts" {{ "checked" if display_impacts else '' }}> Display impacts in main table</div>
-                              <h4>{{ len(pb.impacts) }} impacts</h4>
-                              <table class="table table-condensed" style="table-layout:fixed;width:100%;">
-                                %for business_impact, bi_pbs in groupby(helper.sort_elements(pb.impacts), key=lambda x: x.business_impact):
-                                <tr class="hidden-sm hidden-xs"><td colspan=5 style="text-align:center;"><strong>Business impact: </strong>{{!helper.get_business_impact_text(business_impact, text=True)}}</td></tr>
-                                 %for i in bi_pbs:
-                                 <tr>
-                                    <td align=center>
-                                       {{!helper.get_fa_icon_state(i)}}
-                                    </td>
-                                    <td>{{!helper.get_link(i, short=True)}}</td>
-                                    <td align="center" class="font-{{i.state.lower()}}"><strong>{{ i.state }}</strong></td>
-                                    <td align="center">{{!helper.print_duration_and_date(i.last_state_change, just_duration=True, x_elts=2)}}</td>
-                                    <td class="row hidden-sm hidden-xs">
-                                       <div class="ellipsis output">
-                                          {{! i.output}}
-                                          %if i.long_output:
-                                          <div class="long-output">
-                                             {{! i.long_output}}
-                                          </div>
-                                          %end
-                                       </div>
-                                    </td>
-                                 </tr>
-                                 %end
-                                 %end
-                              </table>
-                           </div>
-                           </div>
-                        </div>
-                        <div class="col-sm-1"></div>
-                  %end
+                    %include("_problems_eltdetail.tpl")
                   </div>
                </td>
             </tr>
