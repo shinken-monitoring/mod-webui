@@ -142,14 +142,11 @@
             <tr>
               <td><strong>Active checks:</strong></td>
               <td>
-                <input type="checkbox" class="switch"
+                <input type="checkbox" class="js-toggle-parameter"
                 {{'checked' if elt.active_checks_enabled else ''}}
                 {{'readonly' if not app.can_action() else ''}}
-                data-size="mini"
-                data-on-color="success" data-off-color="danger"
-                data-type="action" action="toggle-active-checks"
+                data-action="toggle_active_checks"
                 data-element="{{helper.get_uri_name(elt)}}"
-                data-value="{{elt.active_checks_enabled}}"
                 >
               </td>
             </tr>
@@ -170,14 +167,11 @@
             <tr>
               <td><strong>Passive checks:</strong></td>
               <td>
-                <input type="checkbox" class="switch"
+                <input type="checkbox" class="js-toggle-parameter"
                 {{'checked' if elt.passive_checks_enabled else ''}}
                 {{'readonly' if not app.can_action() else ''}}
-                data-size="mini"
-                data-on-color="success" data-off-color="danger"
-                data-type="action" action="toggle-passive-checks"
+                data-action="toggle_passive_checks"
                 data-element="{{helper.get_uri_name(elt)}}"
-                data-value="{{elt.passive_checks_enabled}}"
                 >
               </td>
             </tr>
@@ -228,14 +222,11 @@
             <tr>
               <td><strong>Event handler enabled:</strong></td>
               <td>
-                <input type="checkbox" class="switch"
+                <input type="checkbox" class="js-toggle-parameter"
                 {{'checked' if elt.event_handler_enabled else ''}}
                 {{'readonly' if not app.can_action() else ''}}
-                data-size="mini"
-                data-on-color="success" data-off-color="danger"
-                data-type="action" action="toggle-event-handler"
+                data-action="toggle_event_handlers"
                 data-element="{{helper.get_uri_name(elt)}}"
-                data-value="{{elt.event_handler_enabled}}"
                 >
               </td>
             </tr>
@@ -259,14 +250,11 @@
             <tr>
               <td><strong>Flapping detection:</strong></td>
               <td>
-                <input type="checkbox" class="switch"
+                <input type="checkbox" class="js-toggle-parameter"
                 {{'checked' if elt.flap_detection_enabled else ''}}
                 {{'readonly' if not app.can_action() else ''}}
-                data-size="mini"
-                data-on-color="success" data-off-color="danger"
-                data-type="action" action="toggle-flap-detection"
+                data-action="toggle_flap_detection"
                 data-element="{{helper.get_uri_name(elt)}}"
-                data-value="{{elt.flap_detection_enabled}}"
                 >
               </td>
             </tr>
@@ -319,14 +307,11 @@
             <tr>
               <td><strong>Notifications:</strong></td>
               <td>
-                <input type="checkbox" class="switch"
+                <input type="checkbox" class="js-toggle-parameter"
                 {{'checked' if elt.notifications_enabled else ''}}
                 {{'readonly' if not app.can_action() else ''}}
-                data-size="mini"
-                data-on-color="success" data-off-color="danger"
-                data-type="action" action="toggle-notifications"
+                data-action="toggle_notifications"
                 data-element="{{helper.get_uri_name(elt)}}"
-                data-value="{{elt.notifications_enabled}}"
                 >
               </td>
             </tr>

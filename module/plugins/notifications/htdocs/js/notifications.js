@@ -27,12 +27,9 @@
  * Function called when the page is loaded and on each page refresh ...
  */
 function on_page_refresh() {
-   // Buttons as switches
-   $('input.switch').bootstrapSwitch();
-
    // Toggles Notifications
-   $('input[action="toggle-notifications"]').on('switchChange.bootstrapSwitch', function (event, state) {
-      toggle_all_notifications(state==false ? true : false);
+   $('.js-toggle-notifications').on('change', function (e, data) {
+      toggle_all_notifications($(this).is(':checked'));
    });
 }
 

@@ -32,12 +32,6 @@ var elt_name = '{{elt.get_full_name()}}';
  * Function called when the page is loaded and on each page refresh ...
  */
 function on_page_refresh() {
-   // Buttons tooltips
-   $('button').tooltip();
-
-   // Buttons as switches
-   $('input.switch').bootstrapSwitch();
-
    // Elements popover
 //   $('[data-toggle="popover"]').popover();
 
@@ -125,65 +119,14 @@ function on_page_refresh() {
    });
 
    // Toggles ...
-   $('input[action="toggle-active-checks"]').on('switchChange.bootstrapSwitch', function (e, data) {
+   $('.js-toggle-parameter').on('change', function (e, data) {
       var elt = $(this).data('element');
-      var value = data==false ? true : false;
-      if (eltdetail_logs) console.debug("Toggle active checks for: ", elt, ", currently: ", value);
-
-      // Toggle active checks & host checks
-      toggle_active_checks(elt, value);
-      toggle_host_checks(elt, value);
+      var value = $(this).is(':checked');
+      var func = $(this).data('action')
+      if (eltdetail_logs) console.debug(func, " for: ", elt, ", to make it ", value);
+      
+      window[func](elt, value);
    });
-   $('input[action="toggle-passive-checks"]').on('switchChange.bootstrapSwitch', function (e, data) {
-      var elt = $(this).data('element');
-      var value = data==false ? true : false;
-      if (eltdetail_logs) console.debug("Toggle passive checks for: ", elt, ", currently: ", value);
-
-      // Toggle passive checks
-      toggle_passive_checks(elt, value);
-
-      // If active checks match the passive checks state, toggle active checks too
-      var active_check_value = $('input[action="toggle-active-checks"]').bootstrapSwitch('state');
-      if (value == active_check_value) {
-        $('input[action="toggle-active-checks"]').bootstrapSwitch('toggleState');
-      }
-   });
-   $('input[action="toggle-check-freshness"]').on('switchChange.bootstrapSwitch', function (e, data) {
-      var elt = $(this).data('element');
-      var value = data==false ? true : false;
-      if (eltdetail_logs) console.debug("Toggle freshness checks for: ", elt, ", currently: ", value);
-
-      toggle_freshness_check(elt, value);
-   });
-   $('input[action="toggle-notifications"]').on('switchChange.bootstrapSwitch', function (e, data) {
-      var elt = $(this).data('element');
-      var value = data==false ? true : false;
-      if (eltdetail_logs) console.debug("Toggle notifications for: ", elt, ", currently: ", value);
-
-      toggle_notifications(elt, value);
-   });
-   $('input[action="toggle-event-handler"]').on('switchChange.bootstrapSwitch', function (e, data) {
-      var elt = $(this).data('element');
-      var value = data==false ? true : false;
-      if (eltdetail_logs) console.debug("Toggle event handler for: ", elt, ", currently: ", value);
-
-      toggle_event_handlers(elt, value);
-   });
-   $('input[action="toggle-process-perfdata"]').on('switchChange.bootstrapSwitch', function (e, data) {
-      var elt = $(this).data('element');
-      var value = data==false ? true : false;
-      if (eltdetail_logs) console.debug("Toggle perfdata processing for: ", elt, ", currently: ", value);
-
-      toggle_process_perfdata(elt, value);
-   });
-   $('input[action="toggle-flap-detection"]').on('switchChange.bootstrapSwitch', function (e, data) {
-      var elt = $(this).data('element');
-      var value = data==false ? true : false;
-      if (eltdetail_logs) console.debug("Toggle flap detection for: ", elt, ", currently: ", value);
-
-      toggle_flap_detection(elt, value);
-   });
-
 
    /*
     * History / logs

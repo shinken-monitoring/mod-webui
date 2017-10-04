@@ -15,9 +15,7 @@
         </td>
         <td class="text-right">
             <input type="checkbox" {{'checked' if is_enabled else ''}} {{'' if user.is_admin else 'disabled'}}
-                class="switch" data-size="mini" data-on-color="success" data-off-color="danger"
-                action="toggle-notifications"
-                >
+            class="js-toggle-all-notifications">
         </td>
     </tr>
 </table>

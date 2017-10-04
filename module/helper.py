@@ -221,7 +221,7 @@ class Helper(object):
             res = stars
         return res
 
-    # Give an enabled/disabled state based on glyphicons with optional title and message
+    # Give an enabled/disabled state based on font-awesome with optional title and message
     def get_on_off(self, status=False, title=None, message=''):
         if not title:
             if status:
@@ -230,9 +230,9 @@ class Helper(object):
                 title = 'Disabled'
 
         if status:
-            return '''<i title="%s" class="glyphicon glyphicon-ok font-green">%s</i>''' % (title, message)
+            return '''<i title="%s" class="fa fa-ok font-green">%s</i>''' % (title, message)
         else:
-            return '''<i title="%s" class="glyphicon glyphicon-remove font-red">%s</i>''' % (title, message)
+            return '''<i title="%s" class="fa fa-remove font-red">%s</i>''' % (title, message)
 
     def get_link(self, obj, short=False):
         if obj.__class__.my_type == 'service':

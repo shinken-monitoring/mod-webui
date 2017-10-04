@@ -212,11 +212,11 @@ function toggle_active_checks(name, b){
    if (actions_logs) console.debug("Toggle active checks for: ", name, ", currently: ", b)
 
    if (b) {
-      var url = '/action/DISABLE_' + elt.type + '_CHECK/' + elt.name;
-      launch(url, 'Active checks disabled');
-   } else {
       var url = '/action/ENABLE_' + elt.type + '_CHECK/' + elt.name;
       launch(url, 'Active checks enabled');
+   } else {
+      var url = '/action/DISABLE_' + elt.type + '_CHECK/' + elt.name;
+      launch(url, 'Active checks disabled');
    }
 }
 function toggle_passive_checks(name, b){
@@ -225,11 +225,11 @@ function toggle_passive_checks(name, b){
    if (actions_logs) console.debug("Toggle passive checks for: ", name, ", currently: ", b)
 
    if (b) {
-      var url = '/action/DISABLE_PASSIVE_' + elt.type + '_CHECKS/' + elt.name;
-      launch(url, 'Passive checks disabled');
-   } else {
       var url = '/action/ENABLE_PASSIVE_' + elt.type + '_CHECKS/' + elt.name;
       launch(url, 'Passive checks enabled');
+   } else {
+      var url = '/action/DISABLE_PASSIVE_' + elt.type + '_CHECKS/' + elt.name;
+      launch(url, 'Passive checks disabled');
    }
 }
 function toggle_host_checks(name, b){
@@ -239,11 +239,11 @@ function toggle_host_checks(name, b){
       if (actions_logs) console.debug("Toggle host checks for: ", name, ", currently: ", b);
 
       if (b) {
-          var url = '/action/DISABLE_HOST_SVC_CHECKS/' + elt.name;
-          launch(url, 'Host services checks disabled');
-      } else {
           var url = '/action/ENABLE_HOST_SVC_CHECKS/' + elt.name;
           launch(url, 'Host services checks enabled');
+      } else {
+          var url = '/action/DISABLE_HOST_SVC_CHECKS/' + elt.name;
+          launch(url, 'Host services checks disabled');
       }
    }
 }
@@ -256,11 +256,11 @@ function toggle_all_notifications(b){
    if (actions_logs) console.debug("Toggle all notifications, currently: ", b)
 
    if (b) {
-      var url = '/action/DISABLE_NOTIFICATIONS';
-      launch(url, 'All notifications disabled');
-   } else {
       var url = '/action/ENABLE_NOTIFICATIONS'
       launch(url, 'All notifications enabled');
+   } else {
+      var url = '/action/DISABLE_NOTIFICATIONS';
+      launch(url, 'All notifications disabled');
    }
 }
 
@@ -274,11 +274,11 @@ function toggle_notifications(name, b){
    var elt = get_element(name);
    // Inverse the active check or not for the element
    if (b) { // go disable
-      var url = '/action/DISABLE_'+elt.type+'_NOTIFICATIONS/'+elt.name;
-      launch(url, elt.type+', notifications disabled');
-   } else { // Go enable
       var url = '/action/ENABLE_'+elt.type+'_NOTIFICATIONS/'+elt.name;
       launch(url, elt.type+', notifications enabled');
+   } else { // Go enable
+      var url = '/action/DISABLE_'+elt.type+'_NOTIFICATIONS/'+elt.name;
+      launch(url, elt.type+', notifications disabled');
    }
 }
 
@@ -290,11 +290,11 @@ function toggle_event_handlers(name, b){
    var elt = get_element(name);
    // Inverse the event handler or not for the element
    if (b) { // go disable
-      var url = '/action/DISABLE_'+elt.type+'_EVENT_HANDLER/'+elt.name;
-      launch(url, elt.type+', event handler disabled');
-   } else { // Go enable
       var url = '/action/ENABLE_'+elt.type+'_EVENT_HANDLER/'+elt.name;
       launch(url, elt.type+', event handler enabled');
+   } else { // Go enable
+      var url = '/action/DISABLE_'+elt.type+'_EVENT_HANDLER/'+elt.name;
+      launch(url, elt.type+', event handler disabled');
    }
 }
 
@@ -308,11 +308,11 @@ function toggle_flap_detection(name, b){
    var elt = get_element(name);
    // Inverse the flap detection for the element
    if (b) { //go disable
-      var url = '/action/DISABLE_'+elt.type+'_FLAP_DETECTION/'+elt.name;
-      launch(url, elt.type+', flapping detection disabled');
-   } else {
       var url = '/action/ENABLE_'+elt.type+'_FLAP_DETECTION/'+elt.name;
       launch(url, elt.type+', flapping detection enabled');
+   } else {
+      var url = '/action/DISABLE_'+elt.type+'_FLAP_DETECTION/'+elt.name;
+      launch(url, elt.type+', flapping detection disabled');
    }
 }
 
