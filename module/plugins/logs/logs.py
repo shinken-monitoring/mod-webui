@@ -139,7 +139,9 @@ def get_host_history(name):
     user = app.request.environ['USER']
     name = urllib.unquote(name)
     elt = app.datamgr.get_element(name, user) or app.redirect404()
-    logs = _get_logs(elt=elt)
+    limit = int(app.request.GET.get('limit', 100))
+    offset = int(app.request.GET.get('offset', 0))
+    logs = _get_logs(elt=elt, limit=limit, offset=offset)
     return {'records': logs, 'elt': elt}
 
 

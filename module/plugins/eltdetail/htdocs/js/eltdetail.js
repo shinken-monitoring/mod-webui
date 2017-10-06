@@ -118,21 +118,39 @@ function on_page_refresh() {
       window[func](elt, value);
    });
 
-   /*
-    * History / logs
-    */
-   $('a[data-toggle="tab"][href="#history"]').on('shown.bs.tab', function (e) {
-      // First we get the full name of the object from div data
-      var element = $('#inner_history').data('element');
+   var history_offset = 0;
 
-      // Loading indicator ...
-      $("#inner_history").html('<i class="fa fa-spinner fa-spin fa-3x"></i> Loading history data ...');
-      $("#inner_history").load('/logs/inner/'+encodeURIComponent(element), function(response, status, xhr) {
-         if (status == "error") {
-            $('#inner_history').html('<div class="alert alert-danger">Sorry but there was an error: ' + xhr.status + ' ' + xhr.statusText+'</div>');
-         }
-      });
-   })
+   function more_history() {
+       if ($(window).data('ajaxready') == false) return;
+
+       $(window).data('ajaxready', false);
+
+       $("#loading-spinner").fadeIn(400);
+       var element = $('#inner_history').data('element');
+
+       $.get('/logs/inner/'+encodeURIComponent(element)+'?limit=100&offset='+history_offset, function(data){
+           if (data.indexOf('table') !== -1) {
+               $("#inner_history").append(data);
+               history_offset+=100;
+               $(window).data('ajaxready', true);
+           }
+           $("#loading-spinner").fadeOut(400);
+       });
+   }
+
+   more_history();
+
+   $(window).data('ajaxready', true);
+
+   $(window).scroll(function() {
+       if ($(window).data('ajaxready') == false) return;
+
+       if(($(window).scrollTop() + $(window).height() + 150) > $(document).height()) {
+           disable_refresh();
+
+           more_history();
+       }
+   });
 
 
    /*

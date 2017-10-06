@@ -36,9 +36,9 @@ class LogsMetaModule(MetaModule):
     def is_available(self):
         return self.module is not None
 
-    def get_ui_logs(self, elt, logs_type=None, default=None, range_start=None, range_end=None, limit=200):
+    def get_ui_logs(self, elt, logs_type=None, default=None, range_start=None, range_end=None, limit=200, offset=0):
         if self.is_available():
-            return self.module.get_ui_logs(elt, logs_type, range_start, range_end, limit) or default
+            return self.module.get_ui_logs(elt, logs_type, range_start, range_end, limit, offset) or default
         return default
 
     def get_ui_availability(self, elt, range_start=None, range_end=None, default=None):
@@ -146,7 +146,7 @@ class MongoDBLogs():
         self.conn.close()
 
     # We will get in the mongodb database the logs
-    def get_ui_logs(self, elt, logs_type=None, range_start=None, range_end=None, limit=200):
+    def get_ui_logs(self, elt, logs_type=None, range_start=None, range_end=None, limit=20, offset=0):
         import pymongo
         if not self.db:
             logger.error("[mongo-logs] error Problem during init phase, no database connection")
@@ -167,14 +167,14 @@ class MongoDBLogs():
             query.append({'time': {'$lte': range_end}})
 
         query = {'$and': query} if query else None
-        logger.debug("[mongo-logs] Fetching records from database with query: '%s'", query)
+        logger.debug("[mongo-logs] Fetching %limit records from database with query: '%s' and offset %s", (limit, query, offset))
 
         records = []
         try:
             records = self.db[self.logs_collection].find(query).sort(
-                    [("time", pymongo.DESCENDING)]).limit(limit)
+                    [("time", pymongo.DESCENDING)]).skip(offset).limit(limit)
 
-            logger.debug("[mongo-logs] %d records fetched from database.", len(records))
+            logger.debug("[mongo-logs] %d records fetched from database.", records.count())
         except Exception, exp:
             logger.error("[mongo-logs] Exception when querying database: %s", str(exp))
 
@@ -209,7 +209,7 @@ class MongoDBLogs():
                 if '_id' in log:
                     del log['_id']
                 records.append(log)
-            logger.debug("[mongo-logs] %d records fetched from database.", len(records))
+            logger.debug("[mongo-logs] %d records fetched from database.", records.count())
         except Exception, exp:
             logger.error("[mongo-logs] Exception when querying database: %s", str(exp))
 
