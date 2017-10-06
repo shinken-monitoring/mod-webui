@@ -47,6 +47,11 @@
     <li><code>isnot:s0</code> Matches services and hosts that are SOFT state not OK neither UP (all the not yet confirmed problems)</li>
     <li><code>is:hCRITICAL</code> Matches services that are HARD state CRITICAL.</li>
   </ul>
+  <p>You can also limit to HARD or SOFT states.</p>
+  <ul>
+    <li><code>is:HARD</code> and <code>isnot:SOFT</code> Maches hosts and services in HARD states.</li>
+    <li><code>is:SOFT</code> and <code>isnot:HARD</code> Maches hosts and services in SOFT states.</li>
+  </ul>
 
   <h4>Search by the business impact of an element</h4>
   <p>The <code>bp</code> qualifier finds elements by it's business priority. For example:</p>

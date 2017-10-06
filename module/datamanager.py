@@ -560,8 +560,15 @@ class WebUIDataManager(DataManager):
                     items = [i for i in items if i.__class__.my_type == 'host' or (i.in_scheduled_downtime or i.host.in_scheduled_downtime)]
                 elif s.lower() == 'impact':
                     items = [i for i in items if i.is_impact]
+                elif s.lower() == 'flapping':
+                    items = [i for i in items if i.is_flapping]
+                elif s.lower() == 'soft':
+                    items = [i for i in items if i.state_type != 'HARD']
+                elif s.lower() == 'hard':
+                    items = [i for i in items if i.state_type == 'HARD']
                 else:
                     # Manage SOFT & HARD state
+                    # :COMMENT:maethor:171006: Kept for retrocompatility
                     if s.startswith('s'):
                         s = s[1:]
                         if len(s) == 1:
@@ -589,6 +596,12 @@ class WebUIDataManager(DataManager):
                     items = [i for i in items if i.__class__.my_type == 'host' or (not i.in_scheduled_downtime and not i.host.in_scheduled_downtime)]
                 elif s.lower() == 'impact':
                     items = [i for i in items if not i.is_impact]
+                elif s.lower() == 'flapping':
+                    items = [i for i in items if not i.is_flapping]
+                elif s.lower() == 'soft':
+                    items = [i for i in items if not i.state_type != 'HARD']
+                elif s.lower() == 'hard':
+                    items = [i for i in items if not i.state_type == 'HARD']
                 else:
                     # Manage soft & hard state
                     if s.startswith('s'):
