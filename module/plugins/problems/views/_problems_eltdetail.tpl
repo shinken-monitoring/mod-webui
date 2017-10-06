@@ -1,5 +1,5 @@
 <div class="eltdetail-content">
-  <div class="text-right" style="margin-right: 20px;">
+  <div class="eltdetail-action-buttons">
   %if app.can_action():
     <button class="btn btn-lg btn-ico btn-action js-recheck"
       title="Launch the check command"
@@ -56,12 +56,12 @@
         <i class="fa fa-ellipsis-v"></i>
       </button>
       <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdown-others-{{ helper.get_html_id(pb) }}" style="margin-top: 15px;">
-        <li><a href="{{!helper.get_link_dest(pb)}}">Details</a></li>
+        <li><a href="{{!helper.get_link_dest(pb)}}"><i class="fa fa-search"></i> Details</a></li>
         %if app.graphs_module.is_available() and pb.perf_data:
-        <li><a href="{{!helper.get_link_dest(pb)}}#graphs">Graphs</a></li>
+        <li><a href="{{!helper.get_link_dest(pb)}}#graphs"><i class="fa fa-line-chart"></i> Graphs</a></li>
         %end
         %if app.logs_module.is_available():
-        <li><a href="{{!helper.get_link_dest(pb)}}#history">History</a></li>
+        <li><a href="{{!helper.get_link_dest(pb)}}#history"><i class="fa fa-th-list"></i>&nbsp;&nbsp;History</a></li>
         %end
         %if app.helpdesk_module.is_available():
         <li><a href="{{!helper.get_link_dest(pb)}}#helpdesk">Helpdesk</a></li>

@@ -113,14 +113,14 @@ Next check <strong>{{helper.print_duration(pb.next_chk)}}</strong>
                %end
                <td class="hidden-sm hidden-xs hidden-md">
                   %if pb.host_name != previous_pb_host_name:
-                     <a href="/host/{{pb.host_name}}" title="{{!aka}}">
+                     <a href="/all?search=host:{{ pb.host_name }}" title="{{!aka}}">
                        {{ pb_host.get_name() if pb_host.display_name == '' else pb_host.display_name }}
                      </a>
                   %end
                </td>
                <td class="hidden-sm hidden-xs">
                  <span class="hidden-lg">
-                   <a href="/host/{{pb.host_name}}" title="{{!aka}}">
+                   <a href="/all?search=host:{{ pb.host_name }}" title="{{!aka}}">
                      {{ pb_host.get_name() if pb_host.display_name == '' else pb_host.display_name }}
                    </a>
                    %if pb.__class__.my_type == 'service':
@@ -159,7 +159,7 @@ Next check <strong>{{helper.print_duration(pb.next_chk)}}</strong>
                   <div class="ellipsis output">
                   <!--<div class="ellipsis output" style='font-family: "Liberation Mono", "Lucida Console", Courier, monospace; color=#7f7f7f; font-size:0.917em;'>-->
                     <div class="hidden-md hidden-lg">
-                      <a href="/host/{{pb.host_name}}" title="{{!aka}}">
+                      <a href="/all?search=host:{{ pb.host_name }}" title="{{!aka}}">
                         {{ pb_host.get_name() if pb_host.display_name == '' else pb_host.display_name }}
                       </a>
                       %if pb.__class__.my_type == 'service':

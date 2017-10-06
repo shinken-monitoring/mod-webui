@@ -11,6 +11,10 @@
     padding-right: 0px !important;
 }
 
+.panel > table > tbody > tr:not(.hiddenRow) {
+    cursor: pointer;
+}
+
 .panel > table > tbody > tr:hover > td:first-child,
 .panel > table > tbody > tr.selected > td:first-child {
     border-left: 1px solid #4D95BE;
@@ -123,6 +127,13 @@ tr.selected .item-checkbox,
     padding: 20px;
 }
 
+.eltdetail-action-buttons {
+    text-align: right;
+}
+
+@media(max-width:768px) {
+    text-align: center;
+}
 
 /*
  * Problems table, responsive table columns
