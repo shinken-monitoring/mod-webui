@@ -34,6 +34,12 @@
 html, body {
     background: #f8f8f8;
 }
+
+body {
+    padding-top: 70px;
+    padding-bottom: 70px;
+}
+
 .table-invisible > thead > tr > th,
 .table-invisible > tbody > tr > th,
 .table-invisible > tfoot > tr > th,
@@ -181,10 +187,6 @@ td .ellipsis > .long-output {
     }
 }
 
-#page-content {
-    padding-bottom: 30px;
-}
-
 /*@media (max-width: 768px) {*/
     /*#sidebar-menu > li  {*/
         /*float:left;*/
@@ -259,7 +261,7 @@ td .ellipsis > .long-output {
 }
 
 .navbar-inverse-2 {
-    background-color: #D9EDF7 !important;
+    background-color: #6398d4 !important;
 }
 
 .navbar-inverse .navbar-top-links>li>a {
@@ -392,8 +394,12 @@ td .ellipsis > .long-output {
 .navbar-inverse-2 .btn-action,
 .btn-action {
     background: none;
-    color: #555;
+    /*color: #555;*/
     padding: 6px;
+}
+
+.navbar-inverse-2 .navbar-text {
+    color: white;
 }
 
 .navbar-inverse-2 .btn-action:active,

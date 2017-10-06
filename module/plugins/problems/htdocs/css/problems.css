@@ -11,6 +11,12 @@
     padding-right: 0px !important;
 }
 
+.panel > table > tbody > tr:hover > td:first-child,
+.panel > table > tbody > tr.selected > td:first-child {
+    border-left: 1px solid #4D95BE;
+    padding-left: 19px !important;
+}
+
 .panel > table > tbody > tr:not(.collapsed) > td:first-child {
     border-left: 4px solid #4D95BE;
     /*margin-left: 2px;*/
@@ -86,6 +92,7 @@ td .progress {
 
 tr.selected {
     background-color: #D9EDF7;
+    border-right: 1px solid red;
 }
 
 tr.selected .item-icon,

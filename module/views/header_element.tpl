@@ -9,7 +9,7 @@
 
 
 <!-- Header Navbar -->
-<nav class="header navbar navbar-static-top navbar-inverse" role="navigation">
+<nav class="header navbar navbar-static-top navbar-inverse navbar-fixed-top" role="navigation">
    <div class="navbar-header">
       <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
          <span class="sr-only">Toggle navigation</span>
