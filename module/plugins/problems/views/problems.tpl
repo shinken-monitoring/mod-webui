@@ -74,7 +74,7 @@
             %else:
             %pb_host = pb
             %end
-            <tr data-toggle="collapse" data-target="#details-{{helper.get_html_id(pb)}}" data-item="{{pb.get_full_name()}}" class="accordion-toggle js-select-elt collapsed">
+            <tr data-toggle="collapse" data-target="#details-{{helper.get_html_id(pb)}}" data-item="{{helper.get_uri_name(pb)}}" class="accordion-toggle js-select-elt collapsed">
              <td title="{{pb.get_name()}} - {{pb.state}}
 Since {{helper.print_date(pb.last_state_change, format="%d %b %Y %H:%M:%S")}}
 
@@ -88,7 +88,7 @@ Next check <strong>{{helper.print_duration(pb.next_chk)}}</strong>
                  data-container="body"
                  class="item-state font-{{pb.state.lower()}} text-center">
                    <div style="display: table-cell; vertical-align: middle; padding-right: 10px;">
-                     <input type="checkbox" class="input-sm item-checkbox" value="" id="selector-{{helper.get_html_id(pb)}}" data-type="problem" data-business-impact="{{business_impact}}" data-item="{{pb.get_full_name()}}">
+                     <input type="checkbox" class="input-sm item-checkbox" value="" id="selector-{{helper.get_html_id(pb)}}" data-type="problem" data-business-impact="{{business_impact}}" data-item="{{helper.get_uri_name(pb)}}">
                      <div class="item-icon">
                        {{!helper.get_fa_icon_state(pb, useTitle=False)}}
                      </div>
