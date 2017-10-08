@@ -416,6 +416,78 @@ function delete_acknowledge(name) {
 
 var selected_elements = [];
 
+function display_nav_actions() {
+    $('#nav-filters').addClass('hidden');
+    $('#nav-actions').removeClass('hidden');
+    $('.navbar-inverse').addClass('navbar-inverse-2');
+}
+
+function hide_nav_actions() {
+    $('#nav-actions').addClass('hidden');
+    $('#nav-filters').removeClass('hidden');
+    $('.navbar-inverse').removeClass('navbar-inverse-2');
+}
+
+function add_remove_elements(name){
+   if (selected_elements.indexOf(name) != -1) {
+      remove_element(name);
+   } else {
+      add_element(name);
+   }
+}
+
+// Adding an element in the selected elements list
+function add_element(name){
+   // Force to check the checkbox
+   $('td input[type=checkbox][data-item="'+name+'"]').prop("checked", true);
+
+   $('td input[type=checkbox][data-item="'+name+'"]').closest('tr').addClass('selected');
+   
+   if (problems_logs) console.log('Select element: ', name)
+
+   selected_elements.push(name);
+
+   $('#js-nb-selected-elts').html(selected_elements.length);
+
+   if (selected_elements.length > 0) {
+      display_nav_actions();
+      
+      // Stop page refresh
+      disable_refresh();
+   }
+}
+
+// Removing an element from the selected elements list
+function remove_element(name){
+   // Force to uncheck the checkbox
+   $('td input[type=checkbox][data-item="'+name+'"]').prop("checked", false);
+
+   $('td input[type=checkbox][data-item="'+name+'"]').closest('tr').removeClass('selected');
+   
+   if (problems_logs) console.log('Unselect element: ', name)
+   selected_elements.splice($.inArray(name, selected_elements),1);
+
+   $('#js-nb-selected-elts').html(selected_elements.length);
+
+   if (selected_elements.length == 0){
+      hide_nav_actions();
+
+      // Restart page refresh timer
+      enable_refresh();
+   }
+}
+
+// Flush selected elements list
+function flush_selected_elements(){
+   /* We must copy the list so we can parse it in a clean way
+   without fearing some bugs */
+   var cpy = $.extend({}, selected_elements);
+   $.each(cpy, function(idx, name) {
+      remove_element(name)
+   });
+}
+
+
 function get_action_element(btn) {
     var elt = btn.data('element');
     if (! elt) {

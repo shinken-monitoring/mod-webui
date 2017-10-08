@@ -1,4 +1,4 @@
-<li>
+<li class="hidden-xs">
   <h4 class="navbar-text">
     <span id="js-nb-selected-elts"></span> selected elements
   </h4>

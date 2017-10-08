@@ -319,6 +319,44 @@ td .ellipsis > .long-output {
     background-color: transparent;
 }
 
+#nav-actions {
+  float: left;
+  margin: 0;
+}
+#nav-actions > li {
+  float: left;
+}
+#nav-actions > li > a {
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+
+@media (max-width: 767px) {
+    #nav-actions .open .dropdown-menu {
+        position: absolute;
+        background-color: white;
+        left: 0px;
+        top: 100%;
+        border: 1px solid rgba(0,0,0,.15);
+        border-radius: 4px;
+        -webkit-box-shadow: 0 6px 12px rgba(0,0,0,.175);
+        box-shadow: 0 6px 12px rgba(0,0,0,.175);
+    }
+
+    #nav-actions .open .dropdown-menu .divider {
+        background-color: #e5e5e5;
+    }
+
+    #nav-actions .open .dropdown-menu > li > a,
+    #nav-actions .open .dropdown-menu .dropdown-header {
+        padding: 3px 20px;
+    }
+
+    #nav-actions .open .dropdown-menu > li > a {
+        color: #333;
+    }
+}
+
 /*:TODO:maethor:170924: Make it work*/
 /*.navbar-nav #search-group .hidden-addons a {*/
     /*display: none;*/

@@ -200,8 +200,6 @@ Next check <strong>{{helper.print_duration(pb.next_chk)}}</strong>
    %end
  </div>
 
- %include("_problems_action-menu.tpl")
-
- <ul class='nav navbar-nav hidden-xs hidden' id='nav-actions'>
+ <ul class='nav navbar-nav hidden' id='nav-actions'>
    %include('_problems_actions-navbar.tpl')
  </ul>
