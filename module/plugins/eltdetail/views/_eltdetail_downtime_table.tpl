@@ -3,7 +3,7 @@
 <table class="table table-hover comment-table">
   %for d in sorted(downtimes, key=lambda x: x.entry_time, reverse=True):
   <tr>
-    <td width="150px" class="text-center" style="vertical-align: middle; border-left: 5px solid {{!helper.get_html_color(d.ref.state)}}" title="This element is currently {{ d.ref.state }}">
+    <td width="150px" class="text-center" style="vertical-align: middle; border-left: 5px solid {{!helper.get_html_color(d.ref.state)}} !important;" title="This element is currently {{ d.ref.state }}">
       %if d.is_in_effect:
       EXPIRES<br>
       {{!helper.print_duration_and_date(d.end_time) }}

@@ -6,7 +6,7 @@
     <li> <a href="#" class="js-try-to-fix-elts" title="Try to fix the selected problems" data-placement="right">
         <i class="fa fa-magic"></i> <span class="hidden-xs">Try to fix</span>
     </a> </li>
-    <li> <a href="#" class="js-recheck-elts" title="Launch the check command for selected problems" data-placement="right">
+    <li> <a href="#" class="js-recheck-elts" title="Recheck the selected elements" data-placement="right">
         <i class="fa fa-refresh"></i> <span class="hidden-xs">Recheck</span>
     </a> </li>
     <li> <a href="#" class="js-submit-ok-elts" title="Set the selected problems as OK/UP" data-placement="right">
@@ -15,7 +15,7 @@
     <li> <a href="#" class="js-add-acknowledge-elts" title="Acknowledge the selected problems" data-placement="right">
         <i class="fa fa-check"></i> <span class="hidden-xs">Acknowledge</span>
     </a> </li>
-    <li> <a href="#" class="js-schedule-downtime-elts" title="Schedule a one day downtime for the selected problems" data-placement="right">
+    <li> <a href="#" class="js-schedule-downtime-elts" title="Schedule a one day downtime for the selected elements" data-placement="right">
         <i class="fa fa-ambulance"></i> <span class="hidden-xs">Schedule a downtime</span>
     </a> </li>
     %if s and s['nb_ack']:
@@ -24,7 +24,7 @@
     </a> </li>
     %end
     %if s and s['nb_downtime']:
-    <li> <a href="#" class="js-delete-all-downtimes-elts" class="text-danger" title="Delete all downtimes for the selected problems" data-placement="right">
+    <li> <a href="#" class="js-delete-all-downtimes-elts" class="text-danger" title="Delete all downtimes for the selected elements" data-placement="right">
         <i class="fa fa-ambulance"></i> <span class="hidden-xs">Delete all downtimes</span>
     </a> </li>
     %end

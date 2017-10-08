@@ -140,7 +140,7 @@
                   </button>
                   %disabled='' if pb.active_checks_enabled else 'disabled'
                   <button class="btn btn-default btn-xs {{disabled}} js-recheck"
-                        title="Launch the check command"
+                        title="Recheck"
                         data-element="{{helper.get_uri_name(pb)}}" 
                         >
                      <i class="fa fa-refresh"></i><span class="hidden-sm hidden-xs"> Refresh</span>
@@ -161,7 +161,7 @@
                   </button>
 
                   <button class="btn btn-default btn-xs js-schedule-downtime"
-                        title="Schedule a downtime for this problem"
+                        title="Schedule a downtime for this element"
                         data-element="{{helper.get_uri_name(pb)}}" 
                         >
                    <i class="fa fa-ambulance"></i><span class="hidden-sm hidden-xs"> Downtime</span>

@@ -425,7 +425,15 @@ $("body").on("click", ".js-delete-comment", function () {
 
 $("body").on("click", ".js-schedule-downtime", function () {
     var elt = $(this).data('element');
-    display_modal("/forms/downtime/add/"+elt);
+    var duration = $(this).data('duration');
+    if (duration) {
+        var downtime_start = moment().seconds(0).format('X');
+        var downtime_stop = moment().seconds(0).add('minutes', duration).format('X');
+        var comment = $(this).text() + " downtime scheduled from WebUI by " + user;
+        do_schedule_downtime(elt, downtime_start, downtime_stop, user, comment, shinken_downtime_fixed, shinken_downtime_trigger, shinken_downtime_duration);
+    } else {
+        display_modal("/forms/downtime/add/"+elt);
+    }
 });
 
 $("body").on("click", ".js-delete-downtime", function () {

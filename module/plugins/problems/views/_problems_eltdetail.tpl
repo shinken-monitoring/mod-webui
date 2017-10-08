@@ -2,7 +2,7 @@
   <div class="eltdetail-action-buttons">
   %if app.can_action():
     <button class="btn btn-lg btn-ico btn-action js-recheck"
-      title="Launch the check command"
+      title="Recheck"
       data-element="{{helper.get_uri_name(pb)}}"
       >
       <i class="fa fa-refresh"></i>
@@ -17,7 +17,7 @@
     %end
     <div class="dropdown" style="display: inline;">
       <button class="btn btn-lg btn-ico btn-action dropdown-toggle" type="button" id="dropdown-downtime-{{ helper.get_html_id(pb) }}" data-toggle="dropdown"
-        title="Schedule a downtime for this problem"
+        title="Schedule a downtime for this element"
         data-element="{{helper.get_uri_name(pb)}}"
         >
         <i class="fa fa-ambulance"></i>
@@ -25,13 +25,13 @@
       <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdown-downtime-{{ helper.get_html_id(pb) }}" style="margin-top: 15px;">
         <li class="dropdown-header">Set a downtime for…</li>
         <li role="separator" class="divider"></li>
-        <li class="disabled"><a href="#" data-element="{{helper.get_uri_name(pb)}}">1 hour</a></li>
-        <li class="disabled"><a href="#" data-element="{{helper.get_uri_name(pb)}}">3 hours</a></li>
-        <li class="disabled"><a href="#" data-element="{{helper.get_uri_name(pb)}}">12 hours</a></li>
-        <li class="disabled"><a href="#" data-element="{{helper.get_uri_name(pb)}}">24 hours</a></li>
-        <li class="disabled"><a href="#" data-element="{{helper.get_uri_name(pb)}}">3 days</a></li>
-        <li class="disabled"><a href="#" data-element="{{helper.get_uri_name(pb)}}">7 days</a></li>
-        <li class="disabled"><a href="#" data-element="{{helper.get_uri_name(pb)}}">30 days</a></li>
+        <li><a href="#" class="js-schedule-downtime" data-element="{{helper.get_uri_name(pb)}}" data-duration="60">1 hour</a></li>
+        <li><a href="#" class="js-schedule-downtime" data-element="{{helper.get_uri_name(pb)}}" data-duration="180">3 hours</a></li>
+        <li><a href="#" class="js-schedule-downtime" data-element="{{helper.get_uri_name(pb)}}" data-duration="360">12 hours</a></li>
+        <li><a href="#" class="js-schedule-downtime" data-element="{{helper.get_uri_name(pb)}}" data-duration="720">24 hours</a></li>
+        <li><a href="#" class="js-schedule-downtime" data-element="{{helper.get_uri_name(pb)}}" data-duration="2160">3 days</a></li>
+        <li><a href="#" class="js-schedule-downtime" data-element="{{helper.get_uri_name(pb)}}" data-duration="5040">7 days</a></li>
+        <li><a href="#" class="js-schedule-downtime" data-element="{{helper.get_uri_name(pb)}}" data-duration="21600">30 days</a></li>
         <li role="separator" class="divider"></li>
         <li><a href="#" class="js-schedule-downtime" data-element="{{helper.get_uri_name(pb)}}">Custom timeperiod</a></li>
       </ul>

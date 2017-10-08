@@ -4,20 +4,27 @@ var eltdetail_logs=false;
 
 // Schedule a downtime ...
 $('body').on("click", '.js-schedule-downtime-elts', function () {
-    if (selected_elements.length == 1) {
-        var elt = selected_elements[0];
-        if (eltdetail_logs) console.debug("Schedule a downtime for: ", elt);
-        display_modal("/forms/downtime/add/"+elt);
+    var duration = $(this).data('duration');
+    if (duration) {
+        var downtime_start = moment().seconds(0).format('X');
+        var downtime_stop = moment().seconds(0).add('minutes', duration).format('X');
+        var comment = $(this).text() + " downtime scheduled from WebUI by " + user;
+        if (selected_elements.length == 1) {
+            var elt = selected_elements[0];
+            do_schedule_downtime(elt, downtime_start, downtime_stop, user, comment, shinken_downtime_fixed, shinken_downtime_trigger, shinken_downtime_duration);
+        } else {
+            $.each(selected_elements, function(idx, name){
+                do_schedule_downtime(name, downtime_start, downtime_stop, user, comment, shinken_downtime_fixed, shinken_downtime_trigger, shinken_downtime_duration);
+            });
+        }
     } else {
-        // Default downtime scheduling...
-        // Initial start/stop for downtime, do not consider seconds ...
-        var downtime_start = moment().seconds(0);
-        var downtime_stop = moment().seconds(0).add('day', 1);
-
-        $.each(selected_elements, function(idx, name){
-            if (eltdetail_logs) console.debug("Schedule a downtime for: ", name);
-            do_schedule_downtime(name, downtime_start.format('X'), downtime_stop.format('X'), user, 'One day downtime scheduled by '+user, shinken_downtime_fixed, shinken_downtime_trigger, shinken_downtime_duration);
-        });
+        if (selected_elements.length == 1) {
+            var elt = selected_elements[0];
+            display_modal("/forms/downtime/add/"+elt);
+        } else {
+            // :TODO:maethor:171008: 
+            alert("Sadly, you cannot define a custom timeperiod on multiple elements at once. This is not implemented yet.");
+        }
     }
     flush_selected_elements();
 });

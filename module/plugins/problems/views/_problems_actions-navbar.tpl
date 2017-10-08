@@ -21,13 +21,13 @@
     </button>
     <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdown-downtime-elts" style="margin-top: 15px;">
       <li class="dropdown-header">Set a downtime for…</li>
-      <li class="disabled"><a href="#">1 hour</a></li>
-      <li class="disabled"><a href="#">3 hours</a></li>
-      <li class="disabled"><a href="#">12 hours</a></li>
-      <li class="disabled"><a href="#">24 hours</a></li>
-      <li class="disabled"><a href="#">3 days</a></li>
-      <li class="disabled"><a href="#">7 days</a></li>
-      <li class="disabled"><a href="#">30 days</a></li>
+      <li><a href="#" class="js-schedule-downtime-elts" data-duration="60">1 hour</a></li>
+      <li><a href="#" class="js-schedule-downtime-elts" data-duration="180">3 hours</a></li>
+      <li><a href="#" class="js-schedule-downtime-elts" data-duration="720">12 hours</a></li>
+      <li><a href="#" class="js-schedule-downtime-elts" data-duration="1440">24 hours</a></li>
+      <li><a href="#" class="js-schedule-downtime-elts" data-duration="2160">3 days</a></li>
+      <li><a href="#" class="js-schedule-downtime-elts" data-duration="5040">7 days</a></li>
+      <li><a href="#" class="js-schedule-downtime-elts" data-duration="21600">30 days</a></li>
       <li class="divider"></li>
       <li><a href="#" class="js-schedule-downtime-elts">Custom timeperiod</a></li>
     </ul>
