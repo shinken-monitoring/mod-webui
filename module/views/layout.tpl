@@ -181,9 +181,17 @@
        Shinken globals ...
       -->
       <script>
-      %user = app.get_user()
       var dashboard_currently = false;
+
+      // Configuration for shinken-actions.js
+      %user = app.get_user()
       var user='{{ user.alias if hasattr(user, "alias") and user.alias != "none" else user.get_name() }}';
+      var shinken_downtime_fixed='{{ app.shinken_downtime_fixed}}';
+      var shinken_downtime_trigger='{{ app.shinken_downtime_trigger }}';
+      var shinken_downtime_duration='{{ app.shinken_downtime_duration }}';
+      var default_ack_persistent='{{ app.default_ack_persistent }}';
+      var default_ack_notify='{{ app.default_ack_notify }}';
+      var default_ack_sticky='{{ app.default_ack_sticky }}';
       </script>
 
       <!--

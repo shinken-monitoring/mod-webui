@@ -77,7 +77,7 @@ function remove_element(name){
    if (problems_logs) console.log('Unselect element: ', name)
    selected_elements.splice($.inArray(name, selected_elements),1);
 
-   $('js-nb-selected-elts').html(selected_elements.length);
+   $('#js-nb-selected-elts').html(selected_elements.length);
 
    if (selected_elements.length == 0){
       $('#action-menu').hide();
@@ -98,6 +98,11 @@ function flush_selected_elements(){
    });
 }
 
+
+$('body').on('#display-impacts', 'click', function() {
+    save_user_preference('display_impacts', $('#display-impacts').is(':checked'));
+    location.reload();
+});
 
 // Text ellipsis in tables ...
 $('body').on('show.bs.collapse', '.collapse', function () {
@@ -249,5 +254,10 @@ function on_page_refresh(){
    });
 }
 
+$('a[href="/problems"]').addClass('active');
+
+$("#nav-actions").insertAfter("#nav-filters");
+
 // First page loading ...
 on_page_refresh();
+

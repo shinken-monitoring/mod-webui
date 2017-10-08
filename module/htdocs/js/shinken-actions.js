@@ -411,7 +411,22 @@ function delete_acknowledge(name) {
    launch(url, elt.type+': '+name+', acknowledge deleted');
 }
 
+
 // Join the method to some html classes
+
+var selected_elements = [];
+
+function get_action_element(btn) {
+    var elt = btn.data('element');
+    if (! elt) {
+        if (selected_elements.length == 1) {
+            elt = selected_elements[0];
+        }
+    }
+
+    return elt;
+}
+
 $("body").on("click", ".js-delete-comment", function () {
     var elt = $(this).data('element');
     var comment = $(this).data('comment');
@@ -424,15 +439,28 @@ $("body").on("click", ".js-delete-comment", function () {
 });
 
 $("body").on("click", ".js-schedule-downtime", function () {
-    var elt = $(this).data('element');
+    var elt = get_action_element($(this));
+
     var duration = $(this).data('duration');
     if (duration) {
         var downtime_start = moment().seconds(0).format('X');
         var downtime_stop = moment().seconds(0).add('minutes', duration).format('X');
         var comment = $(this).text() + " downtime scheduled from WebUI by " + user;
-        do_schedule_downtime(elt, downtime_start, downtime_stop, user, comment, shinken_downtime_fixed, shinken_downtime_trigger, shinken_downtime_duration);
+        if (elt) {
+            do_schedule_downtime(elt, downtime_start, downtime_stop, user, comment, shinken_downtime_fixed, shinken_downtime_trigger, shinken_downtime_duration);
+        } else {
+            $.each(selected_elements, function(idx, name){
+                do_schedule_downtime(name, downtime_start, downtime_stop, user, comment, shinken_downtime_fixed, shinken_downtime_trigger, shinken_downtime_duration);
+            });
+            flush_selected_elements();
+        }
     } else {
-        display_modal("/forms/downtime/add/"+elt);
+        if (elt) {
+            display_modal("/forms/downtime/add/"+elt);
+        } else {
+            // :TODO:maethor:171008: 
+            alert("Sadly, you cannot define a custom timeperiod on multiple elements at once. This is not implemented yet.");
+        }
     }
 });
 
@@ -450,33 +478,81 @@ $("body").on("click", ".js-delete-downtime", function () {
 });
 
 $("body").on("click", ".js-delete-all-downtimes", function () {
-    var elt = $(this).data('element');
-    display_modal("/forms/downtime/delete_all/"+elt);
+    var elt = get_action_element($(this));
+
+    if (elt) {
+        display_modal("/forms/downtime/delete_all/"+elt);
+    } else {
+        $.each(selected_elements, function(idx, name){
+            delete_all_downtimes(name);
+        });
+        flush_selected_elements();
+    }
 });
 
 $("body").on("click", ".js-add-acknowledge", function () {
-    var elt = $(this).data('element');
-    display_modal("/forms/acknowledge/add/"+elt);
+    var elt = get_action_element($(this));
+
+    if (elt) {
+        display_modal("/forms/acknowledge/add/"+elt);
+    } else {
+        $.each(selected_elements, function(idx, name){
+            do_acknowledge(name, 'Acknowledged by '+user, user, default_ack_sticky, default_ack_notify, default_ack_persistent);
+        });
+        flush_selected_elements();
+    }
 });
 
 $("body").on("click", ".js-remove-acknowledge", function () {
-    var elt = $(this).data('element');
-    display_modal("/forms/acknowledge/remove/"+elt);
+    var elt = get_action_element($(this));
+
+    if (elt) {
+        display_modal("/forms/acknowledge/remove/"+elt);
+    } else {
+        $.each(selected_elements, function(idx, name){
+            delete_acknowledge(name);
+        });
+        flush_selected_elements();
+    }
 });
 
 $("body").on("click", ".js-recheck", function () {
-    var elt = $(this).data('element');
-    recheck_now(elt);
+    var elt = get_action_element($(this));
+
+    if (elt) {
+        recheck_now(elt);
+    } else {
+        $.each(selected_elements, function(idx, name){
+            recheck_now(name);
+        });
+        flush_selected_elements();
+    }
 });
 
 $("body").on("click", ".js-submit-ok", function () {
-    var elt = $(this).data('element');
-    display_modal("/forms/submit_check/"+elt);
+    var elt = get_action_element($(this));
+
+    if (elt) {
+        display_modal("/forms/submit_check/"+elt);
+    } else { 
+        $.each(selected_elements, function(idx, name){
+            submit_check(name, '0', 'Forced OK/UP by '+user);
+        });
+        flush_selected_elements();
+    }
 });
 
 $("body").on("click", ".js-try-to-fix", function () {
-    var elt = $(this).data('element');
-    try_to_fix(elt);
+    var elt = get_action_element($(this));
+
+    if (elt) {
+        try_to_fix(elt);
+    } else {
+        $.each(selected_elements, function(idx, name){
+            try_to_fix(name);
+        });
+        flush_selected_elements();
+    }
 });
 
 $("body").on("click", ".js-create-ticket", function () {
