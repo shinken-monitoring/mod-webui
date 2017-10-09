@@ -135,7 +135,12 @@ function bootstrap_accordion_bookmark (selector) {
         document.location.hash = this.id;
     }
 
+    var reset_location = function (event) {
+        document.location.hash = "";
+    }
+
     $('body').on('show.bs.collapse', '.collapse', update_location);
+    $('body').on('hide.bs.collapse', '.collapse', reset_location);
 }
 
 
