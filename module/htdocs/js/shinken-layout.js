@@ -147,7 +147,7 @@ $(document).ready(function(){
 
 
   // Sound
-  if ($("#alert-audio").length) {
+  if ($(".js-toggle-sound-alert").length) {
     // Set alerting sound icon ...
     if (! sessionStorage.getItem("sound_play")) {
       // Default is to play ...
