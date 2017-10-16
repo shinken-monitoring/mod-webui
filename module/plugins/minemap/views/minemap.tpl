@@ -114,7 +114,7 @@
                %h = app.datamgr.get_host(r, user)
                %if h:
                <tr>
-                  <td title="{{h.get_name()}} - {{h.state}} - {{helper.print_duration(h.last_chk)}} - {{h.output}}">
+                  <td title="{{h.get_name()}} - {{h.state}} - {{helper.print_duration(h.last_chk)}} - {{h.output}}" data-container="body">
                      <a href="/host/{{h.get_name()}}">
                         {{!helper.get_fa_icon_state(h, useTitle=False)}}
                         {{h.get_name() if h.display_name == '' else h.display_name}}
@@ -123,7 +123,7 @@
                   %for c in columns:
                      %s = app.datamgr.get_service(r, c, user)
                      %if s:
-                        <td title="{{s.get_name()}} - {{s.state}} - {{helper.print_duration(s.last_chk)}} - {{s.output}}">
+                        <td title="{{s.get_name()}} - {{s.state}} - {{helper.print_duration(s.last_chk)}} - {{s.output}}" data-container="body">
                            <a href="/service/{{h.get_name()}}/{{s.get_name()}}">
                               {{!helper.get_fa_icon_state(s, useTitle=False)}}
                            </a>
