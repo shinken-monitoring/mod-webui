@@ -278,6 +278,10 @@ td .ellipsis > .long-output {
     padding: 5px 8px;
     line-height: 1.33;
 }
+/** remove padding for button with .fa-stack as child */
+.navbar-nav > li > .btn-ico.js-toggle-sound-alert {
+    padding: 0;
+}
 
 .navbar-nav > li > .btn-user {
     border-radius: 17px;
