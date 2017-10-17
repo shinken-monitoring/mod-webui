@@ -524,7 +524,6 @@ $("body").on("click", ".js-schedule-downtime", function () {
             $.each(selected_elements, function(idx, name){
                 do_schedule_downtime(name, downtime_start, downtime_stop, user, comment, shinken_downtime_fixed, shinken_downtime_trigger, shinken_downtime_duration);
             });
-            flush_selected_elements();
         }
     } else {
         if (elt) {
@@ -534,6 +533,8 @@ $("body").on("click", ".js-schedule-downtime", function () {
             alert("Sadly, you cannot define a custom timeperiod on multiple elements at once. This is not implemented yet.");
         }
     }
+
+    flush_selected_elements();
 });
 
 $("body").on("click", ".js-delete-downtime", function () {
@@ -558,8 +559,9 @@ $("body").on("click", ".js-delete-all-downtimes", function () {
         $.each(selected_elements, function(idx, name){
             delete_all_downtimes(name);
         });
-        flush_selected_elements();
     }
+
+    flush_selected_elements();
 });
 
 $("body").on("click", ".js-add-acknowledge", function () {
@@ -571,8 +573,9 @@ $("body").on("click", ".js-add-acknowledge", function () {
         $.each(selected_elements, function(idx, name){
             do_acknowledge(name, 'Acknowledged by '+user, user, default_ack_sticky, default_ack_notify, default_ack_persistent);
         });
-        flush_selected_elements();
     }
+
+    flush_selected_elements();
 });
 
 $("body").on("click", ".js-remove-acknowledge", function () {
@@ -584,8 +587,9 @@ $("body").on("click", ".js-remove-acknowledge", function () {
         $.each(selected_elements, function(idx, name){
             delete_acknowledge(name);
         });
-        flush_selected_elements();
     }
+
+    flush_selected_elements();
 });
 
 $("body").on("click", ".js-recheck", function () {
@@ -597,8 +601,9 @@ $("body").on("click", ".js-recheck", function () {
         $.each(selected_elements, function(idx, name){
             recheck_now(name);
         });
-        flush_selected_elements();
     }
+
+    flush_selected_elements();
 });
 
 $("body").on("click", ".js-submit-ok", function () {
@@ -610,8 +615,9 @@ $("body").on("click", ".js-submit-ok", function () {
         $.each(selected_elements, function(idx, name){
             submit_check(name, '0', 'Forced OK/UP by '+user);
         });
-        flush_selected_elements();
     }
+
+    flush_selected_elements();
 });
 
 $("body").on("click", ".js-try-to-fix", function () {
@@ -623,8 +629,9 @@ $("body").on("click", ".js-try-to-fix", function () {
         $.each(selected_elements, function(idx, name){
             try_to_fix(name);
         });
-        flush_selected_elements();
     }
+
+    flush_selected_elements();
 });
 
 $("body").on("click", ".js-create-ticket", function () {
