@@ -109,6 +109,11 @@ function notify(msg) {
   }
 };
 
+var STATUS_GREEN   = ["UP", "WORKING", "OK"];
+var STATUS_RED     = ["DOWN", "LOS", "DYINGGASP", "OFFLINE", "AUTHFAILED"];
+var STATUS_YELLOW  = ["NOT FOUND", "NOTFOUND", "SYNCMIB", "LOGGING"];
+var STATUS_BLUE    = ["NONE", "NULL", ""];
+
 function poll_cpe() {
   $.getJSON('/cpe_poll/{{cpe_host.host_name}}', function(data){
 
@@ -128,15 +133,39 @@ function poll_cpe() {
 
             $('#registration_state').html('<span>'+data.status+'</span>');
 
-            if(data.status == "UP" || data.status == "WORKING") {
+            console.log(data);
+
+            if ( data.cpe_registration_host !== 'undefined' ) {
+               $("[data-type='registration-host'").html(data.cpe_registration_host)
+            }
+
+            if ( data.cpe_registration_id !== 'undefined' ) {
+               $("[data-type='registration-id'").html(data.cpe_registration_id)
+            }
+
+            if ( data.ips !== 'undefined' ) {
+               $("#ips").html('')
+               $.each(data.ips, function(v,k){
+                 $("#ips").append('<a href="http://'+proxy_prefix+k[1]+'.'+proxy_sufix+'">'+k[1]+'</a> | ');
+               })
+            }
+
+            //if(data.status == "UP" || data.status == "WORKING" || data.status == "WORKING") {
+            if ( $.inArray(data.status, STATUS_GREEN ) >= 0 ) {
                 $('#registration_state').css('color','#8BC34A');
 		            $('#status2').html(getHTMLState(0))
-            } else if (data.status == "DOWN")  {
+            } else if ( $.inArray(data.status, STATUS_RED ) >= 0 )  {
                 $('#registration_state').css('color','#FF7043');
 		            $('#status2').html(getHTMLState(2))
-            } else {
+            } else if ( $.inArray(data.status, STATUS_YELLOW ) >= 0 )  {
                 $('#registration_state').css('color','#FAA732');
                 $('#status2').html(getHTMLState(1))
+            } else if ( $.inArray(data.status, STATUS_BLUE ) >= 0 )  {
+                $('#registration_state').css('color','#49AFCD');
+                $('#status2').html(getHTMLState(3))
+            } else { // GRAY COLOR
+                $('#registration_state').css('color','#DDD');
+                $('#status2').html(getHTMLState(3))
             }
 
             line = ""
@@ -197,7 +226,13 @@ var realtimeTimer = window.setInterval(function(){
         <div style="float: left; padding: 10px; border-right: 2px solid black; margin-right: 10px">
             <div class="right" style="font-size: 22px"><a href="/host/{{ cpe.host_name }}">{{ cpe.host_name }}</a></div>
             <div class="right" style="font-size: 10px; ">{{cpe.customs.get('_CPE_MODEL')}}</div>
-            <div class="font-fixed" style="font-size: 12px; text-align: right; color: #9E9E9E;">{{ cpe.customs.get('_SN', '').upper() }}{{ cpe.customs.get('_MAC', '').upper() }}</div>
+            %if cpe.customs.get('_SN') and len(cpe.customs.get('_SN')):
+            <div title="{{ cpe.customs.get('_CPE_NOTES') }}" id="cpe-sn" style="cursor: pointer; text-align: right" class="font-fixed" style="font-size: 12px; text-align: right; color: #9E9E9E;">{{ cpe.customs.get('_SN', '') }}</div>
+            %end
+            %if cpe.customs.get('_MAC') and len(cpe.customs.get('_MAC')):
+            <div title="{{ cpe.customs.get('_CPE_NOTES') }}" id="cpe-mac" style="cursor: pointer; text-align: right" class="font-fixed" style="font-size: 12px; text-align: right; color: #9E9E9E;">{{ cpe.customs.get('_MAC', '') }}</div>
+            %end
+
 
         </div>
         <div>
@@ -206,9 +241,9 @@ var realtimeTimer = window.setInterval(function(){
                 <!--
                                 <a href="https://www.google.es/maps?q={{ cpe.customs.get('_CUSTOMER_ADDRESS')}} {{cpe.customs.get('_CUSTOMER_CITY')}}" target="_blank">{{cpe.customs.get('_CUSTOMER_ADDRESS')}} {{cpe.customs.get('_CUSTOMER_CITY')}}</a>
                 -->
-                <a href="/host/{{ cpe.cpe_registration_host }}" data-type="host">{{ cpe.cpe_registration_host }}</a>
+                <a href="/host/{{ cpe.cpe_registration_host }}" data-type="registration-host">{{ cpe.cpe_registration_host }}</a>
                 <span>/</span>
-                <a href="/all?search=type:host {{cpe.cpe_registration_host}}">{{ cpe.cpe_registration_id }}</a>
+                <a href="/all?search=type:host {{cpe.cpe_registration_host}}" data-type="registration-id">{{ cpe.cpe_registration_id }}</a>
                 <span>:</span>
                 <span id="registration_state"> <i class="fa fa-spinner fa-spin"></i> <!--{{cpe.cpe_registration_state}}--></span>
             </div>
@@ -235,6 +270,9 @@ var realtimeTimer = window.setInterval(function(){
                 %if cpe.customs.get('_VOICE2_CLI'):
                  | <span style="color: #607D8B">2<i class="fa fa-phone" aria-hidden="true"></i> {{ cpe.customs.get('_VOICE2_CLI') }}</span>
                 %end
+            </div>
+            <div style="font-size: 18px; color: #333;" id="ips">
+
             </div>
 
 
@@ -473,6 +511,63 @@ $("[data-type='host']").each(function(key, value){
         }
     });
 });
+
+
+document.getElementById("cpe-sn").addEventListener("click", function() {
+    copyToClipboard(document.getElementById("cpe-sn"));
+});
+
+document.getElementById("cpe-mac").addEventListener("click", function() {
+    copyToClipboard(document.getElementById("cpe-mac"));
+});
+
+
+function copyToClipboard(elem) {
+	  // create hidden text element, if it doesn't already exist
+    var targetId = "_hiddenCopyText_";
+    var isInput = elem.tagName === "INPUT" || elem.tagName === "TEXTAREA";
+    var origSelectionStart, origSelectionEnd;
+    if (isInput) {
+        // can just use the original source element for the selection and copy
+        target = elem;
+        origSelectionStart = elem.selectionStart;
+        origSelectionEnd = elem.selectionEnd;
+    } else {
+        // must use a temporary form element for the selection and copy
+        target = document.getElementById(targetId);
+        if (!target) {
+            var target = document.createElement("textarea");
+            target.style.position = "absolute";
+            target.style.left = "-9999px";
+            target.style.top = "0";
+            target.id = targetId;
+            document.body.appendChild(target);
+        }
+        target.textContent = elem.textContent;
+    }
+
+    var currentFocus = document.activeElement;
+    target.focus();
+    target.setSelectionRange(0, target.value.length);
+
+    var succeed;
+    try {
+    	  succeed = document.execCommand("copy");
+    } catch(e) {
+        succeed = false;
+    }
+
+    if (currentFocus && typeof currentFocus.focus === "function") {
+        currentFocus.focus();
+    }
+
+    if (isInput) {
+        elem.setSelectionRange(origSelectionStart, origSelectionEnd);
+    } else {
+        target.textContent = "";
+    }
+    return succeed;
+}
 
 
 </script>
