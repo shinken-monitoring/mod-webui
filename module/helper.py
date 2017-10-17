@@ -280,7 +280,7 @@ class Helper(object):
                         'DOWN': 'server',
                         'UNREACHABLE': 'server',
                         'ACK': 'check',
-                        'DOWNTIME': 'ambulance',
+                        'DOWNTIME': 'clock-o',
                         'FLAPPING': 'cog fa-spin',
                         'PENDING': 'server',
                         'UNKNOWN': 'server' },
@@ -289,7 +289,7 @@ class Helper(object):
                         'CRITICAL': 'arrow-down',
                         'WARNING': 'exclamation',
                         'ACK': 'check',
-                        'DOWNTIME': 'ambulance',
+                        'DOWNTIME': 'clock-o',
                         'FLAPPING': 'cog fa-spin',
                         'PENDING': 'spinner fa-circle-o-notch',
                         'UNKNOWN': 'question' }
@@ -314,10 +314,10 @@ class Helper(object):
         else:
             icon_style = ""
 
-        if downtime:
+        if state == 'DOWNTIME':
             icon = icons[cls]['DOWNTIME']
             title += " and in scheduled downtime"
-        elif ack:
+        elif state == 'ACK':
             icon = icons[cls]['ACK']
             title += " and acknowledged"
         else:

@@ -45,7 +45,7 @@
                   </div>
 
                   <div class="btn-group btn-group-justified" role="group" aria-label="Resources" title="View resources for hosts related with all contacts">
-                     <a class="btn btn-default" href="/all?search=type:host"><i class="fa fa-ambulance"></i> <span class="hidden-xs">Resources</span></a>
+                     <a class="btn btn-default" href="/all?search=type:host"><i class="fa fa-clock-o"></i> <span class="hidden-xs">Resources</span></a>
                   </div>
 
                   <ul class="list-group">
@@ -87,7 +87,7 @@
                   </div>
 
                   <div class="btn-group btn-group-justified" role="group" aria-label="Resources" title="View resources for hosts related with this contact group">
-                     <a class="btn btn-default" href="/all?search=type:host cg:{{'"%s"' % group.get_name()}}"><i class="fa fa-ambulance"></i> <span class="hidden-xs">Resources</span></a>
+                     <a class="btn btn-default" href="/all?search=type:host cg:{{'"%s"' % group.get_name()}}"><i class="fa fa-clock-o"></i> <span class="hidden-xs">Resources</span></a>
                   </div>
 
                   <ul class="list-group">

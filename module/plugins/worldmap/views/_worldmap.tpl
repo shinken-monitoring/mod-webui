@@ -36,7 +36,7 @@
   function hostInfoContent() {
     var text = '<div class="map-infoView" id="iw-' + this.name + '">' + this.iconState + ' <span class="map-hostname"><a href="/host/' + this.name + '">' + this.name + '</a> ' + this.businessImpact + ' is ' + this.state + '.</span>';
     if (this.scheduledDowntime) {
-      text += '<div><i class="fa fa-ambulance"></i> Currently in scheduled downtime.</div>';
+      text += '<div><i class="fa fa-clock-o"></i> Currently in scheduled downtime.</div>';
     }
     if (this.isProblem) {
       text += '<div><i class="fa fa-check"></i> ';

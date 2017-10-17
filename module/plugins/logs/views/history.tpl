@@ -34,10 +34,10 @@
              <samp class="text-muted">{{ log['plugin_output'] }}</samp>
            </td>
            %elif log['logclass'] == 1:
-           <td class="text-center" style="vertical-align: middle;">
+           <td width="40px" class="text-center" style="vertical-align: middle;">
              <i class="fa fa-info-circle text-primary fa-2x" title="State change"></i>
            </td>
-           <td class="text-center text-primary" style="vertical-align: middle;">
+           <td width="100px" class="text-center text-primary" style="vertical-align: middle;">
              <strong>
                %if "FLAPPING" in log['message']:
                FLAPPING<br>
@@ -51,11 +51,21 @@
              {{ log['service_description'] }}<br>
              <samp class="text-muted">{{ log['message'].split(';')[-1] }}</samp>
            </td>
+           %# Not used for now
            %elif log['logclass'] == 3:
-           <td class="text-center" style="vertical-align: middle;">
+           %if 'sms' in log['command_name']:
+           %icon = 'fa-mobile'
+           %elif 'mail' in log['command_name']:
+           %icon = 'fa-envelope-o'
+           %elif 'slack' in log['command_name']:
+           %icon = 'fa-slack'
+           %else:
+           %icon = 'fa-bell-o'
+           %end
+           <td width="40px" class="text-center" style="vertical-align: middle;">
              <i class="fa fa-bell-o fa-2x font-{{ log['state_type'].lower() }}" title="Notification"></i>
            </td>
-           <td class="text-center" style="vertical-align: middle;">
+           <td width="100px" class="text-center" style="vertical-align: middle;">
              <strong class="font-{{ log['state_type'].lower() }}">
                {{ log['state_type'] }}
              </strong>
@@ -65,9 +75,9 @@
              <samp class="text-muted">{{ log['message'].split(';')[-1] }}</samp>
            </td>
            %else:
-           <td>
+           <td width="40px">
            </td>
-           <td>
+           <td width="100px">
            </td>
            <td>
              {{ log['message'] }}

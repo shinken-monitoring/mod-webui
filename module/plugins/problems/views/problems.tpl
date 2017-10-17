@@ -51,7 +51,8 @@
 
       <table class="table table-condensed table-hover problems-table">
         <colgroup>
-            <col style="width: 150px;"/>
+            <col style="width: 120px;"/>
+            <col style="width: 30px;"/>
             <col class="host-column hidden-sm hidden-xs hidden-md"/>
             <col class="service-column hidden-sm hidden-xs"/>
             <col style="width: 100%;"/>
@@ -106,6 +107,14 @@ Next check <strong>{{helper.print_duration(pb.next_chk)}}</strong>
                        <!--</span>-->
                      </small>
                    </div>
+               </td>
+               <td class="text-muted">
+                 %if pb.problem_has_been_acknowledged:
+                 <i class="fa fa-check" title="Acknowledged"></i><br>
+                 %end
+                 %if pb.in_scheduled_downtime:
+                 <i class="fa fa-clock-o" title="In scheduled downtime"></i><br>
+                 %end
                </td>
                %aka = ''
                %if pb_host.alias and not pb_host.alias.startswith(pb_host.get_name()):

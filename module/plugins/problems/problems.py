@@ -93,7 +93,7 @@ def get_pbs_widget():
     nb_elements = max(0, int(app.request.GET.get('nb_elements', '10')))
     refine_search = app.request.GET.get('search', '')
 
-    items = app.datamgr.search_hosts_and_services("isnot:UP isnot:OK isnot:PENDING isnot:ACK isnot:DOWNTIME bp:>0", user, get_impacts=False)
+    items = app.datamgr.search_hosts_and_services("isnot:UP isnot:OK isnot:PENDING isnot:ACK isnot:DOWNTIME isnot:SOFT bp:>0", user, get_impacts=False)
 
     # Sort it now
     items.sort(hst_srv_sort)
@@ -172,7 +172,7 @@ def get_last_errors_widget():
     refine_search = app.request.GET.get('search', '')
 
     # Apply search filter if exists ...
-    items = app.datamgr.search_hosts_and_services("isnot:UP isnot:OK isnot:PENDING isnot:ACK isnot:DOWNTIME bp:>0", user, get_impacts=False)
+    items = app.datamgr.search_hosts_and_services("isnot:UP isnot:OK isnot:PENDING isnot:ACK isnot:DOWNTIME isnot:SOFT bp:>0", user, get_impacts=False)
 
     # Sort it now
     items.sort(last_state_change_earlier)

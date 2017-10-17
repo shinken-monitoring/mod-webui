@@ -31,7 +31,7 @@
       %setdefault('comment_title', 'User comment')
       %if c.entry_type == 2:
       %comment_title = 'Downtime'
-      %comment_icon = "fa-ambulance"
+      %comment_icon = "fa-clock-o"
       %elif c.entry_type == 3:
       %comment_title = 'Flapping'
       %comment_icon = "fa-cog"

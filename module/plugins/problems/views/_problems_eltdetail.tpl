@@ -20,7 +20,7 @@
         title="Schedule a downtime for this element"
         data-element="{{helper.get_uri_name(pb)}}"
         >
-        <i class="fa fa-ambulance"></i>
+        <i class="fa fa-clock-o"></i>
       </button>
       <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdown-downtime-{{ helper.get_html_id(pb) }}" style="margin-top: 15px;">
         <li class="dropdown-header">Set a downtime for…</li>

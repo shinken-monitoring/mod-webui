@@ -164,7 +164,7 @@
                         title="Schedule a downtime for this element"
                         data-element="{{helper.get_uri_name(pb)}}" 
                         >
-                   <i class="fa fa-ambulance"></i><span class="hidden-sm hidden-xs"> Downtime</span>
+                   <i class="fa fa-clock-o"></i><span class="hidden-sm hidden-xs"> Downtime</span>
                   </button>
                </div>
             </li>
