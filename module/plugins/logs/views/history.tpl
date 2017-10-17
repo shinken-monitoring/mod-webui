@@ -15,10 +15,10 @@
            <td width="150px" style="vertical-align: middle;">{{time.strftime(date_format, time.localtime(log['time']))}}</td>
            %if log['logclass'] == 1 and log['state_type'] in ['SOFT', 'HARD']:
            %state = log['message'].split(';')[2]
-           <td class="text-center" style="vertical-align: middle;">
+           <td width="40px" class="text-center" style="vertical-align: middle;">
              <i class="fa fa-warning fa-2x font-{{ state.lower() }}" title="State change"></i>
            </td>
-           <td class="text-center" style="vertical-align: middle;">
+           <td width="100px" class="text-center" style="vertical-align: middle;">
              <strong class="font-{{ state.lower() }}">
                {{ state }}<br>
                <small>
