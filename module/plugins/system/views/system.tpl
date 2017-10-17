@@ -50,7 +50,7 @@
                 <!--<td>{{!helper.get_on_off(status=s.spare)}}</td>-->
                 %end
                 <td>{{s.attempt}}/{{s.max_check_attempts}}</td>
-                <td title='{{helper.print_date(s.last_check)}}'>{{helper.print_duration(s.last_check, just_duration=True, x_elts=2)}}</td>
+                <td title='{{helper.print_date(s.last_check)}}' data-container="body">{{helper.print_duration(s.last_check, just_duration=True, x_elts=2)}}</td>
                 <td>{{s.realm}}</td>
              </tr>
              %end
