@@ -8,8 +8,7 @@ function more_history() {
     $(window).data('ajaxready', false);
 
     $("#loading-spinner").fadeIn(400);
-    var url = $('#inner_history').data('base-url');
-    url = url + $('#inner_history').data('element');
+    var url = '/logs/inner';
     url = url +'?limit=100&offset='+history_offset;
     if ($('#inner_history').data('service') !== undefined) {
         var url = url + '&service=' + $('#inner_history').data('service');

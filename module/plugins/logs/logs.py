@@ -135,9 +135,8 @@ def set_logs_type_list():
     app.bottle.redirect("/logs")
     return
 
-def get_host_history(name):
+def get_history():
     user = app.request.environ['USER']
-    name = urllib.unquote(name)
 
     filters=dict()
 
@@ -152,10 +151,10 @@ def get_host_history(name):
     else:
         user.is_administrator() or app.redirect403()
 
-    if service is not None:
+    if service:
         filters['service_description'] = service
 
-    if host is not None:
+    if host:
         filters['host_name'] = host
 
     logclass = app.request.GET.get('logclass', None)
@@ -173,6 +172,7 @@ def get_host_history(name):
     return {'records': logs}
 
 
+# :TODO:maethor:171017: This function should be merge in get_history
 def get_global_history():
     user = app.request.environ['USER']
     user.is_administrator() or app.redirect403()
@@ -197,8 +197,8 @@ pages = {
     get_global_history: {
         'name': 'History', 'route': '/logs', 'view': 'logs', 'static': True
     },
-    get_host_history: {
-        'name': 'HistoryHost', 'route': '/logs/inner/<name:path>', 'view': 'history'
+    get_history: {
+        'name': 'HistoryHost', 'route': '/logs/inner', 'view': 'history'
     },
     form_hosts_list: {
         'name': 'GetHostsList', 'route': '/logs/hosts_list', 'view': 'form_hosts_list'

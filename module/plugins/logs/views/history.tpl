@@ -12,6 +12,7 @@
          %for log in logs:
          <tr>
            <td width="150px" style="vertical-align: middle;">{{time.strftime(date_format, time.localtime(log['time']))}}</td>
+           %# STATE CHANGE
            %if log['logclass'] == 1 and log['state_type'] in ['SOFT', 'HARD']:
            %state = log['message'].split(';')[2]
            <td width="40px" class="text-center" style="vertical-align: middle;">
@@ -32,6 +33,7 @@
              {{ log['service_description'] }}<br>
              <samp class="text-muted">{{ log['plugin_output'] }}</samp>
            </td>
+           %# FLAPPING/DOWNTIME
            %elif log['logclass'] == 1:
            <td width="40px" class="text-center" style="vertical-align: middle;">
              <i class="fa fa-info-circle text-primary fa-2x" title="State change"></i>
@@ -50,8 +52,9 @@
              {{ log['service_description'] }}<br>
              <samp class="text-muted">{{ log['message'].split(';')[-1] }}</samp>
            </td>
-           %# Not used for now
+           %# NOTIFICATION
            %elif log['logclass'] == 3:
+           %# Not used for now
            %if 'sms' in log['command_name']:
            %icon = 'fa-mobile'
            %elif 'mail' in log['command_name']:
@@ -71,6 +74,7 @@
            </td>
            <td>
              User {{ log['contact_name'] }} notified with <code>{{ log['command_name'] }}</code><br>
+             {{ log['host_name'] }} / {{ log['service_description'] }} &nbsp;&nbsp;&nbsp;&nbsp;
              <samp class="text-muted">{{ log['message'].split(';')[-1] }}</samp>
            </td>
            %else:
