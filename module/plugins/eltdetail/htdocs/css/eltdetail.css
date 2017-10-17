@@ -25,6 +25,13 @@
 
 /* NEW v2.6 */
 
+#information .table>tbody>tr>td,
+#information .table>tbody>tr>th,
+#information .table>thead>tr>td,
+#information .table>thead>tr>th {
+    border-top: 0;
+}
+
 .comment-list > dt {
     border-bottom: 1px solid #EEE;
     margin-bottom: 0.25em;
