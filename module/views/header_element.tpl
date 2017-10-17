@@ -186,21 +186,21 @@
         <li> <a href="#"><i class="fa fa-sitemap sidebar-icon"></i>
         Groups and tags<i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
-            <li> <a href="{{ app.get_url('HostsGroups') }}"> <span class="fa fa-sitemap"></span> Hosts groups </a> </li>
-            <li> <a href="{{ app.get_url('ServicesGroups') }}"> <span class="fa fa-sitemap"></span> Services groups </a> </li>
-            <li> <a href="{{ app.get_url('HostsTags') }}"> <span class="fa fa-tags"></span> Hosts tags </a> </li>
-            <li> <a href="{{ app.get_url('ServicesTags') }}"> <span class="fa fa-tags"></span> Services tags </a> </li>
+            <li> <a href="{{ app.get_url('HostsGroups') }}"> <span class="fa fa-sitemap sidebar-icon"></span> Hosts groups </a> </li>
+            <li> <a href="{{ app.get_url('ServicesGroups') }}"> <span class="fa fa-sitemap sidebar-icon"></span> Services groups </a> </li>
+            <li> <a href="{{ app.get_url('HostsTags') }}"> <span class="fa fa-tags sidebar-icon"></span> Hosts tags </a> </li>
+            <li> <a href="{{ app.get_url('ServicesTags') }}"> <span class="fa fa-tags sidebar-icon"></span> Services tags </a> </li>
           </ul>
         </li>
         <li> <a href="#"><i class="fa fa-bar-chart sidebar-icon"></i>
         Tactical views<i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
-            <li> <a href="{{ app.get_url('Impacts') }}"> <span class="fa fa-bolt"></span> Impacts </a> </li>
-            <li> <a href="{{ app.get_url('Minemap') }}"> <span class="fa fa-table"></span> Minemap </a> </li>
-            <li> <a href="{{ app.get_url('Worldmap') }}"> <span class="fa fa-globe"></span> World map </a> </li>
-            <li> <a href="{{ app.get_url('Wall') }}"> <span class="fa fa-th-large"></span> Wall </a> </li>
+            <li> <a href="{{ app.get_url('Impacts') }}"> <span class="fa fa-bolt sidebar-icon"></span> Impacts </a> </li>
+            <li> <a href="{{ app.get_url('Minemap') }}"> <span class="fa fa-table sidebar-icon"></span> Minemap </a> </li>
+            <li> <a href="{{ app.get_url('Worldmap') }}"> <span class="fa fa-globe sidebar-icon"></span> World map </a> </li>
+            <li> <a href="{{ app.get_url('Wall') }}"> <span class="fa fa-th-large sidebar-icon"></span> Wall </a> </li>
             %if app.logs_module.is_available():
-            <li> <a href="{{ app.get_url('Availability') }}"> <span class="fa fa-bar-chart"></span> Availability </a> </li>
+            <li> <a href="{{ app.get_url('Availability') }}"> <span class="fa fa-bar-chart sidebar-icon"></span> Availability </a> </li>
             %end
           </ul>
         </li>
@@ -208,20 +208,21 @@
         <li> <a href="#"><i class="fa fa-gears sidebar-icon"></i>
         System<i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
-            <li> <a href="{{ app.get_url('System') }}"> <span class="fa fa-heartbeat"></span> Status </a> </li>
+            <li> <a href="{{ app.get_url('System') }}"> <span class="fa fa-heartbeat sidebar-icon"></span> Status </a> </li>
             %if app.logs_module.is_available():
-            <li> <a href="{{ app.get_url('History') }}"> <span class="fa fa-th-list"></span> Logs </a> </li>
+            <li> <a href="{{ app.get_url('History') }}"> <span class="fa fa-th-list sidebar-icon"></span> Logs </a> </li>
+            <li> <a href="{{ app.get_url('GlobalStats') }}"> <span class="fa fa-bell-o sidebar-icon"></span> Alerts </a> </li>
             %end
           </ul>
         </li>
         <li> <a href="#"><i class="fa fa-wrench sidebar-icon"></i>
         Configuration<i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
-            <li> <a href="{{ app.get_url('Parameters') }}"> <span class="fa fa-gears"></span> Parameters </a> </li>
-            <li> <a href="{{ app.get_url('Contacts') }}"> <span class="fa fa-user"></span> Contacts </a> </li>
-            <li> <a href="{{ app.get_url('ContactsGroups') }}"> <span class="fa fa-users"></span> Contact Groups </a> </li>
-            <li> <a href="{{ app.get_url('Commands') }}"> <span class="fa fa-terminal"></span> Commands </a> </li>
-            <li> <a href="{{ app.get_url('TimePeriods') }}"> <span class="fa fa-calendar"></span> Time periods </a> </li>
+            <li> <a href="{{ app.get_url('Parameters') }}"> <span class="fa fa-gears sidebar-icon"></span> Parameters </a> </li>
+            <li> <a href="{{ app.get_url('Contacts') }}"> <span class="fa fa-user sidebar-icon"></span> Contacts </a> </li>
+            <li> <a href="{{ app.get_url('ContactsGroups') }}"> <span class="fa fa-users sidebar-icon"></span> Contact Groups </a> </li>
+            <li> <a href="{{ app.get_url('Commands') }}"> <span class="fa fa-terminal sidebar-icon"></span> Commands </a> </li>
+            <li> <a href="{{ app.get_url('TimePeriods') }}"> <span class="fa fa-calendar sidebar-icon"></span> Time periods </a> </li>
           </ul>
         </li>
         %end
@@ -232,7 +233,7 @@
           <ul class="nav nav-second-level">
             %for c in other_uis:
             <li>
-              <a href="{{c['uri']}}" target="_blank"><span class="fa fa-rocket"></span> {{c['label']}}</a>
+              <a href="{{c['uri']}}" target="_blank"><span class="fa fa-rocket sidebar-icon"></span> {{c['label']}}</a>
             </li>
             %end
           </ul>
