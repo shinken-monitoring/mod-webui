@@ -512,18 +512,21 @@ class WebUIDataManager(DataManager):
                     logger.debug("[WebUI - datamanager] item %s is %s", item.get_name(), item.__class__)
 
             if t == 'bp' or t == 'bi':
-                if s.startswith('>='):
-                    items = [i for i in items if i.business_impact >= int(s[2:])]
-                elif s.startswith('<='):
-                    items = [i for i in items if i.business_impact <= int(s[2:])]
-                elif s.startswith('>'):
-                    items = [i for i in items if i.business_impact > int(s[1:])]
-                elif s.startswith('<'):
-                    items = [i for i in items if i.business_impact < int(s[1:])]
-                else:
-                    if s.startswith('='):
-                        s = s[1:]
-                    items = [i for i in items if i.business_impact == int(s)]
+                try:
+                    if s.startswith('>='):
+                        items = [i for i in items if i.business_impact >= int(s[2:])]
+                    elif s.startswith('<='):
+                        items = [i for i in items if i.business_impact <= int(s[2:])]
+                    elif s.startswith('>'):
+                        items = [i for i in items if i.business_impact > int(s[1:])]
+                    elif s.startswith('<'):
+                        items = [i for i in items if i.business_impact < int(s[1:])]
+                    else:
+                        if s.startswith('='):
+                            s = s[1:]
+                        items = [i for i in items if i.business_impact == int(s)]
+                except ValueError:
+                    items = []
 
             if t == 'duration':
                 seconds_per_unit = {"s": 1, "m": 60, "h": 3600, "d": 86400, "w": 604800}
