@@ -1,5 +1,7 @@
 %setdefault('with_service_name', False)
+%setdefault('with_contact_form', True)
 
+%if with_contact_form:
 <form class="form-horizontal" class="js-comment-form" action="javascript:submit_comment_form('{{ helper.get_html_id(elt) }}');">
   <input type="hidden" id="user_{{ helper.get_html_id(elt) }}" value="{{ user.get_name() }}">
   <input type="hidden" id="name_{{ helper.get_html_id(elt) }}" value="{{ helper.get_uri_name(elt) }}">
@@ -15,6 +17,7 @@
     </div>
   </div>
 </form>
+%end
 
 <div id="comments_{{ helper.get_html_id(elt) }}">
 %for daterange, dr_comments in helper.group_by_daterange(sorted(comments, key=lambda x: x.entry_time, reverse=True), key=lambda x: x.entry_time).items():
