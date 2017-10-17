@@ -118,41 +118,6 @@ function on_page_refresh() {
       window[func](elt, value);
    });
 
-   var history_offset = 0;
-
-   function more_history() {
-       if ($(window).data('ajaxready') == false) return;
-
-       $(window).data('ajaxready', false);
-
-       $("#loading-spinner").fadeIn(400);
-       var element = $('#inner_history').data('element');
-
-       $.get('/logs/inner/'+encodeURIComponent(element)+'?limit=100&offset='+history_offset, function(data){
-           if (data.indexOf('table') !== -1) {
-               $("#inner_history").append(data);
-               history_offset+=100;
-               $(window).data('ajaxready', true);
-           }
-           $("#loading-spinner").fadeOut(400);
-       });
-   }
-
-   more_history();
-
-   $(window).data('ajaxready', true);
-
-   $(window).scroll(function() {
-       if ($(window).data('ajaxready') == false) return;
-
-       if(($(window).scrollTop() + $(window).height() + 150) > $(document).height()) {
-           disable_refresh();
-
-           more_history();
-       }
-   });
-
-
    /*
     * Availability
     */

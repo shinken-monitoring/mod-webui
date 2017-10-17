@@ -2,7 +2,7 @@
 <div class="tab-pane fade" id="history">
   <div class="panel panel-default" style="border-top:none; border-radius:0;">
     <div class="panel-body">
-      <div id="inner_history" data-element='{{elt.get_full_name()}}'>
+      <div id="inner_history" data-base-url='/logs/inner/' data-host='{{ elt.host_name }}' data-service='{{ elt.service_description if elt_type == 'service' else '' }}'>
       </div>
 
       <div class="text-center" id="loading-spinner">

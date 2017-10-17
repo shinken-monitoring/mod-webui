@@ -2,7 +2,6 @@
 %helper = app.helper
 
 %date_format='%Y-%m-%d %H:%M:%S'
-%elt_type = elt.__class__.my_type
 
 %if hasattr(records,"__iter__"):
 %for daterange, logs in helper.group_by_daterange(records, key=lambda x: x['time']).items():

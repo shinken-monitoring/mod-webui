@@ -138,11 +138,39 @@ def set_logs_type_list():
 def get_host_history(name):
     user = app.request.environ['USER']
     name = urllib.unquote(name)
-    elt = app.datamgr.get_element(name, user) or app.redirect404()
+
+    filters=dict()
+
+    service = app.request.GET.get('service', None)
+    host = app.request.GET.get('host', None)
+
+    if host:
+        if service:
+            app.datamgr.get_element(host + '/' + service, user) or app.redirect404()
+        else:
+            app.datamgr.get_element(host, user) or app.redirect404()
+    else:
+        user.is_administrator() or app.redirect403()
+
+    if service is not None:
+        filters['service_description'] = service
+
+    if host is not None:
+        filters['host_name'] = host
+
+    logclass = app.request.GET.get('logclass', None)
+    if logclass is not None:
+        filters['logclass'] = int(logclass)
+
+    command_name = app.request.GET.get('commandname', None)
+    if command_name is not None:
+        filters['command_name'] = command_name
+
     limit = int(app.request.GET.get('limit', 100))
     offset = int(app.request.GET.get('offset', 0))
-    logs = _get_logs(elt=elt, limit=limit, offset=offset)
-    return {'records': logs, 'elt': elt}
+
+    logs = _get_logs(filters=filters, limit=limit, offset=offset)
+    return {'records': logs}
 
 
 def get_global_history():
@@ -154,7 +182,7 @@ def get_global_history():
     range_end = int(app.request.GET.get('range_end', midnight_timestamp + 86399))
     logger.debug("[WebUI-logs] get_global_history, range: %d - %d", range_start, range_end)
 
-    logs = _get_logs(elt=None, logs_type=params['logs_type'], range_start=range_start, range_end=range_end)
+    logs = _get_logs(elt=None, filters={'type': {'$in': params['logs_type']}}, range_start=range_start, range_end=range_end)
 
     if logs is None:
         message = "No module configured to get Shinken logs from database!"
