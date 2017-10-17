@@ -454,6 +454,12 @@ class WebUIDataManager(DataManager):
                 for i in items:
                     if i.__class__.my_type == 'contact' and pat.search(i.get_name()):
                         new_items.append(i)
+                    if i.__class__.my_type == 'host':
+                        # :TODO:maethor:171012: 
+                        pass
+                    if i.__class__.my_type == 'service':
+                        # :TODO:maethor:171012: 
+                        pass
 
                 items = new_items
 
@@ -462,22 +468,16 @@ class WebUIDataManager(DataManager):
                 group = self.get_hostgroup(s)
                 if not group:
                     return []
-                # Items have a item.get_groupnames() method that returns a comma separated string ... strange format!
-                for item in items:
-                    if group.get_name() in item.get_groupnames().split(', '):
-                        logger.debug("[WebUI - datamanager] => item %s is a known member!", item.get_name())
-                items = [i for i in items if group.get_name() in i.get_groupnames().split(', ')]
+
+                items = [i for i in items if group.get_name() in [h.get_name() for h in i.get_hostgroups()]]
 
             if (t == 'sg' or t == 'sgroup') and s.lower() != 'all':
                 logger.debug("[WebUI - datamanager] searching for items in the servicegroup %s", s)
                 group = self.get_servicegroup(s)
                 if not group:
                     return []
-                # Items have a item.get_groupnames() method that returns a comma+space separated string ... strange format!
-                for item in items:
-                    if group.get_name() in item.get_groupnames().split(','):
-                        logger.debug("[WebUI - datamanager] => item %s is a known member!", item.get_name())
-                items = [i for i in items if group.get_name() in i.get_groupnames().split(',')]
+
+                items = [i for i in items if i.__class__.my_type == 'service' and group.get_name() in [s.get_name() for s in i.servicegroups()]]
 
             #@mohierf: to be refactored!
             if (t == 'cg' or t == 'cgroup') and s.lower() != 'all':
@@ -485,11 +485,6 @@ class WebUIDataManager(DataManager):
                 group = self.get_contactgroup(s, user)
                 if not group:
                     return []
-                # Items have a item.get_groupnames() method that returns a comma+space separated string ... strange format!
-                #for item in items:
-                #    for contact in item.contacts:
-                #        if group.get_name() in contact.get_groupnames().split(', '):
-                #            logger.debug("[WebUI - datamanager] => contact %s is a known member!", contact.get_name())
 
                 contacts = [c for c in self.get_contacts(user=user) if c in group.members]
                 items = list(set(itertools.chain(*[self._only_related_to(items, self.rg.contacts.find_by_name(c)) for c in contacts])))
