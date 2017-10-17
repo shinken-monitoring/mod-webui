@@ -6,6 +6,8 @@
 %rebase("layout", title='Invalid contact name')
 %end
 
+%user = app.get_user()
+
 %helper = app.helper
 
 %username = 'anonymous'
@@ -61,7 +63,7 @@
          <div class="panel-body">
             <!-- User image / user name / user category -->
             <div class="user-header bg-light-blue">
-               <img src="{{contact.avatar}}" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}">
+               <img src="{{contact.avatar_url}}" class="img-circle user-logo" alt="{{username}}" title="Photo: {{username}}">
 
                <p class="username">
                  {{username}}

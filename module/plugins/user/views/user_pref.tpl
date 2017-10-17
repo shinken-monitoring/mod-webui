@@ -93,7 +93,7 @@
                   </thead>
                   <tbody style="font-size:x-small;">
                   %if app.prefs_module.is_available():
-                  %for preference in app.prefs_module.get_ui_user_preference(user):
+                  %for preference in app.prefs_module.get_ui_user_preference(user, None, []):
                   %if preference in ['_id']:
                   %continue
                   %end
