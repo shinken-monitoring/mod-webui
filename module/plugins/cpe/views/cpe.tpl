@@ -181,12 +181,18 @@ function poll_cpe() {
                 cpe.state = data.status;
             }
 
-            updateGraphs(data)
+            updateGraphs(data);
+
+
 
         }
 
     });
 }
+
+
+
+
 
 var realtimeTimer = window.setInterval(function(){
   poll_cpe()
@@ -311,9 +317,24 @@ var realtimeTimer = window.setInterval(function(){
         <div id="timeline"></div>
     </div>
 
-    <div class="col-md-6">
-          {{!helper.print_aggregation_tree(helper.get_host_service_aggregation_tree(cpe, app), helper.get_html_id(cpe), show_output=True)}}
+    <div class="col-md-6" id="quickservices">
+          <!-- {{!helper.print_aggregation_tree(helper.get_host_service_aggregation_tree(cpe, app), helper.get_html_id(cpe), show_output=True)}} -->
     </div>
+    <script>
+    // Actualizador servicios
+    (function worker() {
+      $.ajax({
+        url: '/cpe/quickservices/{{cpe_host.host_name}}',
+        success: function(data) {
+          $('#quickservices').html( $('ul',data) );
+        },
+        complete: function() {
+          setTimeout(worker, 1000);
+        }
+      });
+    })();
+    </script>
+
 
 
     <div class="col-md-12 panel panel-default">
