@@ -3,7 +3,7 @@
 ## Description
 Shinken Web User Interface
 
-Current version is 2.7.0, available on [`shinken.io`](http://shinken.io/package/webui2).
+Current version is 2.7.1, available on [`shinken.io`](http://shinken.io/package/webui2).
 
 ## Release notes
 
