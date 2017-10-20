@@ -22,7 +22,11 @@
             %if elt_type == 'service':
             <a href="{{'/host/'+elt.host_name }}">{{ elt.host.display_name if elt.host.display_name else elt.host.get_name() }}</a>:
             %end
-            {{ elt.display_name }}<br>
+            {{ elt.display_name }} 
+            %if elt_type == 'host':
+            ({{ elt.address }})
+            %end
+            <br>
             <samp>{{! elt.output}}</samp></small>
         </div>
       </div>
