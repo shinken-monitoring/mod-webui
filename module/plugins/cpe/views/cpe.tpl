@@ -42,7 +42,7 @@ Invalid element name
 
 %title = cpe_type.title()+' detail: ' + cpe_display_name
 
-%js=['cpe/js/bootstrap-switch.min.js', 'cpe/js/datatables.min.js', 'cpe/js/google-charts.min.js', 'cpe/js/vis.min.js', 'cpe/js/cpe.js?1234']
+%js=['js/shinken-actions.js', 'cpe/js/bootstrap-switch.min.js', 'cpe/js/datatables.min.js', 'cpe/js/google-charts.min.js', 'cpe/js/vis.min.js', 'cpe/js/cpe.js?1234']
 %css=['cpe/css/bootstrap-switch.min.css', 'cpe/css/datatables.min.css', 'cpe/css/vis.min.css', 'cpe/css/cpe.css']
 %rebase("layout", js=js, css=css, breadcrumb=breadcrumb, title=title)
 
