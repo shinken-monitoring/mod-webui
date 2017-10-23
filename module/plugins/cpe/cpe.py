@@ -94,6 +94,7 @@ pages = {
     show_cpe: {
         'name': 'CPE', 'route': '/cpe/:cpe_name', 'view': 'cpe', 'static': True,
     },
+
     show_quick_services: {
         'name': 'QUICKSERVICES', 'route': '/cpe/quickservices/:cpe_name', 'view': 'quickservices', 'static': True,
     }
