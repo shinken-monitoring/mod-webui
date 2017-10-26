@@ -27,8 +27,8 @@
         <li role="separator" class="divider"></li>
         <li><a href="#" class="js-schedule-downtime" data-element="{{helper.get_uri_name(pb)}}" data-duration="60">1 hour</a></li>
         <li><a href="#" class="js-schedule-downtime" data-element="{{helper.get_uri_name(pb)}}" data-duration="180">3 hours</a></li>
-        <li><a href="#" class="js-schedule-downtime" data-element="{{helper.get_uri_name(pb)}}" data-duration="360">12 hours</a></li>
-        <li><a href="#" class="js-schedule-downtime" data-element="{{helper.get_uri_name(pb)}}" data-duration="720">24 hours</a></li>
+        <li><a href="#" class="js-schedule-downtime" data-element="{{helper.get_uri_name(pb)}}" data-duration="720">12 hours</a></li>
+        <li><a href="#" class="js-schedule-downtime" data-element="{{helper.get_uri_name(pb)}}" data-duration="1440">24 hours</a></li>
         <li><a href="#" class="js-schedule-downtime" data-element="{{helper.get_uri_name(pb)}}" data-duration="2160">3 days</a></li>
         <li><a href="#" class="js-schedule-downtime" data-element="{{helper.get_uri_name(pb)}}" data-duration="5040">7 days</a></li>
         <li><a href="#" class="js-schedule-downtime" data-element="{{helper.get_uri_name(pb)}}" data-duration="21600">30 days</a></li>
