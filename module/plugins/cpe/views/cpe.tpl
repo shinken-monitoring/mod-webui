@@ -541,13 +541,16 @@ $("[data-type='host']").each(function(key, value){
 });
 
 
-document.getElementById("cpe-sn").addEventListener("click", function() {
-    copyToClipboard(document.getElementById("cpe-sn"));
-});
+var cpeSRN = document.getElementById("cpe-sn");
+var cpeMAC = document.getElementById("cpe-mac");
 
-document.getElementById("cpe-mac").addEventListener("click", function() {
-    copyToClipboard(document.getElementById("cpe-mac"));
-});
+if (cpeSRN) {
+  cpeSRN.addEventListener("click", function() { copyToClipboard(cpeSRN) });
+}
+
+if (cpeMAC) {
+  cpeMAC.addEventListener("click", function() { copyToClipboard(cpeMAC) });
+}
 
 
 function copyToClipboard(elem) {
