@@ -210,7 +210,7 @@ function drawDashboard() {
             });
             var nrows = 0;
 
-            if (typeof (result[0]) != "undefined" && typeof (result[0].datapoints) != "undefined")) {
+            if (typeof (result[0]) != "undefined" && typeof (result[0].datapoints) != "undefined") {
 	            result[0].datapoints.forEach(function (point, point_index) {
 	                // Check none of the targets is null for this timestamp
 	                var valid = result.every(function (e) {
