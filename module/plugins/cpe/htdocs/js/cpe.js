@@ -209,21 +209,24 @@ function drawDashboard() {
                 data.addColumn('number', metric.name);
             });
             var nrows = 0;
-            result[0].datapoints.forEach(function (point, point_index) {
-                // Check none of the targets is null for this timestamp
-                var valid = result.every(function (e) {
-                    return e.datapoints[point_index][0] !== null;
-                });
-                if (!valid)
-                    return;
-                // Add row to DataTable
-                data.addRow();
-                data.setCell(nrows, 0, new Date(point[1]*1000));
-                result.forEach(function(target, target_index) {
-                    data.setCell(nrows, target_index+1, target.datapoints[point_index][0]);
-                });
-                nrows += 1;
-            });
+
+						if (typeof result[0].datapoints != 'undefined') {
+	            result[0].datapoints.forEach(function (point, point_index) {
+	                // Check none of the targets is null for this timestamp
+	                var valid = result.every(function (e) {
+	                    return e.datapoints[point_index][0] !== null;
+	                });
+	                if (!valid)
+	                    return;
+	                // Add row to DataTable
+	                data.addRow();
+	                data.setCell(nrows, 0, new Date(point[1]*1000));
+	                result.forEach(function(target, target_index) {
+	                    data.setCell(nrows, target_index+1, target.datapoints[point_index][0]);
+	                });
+	                nrows += 1;
+	            });
+					  }
             var options = {
                 //title: result[0].target,
                 legend: { position: 'top' },
