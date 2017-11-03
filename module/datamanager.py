@@ -477,7 +477,7 @@ class WebUIDataManager(DataManager):
                 if not group:
                     return []
 
-                items = [i for i in items if i.__class__.my_type == 'service' and group.get_name() in [s.get_name() for s in i.servicegroups()]]
+                items = [i for i in items if i.__class__.my_type == 'service' and group.get_name() in [s.get_name() for s in i.servicegroups]]
 
             #@mohierf: to be refactored!
             if (t == 'cg' or t == 'cgroup') and s.lower() != 'all':
