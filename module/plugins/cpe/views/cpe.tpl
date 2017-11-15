@@ -243,13 +243,17 @@ function poll_cpe() {
             %end
         %else:
             <div class="right" style="font-size: 24px">
-              <!-- %if len(cpe.parents):
+              <!--
+              %if len(cpe.parents):
               <a href="/cpe/{{ cpe.parents[0].host_name }}" title="Parent: {{ cpe.parents[0].host_name }}"><i class="fa fa-chevron-left"></i></a>
-              %end -->
+              %end
+              -->
               <a href="/host/{{ cpe.host_name }}">{{ cpe.host_name }}</a>
-              <!-- %if false and len(cpe.childs):
+              <!--
+              %if len(cpe.childs):
               <a href="/cpe/{{ cpe.childs[0].host_name }}" title="Child: {{ cpe.childs[0].host_name }}"><i class="fa fa-chevron-right"></i></a>
-              %end -->
+              %end
+              -->
 
 
 
