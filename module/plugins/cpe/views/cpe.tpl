@@ -156,6 +156,9 @@ function poll_cpe() {
               $('#btn-factrestore').addClass("disabled").prop("disabled", true);
               $('#btn-unprovision').addClass("disabled").prop("disabled", true);
               $('#btn-tr069')      .addClass("disabled").prop("disabled", true);
+            } else {
+              $('[data-type="registration-host"]').html(data.cpe_registration_host)
+              $('[data-type="registration-id"]').html(data.cpe_registration_id)
             }
 
             if ( typeof data.ips !== 'undefined' ) {
