@@ -24,6 +24,8 @@ function getHTMLState(val) {
 
 }
 
+
+
 /*
  * Clean graphite raw data for using with Google Charts
  */
@@ -214,15 +216,18 @@ function drawDashboard() {
 	            result[0].datapoints.forEach(function (point, point_index) {
 	                // Check none of the targets is null for this timestamp
 	                var valid = result.every(function (e) {
-	                    return e.datapoints[point_index][0] !== null;
+	                    return e.datapoints[point_index] != "undefined"; //0
 	                });
+
 	                if (!valid)
 	                    return;
 	                // Add row to DataTable
 	                data.addRow();
 	                data.setCell(nrows, 0, new Date(point[1]*1000));
 	                result.forEach(function(target, target_index) {
-	                    data.setCell(nrows, target_index+1, target.datapoints[point_index][0]);
+											if  (typeof target.datapoints[point_index] !== "undefined") {
+	                    	data.setCell(nrows, target_index+1, target.datapoints[point_index][0]);
+										  }
 	                });
 	                nrows += 1;
 	            });

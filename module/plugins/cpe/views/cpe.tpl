@@ -52,6 +52,9 @@ Invalid element name
 <script src="/static/cpe/js/plots.js" charset="utf-8"></script>
 
 <script>
+var CPE_QUICKSERVICES_UPDATE_FREQUENCY = 2000
+var CPE_POOL_UPDATE_FREQUENCY = 5000
+
 %if app.proxy_sufix:
 var proxy_sufix = "{{app.proxy_sufix}}";
 %else:
@@ -134,16 +137,28 @@ function poll_cpe() {
             $('#registration_state').html('<span>'+data.status+'</span>');
 
             console.log(data);
+            //enable or disable buttons
 
-            if ( data.cpe_registration_host !== 'undefined' ) {
-               $("[data-type='registration-host'").html(data.cpe_registration_host)
+            if ( $.inArray(data.status, STATUS_GREEN ) >= 0 ) {
+              $('#btn-reboot')      .removeClass("disabled").prop("disabled", false);
+              $('#btn-factrestore') .removeClass("disabled").prop("disabled", false);
+              $('#btn-unprovision') .removeClass("disabled").prop("disabled", false);
+              $('#btn-tr069')       .removeClass("disabled").prop("disabled", false);
+            } else if ( $.inArray(data.status, STATUS_RED ) >= 0 )  {
+              $('#btn-reboot')      .addClass("disabled").prop("disabled", true);
+              $('#btn-factrestore') .addClass("disabled").prop("disabled", true);
+              $('#btn-tr069')       .addClass("disabled").prop("disabled", true);
+              $('#btn-unprovision') .removeClass("disabled").prop("disabled", false);
             }
 
-            if ( data.cpe_registration_id !== 'undefined' ) {
-               $("[data-type='registration-id'").html(data.cpe_registration_id)
+            if ( typeof data.cpe_registration_host === 'undefined' ) {
+              $('#btn-reboot')     .addClass("disabled").prop("disabled", true);
+              $('#btn-factrestore').addClass("disabled").prop("disabled", true);
+              $('#btn-unprovision').addClass("disabled").prop("disabled", true);
+              $('#btn-tr069')      .addClass("disabled").prop("disabled", true);
             }
 
-            if ( data.ips !== 'undefined' ) {
+            if ( typeof data.ips !== 'undefined' ) {
                $("#ips").html('')
                $.each(data.ips, function(v,k){
                  $("#ips").append('<a href="http://'+proxy_prefix+k[1]+'.'+proxy_sufix+'">'+k[1]+'</a> | ');
@@ -189,19 +204,6 @@ function poll_cpe() {
 
     });
 }
-
-
-
-
-
-var realtimeTimer = window.setInterval(function(){
-  poll_cpe()
-}, 5000);
-
-
-
-
-
 </script>
 <style>
 .panel-default {
@@ -228,115 +230,104 @@ var realtimeTimer = window.setInterval(function(){
 </style>
 
 <div class="row">
-    <div class="col-md-8">
-        <div style="float: left; padding: 10px; border-right: 2px solid black; margin-right: 10px">
-            <div class="right" style="font-size: 22px"><a href="/host/{{ cpe.host_name }}">{{ cpe.host_name }}</a></div>
-            <div class="right" style="font-size: 10px; ">{{cpe.customs.get('_CPE_MODEL')}}</div>
+    <div class="col-md-2">
+
+        %if cpe.customs.get('_CPE_ID'):
+            <div class="right" style="font-size: 24px"><a href="/cpe/{{ cpe.host_name }}">{{ cpe.host_name }}</a></div>
+            <div class="right" style="font-size: 18px; ">{{cpe.customs.get('_CPE_MODEL')}}</div>
             %if cpe.customs.get('_SN') and len(cpe.customs.get('_SN')):
             <div title="{{ cpe.customs.get('_CPE_NOTES') }}" id="cpe-sn" style="cursor: pointer; text-align: right" class="font-fixed" style="font-size: 12px; text-align: right; color: #9E9E9E;">{{ cpe.customs.get('_SN', '') }}</div>
             %end
             %if cpe.customs.get('_MAC') and len(cpe.customs.get('_MAC')):
             <div title="{{ cpe.customs.get('_CPE_NOTES') }}" id="cpe-mac" style="cursor: pointer; text-align: right" class="font-fixed" style="font-size: 12px; text-align: right; color: #9E9E9E;">{{ cpe.customs.get('_MAC', '') }}</div>
             %end
+        %else:
+            <div class="right" style="font-size: 24px">
+              %if false and len(cpe.parents):
+              <a href="/cpe/{{ cpe.parents[0].host_name }}" title="Parent: {{ cpe.parents[0].host_name }}"><i class="fa fa-chevron-left"></i></a>
+              %end
+              <a href="/host/{{ cpe.host_name }}">{{ cpe.host_name }}</a>
+              %if false and len(cpe.childs):
+              <a href="/cpe/{{ cpe.childs[0].host_name }}" title="Child: {{ cpe.childs[0].host_name }}"><i class="fa fa-chevron-right"></i></a>
+              %end
 
 
-        </div>
-        <div>
-            <div style="font-size: 22px">{{ cpe.customs.get('_CUSTOMER_NAME')}} {{cpe.customs.get('_CUSTOMER_SURNAME')}}</div>
-            <div style="font-size: 18px; color: #666;">
-                <!--
-                                <a href="https://www.google.es/maps?q={{ cpe.customs.get('_CUSTOMER_ADDRESS')}} {{cpe.customs.get('_CUSTOMER_CITY')}}" target="_blank">{{cpe.customs.get('_CUSTOMER_ADDRESS')}} {{cpe.customs.get('_CUSTOMER_CITY')}}</a>
-                -->
-                <a href="/host/{{ cpe.cpe_registration_host }}" data-type="registration-host">{{ cpe.cpe_registration_host }}</a>
-                <span>/</span>
-                <a href="/all?search=type:host {{cpe.cpe_registration_host}}" data-type="registration-id">{{ cpe.cpe_registration_id }}</a>
-                <span>:</span>
-                <span id="registration_state"> <i class="fa fa-spinner fa-spin"></i> <!--{{cpe.cpe_registration_state}}--></span>
-            </div>
-            <div style="font-size: 18px; color: #999;">
-
-
-                %if cpe.customs.get('_ACTIVE') == '1':
-                <span style="color: #64DD17" alt="Enabled Internet access" title="CPE Enabled"><i class="fa fa-thumbs-up"></i></span>
-                    %if cpe.customs.get('_ACCESS') == '1':
-                    <span style="color: #64DD17" alt="Enabled Internet access" title="Enabled Internet access"><i class="fa fa-globe"></i><!--Internet access--></span>
-                    %else:
-                    <span style="color: #E65100" alt="Disabled Internet access" title="Disabled Internet access"><i class="fa fa-globe text-danger"></i><!--Disabled Internet access--></span>
-                    %end
-                %else:
-                <span style="color: #E65100" alt="Disabled Internet access" title="CPE disabled"><i class="fa fa-thumbs-down text-danger"></i><!--Disabled Internet access--></span>
-                %end
-
-                <span style="color: #9E9E9E"><i class="fa fa-arrow-circle-o-down"></i>{{cpe.customs.get('_DOWNSTREAM')}}</span>
-                <span style="color: #9E9E9E"><i class="fa fa-arrow-circle-o-up"></i>{{cpe.customs.get('_UPSTREAM')}}</span>
-
-                %if cpe.customs.get('_VOICE1_CLI'):
-                 | <span style="color: #607D8B">1<i class="fa fa-phone" aria-hidden="true"></i> {{ cpe.customs.get('_VOICE1_CLI') }}</span>
-                %end
-                %if cpe.customs.get('_VOICE2_CLI'):
-                 | <span style="color: #607D8B">2<i class="fa fa-phone" aria-hidden="true"></i> {{ cpe.customs.get('_VOICE2_CLI') }}</span>
-                %end
-            </div>
-            <div style="font-size: 18px; color: #333;" id="ips">
 
             </div>
-
-
-        </div>
+            <div class="right" style="font-size: 22px; "><a href="http://{{ cpe.address }}.{{app.proxy_sufix}}" target=_blank>{{ cpe.address }}</a></div>
+            %if cpe.customs.get('_MAC') and len(cpe.customs.get('_MAC')):
+            <div title="{{ cpe.customs.get('_CPE_NOTES') }}" id="cpe-mac" style="cursor: pointer; text-align: right" class="font-fixed" style="font-size: 12px; text-align: right; color: #9E9E9E;">{{ cpe.customs.get('_MAC', '') }}</div>
+            %end
+        %end
     </div>
 
+    <div class="col-md-6">
+        %if cpe.customs.get('_CPE_ID'):
+        <div style="font-size: 22px">{{ cpe.customs.get('_CUSTOMER_NAME')}} {{cpe.customs.get('_CUSTOMER_SURNAME')}}</div>
+        <div style="font-size: 18px; color: #666;">
+            <!--
+                            <a href="https://www.google.es/maps?q={{ cpe.customs.get('_CUSTOMER_ADDRESS')}} {{cpe.customs.get('_CUSTOMER_CITY')}}" target="_blank">{{cpe.customs.get('_CUSTOMER_ADDRESS')}} {{cpe.customs.get('_CUSTOMER_CITY')}}</a>
+            -->
+            <a href="/cpe/{{ cpe.cpe_registration_host }}" data-type="registration-host">{{ cpe.cpe_registration_host }}</a>
+            <span>/</span>
+            <a href="/all?search=type:host {{cpe.cpe_registration_host}}" data-type="registration-id">{{ cpe.cpe_registration_id }}</a>
+            <span>:</span>
+            <span id="registration_state"> <i class="fa fa-spinner fa-spin"></i> <!--{{cpe.cpe_registration_state}}--></span>
+        </div>
+        <div style="font-size: 18px; color: #999;">
+            %if cpe.customs.get('_ACTIVE') == '1':
+            <span style="color: #64DD17" alt="Enabled Internet access" title="CPE Enabled"><i class="fa fa-thumbs-up"></i></span>
+                %if cpe.customs.get('_ACCESS') == '1':
+                <span style="color: #64DD17" alt="Enabled Internet access" title="Enabled Internet access"><i class="fa fa-globe"></i><!--Internet access--></span>
+                %else:
+                <span style="color: #E65100" alt="Disabled Internet access" title="Disabled Internet access"><i class="fa fa-globe text-danger"></i><!--Disabled Internet access--></span>
+                %end
+            %else:
+            <span style="color: #E65100" alt="Disabled Internet access" title="CPE disabled"><i class="fa fa-thumbs-down text-danger"></i><!--Disabled Internet access--></span>
+            %end
+
+            <span style="color: #9E9E9E"><i class="fa fa-arrow-circle-o-down"></i>{{cpe.customs.get('_DOWNSTREAM')}}</span>
+            <span style="color: #9E9E9E"><i class="fa fa-arrow-circle-o-up"></i>{{cpe.customs.get('_UPSTREAM')}}</span>
+
+            %if cpe.customs.get('_VOICE1_CLI'):
+             | <span style="color: #607D8B">1<i class="fa fa-phone" aria-hidden="true"></i> {{ cpe.customs.get('_VOICE1_CLI') }}</span>
+            %end
+            %if cpe.customs.get('_VOICE2_CLI'):
+             | <span style="color: #607D8B">2<i class="fa fa-phone" aria-hidden="true"></i> {{ cpe.customs.get('_VOICE2_CLI') }}</span>
+            %end
+        </div>
+        <div style="font-size: 18px; color: #333;" id="ips"> </div>
+        %else:
+          <span></span>
+        %end
+    </div>
 
     <div class="col-md-4">
         <div class="btn-group pull-right" role="group">
             %if cpe.customs.get('_TECH') == 'wimax':
-            <button id="btn-update" type="button" class="btn btn-default">Update</button>
-            <button id="btn-reboot" type="button" class="btn btn-default" {{'disabled' if not reboot_available else ''}} >Reboot</button>
-            <button id="btn-backup" type="button" class="btn btn-default">Backup</button>
+            <button id="btn-update" type="button" class="btn btn-default"><i class="fa fa-arrow-up" aria-hidden="true"></i>&nbsp; Update</button>
+            <button id="btn-backup" type="button" class="btn btn-default"><i class="fa fa-save" aria-hidden="true"></i>&nbsp; Backup</button>
             %end
+            <button id="btn-reboot" type="button" class="btn btn-default" {{'disabled' if not reboot_available else ''}} ><i class="fa fa-refresh" aria-hidden="true"></i>&nbsp; Reboot</button>
             %if cpe.customs.get('_TECH') == 'gpon':
-            <button id="btn-reboot" type="button" class="btn btn-default" {{'disabled' if not reboot_available else ''}} >
-            Reboot</button>
-            <button id="btn-factrestore" type="button" class="btn btn-default" {{'disabled' if not reboot_available else ''}} >Factory</button>
-            <button id="btn-unprovision" type="button" class="btn btn-default" {{'disabled' if not reboot_available else ''}} >Unprovision</button>
-            <button id="btn-tr069" type="button" class="btn btn-default" {{'disabled' if not tr069_available else ''}} >TR069</button>
-            %end
-            %if cpe.customs.get('_TECH') == 'docsis':
-            <button id="btn-reboot" type="button" class="btn btn-default" {{'disabled' if not reboot_available else ''}} >
-            Reboot</button>
+            <button id="btn-factrestore" type="button" class="btn btn-default" {{'disabled' if not reboot_available else ''}} ><i class="fa fa-fast-backward" aria-hidden="true"></i>&nbsp; Factory</button>
+            <button id="btn-unprovision" type="button" class="btn btn-default" {{'disabled' if not reboot_available else ''}} ><i class="fa fa-reply" aria-hidden="true"></i>&nbsp; Unprovision</button>
+            <button id="btn-tr069"       type="button" class="btn btn-default" {{'disabled' if not tr069_available else  ''}} ><i class="fa fa-gears" aria-hidden="true"></i>&nbsp; Reconfig (TR069)</button>
             %end
         </div>
-
     </div>
 
 
 </div>
 
-<br />
+<hr />
 
-    <div class="col-md-6">
-        <div id="timeline"></div>
-    </div>
+<div class="row">
+  <div class="col-md-6"><div id="timeline"></div></div>
+  <div class="col-md-6" id="quickservices"> </div>
+</row>
 
-    <div class="col-md-6" id="quickservices">
-          <!-- {{!helper.print_aggregation_tree(helper.get_host_service_aggregation_tree(cpe, app), helper.get_html_id(cpe), show_output=True)}} -->
-    </div>
-    <script>
-    // Actualizador servicios
-    (function worker() {
-      $.ajax({
-        url: '/cpe/quickservices/{{cpe_host.host_name}}',
-        success: function(data) {
-          $('#quickservices').html( $('ul',data) );
-        },
-        complete: function() {
-          setTimeout(worker, 1000);
-        }
-      });
-    })();
-    </script>
-
-
-
+<div clas="row">
     <div class="col-md-12 panel panel-default">
         <div class="panel-heading">
 
@@ -354,13 +345,15 @@ var realtimeTimer = window.setInterval(function(){
 
         </div>
 
-        <div class="panel-body">
+        <div class="panel-body {{ 'hidden' if not cpe.customs.get('_TECH') == 'gpon' else '' }} ">
+
           <div class="col-md-6">
             <div id="bw" style="width: 100%; height: 120px;"></div>
           </div>
           <div class="col-md-6">
             <div id="rx" style="width: 100%; height: 120px;"></div>
           </div>
+
         </div>
 
         <div id="info-panel" class="panel-body collapse">
@@ -437,22 +430,10 @@ var realtimeTimer = window.setInterval(function(){
     </div>
     </div>
 
-
     </div>
-
-
-<!--<div class="col-md-12 panel panel-default">
-<div class="panel-heading clearfix">
-    <h2 class="panel-title pull-left">Info</h2>
-
 </div>
 
-</div>-->
-
-<br />
-
-
-<div class="row container-fluid">
+<div class="row container-fluid clearfix">
     %if app.logs_module.is_available():
     <div class="col-md-6 panel panel-default">
         <div class="panel-heading">
@@ -600,5 +581,23 @@ function copyToClipboard(elem) {
     return succeed;
 }
 
+
+// Actualizador servicios
+(function worker() {
+  $.ajax({
+    url: '/cpe/quickservices/{{cpe_host.host_name}}',
+    success: function(data) {
+      $('#quickservices').html( $('ul',data) );
+    },
+    complete: function() {
+      setTimeout(worker, CPE_QUICKSERVICES_UPDATE_FREQUENCY);
+    }
+  });
+})();
+
+// Poller
+var realtimeTimer = window.setInterval(function(){
+  poll_cpe()
+}, CPE_POOL_UPDATE_FREQUENCY);
 
 </script>
