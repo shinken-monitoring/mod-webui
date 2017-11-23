@@ -129,6 +129,15 @@
 
          %hosts = app.datamgr.search_hosts_and_services('type:host hg:"'+group.get_name()+'"', user)
          %h = app.datamgr.get_hosts_synthesis(hosts, user=user)
+
+         %nHosts=h['nb_elts']
+         %nGroups=len(group.get_hostgroup_members())
+
+         %# Filter empty groups
+         %if nHosts == 0 and nGroups == 0:
+         %continue
+         %end
+
          %if debug:
          <div>Group <strong>{{group.get_name()}}</strong>:<ul>
             %for host in hosts:
@@ -145,10 +154,6 @@
            %even=''
          %end
 
-         %nHosts=h['nb_elts']
-         %nGroups=len(group.get_hostgroup_members())
-         %# Filter empty groups ?
-         %#if nHosts > 0 or nGroups > 0:
          <li class=" list-group-item clearfix {{'alert-danger' if h['nb_elts'] == h['nb_down'] and h['nb_elts'] != 0 else ''}} {{even}}">
             <h3>
                %if nGroups > 0:
@@ -230,7 +235,6 @@
                </section>
             </section>
          </li>
-         %#end
       %end
    </ul>
 </div>
