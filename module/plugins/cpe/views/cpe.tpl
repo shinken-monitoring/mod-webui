@@ -50,9 +50,8 @@ Invalid element name
 
 <script src="http://www.flotcharts.org/flot/jquery.flot.js" charset="utf-8"></script>
 <script src="/static/cpe/js/plots.js" charset="utf-8"></script>
-
 <script>
-var CPE_QUICKSERVICES_UPDATE_FREQUENCY = 2000
+var CPE_QUICKSERVICES_UPDATE_FREQUENCY = 2500
 var CPE_POOL_UPDATE_FREQUENCY = 5000
 
 %if app.proxy_sufix:
@@ -236,14 +235,20 @@ function poll_cpe() {
     <div class="col-md-2">
 
         %if cpe.customs.get('_CPE_ID'):
-            <div class="right" style="font-size: 24px"><a href="/cpe/{{ cpe.host_name }}">{{ cpe.host_name }}</a></div>
+            <div class="right" style="font-size: 24px"><a href="/host/{{ cpe.host_name }}">{{ cpe.host_name }}</a></div>
             <div class="right" style="font-size: 18px; ">{{cpe.customs.get('_CPE_MODEL')}}</div>
             %if cpe.customs.get('_SN') and len(cpe.customs.get('_SN')):
             <div title="{{ cpe.customs.get('_CPE_NOTES') }}" id="cpe-sn" style="cursor: pointer; text-align: right" class="font-fixed" style="font-size: 12px; text-align: right; color: #9E9E9E;">{{ cpe.customs.get('_SN', '') }}</div>
             %end
+            
             %if cpe.customs.get('_MAC') and len(cpe.customs.get('_MAC')):
             <div title="{{ cpe.customs.get('_CPE_NOTES') }}" id="cpe-mac" style="cursor: pointer; text-align: right" class="font-fixed" style="font-size: 12px; text-align: right; color: #9E9E9E;">{{ cpe.customs.get('_MAC', '') }}</div>
             %end
+
+            %if cpe.customs.get('_CPE_NOTES'):
+            <div id="cpe-notes" style="cursor: pointer; text-align: right" class="font-fixed" style="font-size: 12px; text-align: right; color: #9E9E9E;">{{ cpe.customs.get('_CPE_NOTES') }}</div>
+            %end
+
         %else:
             <div class="right" style="font-size: 24px">
               <!--
