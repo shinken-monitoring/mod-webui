@@ -148,7 +148,7 @@ Next check <strong>{{helper.print_duration(pb.next_chk)}}</strong>
                   <!--</div>-->
                </td>
                <!--<td title="Since {{time.strftime("%d %b %Y %H:%M:%S", time.localtime(pb.last_state_change))}}">-->
-                 <!--{{!helper.print_duration(pb.last_state_change, just_duration=True, x_elts=2)}}-->
+                 {#{{!helper.print_duration(pb.last_state_change, just_duration=True, x_elts=2)}}#}
                <!--</td>-->
                <td class="row">
                   <div class="pull-right">
@@ -182,7 +182,6 @@ Next check <strong>{{helper.print_duration(pb.next_chk)}}</strong>
                      <!--<br>-->
 
                     <samp style="font-size:0.95em;">{{! pb.output}}</samp>
-                    <!--{{! pb.output}}-->
                      %if pb.long_output:
                      <div class="long-output">
                         {{! pb.long_output}}
