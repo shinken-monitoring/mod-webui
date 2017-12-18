@@ -28,9 +28,6 @@
         %end
       </td>
       <td width="100%">
-        <!--<div class="pull-right">-->
-          {#{{!helper.get_perfdata_pies(pb)}}&nbsp;#}
-          <!--</div>-->
         <div class="ellipsis output">
           <div>
             <a href="/host/{{pb.host_name}}">

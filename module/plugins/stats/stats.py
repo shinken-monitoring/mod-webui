@@ -33,8 +33,10 @@ def get_global_stats():
     user = app.bottle.request.environ['USER']
     user.is_administrator() or app.redirect403()
 
-    range_end = int(time.time())
-    range_start = int(app.request.GET.get('range_start', range_end - 2592000))
+    days = int(app.request.GET.get('days', 30))
+
+    range_end = int(app.request.GET.get('range_end', time.time()))
+    range_start = int(app.request.GET.get('range_start', range_end - (days * 86400)))
 
     logs = list(app.logs_module.get_ui_logs(range_start=range_start, range_end=range_end, filters={'type': 'SERVICE NOTIFICATION', 'command_name': 'notify-service-by-hubot'}, limit=None))
     hosts = Counter()
@@ -50,8 +52,10 @@ def get_service_stats(name):
     user = app.bottle.request.environ['USER']
     user.is_administrator() or app.redirect403()
 
-    range_end = int(time.time())
-    range_start = int(app.request.GET.get('range_start', range_end - 2592000))
+    days = int(app.request.GET.get('days', 30))
+
+    range_end = int(app.request.GET.get('range_end', time.time()))
+    range_start = int(app.request.GET.get('range_start', range_end - (days * 86400)))
 
     logs = list(app.logs_module.get_ui_logs(range_start=range_start, range_end=range_end, filters={'type': 'SERVICE NOTIFICATION', 'command_name': 'notify-service-by-hubot', 'service_description': name}, limit=None))
     hosts = Counter()
@@ -63,8 +67,10 @@ def get_host_stats(name):
     user = app.bottle.request.environ['USER']
     user.is_administrator() or app.redirect403()
 
-    range_end = int(time.time())
-    range_start = int(app.request.GET.get('range_start', range_end - 2592000))
+    days = int(app.request.GET.get('days', 30))
+
+    range_end = int(app.request.GET.get('range_end', time.time()))
+    range_start = int(app.request.GET.get('range_start', range_end - (days * 86400)))
 
     logs = list(app.logs_module.get_ui_logs(range_start=range_start, range_end=range_end, filters={'type': 'SERVICE NOTIFICATION', 'command_name': 'notify-service-by-hubot', 'host_name': name}, limit=None))
     services = Counter()

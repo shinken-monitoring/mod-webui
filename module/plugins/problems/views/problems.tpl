@@ -147,9 +147,6 @@ Next check <strong>{{helper.print_duration(pb.next_chk)}}</strong>
                     <!--<i class="fa fa-plus"></i>-->
                   <!--</div>-->
                </td>
-               <!--<td title="Since {{time.strftime("%d %b %Y %H:%M:%S", time.localtime(pb.last_state_change))}}">-->
-                 {#{{!helper.print_duration(pb.last_state_change, just_duration=True, x_elts=2)}}#}
-               <!--</td>-->
                <td class="row">
                   <div class="pull-right">
                      {{!helper.get_perfdata_pies(pb)}}&nbsp;

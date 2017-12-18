@@ -439,7 +439,7 @@ class Helper(object):
                 used_pct = None
 
             title = "%s %s%s" % (p.name, p.value, p.uom)
-            if p.uom != '%' and used_pct is not None:
+            if p.uom != '%' and type(used_pct) is float:
                 title += " ({:.2f}%)".format(used_pct)
 
             return '<span class="sparkline piechart" title="%s" role="img" sparkType="pie" sparkBorderWidth="0" sparkSliceColors="[%s,#f5f5f5]" values="%s,%s"></span>' % (title, color, used_value, unused_value)
