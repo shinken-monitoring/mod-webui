@@ -182,7 +182,7 @@ def get_global_history():
     range_end = int(app.request.GET.get('range_end', midnight_timestamp + 86399))
     logger.debug("[WebUI-logs] get_global_history, range: %d - %d", range_start, range_end)
 
-    logs = _get_logs(elt=None, filters={'type': {'$in': params['logs_type']}}, range_start=range_start, range_end=range_end)
+    logs = _get_logs(filters={'type': {'$in': params['logs_type']}}, range_start=range_start, range_end=range_end)
 
     if logs is None:
         message = "No module configured to get Shinken logs from database!"
