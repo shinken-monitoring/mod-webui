@@ -51,7 +51,7 @@ Invalid element name
 <script src="http://www.flotcharts.org/flot/jquery.flot.js" charset="utf-8"></script>
 <script src="/static/cpe/js/plots.js" charset="utf-8"></script>
 <script>
-var CPE_QUICKSERVICES_UPDATE_FREQUENCY = 2500
+var CPE_QUICKSERVICES_UPDATE_FREQUENCY = 5000
 var CPE_POOL_UPDATE_FREQUENCY = 5000
 
 %if app.proxy_sufix:
