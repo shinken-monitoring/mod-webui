@@ -52,9 +52,9 @@ function formatBPS(c) {
 function toHHMMSS(num) {
     var sec_num = parseInt(num, 10); // don't forget the second param
     var days    = Math.floor(sec_num / (3600 * 24));
-    var hours   = Math.floor(sec_num / 3600);
-    var minutes = Math.floor((sec_num - (hours * 3600)) / 60);
-    var seconds = sec_num - (hours * 3600) - (minutes * 60);
+    var hours   = Math.floor((sec_num / 3600) % 24);
+    var minutes = Math.floor((sec_num / 60) % 60);
+    var seconds = sec_num % 60;
 
     if (days    >  1) {days    = days + "d " } else { days = ""}
     if (hours   < 10) {hours   = "0"+hours;}
@@ -62,7 +62,6 @@ function toHHMMSS(num) {
     if (seconds < 10) {seconds = "0"+seconds;}
     return days+hours+':'+minutes+':'+seconds;
 };
-
 
 var plots = {}
 var plotOptions = {}
@@ -86,10 +85,27 @@ plotOptions['bw'] = {
 plotOptions['rx']  = {
   series: {  shadowSize: 0 },
   yaxis: {
-    min: -50,
+    min: -127,
     max: 0,
     ticks: 8,
     tickFormatter: function(d) { ;return (d != 0) ? normalize_tick(d) : 'dbm' + " 0" }
+  },
+  xaxis: {
+    show: false
+  },
+  legend: {
+      position: "ne",
+      backgroundOpacity: 0.4
+  }
+}
+
+plotOptions['ccq']  = {
+  series: {  shadowSize: 0 },
+  yaxis: {
+    min: 0,
+    max: 100,
+    ticks: 8,
+    tickFormatter: function(d) { ;return d }
   },
   xaxis: {
     show: false
@@ -110,18 +126,28 @@ var plotData = {
       {data: [], color: "#8923C6"},
       {data: [], color: "#C62389"}
     ],
+  'ccq': [
+      {data: [], color: "#8BC34A"}
+    ],
 }
 
 
 $( function(){
-    plots['bw'] = $.plot("#bw", plotData['bw'], plotOptions['bw']);
-    plots['rx'] = $.plot("#rx", plotData['rx'], plotOptions['rx']);
+    plots['bw']  = $.plot("#plot_bw",  plotData['bw'],  plotOptions['bw']);
+    plots['rx']  = $.plot("#plot_rx",  plotData['rx'],  plotOptions['rx']);
+    plots['ccq'] = $.plot("#plot_ccq", plotData['ccq'], plotOptions['ccq']);
 });
 
 
 function updateGraphs(data) {
+  console.log(data)
 
-  if (data.dnbw && data.upbw) {
+  if (data.dnbw_d && data.upbw_d) {
+    plotData.bw[0].data.push([ Date.now() , parseInt(data.dnbw_d) ])
+    plotData.bw[0].label = "DnBw: " + humanBytes(data.dnbw_d)
+    plotData.bw[1].data.push([ Date.now() , parseInt(data.upbw_d) ])
+    plotData.bw[1].label = "UpBw: " + humanBytes(data.upbw_d)
+  } else if (data.dnbw && data.upbw) {
     plotData.bw[0].data.push([ Date.now() , parseInt(data.dnbw) ])
     plotData.bw[0].label = "DnBw: " + humanBytes(data.dnbw)
     plotData.bw[1].data.push([ Date.now() , parseInt(data.upbw) ])
@@ -133,6 +159,11 @@ function updateGraphs(data) {
     plotData.rx[0].label = "DnRx: " + data.dnrx + " dbm"
     plotData.rx[1].data.push([ Date.now() , data.uprx ])
     plotData.rx[1].label = "UpRx: " + data.uprx + " dbm"
+  }
+
+  if (data.ccq) {
+    plotData.ccq[0].data.push([ Date.now(), data.ccq ])
+    plotData.ccq[0].label = "CCQ: " + data.ccq + "%"
   }
 
   for (var key in plots) {
@@ -150,5 +181,4 @@ $(window).bind('resize', function(event, ui) {
         plots[key].setupGrid();
         plots[key].draw();
     }
-
 });

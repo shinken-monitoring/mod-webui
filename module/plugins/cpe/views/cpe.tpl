@@ -51,7 +51,7 @@ Invalid element name
 <script src="http://www.flotcharts.org/flot/jquery.flot.js" charset="utf-8"></script>
 <script src="/static/cpe/js/plots.js" charset="utf-8"></script>
 <script>
-var CPE_QUICKSERVICES_UPDATE_FREQUENCY = 2500
+var CPE_QUICKSERVICES_UPDATE_FREQUENCY = 5000
 var CPE_POOL_UPDATE_FREQUENCY = 5000
 
 %if app.proxy_sufix:
@@ -65,8 +65,6 @@ var proxy_prefix = "h";
 %else:
 var proxy_prefix = "";
 %end
-
-
 
 var cpe = {
     name: '{{cpe_host.host_name}}',
@@ -127,15 +125,19 @@ function poll_cpe() {
             $('#dnrx').html(data.dnrx)
             $('#uprx').html(data.uprx)
 
+            if (data.ccq) {
+              $('#ccq').html(data.ccq + "%").show()
+            }
+
             d1 = Date.parse(data.uptime)
             d2 = new Date()
             delta = (d2 - d1) / 1000
 
-            $('#uptime').html(toHHMMSS(delta))
+            $('#uptime').html(toHHMMSS(data.uptime))
 
             $('#registration_state').html('<span>'+data.status+'</span>');
 
-            console.log(data);
+            //console.log(data);
             //enable or disable buttons
 
             if ( $.inArray(data.status, STATUS_GREEN ) >= 0 ) {
@@ -200,8 +202,6 @@ function poll_cpe() {
 
             updateGraphs(data);
 
-
-
         }
 
     });
@@ -240,7 +240,7 @@ function poll_cpe() {
             %if cpe.customs.get('_SN') and len(cpe.customs.get('_SN')):
             <div title="{{ cpe.customs.get('_CPE_NOTES') }}" id="cpe-sn" style="cursor: pointer; text-align: right" class="font-fixed" style="font-size: 12px; text-align: right; color: #9E9E9E;">{{ cpe.customs.get('_SN', '') }}</div>
             %end
-            
+
             %if cpe.customs.get('_MAC') and len(cpe.customs.get('_MAC')):
             <div title="{{ cpe.customs.get('_CPE_NOTES') }}" id="cpe-mac" style="cursor: pointer; text-align: right" class="font-fixed" style="font-size: 12px; text-align: right; color: #9E9E9E;">{{ cpe.customs.get('_MAC', '') }}</div>
             %end
@@ -348,24 +348,29 @@ function poll_cpe() {
             <span class="fa fa-calendar"></span> <span id="uptime">-</span></span>
             <span class="fa fa-dashboard"></span> <span id="dnbw">-</span>/<span id="upbw">-</span>
             <span class="fa fa-signal"></span> <span id="uprx">-</span>/<span id="dnrx">-</span>dbm
+            <span class="fa fa-signal"></span> <span id="ccq">-</span><dbm>
             <span class="fa fa-reorder"></span> <span id="service_ports"></span>
             <span>&nbsp;</span>
             <span class="btn btn-primary btn-xs" data-toggle="collapse" data-target="#info-panel">+</span>
           </div>
 
-        <h4 class="panel-title">Realtime</h4>
+          <h4 class="panel-title">Realtime</h4>
 
         </div>
 
-        <div class="panel-body {{ 'hidden' if not cpe.customs.get('_TECH') == 'gpon' else '' }} ">
+        <div class="panel-body {{ 'hidden' if not cpe.customs.get('_TECH') in ['gpon','wimax'] else '' }} ">
 
-          <div class="col-md-6">
-            <div id="bw" style="width: 100%; height: 120px;"></div>
+          <div class="col-md-4">
+            <div id="plot_bw" style="width: 100%; height: 120px;"></div>
           </div>
-          <div class="col-md-6">
-            <div id="rx" style="width: 100%; height: 120px;"></div>
+          <div class="col-md-4">
+            <div id="plot_rx" style="width: 100%; height: 120px;"></div>
           </div>
-
+          %if cpe.customs.get('_TECH') == 'wimax':
+          <div class="col-md-4">
+            <div id="plot_ccq" style="width: 100%; height: 120px;"></div>
+          </div>
+          %end
         </div>
 
         <div id="info-panel" class="panel-body collapse">

@@ -88,6 +88,7 @@ except ImportError:
 root_app = bottle.default_app()
 # WebUI application
 webui_app = bottle.Bottle()
+webui_app2 = bottle.Bottle()
 
 # Debug
 bottle.debug(True)
@@ -508,6 +509,7 @@ class Webui_broker(BaseModule, Daemon):
     # -----------------------------------------------------
     # We want a lock manager version of the plugin functions
     def lockable_function(self, f):
+        logger.warning("[WebUI] lockable_function, someone want lock!!!!")
         def lock_version(**args):
             self.wait_for_no_writers()
             try:
@@ -571,7 +573,7 @@ class Webui_broker(BaseModule, Daemon):
                     self.nb_writers -= 1
                     self.global_lock.release()
 
-            logger.debug("[WebUI] time to manage %s broks (time %.2gs)", len(l), time.clock() - start)
+            logger.debug("[WebUI] time to manage %s broks (time %.2gs) readers=%d/writers=%d", len(l), time.clock() - start, self.nb_readers, self.nb_writers)
 
         logger.debug("[WebUI] manage_brok_thread end ...")
 
@@ -650,7 +652,8 @@ class Webui_broker(BaseModule, Daemon):
                     # Ok, we will just use the lock for all
                     # plugin page, but not for static objects
                     # so we set the lock at the function level.
-                    f = webui_app.route(route, callback=self.lockable_function(f), method=method, name=name, search_engine=search_engine)
+                    # f = webui_app.route(route, callback=self.lockable_function(f), method=method, name=name, search_engine=search_engine)
+                    f = webui_app.route(route, callback=f, method=method, name=name, search_engine=search_engine)
 
                 # If the plugin declare a static entry, register it
                 # and remember: really static! because there is no lock
@@ -986,4 +989,3 @@ def login_required():
     logger.debug("[WebUI] update current user: %s", user)
     request.environ['USER'] = user
     bottle.BaseTemplate.defaults['user'] = user
-

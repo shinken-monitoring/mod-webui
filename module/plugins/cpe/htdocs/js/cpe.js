@@ -4,6 +4,26 @@
 'use strict';
 var timeline;
 
+function derive(value, value_last, check_time, check_time_last){
+    var t_delta = check_time - check_time_last;
+		var d_delta = 0;
+
+    if (t_delta == 0) {
+			return 0;
+		}
+
+    if (value < value_last) {
+        d_delta = 4294967295 - value_last + value;
+    } else {
+        d_delta = value - value_last;
+		}
+
+    var value = d_delta / t_delta;
+
+    return value;
+}
+
+
 $.fn.dataTable.ext.errMode = 'none';
 
 var ICON_OK       = '<span class="fa-stack" title="service is OK"><i class="fa fa-circle fa-stack-2x font-ok"></i><i class="fa fa-arrow-up fa-stack-1x fa-inverse"></i></span>';
