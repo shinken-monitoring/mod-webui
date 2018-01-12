@@ -21,12 +21,51 @@
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 
 import time
-import urllib
+from datetime import datetime, timedelta
 
-from collections import Counter
+from collections import Counter, OrderedDict
+from itertools import groupby
 
 ### Will be populated by the UI with it's own value
 app = None
+
+def _graph(logs):
+    groups_hour = groupby(logs, key=lambda x: (x['time'] - (x['time'] % 3600)))
+
+    data = OrderedDict()
+    for k, v in groups_hour:
+        data[k] = len(list(v))
+
+    # Smooth graph
+    avg = sum(data.values()) / len(data.values())
+    variance = sum([(v - avg)**2 for v in data.values()]) / len(data.values())
+    deviation = variance**0.5
+
+    # Remove every value that is 3 times out of standard deviation
+    for k, v in data.items():
+       if v > (avg + deviation*3):
+           data[k] = avg
+
+    # Remove every value that is out of standard deviation and more than two times previous value
+    for k, v in data.items():
+        if k - 3600 in data and k + 3600 in data:
+            if v > (avg + deviation) and v > (2 * data[k - 3600]):
+                data[k] = (data[k - 3600] + data[k + 3600]) / 2
+
+    if datetime.fromtimestamp(logs[-1]['time']) < (datetime.now() - timedelta(7)):
+        # Group by 24h
+        data_24 = OrderedDict()
+        for k, v in data.items():
+            t = (k - k % (3600 * 24))
+            if t not in data_24:
+                data_24[t] = 0
+            data_24[t] += v
+        data = data_24
+
+    # Convert timestamp ms to s
+    graph = [{'t': k*1000, 'y': v} for k, v in data.items()]
+
+    return graph
 
 
 def get_global_stats():
@@ -46,7 +85,7 @@ def get_global_stats():
         hosts[l['host_name']] += 1
         services[l['service_description']] += 1
         hostsservices[l['host_name'] + '/' + l['service_description']] += 1
-    return {'hosts': hosts, 'services': services, 'hostsservices': hostsservices}
+    return {'hosts': hosts, 'services': services, 'hostsservices': hostsservices, 'days': days, 'graph': _graph(logs)}
 
 def get_service_stats(name):
     user = app.bottle.request.environ['USER']
@@ -61,7 +100,7 @@ def get_service_stats(name):
     hosts = Counter()
     for l in logs:
         hosts[l['host_name']] += 1
-    return {'service': name, 'hosts': hosts}
+    return {'service': name, 'hosts': hosts, 'days': days}
 
 def get_host_stats(name):
     user = app.bottle.request.environ['USER']
@@ -76,7 +115,7 @@ def get_host_stats(name):
     services = Counter()
     for l in logs:
         services[l['service_description']] += 1
-    return {'host': name, 'services': services}
+    return {'host': name, 'services': services, 'days': days}
 
 
 pages = {
