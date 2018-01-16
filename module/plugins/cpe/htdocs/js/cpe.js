@@ -1,8 +1,50 @@
 /* Copyright (C) 2009-2015:
 
    */
+
 'use strict';
 var timeline;
+
+var Krill = {
+
+  // label=valUOM;warn;crit;min;max
+  PERFDATA_PATTERN: /([^=]+)=([\d\.\-]+)([\w%]*);?([\d\.\-:~@]+)?;?([\d\.\-:~@]+)?;?([\d\.\-]+)?;?([\d\.\-]+)?\s*/,
+
+  parsePerfdata: function(perfdata) {
+    var parsed = [];
+
+    if (!perfdata)
+        return [];
+
+    // Clean up perfdata
+    perfdata = perfdata.replace('/\s*=\s*/', '=');
+
+    var perfdataMatches = perfdata.match(new RegExp(this.PERFDATA_PATTERN.source, "g"));
+
+    // Check for empty perfdata
+    if (perfdataMatches == null)
+        return [];
+
+    for (var i = 0; i < perfdataMatches.length; i++) {
+
+      var tmpPerfdataMatches = perfdataMatches[i].match(this.PERFDATA_PATTERN);
+
+      parsed.push([
+        tmpPerfdataMatches[1], // label
+        tmpPerfdataMatches[2], // value
+        tmpPerfdataMatches[3], // UOM
+        tmpPerfdataMatches[4], // warn
+        tmpPerfdataMatches[5], // crit
+        tmpPerfdataMatches[6], // min
+        tmpPerfdataMatches[7], // max
+      ]);
+
+    }
+    return parsed
+  }
+}
+
+//$.fn.dataTable.ext.errMode = 'none';
 
 function derive(value, value_last, check_time, check_time_last){
     var t_delta = check_time - check_time_last;
@@ -23,13 +65,15 @@ function derive(value, value_last, check_time, check_time_last){
     return value;
 }
 
-
-$.fn.dataTable.ext.errMode = 'none';
-
 var ICON_OK       = '<span class="fa-stack" title="service is OK"><i class="fa fa-circle fa-stack-2x font-ok"></i><i class="fa fa-arrow-up fa-stack-1x fa-inverse"></i></span>';
 var ICON_WARNING  = '<span class="fa-stack" title="service is WARNING"><i class="fa fa-circle fa-stack-2x font-warning"></i><i class="fa fa-exclamation fa-stack-1x fa-inverse"></i></span>';
 var ICON_CRITICAL = '<span class="fa-stack" "=""><i class="fa fa-circle fa-stack-2x font-critical"></i><i class="fa fa-arrow-down fa-stack-1x fa-inverse"></i></span>';
 var ICON_UNKONWN  = '<span class="fa-stack" title="service is UNKNOWN"><i class="fa fa-circle fa-stack-2x font-unknown"></i><i class="fa fa-question fa-stack-1x fa-inverse"></i></span>';
+
+var COLOR_OK        = '#8BC34A';
+var COLOR_WARNING   = '#FAA732';
+var COLOR_CRITICAL  = '#FF7043';
+var COLOR_UNKONWN   = '#49AFCD';
 
 function getHTMLState(val) {
 	if(val == 0) {
@@ -40,6 +84,19 @@ function getHTMLState(val) {
 		return ICON_CRITICAL;
 	} else if ( val == 3 ) {
 		return ICON_UNKONWN;
+	}
+
+}
+
+function getColorState(val) {
+	if(val == 0) {
+		return COLOR_OK;
+	} else if ( val == 1 ) {
+		return COLOR_WARNING;
+	} else if ( val == 2 ) {
+		return COLOR_CRITICAL;
+	} else if ( val == 3 ) {
+		return COLOR_UNKONWN;
 	}
 
 }

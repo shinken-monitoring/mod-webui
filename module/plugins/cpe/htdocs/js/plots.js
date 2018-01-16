@@ -127,15 +127,26 @@ var plotData = {
       {data: [], color: "#C62389"}
     ],
   'ccq': [
-      {data: [], color: "#8BC34A"}
+      {data: [], color: "#3F51B5"},
+      {data: [], color: "#2196F3"},
+      {data: [], color: "#F50057"},
+      {data: [], color: "#D500F9"}
     ],
 }
 
 
 $( function(){
+  if( $("#plot_bw").length ) {
     plots['bw']  = $.plot("#plot_bw",  plotData['bw'],  plotOptions['bw']);
+  }
+
+  if( $("#plot_rx").length ) {
     plots['rx']  = $.plot("#plot_rx",  plotData['rx'],  plotOptions['rx']);
+  }
+
+  if( $("#plot_ccq").length ) {
     plots['ccq'] = $.plot("#plot_ccq", plotData['ccq'], plotOptions['ccq']);
+  }
 });
 
 
@@ -154,16 +165,37 @@ function updateGraphs(data) {
     plotData.bw[1].label = "UpBw: " + humanBytes(data.upbw)
   }
 
-  if (data.dnrx && data.uprx) {
+  if (typeof data.dnrx != 'undefined' && typeof data.uptx != 'undefined') {
+    plotData.rx[0].data.push([ Date.now() , data.dnrx ])
+    plotData.rx[0].label = "DnRx: " + data.dnrx + " dbm"
+    plotData.rx[1].data.push([ Date.now() , data.uptx ])
+    plotData.rx[1].label = "UpTx: " + data.uptx + " dbm"
+  }
+
+  if (typeof data.dnrx != 'undefined' && typeof data.uprx != 'undefined') {
     plotData.rx[0].data.push([ Date.now() , data.dnrx ])
     plotData.rx[0].label = "DnRx: " + data.dnrx + " dbm"
     plotData.rx[1].data.push([ Date.now() , data.uprx ])
     plotData.rx[1].label = "UpRx: " + data.uprx + " dbm"
   }
 
-  if (data.ccq) {
+  if (typeof data.ccq != 'undefined') {
     plotData.ccq[0].data.push([ Date.now(), data.ccq ])
     plotData.ccq[0].label = "CCQ: " + data.ccq + "%"
+  }
+
+  if (typeof data.dncorr != 'undefined' && typeof data.dnko != 'undefined') {
+    plotData.ccq[0].data.push([ Date.now(), data.dncorr ])
+    plotData.ccq[0].label = "dncorr: " + data.dncorr + "%"
+    plotData.ccq[1].data.push([ Date.now(), data.dnko ])
+    plotData.ccq[1].label = "dnko: " + data.dnko + "%"
+  }
+
+  if (typeof data.upcorr != 'undefined' && typeof data.upko != 'undefined') {
+    plotData.ccq[2].data.push([ Date.now(), data.upcorr ])
+    plotData.ccq[2].label = "upcorr: " + data.upcorr + "%"
+    plotData.ccq[3].data.push([ Date.now(), data.upko ])
+    plotData.ccq[3].label = "upko: " + data.upko + "%"
   }
 
   for (var key in plots) {

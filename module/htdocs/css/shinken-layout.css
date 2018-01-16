@@ -110,6 +110,15 @@ html, body {
    #page-wrapper.fullscreen {
       margin: 0 0 0 0;
    }
+
+   .fullscreen #page-wrapper {
+     margin: 0;
+   }
+
+   .fullscreen .sidebar {
+     display: none;
+   }
+
 }
 @media(min-width:768px) {
     .sidebar {

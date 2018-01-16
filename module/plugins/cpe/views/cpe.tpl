@@ -42,7 +42,7 @@ Invalid element name
 
 %title = cpe_type.title()+' detail: ' + cpe_display_name
 
-%js=['js/shinken-actions.js', 'cpe/js/bootstrap-switch.min.js', 'cpe/js/datatables.min.js', 'cpe/js/google-charts.min.js', 'cpe/js/vis.min.js', 'cpe/js/cpe.js?1234']
+%js=['js/shinken-actions.js', 'cpe/js/bootstrap-switch.min.js', 'cpe/js/datatables.min.js', 'cpe/js/google-charts.min.js', 'cpe/js/vis.min.js', 'cpe/js/cpe.js?122345']
 %css=['cpe/css/bootstrap-switch.min.css', 'cpe/css/datatables.min.css', 'cpe/css/vis.min.css', 'cpe/css/cpe.css']
 %rebase("layout", js=js, css=css, breadcrumb=breadcrumb, title=title)
 
@@ -169,22 +169,9 @@ function poll_cpe() {
                })
             }
 
-            //if(data.status == "UP" || data.status == "WORKING" || data.status == "WORKING") {
-            if ( $.inArray(data.status, STATUS_GREEN ) >= 0 ) {
-                $('#registration_state').css('color','#8BC34A');
-		            $('#status2').html(getHTMLState(0))
-            } else if ( $.inArray(data.status, STATUS_RED ) >= 0 )  {
-                $('#registration_state').css('color','#FF7043');
-		            $('#status2').html(getHTMLState(2))
-            } else if ( $.inArray(data.status, STATUS_YELLOW ) >= 0 )  {
-                $('#registration_state').css('color','#FAA732');
-                $('#status2').html(getHTMLState(1))
-            } else if ( $.inArray(data.status, STATUS_BLUE ) >= 0 )  {
-                $('#registration_state').css('color','#49AFCD');
-                $('#status2').html(getHTMLState(3))
-            } else { // GRAY COLOR
-                $('#registration_state').css('color','#DDD');
-                $('#status2').html(getHTMLState(3))
+            if (typeof data.status_id !== "undefined") {
+              $('#registration_state').css('color', getColorState(data.status_id) );
+              $('#status2').html(getHTMLState(data.status_id));
             }
 
             line = ""
@@ -199,6 +186,37 @@ function poll_cpe() {
                 //notify("{{cpe_host.host_name}} is " + data.status);
                 cpe.state = data.status;
             }
+
+            if (typeof data.perfdatas  !== 'undefined') {
+
+              var downstreams = Krill.parsePerfdata(data.perfdatas.downstream);
+              var upstreams   = Krill.parsePerfdata(data.perfdatas.upstream);
+              var qoss        = Krill.parsePerfdata(data.perfdatas.qos);
+
+              for (var i = 0; i < downstreams; i++) {
+                if (downstreams[i][0] == 'dnrx') {
+                  data.dnrx = parseFloat(downstreams[i][1])
+                }
+              }
+
+              for (var i = 0; i < upstreams; i++) {
+                if (upstreams[i][0] == 'uptx') {
+                  data.uptx = parseFloat(upstreams[i][1])
+                }
+              }
+
+
+              for (var i = 0; i < qoss; i++) {
+                if (qoss[i][0] == 'dncorr') {
+                  data.dncorr = parseFloat(upstreams[i][1])
+                }
+                if (qoss[i][0] == 'dnko') {
+                  data.dnko = parseFloat(upstreams[i][1])
+                }
+              }
+
+            }
+
 
             updateGraphs(data);
 
@@ -276,13 +294,10 @@ function poll_cpe() {
     <div class="col-md-6">
         %if cpe.customs.get('_CPE_ID'):
         <div style="font-size: 22px">{{ cpe.customs.get('_CUSTOMER_NAME')}} {{cpe.customs.get('_CUSTOMER_SURNAME')}}</div>
-        <div style="font-size: 18px; color: #666;">
-            <!--
-                            <a href="https://www.google.es/maps?q={{ cpe.customs.get('_CUSTOMER_ADDRESS')}} {{cpe.customs.get('_CUSTOMER_CITY')}}" target="_blank">{{cpe.customs.get('_CUSTOMER_ADDRESS')}} {{cpe.customs.get('_CUSTOMER_CITY')}}</a>
-            -->
+        <div style="font-size: 18px; color: #666; white-space:normal;">
             <a href="/cpe/{{ cpe.cpe_registration_host }}" data-type="registration-host">{{ cpe.cpe_registration_host }}</a>
             <span>/</span>
-            <a href="/all?search=type:host {{cpe.cpe_registration_host}}" data-type="registration-id">{{ cpe.cpe_registration_id }}</a>
+            <a href="/all?search=type:host {{cpe.cpe_registration_id}}" data-type="registration-id">{{ cpe.cpe_registration_id }}</a>
             <span>:</span>
             <span id="registration_state"> <i class="fa fa-spinner fa-spin"></i> <!--{{cpe.cpe_registration_state}}--></span>
         </div>
@@ -316,7 +331,7 @@ function poll_cpe() {
 
     <div class="col-md-4">
         <div class="btn-group pull-right" role="group">
-            %if cpe.customs.get('_TECH') == 'wimax':
+            %if cpe.customs.get('_TECH') in ('wimax'):
             <button id="btn-update" type="button" class="btn btn-default"><i class="fa fa-arrow-up" aria-hidden="true"></i>&nbsp; Update</button>
             <button id="btn-backup" type="button" class="btn btn-default"><i class="fa fa-save" aria-hidden="true"></i>&nbsp; Backup</button>
             %end
@@ -358,7 +373,7 @@ function poll_cpe() {
 
         </div>
 
-        <div class="panel-body {{ 'hidden' if not cpe.customs.get('_TECH') in ['gpon','wimax'] else '' }} ">
+        <div class="panel-body {{ 'hidden' if not cpe.customs.get('_TECH') in ['gpon','wimax','docsis'] else '' }} ">
 
           <div class="col-md-4">
             <div id="plot_bw" style="width: 100%; height: 120px;"></div>
@@ -366,7 +381,7 @@ function poll_cpe() {
           <div class="col-md-4">
             <div id="plot_rx" style="width: 100%; height: 120px;"></div>
           </div>
-          %if cpe.customs.get('_TECH') == 'wimax':
+          %if cpe.customs.get('_TECH') in ('wimax','docsis'):
           <div class="col-md-4">
             <div id="plot_ccq" style="width: 100%; height: 120px;"></div>
           </div>
