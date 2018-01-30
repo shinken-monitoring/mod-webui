@@ -18,14 +18,34 @@ Invalid element name
 %from shinken.macroresolver import MacroResolver
 
 %# Main variables
-%cpe_type = cpe.__class__.my_type
-%cpe_host = cpe if cpe_type=='host' else cpe.host
-%cpe_name = cpe.host_name if cpe_type=='host' else cpe.host.host_name+'/'+cpe.service_description
-%cpe_display_name = cpe_host.display_name if cpe_type=='host' else cpe_service.display_name+' on '+cpe_host.display_name
-%cpe_graphs = helper.get_graphs_for_cpe(cpe_host.host_name, cpe.customs.get('_TECH'));
+%if hasattr(cpe.__class__, 'my_type'):
+  %cpe_type = cpe.__class__.my_type
+%else:
+  %cpe_type = 'None'
+%end
 
-%reboot_available = cpe.cpe_registration_host and cpe.cpe_registration_id
-%tr069_available = cpe.cpe_connection_request_url
+%if hasattr(cpe, 'host'):
+  %cpe_host = cpe if cpe_type=='host' else cpe.host
+  %cpe_name = cpe.host_name if cpe_type=='host' else cpe.host.host_name+'/'+cpe.service_description
+  %cpe_display_name = cpe_host.display_name if cpe_type=='host' else cpe_service.display_name+' on '+cpe_host.display_name
+  %cpe_graphs = helper.get_graphs_for_cpe(cpe_host.host_name, cpe.customs.get('_TECH'));
+%else:
+  %cpe_host = cpe
+  %cpe_display_name = "none"
+  %cpe_name = "NONE"
+  %cpe_graphs = []
+%end
+
+%if hasattr(cpe, 'cpe_registration_host') and hasattr(cpe, 'cpe_registration_id'):
+  %reboot_available = cpe.cpe_registration_host and cpe.cpe_registration_id
+%else:
+  %reboot_available = True
+%end
+
+
+%if hasattr(cpe, 'cpe_connection_request_url'):
+  %tr069_available = cpe.cpe_connection_request_url
+%end
 
 %# Replace MACROS in display name ...
 %if hasattr(cpe, 'get_data_for_checks'):
@@ -33,14 +53,14 @@ Invalid element name
 %end
 
 %business_rule = False
-%if cpe.get_check_command().startswith('bp_rule'):
+%if hasattr(cpe, 'get_check_command') and cpe.get_check_command().startswith('bp_rule'):
 %business_rule = True
 %end
 
-%breadcrumb = [ ['All '+cpe_type.title()+'s', '/'+cpe_type+'s-groups'], [cpe_host.display_name, '/host/'+cpe_host.host_name] ]
+%breadcrumb = [ ['All '+ ( cpe_type.title() if hasattr(cpe_type, 'title') else 'UNK' ) + 's', '/'+cpe_type+'s-groups'], [cpe_display_name, '/host/'+cpe_name] ]
 %breadcrumb = []
 
-%title = cpe_type.title()+' detail: ' + cpe_display_name
+%title = ( cpe_type.title() if hasattr(cpe_type, 'title') else 'KIWI' ) +' detail: ' + cpe_display_name
 
 %js=['js/shinken-actions.js', 'cpe/js/bootstrap-switch.min.js', 'cpe/js/datatables.min.js', 'cpe/js/google-charts.min.js', 'cpe/js/vis.min.js', 'cpe/js/cpe.js?122345']
 %css=['cpe/css/bootstrap-switch.min.css', 'cpe/css/datatables.min.css', 'cpe/css/vis.min.css', 'cpe/css/cpe.css']
@@ -67,17 +87,17 @@ var proxy_prefix = "";
 %end
 
 var cpe = {
-    name: '{{cpe_host.host_name}}',
-    state: '{{cpe_host.state}}',
-    state_id: '{{cpe_host.state_id}}',
-    last_state_change: '{{cpe_host.last_state_change}}',
+    name: '{{ cpe_host.host_name }}',
+    state: '{{ cpe_host.state if hasattr(cpe_host,"state") else "UNK" }}',
+    state_id: '{{cpe_host.state_id  if hasattr(cpe_host,"state_id") else 0 }}',
+    last_state_change: '{{cpe_host.last_state_change  if hasattr(cpe_host,"last_state_change") else "UNK" }}',
     url: '/host/{{cpe_host.host_name}}'
 };
 
-var cpe_name = '{{cpe_name}}';
+var cpe_name = cpe.name
 var cpe_graphs = JSON.parse('{{!json.dumps(cpe_graphs)}}');
 var services = [];
-%for service in cpe.services:
+%for service in ( cpe.services if hasattr(cpe,"state") else []):
   services.push({
     name: '{{service.display_name}}',
     state: '{{service.state}}',
@@ -215,6 +235,33 @@ function poll_cpe() {
                 }
               }
 
+
+
+              qoss_table          = parsePerfdataTable(qoss)
+              qoss_table_titles   = Object.keys(qoss_table)
+              qoss_table_rows     = Object.values(qoss_table)
+
+              downstreams_table        = parsePerfdataTable(downstreams)
+              upstreams_table          = parsePerfdataTable(upstreams)
+
+              downstreams_table.dncorr = qoss_table.dncorr
+              downstreams_table.dnko   = qoss_table.dnko
+              upstreams_table.upcorr   = qoss_table.upcorr
+              upstreams_table.upko     = qoss_table.upko
+
+              downstreams_table_titles = Object.keys(downstreams_table)
+              downstreams_table_rows   = Object.values(downstreams_table)
+
+
+              upstreams_table_titles   = Object.keys(upstreams_table)
+              upstreams_table_rows     = Object.values(upstreams_table)
+
+
+
+              $('#docsisDownstreamTable').html(generatePerfTable(downstreams_table_titles, downstreams_table_rows));
+              $('#docsisUpstreamTable').html(generatePerfTable(upstreams_table_titles, upstreams_table_rows));
+              //$('#docsisQosTable').html(generatePerfTable(qoss_table_titles, qoss_table_rows));
+
             }
 
 
@@ -269,17 +316,9 @@ function poll_cpe() {
 
         %else:
             <div class="right" style="font-size: 24px">
-              <!--
-              %if len(cpe.parents):
-              <a href="/cpe/{{ cpe.parents[0].host_name }}" title="Parent: {{ cpe.parents[0].host_name }}"><i class="fa fa-chevron-left"></i></a>
-              %end
-              -->
+
               <a href="/host/{{ cpe.host_name }}">{{ cpe.host_name }}</a>
-              <!--
-              %if len(cpe.childs):
-              <a href="/cpe/{{ cpe.childs[0].host_name }}" title="Child: {{ cpe.childs[0].host_name }}"><i class="fa fa-chevron-right"></i></a>
-              %end
-              -->
+
 
 
 
@@ -331,12 +370,12 @@ function poll_cpe() {
 
     <div class="col-md-4">
         <div class="btn-group pull-right" role="group">
-            %if cpe.customs.get('_TECH') in ('wimax'):
+            %if str(cpe.customs.get('_TECH') if hasattr(cpe,'customs') else cpe.tech) in ('wimax'):
             <button id="btn-update" type="button" class="btn btn-default"><i class="fa fa-arrow-up" aria-hidden="true"></i>&nbsp; Update</button>
             <button id="btn-backup" type="button" class="btn btn-default"><i class="fa fa-save" aria-hidden="true"></i>&nbsp; Backup</button>
             %end
             <button id="btn-reboot" type="button" class="btn btn-default" {{'disabled' if not reboot_available else ''}} ><i class="fa fa-refresh" aria-hidden="true"></i>&nbsp; Reboot</button>
-            %if cpe.customs.get('_TECH') == 'gpon':
+            %if str(cpe.customs.get('_TECH') if hasattr(cpe,'customs') else cpe.tech) in ('gpon'):
             <button id="btn-factrestore" type="button" class="btn btn-default" {{'disabled' if not reboot_available else ''}} ><i class="fa fa-fast-backward" aria-hidden="true"></i>&nbsp; Factory</button>
             <button id="btn-unprovision" type="button" class="btn btn-default" {{'disabled' if not reboot_available else ''}} ><i class="fa fa-reply" aria-hidden="true"></i>&nbsp; Unprovision</button>
             <button id="btn-tr069"       type="button" class="btn btn-default" {{'disabled' if not tr069_available else  ''}} ><i class="fa fa-gears" aria-hidden="true"></i>&nbsp; Reconfig (TR069)</button>
@@ -386,6 +425,13 @@ function poll_cpe() {
             <div id="plot_ccq" style="width: 100%; height: 120px;"></div>
           </div>
           %end
+
+          <div class="row">
+            <!-- <div class="col-md-4" id="docsisNone"></div> -->
+            <div class="col-md-6" id="docsisDownstreamTable"></div>
+            <div class="col-md-6" id="docsisUpstreamTable"></div>
+            <!-- <div class="col-md-4" id="docsisQosTable"></div> -->
+          </div>
         </div>
 
         <div id="info-panel" class="panel-body collapse">
@@ -402,15 +448,15 @@ function poll_cpe() {
             %if cpe.customs.get('_MTAMAC') and len(cpe.customs.get('_MTAMAC')):
             <dt>MTA MAC</dt><dd>{{cpe.customs.get('_MTAMAC')}}</dd>
             %end
-            <dt>CPE IP Address</dt><dd>{{cpe.cpe_address}}</dd>
+            <dt>CPE IP Address</dt><dd>{{cpe.cpe_address if hasattr(cpe, 'cpe_address') else '' }}</dd>
 
-            <dt>Registration host</dt><dd>{{ cpe.cpe_registration_host }}
-                <a href="/all?search=type:host {{cpe.cpe_registration_host}}"><i class="fa fa-search"></i></a></dd>
-            <dt>Registration ID</dt><dd>{{cpe.cpe_registration_id}}
-                <a href="/all?search=type:host {{cpe.cpe_registration_host}} {{cpe.cpe_registration_id[:-1]}}"><i class="fa fa-search"></i></a></dd>
+            <dt>Registration host</dt><dd>{{ cpe.cpe_registration_host if hasattr(cpe, 'cpe_registration_host') else '' }}
+                <a href="/all?search=type:host {{ cpe.cpe_registration_host if hasattr(cpe, 'cpe_registration_host') else '' }}"><i class="fa fa-search"></i></a></dd>
+            <dt>Registration ID</dt><dd>{{cpe.cpe_registration_id if hasattr(cpe, 'cpe_registration_id') else '' }}
+                <a href="/all?search=type:host {{ cpe.cpe_registration_host if hasattr(cpe, 'cpe_registration_host') else '' }}"><i class="fa fa-search"></i></a></dd>
 
-            <!--<dt>Registration state</dt><dd id="status">{{cpe.cpe_registration_state}}</dd>-->
-            <dt>Registration tags</dt><dd>{{cpe.cpe_registration_tags}}</dd>
+
+            <dt>Registration tags</dt><dd>{{cpe.cpe_registration_tags if hasattr(cpe, 'cpe_registration_tags') else ''  }}</dd>
           </dl>
         </div>
 
@@ -420,7 +466,7 @@ function poll_cpe() {
             <dt>Configuration URL</dt>
 
         <dd>{{cpe.cpe_connection_request_url}}</dd>
-            %if cpe.cpe_ipleases:
+            %if cpe.cpe_ipleases if hasattr(cpe, 'cpe_ipleases') else False:
             %try:
             %cpe_ipleases = ast.literal_eval(cpe.cpe_ipleases) or {'foo': 'bar'}
             %for ip,lease in cpe_ipleases.iteritems():
@@ -475,7 +521,7 @@ function poll_cpe() {
           <h4 class="panel-title">Log History</h4>
         </div>
         <div id="logHistory" class="panel-body panel-collapse collapse">
-            <table id="inner_history" class="table" data-element='{{cpe.get_full_name()}}'>
+            <table id="inner_history" class="table" data-element='{{ cpe.get_full_name() if hasattr(cpe, "get_full_name") else '' }}'>
                 <thead>
                     <tr>
                         <th>State</th>
@@ -495,7 +541,7 @@ function poll_cpe() {
           <h4 class="panel-title">Event History</h4>
         </div>
         <div id="eventHistory" class="panel-body panel-collapse collapse">
-            <table id="inner_events" class="table" data-element='{{cpe.get_full_name()}}'>
+            <table id="inner_events" class="table" data-element='{{ cpe.get_full_name() if hasattr(cpe, "get_full_name") else '' }}'>
                 <thead>
                     <tr>
                         <th>Time</th>
@@ -533,6 +579,8 @@ function poll_cpe() {
     </div>
     %end
 </div>
+
+
 
 %#End of the element exist or not case
 %end
@@ -631,5 +679,10 @@ function copyToClipboard(elem) {
 var realtimeTimer = window.setInterval(function(){
   poll_cpe()
 }, CPE_POOL_UPDATE_FREQUENCY);
+
+
+
+
+
 
 </script>

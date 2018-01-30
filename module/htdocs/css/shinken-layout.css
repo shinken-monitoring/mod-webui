@@ -434,3 +434,7 @@ footer nav {
   color: #000 !important;
   background-color: #fff !important;
 }
+
+td {
+  padding: 0 !important;
+}

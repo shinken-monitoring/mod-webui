@@ -101,7 +101,7 @@ properties = {
     'daemons': ['broker', 'scheduler'],
     'type': 'webui2',
     'phases': ['running'],
-    'external': True}
+    'external': True }
 
 
 # called by the plugin manager to get an instance

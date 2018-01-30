@@ -1,5 +1,42 @@
 /*  */
 
+
+/**
+ * Ajuste decimal de un número.
+ *
+ * @param {String}  tipo  El tipo de ajuste.
+ * @param {Number}  valor El numero.
+ * @param {Integer} exp   El exponente (el logaritmo 10 del ajuste base).
+ * @returns {Number} El valor ajustado.
+ */
+function decimalAdjust(type, value, exp) {
+  // Si el exp no está definido o es cero...
+  if (typeof exp === 'undefined' || +exp === 0) {
+    return Math[type](value);
+  }
+  value = +value;
+  exp = +exp;
+  // Si el valor no es un número o el exp no es un entero...
+  if (isNaN(value) || !(typeof exp === 'number' && exp % 1 === 0)) {
+    return NaN;
+  }
+  // Shift
+  value = value.toString().split('e');
+  value = Math[type](+(value[0] + 'e' + (value[1] ? (+value[1] - exp) : -exp)));
+  // Shift back
+  value = value.toString().split('e');
+  return +(value[0] + 'e' + (value[1] ? (+value[1] + exp) : exp));
+}
+
+// Decimal round
+if (!Math.roundTo) {
+  Math.roundTo = function(value, exp) {
+    return decimalAdjust('round', value, exp);
+  };
+}
+
+
+
 function normalize_float(a) {
     return a;
     //if (!a) { return 0 }
@@ -85,9 +122,9 @@ plotOptions['bw'] = {
 plotOptions['rx']  = {
   series: {  shadowSize: 0 },
   yaxis: {
-    min: -127,
-    max: 0,
-    ticks: 8,
+//    min: -127,
+//    max: 127,
+    ticks: 5,
     tickFormatter: function(d) { ;return (d != 0) ? normalize_tick(d) : 'dbm' + " 0" }
   },
   xaxis: {
@@ -104,7 +141,7 @@ plotOptions['ccq']  = {
   yaxis: {
     min: 0,
     max: 100,
-    ticks: 8,
+    ticks: 10,
     tickFormatter: function(d) { ;return d }
   },
   xaxis: {
@@ -167,16 +204,9 @@ function updateGraphs(data) {
 
   if (typeof data.dnrx != 'undefined' && typeof data.uptx != 'undefined') {
     plotData.rx[0].data.push([ Date.now() , data.dnrx ])
-    plotData.rx[0].label = "DnRx: " + data.dnrx + " dbm"
+    plotData.rx[0].label = "DnRx: " + Math.roundTo(data.dnrx, -2) + " dbm"
     plotData.rx[1].data.push([ Date.now() , data.uptx ])
-    plotData.rx[1].label = "UpTx: " + data.uptx + " dbm"
-  }
-
-  if (typeof data.dnrx != 'undefined' && typeof data.uprx != 'undefined') {
-    plotData.rx[0].data.push([ Date.now() , data.dnrx ])
-    plotData.rx[0].label = "DnRx: " + data.dnrx + " dbm"
-    plotData.rx[1].data.push([ Date.now() , data.uprx ])
-    plotData.rx[1].label = "UpRx: " + data.uprx + " dbm"
+    plotData.rx[1].label = "UpTx: " + Math.roundTo(data.uptx, -2) + " dbm"
   }
 
   if (typeof data.ccq != 'undefined') {
@@ -186,16 +216,16 @@ function updateGraphs(data) {
 
   if (typeof data.dncorr != 'undefined' && typeof data.dnko != 'undefined') {
     plotData.ccq[0].data.push([ Date.now(), data.dncorr ])
-    plotData.ccq[0].label = "dncorr: " + data.dncorr + "%"
+    plotData.ccq[0].label = "dncorr: " + Math.roundTo(data.dncorr, -2) + "%"
     plotData.ccq[1].data.push([ Date.now(), data.dnko ])
-    plotData.ccq[1].label = "dnko: " + data.dnko + "%"
+    plotData.ccq[1].label = "dnko: " + Math.roundTo(data.dnko, -2) + "%"
   }
 
   if (typeof data.upcorr != 'undefined' && typeof data.upko != 'undefined') {
     plotData.ccq[2].data.push([ Date.now(), data.upcorr ])
-    plotData.ccq[2].label = "upcorr: " + data.upcorr + "%"
+    plotData.ccq[2].label = "upcorr: " + Math.roundTo(data.upcorr, -2) + "%"
     plotData.ccq[3].data.push([ Date.now(), data.upko ])
-    plotData.ccq[3].label = "upko: " + data.upko + "%"
+    plotData.ccq[3].label = "upko: " + Math.roundTo(data.upko, -2) + "%"
   }
 
   for (var key in plots) {

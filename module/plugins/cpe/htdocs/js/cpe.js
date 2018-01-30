@@ -539,4 +539,152 @@ function on_page_refresh() {
 
 }
 
+
+
+
+
+
+
+function generateTable(rowsData, titles, type, _class) {
+    var $table = $("<table>").addClass(_class);
+    var $tbody = $("<tbody>").appendTo($table);
+
+
+    if (type == 2) {//vertical table
+        if (rowsData.length !== titles.length) {
+            console.error('rows and data rows count doesent match');
+            return false;
+        }
+        titles.forEach(function (title, index) {
+            var $tr = $("<tr>");
+            $("<th>").html(title).appendTo($tr);
+            var rows = rowsData[index];
+            rows.forEach(function (html) {
+                $td = $("<td>");
+                if( title.indexOf("freq") < 0) {
+                  //$td.css('background-color', '#5bb75b')
+                  $td.css('background-color', '#49afcd')
+                  $td.css('color', 'white');
+                } else {
+                  html = html / 1000000;
+                }
+                $td.css('width', '42px')
+                $td.css('height', '42px')
+                $td.css('vertical-align', 'middle')
+                $td.css('text-align', 'center')
+                $td.css('font-family', 'Courier')
+
+                $td.html(html).appendTo($tr);
+            });
+            $tr.appendTo($tbody);
+        });
+
+    } else if (type == 1) {//horsantal table
+        var valid = true;
+        rowsData.forEach(function (row) {
+            if (!row) {
+                valid = false;
+                return;
+            }
+
+            if (row.length !== titles.length) {
+                valid = false;
+                return;
+            }
+        });
+
+        if (!valid) {
+            console.error('rows and data rows count doesent match');
+            //return false;
+        }
+
+        var $tr = $("<tr>");
+        titles.forEach(function (title, index) {
+            $("<th>").html(title).appendTo($tr);
+        });
+        $tr.appendTo($tbody);
+
+        rowsData.forEach(function (row, index) {
+            var $tr = $("<tr>");
+            row.forEach(function (html) {
+                $("<td>").html(html).appendTo($tr);
+            });
+            $tr.appendTo($tbody);
+        });
+      } else if (type == 3) {//horsantal table
+
+          rowsData = transpose(rowsData);
+
+          var $tr = $("<tr>");
+          titles.forEach(function (title, index) {
+              $("<th>").html(title).appendTo($tr);
+          });
+          $tr.appendTo($tbody);
+
+          rowsData.forEach(function (row, index) {
+              var $tr = $("<tr>");
+              row.forEach(function (html) {
+                  $("<td>").html(html).appendTo($tr);
+              });
+              $tr.appendTo($tbody);
+          });
+      }
+
+    return $table;
+}
+
+
+function transpose(matrix) {
+    return zeroFill(getMatrixWidth(matrix)).map(function(r, i) {
+        return zeroFill(matrix.length).map(function(c, j) {
+            return matrix[j][i];
+        });
+    });
+}
+
+function getMatrixWidth(matrix) {
+    return matrix.reduce(function (result, row) {
+        return Math.max(result, row.length);
+    }, 0);
+}
+
+function zeroFill(n) {
+    return new Array(n+1).join('0').split('').map(Number);
+}
+
+function generatePerfTable(titles, rows) {
+  var tb = generateTable(rows, titles, 3, 'table table-bordered');
+  return tb;
+}
+
+function parsePerfdataTable(metric) {
+  var tmp = {};
+  var max = 0
+  for (var i = 0; i < metric.length; i++) {
+
+    var regex = /([a-z]+)(\d+)/g;
+    var m = regex.exec(metric[i][0])
+    if(m) {
+      var key = m[1]
+      var index = m[2] - 1
+      var value = metric[i][1]
+
+      max = Math.max(max, index)
+
+      if(typeof tmp[key] === "undefined") {
+        tmp[key] = []
+      }
+
+      while(tmp[key].length < max) {
+        tmp[key].push('')
+      }
+
+      //console.log( max + ":" + key + "[" + index + "]=" + value )
+      tmp[key][index] = value
+    }
+  }
+
+  return tmp
+}
+
 on_page_refresh();

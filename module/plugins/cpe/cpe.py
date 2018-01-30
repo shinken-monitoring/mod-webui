@@ -29,12 +29,18 @@ import time
 from shinken.log import logger
 from shinken.external_command import ExternalCommand, ExternalCommandManager
 
+from libkrill.kws.datamanager import KwsDataManager
+from libkrill.config import Config as KrillConfig
+
 # Will be populated by the UI with it's own value
 app = None
 
 
 # Our page
 def show_cpe(cpe_name):
+
+    kc = KrillConfig('/etc/krill')
+    datamanager = KwsDataManager(kc.kws_list or [])
 
     cpe = None
     parent = None
@@ -46,9 +52,17 @@ def show_cpe(cpe_name):
     # if not cpe_name.startswith('cpe'):
         # app.redirect404()
 
-    cpe = app.datamgr.get_host(cpe_name, user) or app.redirect404()
+    cpe = app.datamgr.get_host(cpe_name, user) #or app.redirect404()
 
-    if cpe.cpe_registration_host:
+    if not cpe:
+        cpe = datamanager.get_cpehost_by_hostname(cpe_name)
+
+        logger.error('=>>>>>>>>>>> %s', cpe)
+
+    # if not cpe:
+    #     app.redirect404()
+
+    if hasattr(cpe, 'cpe_registration_host'):
         parent = app.datamgr.get_host(cpe.cpe_registration_host, user)
 
     # Set hostgroups level ...

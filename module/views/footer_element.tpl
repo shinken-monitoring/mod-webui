@@ -3,6 +3,8 @@
 %setdefault('user', None)
 %setdefault('all_pbs', None)
 
+%KRILL_VERSION = '0.9'
+
 %username = 'anonymous'
 <!-- Footer -->
 <footer>
@@ -19,7 +21,7 @@
             <span class="glyphicon glyphicon-plus"></span>&nbsp;
             <img src="http://phicus.es/wp-content/uploads/2017/01/logo_phicus_web.png" alt="Phicus Logo" height="24px" onclick="display_modal('/modal/about-phicus')"/>
             <small><em class="text-muted">
-               Krill 1.0 &mdash; KrillUI User Interface, Phicus &copy;2017-2018
+               Krill {{KRILL_VERSION}} &mdash; KrillUI User Interface, Phicus &copy;2017-2018
             </em></small>
          </div>
       </div>
