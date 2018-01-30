@@ -402,7 +402,7 @@ function poll_cpe() {
             <span class="fa fa-calendar"></span> <span id="uptime">-</span></span>
             <span class="fa fa-dashboard"></span> <span id="dnbw">-</span>/<span id="upbw">-</span>
             <span class="fa fa-signal"></span> <span id="uprx">-</span>/<span id="dnrx">-</span>dbm
-            <span class="fa fa-signal"></span> <span id="ccq">-</span><dbm>
+            <span class="fa fa-signal"></span> <span id="ccq">-</span>dbm
             <span class="fa fa-reorder"></span> <span id="service_ports"></span>
             <span>&nbsp;</span>
             <span class="btn btn-primary btn-xs" data-toggle="collapse" data-target="#info-panel">+</span>
