@@ -171,31 +171,29 @@ var plotData = {
     ],
 }
 
+setTimeout(function(){
 
 $( function(){
-  if( $("#plot_bw").length ) {
+  if( $("#plot_bw").length !==0 ) {
     plots['bw']  = $.plot("#plot_bw",  plotData['bw'],  plotOptions['bw']);
   }
 
-  if( $("#plot_rx").length ) {
+  if( $("#plot_rx").length !==0 ) {
     plots['rx']  = $.plot("#plot_rx",  plotData['rx'],  plotOptions['rx']);
   }
 
-  if( $("#plot_ccq").length ) {
+  if( $("#plot_ccq").length !==0  ) {
     plots['ccq'] = $.plot("#plot_ccq", plotData['ccq'], plotOptions['ccq']);
   }
 });
+
+}, 1000);
 
 
 function updateGraphs(data) {
   console.log(data)
 
-  if (data.dnbw_d && data.upbw_d) {
-    plotData.bw[0].data.push([ Date.now() , parseInt(data.dnbw_d) ])
-    plotData.bw[0].label = "DnBw: " + humanBytes(data.dnbw_d)
-    plotData.bw[1].data.push([ Date.now() , parseInt(data.upbw_d) ])
-    plotData.bw[1].label = "UpBw: " + humanBytes(data.upbw_d)
-  } else if (data.dnbw && data.upbw) {
+  if (data.dnbw != 'undefined' && data.upbw != 'undefined') {
     plotData.bw[0].data.push([ Date.now() , parseInt(data.dnbw) ])
     plotData.bw[0].label = "DnBw: " + humanBytes(data.dnbw)
     plotData.bw[1].data.push([ Date.now() , parseInt(data.upbw) ])

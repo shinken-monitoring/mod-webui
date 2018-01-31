@@ -101,7 +101,6 @@ def show_quick_services(cpe_name):
     maxtime = int(time.time())
     mintime = maxtime - 7 * 24 * 3600
 
-
     return {'cpe': cpe, 'parent': parent, 'mintime': mintime, 'maxtime': maxtime}
 
 pages = {
@@ -112,6 +111,5 @@ pages = {
     show_quick_services: {
         'name': 'QUICKSERVICES', 'route': '/cpe/quickservices/:cpe_name', 'view': 'quickservices', 'static': True,
     }
-
 
 }

@@ -86,12 +86,12 @@ except ImportError:
     frontend_available = False
 
 root_app = bottle.default_app()
+
 # WebUI application
 webui_app = bottle.Bottle()
-webui_app2 = bottle.Bottle()
 
 # Debug
-bottle.debug(True)
+bottle.debug(False)
 
 # Look at the webui module root dir too
 webuimod_dir = os.path.abspath(os.path.dirname(__file__))
