@@ -137,9 +137,6 @@ var STATUS_BLUE    = ["NONE", "NULL", ""];
 function poll_cpe() {
   $.getJSON('/cpe_poll/{{cpe_host.host_name}}', function(data){
 
-
-
-
         if(data && data.status) {
 
 
@@ -640,13 +637,27 @@ if (cpeMAC) {
 })();
 
 // Poller
-var realtimeTimer = window.setInterval(function(){
-  poll_cpe()
-}, CPE_POOL_UPDATE_FREQUENCY);
+// var realtimeTimer = window.setInterval(function(){
+//   poll_cpe()
+//}, CPE_POOL_UPDATE_FREQUENCY);
 
 
+function poll_cpe_timeout() {
+  if ( CPE_POOL_UPDATE_FREQUENCY > 0) {
 
+    poll_cpe();
 
+    window.setTimeout(function(){
+          poll_cpe_timeout();
+    }, CPE_POOL_UPDATE_FREQUENCY);
+
+  }
+}
+
+// lazy start
+window.setTimeout(function(){
+      poll_cpe_timeout();
+}, 1000);
 
 
 </script>
