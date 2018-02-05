@@ -62,7 +62,7 @@ Invalid element name
 
 %title = ( cpe_type.title() if hasattr(cpe_type, 'title') else 'KIWI' ) +' detail: ' + cpe_display_name
 
-%title = cpe_host.host_name + ' detail: ' + cpe_display_name
+%title = cpe_host.host_name
 
 
 %js=['js/shinken-actions.js', 'cpe/js/bootstrap-switch.min.js', 'cpe/js/datatables.min.js', 'cpe/js/google-charts.min.js', 'cpe/js/vis.min.js', 'cpe/js/cpe.js?122345']

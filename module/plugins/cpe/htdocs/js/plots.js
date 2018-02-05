@@ -200,12 +200,21 @@ function updateGraphs(data) {
     plotData.bw[1].label = "UpBw: " + humanBytes(data.upbw)
   }
 
-  if (typeof data.dnrx != 'undefined' && typeof data.uptx != 'undefined') {
+  if (typeof data.dnrx != 'undefined') {
     plotData.rx[0].data.push([ Date.now() , data.dnrx ])
     plotData.rx[0].label = "DnRx: " + Math.roundTo(data.dnrx, -2) + " dbm"
+  }
+
+  if ( typeof data.uptx != 'undefined') {
     plotData.rx[1].data.push([ Date.now() , data.uptx ])
     plotData.rx[1].label = "UpTx: " + Math.roundTo(data.uptx, -2) + " dbm"
   }
+
+  if (typeof data.uprx != 'undefined') {
+    plotData.rx[1].data.push([ Date.now() , data.uprx ])
+    plotData.rx[1].label = "UpRx (AP): " + Math.roundTo(data.uprx, -2) + " dbm"
+  }
+
 
   if (typeof data.ccq != 'undefined') {
     plotData.ccq[0].data.push([ Date.now(), data.ccq ])
