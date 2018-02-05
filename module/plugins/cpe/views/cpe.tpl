@@ -137,7 +137,13 @@ var STATUS_BLUE    = ["NONE", "NULL", ""];
 function poll_cpe() {
   $.getJSON('/cpe_poll/{{cpe_host.host_name}}', function(data){
 
+
+
+
         if(data && data.status) {
+
+
+
             data.status = data.status.replace(/\W+/g, '').toUpperCase()
             $('#registration_state').html(data.status)
             $('#upbw').html(humanBytes(data.upbw))
@@ -180,6 +186,14 @@ function poll_cpe() {
             } else {
               $('[data-type="registration-host"]').html(data.cpe_registration_host)
               $('[data-type="registration-id"]').html(data.cpe_registration_id)
+            }
+
+
+            if ( typeof data.lapse !== 'undefined' ) {
+               CPE_POOL_UPDATE_FREQUENCY = Math.round( (data.lapse * 1000 ) * 1.20 );
+               if ( CPE_POOL_UPDATE_FREQUENCY < 5000 ) {
+                 CPE_POOL_UPDATE_FREQUENCY = 5000;
+               }
             }
 
             if ( typeof data.ips !== 'undefined' ) {
