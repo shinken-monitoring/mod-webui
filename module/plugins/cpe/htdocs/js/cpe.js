@@ -661,7 +661,11 @@ function generateTable(rowsData, titles, type, _class) {
         });
       } else if (type == 3) {//horsantal table
 
-          rowsData = transpose(rowsData);
+          try {
+            rowsData = transpose(rowsData);
+          } catch(err) {
+            console.log(rowsData)
+          }
 
           var $tr = $("<tr>");
           titles.forEach(function (title, index) {
@@ -701,7 +705,12 @@ function zeroFill(n) {
 }
 
 function generatePerfTable(titles, rows) {
-  var tb = generateTable(rows, titles, 3, 'table table-bordered');
+  var tb;
+  try {
+    tb = generateTable(rows, titles, 3, 'table table-bordered');
+  } catch (e) {
+    tb = Array()
+  }
   return tb;
 }
 

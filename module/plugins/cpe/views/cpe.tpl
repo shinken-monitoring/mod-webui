@@ -142,36 +142,36 @@ function poll_cpe() {
 
         if(data && data.status) {
 
-
-
-            data.status = data.status.replace(/\W+/g, '').toUpperCase()
+            //data.status = data.status.replace(/\W+/g, '').toUpperCase()
             $('#registration_state').html(data.status)
             $('#upbw').html(humanBytes(data.upbw))
             $('#dnbw').html(humanBytes(data.dnbw))
             $('#dnrx').html(data.dnrx)
             $('#uprx').html(data.uprx)
 
-            if (data.ccq) {
+            if (typeof data.ccq !== 'undefined') {
               $('#ccq').html(data.ccq + "%").show()
             }
 
-            d1 = Date.parse(data.uptime)
-            d2 = new Date()
-            delta = (d2 - d1) / 1000
-
-            $('#uptime').html(toHHMMSS(data.uptime))
+            if (typeof data.uptime !== 'undefined') {
+              d1 = Date.parse(data.uptime);
+              d2 = new Date();
+              delta = (d2 - d1) / 1000;
+              $('#uptime').html(toHHMMSS(data.uptime));
+            }
 
             $('#registration_state').html('<span>'+data.status+'</span>');
+
 
             //console.log(data);
             //enable or disable buttons
 
-            if ( $.inArray(data.status, STATUS_GREEN ) >= 0 ) {
+            if ( data.status_id == 0 ) {
               $('#btn-reboot')      .removeClass("disabled").prop("disabled", false);
               $('#btn-factrestore') .removeClass("disabled").prop("disabled", false);
               $('#btn-unprovision') .removeClass("disabled").prop("disabled", false);
               $('#btn-tr069')       .removeClass("disabled").prop("disabled", false);
-            } else if ( $.inArray(data.status, STATUS_RED ) >= 0 )  {
+            } else if ( data.status_id == 2 )  {
               $('#btn-reboot')      .addClass("disabled").prop("disabled", true);
               $('#btn-factrestore') .addClass("disabled").prop("disabled", true);
               $('#btn-tr069')       .addClass("disabled").prop("disabled", true);
@@ -271,9 +271,12 @@ function poll_cpe() {
               upstreams_table_rows     = Object.values(upstreams_table)
 
 
-
-              $('#docsisDownstreamTable').html(generatePerfTable(downstreams_table_titles, downstreams_table_rows));
-              $('#docsisUpstreamTable').html(generatePerfTable(upstreams_table_titles, upstreams_table_rows));
+              try {
+                $('#docsisDownstreamTable').html(generatePerfTable(downstreams_table_titles, downstreams_table_rows));
+                $('#docsisUpstreamTable').html(generatePerfTable(upstreams_table_titles, upstreams_table_rows));
+              } catch(err) {
+                console.log(err)
+              }
               //$('#docsisQosTable').html(generatePerfTable(qoss_table_titles, qoss_table_rows));
 
             }
