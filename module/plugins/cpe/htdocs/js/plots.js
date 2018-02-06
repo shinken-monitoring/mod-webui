@@ -210,11 +210,10 @@ function updateGraphs(data) {
     plotData.rx[1].label = "UpTx: " + Math.roundTo(data.uptx, -2) + " dbm"
   }
 
-  if (typeof data.uprx != 'undefined') {
+  if (typeof data.uprx != 'undefined' && typeof data.uptx == 'undefined' ) {
     plotData.rx[1].data.push([ Date.now() , data.uprx ])
     plotData.rx[1].label = "UpRx (AP): " + Math.roundTo(data.uprx, -2) + " dbm"
   }
-
 
   if (typeof data.ccq != 'undefined') {
     plotData.ccq[0].data.push([ Date.now(), data.ccq ])
