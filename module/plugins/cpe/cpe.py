@@ -29,6 +29,9 @@ import time
 from shinken.log import logger
 from shinken.external_command import ExternalCommand, ExternalCommandManager
 
+from libkrill.kws.datamanager import KwsDataManager
+from libkrill.config import Config as KrillConfig
+
 # Will be populated by the UI with it's own value
 app = None
 
@@ -36,18 +39,58 @@ app = None
 # Our page
 def show_cpe(cpe_name):
 
+    kc = KrillConfig('/etc/krill')
+    datamanager = KwsDataManager(kc.kws_list or [])
+
     cpe = None
     parent = None
 
     ''' Mostrar la ficha del CPE con nombre cpe_name.'''
     # Ok, we can lookup it
     user = app.bottle.request.environ['USER']
-    
+
     # if not cpe_name.startswith('cpe'):
         # app.redirect404()
-        
+
+    cpe = app.datamgr.get_host(cpe_name, user) #or app.redirect404()
+
+    if not cpe:
+        cpe = datamanager.get_cpehost_by_hostname(cpe_name)
+
+        logger.error('=>>>>>>>>>>> %s', cpe)
+
+    # if not cpe:
+    #     app.redirect404()
+
+    if hasattr(cpe, 'cpe_registration_host'):
+        parent = app.datamgr.get_host(cpe.cpe_registration_host, user)
+
+    # Set hostgroups level ...
+    app.datamgr.set_hostgroups_level(user)
+
+    # Get graph data. By default, show last 4 hours
+    maxtime = int(time.time())
+    mintime = maxtime - 7 * 24 * 3600
+
+
+    return {'cpe': cpe, 'parent': parent, 'mintime': mintime, 'maxtime': maxtime}
+
+
+
+def show_quick_services(cpe_name):
+
+    cpe = None
+    parent = None
+
+    ''' Mostrar la ficha del CPE con nombre cpe_name.'''
+    # Ok, we can lookup it
+    user = app.bottle.request.environ['USER']
+
+    # if not cpe_name.startswith('cpe'):
+        # app.redirect404()
+
     cpe = app.datamgr.get_host(cpe_name, user) or app.redirect404()
-    
+
     if cpe.cpe_registration_host:
         parent = app.datamgr.get_host(cpe.cpe_registration_host, user)
 
@@ -57,12 +100,16 @@ def show_cpe(cpe_name):
     # Get graph data. By default, show last 4 hours
     maxtime = int(time.time())
     mintime = maxtime - 7 * 24 * 3600
-    
 
     return {'cpe': cpe, 'parent': parent, 'mintime': mintime, 'maxtime': maxtime}
-    
+
 pages = {
     show_cpe: {
-        'name': 'CPE', 'route': '/cpe/:cpe_name', 'view': 'cpe', 'static': True
-    }    
+        'name': 'CPE', 'route': '/cpe/:cpe_name', 'view': 'cpe', 'static': True,
+    },
+
+    show_quick_services: {
+        'name': 'QUICKSERVICES', 'route': '/cpe/quickservices/:cpe_name', 'view': 'quickservices', 'static': True,
+    }
+
 }

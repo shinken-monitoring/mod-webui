@@ -93,4 +93,20 @@ $(document).ready(function(){
    // Sidebar menu
    $('#sidebar-menu').metisMenu();
 
+   if(localStorage.getItem("wrapper_mode") == "fullscreen" ) {
+     $('#wrapper').addClass('fullscreen');
+   }
+
+
 });
+
+
+function toggle_sidebar(){
+  if ( localStorage.getItem("wrapper_mode") == "fullscreen" ) {
+    $('#wrapper').removeClass('fullscreen');
+    localStorage.setItem("wrapper_mode","none");
+  } else {
+    $('#wrapper').addClass('fullscreen');
+    localStorage.setItem("wrapper_mode","fullscreen");
+  }
+}
