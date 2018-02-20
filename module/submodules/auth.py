@@ -157,6 +157,14 @@ class AuthMetaModule(MetaModule):
         else:
             p = c.password
 
+        # basic checks
+        if not p:
+            logger.error("[WebUI-auth-cfg-password] User %s does not have a password: connection refused", username)
+            return False
+        if p=='NOPASSWORDSET':
+            logger.error("[WebUI-auth-cfg-password] User %s still has the default password: connection refused", username)
+            return False
+
         if p == password:
             logger.info("[WebUI-auth-cfg-password] Authenticated")
             return True
