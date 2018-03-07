@@ -588,7 +588,7 @@ class WebUIDataManager(DataManager):
                         return []
                     # Items have a item.get_groupnames() method that returns a comma separated string ... strange format!
                     for item in items:
-                        if group.get_name() in item.get_groupnames().split(', '):
+                        #if group.get_name() in item.get_groupnames().split(', '):
                             # logger.info("[WebUI - datamanager] => item %s is a known member!", item.get_name())
 
                         if group.get_name() in item.get_groupnames().split(', '):
