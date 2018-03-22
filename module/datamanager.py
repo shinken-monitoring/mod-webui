@@ -430,6 +430,8 @@ class WebUIDataManager(DataManager):
 
             try:
                 h = i if i.__class__.my_type == 'host' else i.host
+                if h.address and pat.search(h.address):
+                    return True
                 if h.cpe_address and pat.search(h.cpe_address):
                     return True
                 if h.cpe_registration_host and pat.search(h.cpe_registration_host):
