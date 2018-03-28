@@ -88,7 +88,7 @@ def user_login():
                 app.response.set_cookie(str(app.session_cookie), cookie_value, secret=app.auth_secret, path='/')
                 bottle.redirect(app.get_url("Dashboard"))
 
-    return {'msg_text': err, 'login_text': app.login_text, 'company_logo': app.company_logo}
+    return {'msg_text': err, 'login_text': app.login_text, 'company_logo': app.company_logo, 'path': app.request.query.get('path','') }
 
 
 def user_logout():
@@ -111,6 +111,8 @@ def user_logout():
 def user_auth():
     login = app.request.forms.get('login', '')
     password = app.request.forms.get('password', '')
+    path = app.request.forms.get('path', '')
+
     logger.info("[WebUI]  user '%s' is signing in ...", login)
 
     # Tries to authenticate user
@@ -129,7 +131,10 @@ def user_auth():
             is_authenticated = False
         else:
             logger.debug("[WebUI]  user '%s' signed in: %s", login, cookie_value)
-            bottle.redirect(app.get_url("Dashboard"))
+            if path:
+                bottle.redirect(path)
+            else:
+                bottle.redirect(app.get_url("Dashboard"))
     else:
         logger.warning("[WebUI]  user '%s' access denied, redirection to: %s", login, app.get_url("GetLogin") + "?error=Invalid user or Password")
         bottle.redirect(app.get_url("GetLogin") + "?error=Invalid user or Password")
