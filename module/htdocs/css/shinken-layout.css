@@ -67,7 +67,10 @@ html, body {
  * Popover
  */
 .popover {
-   max-width: 640px;
+   position: fixed;
+   top: 20px !important;
+   left: 20px !important;
+   max-width: 800px;
 /*
    white-space: nowrap; word-wrap: break-word;
 */
