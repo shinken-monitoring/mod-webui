@@ -3,6 +3,9 @@
 
 from shinken.log import logger
 from shinken.misc.perfdata import PerfDatas
+from shinken.objects.service import Service
+from shinken.objects.host import Host
+
 import re
 
 app = None
@@ -35,7 +38,7 @@ def show_technical_json():
     length = int(app.request.query.get('length', None) or 5000)
 
 
-    items = app.datamgr.search_hosts_and_services(search, user, get_impacts=True)
+    items = app.datamgr.search_hosts_and_services(search, user, get_impacts=False)
 
     data = list()
 
@@ -44,7 +47,12 @@ def show_technical_json():
     _headers = set()
     _groups  = dict()
 
-    for h in items:
+    #for h in items:
+    #    logger.warning("busqueda::%s" % type(h) )
+
+    hosts_items = [item for item in items if isinstance(item, Host)]
+
+    for h in hosts_items:
         _host = h.get_name()
         if not hosts.get(_host):
             hosts[_host] = dict()
