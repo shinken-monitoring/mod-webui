@@ -44,7 +44,7 @@
                   </center>
                </div>
                <div class="panel-body">
-                  <form role="form" class="form-signin" method="post" action="/user/auth">
+                  <form role="form" class="form-signin" method="post" action="/user/auth?path={{path}}">
                     <!--<h2>Please sign in</h2>-->
                   %if msg_text:
                   <div class="alert alert-danger" role="alert">

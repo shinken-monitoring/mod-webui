@@ -73,7 +73,21 @@ def show_cpe(cpe_name):
     mintime = maxtime - 7 * 24 * 3600
 
 
-    return {'cpe': cpe, 'parent': parent, 'mintime': mintime, 'maxtime': maxtime}
+    try:
+        with open("/etc/krill/cpe_models.yml", 'r') as stream:
+            models = yaml.load(stream)
+    except:
+        pass
+
+    models = {}
+    model = {}
+    if '_CPE_MODEL' in cpe.customs:
+        model.update(in=1)
+        _model = cpe.customs.get('_CPE_MODEL')
+        if _model and _model in models:
+            model.update(models.get(_model))
+
+    return {'cpe': cpe, 'parent': parent, 'mintime': mintime, 'maxtime': maxtime, 'model': model}
 
 
 

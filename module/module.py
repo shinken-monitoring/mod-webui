@@ -91,7 +91,7 @@ root_app = bottle.default_app()
 webui_app = bottle.Bottle()
 
 # Debug
-bottle.debug(False)
+bottle.debug(True)
 
 # Look at the webui module root dir too
 webuimod_dir = os.path.abspath(os.path.dirname(__file__))
