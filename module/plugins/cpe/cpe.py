@@ -25,6 +25,7 @@
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 
 import time
+import yaml
 
 from shinken.log import logger
 from shinken.external_command import ExternalCommand, ExternalCommandManager
@@ -82,6 +83,7 @@ def show_cpe(cpe_name):
     models = {}
     model = {}
     if '_CPE_MODEL' in cpe.customs:
+        #model.update(in=1)
         _model = cpe.customs.get('_CPE_MODEL')
         if _model and _model in models:
             model.update(models.get(_model))
