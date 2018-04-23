@@ -6,6 +6,8 @@ from shinken.misc.perfdata import PerfDatas
 from shinken.objects.service import Service
 from shinken.objects.host import Host
 
+from collections import OrderedDict
+
 import re
 
 app = None
@@ -45,7 +47,7 @@ def show_technical_json():
     hosts = dict()
 
     _headers = set()
-    _groups  = dict()
+    _groups  = OrderedDict()
 
     #for h in items:
     #    logger.warning("busqueda::%s" % type(h) )
@@ -56,6 +58,22 @@ def show_technical_json():
         _host = h.get_name()
         if not hosts.get(_host):
             hosts[_host] = dict()
+
+        if hasattr(h,'perf_data'):
+            perfdatas = PerfDatas(h.perf_data)
+            for m in perfdatas:
+                _metric = _metric_to_json(m)
+                _name  = _metric.get('name')
+                p = re.compile(r"\w+\d+")
+                if p.search(_name):
+                    continue
+                hosts[_host][_name] = _metric
+                if not _name in _headers:
+                    _headers.add(_name)
+                    if not _groups.get('host'):
+                        _groups['host'] = list()
+                    _groups['host'].append(_name)
+
         for s in h.services:
             _group = s.get_name()
             if not _groups.get(_group):

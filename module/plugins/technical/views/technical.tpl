@@ -31,6 +31,8 @@
 
 
 <script>
+var _cache = {}
+
 function humanBytes(fileSizeInBytes) {
 
     var i = -1;
@@ -43,11 +45,41 @@ function humanBytes(fileSizeInBytes) {
     return Math.max(fileSizeInBytes, 0.1).toFixed(1) + byteUnits[i];
 };
 
+function humanHertz(frequency) {
+
+    var i = 0;
+    var byteUnits = ['Hz', 'kHz', 'MHz', 'GHz'];
+    do {
+        frequency = frequency / 1000;
+        i++;
+    } while (frequency > 1000);
+
+    return Math.max(frequency, 0).toFixed(0) + byteUnits[i];
+};
+
+function getServiceFromMetric(metric) {
+  for (var i in _cache.groups) {
+    if( $.inArray(metric, _cache.groups[i]) >= 0 ) {
+       return i;
+    }
+  }
+  return '';
+}
+
+function g(host,metric) {
+  var ser = getServiceFromMetric(metric)
+  if (ser == 'host') ser = '__HOST__';
+  var val = "" + host + "." + ser + "." + metric;
+  var src = "http://"+window.location.hostname+":4288/render/?width=640&height=200&lineMode=connected&target="+val+"&fontSize=12&from=-7days"
+  $('#g').attr('src',src);
+}
+
 function processMetric(m) {
     str = "";
 
     if (false) { null }
     else if (m.name == 'upbw' || m.name == 'dnbw') str = str + humanBytes(m.value);
+    else if (m.name.includes('freq')) str = str + humanHertz(m.value);
     else str = str + m.value;
 
     //if ( m.uom ) str = str +  " " + m.uom;
@@ -70,10 +102,24 @@ $(document).ready( function (){
   var table;
   var _headers = [];
 
-  $.getJSON( "/technical/json?search=" + $('#search').val(), function( data ) {
-        row = '<thead><tr><th></th>';
-        _headers.push('host')
 
+  $("#g").hide();
+  $("#g").on('click',function(){
+    $(this).hide();
+  });
+
+  $('body').keypress(function(e) {
+    if ( e.key = 'g' ) {
+      $('#g').toggle();
+    }
+  });
+
+
+  $.getJSON( "/technical/json?search=" + $('#search').val(), function( data ) {
+        _cache = data;
+
+        row = '<thead><tr><th></th>';
+        _headers.push('host');
         $.each(data.groups, function(k,v){
            if (v.length > 0) {
              row = row + '<th colspan="'+v.length+'">' + k + "</th>";
@@ -93,15 +139,16 @@ $(document).ready( function (){
 
         row = "<tbody>";
         $('#myTable').append(row);
-
+        var host = null;
         $.each(data.data, function(k,v){
             row = "<tr>";
             $.each(_headers, function(kk,i){
               cell = v[i]
               if ( i == "host" ) {
                 row = row + '<td ><a href="/cpe/' + cell +'">' + cell + '</a></td>';
+                host = cell;
               } else if ( cell instanceof Object ) {
-                row = row + '<td>' + processMetric(cell) + "</td>";
+                row = row + '<td onmouseover="g(\''+host+'\',\''+cell.name+'\')">' + processMetric(cell) + '</td>';
               } else if ( typeof cell === "undefined"){
                  row = row + '<td>-</td>';
               } else {
@@ -148,3 +195,6 @@ td.highlight {
     background-color: whitesmoke !important;
 }
 </style>
+
+
+<img id="g" src="about:blank" style="position: fixed; bottom: 0px; right: 0px;">
