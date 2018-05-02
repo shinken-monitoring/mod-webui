@@ -73,7 +73,7 @@ Invalid element name
 
 <!--<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>-->
 
-<script src="http://www.flotcharts.org/flot/jquery.flot.js" charset="utf-8"></script>
+<script src="https://www.flotcharts.org/flot/jquery.flot.js" charset="utf-8"></script>
 <script src="/static/cpe/js/plots.js" charset="utf-8"></script>
 <script>
 var CPE_QUICKSERVICES_UPDATE_FREQUENCY = 5000
