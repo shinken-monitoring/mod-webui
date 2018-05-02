@@ -139,7 +139,7 @@
             if (dashboard_logs) console.debug(message);
         }
         if (hosts_problems < old_hosts_problems) {
-            var message = (old_hosts_problems - hosts_problems) + " less " + ((old_hosts_problems - hosts_problems)==1 ? "hosts problem" : "hosts problems")
+            var message = (old_hosts_problems - hosts_problems) + " fewer " + ((old_hosts_problems - hosts_problems)==1 ? "hosts problem" : "hosts problems")
             %if refresh:
             message += " since last " + app_refresh_period + " seconds."
             %else:
@@ -160,7 +160,7 @@
             if (dashboard_logs) console.debug(message);
         }
         if (services_problems < old_services_problems) {
-            var message = (old_services_problems - services_problems) + " less " + ((old_services_problems - services_problems)==1 ? "services problem" : "services problems")
+            var message = (old_services_problems - services_problems) + " fewer " + ((old_services_problems - services_problems)==1 ? "services problem" : "services problems")
             %if refresh:
             message += " since last " + app_refresh_period + " seconds."
             %else:
