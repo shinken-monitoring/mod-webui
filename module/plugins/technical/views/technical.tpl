@@ -109,7 +109,7 @@ $(document).ready( function (){
   });
 
   $('body').keypress(function(e) {
-    if ( e.key = 'g' ) {
+    if ( e.key == 'g' ) {
       $('#g').toggle();
     }
   });
