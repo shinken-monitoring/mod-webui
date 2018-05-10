@@ -76,8 +76,8 @@ Invalid element name
 <script src="https://www.flotcharts.org/flot/jquery.flot.js" charset="utf-8"></script>
 <script src="/static/cpe/js/plots.js" charset="utf-8"></script>
 <script>
-var CPE_QUICKSERVICES_UPDATE_FREQUENCY = 5000
-var CPE_POOL_UPDATE_FREQUENCY = 5000
+var CPE_QUICKSERVICES_UPDATE_FREQUENCY = 5000;
+var CPE_POOL_UPDATE_FREQUENCY = 10000;
 
 %if app.proxy_sufix:
 var proxy_sufix = "{{app.proxy_sufix}}";
@@ -206,8 +206,8 @@ function poll_cpe() {
 
             if ( typeof data.lapse !== 'undefined' ) {
                CPE_POOL_UPDATE_FREQUENCY = Math.round( (data.lapse * 1000 ) * 1.20 );
-               if ( CPE_POOL_UPDATE_FREQUENCY < 5000 ) {
-                 CPE_POOL_UPDATE_FREQUENCY = 5000;
+               if ( CPE_POOL_UPDATE_FREQUENCY < 10000 ) {
+                 CPE_POOL_UPDATE_FREQUENCY = 10000;
                }
             }
 
