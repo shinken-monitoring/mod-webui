@@ -57,6 +57,20 @@ function humanHertz(frequency) {
     return Math.max(frequency, 0).toFixed(0) + byteUnits[i];
 };
 
+function toHHMMSS(num) {
+    var sec_num = parseInt(num, 10); // don't forget the second param
+    var days    = Math.floor(sec_num / (3600 * 24));
+    var hours   = Math.floor((sec_num / 3600) % 24);
+    var minutes = Math.floor((sec_num / 60) % 60);
+    var seconds = sec_num % 60;
+
+    if (days    >  1) {days    = days + "d " } else { days = ""}
+    if (hours   < 10) {hours   = "0"+hours;}
+    if (minutes < 10) {minutes = "0"+minutes;}
+    if (seconds < 10) {seconds = "0"+seconds;}
+    return days+hours+':'+minutes+':'+seconds;
+};
+
 function getServiceFromMetric(metric) {
   for (var i in _cache.groups) {
     if( $.inArray(metric, _cache.groups[i]) >= 0 ) {
@@ -80,6 +94,7 @@ function processMetric(m) {
     if (false) { null }
     else if (m.name == 'upbw' || m.name == 'dnbw') str = str + humanBytes(m.value);
     else if (m.name.includes('freq')) str = str + humanHertz(m.value);
+    else if (m.uom == 's') str = str + toHHMMSS(m.value);
     else str = str + m.value;
 
     //if ( m.uom ) str = str +  " " + m.uom;

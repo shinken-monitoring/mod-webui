@@ -115,8 +115,13 @@ function derive(value, value_last, check_time, check_time_last){
 
 var ICON_OK       = '<span class="fa-stack" title="service is OK"><i class="fa fa-circle fa-stack-2x font-ok"></i><i class="fa fa-arrow-up fa-stack-1x fa-inverse"></i></span>';
 var ICON_WARNING  = '<span class="fa-stack" title="service is WARNING"><i class="fa fa-circle fa-stack-2x font-warning"></i><i class="fa fa-exclamation fa-stack-1x fa-inverse"></i></span>';
-var ICON_CRITICAL = '<span class="fa-stack" "=""><i class="fa fa-circle fa-stack-2x font-critical"></i><i class="fa fa-arrow-down fa-stack-1x fa-inverse"></i></span>';
+var ICON_CRITICAL = '<span class="fa-stack" title="service is CRITICAL"><i class="fa fa-circle fa-stack-2x font-critical"></i><i class="fa fa-arrow-down fa-stack-1x fa-inverse"></i></span>';
 var ICON_UNKONWN  = '<span class="fa-stack" title="service is UNKNOWN"><i class="fa fa-circle fa-stack-2x font-unknown"></i><i class="fa fa-question fa-stack-1x fa-inverse"></i></span>';
+
+var ICON_HOST_OK          = '<span class="fa-stack" title="host is UP"><i class="fa fa-circle fa-stack-2x font-ok"></i><i class="fa fa-server fa-stack-1x fa-inverse"></i></span>';
+var ICON_HOST_DOWN        = '<span class="fa-stack" title="host is DOWN"><i class="fa fa-circle fa-stack-2x font-down"></i><i class="fa fa-server fa-stack-1x fa-inverse"></i></span>';
+var ICON_HOST_UNREACHABLE = '<span class="fa-stack" title="host is UNREACHABLE"><i class="fa fa-circle fa-stack-2x font-unreachable"></i><i class="fa fa-server fa-stack-1x fa-inverse"></i></span>';
+var ICON_HOST_UNKONWN     = '<span class="fa-stack" title="host is UNKNOWN"><i class="fa fa-circle fa-stack-2x font-unknown"></i><i class="fa fa-server fa-stack-1x fa-inverse"></i></span>';
 
 var COLOR_OK        = '#8BC34A';
 var COLOR_WARNING   = '#FAA732';
@@ -133,8 +138,20 @@ function getHTMLState(val) {
 	} else if ( val == 3 ) {
 		return ICON_UNKONWN;
 	}
-
 }
+
+function getHostHTMLState(val) {
+	if(val == 0) {
+		return ICON_HOST_OK;
+	} else if ( val == 1 ) {
+		return ICON_HOST_DOWN;
+	} else if ( val == 2 ) {
+		return ICON_HOST_UNREACHABLE;
+	} else if ( val == 3 ) {
+		return ICON_HOST_UNKONWN;
+	}
+}
+
 
 function getColorState(val) {
 	if(val == 0) {
@@ -273,7 +290,8 @@ function labelToColor(label) {
 function createTimeline(min_date, max_date) {
     var container = document.getElementById('timeline');
     var groups = [];
-    groups.push({id: cpe.name, content: '<span id="status2">'+getHTMLState(cpe.state_id)+'</span>' + '<a href="'+cpe.url+'">'+cpe.name+'</a>'});
+    console.log("Hola" + cpe.state_id)
+    groups.push({id: cpe.name, content: '<span id="status2">'+getHostHTMLState(cpe.state_id)+'</span>' + '<a href="'+cpe.url+'">'+cpe.name+'</a>'});
     services.forEach(function(service) {
         groups.push({id: service.name, content: getHTMLState(service.state_id) + '<a href="'+service.url+'">'+service.name+'</a>'});
     });
