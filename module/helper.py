@@ -855,14 +855,14 @@ class Helper(object):
             'uom': 'dBm'
         },
         {
-            'title': 'Attrition',
+            'title': 'Attenuation',
             'metrics': [
                 {
-                    'name': 'Down Attrition',
+                    'name': 'Down Attenuation',
                     'graphite_name': '%s.txrx.dnatt' % (cpe)
                 },
                 {
-                    'name': 'Up Attrition',
+                    'name': 'Up Attenuation',
                     'graphite_name': '%s.txrx.upatt' % (cpe)
                 }
             ],
@@ -901,14 +901,14 @@ class Helper(object):
             'uom': 'dBm'
         },
         {
-            'title': 'Attrition',
+            'title': 'Attenuation',
             'metrics': [
                 {
-                    'name': 'Down Attrition',
+                    'name': 'Down Attenuation',
                     'graphite_name': '%s.downstream.dnatt' % (cpe)
                 },
                 {
-                    'name': 'Up Attrition',
+                    'name': 'Up Attenuation',
                     'graphite_name': '%s.upstream.upatt' % (cpe)
                 }
             ],

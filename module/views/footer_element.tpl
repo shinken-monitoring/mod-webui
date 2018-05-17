@@ -19,7 +19,7 @@
                Shinken {{VERSION}} &mdash; Web User Interface {{app.app_version}}, &copy;2011-2016
             </em></small>
             <span class="glyphicon glyphicon-plus"></span>&nbsp;
-            <img src="http://phicus.es/wp-content/uploads/2017/01/logo_phicus_web.png" alt="Phicus Logo" height="24px" onclick="display_modal('/modal/about-phicus')"/>
+            <img src="//phicus.es/wp-content/uploads/2017/01/logo_phicus_web.png" alt="Phicus Logo" height="24px" onclick="display_modal('/modal/about-phicus')"/>
             <small><em class="text-muted">
                Krill {{KRILL_VERSION}} &mdash; KrillUI User Interface, Phicus &copy;2017-2018
             </em></small>

@@ -44,7 +44,7 @@
                   </center>
                </div>
                <div class="panel-body">
-                  <form role="form" class="form-signin" method="post" action="/user/auth">
+                  <form role="form" class="form-signin" method="post" action="/user/auth?path={{path}}">
                     <!--<h2>Please sign in</h2>-->
                   %if msg_text:
                   <div class="alert alert-danger" role="alert">
@@ -58,6 +58,7 @@
                     <!--<div class="form-group">-->
                       <input class="form-control" placeholder="Password" name="password" type="password" value="" required>
                     <!--</div>-->
+                      <input type="hidden" class="form-control" placeholder="path" name="path" type="path" value="{{path}}">
 
                     <button class="btn btn-lg btn-success btn-block" type="submit"><i class="fa fa-sign-in"></i> Login</button>
                   </form>

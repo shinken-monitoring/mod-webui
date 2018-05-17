@@ -1,101 +1,141 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# Copyright (C) 2009-2012:
-#    Gabes Jean, naparuba@gmail.com
-#    Mohier Frederic frederic.mohier@gmail.com
-#    Karfusehr Andreas, frescha@unitedseed.de
-# This file is part of Shinken.
-#
-# Shinken is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Affero General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#
-# Shinken is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU Affero General Public License for more details.
-#
-# You should have received a copy of the GNU Affero General Public License
-# along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
-
-### Will be populated by the UI with it's own value
-app = None
 
 from shinken.log import logger
+from shinken.misc.perfdata import PerfDatas
+from shinken.objects.service import Service
+from shinken.objects.host import Host
 
-# Get plugin's parameters from configuration file
-# params = {}
-# params['elts_per_page'] = 10
+from collections import OrderedDict
 
-# def load_cfg():
-    # global params
+import re
 
-    # import os,sys
-    # from webui2.config_parser import config_parser
-    # plugin_name = os.path.splitext(os.path.basename(__file__))[0]
-    # try:
-        # currentdir = os.path.dirname(os.path.realpath(__file__))
-        # configuration_file = "%s/%s" % (currentdir, 'plugin.cfg')
-        # logger.debug("Plugin configuration file: %s" % (configuration_file))
-        # scp = config_parser('#', '=')
-        # params = scp.parse_config(configuration_file)
+app = None
 
-        # params['elts_per_page'] = int(params['elts_per_page'])
+def _metric_to_json(m):
+    return dict(name=m.name, value=m.value, uom=m.uom, warning=m.warning, critical=m.critical, min=m.min, max=m.max)
 
-        # params['minemap_hostsLevel'] = [int(item) for item in params['minemap_hostsLevel'].split(',')]
-        # params['minemap_hostsShow'] = [item for item in params['minemap_hostsShow'].split(',')]
-        # params['minemap_hostsHide'] = [item for item in params['minemap_hostsHide'].split(',')]
-        # params['minemap_servicesLevel'] = [int(item) for item in params['minemap_servicesLevel'].split(',')]
-        # params['minemap_servicesHide'] = [item for item in params['minemap_servicesHide'].split(',')]
-
-        # logger.info("[webui-minemap] configuration loaded.")
-        # logger.debug("[webui-minemap] configuration, elts_per_page: %d", params['elts_per_page'])
-        # logger.debug("[webui-minemap] configuration, minemap hosts level: %s", params['minemap_hostsLevel'])
-        # logger.debug("[webui-minemap] configuration, minemap hosts always shown: %s", params['minemap_hostsShow'])
-        # logger.debug("[webui-minemap] configuration, minemap hosts always hidden: %s", params['minemap_hostsHide'])
-        # logger.debug("[webui-minemap] configuration, minemap services level: %s", params['minemap_servicesLevel'])
-        # logger.debug("[webui-minemap] configuration, minemap services hide: %s", params['minemap_servicesHide'])
-        # return True
-    # except Exception, exp:
-        # logger.warning("[webui-minemap] configuration file (%s) not available: %s", configuration_file, str(exp))
-        # return False
-
-# def reload_cfg():
-    # load_cfg()
-    # app.bottle.redirect("/config")
 
 def show_technical():
-    user = app.request.environ['USER']
+    return show_technical_table()
 
-    # Apply search filter if exists ...
+def show_mavis_mode():
+    return show_technical_table()
+
+def show_technical_table():
+
+    user = app.request.environ['USER']
     search = app.request.query.get('search', "type:host")
-    if not "type:host" in search:
-        search = "type:host "+search
-    logger.debug("[WebUI-worldmap] search parameters '%s'", search)
+    return {'search': search}
+
+
+def show_technical_json():
+
+    user = app.request.environ['USER']
+    #
+    search = app.request.query.get('search', "type:host")
+    draw = app.request.query.get('draw', "")
+
+    start  = int(app.request.query.get('start', None) or 0)
+    length = int(app.request.query.get('length', None) or 5000)
+
+
     items = app.datamgr.search_hosts_and_services(search, user, get_impacts=False)
 
-    # Fetch elements per page preference for user, default is 25
-    elts_per_page = app.prefs_module.get_ui_user_preference(user, 'elts_per_page', 25)
+    data = list()
 
-    # We want to limit the number of elements
-    step = int(app.request.GET.get('step', elts_per_page))
-    start = int(app.request.GET.get('start', '0'))
-    end = int(app.request.GET.get('end', start + step))
+    hosts = dict()
 
-    # If we overflow, came back as normal
-    total = len(items)
-    if start > total:
-        start = 0
-        end = step
+    _headers = set()
+    _groups  = OrderedDict()
 
-    navi = app.helper.get_navi(total, start, step=step)
+    #for h in items:
+    #    logger.warning("busqueda::%s" % type(h) )
 
-    return {'navi': navi, 'items': items[start:end], 'page': "minemap"}
+    hosts_items = [item for item in items if isinstance(item, Host)]
 
+    for h in hosts_items:
+        _host = h.get_name()
+        if not hosts.get(_host):
+            hosts[_host] = dict()
+
+        if hasattr(h,'perf_data'):
+            perfdatas = PerfDatas(h.perf_data)
+            for m in perfdatas:
+                _metric = _metric_to_json(m)
+                _name  = _metric.get('name')
+                p = re.compile(r"\w+\d+")
+                if p.search(_name):
+                    continue
+                hosts[_host][_name] = _metric
+                if not _name in _headers:
+                    _headers.add(_name)
+                    if not _groups.get('host'):
+                        _groups['host'] = list()
+                    _groups['host'].append(_name)
+
+        for s in h.services:
+            _group = s.get_name()
+            if not _groups.get(_group):
+                _groups[_group] = list()
+
+            perfdatas = PerfDatas(s.perf_data)
+            for m in perfdatas:
+                _metric = _metric_to_json(m)
+                _name  = _metric.get('name')
+                p = re.compile(r"\w+\d+")
+                if p.search(_name):
+                    continue
+
+                hosts[_host][_name] = _metric
+                if not _name in _headers:
+                    _headers.add(_name)
+                    _groups[_group].append(_name)
+
+
+    for key, value in hosts.iteritems():
+        if not value:
+            continue
+        _temp = {'host': key}
+        for _kk, _vv in value.iteritems():
+            _temp[_kk] = _vv
+
+        data.append(_temp)
+
+    xdata = {
+        'draw': draw,
+        'data': data[start:int(start+length)],
+        'recordsFiltered': len(data),
+        'recordsTotal': len(data),
+        'headers': list(_headers),
+        'groups': _groups
+    }
+
+    # xdata.update(columns=[
+    #     ['title', 'name'],
+    #     ['title', 'value'],
+    #     ['title', 'uom'],
+    #     ['title', 'warning'],
+    #     ['title', 'critical'],
+    #     ['title', 'min'],
+    #     ['title', 'max']
+    # ])
+
+
+    return xdata
 
 pages = {
+    show_mavis_mode: {
+        'name': 'technical', 'route': '/mavis', 'view': 'technical', 'static': True, 'search_engine': True
+    },
     show_technical: {
-        'name': 'Minemap', 'route': '/technical', 'view': 'technical', 'static': True, 'search_engine': True
+        'name': 'technical', 'route': '/technical', 'view': 'technical', 'static': True, 'search_engine': True
+    },
+    show_technical_table: {
+        'name': 'technical', 'route': '/technical/table', 'view': 'technical', 'static': True, 'search_engine': True
+    },
+    show_technical_json: {
+        'name': 'technical', 'route': '/technical/json'
     }
+
 }

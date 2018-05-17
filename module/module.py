@@ -91,7 +91,7 @@ root_app = bottle.default_app()
 webui_app = bottle.Bottle()
 
 # Debug
-bottle.debug(False)
+bottle.debug(True)
 
 # Look at the webui module root dir too
 webuimod_dir = os.path.abspath(os.path.dirname(__file__))
@@ -936,7 +936,7 @@ def login_required():
     logger.debug("[WebUI] login_required, getting user cookie ...")
     cookie_value = bottle.request.get_cookie(str(app.session_cookie), secret=app.auth_secret)
     if not cookie_value and not app.allow_anonymous:
-        bottle.redirect(app.get_url("GetLogin"))
+        bottle.redirect(app.get_url("GetLogin")+'?path='+request.urlparts.path)
     if cookie_value:
         # For alignak backend
         if app.alignak_backend_endpoint:
@@ -947,9 +947,9 @@ def login_required():
                 if not app.frontend.is_logged_in():
                     try:
                         if not app.frontend.connect(app.user_session):
-                            bottle.redirect(app.get_url("GetLogin"))
+                            bottle.redirect(app.get_url("GetLogin")+'?path='+request.urlparts.path)
                     except Exception:
-                        bottle.redirect(app.get_url("GetLogin"))
+                        bottle.redirect(app.get_url("GetLogin")+'?path='+request.urlparts.path)
 
             if 'info' in cookie_value:
                 app.user_info = cookie_value['info']
@@ -974,11 +974,11 @@ def login_required():
     else:
         # Only the /dashboard/currently should be accessible to anonymous users
         if request.urlparts.path != "/dashboard/currently":
-            bottle.redirect("/user/login")
+            bottle.redirect("/user/login"+"?path="+request.urlparts.path)
         contact = app.datamgr.get_contact(name='anonymous')
 
     if not contact:
-        bottle.redirect(app.get_url("GetLogin"))
+        bottle.redirect(app.get_url("GetLogin")+'?path='+request.urlparts.path)
 
     user = User.from_contact(contact, app.user_picture, app.gravatar)
     if app.user_session and app.user_info:

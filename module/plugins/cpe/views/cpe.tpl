@@ -2,6 +2,8 @@
 %import re
 %import ast
 %import json
+%import yaml
+
 %from shinken.misc.perfdata import PerfDatas
 %now = int(time.time())
 
@@ -71,11 +73,11 @@ Invalid element name
 
 <!--<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>-->
 
-<script src="http://www.flotcharts.org/flot/jquery.flot.js" charset="utf-8"></script>
+<script src="https://www.flotcharts.org/flot/jquery.flot.js" charset="utf-8"></script>
 <script src="/static/cpe/js/plots.js" charset="utf-8"></script>
 <script>
-var CPE_QUICKSERVICES_UPDATE_FREQUENCY = 5000
-var CPE_POOL_UPDATE_FREQUENCY = 5000
+var CPE_QUICKSERVICES_UPDATE_FREQUENCY = 5000;
+var CPE_POOL_UPDATE_FREQUENCY = 10000;
 
 %if app.proxy_sufix:
 var proxy_sufix = "{{app.proxy_sufix}}";
@@ -140,9 +142,22 @@ var STATUS_BLUE    = ["NONE", "NULL", ""];
 function poll_cpe() {
   $.getJSON('/cpe_poll/{{cpe_host.host_name}}', function(data){
 
+
+        if ( typeof data.hostevent !== 'undefined' ) {
+          $.each(data.hostevent, function(k,v){
+
+              if ( typeof v.leased_address !== 'undefined' ) {
+                alertify.log("New IP ADDRESS: " + v.leased_address, "info", 15000);
+              }
+
+          });
+        }
+
+
         if(data && data.status) {
 
-            //data.status = data.status.replace(/\W+/g, '').toUpperCase()
+            data.status = data.status.replace(/\W+\s+/g, '').toUpperCase()
+
             $('#registration_state').html(data.status)
             $('#upbw').html(humanBytes(data.upbw))
             $('#dnbw').html(humanBytes(data.dnbw))
@@ -191,8 +206,8 @@ function poll_cpe() {
 
             if ( typeof data.lapse !== 'undefined' ) {
                CPE_POOL_UPDATE_FREQUENCY = Math.round( (data.lapse * 1000 ) * 1.20 );
-               if ( CPE_POOL_UPDATE_FREQUENCY < 5000 ) {
-                 CPE_POOL_UPDATE_FREQUENCY = 5000;
+               if ( CPE_POOL_UPDATE_FREQUENCY < 10000 ) {
+                 CPE_POOL_UPDATE_FREQUENCY = 10000;
                }
             }
 
@@ -210,7 +225,11 @@ function poll_cpe() {
 
             line = ""
             $.each(data.service_ports, function(k,v){
-               line = line + v.user_vlan + '/'+ v.service_vlan + " "
+               line = line + v.service_vlan + '/'+ v.user_vlan
+               if ( typeof v.native_vlan !== 'undefined' && v.native_vlan ) {
+                 line = line + "N";
+               }
+               line = line + " ";
             })
 
             $('#service_ports').html(line)
@@ -316,6 +335,7 @@ function poll_cpe() {
 <div class="row">
     <div class="col-md-2">
 
+
         %if cpe.customs.get('_CPE_ID'):
             <div class="right" style="font-size: 24px"><a href="/host/{{ cpe.host_name }}">{{ cpe.host_name }}</a></div>
             <div class="right" style="font-size: 18px; ">{{cpe.customs.get('_CPE_MODEL')}}</div>
@@ -333,7 +353,6 @@ function poll_cpe() {
 
         %else:
             <div class="right" style="font-size: 24px">
-
               <a href="/host/{{ cpe.host_name }}">{{ cpe.host_name }}</a>
 
 
