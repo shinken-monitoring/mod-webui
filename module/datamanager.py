@@ -780,7 +780,14 @@ class WebUIDataManager(DataManager):
                 items = new_items
 
             if t == 'loc':
-                items = [i for i in items if i.customs.get('_LOCATION') in s.split(',')]
+                pat = re.compile(s, re.IGNORECASE)
+                new_items = []
+                for i in items:
+                    logger.info("[WebUI-LOC] i={} c={}".format(i, i.customs))
+
+                    if pat.match(i.customs.get('_LOCATION', '')):
+                        new_items.append(i)
+                items = new_items
 
             if t == 'his':
                 new_items = []
