@@ -383,8 +383,8 @@ function drawDashboard() {
                     minValue: 0,
                     format: 'short'
                 },
-                height: 400,
-                width: 600,
+                height: 200,
+                width: '100%',
                 chartArea: {
                     width: '80%'
                 }
@@ -398,7 +398,7 @@ function drawDashboard() {
                     ui: {
                         chartOptions: {
                             height: 50,
-                            width: 600,
+                            width: '100%',
                             chartArea: {
                                 width: '80%'
                             }
