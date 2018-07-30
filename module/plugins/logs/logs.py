@@ -26,6 +26,8 @@
 
 import time
 import datetime
+
+import json
 import urllib
 
 from shinken.log import logger
@@ -163,6 +165,10 @@ def get_history():
 
     command_name = app.request.GET.get('commandname', None)
     if command_name is not None:
+        try:
+            command_name = json.loads(command_name)
+        except:
+            pass
         filters['command_name'] = command_name
 
     limit = int(app.request.GET.get('limit', 100))
