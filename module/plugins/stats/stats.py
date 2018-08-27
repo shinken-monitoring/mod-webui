@@ -77,7 +77,7 @@ def get_global_stats():
     range_end = int(app.request.GET.get('range_end', time.time()))
     range_start = int(app.request.GET.get('range_start', range_end - (days * 86400)))
 
-    logs = list(app.logs_module.get_ui_logs(range_start=range_start, range_end=range_end, filters={'type': 'SERVICE NOTIFICATION', 'command_name': 'notify-service-by-hubot'}, limit=None))
+    logs = list(app.logs_module.get_ui_logs(range_start=range_start, range_end=range_end, filters={'type': 'SERVICE NOTIFICATION', 'command_name': {'$regex':'notify-service-by-slack'}}, limit=None))
     hosts = Counter()
     services = Counter()
     hostsservices = Counter()
@@ -96,7 +96,7 @@ def get_service_stats(name):
     range_end = int(app.request.GET.get('range_end', time.time()))
     range_start = int(app.request.GET.get('range_start', range_end - (days * 86400)))
 
-    logs = list(app.logs_module.get_ui_logs(range_start=range_start, range_end=range_end, filters={'type': 'SERVICE NOTIFICATION', 'command_name': 'notify-service-by-hubot', 'service_description': name}, limit=None))
+    logs = list(app.logs_module.get_ui_logs(range_start=range_start, range_end=range_end, filters={'type': 'SERVICE NOTIFICATION', 'command_name': {'$regex':'notify-service-by-slack'}, 'service_description': name}, limit=None))
     hosts = Counter()
     for l in logs:
         hosts[l['host_name']] += 1
@@ -111,7 +111,7 @@ def get_host_stats(name):
     range_end = int(app.request.GET.get('range_end', time.time()))
     range_start = int(app.request.GET.get('range_start', range_end - (days * 86400)))
 
-    logs = list(app.logs_module.get_ui_logs(range_start=range_start, range_end=range_end, filters={'type': 'SERVICE NOTIFICATION', 'command_name': 'notify-service-by-hubot', 'host_name': name}, limit=None))
+    logs = list(app.logs_module.get_ui_logs(range_start=range_start, range_end=range_end, filters={'type': 'SERVICE NOTIFICATION', 'command_name': {'$regex':'notify-service-by-slack'}, 'host_name': name}, limit=None))
     services = Counter()
     for l in logs:
         services[l['service_description']] += 1
