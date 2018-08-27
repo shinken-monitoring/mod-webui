@@ -926,7 +926,7 @@ def login_required():
     logger.debug("[WebUI] login_required, getting user cookie ...")
     cookie_value = bottle.request.get_cookie(str(app.session_cookie), secret=app.auth_secret)
     if not cookie_value and not app.allow_anonymous:
-        bottle.redirect(app.get_url("GetLogin"))
+        bottle.redirect('/user/login')
     if cookie_value:
         # For alignak backend
         if app.alignak_backend_endpoint:
@@ -937,9 +937,9 @@ def login_required():
                 if not app.frontend.is_logged_in():
                     try:
                         if not app.frontend.connect(app.user_session):
-                            bottle.redirect(app.get_url("GetLogin"))
+                            bottle.redirect('/user/login')
                     except Exception:
-                        bottle.redirect(app.get_url("GetLogin"))
+                        bottle.redirect('/user/login')
 
             if 'info' in cookie_value:
                 app.user_info = cookie_value['info']
@@ -968,7 +968,8 @@ def login_required():
         contact = app.datamgr.get_contact(name='anonymous')
 
     if not contact:
-        bottle.redirect(app.get_url("GetLogin"))
+        app.redirect403();
+        bottle.redirect('/user/login')
 
     user = User.from_contact(contact)
     if app.user_session and app.user_info:
