@@ -379,6 +379,9 @@ class WebUIDataManager(DataManager):
             re.VERBOSE
             )
 
+        # Replace "NOT foo" by "^((?!foo).)*$" to ignore foo
+        search = re.sub('NOT ([^\ ]*)', r'^((?!\1).)*$', search)
+
         patterns = []
         for match in regex.finditer(search):
             if match.group('name'):
