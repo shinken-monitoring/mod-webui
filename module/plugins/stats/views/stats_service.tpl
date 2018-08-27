@@ -18,7 +18,7 @@
 <div class="col-xs-12">
   <div class="panel panel-default">
     <div class="panel-body">
-      <div id="inner_history" data-service='{{ service }}' data-logclass="3" data-commandname="notify-service-by-slack">
+      <div id="inner_history" data-service='{{ service }}' data-logclass="3" data-commandname="{%22$regex%22:%22notify-service-by-slack%22}">
       </div>
 
       <div class="text-center" id="loading-spinner">
