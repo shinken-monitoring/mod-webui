@@ -43,6 +43,7 @@ from shinken.objects.contact import Contact, Contacts
 from shinken.objects.contactgroup import Contactgroup, Contactgroups
 from shinken.objects.notificationway import NotificationWay, NotificationWays
 from shinken.objects.timeperiod import Timeperiod, Timeperiods
+from shinken.daterange import Timerange
 from shinken.objects.command import Command, Commands
 from shinken.objects.config import Config
 from shinken.objects.schedulerlink import SchedulerLink, SchedulerLinks
@@ -469,23 +470,31 @@ class Regenerator(object):
             setattr(o, prop, [])
             return
 
-        logger.warning("Linkify Dict Srv/Host for %s - %s = %s", o.get_name(), prop, v)
+        logger.debug("Linkify Dict Srv/Host for %s - %s = %s", o.get_name(), prop, v)
         new_v = []
         if 'hosts' not in v or 'services' not in v:
-            logger.error("\n\n\n\nNo hosts nor services in v: %s\n\n\n\n", v)
-            return
-
-        for name in v['services']:
-            elts = name.split('/')
-            hname = elts[0]
-            sdesc = elts[1]
-            s = self.services.find_srv_by_name_and_hostname(hname, sdesc)
-            if s:
-                new_v.append(s)
-        for hname in v['hosts']:
-            h = self.hosts.find_by_name(hname)
-            if h:
-                new_v.append(h)
+            for uuid in v:
+                for host in self.hosts:
+                    if uuid == host.uuid:
+                        new_v.append(host)
+                        break
+                else:
+                    for service in self.services:
+                        if uuid == service.uuid:
+                            new_v.append(service)
+                            break
+        else:
+            for name in v['services']:
+                elts = name.split('/')
+                hname = elts[0]
+                sdesc = elts[1]
+                s = self.services.find_srv_by_name_and_hostname(hname, sdesc)
+                if s:
+                    new_v.append(s)
+            for hname in v['hosts']:
+                h = self.hosts.find_by_name(hname)
+                if h:
+                    new_v.append(h)
         setattr(o, prop, new_v)
 
     def linkify_host_and_hosts(self, o, prop):
@@ -494,7 +503,7 @@ class Regenerator(object):
             setattr(o, prop, [])
             return
 
-        logger.warning("Linkify host>hosts for %s - %s = %s", o.get_name(), prop, v)
+        logger.debug("Linkify host>hosts for %s - %s = %s", o.get_name(), prop, v)
         new_v = []
         for hname in v:
             h = self.hosts.find_by_name(hname)
@@ -514,16 +523,16 @@ class Regenerator(object):
             setattr(o, prop, [])
             return
 
-        logger.warning("Linkify service>services for %s - %s = %s", o.get_name(), prop, v)
+        logger.debug("Linkify service>services for %s - %s = %s", o.get_name(), prop, v)
         new_v = []
-        for hname in v:
-            h = self.hosts.find_by_name(hname)
-            if h:
-                new_v.append(h)
+        for sdesc in v:
+            s = self.services.find_by_name(sdesc)
+            if s:
+                new_v.append(s)
             else:
-                for host in self.hosts:
-                    if hname == host.uuid:
-                        new_v.append(host)
+                for service in self.services:
+                    if sdesc == service.uuid:
+                        new_v.append(service)
                         break
 
         setattr(o, prop, new_v)
@@ -607,17 +616,22 @@ class Regenerator(object):
             return
         logger.debug("Creating a host: %s in instance %s", hname, inst_id)
 
-        h = Host({})
-        self.update_element(h, data)
+        host = Host({})
+        self.update_element(host, data)
 
         # We need to rebuild Downtime and Comment relationship
-        for dtc in h.downtimes:
-            dtc.ref = h
-        for dtc in h.comments:
-            dtc.ref = h
+        for downtime in host.downtimes.values():
+            downtime.ref = host
+            downtime.id = downtime.uuid
+        host.downtimes = host.downtimes.values()
+        for comment in host.comments.values():
+            comment.ref = host
+            comment.id = comment.uuid
+            comment.persistent = True
+        host.comments = host.comments.values()
 
         # Ok, put in in the in progress hosts
-        inp_hosts[h.id] = h
+        inp_hosts[host.id] = host
 
     # From now we only create a hostgroup in the in prepare
     # part. We will link at the end.
@@ -658,17 +672,22 @@ class Regenerator(object):
             return
         logger.debug("Creating a service: %s/%s in instance %s", hname, sdesc, inst_id)
 
-        s = Service({})
-        self.update_element(s, data)
+        service = Service({})
+        self.update_element(service, data)
 
-        # We need to rebuild Downtime and Comment relationship
-        for dtc in s.downtimes:
-            dtc.ref = s
-        for dtc in s.comments:
-            dtc.ref = s
+        # We need to rebuild Downtime and Comment relationssip
+        for downtime in service.downtimes.values():
+            downtime.ref = service
+            downtime.id = downtime.uuid
+        service.downtimes = service.downtimes.values()
+        for comment in service.comments.values():
+            comment.ref = service
+            comment.id = comment.uuid
+            comment.persistent = True
+        service.comments = service.comments.values()
 
         # Ok, put in in the in progress hosts
-        inp_services[s.id] = s
+        inp_services[service.id] = service
 
     # We create a servicegroup in our in progress part
     # we will link it after
@@ -806,15 +825,27 @@ class Regenerator(object):
     # if not: create it and declare it in our main commands
     def manage_initial_timeperiod_status_brok(self, b):
         data = b.data
-        # print "Creating timeperiod", data
         tpname = data['timeperiod_name']
 
+        logger.debug("Creating a timeperiod: %s", tpname)
         tp = self.timeperiods.find_by_name(tpname)
         if tp:
             self.update_element(tp, data)
         else:
             tp = Timeperiod({})
             self.update_element(tp, data)
+            # Alignak do not keep the Timerange objects and serializes as dict...
+            # so we must restore Timeranges from the dictionary
+            logger.debug("Timeperiod: %s", tp)
+
+            # Transform some inner items
+            for dr in tp.dateranges:
+                new_trs = []
+                for tr in dr.timeranges:
+                    entry = "%02d:%02d-%02d:%02d" % (tr['hstart'], tr['mstart'], tr['hend'], tr['mend'])
+                    new_trs.append(Timerange(entry))
+                dr.timeranges = new_trs
+
             self.timeperiods.add_item(tp)
 
     # For command we got 2 cases: do we already got the command or not.
@@ -927,31 +958,36 @@ class Regenerator(object):
             del data[prop]
 
         hname = data['host_name']
-        h = self.hosts.find_by_name(hname)
-        if not h:
+        host = self.hosts.find_by_name(hname)
+        if not host:
             return
 
-        logger.info("Updated host: %s", hname)
-        self.before_after_hook(b, h)
-        self.update_element(h, data)
+        logger.debug("Updated host: %s", hname)
+        self.before_after_hook(b, host)
+        self.update_element(host, data)
 
         # We can have some change in our impacts and source problems.
-        self.linkify_dict_srv_and_hosts(h, 'impacts')
-        self.linkify_dict_srv_and_hosts(h, 'source_problems')
+        self.linkify_dict_srv_and_hosts(host, 'impacts')
+        self.linkify_dict_srv_and_hosts(host, 'source_problems')
 
         # If the topology change, update it
         if toplogy_change:
-            logger.debug("Topology change for %s %s"  % (h.get_name(), h.parent_dependencies))
-            self.linkify_host_and_hosts(h, 'parents')
-            self.linkify_host_and_hosts(h, 'childs')
-            self.linkify_dict_srv_and_hosts(h, 'parent_dependencies')
-            self.linkify_dict_srv_and_hosts(h, 'child_dependencies')
+            logger.debug("Topology change for %s %s"  % (host.get_name(), host.parent_dependencies))
+            self.linkify_host_and_hosts(host, 'parents')
+            self.linkify_host_and_hosts(host, 'childs')
+            self.linkify_dict_srv_and_hosts(host, 'parent_dependencies')
+            self.linkify_dict_srv_and_hosts(host, 'child_dependencies')
 
-        # Relink downtimes and comments
-        for dtc in h.downtimes:
-            dtc.ref = h
-        for dtc in h.comments:
-            dtc.ref = h
+        # We need to rebuild Downtime and Comment relationship
+        for downtime in host.downtimes.values():
+            downtime.ref = host
+            downtime.id = downtime.uuid
+        host.downtimes = host.downtimes.values()
+        for comment in host.comments.values():
+            comment.ref = host
+            comment.id = comment.uuid
+            comment.persistent = True
+        host.comments = host.comments.values()
 
     # In fact, an update of a service is like a check return
     def manage_update_service_status_brok(self, b):
@@ -974,28 +1010,32 @@ class Regenerator(object):
 
         hname = data['host_name']
         sdesc = data['service_description']
-        s = self.services.find_srv_by_name_and_hostname(hname, sdesc)
-        if not s:
+        service = self.services.find_srv_by_name_and_hostname(hname, sdesc)
+        if not service:
             return
 
-        logger.info("Updated service: %s/%s", hname, sdesc)
-        self.before_after_hook(b, s)
-        self.update_element(s, data)
+        logger.debug("Updated service: %s/%s", hname, sdesc)
+        self.before_after_hook(b, service)
+        self.update_element(service, data)
 
         # We can have some change in our impacts and source problems.
-        self.linkify_dict_srv_and_hosts(s, 'impacts')
-        self.linkify_dict_srv_and_hosts(s, 'source_problems')
+        self.linkify_dict_srv_and_hosts(service, 'impacts')
+        self.linkify_dict_srv_and_hosts(service, 'source_problems')
 
         # If the topology change, update it
         if toplogy_change:
-            self.linkify_dict_srv_and_hosts(s, 'parent_dependencies')
-            self.linkify_dict_srv_and_hosts(s, 'child_dependencies')
+            self.linkify_dict_srv_and_hosts(service, 'parent_dependencies')
+            self.linkify_dict_srv_and_hosts(service, 'child_dependencies')
 
-        # Relink downtimes and comments
-        for dtc in h.downtimes:
-            dtc.ref = h
-        for dtc in h.comments:
-            dtc.ref = h
+        for downtime in service.downtimes.values():
+            downtime.ref = service
+            downtime.id = downtime.uuid
+        service.downtimes = service.downtimes.values()
+        for comment in service.comments.values():
+            comment.ref = service
+            comment.id = comment.uuid
+            comment.persistent = True
+        service.comments = service.comments.values()
 
     def manage_update_broker_status_brok(self, b):
         data = b.data
@@ -1054,7 +1094,7 @@ class Regenerator(object):
         if not h:
             return
 
-        logger.info("Host check result: %s - %s (%s)", hname, h.state, h.state_type)
+        logger.debug("Host check result: %s - %s (%s)", hname, h.state, h.state_type)
         self.before_after_hook(b, h)
         self.update_element(h, data)
 
@@ -1071,7 +1111,7 @@ class Regenerator(object):
         if not s:
             return
 
-        logger.info("Service check result: %s/%s - %s (%s)", hname, sdesc, s.state, s.state_type)
+        logger.debug("Service check result: %s/%s - %s (%s)", hname, sdesc, s.state, s.state_type)
         self.before_after_hook(b, s)
         self.update_element(s, data)
 

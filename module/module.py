@@ -54,6 +54,7 @@ import threading
 import imp
 # Unused import
 # from urlparse import urljoin
+import requests
 
 try:
     from setproctitle import setproctitle
@@ -371,6 +372,7 @@ class Webui_broker(BaseModule, Daemon):
         """
             Module main function
         """
+        global ALIGNAK
         self.stand_alone = stand_alone
         if self.stand_alone:
             setproctitle(self.name)
@@ -405,11 +407,42 @@ class Webui_broker(BaseModule, Daemon):
 
             logger.info("[WebUI] configured modules %s", self.modules)
             self.modules_manager = ModulesManager('webui', self.find_modules_path(), [])
+            self.modules_manager.set_modules(self.modules)
             # This function is loading all the installed 'webui' daemon modules...
             self.do_load_modules()
+            # All the webui modules were imported but instances were not created...
+            # let's create them!
             logger.info("[WebUI] imported %d modules %s",
                         len(self.modules_manager.imported_modules),
                         self.modules_manager.imported_modules)
+            logger.info("[WebUI] allowed: %s / %s",
+                        self.modules_manager.allowed_types, self.modules_manager.modules_assoc)
+
+            # Now we want to find in theses modules the ones we are looking for
+            del self.modules_manager.modules_assoc[:]
+            for mod_conf in self.modules_manager.modules:
+                logger.warning("Module: %s", mod_conf)
+                module_type = mod_conf.module_type
+                for module in self.modules_manager.imported_modules:
+                    if module.properties['type'] == module_type:
+                        self.modules_manager.modules_assoc.append((mod_conf, module))
+                        break
+                else:  # No module is suitable, we emit a Warning
+                    logger.warning("The module type %s for %s was not found in modules!",
+                                   module_type, mod_conf.get_name())
+
+            self.modules_manager.get_instances()
+
+            #
+            # for module in self.modules_manager.imported_modules:
+            #     logger.info("[WebUI] initializing module: %s", module.__dict__)
+            #     for cfg_module in self.modules:
+            #         if cfg_module.name == module.name:
+            #             # Give the module the data to which module it is load from
+            #             logger.info("[WebUI] initializeing module: %s", module.get_name())
+            #             inst = module.get_instance({})
+            #             inst.set_loaded_into(self.modules_manager.modules_type)
+            #             self.instances.append(inst)
 
             for inst in self.modules_manager.instances:
                 logger.info("[WebUI] loading %s", inst)
@@ -531,16 +564,25 @@ class Webui_broker(BaseModule, Daemon):
         """
             A plugin sends us an external command. Notify this command to the monitoring framework ...
         """
+        global ALIGNAK
         logger.debug("[WebUI] Got an external command: %s", e.__dict__)
         if self.stand_alone:
             logger.warning("[WebUI] --------------------------------------------------")
             logger.warning("[WebUI] TODO: notify external command: %s", e.__dict__)
             logger.warning("[WebUI] --------------------------------------------------")
         else:
-            try:
-                self.from_q.put(e)
-            except Exception as exp:
-                logger.error("[WebUI] External command push, exception: %s", str(exp))
+            if ALIGNAK:
+                logger.warning("Sending command to Alignak: %s", e)
+                req = requests.Session()
+                raw_data = req.get("http://localhost:7770/command",
+                                   params={'command': e.cmd_line})
+                logger.warning("Result: %s", raw_data.content)
+            else:
+                try:
+                    logger.warning("[WebUI] from_q: %s", self.from_q)
+                    self.from_q.put(e)
+                except Exception as exp:
+                    logger.error("[WebUI] External command push, exception: %s", str(exp))
 
     # Shinken broker module only
     # -----------------------------------------------------
