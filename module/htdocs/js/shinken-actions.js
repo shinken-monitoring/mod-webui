@@ -173,7 +173,10 @@ check, along with optional performance data.
 */
 function submit_check(name, return_code, output){
    var elt = get_element(name);
-   var url = '/action/PROCESS_'+elt.type+'_HOST_CHECK_RESULT/'+elt.name+'/'+return_code+'/'+output;
+   if (elt.type == 'SVC') {
+       elt.type = 'SERVICE';
+   }
+   var url = '/action/PROCESS_'+elt.type+'_CHECK_RESULT/'+elt.name+'/'+return_code+'/'+output;
    // We can launch it :)
    launch(url, elt.type+': '+name+', check result submitted');
 }
