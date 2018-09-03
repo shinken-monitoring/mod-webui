@@ -672,6 +672,9 @@ class Regenerator(object):
             return
         logger.debug("Creating a service: %s/%s in instance %s", hname, sdesc, inst_id)
 
+        if isinstance(data['display_name'], list):
+            data['display_name'] = data['service_description']
+
         service = Service({})
         self.update_element(service, data)
 
