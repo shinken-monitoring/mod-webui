@@ -26,7 +26,8 @@
 
 
 WEBUI_VERSION = "2.7.2"
-WEBUI_COPYRIGHT = "(c) 2009-2017 - License GNU AGPL as published by the FSF, minimum version 3 of the License."
+WEBUI_COPYRIGHT = "(c) 2009-2017 - License GNU AGPL as published by the FSF, " \
+                  "minimum version 3 of the License."
 
 
 """
@@ -34,24 +35,52 @@ This Class is a plugin for the Shinken Broker. It is in charge
 to get broks and recreate real objects, and propose a Web User Interface :)
 """
 
+import os
+
+# Check if Alignak is installed
+# An environment variable must be set when this UI module is to be used with Alignak
+# Else, the default Alignak installation directory is tested
+ALIGNAK = False
+if os.environ.get('ALIGNAK_SHINKEN_UI', None):
+    ALIGNAK = True
+else:
+    if os.path.exists('/usr/local/share/alignak'):
+        ALIGNAK = True
+
 import traceback
 import sys
-import os
 import time
 import threading
 import imp
-from urlparse import urljoin
+# Unused import
+# from urlparse import urljoin
+import requests
 
 try:
     from setproctitle import setproctitle
 except ImportError as err:
     setproctitle = lambda s: None
 
-# Shinken import
-from shinken.basemodule import BaseModule
-from shinken.message import Message
-from shinken.misc.regenerator import Regenerator
-from shinken.log import logger
+# Alignak
+if ALIGNAK:
+    from alignak.basemodule import BaseModule
+    from alignak.message import Message
+    from regenerator import Regenerator
+
+    # Shinken logger configuration
+    from shinken.log import logger
+    logger.register_local_log('/tmp/var/log/alignak/shinken.log', 'WARNING')
+    import logging
+    logger.setLevel(logging.INFO)
+else:
+    # Shinken import
+    from shinken.basemodule import BaseModule
+    from shinken.message import Message
+    from shinken.misc.regenerator import Regenerator
+
+    # Shinken logger configuration
+    from shinken.log import logger
+
 from shinken.modulesctx import modulesctx
 from shinken.modulesmanager import ModulesManager
 from shinken.daemon import Daemon
@@ -66,7 +95,8 @@ from datamanager import WebUIDataManager
 from user import User
 from helper import helper
 
-from lib.md5crypt import apache_md5_crypt, unix_md5_crypt
+# Unused import
+# from lib.md5crypt import apache_md5_crypt, unix_md5_crypt
 
 from submodules.prefs import PrefsMetaModule
 from submodules.auth import AuthMetaModule
@@ -74,13 +104,16 @@ from submodules.logs import LogsMetaModule
 from submodules.graphs import GraphsMetaModule
 from submodules.helpdesk import HelpdeskMetaModule
 
+# Only for Alignak backend connection
+# todo: very old code that is no more compatible with most recent versions - to be cleaned!
 try:
     from frontend import FrontEnd
     frontend_available = True
 except ImportError:
     logger.warning(
         '[WebUI] Can not import Alignak frontend library. '
-        'If you intend to use Alignak backend authentication or objects, you should \'pip install alignak_backend_client\''
+        'If you intend to use Alignak backend authentication or objects, '
+        'you should \'pip install alignak_backend_client\''
     )
     frontend_available = False
 
@@ -89,11 +122,15 @@ root_app = bottle.default_app()
 webui_app = bottle.Bottle()
 
 # Debug
+# todo: only if debug mode!
 bottle.debug(True)
 
 # Look at the webui module root dir too
 webuimod_dir = os.path.abspath(os.path.dirname(__file__))
 htdocs_dir = os.path.join(webuimod_dir, 'htdocs')
+
+bottle.TEMPLATE_PATH.append(os.path.join(webuimod_dir, 'views'))
+bottle.TEMPLATE_PATH.append(webuimod_dir)
 
 properties = {
     'daemons': ['broker', 'scheduler'],
@@ -106,9 +143,8 @@ properties = {
 def get_instance(plugin):
     # Only add template if we CALL webui
     logger.info("[WebUI] Webui_broker directory: %s", webuimod_dir)
-    bottle.TEMPLATE_PATH.append(os.path.join(webuimod_dir, 'views'))
-    bottle.TEMPLATE_PATH.append(webuimod_dir)
 
+    logger.info("[WebUI] configuration: %s", plugin.__dict__)
     instance = Webui_broker(plugin)
     logger.info("[WebUI] got an instance of Webui_broker for module: %s", plugin.get_name())
     return instance
@@ -142,6 +178,22 @@ class Webui_broker(BaseModule, Daemon):
     def __init__(self, modconf):
         BaseModule.__init__(self, modconf)
 
+        # For Alignak ModulesManager...
+        # ---
+        if ALIGNAK:
+            # A daemon must have these properties
+            self.type = 'webui'
+            self.name = 'webui'
+            # I may have some modules in my configuration or not...
+            self.module_type = getattr(modconf, 'module_type', 'unset')
+            self.module_name = getattr(modconf, 'module_name', 'unset')
+            self.modules = getattr(modconf, 'modules', [])
+            if self.modules and not self.modules[0]:
+                self.modules = []
+            self.modules_dir = getattr(modconf, 'modules_dir', '/var/lib/shinken/modules')
+            logger.info("[WebUI] modules: %s in %s", self.modules, self.modules_dir)
+        # ---
+
         self.plugins = []
         self.modconf = modconf
 
@@ -154,7 +206,8 @@ class Webui_broker(BaseModule, Daemon):
             if self.endpoint.endswith('/'):
                 self.endpoint = self.endpoint[:-1]
             logger.info("[WebUI] configured endpoint: %s", self.endpoint)
-            logger.warning("[WebUI] endpoint feature is not implemented! WebUI is served from root URL: http://%s:%d/", self.host, self.port)
+            logger.warning("[WebUI] endpoint feature is not implemented! "
+                           "WebUI is served from root URL: http://%s:%d/", self.host, self.port)
             self.endpoint = None
 
         # Build session cookie
@@ -288,12 +341,19 @@ class Webui_broker(BaseModule, Daemon):
         self.bottle = bottle
 
         bottle.BaseTemplate.defaults['app'] = self
+        bottle.BaseTemplate.defaults['alignak'] = ALIGNAK
 
     # Called by Broker so we can do init stuff
     def init(self):
         logger.info("[WebUI] Initializing ...")
+        if ALIGNAK:
+            logger.warning("Running the Web UI for the Alignak framework.")
+        else:
+            logger.warning("Running the Web UI for the Shinken framework.")
+        # todo: Alignak backend feature - see former comment about this!
         if not self.alignak_backend_objects:
             self.rg.load_external_queue(self.from_q)
+        return True
 
     # This is called only when we are in a scheduler
     # and just before we are started. So we can gain time, and
@@ -312,6 +372,7 @@ class Webui_broker(BaseModule, Daemon):
         """
             Module main function
         """
+        global ALIGNAK
         self.stand_alone = stand_alone
         if self.stand_alone:
             setproctitle(self.name)
@@ -319,22 +380,50 @@ class Webui_broker(BaseModule, Daemon):
             self.set_proctitle(self.name)
 
         # Modules management
-        self.debug_output = []
-        self.modules_dir = modulesctx.get_modulesdir()
-        self.modules_manager = ModulesManager('webui', self.find_modules_path(), [])
-        self.modules_manager.set_modules(self.modules)
-        logger.info("[WebUI] modules %s", self.modules)
+        # ---
+        # I used a large If/Else to avoid breaking the existing behavior but I am quite sure
+        # that the Alignak branch code is fully compatible with Shinken. I prefer separating
+        # to avoid too many testings...
+        if not ALIGNAK:
+            self.debug_output = []
+            self.modules_dir = modulesctx.get_modulesdir()
+            self.modules_manager = ModulesManager('webui', self.find_modules_path(), [])
+            self.modules_manager.set_modules(self.modules)
+            logger.info("[WebUI] modules %s", self.modules)
 
-        # We can now output some previously silenced debug output
-        self.do_load_modules()
-        for inst in self.modules_manager.instances:
-            f = getattr(inst, 'load', None)
-            if f and callable(f):
-                f(self)
-        for s in self.debug_output:
-            print s
-        del self.debug_output
-        logger.info("[WebUI] loaded modules %s", self.modules)
+            # We can now output some previously silenced debug output
+            self.do_load_modules()
+            for inst in self.modules_manager.instances:
+                f = getattr(inst, 'load', None)
+                if f and callable(f):
+                    f(self)
+            for s in self.debug_output:
+                print s
+            del self.debug_output
+            logger.info("[WebUI] loaded modules %s", self.modules)
+
+        else:
+            self.debug_output = []
+
+            logger.info("[WebUI] configured modules %s", self.modules)
+            self.modules_manager = ModulesManager('webui', self.find_modules_path(), [])
+            self.modules_manager.set_modules(self.modules)
+            # This function is loading all the installed 'webui' daemon modules...
+            self.do_load_modules()
+            logger.info("[WebUI] imported %d modules", len(self.modules_manager.imported_modules))
+
+            for inst in self.modules_manager.instances:
+                logger.info("[WebUI] loading %s", inst)
+                f = getattr(inst, 'load', None)
+                if f and callable(f):
+                    logger.info("[WebUI] running module load function")
+                    f(self)
+            logger.info("[WebUI] loaded modules %s", self.modules)
+
+            # We can now output some previously silenced debug output
+            for s in self.debug_output:
+                print s
+            del self.debug_output
 
         # Check if the Bottle view dir really exist
         if not os.path.exists(bottle.TEMPLATE_PATH[0]):
@@ -400,7 +489,7 @@ class Webui_broker(BaseModule, Daemon):
                     # logger.info("[WebUI] route: %s", route)
 
             for route in webui_app.routes:
-                logger.info("[WebUI] route: %s", route)
+                logger.debug("[WebUI] route: %s", route)
 
             # We will protect the operations on
             # the non read+write with a lock and
@@ -427,33 +516,41 @@ class Webui_broker(BaseModule, Daemon):
             bottle.TEMPLATES.clear()
             webui_app.run(host=self.host, port=self.port, server=self.http_backend, **self.serveropts)
         except Exception as e:
-            if self.stand_alone:
-                logger.error("[WebUI] do_main exception: %s", str(e))
-                logger.error("[WebUI] traceback: %s", traceback.format_exc())
-                exit(1)
-            else:
-                msg = Message(id=0, type='ICrash', data={'name': self.get_name(), 'exception': e, 'trace': traceback.format_exc()})
-                self.from_q.put(msg)
-                # wait 2 sec so we know that the broker got our message, and die
-                time.sleep(2)
-                raise
-
+            logger.error("[WebUI] do_main exception: %s", str(e))
+            logger.error("[WebUI] traceback: %s", traceback.format_exc())
+            exit(1)
+            # if self.stand_alone:
+            # else:
+            #     msg = Message(id=0, type='ICrash', data={'name': self.get_name(), 'exception': e, 'trace': traceback.format_exc()})
+            #     self.from_q.put(msg)
+            #     # wait 2 sec so we know that the broker got our message, and die
+            #     time.sleep(2)
+            #     raise
     # External commands
     # -----------------------------------------------------
     def push_external_command(self, e):
         """
             A plugin sends us an external command. Notify this command to the monitoring framework ...
         """
+        global ALIGNAK
         logger.debug("[WebUI] Got an external command: %s", e.__dict__)
         if self.stand_alone:
             logger.warning("[WebUI] --------------------------------------------------")
             logger.warning("[WebUI] TODO: notify external command: %s", e.__dict__)
             logger.warning("[WebUI] --------------------------------------------------")
         else:
-            try:
-                self.from_q.put(e)
-            except Exception, exp:
-                logger.error("[WebUI] External command push, exception: %s", str(exp))
+            if ALIGNAK:
+                logger.warning("Sending command to Alignak: %s", e)
+                req = requests.Session()
+                raw_data = req.get("http://localhost:7770/command",
+                                   params={'command': e.cmd_line})
+                logger.warning("Result: %s", raw_data.content)
+            else:
+                try:
+                    logger.warning("[WebUI] from_q: %s", self.from_q)
+                    self.from_q.put(e)
+                except Exception as exp:
+                    logger.error("[WebUI] External command push, exception: %s", str(exp))
 
     # Shinken broker module only
     # -----------------------------------------------------
@@ -524,15 +621,24 @@ class Webui_broker(BaseModule, Daemon):
     def manage_brok_thread(self):
         logger.debug("[WebUI] manage_brok_thread start ...")
 
-        while True:
+        while not self.interrupted:
             start = time.clock()
-            l = self.to_q.get()
+            # Get messages in the queue
+            try:
+                message = self.to_q.get()
+            except Exception as exp:
+                logger.warning("Broken module queue: %s", exp)
+                continue
 
             # try to relaunch dead module
             self.check_and_del_zombie_modules()
 
-            logger.debug("[WebUI] manage_brok_thread got %d broks, queue length: %d", len(l), self.to_q.qsize())
-            for b in l:
+            if not message:
+                continue
+
+            logger.debug("[WebUI] manage_brok_thread got %d broks, queue length: %d",
+                         len(message), self.to_q.qsize())
+            for b in message:
                 b.prepare()
                 self.wait_for_no_readers()
                 try:
@@ -544,17 +650,16 @@ class Webui_broker(BaseModule, Daemon):
                     for mod in self.modules_manager.get_internal_instances():
                         try:
                             mod.manage_brok(b)
-                        except Exception, exp:
+                        except Exception as exp:
                             logger.warning("[WebUI] The mod %s raise an exception: %s, I'm tagging it to restart later", mod.get_name(), str(exp))
                             logger.debug("[WebUI] Exception type: %s", self.name, type(exp))
                             logger.debug("[WebUI] Back trace of this kill: %s", traceback.format_exc())
                             self.modules_manager.set_to_restart(mod)
-                except Exception, exp:
+                except Exception as exp:
                     logger.error("[WebUI] manage_brok_thread exception")
-                    msg = Message(id=0, type='ICrash', data={'name': self.get_name(), 'exception': exp, 'trace': traceback.format_exc()})
-                    self.from_q.put(msg)
-                    # wait 2 sec so we know that the broker got our message, and die
-                    time.sleep(2)
+                    logger.error("[WebUI] Exception type: %s", type(exp))
+                    logger.error("[WebUI] Back trace of this kill: %s",
+                                 traceback.format_exc())
                     # No need to raise here, we are in a thread, exit!
                     os._exit(2)
                 finally:
@@ -566,7 +671,8 @@ class Webui_broker(BaseModule, Daemon):
                     self.nb_writers -= 1
                     self.global_lock.release()
 
-            logger.debug("[WebUI] time to manage %s broks (time %.2gs)", len(l), time.clock() - start)
+            logger.debug("[WebUI] time to manage %d broks (time %.2gs)",
+                         len(message), time.clock() - start)
 
         logger.debug("[WebUI] manage_brok_thread end ...")
 
@@ -690,7 +796,7 @@ class Webui_broker(BaseModule, Daemon):
 
             logger.info("[WebUI] loaded plugin %s", fdir)
 
-        except Exception, exp:
+        except Exception as exp:
             logger.error("[WebUI] loading plugin %s, exception: %s", fdir, str(exp))
 
     # Get URL for a named route
@@ -885,8 +991,9 @@ class Webui_broker(BaseModule, Daemon):
                 f = getattr(mod, 'get_external_ui_link', None)
                 if f and callable(f):
                     lst.append(f())
-            except Exception, exp:
-                logger.warning("[WebUI] Warning: The mod %s raise an exception: %s, I'm tagging it to restart later", mod.get_name(), str(exp))
+            except Exception as exp:
+                logger.warning("[WebUI] Warning: The mod %s raise an exception: %s, "
+                               "I'm tagging it to restart later", mod.get_name(), str(exp))
                 logger.debug("[WebUI] Exception type: %s", type(exp))
                 logger.debug("Back trace of this kill: %s", traceback.format_exc())
                 self.modules_manager.set_to_restart(mod)
@@ -978,4 +1085,3 @@ def login_required():
 
     logger.debug("[WebUI] update current user: %s", user)
     request.environ['USER'] = user
-
