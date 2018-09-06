@@ -91,7 +91,7 @@ Next check <strong>{{helper.print_duration(pb.next_chk)}}</strong>
                    <div style="display: table-cell; vertical-align: middle; padding-right: 10px;">
                      <input type="checkbox" class="input-sm item-checkbox" value="" id="selector-{{helper.get_html_id(pb)}}" data-type="problem" data-business-impact="{{business_impact}}" data-item="{{helper.get_uri_name(pb)}}">
                      <div class="item-icon">
-                       {{!helper.get_fa_icon_state(pb, useTitle=False)}}
+                       {{!helper.get_fa_icon_state(pb, use_title=False)}}
                      </div>
                    </div>
                    <div style="display: table-cell; vertical-align: middle;">

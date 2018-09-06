@@ -5,7 +5,7 @@
 
         <div class="status-lead" style="margin-top: 20px;">
           <div style="display: table-cell; vertical-align: middle; padding-right: 10px;">
-            {{!helper.get_fa_icon_state(elt, useTitle=False)}}
+            {{!helper.get_fa_icon_state(elt, use_title=False)}}
           </div>
           <div style="display: table-cell; vertical-align: middle; padding-right: 10px;" class="font-{{elt.state.lower()}} text-center">
             <strong>{{ elt.state }}</strong><br>
@@ -22,7 +22,7 @@
             %if elt_type == 'service':
             <a href="{{'/host/'+elt.host_name }}">{{ elt.host.display_name if elt.host.display_name else elt.host.get_name() }}</a>:
             %end
-            {{ elt.display_name }} 
+            {{ elt.display_name }}
             %if elt_type == 'host':
             ({{ elt.address }})
             %end

@@ -1,13 +1,23 @@
-# Python requirements for unit tests
+# These are the requirements dedicated to tests.
+# ---
+# Get project requirements
 -r ../requirements.txt
-unittest2
-mock
-coveralls
-nose-cov
+
+# Let coverage use the most recent version
 coverage
-nose
+
+# Report coverage results to codecov.io
+codecov
+
+# Report coverage results to coveralls.io
+coveralls
+
+# Static code analysis libraries
 pylint
-pep8
+pycodestyle
 pep257
-# alignak
--e git+https://github.com/naparuba/shinken.git#egg=shinken
+
+# Use py.test as test-runner
+pytest<3.3.0; python_version < '2.7'
+pytest; python_version >= '2.7'
+pytest-cov

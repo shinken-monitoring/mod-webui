@@ -113,6 +113,9 @@ class MongoDBPreferences:
         self.open()
 
     def open(self):
+        if not self.uri:
+            return
+
         try:
             from pymongo import MongoClient
         except ImportError:
