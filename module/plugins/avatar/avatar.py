@@ -11,7 +11,7 @@ from bottle import redirect
 
 from webui2.user import User
 
-### Will be populated by the UI with it's own value
+# Will be populated by the UI with it's own value
 app = None
 
 
@@ -100,7 +100,7 @@ def get_gravatar_url(email, size=256, default='404'):
         ret = urllib2.urlopen(url)
         if ret.code == 200:
             return url
-    except:
+    except Exception:
         pass
 
     return None

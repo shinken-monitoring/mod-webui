@@ -22,10 +22,12 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
-### Will be populated by the UI with it's own value
-app = None
 
 from webui2.user import User
+
+# Will be populated by the UI with it's own value
+app = None
+
 
 # Contact page
 def show_contact(name):
@@ -34,6 +36,7 @@ def show_contact(name):
 
     return {'contact': User.from_contact(contact)}
 
+
 # All contacts
 def show_contacts():
     user = app.request.environ['USER']
@@ -41,11 +44,14 @@ def show_contacts():
 
     return {'contacts': sorted(app.datamgr.get_contacts(user=user), key=lambda c: c.contact_name)}
 
+
 pages = {
     show_contact: {
-        'name': 'Contact', 'route': '/contact/:name', 'view': 'contact', 'static': True
+        'name': 'Contact', 'route': '/contact/:name', 'view': 'contact',
+        'static': True
     },
     show_contacts: {
-        'name': 'Contacts', 'route': '/contacts', 'view': 'contacts', 'static': True
+        'name': 'Contacts', 'route': '/contacts', 'view': 'contacts',
+        'static': True
     }
 }

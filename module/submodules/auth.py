@@ -9,24 +9,23 @@ from shinken.log import logger
 
 from .metamodule import MetaModule
 
-#TODO: use md5 functions from passlib library instead of this specific library ...
+# TODO: use md5 functions from passlib library instead of this specific library ...
+md5_available = False
 try:
     from ..lib.md5crypt import apache_md5_crypt, unix_md5_crypt
     md5_available = True
 except ImportError:
     logger.warning('[WebUI-auth-htpasswd] Can not import md5 password authentication.')
-    md5_available = False
 except ValueError:
     logger.warning('[WebUI-auth-htpasswd] Can not import md5 password authentication!')
-    md5_available = False
 
+bcrypt_available = False
 try:
     from passlib.hash import bcrypt
     bcrypt_available = True
 except ImportError:
-    logger.warning('[WebUI-auth-htpasswd] Can not import bcrypt password authentication. '
-                 'You should \'pip install passlib\' if you intend to use it.')
-    bcrypt_available = False
+    logger.warning("[WebUI-auth-htpasswd] Can not import bcrypt password authentication. "
+                   "You should 'pip install passlib' if you intend to use it.")
 
 
 class AuthMetaModule(MetaModule):
@@ -54,9 +53,11 @@ class AuthMetaModule(MetaModule):
         if self.modules:
             for mod in self.modules:
                 try:
-                    logger.info("[WebUI] Authenticating user '%s' with %s", username, mod.get_name())
+                    logger.info("[WebUI] Authenticating user '%s' with %s",
+                                username, mod.get_name())
                     if mod.check_auth(username, password):
-                        logger.info("[WebUI] User '%s' is authenticated by %s", username, mod.get_name())
+                        logger.info("[WebUI] User '%s' is authenticated by %s",
+                                    username, mod.get_name())
                         self._authenticator = mod.get_name()
                         self._user_login = username
 
@@ -82,15 +83,6 @@ class AuthMetaModule(MetaModule):
                 self._user_login = username
 
         if not self._user_login:
-            logger.info("[WebUI] Internal alignak backend authentication")
-            if self.app.alignak_backend_endpoint:
-                if self.check_alignak_auth(username, password):
-                    self._authenticator = 'alignak'
-                    self._user_login = username
-                    self._session = self.app.frontend.get_logged_user_token()
-                    self._user_info = self.app.frontend.get_logged_user()
-
-        if not self._user_login:
             logger.info("[WebUI] Internal contact authentication")
             if self.check_cfg_password_auth(username, password):
                 self._authenticator = 'contact'
@@ -103,53 +95,37 @@ class AuthMetaModule(MetaModule):
         return None
 
     def is_available(self):
-        ''' Always returns True because this MetaModule have a default behavior. '''
+        """ Always returns True because this MetaModule have a default behavior. """
         return True
 
     def get_session(self):
-        '''
+        """
         Get the session identifier
-        '''
+        """
         return self._session
 
     def get_user_login(self):
-        '''
+        """
         Get the user login
-        '''
+        """
         return self._user_login
 
     def get_user_info(self):
-        '''
+        """
         Get the user information
-        '''
+        """
         return self._user_info
 
-    def check_alignak_auth(self, username, password):
-        ''' Embedded authentication against Alignak backend.
-        '''
-        logger.info("[WebUI-auth-alignak] Authenticating user '%s'", username)
-
-        try:
-            self.app.frontend.logout()
-            self.app.frontend.login(username, password)
-            logger.info("[WebUI-auth-alignak] Authenticated")
-            return True
-        except:
-            logger.error("[WebUI-auth-alignak] could not connect to Alignak backend")
-            return False
-
-        logger.warning("[WebUI-auth-alignak] Authentication failed, password mismatch")
-        return False
-
     def check_cfg_password_auth(self, username, password):
-        ''' Embedded authentication with password stored in contact definition.
+        """ Embedded authentication with password stored in contact definition.
             Function imported from auth-cfg-password module.
-        '''
+        """
         logger.info("[WebUI-auth-cfg-password] Authenticating user '%s'", username)
 
         c = self.app.datamgr.get_contact(name=username)
         if not c:
-            logger.error("[WebUI-auth-cfg-password] You need to have a contact having the same name as your user: %s", username)
+            logger.error("[WebUI-auth-cfg-password] You need to have a contact "
+                         "having the same name as your user: %s", username)
             return False
         p = None
         if isinstance(c, dict):
@@ -165,9 +141,9 @@ class AuthMetaModule(MetaModule):
         return False
 
     def check_apache_htpasswd_auth(self, username, password):
-        ''' Embedded authentication with password in Apache htpasswd file.
+        """ Embedded authentication with password in Apache htpasswd file.
             Function imported from auth-htpasswd module.
-        '''
+        """
         logger.info("[WebUI-auth-htpasswd] Authenticating user '%s'", username)
 
         try:
@@ -175,23 +151,23 @@ class AuthMetaModule(MetaModule):
             for line in f.readlines():
                 line = line.strip()
                 # Bypass bad lines
-                if not ':' in line:
+                if ':' not in line:
                     continue
                 if line.startswith('#'):
                     continue
                 elts = line.split(':')
                 name = elts[0]
-                hash = elts[1]
-                if md5_available and hash[:5] == '$apr1' or hash[:3] == '$1$':
-                    h = hash.split('$')
+                inner_hash = elts[1]
+                if md5_available and inner_hash[:5] == '$apr1' or inner_hash[:3] == '$1$':
+                    h = inner_hash.split('$')
                     magic = h[1]
                     salt = h[2]
-                elif bcrypt_available and hash[:4] == '$2y$':
-                    h = hash.split('$')
+                elif bcrypt_available and inner_hash[:4] == '$2y$':
+                    h = inner_hash.split('$')
                     magic = h[1]
                 else:
                     magic = None
-                    salt = hash[:2]
+                    salt = inner_hash[:2]
 
                 # If we match the username, look at the crypt
                 if name == username:
@@ -200,20 +176,22 @@ class AuthMetaModule(MetaModule):
                     elif md5_available and magic == '1':
                         compute_hash = unix_md5_crypt(password, salt)
                     elif bcrypt_available and magic == '2y':
-                        compute_hash = bcrypt.verify(password, hash) and hash
+                        compute_hash = bcrypt.verify(password, inner_hash) and inner_hash
                     else:
                         compute_hash = crypt.crypt(password, salt)
-                    if compute_hash == hash:
+                    if compute_hash == inner_hash:
                         logger.info("[WebUI-auth-htpasswd] Authenticated")
                         return True
                 else:
-                    logger.debug("[WebUI-auth-htpasswd] Authentication failed, invalid name: %s / %s", name, username)
+                    logger.debug("[WebUI-auth-htpasswd] Authentication failed, "
+                                 "invalid name: %s / %s", name, username)
         except Exception as exp:
-            logger.info("[WebUI-auth-htpasswd] Authentication against apache passwd file failed, exception: %s", str(exp))
+            logger.info("[WebUI-auth-htpasswd] Authentication against apache passwd "
+                        "file failed, exception: %s", str(exp))
         finally:
             try:
                 f.close()
-            except:
+            except Exception:
                 pass
 
         return False

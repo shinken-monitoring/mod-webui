@@ -40,9 +40,9 @@ app = None
 def _get_availability(*args, **kwargs):
     if app.logs_module.is_available():
         return app.logs_module.get_ui_availability(*args, **kwargs)
-    else:
-        logger.warning("[WebUI-availability] no get availability external module defined!")
-        return None
+
+    logger.warning("[WebUI-availability] no get availability external module defined!")
+    return None
 
 
 def get_element(name):
@@ -50,22 +50,26 @@ def get_element(name):
     name = urllib.unquote(name)
     elt = app.datamgr.get_element(name, user) or app.redirect404()
 
-    records = []
-    today = arrow.now().replace(hour=0,minute=0,second=0)
+    today = arrow.now().replace(hour=0, minute=0, second=0)
     records = OrderedDict()
     records['Today'] = _get_availability(elt=elt, range_start=today.timestamp)
-    records['This week'] = _get_availability(elt=elt,
-                                             range_start=today.replace(days=-today.weekday()).timestamp)
-    records['This month'] = _get_availability(elt=elt, range_start=today.replace(day=1).timestamp)
-    records['Yesterday'] = _get_availability(elt=elt,
-                                             range_start=today.replace(days=-1).timestamp,
-                                             range_end=today.timestamp)
-    records['Last week'] = _get_availability(elt=elt,
-                                             range_start=today.replace(days=-(7+today.weekday())).timestamp,
-                                             range_end=today.replace(days=-today.weekday()).timestamp)
-    records['Last month'] = _get_availability(elt=elt,
-                                              range_start=today.replace(day=1, months=-1).timestamp,
-                                              range_end=today.replace(day=1).timestamp)
+    records['This week'] = \
+        _get_availability(elt=elt,
+                          range_start=today.replace(days=-today.weekday()).timestamp)
+    records['This month'] = \
+        _get_availability(elt=elt, range_start=today.replace(day=1).timestamp)
+    records['Yesterday'] = \
+        _get_availability(elt=elt,
+                          range_start=today.replace(days=-1).timestamp,
+                          range_end=today.timestamp)
+    records['Last week'] = \
+        _get_availability(elt=elt,
+                          range_start=today.replace(days=-(7+today.weekday())).timestamp,
+                          range_end=today.replace(days=-today.weekday()).timestamp)
+    records['Last month'] = \
+        _get_availability(elt=elt,
+                          range_start=today.replace(day=1, months=-1).timestamp,
+                          range_end=today.replace(day=1).timestamp)
 
     # Find as many months as possible in the past
     start = today.replace(day=1, months=-2)
@@ -96,16 +100,20 @@ def get_page():
     range_end = int(app.request.GET.get('range_end', midnight_timestamp + 86399))
     logger.debug("[WebUI-availability] get_page, range: %d - %d", range_start, range_end)
 
-    records = [_get_availability(elt=host, range_start=range_start, range_end=range_end) for host in hosts]
+    records = [
+        _get_availability(elt=host, range_start=range_start, range_end=range_end) for host in hosts
+    ]
 
     return {'records': records, 'range_start': range_start, 'range_end': range_end}
 
 
 pages = {
     get_element: {
-        'name': 'AvailabilityInner', 'route': '/availability/inner/<name:path>', 'view': 'availability-elt', 'static': True
+        'name': 'AvailabilityInner', 'route': '/availability/inner/<name:path>',
+        'view': 'availability-elt', 'static': True
     },
     get_page: {
-        'name': 'Availability', 'route': '/availability', 'view': 'availability-all', 'static': True, 'search_engine': True
+        'name': 'Availability', 'route': '/availability',
+        'view': 'availability-all', 'static': True, 'search_engine': True
     }
 }

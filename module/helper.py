@@ -32,17 +32,6 @@ import re
 
 from collections import OrderedDict
 
-try:
-    import json
-except ImportError:
-    # For old Python version, load
-    # simple json (it can be hard json?! It's 2 functions guy!)
-    try:
-        import simplejson as json
-    except ImportError:
-        print "Error: you need the json or simplejson module"
-        raise
-
 from shinken.misc.sorter import hst_srv_sort
 from shinken.misc.perfdata import PerfDatas
 
@@ -59,8 +48,8 @@ class Helper(object):
 
         if format:
             return time.strftime(format, time.localtime(t))
-        else:
-            return time.asctime(time.localtime(t))
+
+        return time.asctime(time.localtime(t))
 
     # For a time, print something like
     # 10m 37s  (just duration = True)
@@ -89,7 +78,7 @@ class Helper(object):
         # Now manage all case like in the past
         seconds = abs(seconds)
 
-        seconds = long(round(seconds))
+        seconds = int(round(seconds))
         minutes, seconds = divmod(seconds, 60)
         hours, minutes = divmod(minutes, 60)
         days, hours = divmod(hours, 24)
@@ -97,12 +86,12 @@ class Helper(object):
         months, weeks = divmod(weeks, 4)
         years, months = divmod(months, 12)
 
-        minutes = long(minutes)
-        hours = long(hours)
-        days = long(days)
-        weeks = long(weeks)
-        months = long(months)
-        years = long(years)
+        minutes = int(minutes)
+        hours = int(hours)
+        days = int(days)
+        weeks = int(weeks)
+        months = int(months)
+        years = int(years)
 
         duration = []
         if years > 0:
@@ -132,26 +121,27 @@ class Helper(object):
         # Now manage the future or not print
         if in_future:
             return 'in ' + ' '.join(duration)
-        else:
-            return ' '.join(duration) + ' ago'
+
+        return ' '.join(duration) + ' ago'
 
     # Prints the duration with the date as title
     def print_duration_and_date(self, t, just_duration=False, x_elts=2):
-        return "<span title='%s'>%s</span>" % (self.print_date(t, format="%d %b %Y %H:%M:%S"), self.print_duration(t, just_duration, x_elts=x_elts))
+        return "<span title='%s'>%s</span>" % (self.print_date(t, format="%d %b %Y %H:%M:%S"),
+                                               self.print_duration(t, just_duration, x_elts=x_elts))
 
     def sort_elements(self, elements):
-        l = copy.copy(elements)
-        l.sort(hst_srv_sort)
-        return l
+        sorted_elements = copy.copy(elements)
+        sorted_elements.sort(hst_srv_sort)
+        return sorted_elements
 
     def group_by_daterange(self, l, key):
         today = datetime.datetime.now().date()
 
         groups = OrderedDict([
-                  ('In the future', []),
-                  ('Today', []),
-                  ('Yesterday', []),
-                  ('This month', [])])
+            ('In the future', []),
+            ('Today', []),
+            ('Yesterday', []),
+            ('This month', [])])
 
         for e in l:
             d = datetime.datetime.fromtimestamp(key(e)).date()
@@ -175,10 +165,7 @@ class Helper(object):
 
         return groups
 
-
-
-    # Get the small state for host/service icons
-    # and satellites ones
+    # Get the small state for host/service icons and satellites ones
     def get_small_icon_state(self, obj):
         if obj.__class__.my_type in ['service', 'host']:
             if obj.state == 'PENDING':
@@ -213,7 +200,8 @@ class Helper(object):
         txts = {0: 'None', 1: 'Low', 2: 'Normal',
                 3: 'Important', 4: 'Very important', 5: 'Business critical'}
         nb_stars = max(0, business_impact - 2)
-        stars = '<small style="vertical-align: middle;"><i class="fa fa-star"></i></small>' * nb_stars
+        stars = '<small style="vertical-align: middle;">' \
+                '<i class="fa fa-star"></i></small>' * nb_stars
 
         if text:
             res = "%s %s" % (txts.get(business_impact, 'Unknown'), stars)
@@ -231,8 +219,8 @@ class Helper(object):
 
         if status:
             return '''<i title="%s" class="fa fa-ok font-green">%s</i>''' % (title, message)
-        else:
-            return '''<i title="%s" class="fa fa-remove font-red">%s</i>''' % (title, message)
+
+        return '''<i title="%s" class="fa fa-remove font-red">%s</i>''' % (title, message)
 
     def get_link(self, obj, short=False):
         if obj.__class__.my_type == 'service':
@@ -250,7 +238,8 @@ class Helper(object):
     def get_link_dest(self, obj):
         return "/%s/%s" % (obj.__class__.my_type, obj.get_full_name())
 
-    def get_fa_icon_state(self, obj=None, cls='host', state='UP', disabled=False, label='', useTitle=True):
+    def get_fa_icon_state(self, obj=None, cls='host', state='UP', disabled=False, label='',
+                          use_title=True):
         '''
             Get an Html formatted string to display host/service state
 
@@ -269,37 +258,43 @@ class Helper(object):
            consistently the host/service current state (see issue #147)
         '''
         state = obj.state.upper() if obj is not None else state.upper()
-        flapping = (obj and obj.is_flapping) or state=='FLAPPING'
-        ack = (obj and obj.problem_has_been_acknowledged) or state=='ACK'
-        downtime = (obj and obj.in_scheduled_downtime) or state=='DOWNTIME'
+        flapping = (obj and obj.is_flapping) or state == 'FLAPPING'
+        ack = (obj and obj.problem_has_been_acknowledged) or state == 'ACK'
+        downtime = (obj and obj.in_scheduled_downtime) or state == 'DOWNTIME'
         hard = (not obj or obj.state_type == 'HARD')
 
         # Icons depending upon element and real state ...
-        icons = { 'host':
-                    {   'UP': 'server',
-                        'DOWN': 'server',
-                        'UNREACHABLE': 'server',
-                        'ACK': 'check',
-                        'DOWNTIME': 'clock-o',
-                        'FLAPPING': 'cog fa-spin',
-                        'PENDING': 'server',
-                        'UNKNOWN': 'server' },
-                  'service':
-                    {   'OK': 'arrow-up',
-                        'CRITICAL': 'arrow-down',
-                        'WARNING': 'exclamation',
-                        'ACK': 'check',
-                        'DOWNTIME': 'clock-o',
-                        'FLAPPING': 'cog fa-spin',
-                        'PENDING': 'spinner fa-circle-o-notch',
-                        'UNKNOWN': 'question' }
-                }
+        icons = {
+            'host': {
+                'UP': 'server',
+                'DOWN': 'server',
+                'UNREACHABLE': 'server',
+                'ACK': 'check',
+                'DOWNTIME': 'clock-o',
+                'FLAPPING': 'cog fa-spin',
+                'PENDING': 'server',
+                'UNKNOWN': 'server'
+            },
+            'service': {
+                'OK': 'arrow-up',
+                'CRITICAL': 'arrow-down',
+                'WARNING': 'exclamation',
+                'ACK': 'check',
+                'DOWNTIME': 'clock-o',
+                'FLAPPING': 'cog fa-spin',
+                'PENDING': 'spinner fa-circle-o-notch',
+                'UNKNOWN': 'question'
+            }
+        }
 
         cls = obj.__class__.my_type if obj is not None else cls
 
-        back = '''<i class="fa fa-%s fa-stack-2x font-%s"></i>''' % (icons[cls]['FLAPPING'] if flapping else 'circle', state.lower() if not disabled else 'greyed')
+        back = '''<i class="fa fa-%s fa-stack-2x font-%s"></i>''' \
+               % (icons[cls]['FLAPPING'] if flapping else 'circle',
+                  state.lower() if not disabled else 'greyed')
         if flapping:
-            back += '''<i class="fa fa-circle fa-stack-1x font-%s"></i>''' % (state.lower() if not disabled else 'greyed')
+            back += '''<i class="fa fa-circle fa-stack-1x font-%s"></i>''' \
+                    % (state.lower() if not disabled else 'greyed')
 
         title = "%s is %s" % (cls, state)
 
@@ -325,43 +320,35 @@ class Helper(object):
 
         front = '''<i class="fa fa-%s fa-stack-1x %s"></i>''' % (icon, icon_color)
 
-        if useTitle:
-            icon_text = '''<span class="fa-stack" %s title="%s">%s%s</span>''' % (icon_style, title, back, front)
+        if use_title:
+            icon_text = '''<span class="fa-stack" %s title="%s">%s%s</span>''' \
+                        % (icon_style, title, back, front)
         else:
-            icon_text = '''<span class="fa-stack" %s>%s%s</span>''' % (icon_style, back, front)
+            icon_text = '''<span class="fa-stack" %s>%s%s</span>''' \
+                        % (icon_style, back, front)
 
-        if label=='':
+        if label == '':
             return icon_text
-        else:
-            color = state.lower() if not disabled else 'greyed'
-            if label=='title':
-                label=title
-            return '''
-              <span class="font-%s">
-                 %s&nbsp;<span class="num">%s</span>
-              </span>
-              ''' % (color,
-                     icon_text,
-                     label)
 
-
-    def get_fa_icon_state_and_label(self, obj=None, cls='host', state='UP', label="", disabled=False, useTitle=True):
         color = state.lower() if not disabled else 'greyed'
-        return '''
-          <span class="font-%s">
-             %s&nbsp;<span class="num">%s</span>
-          </span>
-          ''' % (color,
-                 self.get_fa_icon_state(obj=obj, cls=cls, state=state, disabled=disabled, useTitle=useTitle),
-                 label)
+        if label == 'title':
+            label = title
+        return '<span class="font-%s">%s&nbsp;<span class="num">%s</span></span>' \
+               % (color, icon_text, label)
 
+    def get_fa_icon_state_and_label(self, obj=None, cls='host', state='UP', label="",
+                                    disabled=False, use_title=True):
+        color = state.lower() if not disabled else 'greyed'
+        return '<span class="font-%s">%s&nbsp;<span class="num">%s</span></span>' \
+               % (color, self.get_fa_icon_state(obj=obj, cls=cls, state=state, disabled=disabled,
+                                                use_title=use_title), label)
 
     # :TODO:maethor:150609: Rewrite this function
     # Get
     def get_navi(self, total, pos, step=30):
         step = float(step)
-        nb_pages = math.ceil(total / step) if step <> 0 else 0
-        current_page = int(pos / step) if step <> 0 else 0
+        nb_pages = math.ceil(total / step) if step != 0 else 0
+        current_page = int(pos / step) if step != 0 else 0
 
         step = int(step)
 
@@ -374,11 +361,11 @@ class Helper(object):
             res.append((u'«', 0, step, False))
             res.append(('...', None, None, False))
 
-        #print "Range,", current_page - 1, current_page + 1
-        for i in xrange(current_page - (nb_max_items / 2), current_page + 1 + (nb_max_items / 2)):
+        # print "Range,", current_page - 1, current_page + 1
+        for i in range(current_page - (nb_max_items / 2), current_page + 1 + (nb_max_items / 2)):
             if i < 0:
                 continue
-            #print "Doing PAGE", i
+            # print "Doing PAGE", i
             is_current = (i == current_page)
             start = int(i * step)
             # Maybe we are generating a page too high, bail out
@@ -401,7 +388,6 @@ class Helper(object):
         colors = {'CRITICAL': "#d9534f",
                   'DOWN': "#d9534f",
                   'WARNING': "#f0ad4e",
-                  'WARNING': "#f0ad4e",
                   'OK': "#5cb85c",
                   'UP': "#5cb85c",
                   'PENDING': '#49AFCD',
@@ -409,8 +395,8 @@ class Helper(object):
 
         if state in colors:
             return colors[state]
-        else:
-            return colors['UNKNOWN']
+
+        return colors['UNKNOWN']
 
     def get_perfdata_pie(self, p):
         if p.max is not None:
@@ -433,7 +419,7 @@ class Helper(object):
 
             used_value = p.value - (p.min or 0)
             unused_value = p.max - (p.min or 0) - used_value
-            if (unused_value + used_value):
+            if unused_value + used_value:
                 used_pct = (float(used_value) / float(unused_value + used_value)) * 100
             else:
                 used_pct = None
@@ -442,7 +428,9 @@ class Helper(object):
             if p.uom != '%' and type(used_pct) is float:
                 title += " ({:.2f}%)".format(used_pct)
 
-            return '<span class="sparkline piechart" title="%s" role="img" sparkType="pie" sparkBorderWidth="0" sparkSliceColors="[%s,#f5f5f5]" values="%s,%s"></span>' % (title, color, used_value, unused_value)
+            return '<span class="sparkline piechart" title="%s" role="img" sparkType="pie" ' \
+                   'sparkBorderWidth="0" sparkSliceColors="[%s,#f5f5f5]" values="%s,%s"></span>' \
+                   % (title, color, used_value, unused_value)
         return ""
 
     def get_perfdata_pies(self, elt):
@@ -468,7 +456,8 @@ class Helper(object):
         s += '</tr>'
 
         for p in perfdatas:
-            s += '<tr><td>%s</td><td>%s</td><td>%s %s</td>' % (self.get_perfdata_pie(p), p.name, p.value, p.uom)
+            s += '<tr><td>%s</td><td>%s</td><td>%s %s</td>' \
+                 % (self.get_perfdata_pie(p), p.name, p.value, p.uom)
             if display_min:
                 if p.min is not None:
                     s += '<td>%s %s</td>' % (p.min, p.uom)
@@ -540,7 +529,7 @@ class Helper(object):
         tree['state'] = 'unknown'
 
     def assume_and_get_path_in_tree(self, tree, paths):
-        #print "Tree on start of", paths, tree
+        # print "Tree on start of", paths, tree
         current_full_path = ''
         for p in paths:
             # Don't care about void path, like for root
@@ -556,13 +545,16 @@ class Helper(object):
                     break
             # Did we find our son? If no, create it and jump into it
             if not found:
-                s = {'path' : p, 'sons' : [], 'services':[], 'state':'unknown', 'full_path':current_full_path}
+                s = {
+                    'path': p, 'sons': [], 'services': [],
+                    'state': 'unknown', 'full_path': current_full_path
+                }
                 tree['sons'].append(s)
                 tree = s
         return tree
 
     def get_host_service_aggregation_tree(self, h, app=None):
-        tree = {'path' : '/', 'sons' : [], 'services':[], 'state':'unknown', 'full_path':'/'}
+        tree = {'path': '/', 'sons': [], 'services': [], 'state': 'unknown', 'full_path': '/'}
         for s in h.services:
             p = s.aggregation
             paths = self.get_aggregation_paths(p)
@@ -583,7 +575,6 @@ class Helper(object):
         s = ''
 
         display = 'block'
-        img = 'reduce.png'
         icon = 'minus'
         list_state = 'expanded'
 
@@ -591,25 +582,26 @@ class Helper(object):
             # If our state is OK, hide our sons
             if state == 'ok' and (not expanded or len(sons) >= max_sons):
                 display = 'none'
-                img = 'expand.png'
                 icon = 'plus'
                 list_state = 'collapsed'
 
-            s += """<a class="toggle-list" data-state="%s" data-target="ag-%s"> <span class="alert-small alert-%s"> <i class="fa fa-%s"></i> %s&nbsp;</span> </a>""" % (list_state, _id, state, icon, path)
+            s += '<a class="toggle-list" data-state="%s" data-target="ag-%s"> ' \
+                 '<span class="alert-small alert-%s"> ' \
+                 '<i class="fa fa-%s"></i> %s&nbsp;</span> </a>' \
+                 % (list_state, _id, state, icon, path)
 
         s += """<ul name="ag-%s" class="list-group" style="display: %s;">""" % (_id, display)
         # If we got no parents, no need to print the expand icon
-        if len(sons) > 0:
+        if sons:
             for son in sons:
                 sub_s = self.print_aggregation_tree(son, html_id, expanded=expanded)
                 s += '<li class="list-group-item">%s</li>' % sub_s
 
-
         s += '<li class="list-group-item">'
-        if path == '/' and len(services) > 0:
+        if path == '/' and services:
             s += """<span class="alert-small"> Others </span>"""
 
-        if len(services):
+        if services:
             s += '<ul class="list-group">'
             # Sort our services before print them
             services.sort(hst_srv_sort)
@@ -619,13 +611,14 @@ class Helper(object):
                 s += self.get_link(svc, short=True)
                 if svc.business_impact > 2:
                     s += "(" + self.get_business_impact_text(svc.business_impact) + ")"
-                s += """ is <span class="font-%s"><strong>%s</strong></span>""" % (svc.state.lower(), svc.state)
-                s += " since %s" % self.print_duration(svc.last_state_change, just_duration=True, x_elts=2)
+                s += """ is <span class="font-%s"><strong>%s</strong></span>""" \
+                     % (svc.state.lower(), svc.state)
+                s += " since %s" % self.print_duration(svc.last_state_change,
+                                                       just_duration=True, x_elts=2)
                 s += "</li>"
             s += "</ul></li>"
         else:
             s += "</li>"
-
 
         s += "</ul>"
 
@@ -639,6 +632,7 @@ class Helper(object):
         s = ''
 
         # Maybe we are the root problem of this, and so we are printing it
+        # todo: Replace root_str with s ?
         root_str = ''
         if node in source_problems:
             root_str = ' <span class="alert-small alert-critical"> Root problem</span>'
@@ -649,11 +643,14 @@ class Helper(object):
             s += self.get_link(node, short=True)
             if node.business_impact > 2:
                 s += "(" + self.get_business_impact_text(node.business_impact) + ")"
-            s += """ is <span class="font-%s"><strong>%s</strong></span>""" % (node.state.lower(), node.state)
-            s += """ since <span title="%s">%s""" % (time.strftime("%d %b %Y %H:%M:%S", time.localtime(node.last_state_change)), self.print_duration(node.last_state_change, just_duration=True, x_elts=2))
+            s += """ is <span class="font-%s"><strong>%s</strong></span>""" \
+                 % (node.state.lower(), node.state)
+            s += """ since <span title="%s">%s""" \
+                 % (time.strftime("%d %b %Y %H:%M:%S", time.localtime(node.last_state_change)),
+                    self.print_duration(node.last_state_change, just_duration=True, x_elts=2))
 
         # If we got no parents, no need to print the expand icon
-        if len(fathers) > 0:
+        if fathers:
             # We look if the below tree is good or not
             tree_is_good = (node.state_id == 0)
 
@@ -670,20 +667,24 @@ class Helper(object):
 
             # If we are the root, we already got this
             if level != 0:
-                s += '''<a class="pull-right toggle-list" data-state="%s" data-target="bp-%s"> <i class="fa fa-%s"></i> </a>''' % (list_state, self.make_html_id(name), icon)
+                s += '<a class="pull-right toggle-list" data-state="%s" data-target="bp-%s"> ' \
+                     '<i class="fa fa-%s"></i> </a>' \
+                     % (list_state, self.make_html_id(name), icon)
 
-            s += """<ul class="list-group" name="bp-%s" style="display: %s;">""" % (self.make_html_id(name), display)
+            s += """<ul class="list-group" name="bp-%s" style="display: %s;">""" \
+                 % (self.make_html_id(name), display)
 
             for n in fathers:
                 sub_node = n['node']
                 sub_s = self.print_business_rules(n, level=level+1, source_problems=source_problems)
-                s += '<li class="list-group-item %s">%s</li>' % (self.get_small_icon_state(sub_node), sub_s)
+                s += '<li class="list-group-item %s">%s</li>' \
+                     % (self.get_small_icon_state(sub_node), sub_s)
             s += "</ul>"
 
         return s
 
     def get_timeperiod_html(self, tp):
-        if len(tp.dateranges) == 0:
+        if not tp.dateranges:
             return ''
 
         # Build a definition list ...
@@ -692,16 +693,19 @@ class Helper(object):
             (dr_start, dr_end) = dr.get_start_and_end_time()
             dr_start = time.strftime("%d %b %Y", time.localtime(dr_start))
             dr_end = time.strftime("%d %b %Y", time.localtime(dr_end))
-            if dr_start==dr_end:
+            if dr_start == dr_end:
                 content += '''<dd>%s:</dd>''' % (dr_start)
             else:
                 content += '''<dd>From: %s, to: %s</dd>''' % (dr_start, dr_end)
 
-            if len(dr.timeranges) > 0:
+            if dr.timeranges:
                 content += '''<dt>'''
-                idx=1
+                idx = 1
                 for timerange in dr.timeranges:
-                    content += '''&nbsp;%s-%s''' % ("%02d:%02d" % (timerange.hstart, timerange.mstart), "%02d:%02d" % (timerange.hend, timerange.mend))
+                    content += '''&nbsp;%s-%s''' % ("%02d:%02d"
+                                                    % (timerange.hstart, timerange.mstart),
+                                                    "%02d:%02d"
+                                                    % (timerange.hend, timerange.mend))
                     idx += 1
                 content += '''</dt>'''
         content += '''</dl>'''

@@ -171,7 +171,8 @@ class Regenerator(object):
 
         # In a scheduler we are already "linked" so we can skip this
         if self.in_scheduler_mode:
-            logger.debug("Regenerator: We skip the all_done_linking phase because we are in a scheduler")
+            logger.debug("Regenerator: We skip the all_done_linking phase "
+                         "because we are in a scheduler")
             return
 
         start = time.time()
@@ -703,7 +704,8 @@ class Regenerator(object):
         try:
             inp_servicegroups = self.inp_servicegroups[inst_id]
         except Exception as exp:  # not good. we will cry in theprogram update
-            logger.error("[Regenerator]manage_initial_servicegroup_status_brok:: Not good!  %s" % exp)
+            logger.error("[Regenerator]manage_initial_servicegroup_status_brok:: Not good!  %s",
+                         exp)
             return
         logger.debug("Creating a servicegroup: %s in instance %s", sgname, inst_id)
 
@@ -845,7 +847,8 @@ class Regenerator(object):
             for dr in tp.dateranges:
                 new_trs = []
                 for tr in dr.timeranges:
-                    entry = "%02d:%02d-%02d:%02d" % (tr['hstart'], tr['mstart'], tr['hend'], tr['mend'])
+                    entry = "%02d:%02d-%02d:%02d" \
+                            % (tr['hstart'], tr['mstart'], tr['hend'], tr['mend'])
                     new_trs.append(Timerange(entry))
                 dr.timeranges = new_trs
 
@@ -975,7 +978,7 @@ class Regenerator(object):
 
         # If the topology change, update it
         if toplogy_change:
-            logger.debug("Topology change for %s %s"  % (host.get_name(), host.parent_dependencies))
+            logger.debug("Topology change for %s %s", host.get_name(), host.parent_dependencies)
             self.linkify_host_and_hosts(host, 'parents')
             self.linkify_host_and_hosts(host, 'childs')
             self.linkify_dict_srv_and_hosts(host, 'parent_dependencies')
