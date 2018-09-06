@@ -21,3 +21,7 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
+
+# Alignak need this information
+# the properties and get_instance must be available from the top-level:
+from .module import properties, get_instance
