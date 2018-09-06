@@ -48,8 +48,8 @@ class User(Contact):
     def get_username(self):
         if getattr(self, 'contact_name', None):
             return self.contact_name
-        elif getattr(self, 'name', None):
-            return self.name
+
+        return self.name
 
     def get_name(self):
         name = self.get_username()
@@ -65,8 +65,8 @@ class User(Contact):
         """
         if isinstance(self.is_admin, bool):
             return self.is_admin
-        else:
-            return getattr(self, 'is_admin', '0') == '1'
+
+        return getattr(self, 'is_admin', '0') == '1'
 
     def can_submit_commands(self):
         """

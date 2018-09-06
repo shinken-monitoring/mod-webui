@@ -27,7 +27,7 @@ import time
 
 from shinken.log import logger
 
-### Will be populated by the UI with it's own value
+# Will be populated by the UI with it's own value
 app = None
 
 
@@ -38,9 +38,9 @@ def system_parameters():
     configs = app.datamgr.get_configs()
     if configs:
         configs = sorted(vars(configs[0]).iteritems())
-        return {'configs': configs }
-    else:
-        return {'configs': None }
+        return {'configs': configs}
+
+    return {'configs': None}
 
 
 def system_page():
@@ -59,10 +59,10 @@ def system_page():
     logger.debug("[WebUI-system] receivers: %s", receivers)
     logger.debug("[WebUI-system] pollers: %s", pollers)
 
-    return {'schedulers': schedulers,
-            'brokers': brokers, 'reactionners': reactionners,
-            'receivers': receivers, 'pollers': pollers,
-            }
+    return {
+        'schedulers': schedulers, 'brokers': brokers, 'reactionners': reactionners,
+        'receivers': receivers, 'pollers': pollers,
+    }
 
 
 def system_widget():
@@ -85,29 +85,34 @@ def system_widget():
 
     options = {}
 
-    return {'wid': wid,
-            'collapsed': collapsed, 'options': options,
-            'base_url': '/widget/system', 'title': 'System Information',
-            'schedulers': schedulers,
-            'brokers': brokers, 'reactionners': reactionners,
-            'receivers': receivers, 'pollers': pollers,
-            }
+    return {
+        'wid': wid, 'collapsed': collapsed, 'options': options,
+        'base_url': '/widget/system', 'title': 'System Information',
+        'schedulers': schedulers, 'brokers': brokers, 'reactionners': reactionners,
+        'receivers': receivers, 'pollers': pollers,
+    }
 
 
-
-widget_desc = '''
+widget_desc = """
 <h4>System state</h4>
 Show an aggregated view of all Shinken daemons.
-'''
+"""
 
 pages = {
     system_parameters: {
-        'name': 'Parameters', 'route': '/parameters', 'view': 'parameters', 'static': True
+        'name': 'Parameters', 'route': '/parameters', 'view': 'parameters',
+        'static': True
     },
     system_page: {
-        'name': 'System', 'route': '/system', 'view': 'system', 'static': True
+        'name': 'System', 'route': '/system', 'view': 'system',
+        'static': True
     },
     system_widget: {
-        'name': 'wid_System', 'route': '/widget/system', 'view': 'system_widget', 'static': True, 'widget': ['dashboard'], 'widget_desc': widget_desc, 'widget_name': 'system', 'widget_picture': '/static/system/img/widget_system.png'
+        'name': 'wid_System', 'route': '/widget/system', 'view': 'system_widget',
+        'static': True,
+        'widget': ['dashboard'],
+        'widget_desc': widget_desc,
+        'widget_name': 'system',
+        'widget_picture': '/static/system/img/widget_system.png'
     }
 }

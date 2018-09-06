@@ -25,3 +25,15 @@ after_success:
   # execute coveralls from the base directory of the project,
   # so we need to move the .coverage file here :
   mv test/.coverage . && coveralls --rcfile=test/.coveragerc -v
+
+jobs:
+  include:
+    - stage: Coding standard
+      script:
+        # Static code analysis
+        # -- pycodestyle (former pep8)
+        - pycodestyle --max-line-length=100 --exclude='*.pyc' module/*
+        # -- pylint
+        - pylint --rcfile=.pylintrc -r no module
+        # -- pep257
+        - pep257 --select=D300 module

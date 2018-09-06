@@ -23,20 +23,11 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 
-
-try:
-    import json
-except ImportError:
-    # For old Python version, load
-    # simple json (it can be hard json?! It's 2 functions guy!)
-    try:
-        import simplejson as json
-    except ImportError:
-        print "Error: you need the json or simplejson module"
-        raise
+import json
+from shinken.log import logger
 
 
-### Will be populated by the UI with it's own value
+# Will be populated by the UI with it's own value
 app = None
 
 
@@ -51,7 +42,7 @@ def get_pref():
     key = app.request.query.get('key', None)
 
     if not key:
-        return
+        return ''
 
     return app.prefs_module.get_ui_user_preference(user, key)
 
@@ -61,9 +52,10 @@ def get_common_pref():
     key = app.request.query.get('key', None)
 
     if not key:
-        return
+        return ''
 
     return app.prefs_module.get_ui_common_preference(user, key)
+
 
 def save_pref():
     user = app.request.environ['USER']
@@ -74,10 +66,9 @@ def save_pref():
         return
 
     s = json.dumps('{%s: %s}' % (key, value))
+    logger.debug("We will save pref %s=%s, as %s", key, ':', value, s)
 
     app.prefs_module.set_ui_user_preference(user, key, value)
-
-    return
 
 
 def save_common_pref():
@@ -89,14 +80,10 @@ def save_common_pref():
         return
 
     s = json.dumps('{%s: %s}' % (key, value))
-
-    print "We will save common pref ", key, ':', value
-    print "As %s" % s
+    logger.debug("We will save common pref %s=%s, as %s", key, ':', value, s)
 
     if user.is_administrator():
-        app.prefs_module.set_ui_common_preference( key, value)
-
-    return
+        app.prefs_module.set_ui_common_preference(key, value)
 
 
 pages = {

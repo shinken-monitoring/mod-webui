@@ -24,20 +24,9 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 
-from shinken.log import logger
+import json
 
-try:
-    import json
-except ImportError:
-    # For old Python version, load
-    # simple json (it can be hard json?! It's 2 functions guy!)
-    try:
-        import simplejson as json
-    except ImportError:
-        logger.error("[WebUI-dashboard] Error: you need the json or simplejson module")
-        raise
-
-### Will be populated by the UI with it's own value
+# Will be populated by the UI with it's own value
 app = None
 
 
@@ -55,7 +44,7 @@ def get_page():
     widgets = []
 
     for w in widget_names:
-        if not 'id' in w or not 'position' in w:
+        if 'id' not in w or 'position' not in w:
             continue
 
         # by default the widget is for /dashboard
@@ -64,7 +53,6 @@ def get_page():
             # Not a dashboard widget? I don't want it so
             continue
 
-        pos = w['position']
         options = w.get('options', {})
         collapsed = w.get('collapsed', '0')
 
@@ -78,6 +66,7 @@ def get_page():
         widgets.append(w)
 
     return {'widgets': widgets}
+
 
 def get_currently():
     user = app.request.environ['USER']
@@ -99,6 +88,7 @@ def get_currently():
     graphs = json.loads(s)
 
     return {'panels': panels, 'graphs': graphs}
+
 
 pages = {
     get_page: {

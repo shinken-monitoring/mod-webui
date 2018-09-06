@@ -24,21 +24,21 @@
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 import time
 import json
-import requests
 import random
+
+import requests
 from shinken.log import logger
 
-
-### Will be populated by the UI with it's own value
+# Will be populated by the UI with it's own value
 app = None
 
 
 def proxy_graph():
-    ''' This route proxies graphs returned by the graph module.
+    """ This route proxies graphs returned by the graph module.
         The pnp4nagios/graphite image url have to be in the GET attributes,
         encoded with urlencode. The graphs metamodule takes care of that. This
         route should not be usefull anywhere else.
-    '''
+    """
     url = app.request.GET.get('url', '')
 
     try:
@@ -93,7 +93,11 @@ def get_host_graphs(host_name):
 # Our page
 def get_graphs_widget():
     user = app.request.environ['USER']
-    # Graph URL may be: http://192.168.0.42/render/?width=320&height=240&fontSize=8&lineMode=connected&from=04:57_20151203&until=04:57_20151204&tz=Europe/Paris&title=Outlook_Web_Access/ - rta&target=alias(color(Outlook_Web_Access.rta,"green"),"rta")&target=alias(color(constantLine(1000),"orange"),"Warning")&target=alias(color(constantLine(3000),"red"),"Critical")
+    # Graph URL may be: http://192.168.0.42/render/?width=320&height=240&fontSize=8&
+    # lineMode=connected&from=04:57_20151203&until=04:57_20151204&tz=Europe/Paris&
+    # title=Outlook_Web_Access/ - rta&target=alias(color(Outlook_Web_Access.rta,"green"),"rta")&
+    # target=alias(color(constantLine(1000),"orange"),"Warning")&
+    # target=alias(color(constantLine(3000),"red"),"Critical")
     url = app.request.GET.get('url', '')
     logger.debug("[WebUI-graph] graph URL: %s", url)
 
@@ -154,16 +158,19 @@ def get_graphs_widget():
         'duration': int(duration),
     }
 
-widget_desc = '''<h4>Graphs</h4>
+
+widget_desc = """<h4>Graphs</h4>
 Show the perfdata graph
-'''
+"""
 
 pages = {
     proxy_graph: {
         'name': 'Graph', 'route': '/graph', 'view': 'graph', 'static': True
     },
     get_graphs_widget: {
-        'name': 'wid_Graph', 'route': '/widget/graphs', 'view': 'widget_graphs', 'static': True, 'widget': ['dashboard'], 'widget_desc': widget_desc, 'widget_name': 'graphs', 'widget_picture': '/static/graphs/img/widget_graphs.png'
+        'name': 'wid_Graph', 'route': '/widget/graphs', 'view': 'widget_graphs', 'static': True,
+        'widget': ['dashboard'], 'widget_desc': widget_desc, 'widget_name': 'graphs',
+        'widget_picture': '/static/graphs/img/widget_graphs.png'
     },
     get_service_graphs: {
         'name': 'GetServiceGraphs', 'route': '/graphs/:host_name/:service#.+#'

@@ -23,17 +23,18 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 
+import time
+import re
+
 from shinken.misc.sorter import hst_srv_sort, last_state_change_earlier
 
 # Will be populated by the UI with it's own value
 app = None
 
-import time
-import re
-
 
 def get_page():
-    app.bottle.redirect("/all?search=isnot:UP isnot:OK isnot:PENDING isnot:ACK isnot:DOWNTIME isnot:SOFT bp:>0")
+    app.bottle.redirect("/all?search=isnot:UP isnot:OK isnot:PENDING "
+                        "isnot:ACK isnot:DOWNTIME isnot:SOFT bp:>0")
 
 
 def get_all():
@@ -44,7 +45,8 @@ def get_all():
     display_impacts = display_impacts and display_impacts != 'false'
 
     # Fetch sound preference for user, default is 'no'
-    sound_pref = app.prefs_module.get_ui_user_preference(user, 'sound', 'yes' if app.play_sound else 'no')
+    sound_pref = app.prefs_module.get_ui_user_preference(user, 'sound',
+                                                         'yes' if app.play_sound else 'no')
     sound = app.request.GET.get('sound', '')
     if sound != sound_pref and sound in ['yes', 'no']:
         app.prefs_module.set_ui_user_preference(user, 'sound', sound)
@@ -83,7 +85,17 @@ def get_all():
 
     navi = app.helper.get_navi(len(pbs), start, step=step)
 
-    return {'pbs': pbs[start:end], 'all_pbs': items, 'navi': navi, 'title': title, 'bookmarks': app.prefs_module.get_user_bookmarks(user), 'bookmarksro': app.prefs_module.get_common_bookmarks(), 'sound': sound_pref, 'elts_per_page': elts_per_page, 'display_impacts': display_impacts}
+    return {
+        'pbs': pbs[start:end],
+        'all_pbs': items,
+        'navi': navi,
+        'title': title,
+        'bookmarks': app.prefs_module.get_user_bookmarks(user),
+        'bookmarksro': app.prefs_module.get_common_bookmarks(),
+        'sound': sound_pref,
+        'elts_per_page': elts_per_page,
+        'display_impacts': display_impacts
+    }
 
 
 def get_pbs_widget():
@@ -93,7 +105,9 @@ def get_pbs_widget():
     nb_elements = max(0, int(app.request.GET.get('nb_elements', '10')))
     refine_search = app.request.GET.get('search', '')
 
-    items = app.datamgr.search_hosts_and_services("isnot:UP isnot:OK isnot:PENDING isnot:ACK isnot:DOWNTIME isnot:SOFT bp:>0", user, get_impacts=False)
+    items = app.datamgr.search_hosts_and_services("isnot:UP isnot:OK isnot:PENDING "
+                                                  "isnot:ACK isnot:DOWNTIME isnot:SOFT bp:>0",
+                                                  user, get_impacts=False)
 
     # Sort it now
     items.sort(hst_srv_sort)
@@ -158,10 +172,11 @@ def get_pbs_widget():
     if refine_search:
         title = 'IT problems (%s)' % refine_search
 
-    return {'pbs': pbs, 'all_pbs': items, 'search': refine_search, 'page': 'problems',
-            'wid': wid, 'collapsed': collapsed, 'options': options, 'base_url': '/widget/problems', 'title': title,
-            'header': header, 'commands': commands
-            }
+    return {
+        'pbs': pbs, 'all_pbs': items, 'search': refine_search, 'page': 'problems',
+        'wid': wid, 'collapsed': collapsed, 'options': options, 'base_url': '/widget/problems',
+        'title': title, 'header': header, 'commands': commands
+    }
 
 
 def get_last_errors_widget():
@@ -172,7 +187,9 @@ def get_last_errors_widget():
     refine_search = app.request.GET.get('search', '')
 
     # Apply search filter if exists ...
-    items = app.datamgr.search_hosts_and_services("isnot:UP isnot:OK isnot:PENDING isnot:ACK isnot:DOWNTIME isnot:SOFT bp:>0", user, get_impacts=False)
+    items = app.datamgr.search_hosts_and_services("isnot:UP isnot:OK isnot:PENDING "
+                                                  "isnot:ACK isnot:DOWNTIME isnot:SOFT bp:>0",
+                                                  user, get_impacts=False)
 
     # Sort it now
     items.sort(last_state_change_earlier)
@@ -205,18 +222,22 @@ def get_last_errors_widget():
 
     title = 'Last IT problems'
 
-    return {'pbs': pbs, 'all_pbs': items, 'page': 'problems',
-            'wid': wid, 'collapsed': collapsed, 'options': options, 'base_url': '/widget/last_problems', 'title': title,
-            'header': header, 'commands': commands
-            }
+    return {
+        'pbs': pbs, 'all_pbs': items, 'page': 'problems',
+        'wid': wid, 'collapsed': collapsed, 'options': options, 'base_url': '/widget/last_problems',
+        'title': title, 'header': header, 'commands': commands
+    }
 
-widget_desc = '''<h4>IT problems</h4>
+
+widget_desc = """<h4>IT problems</h4>
 Show the most impacting IT problems
-'''
+"""
 
-last_widget_desc = '''<h4>Last IT problems</h4>
+
+last_widget_desc = """<h4>Last IT problems</h4>
 Show the most recent IT problems
-'''
+"""
+
 
 pages = {
     get_page: {
@@ -226,9 +247,17 @@ pages = {
         'name': 'All', 'route': '/all', 'view': 'problems', 'static': True, 'search_engine': True
     },
     get_pbs_widget: {
-        'name': 'wid_Problems', 'route': '/widget/problems', 'view': 'widget_problems', 'static': True, 'widget': ['dashboard'], 'widget_desc': widget_desc, 'widget_name': 'problems', 'widget_picture': '/static/problems/img/widget_problems.png'
+        'name': 'wid_Problems', 'route': '/widget/problems', 'view': 'widget_problems',
+        'static': True,
+        'widget': ['dashboard'], 'widget_desc': widget_desc,
+        'widget_name': 'problems',
+        'widget_picture': '/static/problems/img/widget_problems.png'
     },
     get_last_errors_widget: {
-        'name': 'wid_LastProblems', 'route': '/widget/last_problems', 'view': 'widget_problems', 'static': True, 'widget': ['dashboard'], 'widget_desc': last_widget_desc, 'widget_name': 'last_problems', 'widget_picture': '/static/problems/img/widget_last_problems.png'
+        'name': 'wid_LastProblems', 'route': '/widget/last_problems', 'view': 'widget_problems',
+        'static': True,
+        'widget': ['dashboard'], 'widget_desc': last_widget_desc,
+        'widget_name': 'last_problems',
+        'widget_picture': '/static/problems/img/widget_last_problems.png'
     }
 }

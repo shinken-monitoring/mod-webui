@@ -28,26 +28,26 @@ import time
 import datetime
 
 import json
-import urllib
 
 from shinken.log import logger
 
-### Will be populated by the UI with it's own value
-app = None
-
 # Get plugin's parameters from configuration file
-params = {}
-params['logs_type'] = ['INFO', 'WARNING', 'ERROR']
-params['logs_hosts'] = []
-params['logs_services'] = []
+params = {
+    'logs_type': ['INFO', 'WARNING', 'ERROR'],
+    'logs_hosts': [],
+    'logs_services': []
+}
+
+# Will be populated by the UI with it's own value
+app = None
 
 
 def _get_logs(*args, **kwargs):
     if app.logs_module.is_available():
         return app.logs_module.get_ui_logs(*args, **kwargs)
-    else:
-        logger.warning("[WebUI-logs] no get history external module defined!")
-        return None
+
+    logger.warning("[WebUI-logs] no get history external module defined!")
+    return None
 
 
 def load_config(app):
@@ -55,19 +55,19 @@ def load_config(app):
 
     import os
     from webui2.config_parser import config_parser
+    currentdir = os.path.dirname(os.path.realpath(__file__))
+    configuration_file = "%s/%s" % (currentdir, 'plugin.cfg')
+    logger.info("[WebUI-logs] Plugin configuration file: %s", configuration_file)
     try:
-        currentdir = os.path.dirname(os.path.realpath(__file__))
-        configuration_file = "%s/%s" % (currentdir, 'plugin.cfg')
-        logger.info("[WebUI-logs] Plugin configuration file: %s", configuration_file)
         scp = config_parser('#', '=')
         z = params.copy()
         z.update(scp.parse_config(configuration_file))
         params = z
 
         params['logs_type'] = [item.strip() for item in params['logs_type'].split(',')]
-        if len(params['logs_hosts']) > 0:
+        if params['logs_hosts']:
             params['logs_hosts'] = [item.strip() for item in params['logs_hosts'].split(',')]
-        if len(params['logs_services']) > 0:
+        if params['logs_services']:
             params['logs_services'] = [item.strip() for item in params['logs_services'].split(',')]
 
         logger.info("[WebUI-logs] configuration loaded.")
@@ -75,13 +75,15 @@ def load_config(app):
         logger.info("[WebUI-logs] configuration, hosts: %s", params['logs_hosts'])
         logger.info("[WebUI-logs] configuration, services: %s", params['logs_services'])
         return True
-    except Exception, exp:
-        logger.warning("[WebUI-logs] configuration file (%s) not available: %s", configuration_file, str(exp))
+    except Exception as exp:
+        logger.warning("[WebUI-logs] configuration file (%s) not available: %s",
+                       configuration_file, str(exp))
         return False
 
 
 def form_hosts_list():
     return {'params': params}
+
 
 def set_hosts_list():
     # Form cancel
@@ -97,10 +99,11 @@ def set_hosts_list():
         params['logs_hosts'].append(host)
 
     app.bottle.redirect("/logs")
-    return
+
 
 def form_services_list():
     return {'params': params}
+
 
 def set_services_list():
     # Form cancel
@@ -116,10 +119,11 @@ def set_services_list():
         params['logs_services'].append(service)
 
     app.bottle.redirect("/logs")
-    return
+
 
 def form_logs_type_list():
     return {'params': params}
+
 
 def set_logs_type_list():
     # Form cancel
@@ -135,12 +139,12 @@ def set_logs_type_list():
         params['logs_type'].append(log_type)
 
     app.bottle.redirect("/logs")
-    return
+
 
 def get_history():
     user = app.request.environ['USER']
 
-    filters=dict()
+    filters = dict()
 
     service = app.request.GET.get('service', None)
     host = app.request.GET.get('host', None)
@@ -167,7 +171,7 @@ def get_history():
     if command_name is not None:
         try:
             command_name = json.loads(command_name)
-        except:
+        except Exception:
             pass
         filters['command_name'] = command_name
 
@@ -188,40 +192,53 @@ def get_global_history():
     range_end = int(app.request.GET.get('range_end', midnight_timestamp + 86399))
     logger.debug("[WebUI-logs] get_global_history, range: %d - %d", range_start, range_end)
 
-    logs = _get_logs(filters={'type': {'$in': params['logs_type']}}, range_start=range_start, range_end=range_end)
+    logs = _get_logs(filters={'type': {'$in': params['logs_type']}},
+                     range_start=range_start, range_end=range_end)
 
     if logs is None:
         message = "No module configured to get Shinken logs from database!"
     else:
         message = ""
 
-    return {'records': logs, 'params': params, 'message': message, 'range_start': range_start, 'range_end': range_end}
-
+    return {
+        'records': logs,
+        'params': params,
+        'message': message,
+        'range_start': range_start, 'range_end': range_end
+    }
 
 
 pages = {
     get_global_history: {
-        'name': 'History', 'route': '/logs', 'view': 'logs', 'static': True
+        'name': 'History', 'route': '/logs',
+        'view': 'logs', 'static': True
     },
     get_history: {
-        'name': 'HistoryHost', 'route': '/logs/inner', 'view': 'history'
+        'name': 'HistoryHost', 'route': '/logs/inner',
+        'view': 'history'
     },
     form_hosts_list: {
-        'name': 'GetHostsList', 'route': '/logs/hosts_list', 'view': 'form_hosts_list'
+        'name': 'GetHostsList', 'route': '/logs/hosts_list',
+        'view': 'form_hosts_list'
     },
     set_hosts_list: {
-        'name': 'SetHostsList', 'route': '/logs/set_hosts_list', 'view': 'logs', 'method': 'POST'
+        'name': 'SetHostsList', 'route': '/logs/set_hosts_list',
+        'view': 'logs', 'method': 'POST'
     },
     form_services_list: {
-        'name': 'GetServicesList', 'route': '/logs/services_list', 'view': 'form_services_list'
+        'name': 'GetServicesList', 'route': '/logs/services_list',
+        'view': 'form_services_list'
     },
     set_services_list: {
-        'name': 'SetServicesList', 'route': '/logs/set_services_list', 'view': 'logs', 'method': 'POST'
+        'name': 'SetServicesList', 'route': '/logs/set_services_list',
+        'view': 'logs', 'method': 'POST'
     },
     form_logs_type_list: {
-        'name': 'GetLogsTypeList', 'route': '/logs/logs_type_list', 'view': 'form_logs_type_list'
+        'name': 'GetLogsTypeList', 'route': '/logs/logs_type_list',
+        'view': 'form_logs_type_list'
     },
     set_logs_type_list: {
-        'name': 'SetLogsTypeList', 'route': '/logs/set_logs_type_list', 'view': 'logs', 'method': 'POST'
+        'name': 'SetLogsTypeList', 'route': '/logs/set_logs_type_list',
+        'view': 'logs', 'method': 'POST'
     }
 }

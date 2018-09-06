@@ -23,7 +23,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 
-### Will be populated by the UI with it's own value
+# Will be populated by the UI with it's own value
 app = None
 
 
@@ -39,6 +39,7 @@ def get_page(arg1='nothing'):
     # only one the template will have, so we must give it an app link and the
     # user we are logged with (it's a contact object in fact)
     return {'host': my_host}
+
 
 # This is the dict the webui will try to "load".
 #  *here we register one page with both addresses /dummy/:arg1 and /dummy/, both addresses

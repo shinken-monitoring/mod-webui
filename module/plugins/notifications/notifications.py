@@ -23,7 +23,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 
-
+# Will be populated by the UI with it's own value
 app = None
 
 
@@ -43,9 +43,11 @@ def notification_toggle():
         'user': user,
     }
 
-notification_toggle_widget_desc = '''<h4>Notification Toggle</h4>
+
+notification_toggle_widget_desc = """<h4>Notification Toggle</h4>
 Display a notification toggle switch & the current state of notifications.
-'''
+"""
+
 
 pages = {
     notification_toggle: {

@@ -23,10 +23,11 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 
-### Will be populated by the UI with it's own value
+import time
+
+# Will be populated by the UI with it's own value
 app = None
 
-import time
 
 def get_depgraph_widget():
     search = app.request.GET.get('search', '').strip()
@@ -49,16 +50,19 @@ def get_depgraph_widget():
 
     title = 'Relation graph for %s' % search
 
-    return { 'elt': elt,
-            'wid': wid, 'collapsed': collapsed, 'options': options, 'base_url': '/widget/depgraph', 'title': title,
-            }
+    return {
+        'elt': elt, 'wid': wid, 'collapsed': collapsed,
+        'options': options, 'base_url': '/widget/depgraph', 'title': title
+    }
 
-widget_desc = '''<h4>Relation graph</h4>
+
+widget_desc = """<h4>Relation graph</h4>
 Displays a dependeny graph for the selected object
-'''
+"""
+
 
 pages = {
-    get_depgraph_widget:{
+    get_depgraph_widget: {
         'name': 'wid_Depgraph',
         'route': '/widget/depgraph',
         'view': 'widget_depgraph',

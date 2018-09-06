@@ -23,28 +23,33 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
-### Will be populated by the UI with it's own value
-app = None
 
 # We will need external commands here
+import re
 import time
+
 from shinken.external_command import ExternalCommand, ExternalCommandManager
 from shinken.log import logger
-import re
+
+# Will be populated by the UI with it's own value
+app = None
 
 
 # Function handling $NOW$ macro
-def subsNOW():
+def subs_now():
     return str(int(time.time()))
 
-def subsSLASH():
+
+def subs_slash():
     return '/'
 
+
 # This dictionary associate macros with expansion function
-subs = {'$NOW$': subsNOW,
-        '$SLASH$' : subsSLASH,
-        # Add new macros here
-       }
+subs = {
+    '$NOW$': subs_now,
+    '$SLASH$': subs_slash,
+    # Add new macros here
+}
 
 
 # Expand macro in a string. It returns the string with macros defined in subs dictionary expanded
@@ -63,8 +68,8 @@ def expand_macros(cmd=None):
 def forge_response(callback, status, text):
     if callback:
         return "%s({'status':%s,'text':'%s'})" % (callback, status, text)
-    else:
-        return "{'status':%s,'text':'%s'}" % (status, text)
+
+    return "{'status':%s,'text':'%s'}" % (status, text)
 
 
 # Our page
@@ -79,7 +84,7 @@ def get_page(cmd=None):
     if not app.can_action():
         return forge_response(callback, 403, 'You are not authorized to launch commands')
 
-    now = subsNOW()
+    now = subs_now()
     elts = cmd.split('/')
     cmd_name = elts[0]
     cmd_args = elts[1:]
@@ -102,6 +107,7 @@ def get_page(cmd=None):
     app.push_external_command(e)
 
     return forge_response(callback, 200, response_text)
+
 
 pages = {
     get_page: {
