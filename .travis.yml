@@ -4,9 +4,6 @@ python:
   - "2.7"
   # - "2.6"
 
-services:
-  - mongodb
-
 # command to install dependencies
 # some are only used for travis/coveralls so we are installing them here only
 install:
@@ -15,16 +12,11 @@ install:
 script:
   - cd test
   - pip freeze
-  # - nosetests -xv --process-restartworker --processes=1 --process-timeout=300 --with-coverage --cover-package=module test*.py
-  # - coverage combine
-  # - coverage report -m
+  - echo "Starting tests..."
+  - pytest --verbose --durations=10 --no-print-logs --cov=module --cov-config .coveragerc test_*.py
+  - # Upload coverage results to codecov
+  - bash <(curl -s https://codecov.io/bash) -e test
   - cd ..
-
-after_success:
-  # to get coverage data with relative paths and not absolute we have to
-  # execute coveralls from the base directory of the project,
-  # so we need to move the .coverage file here :
-  mv test/.coverage . && coveralls --rcfile=test/.coveragerc -v
 
 jobs:
   include:

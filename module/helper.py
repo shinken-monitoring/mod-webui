@@ -252,7 +252,7 @@ class Helper(object):
             If label is set as 'state', the icon title is used as text
             Else, the content of label is used as text near the icon.
 
-            If useTitle is False, do not include title attribute.
+            If use_title is False, do not include title attribute.
 
             Returns a span element containing a Font Awesome icon that depicts
            consistently the host/service current state (see issue #147)

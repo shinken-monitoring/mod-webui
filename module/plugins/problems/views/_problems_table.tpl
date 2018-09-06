@@ -10,7 +10,7 @@
       <td width="110px" title="{{pb.get_name()}} - {{pb.state}}<br> Since {{helper.print_date(pb.last_state_change, format="%d %b %Y %H:%M:%S")}}<br> Last check {{helper.print_duration(pb.last_chk)}}<br> Next check {{helper.print_duration(pb.next_chk)}}"
         class="font-{{pb.state.lower()}} text-center">
         <div style="display: table-cell; vertical-align: middle; padding-right: 10px;">
-          {{!helper.get_fa_icon_state(pb, useTitle=False)}}
+          {{!helper.get_fa_icon_state(pb, use_title=False)}}
         </div>
         <div style="display: table-cell; vertical-align: middle;">
           <small>

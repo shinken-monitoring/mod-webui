@@ -116,7 +116,7 @@
                <tr>
                   <td title="{{h.get_name()}} - {{h.state}} - {{helper.print_duration(h.last_chk)}} - {{h.output}}" data-container="body">
                      <a href="/host/{{h.get_name()}}">
-                        {{!helper.get_fa_icon_state(h, useTitle=False)}}
+                        {{!helper.get_fa_icon_state(h, use_title=False)}}
                         {{h.get_name() if h.display_name == '' else h.display_name}}
                      </a>
                   </td>
@@ -125,7 +125,7 @@
                      %if s:
                         <td title="{{s.get_name()}} - {{s.state}} - {{helper.print_duration(s.last_chk)}} - {{s.output}}" data-container="body">
                            <a href="/service/{{h.get_name()}}/{{s.get_name()}}">
-                              {{!helper.get_fa_icon_state(s, useTitle=False)}}
+                              {{!helper.get_fa_icon_state(s, use_title=False)}}
                            </a>
                         </td>
                      %else:
