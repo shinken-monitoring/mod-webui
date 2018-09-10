@@ -22,11 +22,13 @@ except ValueError:
 
 try:
     from passlib.hash import bcrypt
-    bcrypt_available = True
+    from passlib.hash import sha256_crypt
+    from passlib.hash import sha512_crypt
+    passlib_available = True
 except ImportError:
-    logger.warning('[WebUI-auth-htpasswd] Can not import bcrypt password authentication. '
+    logger.warning('[WebUI-auth-htpasswd] Can not import bcrypt/sha256/sha512 password authentication. '
                  'You should \'pip install passlib\' if you intend to use it.')
-    bcrypt_available = False
+    passlib_available = False
 
 
 class AuthMetaModule(MetaModule):
@@ -182,11 +184,12 @@ class AuthMetaModule(MetaModule):
                 elts = line.split(':')
                 name = elts[0]
                 hash = elts[1]
-                if md5_available and hash[:5] == '$apr1' or hash[:3] == '$1$':
+
+                if hash[:5] == '$apr1' or hash[:3] == '$1$':
                     h = hash.split('$')
                     magic = h[1]
                     salt = h[2]
-                elif bcrypt_available and hash[:4] == '$2y$':
+                elif hash[0] == '$':
                     h = hash.split('$')
                     magic = h[1]
                 else:
@@ -196,14 +199,19 @@ class AuthMetaModule(MetaModule):
                 # If we match the username, look at the crypt
                 if name == username:
                     if md5_available and magic == 'apr1':
-                        compute_hash = apache_md5_crypt(password, salt)
+                        valid_hash = (apache_md5_crypt(password, salt) == hash)
                     elif md5_available and magic == '1':
-                        compute_hash = unix_md5_crypt(password, salt)
-                    elif bcrypt_available and magic == '2y':
-                        compute_hash = bcrypt.verify(password, hash) and hash
-                    else:
-                        compute_hash = crypt.crypt(password, salt)
-                    if compute_hash == hash:
+                        valid_hash = (unix_md5_crypt(password, salt) == hash)
+                    elif passlib_available and (magic[0] == '2'):
+                        valid_hash = bcrypt.verify(password, hash)
+                    elif passlib_available and magic == '5':
+                        valid_hash = sha256_crypt.verify(password, hash)
+                    elif passlib_available and magic == '6':
+                        valid_hash = sha512_crypt.verify(password, hash)
+                    elif magic == None:
+                        valid_hash = (crypt.crypt(password, salt) == hash)
+
+                    if valid_hash:
                         logger.info("[WebUI-auth-htpasswd] Authenticated")
                         return True
                 else:
