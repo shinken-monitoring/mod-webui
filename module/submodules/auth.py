@@ -170,7 +170,7 @@ class AuthMetaModule(MetaModule):
                     magic = h[1]
                 else:
                     magic = None
-                    salt = hash[:2]
+                    salt = inner_hash[:2]
 
                 # If we match the username, look at the crypt
                 if name == username:
