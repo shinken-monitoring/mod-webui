@@ -27,6 +27,7 @@
 # Will be populated by the UI with it's own value
 app = None
 
+
 def show_htag(name):
     app.bottle.redirect("/all?search=type:host htag:" + name)
 
@@ -41,7 +42,7 @@ def show_htags():
     fake_htags = []
     for tag in app.datamgr.get_host_tags():
         hosts = app.datamgr.get_hosts_tagged_with(tag[0], user)
-        if len(hosts) > 0:
+        if hosts:
             fake_htags.append({'name': tag[0], 'hosts': hosts})
 
     return {'htags': fake_htags}
@@ -53,7 +54,7 @@ def show_stags():
     fake_stags = []
     for tag in app.datamgr.get_service_tags():
         services = app.datamgr.get_services_tagged_with(tag[0], user)
-        if len(services) > 0:
+        if services:
             fake_stags.append({'name': tag[0], 'services': services})
 
     return {'stags': fake_stags}
@@ -61,15 +62,19 @@ def show_stags():
 
 pages = {
     show_htag: {
-        'name': 'HostsTag', 'route': '/hosts-tag/:name', 'view': 'hosts-tag', 'static': True
+        'name': 'HostsTag', 'route': '/hosts-tag/:name', 'view': 'hosts-tag',
+        'static': True
     },
     show_stag: {
-        'name': 'ServicesTag', 'route': '/services-tag/:name', 'view': 'services-tag', 'static': True
+        'name': 'ServicesTag', 'route': '/services-tag/:name', 'view': 'services-tag',
+        'static': True
     },
     show_htags: {
-        'name': 'HostsTags', 'route': '/hosts-tags', 'view': 'hosts-tags-overview', 'static': True
+        'name': 'HostsTags', 'route': '/hosts-tags', 'view': 'hosts-tags-overview',
+        'static': True
     },
     show_stags: {
-        'name': 'ServicesTags', 'route': '/services-tags', 'view': 'services-tags-overview', 'static': True
+        'name': 'ServicesTags', 'route': '/services-tags', 'view': 'services-tags-overview',
+        'static': True
     }
 }

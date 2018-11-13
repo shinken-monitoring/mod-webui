@@ -1,11 +1,20 @@
-<!DOCTYPE html>
+%# Default is to consider that the underlying framework is not Alignak (hence Shinken)
+%setdefault('alignak', False)
+%setdefault('fmwk', 'Shinken')
 
+%if alignak:
+%from alignak.version import VERSION
+%fmwk="Alignak"
+%else:
 %from shinken.bin import VERSION
+%end
+
+<!DOCTYPE html>
 
 <html lang="en">
    <head>
       <meta charset="utf-8">
-      <title>Shinken WebUI Login page</title>
+      <title>{{fmwk}} WebUI Login page</title>
       <meta name="viewport" content="width=device-width, initial-scale=1">
 
       <!--

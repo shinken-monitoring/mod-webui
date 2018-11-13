@@ -19,61 +19,22 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 
-### Will be populated by the UI with it's own value
-app = None
-
 from shinken.log import logger
 
-# Get plugin's parameters from configuration file
-# params = {}
-# params['elts_per_page'] = 10
+# Will be populated by the UI with it's own value
+app = None
 
-# def load_cfg():
-    # global params
-
-    # import os,sys
-    # from webui2.config_parser import config_parser
-    # plugin_name = os.path.splitext(os.path.basename(__file__))[0]
-    # try:
-        # currentdir = os.path.dirname(os.path.realpath(__file__))
-        # configuration_file = "%s/%s" % (currentdir, 'plugin.cfg')
-        # logger.debug("Plugin configuration file: %s" % (configuration_file))
-        # scp = config_parser('#', '=')
-        # params = scp.parse_config(configuration_file)
-
-        # params['elts_per_page'] = int(params['elts_per_page'])
-
-        # params['minemap_hostsLevel'] = [int(item) for item in params['minemap_hostsLevel'].split(',')]
-        # params['minemap_hostsShow'] = [item for item in params['minemap_hostsShow'].split(',')]
-        # params['minemap_hostsHide'] = [item for item in params['minemap_hostsHide'].split(',')]
-        # params['minemap_servicesLevel'] = [int(item) for item in params['minemap_servicesLevel'].split(',')]
-        # params['minemap_servicesHide'] = [item for item in params['minemap_servicesHide'].split(',')]
-
-        # logger.info("[webui-minemap] configuration loaded.")
-        # logger.debug("[webui-minemap] configuration, elts_per_page: %d", params['elts_per_page'])
-        # logger.debug("[webui-minemap] configuration, minemap hosts level: %s", params['minemap_hostsLevel'])
-        # logger.debug("[webui-minemap] configuration, minemap hosts always shown: %s", params['minemap_hostsShow'])
-        # logger.debug("[webui-minemap] configuration, minemap hosts always hidden: %s", params['minemap_hostsHide'])
-        # logger.debug("[webui-minemap] configuration, minemap services level: %s", params['minemap_servicesLevel'])
-        # logger.debug("[webui-minemap] configuration, minemap services hide: %s", params['minemap_servicesHide'])
-        # return True
-    # except Exception, exp:
-        # logger.warning("[webui-minemap] configuration file (%s) not available: %s", configuration_file, str(exp))
-        # return False
-
-# def reload_cfg():
-    # load_cfg()
-    # app.bottle.redirect("/config")
 
 def show_minemap():
     user = app.request.environ['USER']
 
     # Apply search filter if exists ...
     search = app.request.query.get('search', "type:host")
-    if not "type:host" in search:
-        search = "type:host "+search
-    logger.debug("[WebUI-worldmap] search parameters '%s'", search)
+    if "type:host" not in search:
+        search = "type:host " + search
+    logger.debug("[WebUI-minemap] search parameters '%s'", search)
     items = app.datamgr.search_hosts_and_services(search, user, get_impacts=False)
+    logger.info("[WebUI-minemap] got %d matching items: %s", len(items), items)
 
     # Fetch elements per page preference for user, default is 25
     elts_per_page = app.prefs_module.get_ui_user_preference(user, 'elts_per_page', 25)
@@ -93,6 +54,7 @@ def show_minemap():
 
     return {'navi': navi, 'items': items[start:end], 'page': "minemap"}
 
+
 def show_minemaps():
     app.bottle.redirect("/minemap/all")
 
@@ -102,9 +64,11 @@ def show_minemaps():
 
 pages = {
     show_minemap: {
-        'name': 'Minemap', 'route': '/minemap', 'view': 'minemap', 'static': True, 'search_engine': True
+        'name': 'Minemap', 'route': '/minemap', 'view': 'minemap', 'search_engine': True,
+        'static': True
     },
     show_minemaps: {
-        'name': 'Minemaps', 'route': '/minemaps', 'view': 'minemap', 'static': True
+        'name': 'Minemaps', 'route': '/minemaps', 'view': 'minemap',
+        'static': True
     }
 }

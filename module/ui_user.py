@@ -48,8 +48,8 @@ class User(Contact):
     def get_username(self):
         if getattr(self, 'contact_name', None):
             return self.contact_name
-        elif getattr(self, 'name', None):
-            return self.name
+
+        return getattr(self, 'name', 'Unnamed')
 
     def get_name(self):
         name = self.get_username()
@@ -63,19 +63,19 @@ class User(Contact):
         """
         Is contact an administrator?
         """
-        if isinstance(self.is_admin, bool):
+        if isinstance(getattr(self, 'is_admin', '0'), bool):
             return self.is_admin
-        else:
-            return getattr(self, 'is_admin', '0') == '1'
 
-    def can_submit_commands(self):
+        return getattr(self, 'is_admin', '0') == '1'
+
+    def is_commands_allowed(self):
         """
-        Is contact an administrator?
+        Is contact allowed to use commands?
         """
         if self.is_administrator():
             return True
 
-        if 'can_submit_commands' in self and isinstance(self.can_submit_commands, bool):
+        if isinstance(getattr(self, 'can_submit_commands', '0'), bool):
             return self.can_submit_commands
 
         return getattr(self, 'can_submit_commands', '0') == '1'

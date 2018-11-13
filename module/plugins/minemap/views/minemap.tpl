@@ -1,6 +1,4 @@
 %user = app.get_user()
-%groupname = 'all'
-%groupalias = 'All hosts'
 %title = 'Minemap for all hosts'
 
 %helper = app.helper
@@ -26,24 +24,16 @@
       %rows = []
       %columns = []
 
-      %for h in items:
-         %if h.my_type=='service':
-            %if not h.host_name in rows:
-               %rows.append(h.host_name)
-            %end
-            %if not h.get_name() in columns:
-               %columns.append(h.get_name())
-            %end
-         %elif h.my_type=='host':
-            %if not h.get_name() in rows:
-               %rows.append(h.get_name())
-               %for s in h.services:
-                  %columns.append(s.get_name() if s.display_name == '' else s.display_name)
-               %end
-            %end
-         %end
+      %# items is a list of hosts
+      %for host in items:
+          %rows.append(host.get_name())
+          %for s in host.services:
+             %if s.service_description not in columns:
+                %columns.append(s.service_description)
+             %end
+          %end
       %end
-      %rows.sort()
+      %#rows.sort()
       %try:
       %# For Python < 2.7 ...
       %import collections
@@ -116,7 +106,7 @@
                <tr>
                   <td title="{{h.get_name()}} - {{h.state}} - {{helper.print_duration(h.last_chk)}} - {{h.output}}" data-container="body">
                      <a href="/host/{{h.get_name()}}">
-                        {{!helper.get_fa_icon_state(h, useTitle=False)}}
+                        {{!helper.get_fa_icon_state(h, use_title=False)}}
                         {{h.get_name() if h.display_name == '' else h.display_name}}
                      </a>
                   </td>
@@ -125,7 +115,7 @@
                      %if s:
                         <td title="{{s.get_name()}} - {{s.state}} - {{helper.print_duration(s.last_chk)}} - {{s.output}}" data-container="body">
                            <a href="/service/{{h.get_name()}}/{{s.get_name()}}">
-                              {{!helper.get_fa_icon_state(s, useTitle=False)}}
+                              {{!helper.get_fa_icon_state(s, use_title=False)}}
                            </a>
                         </td>
                      %else:

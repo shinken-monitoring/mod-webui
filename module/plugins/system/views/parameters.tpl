@@ -16,7 +16,7 @@
     <tr>
       <td>{{key}}</td>
       <td>
-        %if type(value) is bool:
+        %if isinstance(value, bool):
         {{! app.helper.get_on_off(value)}}
         %else:
         {{value}}

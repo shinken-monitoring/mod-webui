@@ -1,5 +1,11 @@
+# Requires Shinken
+shinken
+
+# Bottle and PyMongo
 bottle==0.12.8
 pymongo>=3.0.3
+
+# Some extra libraries
 requests
 arrow
 passlib
