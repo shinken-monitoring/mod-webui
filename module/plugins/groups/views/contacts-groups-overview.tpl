@@ -50,7 +50,7 @@
 
                   <ul class="list-group">
                      <li class="list-group-item">
-                        {{!'<span class="badge">%s</span>Services' % (len(contacts)) if len(contacts) else '<small><em>No members</em></small>'}}
+                        {{!'<span class="badge">%s</span>Contacts' % (len(contacts)) if len(contacts) else '<small><em>No members</em></small>'}}
                      </li>
                      <li class="list-group-item">
                         {{!'<span class="badge">%s</span>Groups' % (nGroups) if nGroups else '<small><em>No sub-groups</em></small>'}}
@@ -62,6 +62,10 @@
       %end
 
       %for group in contactgroups:
+         %sub_groups = group.contactgroup_members
+         %sub_groups = [] if (sub_groups and not sub_groups[0]) else sub_groups
+
+         %nGroups=len(group.contactgroup_members)
          <li class="group list-group-item clearfix">
             <h3>
                <a role="menuitem" href="/all?search=cg:{{'"%s"' % group.get_name()}}">
@@ -86,13 +90,13 @@
                      <a class="btn btn-default" href="/minemap?search=type:host cg:{{'"%s"' % group.get_name()}}"><i class="fa fa-table"></i> <span class="hidden-xs">Minemap</span></a>
                   </div>
 
-                  <div class="btn-group btn-group-justified" role="group" aria-label="Resources" title="View resources for hosts related with this contact group">
+                  <div class="btn-group btn-group-justified" role="group" aria-label="Resources" title="View resources for contacts related with this contact group">
                      <a class="btn btn-default" href="/all?search=type:host cg:{{'"%s"' % group.get_name()}}"><i class="fa fa-clock-o"></i> <span class="hidden-xs">Resources</span></a>
                   </div>
 
                   <ul class="list-group">
                      <li class="list-group-item">
-                        {{!'<span class="badge">%s</span>Services' % (len(contacts)) if len(contacts) else '<small><em>No members</em></small>'}}
+                        {{!'<span class="badge">%s</span>Contacts' % (len(contacts)) if len(contacts) else '<small><em>No members</em></small>'}}
                      </li>
                      <li class="list-group-item">
                         {{!'<span class="badge">%s</span>Groups' % (nGroups) if nGroups else '<small><em>No sub-groups</em></small>'}}

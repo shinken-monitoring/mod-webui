@@ -200,14 +200,16 @@
                      %if nw.host_notifications_enabled:
                      <tr>
                         <td><strong>&nbsp;&ndash;&nbsp;period:</strong></td>
-                        <td name="{{"host_notification_period%s" % i}}" class="popover-dismiss" data-html="true" data-toggle="popover" data-trigger="hover" title="Host notification period" data-placement="top" data-content="...">{{! app.helper.get_on_off(nw.host_notification_period.is_time_valid(time.time()), "Is notification period currently active?")}}
+                        %tp=app.datamgr.get_timeperiod(nw.host_notification_period.get_name())
+                        <td name="{{"host_notification_period%s" % i}}" class="popover-dismiss" data-html="true"
+                            data-toggle="popover" data-trigger="hover" title="{{tp.alias if hasattr(tp, "alias") else tp.timeperiod_name}}"
+                            data-placement="bottom" data-content="{{! app.helper.get_timeperiod_html(tp)}}">
+                            {{! app.helper.get_on_off(nw.host_notification_period.is_time_valid(time.time()), "Is notification period currently active?")}}
                            <a href="/timeperiods">{{nw.host_notification_period.alias}}</a>
                            <script>
-                              %tp=app.datamgr.get_timeperiod(nw.host_notification_period.get_name())
-                              $('td[name="{{"host_notification_period%s" % i}}"]')
-                                .attr('title', '{{tp.alias if hasattr(tp, "alias") else tp.timeperiod_name}}')
-                                .attr('data-content', '{{! app.helper.get_timeperiod_html(tp)}}')
-                                .popover();
+                            $(document).ready(function(){
+                              $('td[name="{{"host_notification_period%s" % i}}"]').popover();
+                            });
                            </script>
                         </td>
                      </tr>
@@ -237,13 +239,13 @@
                        %i += 1
                        <tr>
                            <td><strong>&nbsp;&ndash;&nbsp;command:</strong></td>
-                           <td name="host_command{{i}}" class="popover-dismiss" data-html="true" data-toggle="popover" data-trigger="hover" title="Host notification command" data-placement="top" data-content="...">
+                           <td name="host_command{{i}}" class="popover-dismiss" data-html="true" data-toggle="popover"
+                           data-trigger="hover" title="Host notification command" data-placement="bottom" data-content="{{command.__dict__}}">
                               <a href="/commands#{{command.get_name()}}">{{command.get_name()}}</a>
                               <script>
-                              $('td[name="host_command{{i}}"]')
-                                .attr('title', '{{command.get_name()}}')
-                                .attr('data-content', '{{json.dumps(command.command.command_line)}}')
-                                .popover();
+                              $(document).ready(function(){
+                                 $('td[name="host_command{{i}}"]').popover();
+                              });
                               </script>
                            </td>
                         </tr>
@@ -258,14 +260,16 @@
                      %if nw.service_notifications_enabled:
                      <tr>
                         <td><strong>&nbsp;&ndash;&nbsp;period:</strong></td>
-                        <td name="{{"service_notification_period%s" % i}}" class="popover-dismiss" data-html="true" data-toggle="popover" data-trigger="hover" title="service notification period" data-placement="top" data-content="...">{{! app.helper.get_on_off(nw.service_notification_period.is_time_valid(time.time()), "Is notification period currently active?")}}
+                        %tp=app.datamgr.get_timeperiod(nw.service_notification_period.get_name())
+                        <td name="{{"service_notification_period%s" % i}}" class="popover-dismiss" data-html="true"
+                            data-toggle="popover" data-trigger="hover" title="{{tp.alias if hasattr(tp, "alias") else tp.timeperiod_name}}"
+                            data-placement="bottom" data-content="{{!app.helper.get_timeperiod_html(tp)}}">
+                            {{! app.helper.get_on_off(nw.service_notification_period.is_time_valid(time.time()), "Is notification period currently active?")}}
                            <a href="/timeperiods">{{nw.service_notification_period.alias}}</a>
                            <script>
-                            %tp=app.datamgr.get_timeperiod(nw.service_notification_period.get_name())
-                            $('td[name="{{"service_notification_period%s" % i}}"]')
-                              .attr('title', '{{tp.alias if hasattr(tp, "alias") else tp.timeperiod_name}}')
-                              .attr('data-content', '{{!app.helper.get_timeperiod_html(tp)}}')
-                              .popover();
+                           $(document).ready(function(){
+                            $('td[name="{{"service_notification_period%s" % i}}"]').popover();
+                           });
                            </script>
                         </td>
                      </tr>
@@ -296,13 +300,14 @@
                         %i += 1
                         <tr>
                            <td><strong>&nbsp;&ndash;command:</strong></td>
-                           <td name="service_command{{i}}" class="popover-dismiss" data-html="true" data-toggle="popover" data-trigger="hover" title="Service notification command" data-placement="top" data-content="...">
+                           <td name="service_command{{i}}" class="popover-dismiss" data-html="true"
+                                data-toggle="popover" data-trigger="hover" title="{{command.get_name()}}"
+                                data-placement="bottom" data-content="{{command.__dict__ }}">
                               <a href="/commands#{{command.get_name()}}">{{command.get_name()}}</a>
                               <script>
-                                 $('td[name="service_command{{i}}"]')
-                                   .attr('title', '{{command.get_name()}}')
-                                   .attr('data-content', '{{json.dumps(command.command.command_line)}}')
-                                   .popover();
+                              $(document).ready(function(){
+                                 $('td[name="service_command{{i}}"]').popover();
+                              });
                               </script>
                            </td>
                         </tr>
