@@ -34,7 +34,7 @@ function get_user_preference(key, callback) {
    $.get("/user/get_pref", { 'key' : key }, function( data, textStatus, jqXHR ) {
       if (actions_logs) console.debug('Got: '+key, data, textStatus);
 
-      if (typeof callback !== 'undefined' && $.isFunction(callback)) {
+      if (data && typeof callback !== 'undefined' && $.isFunction(callback)) {
          if (actions_logs) console.debug('Calling callback function ...', callback);
          callback(JSON.parse(data));
       }
@@ -52,7 +52,7 @@ function save_user_preference(key, value, callback) {
       if (actions_logs) console.debug('User preference saved: ', key, value);
       // raise_message_ok("User parameter saved");
 
-      if (typeof callback !== 'undefined' && $.isFunction(callback)) {
+      if (value && typeof callback !== 'undefined' && $.isFunction(callback)) {
          if (actions_logs) console.debug('Calling callback function ...', callback);
          callback(JSON.parse(value));
       }
@@ -70,7 +70,7 @@ function save_common_preference(key, value, callback) {
       if (actions_logs) console.debug('Common preference saved: ', key, value);
       // raise_message_ok("Common parameter saved");
 
-      if (typeof callback !== 'undefined' && $.isFunction(callback)) {
+      if (value && typeof callback !== 'undefined' && $.isFunction(callback)) {
          if (actions_logs) console.debug('Calling callback function ...', callback);
          callback(JSON.parse(value));
       }
@@ -445,7 +445,7 @@ function add_element(name){
    $('td input[type=checkbox][data-item="'+name+'"]').prop("checked", true);
 
    $('td input[type=checkbox][data-item="'+name+'"]').closest('tr').addClass('selected');
-   
+
    if (problems_logs) console.log('Select element: ', name)
 
    selected_elements.push(name);
@@ -454,7 +454,7 @@ function add_element(name){
 
    if (selected_elements.length > 0) {
       display_nav_actions();
-      
+
       // Stop page refresh
       disable_refresh();
    }
@@ -466,7 +466,7 @@ function remove_element(name){
    $('td input[type=checkbox][data-item="'+name+'"]').prop("checked", false);
 
    $('td input[type=checkbox][data-item="'+name+'"]').closest('tr').removeClass('selected');
-   
+
    if (problems_logs) console.log('Unselect element: ', name)
    selected_elements.splice($.inArray(name, selected_elements),1);
 
@@ -532,7 +532,7 @@ $("body").on("click", ".js-schedule-downtime", function () {
         if (elt) {
             display_modal("/forms/downtime/add/"+elt);
         } else {
-            // :TODO:maethor:171008: 
+            // :TODO:maethor:171008:
             alert("Sadly, you cannot define a custom timeperiod on multiple elements at once. This is not implemented yet.");
         }
     }
@@ -614,7 +614,7 @@ $("body").on("click", ".js-submit-ok", function () {
 
     if (elt) {
         display_modal("/forms/submit_check/"+elt);
-    } else { 
+    } else {
         $.each(selected_elements, function(idx, name){
             submit_check(name, '0', 'Forced OK/UP by '+user);
         });
