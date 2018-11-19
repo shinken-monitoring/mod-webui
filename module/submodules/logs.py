@@ -5,6 +5,8 @@
 import traceback
 import time
 
+import pymongo
+
 from shinken.log import logger
 
 from .metamodule import MetaModule
@@ -37,6 +39,9 @@ class LogsMetaModule(MetaModule):
                 logger.warning('[WebUI] Exception %s', str(exp))
 
     def is_available(self):
+        if isinstance(self.module, MongoDBLogs):
+            return self.module.is_connected
+
         return self.module is not None
 
     def get_ui_logs(self, *args, **kwargs):
@@ -54,14 +59,6 @@ class MongoDBLogs(object):
     """
 
     def __init__(self, mod_conf):
-        try:
-            import pymongo
-        except ImportError:
-            logger.error('[WebUI-mongo-logs] Can not import pymongo'
-                         'Please install it with a 3.x+ version from '
-                         'https://pypi.python.org/pypi/pymongo')
-            raise
-
         self.uri = getattr(mod_conf, 'uri', 'mongodb://localhost')
         logger.info('[WebUI-mongo-logs] mongo uri: %s', self.uri)
 
@@ -96,9 +93,13 @@ class MongoDBLogs(object):
             logger.warning("[WebUI-MongoDBPreferences] No Mongodb connection configured!")
             return
 
-        logger.info("[WebUI-mongo-logs] Trying to open a Mongodb connection to %s, database: %s",
-                    self.uri, self.database)
-        self.open()
+        if self.uri:
+            logger.info("[WebUI-mongo-logs] Trying to open a Mongodb connection to %s, database: %s",
+                        self.uri, self.database)
+            self.open()
+        else:
+            logger.warning("You do not have any MongoDB connection for log module installed. "
+                           "The Web UI system log and availability features will not be available.")
 
     def open(self):
         try:
@@ -158,7 +159,9 @@ class MongoDBLogs(object):
 
     # We will get in the mongodb database the logs
     def get_ui_logs(self, filters=None, range_start=None, range_end=None, limit=200, offset=0):
-        import pymongo
+        if not self.uri:
+            return None
+
         if not self.db:
             logger.error("[mongo-logs] error Problem during init phase, no database connection")
             return []
@@ -195,7 +198,9 @@ class MongoDBLogs(object):
 
     # We will get in the mongodb database the host availability
     def get_ui_availability(self, elt, range_start=None, range_end=None):
-        import pymongo
+        if not self.uri:
+            return None
+
         if not self.db:
             logger.error("[mongo-logs] error Problem during init phase, no database connection")
             return []
