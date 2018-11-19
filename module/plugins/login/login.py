@@ -23,15 +23,16 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 
-### Will be populated by the UI with it's own value
-app = None
-
 from shinken.log import logger
 import bottle
 
+# Will be populated by the UI with it's own value
+app = None
+
 
 def user_login():
-    logger.debug("[WebUI] user login request, remote user enabled: %s: %s", app.remote_user_enable, app.remote_user_variable)
+    logger.debug("[WebUI] user login request, remote user enabled: %s: %s",
+                 app.remote_user_enable, app.remote_user_variable)
     for header in app.request.headers:
         logger.debug("[WebUI] X request header: %s = %s", header, app.request.headers[header])
 
@@ -42,26 +43,12 @@ def user_login():
     cookie_value = app.request.get_cookie(app.session_cookie, secret=app.auth_secret)
     if cookie_value:
         logger.info("[WebUI] user login request, existing cookie found: %s", cookie_value)
-        # For Alignak backend
-        if app.alignak_backend_endpoint:
-            if 'session' in cookie_value:
-                app.user_session = cookie_value['session']
-                # For alignak backend
-                try:
-                    if app.frontend.connect(app.user_session):
-                        bottle.redirect(app.get_url("Dashboard"))
-                except Exception:
-                    pass
-
-                app.response.set_cookie(str(app.session_cookie), '', secret=app.auth_secret, path='/')
-                bottle.redirect("/user/login")
-
         bottle.redirect(app.get_url("Dashboard"))
 
     elif app.remote_user_enable in ['1', '2']:
         logger.debug("[WebUI] user login request, no existing cookie found")
         if not err:
-            user_name=None
+            user_name = None
             if app.remote_user_enable == '1':
                 logger.debug("[WebUI] search %s in request headers", app.remote_user_variable)
                 if app.remote_user_variable in app.request.headers:
@@ -75,7 +62,8 @@ def user_login():
                     logger.debug("[WebUI] remote user found in WSGI environment: %s", user_name)
 
             if not user_name:
-                logger.warning("[WebUI] remote user is enabled but no authenticated user name was found")
+                logger.warning("[WebUI] remote user is enabled but no authenticated "
+                               "user name was found")
                 bottle.redirect(app.get_url("GetLogin"))
 
             c = app.datamgr.get_contact(name=user_name)
@@ -85,7 +73,8 @@ def user_login():
                     'session': app.user_session,
                     'info': app.user_info
                 }
-                app.response.set_cookie(str(app.session_cookie), cookie_value, secret=app.auth_secret, path='/')
+                app.response.set_cookie(str(app.session_cookie), cookie_value,
+                                        secret=app.auth_secret, path='/')
                 bottle.redirect(app.get_url("Dashboard"))
 
     return {'msg_text': err, 'login_text': app.login_text, 'company_logo': app.company_logo}
@@ -98,10 +87,6 @@ def user_logout():
         app.response.set_cookie(str(app.session_cookie), False, secret=app.auth_secret, path='/')
     else:
         app.response.set_cookie(str(app.session_cookie), '', secret=app.auth_secret, path='/')
-
-    # For Alignak backend
-    if app.alignak_backend_endpoint:
-        app.frontend.logout()
 
     logger.info("[WebUI]  user '%s' signed out", user_name)
     bottle.redirect(app.get_url("GetLogin"))
@@ -123,7 +108,8 @@ def user_auth():
             'info': app.user_info
         }
         try:
-            app.response.set_cookie(str(app.session_cookie), cookie_value, secret=app.auth_secret, path='/')
+            app.response.set_cookie(str(app.session_cookie), cookie_value,
+                                    secret=app.auth_secret, path='/')
         except ValueError:
             logger.error("[WebUI]  cookie value error (too long > 4096 bytes!): %s", cookie_value)
             is_authenticated = False
@@ -131,7 +117,8 @@ def user_auth():
             logger.debug("[WebUI]  user '%s' signed in: %s", login, cookie_value)
             bottle.redirect(app.get_url("Dashboard"))
     else:
-        logger.warning("[WebUI]  user '%s' access denied, redirection to: %s", login, app.get_url("GetLogin") + "?error=Invalid user or Password")
+        logger.warning("[WebUI]  user '%s' access denied, redirection to: %s",
+                       login, app.get_url("GetLogin") + "?error=Invalid user or Password")
         bottle.redirect(app.get_url("GetLogin") + "?error=Invalid user or Password")
 
     return {'is_auth': is_authenticated}
@@ -145,15 +132,15 @@ def get_root():
 
 pages = {
     user_login: {
-        'name': 'GetLogin', 'route': '/user/login', 'view': 'login', 'static': True
+        'name': 'GetLogin', 'route': '/user/login', 'view': 'login'
     },
     user_auth: {
-        'name': 'SetLogin', 'route': '/user/auth', 'method': 'POST', 'static': True
+        'name': 'SetLogin', 'route': '/user/auth', 'method': 'POST'
     },
     user_logout: {
-        'name': 'Logout', 'route': '/user/logout', 'static': True
+        'name': 'Logout', 'route': '/user/logout'
     },
     get_root: {
-        'name': 'Root', 'route': '/', 'static': True
+        'name': 'Root', 'route': '/'
     }
 }

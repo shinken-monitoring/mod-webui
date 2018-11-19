@@ -22,17 +22,15 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 
-### Will be populated by the UI with it's own value
 
-# config_parser
-class config_parser(object):
- 
-    def __init__(self, comment_char = '#', option_char = '=', allow_duplicates = False, strip_quotes = True):
+class ConfigParser(object):
+
+    def __init__(self, comment_char='#', option_char='=', allow_duplicates=False, strip_quotes=True):
         self.comment_char = comment_char
         self.option_char = option_char
         self.allow_duplicates = allow_duplicates
-        self.strip_quotes = True
- 
+        self.strip_quotes = strip_quotes
+
     def parse_config(self, filename):
         self.options = {}
         config_file = open(filename)
@@ -46,7 +44,7 @@ class config_parser(object):
                 value = value.strip('"\'')
                 if self.allow_duplicates:
                     if option in self.options:
-                        if not type(self.options[option]) == list:
+                        if not isinstance(self.options[option], list):
                             old_value = self.options[option]
                             self.options[option] = [old_value] + [value]
                         else:
@@ -57,4 +55,3 @@ class config_parser(object):
                     self.options[option] = value
         config_file.close()
         return self.options
- 

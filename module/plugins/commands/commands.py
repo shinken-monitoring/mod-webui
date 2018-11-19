@@ -22,18 +22,21 @@
 #
 # You should have received a copy of the GNU Affero General Public License
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
-### Will be populated by the UI with it's own value
+
+# Will be populated by the UI with it's own value
 app = None
+
 
 # All commands
 def show_commands():
     user = app.request.environ['USER']
-    user.is_administrator() or app.redirect403()
+    _ = user.is_administrator() or app.redirect403()
 
     return {'commands': sorted(app.datamgr.get_commands(), key=lambda c: c.command_name)}
 
+
 pages = {
     show_commands: {
-        'name': 'Commands', 'route': '/commands', 'view': 'commands', 'static': True
+        'name': 'Commands', 'route': '/commands', 'view': 'commands'
     }
 }

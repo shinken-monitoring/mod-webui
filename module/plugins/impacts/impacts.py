@@ -24,10 +24,11 @@
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 import time
 
+from shinken.log import logger
+
 # Global value that will be changed by the main app
 app = None
 
-from shinken.log import logger
 
 def show_impacts():
     user = app.request.environ['USER']
@@ -62,24 +63,36 @@ def impacts_widget():
             new_impacts[k] = v
     d['impacts'] = new_impacts
 
-    options = {'nb_elements': {'value': nb_elements, 'type': 'int', 'label': 'Max number of elements to show'},
-               }
+    options = {
+        'nb_elements': {
+            'value': nb_elements, 'type': 'int', 'label': 'Max number of elements to show'
+        }
+    }
 
     d.update({'wid': wid, 'collapsed': collapsed, 'options': options,
-            'base_url': '/widget/impacts', 'title': 'Impacts'})
+              'base_url': '/widget/impacts', 'title': 'Impacts'})
 
     return d
+
 
 widget_desc = """
 <h4>Impacts</h4>
 Show an aggregated view of the most important business impacts!
 """
 
+
 pages = {
     show_impacts: {
-        'name': 'Impacts', 'route': '/impacts', 'view': 'impacts', 'static': True, 'search_engine': True
+        'name': 'Impacts', 'route': '/impacts', 'view': 'impacts',
+        'static': True,
+        'search_engine': True
     },
     impacts_widget: {
-        'name': 'wid_Impacts', 'route': '/widget/impacts', 'view': 'widget_impacts', 'static': True, 'widget': ['dashboard'], 'widget_desc': widget_desc, 'widget_name': 'impacts', 'widget_picture': '/static/impacts/img/widget_impacts.png'
+        'name': 'wid_Impacts', 'route': '/widget/impacts', 'view': 'widget_impacts',
+        'widget': ['dashboard'],
+        'widget_desc': widget_desc,
+        'widget_name': 'impacts',
+        'widget_picture': '/static/impacts/img/widget_impacts.png',
+        'static': True
     }
 }

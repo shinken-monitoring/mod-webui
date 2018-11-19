@@ -26,13 +26,11 @@
 
 
 import re
-import json
 import itertools
 import time
 from shinken.log import logger
 
 from shinken.misc.datamanager import DataManager
-from shinken.objects.contact import Contact
 
 # Import all objects we will need
 from shinken.objects.host import Host, Hosts
@@ -49,13 +47,9 @@ from shinken.misc.sorter import worse_first, last_state_change_earlier
 
 class WebUIDataManager(DataManager):
 
-    def __init__(self, rg=None, frontend=None, alignak=False):
+    def __init__(self, rg=None):
         super(WebUIDataManager, self).__init__()
         self.rg = rg
-
-        self.fe = frontend
-        self.logged_in_user = None
-        self.alignak = alignak if self.fe else False
 
     @property
     def is_initialized(self):
@@ -113,21 +107,6 @@ class WebUIDataManager(DataManager):
     def get_host(self, name, user=None):
         """ Get a host by its hostname. """
 
-        if self.alignak:
-            parameters = {
-                'where': json.dumps({
-                    'name': name
-                })
-            }
-            logger.debug("[WebUI - datamanager] get_host, backend parameters: %s", parameters)
-
-            hosts = self.fe.get_hosts(parameters=parameters, all_elements=False, update=True)
-            if hosts:
-                logger.debug("[WebUI - datamanager] get_host, found: %s", hosts[0])
-                return self._only_related_to(hosts[0], user)
-
-            return None
-
         hosts = self.search_hosts_and_services('type:host host:^%s$' % (name), user=user)
         return hosts[0] if hosts else None
 
@@ -142,8 +121,7 @@ class WebUIDataManager(DataManager):
                             True to return the % of hosts in problems.
                             False by default
         """
-        ### TODO: Use livestate
-        ###
+        # TODO: Use livestate
         all_hosts = self.get_hosts(user=user)
         if not all_hosts:
             return 0
@@ -152,11 +130,11 @@ class WebUIDataManager(DataManager):
 
         if problem:
             return int((len(problems) * 100) / float(len(all_hosts)))
-        else:
-            return int(100 - (len(problems) * 100) / float(len(all_hosts)))
+
+        return int(100 - (len(problems) * 100) / float(len(all_hosts)))
 
     def get_hosts_synthesis(self, elts=None, user=None):
-        if elts != None:
+        if elts is not None:
             hosts = [item for item in elts if item.__class__.my_type == 'host']
         else:
             hosts = self.get_hosts(user=user)
@@ -171,16 +149,20 @@ class WebUIDataManager(DataManager):
                 h['nb_' + state] = sum(1 for host in hosts if host.state == state.upper())
                 h['pct_' + state] = round(100.0 * h['nb_' + state] / h['nb_elts'], 1)
             for state in 'down', 'unreachable', 'unknown':
-                h['nb_' + state] = sum(1 for host in hosts if host.state == state.upper()  and not (host.problem_has_been_acknowledged or host.in_scheduled_downtime))
+                h['nb_' + state] = sum(1 for host in hosts if host.state == state.upper()
+                                       and not (host.problem_has_been_acknowledged or host.in_scheduled_downtime))
                 h['pct_' + state] = round(100.0 * h['nb_' + state] / h['nb_elts'], 1)
 
-            # h['nb_problems'] = sum(1 for host in hosts if host.is_problem and not host.problem_has_been_acknowledged)
-            # Shinken does not always reflect the "problem" state ... to make UI more consistent, build our own problems counter!
+            # h['nb_problems'] = sum(1 for host in hosts if host.is_problem
+            # and not host.problem_has_been_acknowledged)
+            # Shinken does not always reflect the "problem" state ...
+            # to make UI more consistent, build our own problems counter!
             h['nb_problems'] = 0
             for host in hosts:
                 if host.state.lower() in ['down', 'unreachable'] and not host.problem_has_been_acknowledged:
                     h['nb_problems'] += 1
-                    logger.debug("[WebUI - datamanager] get_hosts_synthesis: %s: %s, %s, %s", host.get_name(), host.state, host.is_problem, host.problem_has_been_acknowledged)
+                    logger.debug("[WebUI - datamanager] get_hosts_synthesis: %s: %s, %s, %s",
+                                 host.get_name(), host.state, host.is_problem, host.problem_has_been_acknowledged)
 
             h['pct_problems'] = round(100.0 * h['nb_problems'] / h['nb_elts'], 1)
             h['nb_ack'] = sum(1 for host in hosts if host.is_problem and host.problem_has_been_acknowledged)
@@ -215,21 +197,6 @@ class WebUIDataManager(DataManager):
 
     def get_service(self, hname, sname, user):
         """ Get a service by its hostname and service description. """
-        if self.alignak:
-            parameters = {
-                'where': json.dumps({
-                    'host_name': hname, 'service_description': sname
-                })
-            }
-            logger.debug("[WebUI - datamanager] get_service, backend parameters: %s", parameters)
-
-            services = self.fe.get_services(parameters=parameters, all_elements=False, update=True)
-            if services:
-                logger.debug("[WebUI - datamanager] get_service, found: %s", services[0])
-                return self._only_related_to(services[0], user)
-
-            return None
-
         services = self.search_hosts_and_services('type:service host:^%s$ service:"^%s$"' % (hname, sname), user=user)
         return services[0] if services else None
 
@@ -240,8 +207,7 @@ class WebUIDataManager(DataManager):
                             True to return the % of services in problems.
                             False by default
         """
-        ### TODO: Use livestate
-        ###
+        # TODO: Use livestate
         all_services = self.get_services(user=user)
         if not all_services:
             return 0
@@ -250,11 +216,11 @@ class WebUIDataManager(DataManager):
 
         if problem:
             return int((len(problems) * 100) / float(len(all_services)))
-        else:
-            return int(100 - (len(problems) * 100) / float(len(all_services)))
+
+        return int(100 - (len(problems) * 100) / float(len(all_services)))
 
     def get_services_synthesis(self, elts=None, user=None):
-        if elts != None:
+        if elts is not None:
             services = [item for item in elts if item.__class__.my_type == 'service']
         else:
             services = self.get_services(user=user)
@@ -269,16 +235,21 @@ class WebUIDataManager(DataManager):
                 s['nb_' + state] = sum(1 for service in services if service.state == state.upper())
                 s['pct_' + state] = round(100.0 * s['nb_' + state] / s['nb_elts'], 1)
             for state in 'warning', 'critical', 'unknown':
-                s['nb_' + state] = sum(1 for service in services if service.state == state.upper()  and not (service.problem_has_been_acknowledged or service.in_scheduled_downtime))
+                s['nb_' + state] = sum(1 for service in services if service.state == state.upper()
+                                       and not (service.problem_has_been_acknowledged or service.in_scheduled_downtime))
                 s['pct_' + state] = round(100.0 * s['nb_' + state] / s['nb_elts'], 1)
 
-            # s['nb_problems'] = sum(1 for service in services if service.is_problem and not service.problem_has_been_acknowledged)
-            # Shinken does not always reflect the "problem" state ... to make UI more consistent, build our own problems counter!
+            # s['nb_problems'] = sum(1 for service in services if service.is_problem
+            # and not service.problem_has_been_acknowledged)
+            # Shinken does not always reflect the "problem" state ...
+            # to make UI more consistent, build our own problems counter!
             s['nb_problems'] = 0
             for service in services:
                 if service.state.lower() in ['warning', 'critical'] and not service.problem_has_been_acknowledged:
                     s['nb_problems'] += 1
-                    logger.debug("[WebUI - datamanager] get_services_synthesis: %s: %s, %s, %s", service.get_name(), service.state, service.is_problem, service.problem_has_been_acknowledged)
+                    logger.debug("[WebUI - datamanager] get_services_synthesis: %s: %s, %s, %s",
+                                 service.get_name(), service.state, service.is_problem,
+                                 service.problem_has_been_acknowledged)
 
             s['pct_problems'] = round(100.0 * s['nb_problems'] / s['nb_elts'], 1)
             s['nb_ack'] = sum(1 for service in services if service.is_problem and service.problem_has_been_acknowledged)
@@ -303,11 +274,12 @@ class WebUIDataManager(DataManager):
         """
         if '/' in name:
             return self.get_service(name.split('/')[0], '/'.join(name.split('/')[1:]), user)
-        else:
-            host = self.get_host(name, user)
-            if not host:
-                return self.get_contact(name=name, user=user)
-            return host
+
+        host = self.get_host(name, user)
+        if not host:
+            return self.get_contact(name=name, user=user)
+
+        return host
 
     ##
     # Searching
@@ -324,39 +296,14 @@ class WebUIDataManager(DataManager):
             :returns: list of hosts and services
         """
         # Make user an User object ... simple protection.
-        if isinstance(user, basestring):
+        # pylint: disable=undefined-variable
+        # Because unicode...
+        if isinstance(user, (unicode, str)):
             user = self.rg.contacts.find_by_name(user)
 
         items = []
-        if self.alignak and self.fe.initialized:
-            logger.debug("[WebUI - datamanager] frontend hosts: %d items", len(self.fe.hosts))
-            items.extend(
-                self._only_related_to(
-                    self.fe.hosts,
-                    user
-                )
-            )
-            logger.debug("[WebUI - datamanager] frontend services: %d items", len(self.fe.services))
-            items.extend(
-                self._only_related_to(
-                    self.fe.services,
-                    user
-                )
-            )
-
-        else:
-            items.extend(
-                self._only_related_to(
-                    super(WebUIDataManager, self).get_hosts(),
-                    user
-                )
-            )
-            items.extend(
-                self._only_related_to(
-                    super(WebUIDataManager, self).get_services(),
-                    user
-                )
-            )
+        items.extend(self._only_related_to(super(WebUIDataManager, self).get_hosts(), user))
+        items.extend(self._only_related_to(super(WebUIDataManager, self).get_services(), user))
 
         logger.debug("[WebUI - datamanager] search_hosts_and_services, search for %s in %d items", search, len(items))
 
@@ -376,18 +323,18 @@ class WebUIDataManager(DataManager):
                 (?P=quote)          # Closing quote equals the opening one.
                 ($|\s)              # Entry ends with whitespace or end of string
             ''',
-            re.VERBOSE
-            )
+            re.VERBOSE)
 
         # Replace "NOT foo" by "^((?!foo).)*$" to ignore foo
-        search = re.sub('NOT ([^\ ]*)', r'^((?!\1).)*$', search)
+        search = re.sub(r'NOT ([^\ ]*)', r'^((?!\1).)*$', search)
+        search = re.sub(r'not ([^\ ]*)', r'^((?!\1).)*$', search)
 
         patterns = []
         for match in regex.finditer(search):
             if match.group('name'):
-                patterns.append( ('name', match.group('name')) )
+                patterns.append(('name', match.group('name')))
             elif match.group('key'):
-                patterns.append( (match.group('key'), match.group('value')) )
+                patterns.append((match.group('key'), match.group('value')))
         logger.debug("[WebUI - datamanager] search patterns: %s", patterns)
 
         for t, s in patterns:
@@ -399,15 +346,13 @@ class WebUIDataManager(DataManager):
                 pat = re.compile(s, re.IGNORECASE)
                 new_items = []
                 for i in items:
-                    if (pat.search(i.get_full_name()) or
-                        (i.__class__.my_type == 'host' and
-                         i.alias and pat.search(i.alias))):
+                    if (pat.search(i.get_full_name())
+                            or (i.__class__.my_type == 'host' and i.alias and pat.search(i.alias))):
                         new_items.append(i)
                     else:
-                        for j in (i.impacts + i.source_problems):
-                            if (pat.search(j.get_full_name()) or
-                                (j.__class__.my_type == 'host' and
-                                 j.alias and pat.search(j.alias))):
+                        for j in i.impacts + i.source_problems:
+                            if (pat.search(j.get_full_name())
+                                    or (j.__class__.my_type == 'host' and j.alias and pat.search(j.alias))):
                                 new_items.append(i)
 
                 if not new_items:
@@ -415,13 +360,13 @@ class WebUIDataManager(DataManager):
                         if pat.search(i.output):
                             new_items.append(i)
                         else:
-                            for j in (i.impacts + i.source_problems):
+                            for j in i.impacts + i.source_problems:
                                 if pat.search(j.output):
                                     new_items.append(i)
 
                 items = new_items
 
-            if (t == 'h' or t == 'host') and s.lower() != 'all':
+            if (t in ['h', 'host']) and s.lower() != 'all':
                 logger.debug("[WebUI - datamanager] searching for an host %s", s)
                 # Case sensitive
                 pat = re.compile(s)
@@ -437,7 +382,7 @@ class WebUIDataManager(DataManager):
                 for item in items:
                     logger.debug("[WebUI - datamanager] item %s is %s", item.get_name(), item.__class__)
 
-            if (t == 's' or t == 'service') and s.lower() != 'all':
+            if (t in ['s', 'service']) and s.lower() != 'all':
                 logger.debug("[WebUI - datamanager] searching for a service %s", s)
                 pat = re.compile(s)
                 new_items = []
@@ -450,7 +395,7 @@ class WebUIDataManager(DataManager):
                 for item in items:
                     logger.debug("[WebUI - datamanager] item %s is %s", item.get_name(), item.__class__)
 
-            if (t == 'c' or t == 'contact') and s.lower() != 'all':
+            if (t in ['c', 'contact']) and s.lower() != 'all':
                 logger.debug("[WebUI - datamanager] searching for a contact %s", s)
                 pat = re.compile(s)
                 new_items = []
@@ -458,15 +403,15 @@ class WebUIDataManager(DataManager):
                     if i.__class__.my_type == 'contact' and pat.search(i.get_name()):
                         new_items.append(i)
                     if i.__class__.my_type == 'host':
-                        # :TODO:maethor:171012: 
+                        # :TODO:maethor:171012:
                         pass
                     if i.__class__.my_type == 'service':
-                        # :TODO:maethor:171012: 
+                        # :TODO:maethor:171012:
                         pass
 
                 items = new_items
 
-            if (t == 'hg' or t == 'hgroup') and s.lower() != 'all':
+            if (t in ['hg', 'hgroup', 'hostgroup']) and s.lower() != 'all':
                 logger.debug("[WebUI - datamanager] searching for items in the hostgroup %s", s)
                 group = self.get_hostgroup(s)
                 if not group:
@@ -474,23 +419,26 @@ class WebUIDataManager(DataManager):
 
                 items = [i for i in items if group.get_name() in [h.get_name() for h in i.get_hostgroups()]]
 
-            if (t == 'sg' or t == 'sgroup') and s.lower() != 'all':
+            if (t in ['sg', 'sgroup', 'servicegroup']) and s.lower() != 'all':
                 logger.debug("[WebUI - datamanager] searching for items in the servicegroup %s", s)
                 group = self.get_servicegroup(s)
                 if not group:
                     return []
 
-                items = [i for i in items if i.__class__.my_type == 'service' and group.get_name() in [s.get_name() for s in i.servicegroups]]
+                items = [i for i in items if i.__class__.my_type == 'service'
+                         and group.get_name() in [s.get_name() for s in i.servicegroups]]
 
-            #@mohierf: to be refactored!
-            if (t == 'cg' or t == 'cgroup') and s.lower() != 'all':
+            # @mohierf: to be refactored!
+            if (t in ['cg', 'cgroup', 'contactgroup']) and s.lower() != 'all':
                 logger.info("[WebUI - datamanager] searching for items related with the contactgroup %s", s)
                 group = self.get_contactgroup(s, user)
                 if not group:
                     return []
 
                 contacts = [c for c in self.get_contacts(user=user) if c in group.members]
-                items = list(set(itertools.chain(*[self._only_related_to(items, self.rg.contacts.find_by_name(c)) for c in contacts])))
+                items = list(set(itertools.chain(*[self._only_related_to(items,
+                                                                         self.rg.contacts.find_by_name(c))
+                                                   for c in contacts])))
 
             if t == 'realm':
                 r = self.get_realm(s)
@@ -514,7 +462,7 @@ class WebUIDataManager(DataManager):
                 for item in items:
                     logger.debug("[WebUI - datamanager] item %s is %s", item.get_name(), item.__class__)
 
-            if t == 'bp' or t == 'bi':
+            if t in ['bp', 'bi']:
                 try:
                     if s.startswith('>='):
                         items = [i for i in items if i.business_impact >= int(s[2:])]
@@ -554,11 +502,15 @@ class WebUIDataManager(DataManager):
 
             if t == 'is':
                 if s.lower() == 'ack':
-                    items = [i for i in items if i.__class__.my_type == 'service' or i.problem_has_been_acknowledged]
-                    items = [i for i in items if i.__class__.my_type == 'host' or (i.problem_has_been_acknowledged or i.host.problem_has_been_acknowledged)]
+                    items = [i for i in items if i.__class__.my_type == 'service'
+                             or i.problem_has_been_acknowledged]
+                    items = [i for i in items if i.__class__.my_type == 'host'
+                             or (i.problem_has_been_acknowledged or i.host.problem_has_been_acknowledged)]
                 elif s.lower() == 'downtime':
-                    items = [i for i in items if i.__class__.my_type == 'service' or i.in_scheduled_downtime]
-                    items = [i for i in items if i.__class__.my_type == 'host' or (i.in_scheduled_downtime or i.host.in_scheduled_downtime)]
+                    items = [i for i in items if i.__class__.my_type == 'service'
+                             or i.in_scheduled_downtime]
+                    items = [i for i in items if i.__class__.my_type == 'host'
+                             or (i.in_scheduled_downtime or i.host.in_scheduled_downtime)]
                 elif s.lower() == 'impact':
                     items = [i for i in items if i.is_impact]
                 elif s.lower() == 'flapping':
@@ -590,11 +542,15 @@ class WebUIDataManager(DataManager):
 
             if t == 'isnot':
                 if s.lower() == 'ack':
-                    items = [i for i in items if i.__class__.my_type == 'service' or not i.problem_has_been_acknowledged]
-                    items = [i for i in items if i.__class__.my_type == 'host' or (not i.problem_has_been_acknowledged and not i.host.problem_has_been_acknowledged)]
+                    items = [i for i in items if i.__class__.my_type == 'service'
+                             or not i.problem_has_been_acknowledged]
+                    items = [i for i in items if i.__class__.my_type == 'host'
+                             or (not i.problem_has_been_acknowledged and not i.host.problem_has_been_acknowledged)]
                 elif s.lower() == 'downtime':
-                    items = [i for i in items if i.__class__.my_type == 'service' or not i.in_scheduled_downtime]
-                    items = [i for i in items if i.__class__.my_type == 'host' or (not i.in_scheduled_downtime and not i.host.in_scheduled_downtime)]
+                    items = [i for i in items if i.__class__.my_type == 'service'
+                             or not i.in_scheduled_downtime]
+                    items = [i for i in items if i.__class__.my_type == 'host'
+                             or (not i.in_scheduled_downtime and not i.host.in_scheduled_downtime)]
                 elif s.lower() == 'impact':
                     items = [i for i in items if not i.is_impact]
                 elif s.lower() == 'flapping':
@@ -626,16 +582,16 @@ class WebUIDataManager(DataManager):
             # :COMMENT:maethor:150616: Legacy filters, kept for bookmarks compatibility
             if t == 'ack':
                 if s.lower() == 'false' or s.lower() == 'no':
-                    patterns.append( ("isnot", "ack") )
+                    patterns.append(("isnot", "ack"))
                 if s.lower() == 'true' or s.lower() == 'yes':
-                    patterns.append( ("is", "ack") )
+                    patterns.append(("is", "ack"))
             if t == 'downtime':
                 if s.lower() == 'false' or s.lower() == 'no':
-                    patterns.append( ("isnot", "downtime") )
+                    patterns.append(("isnot", "downtime"))
                 if s.lower() == 'true' or s.lower() == 'yes':
-                    patterns.append( ("is", "downtime") )
+                    patterns.append(("is", "downtime"))
             if t == 'crit':
-                patterns.append( ("is", "critical") )
+                patterns.append(("is", "critical"))
 
         if sorter is not None:
             items.sort(sorter)
@@ -660,17 +616,13 @@ class WebUIDataManager(DataManager):
             :returns: List of elements related to the user
         """
         logger.debug("[WebUI - datamanager] get_timeperiods, name: %s, user: %s", name, user)
-        items = []
-        if self.alignak:
-            items = self.fe.timeperiods
-        else:
-            items = self.rg.timeperiods
+        items = self.rg.timeperiods
         logger.debug("[WebUI - datamanager] got %d timeperiods", len(items))
 
         if name:
             return items.find_by_name(name)
-        else:
-            return self._only_related_to(items, user)
+
+        return self._only_related_to(items, user)
 
     def get_timeperiod(self, name):
         try:
@@ -691,17 +643,13 @@ class WebUIDataManager(DataManager):
             :returns: List of elements related to the user
         """
         logger.debug("[WebUI - datamanager] get_commands, name: %s, user: %s", name, user)
-        items = []
-        if self.alignak:
-            items = self.fe.commands
-        else:
-            items = self.rg.commands
+        items = self.rg.commands
         logger.debug("[WebUI - datamanager] got %d commands", len(items))
 
         if name:
             return items.find_by_name(name)
-        else:
-            return self._only_related_to(items, user)
+
+        return self._only_related_to(items, user)
 
     def get_command(self, name):
         try:
@@ -722,17 +670,13 @@ class WebUIDataManager(DataManager):
             :returns: List of elements related to the user
         """
         logger.debug("[WebUI - datamanager] get_contacts, name: %s", name)
-        items = []
-        if self.alignak:
-            items = self.fe.contacts
-        else:
-            items = self.rg.contacts
+        items = self.rg.contacts
         logger.debug("[WebUI - datamanager] got %d contacts", len(items))
 
         if name:
             return items.find_by_name(name)
-        else:
-            return self._only_related_to(items, user)
+
+        return self._only_related_to(items, user)
 
     def get_contact(self, name=None, user=None):
         try:
@@ -742,17 +686,6 @@ class WebUIDataManager(DataManager):
         except AttributeError:
             pass
         logger.debug("[WebUI - datamanager] get_contact, name: %s, user: %s", name, user)
-
-        if self.alignak:
-            if not self.fe.is_logged_in():
-                return None
-
-            if self.fe.is_logged_in():
-                if not name or (name and name == self.fe.logged_in["name"]):
-                    logger.debug("[WebUI - datamanager] get_contact, returns logged in contact: %s", self.fe.logged_in["name"])
-                    return Contact(self.fe.logged_in)
-
-                return self.get_contacts(user=user, name=name)
 
         return self.get_contacts(user=user, name=name)
 
@@ -796,16 +729,13 @@ class WebUIDataManager(DataManager):
             else:
                 return items
         else:
-            if self.alignak:
-                items = self.fe.contactgroups
-            else:
-                items = self.rg.contactgroups
+            items = self.rg.contactgroups
         logger.debug("[WebUI - datamanager] got %d contactgroups", len(items))
 
         if name:
             return items.find_by_name(name)
-        else:
-            return self._only_related_to(items, user)
+
+        return self._only_related_to(items, user)
 
     def get_contactgroup(self, name, user=None, members=False):
         """ Get a specific contacts group
@@ -835,7 +765,6 @@ class WebUIDataManager(DataManager):
             pass
 
         return self._is_related_to(self.get_contactgroup(user=user, name=name, members=True), user)
-
 
     ##
     # Hosts groups
@@ -877,16 +806,13 @@ class WebUIDataManager(DataManager):
             else:
                 return items
         else:
-            if self.alignak:
-                items = self.fe.hostgroups
-            else:
-                items = self.rg.hostgroups
+            items = self.rg.hostgroups
         logger.debug("[WebUI - datamanager] got %d hostgroups", len(items))
 
         if name:
             return items.find_by_name(name)
-        else:
-            return self._only_related_to(items, user)
+
+        return self._only_related_to(items, user)
 
     def get_hostgroup(self, name, user=None):
         """ Get a specific hosts group
@@ -963,16 +889,13 @@ class WebUIDataManager(DataManager):
             else:
                 return items
         else:
-            if self.alignak:
-                items = self.fe.servicegroups
-            else:
-                items = self.rg.servicegroups
+            items = self.rg.servicegroups
         logger.debug("[WebUI - datamanager] got %d servicegroups", len(items))
 
         if name:
             return items.find_by_name(name)
-        else:
-            return self._only_related_to(items, user)
+
+        return self._only_related_to(items, user)
 
     def get_servicegroup(self, name, user=None, parent=None, members=False):
         """ Get a specific hosts group
@@ -1009,10 +932,7 @@ class WebUIDataManager(DataManager):
         ''' Get the hosts tags sorted by names. '''
         logger.debug("[WebUI - datamanager] get_host_tags")
         items = []
-        if self.alignak:
-            names = self.fe.hosts_tags.keys()
-        else:
-            names = self.rg.tags.keys()
+        names = self.rg.tags.keys()
 
         names.sort()
         for name in names:
@@ -1031,10 +951,7 @@ class WebUIDataManager(DataManager):
     def get_service_tags(self):
         ''' Get the services tags sorted by names. '''
         items = []
-        if self.alignak:
-            names = self.fe.services_tags.keys()
-        else:
-            names = self.rg.services_tags.keys()
+        names = self.rg.services_tags.keys()
 
         names.sort()
         for name in names:
@@ -1050,37 +967,10 @@ class WebUIDataManager(DataManager):
     ##
     # Realms
     ##
-    def get_realms(self):
-        items = []
-        if self.alignak:
-            # Request objects from the backend ...
-            # Get only registered (real ...) objects ...
-            parameters = {
-            }
-            if name:
-                parameters = {
-                    'where': json.dumps({
-                        'realm_name': name
-                    })
-                }
-
-            logger.info("[WebUI - datamanager] get_realms, backend parameters: %s", parameters)
-            resp = self.fe.get_objects('contactgroup', parameters=parameters)
-            total = 0
-            if '_meta' in resp:
-                total = int(resp['_meta']['total'])
-                page_number = int(resp['_meta']['page'])
-                logger.info("[WebUI - datamanager] get_realms, total %d realms", total)
-
-            if '_items' in resp:
-                for item in resp['_items']:
-                    logger.info("[WebUI - datamanager] get_realms, found realm: %s", item['name'])
-                    items.append(Realm(item))
-                return self._only_related_to(items, user)
-
+    def get_realms(self, user=None, name=None, parent=None):
         return self._only_related_to(self.rg.realms, user)
 
-    def get_realm(self, name):
+    def get_realm(self, name, user=None):
         try:
             name = name.decode('utf8', 'ignore')
         except UnicodeEncodeError:
@@ -1092,39 +982,21 @@ class WebUIDataManager(DataManager):
     # Shinken program and daemons
     ##
     def get_configs(self):
-        if self.alignak:
-            return None
-
         return self.rg.configs.values()
 
     def get_schedulers(self):
-        if self.alignak:
-            return None
-
         return self.rg.schedulers
 
     def get_pollers(self):
-        if self.alignak:
-            return None
-
         return self.rg.pollers
 
     def get_brokers(self):
-        if self.alignak:
-            return None
-
         return self.rg.brokers
 
     def get_receivers(self):
-        if self.alignak:
-            return None
-
         return self.rg.receivers
 
     def get_reactionners(self):
-        if self.alignak:
-            return None
-
         return self.rg.reactionners
 
     ##
@@ -1135,8 +1007,8 @@ class WebUIDataManager(DataManager):
         impacts = self.get_impacts(user, sorter=worse_first)
         if impacts:
             return impacts[0].state_id
-        else:
-            return 0
+
+        return 0
 
     def get_overall_it_state(self, user):
         ''' Get the worst state of IT problems. '''
@@ -1150,18 +1022,21 @@ class WebUIDataManager(DataManager):
         return self.search_hosts_and_services('bi:>2 ack:false type:%s' % type, user=user, sorter=sorter)
 
     def get_impacts(self, user, search='is:impact bi:>=0 type:all', sorter=worse_first):
-        if not "is:impact" in search:
-            search = "is:impact "+search
+        if "is:impact" not in search:
+            search = "is:impact " + search
         return self.search_hosts_and_services(search, user=user, get_impacts=True, sorter=sorter)
 
-    def get_problems(self, user, search='isnot:UP isnot:OK isnot:PENDING bi:>=0 type:all', get_acknowledged=False, get_downtimed=False, sorter=worse_first):
-        if not "isnot:UP" in search:
-            search = "isnot:UP "+search
-        if not "isnot:OK" in search:
-            search = "isnot:OK "+search
-        if not "isnot:PENDING" in search:
-            search = "isnot:PENDING "+search
-        return self.search_hosts_and_services('%s ack:%s downtime:%s' % (search, str(get_acknowledged), str(get_downtimed)), user=user, sorter=sorter)
+    def get_problems(self, user, search='isnot:UP isnot:OK isnot:PENDING bi:>=0 type:all',
+                     get_acknowledged=False, get_downtimed=False, sorter=worse_first):
+        if "isnot:UP" not in search:
+            search = "isnot:UP " + search
+        if "isnot:OK" not in search:
+            search = "isnot:OK " + search
+        if "isnot:PENDING" not in search:
+            search = "isnot:PENDING " + search
+        return self.search_hosts_and_services('%s ack:%s downtime:%s'
+                                              % (search, str(get_acknowledged), str(get_downtimed)),
+                                              user=user, sorter=sorter)
 
     def guess_root_problems(self, user, obj):
         ''' Returns the root problems for a service. '''

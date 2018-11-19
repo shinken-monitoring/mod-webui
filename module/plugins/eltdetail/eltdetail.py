@@ -23,10 +23,10 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 
+import time
+
 # Will be populated by the UI with it's own value
 app = None
-
-import time
 
 
 # Host element view
@@ -49,7 +49,11 @@ def show_host(host_name):
     else:
         configintervallength = 1
 
-    return {'elt': h, 'graphstart': graphstart, 'graphend': graphend, 'configintervallength': configintervallength}
+    return {
+        'elt': h,
+        'graphstart': graphstart, 'graphend': graphend,
+        'configintervallength': configintervallength
+    }
 
 
 # Service element view
@@ -71,14 +75,20 @@ def show_service(host_name, service):
     else:
         configintervallength = 1
 
-    return {'elt': s, 'graphstart': graphstart, 'graphend': graphend, 'configintervallength': configintervallength}
+    return {
+        'elt': s,
+        'graphstart': graphstart, 'graphend': graphend,
+        'configintervallength': configintervallength
+    }
 
 
 pages = {
     show_host: {
-        'name': 'Host', 'route': '/host/:host_name', 'view': 'eltdetail', 'static': True
+        'name': 'Host', 'route': '/host/:host_name', 'view': 'eltdetail',
+        'static': True
     },
     show_service: {
-        'name': 'Service', 'route': '/service/:host_name/:service#.+#', 'view': 'eltdetail', 'static': True
+        'name': 'Service', 'route': '/service/:host_name/:service#.+#', 'view': 'eltdetail',
+        'static': True
     }
 }
