@@ -4,6 +4,7 @@
 
 from shinken.log import logger
 
+
 class MetaModule(object):
 
     """ Base class for "MetaModules".
@@ -31,7 +32,7 @@ class MetaModule(object):
         self.modules = modules
         self.app = app
         if not modules:
-            logger.info("[WebUI] No module for %s. %s" % (self.__class__.__name__, self._custom_log))
+            logger.info("[WebUI] No module for %s. %s", self.__class__.__name__, self._custom_log)
 
     def is_available(self):
         ''' Is the MetaModule available? Checks if the MetaModule have at least one module. '''
@@ -41,7 +42,7 @@ class MetaModule(object):
     def find_modules(cls, modules):
         ''' Filter the modules and returns only the modules that contains the
             methods listed in `_functions`. '''
-        logger.debug("[WebUI] searching module containing %s" % ', '.join(cls._functions))
+        logger.debug("[WebUI] searching module containing %s", ', '.join(cls._functions))
         mods = []
         for mod in modules:
             logger.debug("[WebUI] searching in module: %s", mod.get_name())
@@ -54,4 +55,3 @@ class MetaModule(object):
                 logger.info("[WebUI] Module found: %s", mod.get_name())
                 mods.append(mod)
         return mods
-
