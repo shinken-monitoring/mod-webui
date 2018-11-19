@@ -6,6 +6,8 @@ import traceback
 import json
 import time
 
+import pymongo
+
 from shinken.log import logger
 
 from .metamodule import MetaModule
@@ -38,6 +40,9 @@ class PrefsMetaModule(MetaModule):
                 logger.warning("[WebUI] %s", str(exp))
 
     def is_available(self):
+        if isinstance(self.module, MongoDBPreferences):
+            return self.module.is_connected
+
         return self.module is not None
 
     def get_ui_user_preference(self, user, key=None, default=None):
@@ -73,14 +78,6 @@ class MongoDBPreferences(object):
     """
 
     def __init__(self, mod_conf):
-        try:
-            import pymongo
-        except ImportError:
-            logger.error("[WebUI-MongoDBPreferences] Can not import pymongo"
-                         "Please install it with a 3.x+ version from "
-                         "https://pypi.python.org/pypi/pymongo")
-            raise
-
         self.uri = getattr(mod_conf, "uri", "mongodb://localhost")
         logger.info("[WebUI-MongoDBPreferences] mongo uri: %s", self.uri)
 
@@ -104,9 +101,13 @@ class MongoDBPreferences(object):
         self.con = None
         self.db = None
 
-        logger.info("[WebUI-MongoDBPreferences] Trying to open a Mongodb connection to %s, database: %s",
-                    self.uri, self.database)
-        self.open()
+        if self.uri:
+            logger.info("[WebUI-MongoDBPreferences] Trying to open a Mongodb connection to %s, database: %s",
+                        self.uri, self.database)
+            self.open()
+        else:
+            logger.warning("You do not have any MongoDB connection for user's preferences storage module installed. "
+                           "The Web UI dashboard and user's preferences will not be saved.")
 
     def open(self):
         try:
@@ -162,6 +163,9 @@ class MongoDBPreferences(object):
     # We will get in the mongodb database the user preference entry, for the "shinken-global" user
     # and get the key they are asking us
     def get_ui_common_preference(self, key):
+        if not self.uri:
+            return None
+
         if not self.is_connected:
             if not self.open():
                 logger.error("[WebUI-MongoDBPreferences] error during initialization, no database connection!")
@@ -184,6 +188,9 @@ class MongoDBPreferences(object):
     # We will get in the mongodb database the user preference entry, and get the key
     # they are asking us
     def get_ui_user_preference(self, user, key):
+        if not self.uri:
+            return None
+
         if not self.is_connected:
             if not self.open():
                 logger.error("[WebUI-MongoDBPreferences] error during initialization, no database connection!")
@@ -213,6 +220,9 @@ class MongoDBPreferences(object):
 
     # Same but for saving
     def set_ui_user_preference(self, user, key, value):
+        if not self.uri:
+            return
+
         if not self.is_connected:
             if not self.open():
                 logger.error("[WebUI-MongoDBPreferences] error during initialization, no database connection!")
@@ -247,6 +257,9 @@ class MongoDBPreferences(object):
             self.is_connected = False
 
     def set_ui_common_preference(self, key, value):
+        if not self.uri:
+            return None
+
         if not self.is_connected:
             if not self.open():
                 logger.error("[WebUI-MongoDBPreferences] error during initialization, no database connection!")

@@ -279,6 +279,12 @@ class Webui_broker(BaseModule, Daemon):
         self.default_ack_notify = int(getattr(modconf, 'default_ack_notify', '1'))
         self.default_ack_persistent = int(getattr(modconf, 'default_ack_persistent', '1'))
 
+        # MongoDB connection
+        self.uri = getattr(modconf, "uri", "mongodb://localhost")
+        if not self.uri:
+            logger.warning("You defined an empty MongoDB connection URI. Features like user's preferences, or system"
+                           "log and hosts availability will not be available.")
+
         # Advanced options
         self.http_backend = getattr(modconf, 'http_backend', 'auto')
         self.remote_user_enable = getattr(modconf, 'remote_user_enable', '0')
