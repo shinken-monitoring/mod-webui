@@ -28,6 +28,9 @@
 from shinken.objects import Contact
 from shinken.log import logger
 
+from shinken.objects.contact import Contact
+from shinken.objects.host import Host
+from shinken.objects.service import Service
 
 class User(Contact):
     session = None
@@ -104,6 +107,9 @@ class User(Contact):
         # Am I member of the contacts group?
         if item.__class__.my_type == 'contactgroup':
             for contact in item.members:
+                if not isinstance(contact, Contact):
+                    logger.error("[WebUI - relation], member is only a contact name! %s", contact)
+                    continue
                 if contact.contact_name == self.contact_name:
                     logger.debug("[WebUI - relation], member of contactgroup")
                     return True
@@ -111,6 +117,9 @@ class User(Contact):
         # May be the user is a direct contact
         if hasattr(item, 'contacts'):
             for contact in item.contacts:
+                if not isinstance(contact, Contact):
+                    logger.error("[WebUI - relation], contact is only a contact name! %s", contact)
+                    continue
                 if contact.contact_name == self.contact_name:
                     logger.debug("[WebUI - relation], user is a direct contact")
                     return True
@@ -118,6 +127,9 @@ class User(Contact):
         # May be it's a contact of a linked item
         if item.__class__.my_type == 'hostgroup':
             for host in item.get_hosts():
+                # if not isinstance(host, Host):
+                #     logger.error("[WebUI - relation], host is only an host name! %s", host)
+                #     continue
                 for contact in host.contacts:
                     if contact.contact_name == self.contact_name:
                         logger.debug("[WebUI - relation], user is a contact through an hostgroup")
@@ -126,6 +138,9 @@ class User(Contact):
         # May be it's a contact of a sub item ...
         if item.__class__.my_type == 'servicegroup':
             for service in item.get_services():
+                if not isinstance(service, Service):
+                    logger.error("[WebUI - relation], service is only a service name! %s", service)
+                    continue
                 for contact in service.contacts:
                     if contact.contact_name == self.contact_name:
                         logger.debug("[WebUI - relation], user is a contact through a servicegroup")
@@ -167,7 +182,8 @@ class User(Contact):
         user = contact
         try:
             user.__class__ = User
-        except Exception:
+        except Exception as exp:
+            logger.error("[WebUI - ui_user] get from contact: %s", str(exp))
             raise Exception(user)
 
         return user
