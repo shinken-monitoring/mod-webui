@@ -32,6 +32,7 @@ by an Alignak broker.
 
 Some small modifications introduced by Alignak are managed in this class.
 """
+import os
 import time
 
 # Import all objects we will need
@@ -51,8 +52,16 @@ from shinken.objects.reactionnerlink import ReactionnerLink, ReactionnerLinks
 from shinken.objects.pollerlink import PollerLink, PollerLinks
 from shinken.objects.brokerlink import BrokerLink, BrokerLinks
 from shinken.objects.receiverlink import ReceiverLink, ReceiverLinks
-from shinken.util import safe_print
-from shinken.message import Message
+
+ALIGNAK = False
+if os.environ.get('ALIGNAK_SHINKEN_UI', None):
+    if os.environ.get('ALIGNAK_SHINKEN_UI') not in ['0']:
+        ALIGNAK = True
+if ALIGNAK:
+    from alignak.message import Message
+else:
+    from shinken.message import Message
+
 from shinken.log import logger
 
 
@@ -105,8 +114,7 @@ class Regenerator(object):
 
     # If we are called from a scheduler it self, we load the data from it
     def load_from_scheduler(self, sched):
-        # Ok, we are in a scheduler, so we will skip some useless
-        # steps
+        # Ok, we are in a scheduler, so we will skip some useless steps
         self.in_scheduler_mode = True
 
         # Go with the data creation/load
@@ -152,14 +160,21 @@ class Regenerator(object):
     def manage_brok(self, brok):
         """ Look for a manager function for a brok, and call it """
         manage = getattr(self, 'manage_' + brok.type + '_brok', None)
-        # If we can and want it, got for it :)
-        if manage and self.want_brok(brok):
-            # Alignak uses uuid as an object identifier
-            if getattr(brok, 'uuid', None):
-                brok.id = brok.uuid
-            logger.debug("Got a brok: %s", brok.type)
-            return manage(brok)
+        if not manage:
+            return None
 
+        if not self.want_brok(brok):
+            return None
+
+        # If we can and want it, got for it :)
+
+        # Alignak uses uuid as an object identifier
+        if getattr(brok, 'uuid', None):
+            brok.id = brok.uuid
+        logger.debug("Got a brok: %s", brok.type)
+        return manage(brok)
+
+    # pylint: disable=no-self-use
     def update_element(self, element, data):
         if getattr(data, 'uuid', None):
             element.id = data.uuid
@@ -175,11 +190,12 @@ class Regenerator(object):
             return
 
         start = time.time()
-        logger.debug("In ALL Done linking phase for instance %s" % inst_id)
+        logger.info("Linking objects together for %s, starting...", inst_id)
+
         # check if the instance is really defined, so got ALL the
         # init phase
         if inst_id not in self.configs.keys():
-            logger.warning("Warning: the instance %d is not fully given, bailout" % inst_id)
+            logger.warning("Warning: the instance %d is not fully given, bailout", inst_id)
             return
 
         # Try to load the in progress list and make them available for
@@ -191,7 +207,7 @@ class Regenerator(object):
             inp_services = self.inp_services[inst_id]
             inp_servicegroups = self.inp_servicegroups[inst_id]
         except Exception as exp:
-            logger.error("Warning all done: %s" % exp)
+            logger.error("Warning all done: %s", str(exp))
             return
 
         # Linking TIMEPERIOD exclude with real ones now
@@ -244,7 +260,7 @@ class Regenerator(object):
                     # Name rather than object!
                     new_members.append(hname)
                 else:
-                    logger.warning("Unknown host %s for hostgroup: %s", hname, hg)
+                    logger.warning("Unknown host %s for hostgroup: %s", hname, hg.get_name())
             hg.members = new_members
             # Information not received!
             hg.hostgroup_members = ''
@@ -269,7 +285,7 @@ class Regenerator(object):
                             new_groups.append(group)
                             break
                     else:
-                        logger.warning("No hostgroup %s for host: %s", hgname, h)
+                        logger.warning("No hostgroup %s for host: %s", hgname, h.get_name())
                 h.hostgroups = new_groups
                 logger.debug("Linked %s groups %s", h.get_name(), h.hostgroups)
 
@@ -401,7 +417,7 @@ class Regenerator(object):
             for item in getattr(self, "%ss" % item_type):
                 logger.debug("- %s", item)
 
-        logger.info("All objects linking time: %s" % (time.time() - start))
+        logger.info("Linking objects together, end. Duration: %s", time.time() - start)
 
     # We look for o.prop (CommandCall) and we link the inner
     # Command() object with our real ones
@@ -557,10 +573,18 @@ class Regenerator(object):
     def manage_program_status_brok(self, b):
         data = b.data
         c_id = data['instance_id']
-        logger.debug("[Regenerator]Creating config: %s" % c_id)
+        logger.info("Got a configuration from %s", c_id)
 
-        # We get a real Conf object ,adn put our data
+        now = time.time()
+        if c_id in self.configs:
+            # We already have a configuration for this scheduler instance
+            if now - self.configs[c_id].timestamp < 60:
+                logger.warning("Got near initial program status for %s. Ignoring this information.", c_id)
+                return
+
+        # We get a real Conf object to store our data
         c = Config()
+        c.timestamp = now
         self.update_element(c, data)
 
         # Clean all in_progress things.
@@ -577,30 +601,43 @@ class Regenerator(object):
         # Clean the old "hard" objects
 
         # We should clean all previously added hosts and services
-        logger.debug("Clean hosts/service of %s" % c_id)
+        logger.debug("Cleaning hosts/service of %s", c_id)
         to_del_h = [h for h in self.hosts if h.instance_id == c_id]
         to_del_srv = [s for s in self.services if s.instance_id == c_id]
 
-        logger.debug("Cleaning host:%d srv:%d" % (len(to_del_h), len(to_del_srv)))
-        # Clean hosts from hosts and hostgroups
-        for h in to_del_h:
-            logger.debug("Deleting %s" % h.get_name())
-            self.hosts.remove_item(h)
+        if to_del_h:
+            # Clean hosts from hosts and hostgroups
+            logger.info("Cleaning %d hosts", len(to_del_h))
 
-        # Now clean all hostgroups too
-        for hg in self.hostgroups:
-            logger.debug("Cleaning hostgroup %s:%d" % (hg.get_name(), len(hg.members)))
-            # Exclude from members the hosts with this inst_id
-            hg.members = [h for h in hg.members if h.instance_id != c_id]
-            logger.debug("Len after clean %s" % len(hg.members))
+            for h in to_del_h:
+                self.hosts.remove_item(h)
 
-        for s in to_del_srv:
-            logger.debug("Deleting %s" % s.get_full_name())
-            self.services.remove_item(s)
+            # Exclude from all hostgroups members the hosts of this scheduler instance
+            for hg in self.hostgroups:
+                logger.info("Cleaning hostgroup %s: %d members", hg.get_name(), len(hg.members))
+                try:
+                    hg.members = [h for h in hg.members if h.instance_id != c_id]
+                except Exception as exp:
+                    logger.error("Exception when cleaning hostgroup: %s", str(exp))
 
-        # Now clean service groups
-        for sg in self.servicegroups:
-            sg.members = [s for s in sg.members if s.instance_id != c_id]
+                logger.info("- members count after cleaning: %d members", len(hg.members))
+
+        if to_del_srv:
+            # Clean services from services and servicegroups
+            logger.info("Cleaning %d services", len(to_del_srv))
+
+            for s in to_del_srv:
+                self.services.remove_item(s)
+
+            # Exclude from all servicegroups members the services of this scheduler instance
+            for sg in self.servicegroups:
+                logger.info("Cleaning servicegroup %s: %d members", sg.get_name(), len(sg.members))
+                try:
+                    sg.members = [s for s in sg.members if s.instance_id != c_id]
+                except Exception as exp:
+                    logger.error("Exception when cleaning hostgroup: %s", str(exp))
+
+                logger.info("- members count after cleaning: %d members", len(sg.members))
 
     # Get a new host. Add in in in progress tab
     def manage_initial_host_status_brok(self, b):
@@ -611,10 +648,10 @@ class Regenerator(object):
         # Try to get the in progress Hosts
         try:
             inp_hosts = self.inp_hosts[inst_id]
-        except Exception as exp:  # not good. we will cry in theprogram update
-            logger.error("[Regenerator]host_check_result:: Not good!  %s" % exp)
+        except Exception as exp:
+            logger.error("[Regenerator] initial_host_status:: Not good!  %s", str(exp))
             return
-        logger.debug("Creating a host: %s in instance %s", hname, inst_id)
+        logger.info("Creating a host: %s from instance %s", hname, inst_id)
 
         host = Host({})
         self.update_element(host, data)
@@ -643,10 +680,10 @@ class Regenerator(object):
         # Try to get the in progress Hostgroups
         try:
             inp_hostgroups = self.inp_hostgroups[inst_id]
-        except Exception as exp:  # not good. we will cry in theprogram update
-            logger.error("[regen] host_check_result:: Not good!   %s" % exp)
+        except Exception as exp:
+            logger.error("[Regenerator] initial_hostgroup_stqtus:: Not good!   %s", str(exp))
             return
-        logger.debug("Creating a hostgroup: %s in instance %s", hgname, inst_id)
+        logger.info("Creating a hostgroup: %s from instance%s", hgname, inst_id)
 
         # With void members
         hg = Hostgroup([])
@@ -667,10 +704,10 @@ class Regenerator(object):
         # Try to get the in progress Hosts
         try:
             inp_services = self.inp_services[inst_id]
-        except Exception as exp:  # not good. we will cry in theprogram update
-            logger.error("[Regenerator]host_check_result  Not good!  %s" % exp)
+        except Exception as exp:
+            logger.error("[Regenerator] host_check_result  Not good!  %s", str(exp))
             return
-        logger.debug("Creating a service: %s/%s in instance %s", hname, sdesc, inst_id)
+        logger.debug("Creating a service: %s/%s from instance%s", hname, sdesc, inst_id)
 
         if isinstance(data['display_name'], list):
             data['display_name'] = data['service_description']
@@ -702,10 +739,10 @@ class Regenerator(object):
         # Try to get the in progress Hostgroups
         try:
             inp_servicegroups = self.inp_servicegroups[inst_id]
-        except Exception as exp:  # not good. we will cry in theprogram update
-            logger.error("[Regenerator]manage_initial_servicegroup_status_brok:: Not good!  %s" % exp)
+        except Exception as exp:
+            logger.error("[Regenerator] manage_initial_servicegroup_status_brok:: Not good!  %s", str(exp))
             return
-        logger.debug("Creating a servicegroup: %s in instance %s", sgname, inst_id)
+        logger.info("Creating a servicegroup: %s from instance%s", sgname, inst_id)
 
         # With void members
         sg = Servicegroup([])
@@ -724,6 +761,9 @@ class Regenerator(object):
     def manage_initial_contact_status_brok(self, b):
         data = b.data
         cname = data['contact_name']
+        inst_id = data['instance_id']
+
+        logger.info("Creating a host: %s from instance %s", cname, inst_id)
 
         c = self.contacts.find_by_name(cname)
         if c:
@@ -747,7 +787,8 @@ class Regenerator(object):
         if nws:
             # Alignak has a list of NW uuids whereas Shinken is expecting a list of objects!
             # Rebuild notification ways from the simple arameters
-            logger.warning("Regenerator will not restore the notification ways, sorry!")
+            logger.warning("[WebUI] Contact %s, the regenerator will not restore the notification ways, sorry!",
+                           c.get_name())
 
             _simple_way_parameters = (
                 'service_notification_period', 'host_notification_period',
@@ -778,7 +819,7 @@ class Regenerator(object):
             nwname = cnw.notificationway_name
             nw = self.notificationways.find_by_name(nwname)
             if not nw:
-                logger.debug("Creating notif way %s" % nwname)
+                logger.debug("Creating notif way %s", nwname)
                 nw = NotificationWay([])
                 self.notificationways.add_item(nw)
             # Now update it
@@ -808,10 +849,10 @@ class Regenerator(object):
         # Try to get the in progress Contactgroups
         try:
             inp_contactgroups = self.inp_contactgroups[inst_id]
-        except Exception as exp:  # not good. we will cry in theprogram update
-            logger.error("[Regenerator]manage_initial_contactgroup_status_brok Not good!  %s" % exp)
+        except Exception as exp:
+            logger.error("[Regenerator] manage_initial_contactgroup_status_brok Not good!  %s", str(exp))
             return
-        logger.debug("Creating an contactgroup: %s in instance %s", cgname, inst_id)
+        logger.info("Creating a contactgroup: %s from instance%s", cgname, inst_id)
 
         # With void members
         cg = Contactgroup([])
@@ -829,8 +870,10 @@ class Regenerator(object):
     def manage_initial_timeperiod_status_brok(self, b):
         data = b.data
         tpname = data['timeperiod_name']
+        inst_id = data['instance_id']
 
-        logger.debug("Creating a timeperiod: %s", tpname)
+        logger.info("Creating a timeperiod: %s from instance %s", tpname, inst_id)
+
         tp = self.timeperiods.find_by_name(tpname)
         if tp:
             self.update_element(tp, data)
@@ -857,6 +900,9 @@ class Regenerator(object):
     def manage_initial_command_status_brok(self, b):
         data = b.data
         cname = data['command_name']
+        inst_id = data['instance_id']
+
+        logger.info("Creating a command: %s from instance %s", cname, inst_id)
 
         c = self.commands.find_by_name(cname)
         if c:
@@ -922,14 +968,13 @@ class Regenerator(object):
         data = b.data
         c_id = data['instance_id']
 
-        # If we got an update about an unknown instance, cry and ask for a full
-        # version!
-        # todo - Not sure this will be ok with Alignak!
+        # If we got an update about an unknown instance, cry and ask for a full version!
+        # Checked that Alignak will also provide information if it gets such a message...
         if c_id not in self.configs.keys():
             # Do not ask data too quickly, very dangerous
             # one a minute
             if time.time() - self.last_need_data_send > 60 and self.from_q is not None:
-                logger.debug("I ask the broker for instance id data: %s" % c_id)
+                logger.debug("I ask the broker for instance id data: %s", c_id)
                 msg = Message(id=0, type='NeedData', data={'full_instance_id': c_id})
                 self.from_q.put(msg)
                 self.last_need_data_send = time.time()
@@ -975,7 +1020,7 @@ class Regenerator(object):
 
         # If the topology change, update it
         if toplogy_change:
-            logger.debug("Topology change for %s %s"  % (host.get_name(), host.parent_dependencies))
+            logger.debug("Topology change for %s %s", host.get_name(), host.parent_dependencies)
             self.linkify_host_and_hosts(host, 'parents')
             self.linkify_host_and_hosts(host, 'childs')
             self.linkify_dict_srv_and_hosts(host, 'parent_dependencies')

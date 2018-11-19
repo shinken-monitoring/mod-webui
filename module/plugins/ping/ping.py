@@ -23,15 +23,15 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 
-### Will be populated by the UI with it's own value
+# Will be populated by the UI with it's own value
 app = None
 
 
 def forge_response(callback, status, text):
     if callback:
         return "%s({'status':%s,'text':'%s'})" % (callback, status, text)
-    else:
-        return "{'status':%s,'text':'%s'}" % (status, text)
+
+    return "{'status':%s,'text':'%s'}" % (status, text)
 
 
 # We will always answer pong to a ping.
@@ -52,8 +52,9 @@ def get_gotfirstdata():
 
     if app.datamgr.is_initialized:
         return forge_response(callback, 200, '1')
-    else:
-        return forge_response(callback, 200, '0')
+
+    return forge_response(callback, 200, '0')
+
 
 pages = {
     get_ping: {

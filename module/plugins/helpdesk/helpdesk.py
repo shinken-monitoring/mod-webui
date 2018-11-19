@@ -1,5 +1,4 @@
 #!/usr/bin/python
-#!/usr/bin/python
 
 # -*- coding: utf-8 -*-
 
@@ -31,8 +30,9 @@ import traceback
 
 from shinken.log import logger
 
-### Will be populated by the UI with it's own value
+# Will be populated by the UI with it's own value
 app = None
+
 
 def create_ticket(name):
     """
@@ -43,22 +43,23 @@ def create_ticket(name):
 
     logger.info("[WebUI-helpdesk] request to create a ticket for %s", name)
 
-    result = { 'status': 405, 'message': "Ticket creation failed", 'ticket': None}
+    result = {'status': 405, 'message': "Ticket creation failed", 'ticket': None}
 
     app.response.content_type = 'application/json'
     callback = app.request.query.get('callback', None)
     response_text = app.request.query.get('response_text', 'Ticket creation succeeded')
 
-    parameters = {}
-    parameters['name']          = app.request.query.get('name', name)
-    parameters['itemtype']      = app.request.query.get('itemtype', 'Computer')
-    parameters['item']          = app.request.query.get('item', '')
-    parameters['entity']        = app.request.query.get('entity', '')
+    parameters = {
+        'name': app.request.query.get('name', name),
+        'itemtype': app.request.query.get('itemtype', 'Computer'),
+        'item': app.request.query.get('item', ''),
+        'entity': app.request.query.get('entity', ''),
 
-    parameters['type']          = app.request.query.get('ticket_type', '')
-    parameters['category']      = app.request.query.get('ticket_category', '')
-    parameters['title']         = app.request.query.get('ticket_title', '')
-    parameters['content']       = app.request.query.get('ticket_content', '')
+        'type': app.request.query.get('ticket_type', ''),
+        'category': app.request.query.get('ticket_category', ''),
+        'title': app.request.query.get('ticket_title', ''),
+        'content': app.request.query.get('ticket_content', '')
+    }
     logger.info("[WebUI-helpdesk] request to create a ticket with %s", parameters)
 
     try:
@@ -67,19 +68,21 @@ def create_ticket(name):
         logger.info("[WebUI-helpdesk] ticket creation result: %s", response)
         # ticket = None
         # if app.create_ticket:
-            # ticket = app.create_ticket(parameters)
+        # ticket = app.create_ticket(parameters)
         if response:
-            result = { 'status': 200, 'message': response_text, 'ticket': response}
+            result = {'status': 200, 'message': response_text, 'ticket': response}
 
         if callback:
-            return '''%s(%s)''' % (callback, json.dumps(response['id']))
-        else:
-            return json.dumps(result)
-    except Exception as e:
-        logger.info("[WebUI-helpdesk] ticket creation failed, exception: %s", traceback.format_exc())
+            return """%s(%s)""" % (callback, json.dumps(response['id']))
+
+        return json.dumps(result)
+    except Exception:
+        logger.info("[WebUI-helpdesk] ticket creation failed, exception: %s",
+                    traceback.format_exc())
         return json.dumps(result)
 
-def create_ticket_followup(name):
+
+def create_ticket_followup():
     """
     Add a follow-up to an existing ticket
     """
@@ -87,9 +90,9 @@ def create_ticket_followup(name):
         app.redirect404()
 
     ticket = int(app.request.query.get('ticket', '0'))
-    logger.info("[WebUI-helpdesk] request to create a ticket follow-up for %s, ticket #%d", ticket)
+    logger.info("[WebUI-helpdesk] request to create a ticket follow-up for the ticket #%d", ticket)
 
-    result = { 'status': 405, 'message': "Ticket creation failed", 'ticket': ticket}
+    result = {'status': 405, 'message': "Ticket creation failed", 'ticket': ticket}
     if ticket <= 0:
         logger.info("[WebUI-helpdesk] ticket follow-up creation failed, no ticket ID!")
         return json.dumps(result)
@@ -98,10 +101,11 @@ def create_ticket_followup(name):
     callback = app.request.query.get('callback', None)
     response_text = app.request.query.get('response_text', 'Ticket follow-up creation succeeded')
 
-    parameters = {}
-    parameters['ticket']        = ticket
-    parameters['status']        = app.request.query.get('status', '1')
-    parameters['content']       = app.request.query.get('content', 'No data ...')
+    parameters = {
+        'ticket': ticket,
+        'status': app.request.query.get('status', '1'),
+        'content': app.request.query.get('content', 'No data ...')
+    }
     logger.info("[WebUI-helpdesk] request to create a ticket follow-up with %s", parameters)
 
     try:
@@ -109,15 +113,17 @@ def create_ticket_followup(name):
         response = app.helpdesk_module.set_ui_ticket_followup(parameters)
         logger.info("[WebUI-helpdesk] ticket follow-up creation result: %s", response)
         if response:
-            result = { 'status': 200, 'message': response_text, 'ticket': response}
+            result = {'status': 200, 'message': response_text, 'ticket': response}
 
         if callback:
-            return '''%s(%s)''' % (callback, json.dumps(result['id']))
-        else:
-            return json.dumps(result)
-    except Exception as e:
-        logger.info("[WebUI-helpdesk] ticket follow-up creation failed, exception: %s", traceback.format_exc())
+            return """%s(%s)""" % (callback, json.dumps(result['id']))
+
         return json.dumps(result)
+    except Exception:
+        logger.info("[WebUI-helpdesk] ticket follow-up creation failed, exception: %s",
+                    traceback.format_exc())
+        return json.dumps(result)
+
 
 def add_ticket(name):
     """
@@ -145,10 +151,21 @@ def add_ticket(name):
         templates = app.helpdesk_module.get_ui_templates()
         logger.info("[WebUI-helpdesk] templates: %s", templates)
 
-        return {'elt': elt, 'name': name, 'itemtype': itemtype, 'items_id': items_id, 'entities_id': entities_id, 'types': types, 'categories': categories, 'templates': templates}
-    except Exception as e:
-        logger.info("[WebUI-helpdesk] ticket creation is not possible for %s, exception: %s", name, traceback.format_exc())
+        return {
+            'elt': elt,
+            'name': name,
+            'itemtype': itemtype,
+            'items_id': items_id,
+            'entities_id': entities_id,
+            'types': types,
+            'categories': categories,
+            'templates': templates
+        }
+    except Exception:
+        logger.info("[WebUI-helpdesk] ticket creation is not possible for %s, exception: %s",
+                    name, traceback.format_exc())
         return {'name': None}
+
 
 def add_ticket_followup(name):
     """
@@ -160,15 +177,15 @@ def add_ticket_followup(name):
     ticket = int(app.request.query.get('ticket', '0'))
     status = int(app.request.query.get('status', '0'))
 
-    result = { 'status': 405, 'message': "Ticket creation failed", 'ticket': ticket}
+    # result = {'status': 405, 'message': "Ticket creation failed", 'ticket': ticket}
     if ticket <= 0:
         logger.info("[WebUI-helpdesk] ticket follow-up creation failed, no ticket ID!")
         return {'name': None, 'ticket': 0}
 
-
     user = app.request.environ['USER']
     elt = app.datamgr.get_element(name, user) or app.redirect404()
-    logger.info("[WebUI-helpdesk] adding a ticket follow-up to #%d for %s from %s", ticket, name, user)
+    logger.info("[WebUI-helpdesk] adding a ticket follow-up to #%d for %s from %s",
+                ticket, name, user)
 
     try:
         # helpdesk_configuration = app.helpdesk_module.get_ui_helpdesk_configuration()
@@ -176,11 +193,13 @@ def add_ticket_followup(name):
         logger.info("[WebUI-helpdesk] session: %s", session)
 
         return {'elt': elt, 'name': name, 'ticket': ticket, 'status': status}
-    except Exception as e:
-        logger.info("[WebUI-helpdesk] ticket creation is not possible for %s, exception: %s", name, traceback.format_exc())
+    except Exception:
+        logger.info("[WebUI-helpdesk] ticket creation is not possible for %s, exception: %s",
+                    name, traceback.format_exc())
         return {'name': None}
 
-def get_ticket(id):
+
+def get_ticket(name):
     if not app.helpdesk_module.is_available():
         app.redirect404()
 
@@ -190,6 +209,7 @@ def get_ticket(id):
 
     tickets = app.helpdesk_module.get_ui_tickets(name)
     return {'elt': elt, 'name': name, 'app': app, 'tickets': tickets}
+
 
 def get_element_tickets(name):
     if not app.helpdesk_module.is_available():
@@ -208,6 +228,7 @@ def get_element_tickets(name):
         'ticket_page_uri': app.helpdesk_module.get_external_ui_link(ticket_page=True)
     }
 
+
 def get_widget_tickets():
     """
     Create a new ticket
@@ -220,7 +241,7 @@ def get_widget_tickets():
         """
 
     user = app.request.environ['USER']
-    user.is_administrator() or app.redirect403()
+    _ = user.is_administrator() or app.redirect403()
 
     wid = app.request.query.get('wid', 'widget_helpdesk_' + str(int(time.time())))
     collapsed = (app.request.query.get('collapsed', 'False') == 'True')
@@ -253,7 +274,8 @@ def get_widget_tickets():
     logger.info("[WebUI-helpdesk] requesting tickets with status %s", search)
 
     # Get tickets
-    tickets = app.helpdesk_module.get_ui_tickets(status=search, count=nb_elements, list_only=True, session=user.get_session())
+    tickets = app.helpdesk_module.get_ui_tickets(status=search, count=nb_elements,
+                                                 list_only=True, session=user.get_session())
 
     options = {
         'search': {
@@ -284,43 +306,47 @@ def get_widget_tickets():
         'ticket_page_uri': app.helpdesk_module.get_external_ui_link(ticket_page=True)
     }
 
-widget_desc = '''
+
+widget_desc = """
 <h4>Helpdesk</h4>
 Show a list of selected helpdesk tickets.
-'''
+"""
 
 pages = {
-    create_ticket:{
+    create_ticket: {
         'name': 'TicketCreate',
         'route': '/helpdesk/ticket/create/:name'
     },
-    create_ticket_followup:{
+    create_ticket_followup: {
         'name': 'TicketFollowUpCreate',
         'route': '/helpdesk/ticket_followup/create/:name'
     },
-    add_ticket:{
+    add_ticket: {
         'name': 'TicketAdd',
         'route': '/helpdesk/ticket/add/:name',
-        'view': 'add_ticket'
+        'view': 'add_ticket',
+        'static': True
     },
-    add_ticket_followup:{
+    add_ticket_followup: {
         'name': 'TicketFollowUpAdd',
         'route': '/helpdesk/ticket_followup/add/:name',
-        'view': 'add_ticket_followup'
+        'view': 'add_ticket_followup',
+        'static': True
     },
-    get_element_tickets:{
+    get_element_tickets: {
         'name': 'TicketList',
         'route': '/helpdesk/tickets/:name',
-        'view': 'helpdesk'
+        'view': 'helpdesk',
+        'static': True
     },
     get_widget_tickets: {
         'name': 'wid_Helpdesk',
         'route': '/widget/helpdesk',
         'view': 'helpdesk_widget',
-        'static': True,
         'widget': ['dashboard'],
         'widget_desc': widget_desc,
         'widget_name': 'helpdesk',
-        'widget_picture': '/static/helpdesk/img/widget_helpdesk.png'
+        'widget_picture': '/static/helpdesk/img/widget_helpdesk.png',
+        'static': True
     }
 }

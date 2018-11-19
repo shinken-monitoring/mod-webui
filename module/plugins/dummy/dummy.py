@@ -23,7 +23,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 
-### Will be populated by the UI with it's own value
+# Will be populated by the UI with it's own value
 app = None
 
 
@@ -40,6 +40,7 @@ def get_page(arg1='nothing'):
     # user we are logged with (it's a contact object in fact)
     return {'host': my_host}
 
+
 # This is the dict the webui will try to "load".
 #  *here we register one page with both addresses /dummy/:arg1 and /dummy/, both addresses
 #   will call the function get_page.
@@ -50,6 +51,6 @@ def get_page(arg1='nothing'):
 #    POST calls. By default it's GET. Look at the lookup module for sample about this.
 pages = {
     get_page: {
-        'name': 'Name', 'route': '/dummy/', 'view': 'dummy', 'static': True
+        'name': 'Name', 'route': '/dummy/', 'view': 'dummy'
     }
 }
