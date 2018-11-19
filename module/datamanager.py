@@ -416,17 +416,19 @@ class WebUIDataManager(DataManager):
                 group = self.get_hostgroup(s)
                 if not group:
                     return []
+                logger.debug("[WebUI - datamanager] found the group: %s", group.get_name())
 
-                items = [i for i in items if group.get_name() in [h.get_name() for h in i.get_hostgroups()]]
+                items = [i for i in items if i in group.members]
 
             if (t in ['sg', 'sgroup', 'servicegroup']) and s.lower() != 'all':
-                logger.debug("[WebUI - datamanager] searching for items in the servicegroup %s", s)
+                logger.info("[WebUI - datamanager] searching for items in the servicegroup %s", s)
                 group = self.get_servicegroup(s)
                 if not group:
                     return []
+                logger.debug("[WebUI - datamanager] found the group: %s", group.get_name())
 
-                items = [i for i in items if i.__class__.my_type == 'service'
-                         and group.get_name() in [s.get_name() for s in i.servicegroups]]
+                items = [i for i in items if i in group.members]
+                # items = [i for i in items if i.__class__.my_type == 'service'
 
             # @mohierf: to be refactored!
             if (t in ['cg', 'cgroup', 'contactgroup']) and s.lower() != 'all':
@@ -434,6 +436,7 @@ class WebUIDataManager(DataManager):
                 group = self.get_contactgroup(s, user)
                 if not group:
                     return []
+                logger.debug("[WebUI - datamanager] found the group: %s", group.get_name())
 
                 contacts = [c for c in self.get_contacts(user=user) if c in group.members]
                 items = list(set(itertools.chain(*[self._only_related_to(items,
@@ -752,20 +755,6 @@ class WebUIDataManager(DataManager):
 
         return self._only_related_to(self.get_contactgroups(user=user, name=name, members=members), user)
 
-    def get_contactgroup_members(self, name, user=None):
-        """ Get a list of contacts members of a group
-
-            :param name: searched group name
-            :param user: concerned user
-            :returns: List of contacts groups related to the user
-        """
-        try:
-            name = name.decode('utf8', 'ignore')
-        except UnicodeEncodeError:
-            pass
-
-        return self._is_related_to(self.get_contactgroup(user=user, name=name, members=True), user)
-
     ##
     # Hosts groups
     ##
@@ -780,12 +769,12 @@ class WebUIDataManager(DataManager):
         setattr(group, 'level', level)
         logger.debug("[WebUI - datamanager] set_hostgroup_level, group: %s, level: %d", group, level)
 
-        for g in sorted(group.hostgroup_members):
+        for g in sorted(group.hostgroup_members, key=lambda g: g.hostgroup_name):
             if not g:
                 continue
-            logger.debug("[WebUI - datamanager] set_hostgroup_level, g: %s", g)
+            logger.debug("[WebUI - datamanager] set_hostgroup_level, g: %s", g.get_name())
             try:
-                child_group = self.get_hostgroup(g, user=user)
+                child_group = self.get_hostgroup(g.get_name(), user=user)
                 self.set_hostgroup_level(child_group, level + 1, user)
             except AttributeError:
                 pass
@@ -802,7 +791,7 @@ class WebUIDataManager(DataManager):
         if parent:
             group = self.get_hostgroups(user=user, name=parent)
             if group:
-                items = [self.get_hostgroup(g) for g in group.hostgroup_members]
+                items = [self.get_hostgroup(g.get_name()) for g in group.hostgroup_members]
             else:
                 return items
         else:
@@ -826,33 +815,8 @@ class WebUIDataManager(DataManager):
         except UnicodeEncodeError:
             pass
 
-        group = self.get_hostgroups(user=user, name=name)
+        # group = self.get_hostgroups(user=user, name=name)
         return self._is_related_to(self.get_hostgroups(user=user, name=name), user)
-
-    def get_hostgroup_hosts(self, name, user=None):
-        """ Get a list of hosts members of a group
-
-            :param name: searched group name
-            :param user: concerned user
-            :returns: List of hosts groups related to the user
-        """
-        logger.warning("[WebUI - datamanager] get_hostgroup_hosts: %s", name)
-        try:
-            name = name.decode('utf8', 'ignore')
-        except UnicodeEncodeError:
-            pass
-
-        group = self.get_hostgroup(user=user, name=name)
-        logger.warning("[WebUI - datamanager] get_hostgroup_hosts, found: %s", group)
-        if group:
-            for host in group.get_hosts():
-                logger.warning("[WebUI - datamanager] -> host: %s, contacts: %s", host.get_name(), host.contacts)
-                if user:
-                    for contact in host.contacts:
-                        if contact.contact_name == user.contact_name:
-                            logger.info("[WebUI - relation], user is a contact through an hostgroup")
-            return self._is_related_to(group.get_hosts(), user)
-        return None
 
     ##
     # Services groups
@@ -878,6 +842,7 @@ class WebUIDataManager(DataManager):
 
             :param user: concerned user
             :param name: only this element
+            :param parent: only the sub groups of this group
             :returns: List of elements related to the user
         """
         logger.debug("[WebUI - datamanager] get_servicegroups, name: %s", user)
@@ -910,20 +875,6 @@ class WebUIDataManager(DataManager):
             pass
 
         return self._is_related_to(self.get_servicegroups(user=user, name=name, members=members), user)
-
-    def get_servicegroup_members(self, name, user=None):
-        """ Get a list of services members of a group
-
-            :param name: searched group name
-            :param user: concerned user
-            :returns: List of hosts groups related to the user
-        """
-        try:
-            name = name.decode('utf8', 'ignore')
-        except UnicodeEncodeError:
-            pass
-
-        return self._is_related_to(self.get_servicegroup(user=user, name=name, members=True), user)
 
     ##
     # Hosts tags

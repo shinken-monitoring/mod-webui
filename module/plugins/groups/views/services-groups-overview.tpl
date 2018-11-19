@@ -55,9 +55,7 @@
 
       %even='alt'
       %if level==0:
-         %nServices=s['nb_elts']
-         %nGroups=len(servicegroups)
-         <li class="all_groups list-group-item clearfix {{even}} {{'empty' if s['nb_elts'] == s['nb_critical'] and s['nb_elts'] != 0 else ''}}">
+         <li class="all_groups list-group-item clearfix {{even}} {{'alert-danger' if s['nb_elts'] == s['nb_critical'] and s['nb_elts'] != 0 else ''}}">
             <h3>
                <a role="menuitem" href="/all?search=type:service">
                   All services {{!helper.get_business_impact_text(s['bi'])}}
@@ -65,29 +63,29 @@
             </h3>
             <section class="col-md-8 col-sm-6 col-xs-6">
                <div>
-                  %for state in 'ok', 'warning', 'critical':
-                  %if s['nb_' + state]>0:
+                  %for state in 'ok', 'warning', 'critical', 'pending':
+                  %if s['nb_' + state] > 0:
                   <a role="menuitem" href="/all?search=type:service is:{{state}}">
                   %end
                   <span class="{{'font-' + state if s['nb_' + state] > 0 else 'font-greyed'}}">
                     %label = "%s <i>(%s%%)</i>" % (s['nb_' + state], s['pct_' + state])
                     {{!helper.get_fa_icon_state_and_label(cls='service', state=state, label=label)}}
                   </span>
-                  %if s['nb_' + state]>0:
+                  %if s['nb_' + state] > 0:
                   </a>
                   %end
                   %end
                </div>
                <div>
-                  %for state in 'pending', 'unknown', 'ack', 'downtime':
-                  %if s['nb_' + state]>0:
+                  %for state in 'unknown', 'ack', 'downtime':
+                  %if s['nb_' + state] > 0:
                   <a role="menuitem" href="/all?search=type:service is:{{state}}">
                   %end
                   <span class="{{'font-' + state if s['nb_' + state] > 0 else 'font-greyed'}}">
                     %label = "%s <i>(%s%%)</i>" % (s['nb_' + state], s['pct_' + state])
                     {{!helper.get_fa_icon_state_and_label(cls='service', state=state, label=label)}}
                   </span>
-                  %if s['nb_' + state]>0:
+                  %if s['nb_' + state] > 0:
                   </a>
                   %end
                   %end
@@ -112,7 +110,7 @@
                         {{!'<span class="badge">%s</span>Services' % (s['nb_elts']) if s['nb_elts'] else '<small><em>No members</em></small>'}}
                      </li>
                      <li class="list-group-item">
-                        {{!'<span class="badge">%s</span>Groups' % (nGroups) if nGroups else '<small><em>No sub-groups</em></small>'}}
+                        {{!'<span class="badge">%s</span>Groups' % (len(servicegroups)) if servicegroups else '<small><em>No sub-groups</em></small>'}}
                      </li>
                   </ul>
                </section>
@@ -122,12 +120,42 @@
 
       %even='alt'
       %for group in servicegroups:
-         %if group.has('level')and group.level != level:
+         %if group.has('level') and group.level != level:
          %continue
+         %end
+
+         %if even =='':
+           %even='alt'
+         %else:
+           %even=''
          %end
 
          %services = app.datamgr.search_hosts_and_services('type:service sg:"'+group.get_name()+'"', user)
          %s = app.datamgr.get_services_synthesis(services, user=user)
+         %sub_groups = group.servicegroup_members
+         %sub_groups = [] if (sub_groups and not sub_groups[0]) else sub_groups
+
+         %if not services:
+         %# Empty group: no service
+         <li class=" list-group-item clearfix {{even}}">
+            <h3>
+               %if sub_groups:
+               <a class="btn btn-default btn-xs" href="services-groups?level={{int(level+1)}}&parent={{group.get_name()}}" title="View contained groups"><i class="fa fa-angle-double-down"></i></a>
+               %end
+
+               %if group.has('level') and group.level > 0:
+               <a class="btn btn-default btn-xs" href="services-groups?level={{int(level-1)}}" title="View parent group"><i class="fa fa-angle-double-up"></i></a>
+               %end
+
+               <span>
+                  {{group.alias if group.alias != '' else group.get_name()}} {{!helper.get_business_impact_text(s['bi'])}}
+               </span>
+               <small><em>No members</em></small>
+            </h3>
+         </li>
+         %continue
+         %end
+
          %if debug:
          <div>Group <strong>{{group.get_name()}}</strong>:<ul>
             %for service in services:
@@ -138,19 +166,10 @@
          </ul></div>
          %end
 
-         %if even =='':
-           %even='alt'
-         %else:
-           %even=''
-         %end
-
-         %nServices=s['nb_elts']
-         %nGroups=len(group.servicegroup_members)
-         %# Filter empty groups ?
-         %#if nServices > 0 or nGroups > 0:
-         <li class="group list-group-item clearfix {{'empty' if s['nb_elts'] == s['nb_critical'] and s['nb_elts'] != 0 else ''}} {{even}}">
+         %#if services or sub_groups:
+         <li class="group list-group-item clearfix {{'alert-danger' if s['nb_elts'] == s['nb_critical'] and s['nb_elts'] != 0 else ''}} {{even}}">
             <h3>
-               %if nGroups > 0:
+               %if sub_groups:
                <a class="btn btn-default btn-xs" href="services-groups?level={{int(level+1)}}&parent={{group.get_name()}}" title="View contained groups"><i class="fa fa-angle-double-down"></i></a>
                %end
 
@@ -164,29 +183,29 @@
             </h3>
             <section class="col-md-8 col-sm-6 col-xs-6">
                <div>
-                  %for state in 'ok', 'warning', 'critical':
-                  %if s['nb_' + state]>0:
+                  %for state in 'ok', 'warning', 'critical', 'pending':
+                  %if s['nb_' + state] > 0:
                   <a role="menuitem" href="/all?search=type:service sg:{{'"%s"' % group.get_name()}} is:{{state}}">
                   %end
                   <span class="{{'font-' + state if s['nb_' + state] > 0 else 'font-greyed'}}">
                     %label = "%s <i>(%s%%)</i>" % (s['nb_' + state], s['pct_' + state])
                     {{!helper.get_fa_icon_state_and_label(cls='service', state=state, label=label)}}
                   </span>
-                  %if s['nb_' + state]>0:
+                  %if s['nb_' + state] > 0:
                   </a>
                   %end
                   %end
                </div>
                <div>
-                  %for state in 'pending', 'unknown', 'ack', 'downtime':
-                  %if s['nb_' + state]>0:
+                  %for state in 'unknown', 'ack', 'downtime':
+                  %if s['nb_' + state] > 0:
                   <a role="menuitem" href="/all?search=type:service sg:{{'"%s"' % group.get_name()}} is:{{state}}">
                   %end
                   <span class="{{'font-' + state if s['nb_' + state] > 0 else 'font-greyed'}}">
                     %label = "%s <i>(%s%%)</i>" % (s['nb_' + state], s['pct_' + state])
                     {{!helper.get_fa_icon_state_and_label(cls='service', state=state, label=label)}}
                   </span>
-                  %if s['nb_' + state]>0:
+                  %if s['nb_' + state] > 0:
                   </a>
                   %end
                   %end
@@ -223,7 +242,7 @@
                         {{!'<span class="badge">%s</span>Services' % (s['nb_elts']) if s['nb_elts'] else '<small><em>No members</em></small>'}}
                      </li>
                      <li class="list-group-item">
-                        {{!'<span class="badge">%s</span>Groups' % (nGroups) if nGroups else '<small><em>No sub-groups</em></small>'}}
+                        {{!'<span class="badge">%s</span>Groups' % (len(sub_groups)) if sub_groups else '<small><em>No sub-groups</em></small>'}}
                      </li>
                   </ul>
                </section>

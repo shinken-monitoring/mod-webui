@@ -92,9 +92,9 @@ def get_currently():
 
 pages = {
     get_page: {
-        'name': 'Dashboard', 'route': '/dashboard', 'view': 'dashboard'
+        'name': 'Dashboard', 'route': '/dashboard', 'view': 'dashboard', 'static': True
     },
     get_currently: {
-        'name': 'Currently', 'route': '/dashboard/currently', 'view': 'currently'
+        'name': 'Currently', 'route': '/dashboard/currently', 'view': 'currently', 'static': True
     }
 }

@@ -40,14 +40,16 @@
    <ul id="groups" class="list-group">
       %even='alt'
       %if level==0:
-         %nHosts=h['nb_elts']
-         %nGroups=len(hostgroups)
          <li class="all_groups list-group-item clearfix {{even}} {{'alert-danger' if h['nb_elts'] == h['nb_down'] and h['nb_elts'] != 0 else ''}}">
             <section class="left">
                <h3>
                   <a role="menuitem" href="/all?search=type:host"><i class="fa fa-angle-double-down"></i>
                      All hosts {{!helper.get_business_impact_text(h['bi'])}}
                   </a>
+
+               <span class="btn-group pull-right">
+                  <a href="{{app.get_url("HostsGroups")}}" class="btn btn-small switcher quickinfo pull-right" data-original-title='List'> <i class="fa fa-align-justify"></i> </a>
+               </span>
                </h3>
                <div>
                   %for state in 'up', 'unreachable', 'down', 'pending', 'unknown', 'ack', 'downtime':
@@ -79,9 +81,7 @@
       %i=0
       %for group in hostgroups:
          %hosts = app.datamgr.search_hosts_and_services('type:host hg:'+group.get_name(), user)
-         %h = app.datamgr.get_hosts_synthesis(user=user)
-         %nHosts=h['nb_elts']
-         %nGroups=len(group.hostgroup_members)
+         %h = app.datamgr.get_hosts_synthesis(elts=hosts, user=user)
          %if (i % 6)==0:
          <tr data-row="{{i}}">
          %end
@@ -97,7 +97,9 @@
 
             %html=''
             %for state in 'down', 'unreachable', 'up', 'pending', 'unknown', 'ack', 'downtime':
+              %if h['nb_' + state]:
               %html += helper.get_fa_icon_state_and_label(cls='host', state=state, label=h['nb_' + state])
+              %end
             %end
             <div class="col-sm-6 text-center btn popover-dismiss"
                   data-html="true" data-toggle="popover" data-trigger="hover" data-placement="bottom"
@@ -124,6 +126,30 @@
 
 
 <script type="text/javascript">
+$(document).ready(function(){
    // Tooltips
    $('[data-toggle="tooltip"]').tooltip();
+
+   // Popovers
+   $('div[data-toggle="popover"]').popover({
+      placement: 'bottom',
+      container: 'body',
+      trigger: 'manual',
+      animation: false,
+      template: '<div class="popover img-popover"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>'
+   }).on("mouseenter", function () {
+      var _this = this;
+      $(this).popover("show");
+      $(this).siblings(".popover").on("mouseleave", function () {
+          $(_this).popover('hide');
+      });
+   }).on("mouseleave", function () {
+      var _this = this;
+      setTimeout(function () {
+          if (!$(".popover:hover").length) {
+              $(_this).popover("hide");
+          }
+      }, 100);
+   });
+});
 </script>

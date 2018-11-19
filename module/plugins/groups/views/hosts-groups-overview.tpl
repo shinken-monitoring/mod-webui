@@ -55,39 +55,41 @@
 
       %even='alt'
       %if level==0:
-         %nHosts=h['nb_elts']
-         %nGroups=len(hostgroups)
          <li class="all_groups list-group-item clearfix {{even}} {{'alert-danger' if h['nb_elts'] == h['nb_down'] and h['nb_elts'] != 0 else ''}}">
             <h3>
                <a role="menuitem" href="/all?search=type:host">
                   All hosts {{!helper.get_business_impact_text(h['bi'])}}
                </a>
+
+               <span class="btn-group pull-right">
+                  <a href="{{app.get_url("HostsGroupsDashboard")}}" class="btn btn-small switcher quickinfo pull-right" data-original-title='List'> <i class="fa fa-align-justify"></i> </a>
+               </span>
             </h3>
             <section class="col-md-8 col-sm-6 col-xs-6">
                <div>
                   %for state in 'up', 'unreachable', 'down', 'pending':
-                  %if h['nb_' + state]>0:
+                  %if h['nb_' + state] > 0:
                   <a role="menuitem" href="/all?search=type:host is:{{state}}">
                   %end
                   <span class="{{'font-' + state if h['nb_' + state] > 0 else 'font-greyed'}}">
                     %label = "%s <i>(%s%%)</i>" % (h['nb_' + state], h['pct_' + state])
                     {{!helper.get_fa_icon_state_and_label(cls='host', state=state, label=label)}}
                   </span>
-                  %if h['nb_' + state]>0:
+                  %if h['nb_' + state] > 0:
                   </a>
                   %end
                   %end
                </div>
                <div>
                   %for state in 'unknown', 'ack', 'downtime':
-                  %if h['nb_' + state]>0:
+                  %if h['nb_' + state] > 0:
                   <a role="menuitem" href="/all?search=type:host is:{{state}}">
                   %end
                   <span class="{{'font-' + state if h['nb_' + state] > 0 else 'font-greyed'}}">
                     %label = "%s <i>(%s%%)</i>" % (h['nb_' + state], h['pct_' + state])
                     {{!helper.get_fa_icon_state_and_label(cls='host', state=state, label=label)}}
                   </span>
-                  %if h['nb_' + state]>0:
+                  %if h['nb_' + state] > 0:
                   </a>
                   %end
                   %end
@@ -113,7 +115,7 @@
                         {{!'<span class="badge">%s</span>Hosts' % (h['nb_elts']) if h['nb_elts'] else '<small><em>No members</em></small>'}}
                      </li>
                      <li class="list-group-item">
-                        {{!'<span class="badge">%s</span>Groups' % (nGroups) if nGroups else '<small><em>No sub-groups</em></small>'}}
+                        {{!'<span class="badge">%s</span>Groups' % (len(hostgroups)) if hostgroups else '<small><em>No sub-groups</em></small>'}}
                      </li>
                   </ul>
                </section>
@@ -123,12 +125,42 @@
 
       %even='alt'
       %for group in hostgroups:
-         %if group.has('level')and group.level != level:
+         %if group.has('level') and group.level != level:
          %continue
+         %end
+
+         %if even =='':
+           %even='alt'
+         %else:
+           %even=''
          %end
 
          %hosts = app.datamgr.search_hosts_and_services('type:host hg:"'+group.get_name()+'"', user)
          %h = app.datamgr.get_hosts_synthesis(hosts, user=user)
+         %sub_groups = group.hostgroup_members
+         %sub_groups = [] if (sub_groups and not sub_groups[0]) else sub_groups
+
+         %if not hosts:
+         %# Empty group: no hosts
+         <li class=" list-group-item clearfix {{even}}">
+            <h3>
+               %if sub_groups:
+               <a class="btn btn-default btn-xs" href="hosts-groups?level={{int(level+1)}}&parent={{group.get_name()}}" title="View contained groups"><i class="fa fa-angle-double-down"></i></a>
+               %end
+
+               %if group.has('level') and group.level > 0:
+               <a class="btn btn-default btn-xs" href="hosts-groups?level={{int(level-1)}}" title="View parent group"><i class="fa fa-angle-double-up"></i></a>
+               %end
+
+               <span>
+                  {{group.alias if group.alias != '' else group.get_name()}} {{!helper.get_business_impact_text(h['bi'])}}
+               </span>
+               <small><em>No members</em></small>
+            </h3>
+         </li>
+         %continue
+         %end
+
          %if debug:
          <div>Group <strong>{{group.get_name()}}</strong>:<ul>
             %for host in hosts:
@@ -139,19 +171,10 @@
          </ul></div>
          %end
 
-         %if even =='':
-           %even='alt'
-         %else:
-           %even=''
-         %end
-
-         %nHosts=h['nb_elts']
-         %nGroups=len(group.hostgroup_members)
-         %# Filter empty groups ?
-         %#if nHosts > 0 or nGroups > 0:
-         <li class=" list-group-item clearfix {{'alert-danger' if h['nb_elts'] == h['nb_down'] and h['nb_elts'] != 0 else ''}} {{even}}">
+         %#if hosts or sub_groups:
+         <li class=" list-group-item clearfix {{'alert-danger' if h['nb_elts'] == h['nb_down'] and h['nb_elts'] else ''}} {{even}}">
             <h3>
-               %if nGroups > 0:
+               %if sub_groups:
                <a class="btn btn-default btn-xs" href="hosts-groups?level={{int(level+1)}}&parent={{group.get_name()}}" title="View contained groups"><i class="fa fa-angle-double-down"></i></a>
                %end
 
@@ -166,28 +189,28 @@
             <section class="col-md-8 col-sm-6 col-xs-6">
                <div>
                   %for state in 'up', 'unreachable', 'down', 'pending':
-                  %if h['nb_' + state]>0:
+                  %if h['nb_' + state] > 0:
                   <a role="menuitem" href="/all?search=type:host hg:{{'"%s"' % group.get_name()}} is:{{state}}">
                   %end
                   <span class="{{'font-' + state if h['nb_' + state] > 0 else 'font-greyed'}}">
                     %label = "%s <i>(%s%%)</i>" % (h['nb_' + state], h['pct_' + state])
                     {{!helper.get_fa_icon_state_and_label(cls='host', state=state, label=label)}}
                   </span>
-                  %if h['nb_' + state]>0:
+                  %if h['nb_' + state] > 0:
                   </a>
                   %end
                   %end
                </div>
                <div>
                   %for state in 'unknown', 'ack', 'downtime':
-                  %if h['nb_' + state]>0:
+                  %if h['nb_' + state] > 0:
                   <a role="menuitem" href="/all?search=type:host hg:{{'"%s"' % group.get_name()}} is:{{state}}">
                   %end
                   <span class="{{'font-' + state if h['nb_' + state] > 0 else 'font-greyed'}}">
                     %label = "%s <i>(%s%%)</i>" % (h['nb_' + state], h['pct_' + state])
                     {{!helper.get_fa_icon_state_and_label(cls='host', state=state, label=label)}}
                   </span>
-                  %if h['nb_' + state]>0:
+                  %if h['nb_' + state] > 0:
                   </a>
                   %end
                   %end
@@ -224,7 +247,7 @@
                         {{!'<span class="badge">%s</span>Hosts' % (h['nb_elts']) if h['nb_elts'] else '<small><em>No members</em></small>'}}
                      </li>
                      <li class="list-group-item">
-                        {{!'<span class="badge">%s</span>Groups' % (nGroups) if nGroups else '<small><em>No sub-groups</em></small>'}}
+                        {{!'<span class="badge">%s</span>Groups' % (len(sub_groups)) if len(sub_groups) else '<small><em>No sub-groups</em></small>'}}
                      </li>
                   </ul>
                </section>
@@ -234,20 +257,3 @@
       %end
    </ul>
 </div>
-
-<script type="text/javascript">
-   // Elements popover
-   $('[data-toggle="popover"]').popover();
-
-   $('[data-toggle="popover medium"]').popover({
-      trigger: "hover",
-      placement: 'bottom',
-      toggle : "popover",
-      viewport: {
-         selector: 'body',
-         padding: 10
-      },
-
-      template: '<div class="popover popover-medium"><div class="arrow"></div><div class="popover-inner"><h3 class="popover-title"></h3><div class="popover-content"><p></p></div></div></div>',
-   });
-</script>
