@@ -1,6 +1,5 @@
-%rebase("layout", title='Shinken daemons status')
+%rebase("layout", title='Monitoring framework daemons status')
 
-%from shinken.bin import VERSION
 %helper = app.helper
 
 <div class="col-sm-12 panel panel-default">
@@ -34,25 +33,28 @@
                 <td>{{s.port}}</td>
                 <td>
                 %if not s.alive:
-                    {{!helper.get_fa_icon_state(cls='service', state='warning')}}
+                    {{!helper.get_fa_icon_state(cls='service', state='critical')}}
                 %else:
-                    %if s.attempt:
-                        {{!helper.get_fa_icon_state(cls='service', state='critical')}}
+                    %if s.attempt > 0:
+                        {{!helper.get_fa_icon_state(cls='service', state='warning')}}
                     %else:
                         {{!helper.get_fa_icon_state(cls='service', state='ok')}}
                     %end
                 %end
                 </td>
-                <td>{{!helper.get_on_off(status=s.alive, title=None, message='')}}</td>
+                %if s.alive:
+                <td><i title="Is alive" class="glyphicon glyphicon-ok font-green"></i></td>
+                %else:
+                <td><i title="Is dead!" class="glyphicon glyphicon-ko font-red"></i></td>
+                %end
                 %if not s.spare:
                 <td><i title="Is not a spare daemon" class="glyphicon glyphicon-ok font-green"></i></td>
                 %else:
                 <td></td>
-                <!--<td>{{!helper.get_on_off(status=s.spare)}}</td>-->
                 %end
                 <td>{{s.attempt}}/{{s.max_check_attempts}}</td>
                 <td title='{{helper.print_date(s.last_check)}}' data-container="body">{{helper.print_duration(s.last_check, just_duration=True, x_elts=2)}}</td>
-                <td>{{s.realm}}</td>
+                <td>{{s.realm_name}}</td>
              </tr>
              %end
           </tbody>

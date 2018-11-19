@@ -982,7 +982,33 @@ class WebUIDataManager(DataManager):
     # Shinken program and daemons
     ##
     def get_configs(self):
+        """Return the scheduler configurations received during the initialisation phase"""
         return self.rg.configs.values()
+
+    def get_framework_status(self):
+        """Return a status for the underlying monitoring framework
+
+        If all daemons are seen as alive, the status is 0 (Ok)
+        If one daemon is not alive, the status is 2 (Critical)
+        Else, if some connection attempts occured, the status is 1 (Warning)"""
+        daemons = [
+            ('scheduler', self.rg.schedulers), ('poller', self.rg.pollers), ('broker', self.rg.brokers),
+            ('reactionner', self.rg.reactionners), ('receiver', self.rg.receivers)
+        ]
+        present = sum(1 for (type, satellites) in daemons if satellites)
+        if not present:
+            return None
+
+        status = 0
+        for (type, satellites) in daemons:
+            for s in satellites:
+                if not s.alive:
+                    status = 2
+                else:
+                    if s.attempt:
+                        status = 1
+
+        return status
 
     def get_schedulers(self):
         return self.rg.schedulers
