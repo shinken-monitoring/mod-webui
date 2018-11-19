@@ -1160,7 +1160,7 @@ class Regenerator(object):
         sched = SchedulerLink({})
         self._update_realm(data)
         self.update_element(sched, data)
-        self.schedulers[scheduler_name] = sched
+        self.schedulers[data['scheduler_name']] = sched
 
     def manage_initial_poller_status_brok(self, b):
         """Got a poller status"""
@@ -1170,7 +1170,7 @@ class Regenerator(object):
         poller = PollerLink({})
         self._update_realm(data)
         self.update_element(poller, data)
-        self.pollers[poller_name] = poller
+        self.pollers[data['poller_name']] = poller
 
     def manage_initial_reactionner_status_brok(self, b):
         """Got a reactionner status"""
@@ -1180,12 +1180,11 @@ class Regenerator(object):
         reac = ReactionnerLink({})
         self._update_realm(data)
         self.update_element(reac, data)
-        self.reactionners[reactionner_name] = reac
+        self.reactionners[data['reactionner_name']] = reac
 
     def manage_initial_broker_status_brok(self, b):
         """Got a broker status"""
         data = b.data
-        broker_name = data['broker_name']
 
         broker = BrokerLink({})
         self._update_realm(data)
@@ -1200,7 +1199,7 @@ class Regenerator(object):
         receiver = ReceiverLink({})
         self._update_realm(data)
         self.update_element(receiver, data)
-        self.receivers[receiver_name] = receiver
+        self.receivers[data['receiver_name']] = receiver
 
     def manage_initial_broks_done_brok(self, b):
         """This brok is here when the WHOLE initial phase is done.
@@ -1213,10 +1212,10 @@ class Regenerator(object):
 # Status Update part
 #################
 
-# A scheduler send us a "I'm alive" brok. If we never
-# heard about this one, we got some problem and we
-# ask him some initial data :)
     def manage_update_program_status_brok(self, b):
+        """Each scheduler sends us a "I'm alive" brok.
+        If we never heard about this one, we got some problem and we ask him some initial data :)
+        """
         data = b.data
         c_id = data['instance_id']
 
@@ -1264,14 +1263,8 @@ class Regenerator(object):
             else:
                 clean_prop.extend(['childs', 'parents', 'child_dependencies', 'parent_dependencies'])
 
-        data = b.data
         for prop in clean_prop:
             del data[prop]
-
-        hname = data['host_name']
-        host = self.hosts.find_by_name(hname)
-        if not host:
-            return
 
         logger.debug("Updated host: %s", hname)
         self.before_after_hook(b, host)

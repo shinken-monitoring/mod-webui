@@ -75,6 +75,20 @@
      </div>
 
       <!-- Do not remove the next comment!
+         Everything between 'begin-framework-states' comment and 'end-framework-states' comment
+         may be used by the layout page refresh.
+      -->
+      <!--begin-framework-states-->
+      <li id="overall-framework-states">
+         %state = app.datamgr.get_framework_status()
+         %color = 'font-critical' if state == 2 else 'font-warning' if state > 0 else ''
+         <a id="framework-state" class="btn btn-primary" href="/system">
+            <i class="fa fa-heartbeat {{ color }}"></i>
+         </a>
+      </li>
+      <!--end-framework-states-->
+
+      <!-- Do not remove the next comment!
          Everything between 'begin-hosts-states' comment and 'end-hosts-states' comment
          may be used by the layout page refresh.
       -->

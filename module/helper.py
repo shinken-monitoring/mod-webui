@@ -226,9 +226,9 @@ class Helper(object):
                 title = 'Disabled'
 
         if status:
-            return '''<i title="%s" class="fa fa-ok font-green">%s</i>''' % (title, message)
+            return '''<i title="%s" class="fa fa-check font-green">%s</i>''' % (title, message)
 
-        return '''<i title="%s" class="fa fa-remove font-red">%s</i>''' % (title, message)
+        return '''<i title="%s" class="fa fa-times font-red">%s</i>''' % (title, message)
 
     def get_link(self, obj, short=False):
         if obj.__class__.my_type == 'service':
