@@ -30,10 +30,14 @@ from itertools import groupby
 app = None
 
 def _graph(logs):
-    groups_hour = groupby(logs, key=lambda x: (x['time'] - (x['time'] % 3600)))
+    groups_hour = groupby(reversed(logs), key=lambda x: (x['time'] - (x['time'] % 3600)))
 
     data = OrderedDict()
     for k, v in groups_hour:
+        # Filling voids with zeros
+        if data:
+            while next(reversed(data)) < (k - 3600):
+                data[next(reversed(data)) + 3600] = 0
         data[k] = len(list(v))
 
     # Smooth graph
@@ -62,7 +66,7 @@ def _graph(logs):
             data_24[t] += v
         data = data_24
 
-    # Convert timestamp ms to s
+    # Convert timestamp to milliseconds
     graph = [{'t': k*1000, 'y': v} for k, v in data.items()]
 
     return graph

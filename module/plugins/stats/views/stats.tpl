@@ -59,11 +59,14 @@
             options: {
               scales: {
                 xAxes: [{
+                  //gridLines: {
+                  //  offsetGridLines: true
+                  //},
                   type: 'time',
-                  distribution: 'series',
+                  distribution: 'linear',
                   time: {
-                    minUnit: 'hour',
-                    tooltipFormat: 'll'
+                    minUnit: 'day',
+                    tooltipFormat: 'll HH'
                   }
                 }],
               }
