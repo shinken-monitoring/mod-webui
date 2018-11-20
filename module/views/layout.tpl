@@ -1,3 +1,14 @@
+%# Default is to consider that the underlying framework is not Alignak (hence Shinken)
+%setdefault('alignak', False)
+%setdefault('fmwk', 'Shinken')
+
+%if alignak:
+%from alignak.version import VERSION
+%fmwk="Alignak"
+%else:
+%from shinken.bin import VERSION
+%end
+
 <!DOCTYPE html>
 %#Set default values
 %#if not 'js' in locals(): js = []
@@ -22,7 +33,6 @@
 %setdefault('navi', None)
 %setdefault('elts_per_page', 25)
 
-%from shinken.bin import VERSION
 %if app is not None:
 %helper = app.helper
 %refresh = app.refresh
@@ -43,7 +53,7 @@
          version 3 of the License, or (at your option) any later version.
 
          WebUI Version: {{app.app_version if app is not None and app.app_version is not None else ''}}
-         Shinken Framework Version: {{VERSION}}
+         {{fmwk}} Framework Version: {{VERSION}}
       -->
 
       <link href="/static/images/favicon.ico" rel="shortcut icon">

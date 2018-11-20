@@ -3,7 +3,6 @@
 # vim: ai ts=4 sts=4 et sw=4 nu
 
 import traceback
-import re
 import time
 
 from shinken.log import logger
@@ -14,24 +13,28 @@ from .metamodule import MetaModule
 class LogsMetaModule(MetaModule):
 
     _functions = ['get_ui_logs', 'get_ui_availability']
-    _custom_log = "You should configure the module 'mongo-logs' in your broker to be able to display logs and availability."
+    _custom_log = "You should configure the module 'mongo-logs' in your broker " \
+                  "to be able to display logs and availability."
 
     def __init__(self, modules, app):
-        ''' Because it wouldn't make sense to use many submodules in this
+        """ Because it wouldn't make sense to use many submodules in this
             MetaModule, we only use the first one in the list of modules.
             If there is no module in the list, we try to init a default module.
-        '''
+        """
+        super(LogsMetaModule, self).__init__(modules=modules, app=app)
+
         self.app = app
         self.module = None
         if modules:
             if len(modules) > 1:
-                logger.warning('[WebUI] Too much prefs modules declared (%s > 1). Using %s.' % (len(modules), modules[0]))
+                logger.warning("[WebUI] Too much prefs modules declared (%s > 1). Using %s.",
+                               len(modules), modules[0])
             self.module = modules[0]
         else:
             try:
                 self.module = MongoDBLogs(app.modconf)
-            except Exception as e:
-                logger.warning('[WebUI] %s' % e)
+            except Exception as exp:
+                logger.warning('[WebUI] Exception %s', str(exp))
 
     def is_available(self):
         return self.module is not None
@@ -45,10 +48,10 @@ class LogsMetaModule(MetaModule):
         return default
 
 
-class MongoDBLogs():
-    '''
+class MongoDBLogs(object):
+    """
     This module job is to get webui configuration data from a mongodb database:
-    '''
+    """
 
     def __init__(self, mod_conf):
         try:
@@ -60,7 +63,7 @@ class MongoDBLogs():
             raise
 
         self.uri = getattr(mod_conf, 'uri', 'mongodb://localhost')
-        logger.info('[WebUI-mongo-logs] mongo uri: %s' % self.uri)
+        logger.info('[WebUI-mongo-logs] mongo uri: %s', self.uri)
 
         self.replica_set = getattr(mod_conf, 'replica_set', None)
         if self.replica_set and int(pymongo.version[0]) < 3:
@@ -68,7 +71,7 @@ class MongoDBLogs():
                          'replica_set because your pymongo lib is too old. '
                          'Please install it with a 3.x+ version from '
                          'https://pypi.python.org/pypi/pymongo')
-            return None
+            return
 
         self.database = getattr(mod_conf, 'database', 'shinken')
         self.username = getattr(mod_conf, 'username', None)
@@ -89,7 +92,12 @@ class MongoDBLogs():
         self.con = None
         self.db = None
 
-        logger.info("[WebUI-mongo-logs] Trying to open a Mongodb connection to %s, database: %s" % (self.uri, self.database))
+        if not self.uri:
+            logger.warning("[WebUI-MongoDBPreferences] No Mongodb connection configured!")
+            return
+
+        logger.info("[WebUI-mongo-logs] Trying to open a Mongodb connection to %s, database: %s",
+                    self.uri, self.database)
         self.open()
 
     def open(self):
@@ -101,7 +109,8 @@ class MongoDBLogs():
 
         try:
             if self.replica_set:
-                self.con = MongoClient(self.uri, replicaSet=self.replica_set, fsync=self.mongodb_fsync, connect=True)
+                self.con = MongoClient(self.uri, replicaSet=self.replica_set,
+                                       fsync=self.mongodb_fsync, connect=True)
             else:
                 self.con = MongoClient(self.uri, fsync=self.mongodb_fsync, connect=True)
             logger.info("[WebUI-mongo-logs] connected to mongodb: %s", self.uri)
@@ -119,17 +128,21 @@ class MongoDBLogs():
             if not u:
                 # No document ... create a new one!
                 logger.debug('[WebUI-mongo-logs] not found connection test item in the collection')
-                r = self.db[self.logs_collection].save({'_id': 'shinken-test', 'last_test': time.time()})
+                r = self.db[self.logs_collection].save({'_id': 'shinken-test',
+                                                        'last_test': time.time()})
+                logger.debug('[WebUI-mongo-logs] result: %s', r)
                 logger.info('[WebUI-mongo-logs] updated connection test item')
             else:
                 # Found document ... update!
                 logger.debug('[WebUI-mongo-logs] found connection test item in the collection')
-                r = self.db[self.logs_collection].update({'_id': 'shinken-test'}, {'$set': {'last_test': time.time()}})
+                r = self.db[self.logs_collection].update({'_id': 'shinken-test'},
+                                                         {'$set': {'last_test': time.time()}})
+                logger.debug('[WebUI-mongo-logs] result: %s', r)
                 logger.info('[WebUI-mongo-logs] updated connection test item')
 
             self.is_connected = True
             logger.info('[WebUI-mongo-logs] database connection established')
-        except Exception, e:
+        except Exception as e:
             logger.error("[WebUI-mongo-logs] Exception: %s", str(e))
             logger.debug("[WebUI-mongo-logs] Exception type: %s", type(e))
             logger.debug("[WebUI-mongo-logs] Back trace of this kill: %s", traceback.format_exc())
@@ -141,16 +154,19 @@ class MongoDBLogs():
 
     def close(self):
         self.is_connected = False
-        self.conn.close()
+        self.con.close()
 
     # We will get in the mongodb database the logs
-    def get_ui_logs(self, filters={}, range_start=None, range_end=None, limit=200, offset=0):
+    def get_ui_logs(self, filters=None, range_start=None, range_end=None, limit=200, offset=0):
         import pymongo
         if not self.db:
             logger.error("[mongo-logs] error Problem during init phase, no database connection")
-            return None
+            return []
 
         logger.debug("[mongo-logs] get_ui_logs")
+
+        if filters is None:
+            filters = {}
 
         query = []
         for k, v in filters.items():
@@ -161,17 +177,18 @@ class MongoDBLogs():
             query.append({'time': {'$lte': range_end}})
 
         query = {'$and': query} if query else None
-        logger.debug("[mongo-logs] Fetching %limit records from database with query: '%s' and offset %s", (limit, query, offset))
+        logger.debug("[mongo-logs] Fetching %limit records from database with query: "
+                     "'%s' and offset %s", limit, query, offset)
 
         records = []
         try:
-            records = self.db[self.logs_collection].find(query).sort(
-                    [("time", pymongo.DESCENDING)]).skip(offset)
+            records = self.db[self.logs_collection].find(query).sort([
+                ("time", pymongo.DESCENDING)]).skip(offset)
             if limit:
                 records = records.limit(limit)
 
             logger.debug("[mongo-logs] %d records fetched from database.", records.count())
-        except Exception, exp:
+        except Exception as exp:
             logger.error("[mongo-logs] Exception when querying database: %s", str(exp))
 
         return records
@@ -181,7 +198,7 @@ class MongoDBLogs():
         import pymongo
         if not self.db:
             logger.error("[mongo-logs] error Problem during init phase, no database connection")
-            return None
+            return []
 
         logger.debug("[mongo-logs] get_ui_availability, name: %s", elt)
 
@@ -198,15 +215,15 @@ class MongoDBLogs():
 
         records = []
         try:
-            for log in self.db[self.hav_collection].find(query).sort([
-                                ("day",pymongo.DESCENDING),
-                                ("hostname",pymongo.ASCENDING),
-                                ("service",pymongo.ASCENDING)]):
+            for log in self.db[self.hav_collection].find(query).sort(
+                    [("day", pymongo.DESCENDING),
+                     ("hostname", pymongo.ASCENDING),
+                     ("service", pymongo.ASCENDING)]):
                 if '_id' in log:
                     del log['_id']
                 records.append(log)
             logger.debug("[mongo-logs] %d records fetched from database.", records.count())
-        except Exception, exp:
+        except Exception as exp:
             logger.error("[mongo-logs] Exception when querying database: %s", str(exp))
 
         if not records:
@@ -235,10 +252,12 @@ class MongoDBLogs():
             record['daily_2'] += log['daily_2']
             record['daily_3'] += log['daily_3']
             record['daily_4'] += log['daily_4']
-            if log['last_check_timestamp'] > record['last_check_timestamp'] or record['last_check_timestamp'] is None:
+            if log['last_check_timestamp'] > record['last_check_timestamp'] or \
+                    record['last_check_timestamp'] is None:
                 record['last_check_timestamp'] = log['last_check_timestamp']
                 record['last_check_state'] = log['last_check_state']
-            if log['first_check_timestamp'] < record['first_check_timestamp'] or record['first_check_timestamp'] is None:
+            if log['first_check_timestamp'] < record['first_check_timestamp'] or \
+                    record['first_check_timestamp'] is None:
                 record['first_check_timestamp'] = log['first_check_timestamp']
                 record['first_check_state'] = log['first_check_state']
 

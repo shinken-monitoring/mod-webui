@@ -23,21 +23,11 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 
-### Will be populated by the UI with it's own value
-app = None
-
+import json
 from shinken.log import logger
 
-try:
-    import json
-except ImportError:
-    # For old Python version, load
-    # simple json (it can be hard json?! It's 2 functions guy!)
-    try:
-        import simplejson as json
-    except ImportError:
-        print "Error: you need the json or simplejson module"
-        raise
+# Will be populated by the UI with it's own value
+app = None
 
 
 def lookup():
@@ -68,4 +58,4 @@ pages = {
     lookup: {
         'name': 'GetLookup', 'route': '/lookup', 'method': 'GET'
     }
- }
+}

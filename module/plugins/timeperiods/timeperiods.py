@@ -24,20 +24,20 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 
-### Will be populated by the UI with it's own value
+# Will be populated by the UI with it's own value
 app = None
 
 
 # All timeperiods
 def show_timeperiods():
     user = app.request.environ['USER']
-    user.is_administrator() or app.redirect403()
+    _ = user.is_administrator() or app.redirect403()
 
     return {'timeperiods': app.datamgr.get_timeperiods()}
 
 
 pages = {
     show_timeperiods: {
-        'name': 'TimePeriods', 'route': '/timeperiods', 'view': 'timeperiods', 'static': True
+        'name': 'TimePeriods', 'route': '/timeperiods', 'view': 'timeperiods'
     }
 }
