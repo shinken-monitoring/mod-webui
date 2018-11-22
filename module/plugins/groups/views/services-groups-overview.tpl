@@ -145,7 +145,7 @@
          %end
 
          %nServices=s['nb_elts']
-         %nGroups=len(group.get_servicegroup_members())
+         %nGroups=len(group.servicegroup_members)
          %# Filter empty groups ?
          %#if nServices > 0 or nGroups > 0:
          <li class="group list-group-item clearfix {{'empty' if s['nb_elts'] == s['nb_critical'] and s['nb_elts'] != 0 else ''}} {{even}}">
