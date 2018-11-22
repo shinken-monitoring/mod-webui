@@ -703,7 +703,7 @@ class WebUIDataManager(DataManager):
         logger.debug("[WebUI - datamanager] set_contactgroup_level, group: %s, level: %d", group, level)
         setattr(group, 'level', level)
 
-        for g in sorted(group.get_contactgroup_members()):
+        for g in sorted(group.contactgroup_members):
             if not g:
                 continue
             logger.debug("[WebUI - datamanager] set_contactgroup_level, g: %s", g)
@@ -725,7 +725,7 @@ class WebUIDataManager(DataManager):
         if parent:
             group = self.get_contactgroups(user=user, name=parent)
             if group:
-                items = [self.get_contactgroup(g) for g in group.get_contactgroup_members()]
+                items = [self.get_contactgroup(g) for g in group.contactgroup_members]
             else:
                 return items
         else:
@@ -780,7 +780,7 @@ class WebUIDataManager(DataManager):
         setattr(group, 'level', level)
         logger.debug("[WebUI - datamanager] set_hostgroup_level, group: %s, level: %d", group, level)
 
-        for g in sorted(group.get_hostgroup_members()):
+        for g in sorted(group.hostgroup_members):
             if not g:
                 continue
             logger.debug("[WebUI - datamanager] set_hostgroup_level, g: %s", g)
@@ -802,7 +802,7 @@ class WebUIDataManager(DataManager):
         if parent:
             group = self.get_hostgroups(user=user, name=parent)
             if group:
-                items = [self.get_hostgroup(g) for g in group.get_hostgroup_members()]
+                items = [self.get_hostgroup(g) for g in group.hostgroup_members]
             else:
                 return items
         else:
@@ -866,7 +866,7 @@ class WebUIDataManager(DataManager):
     def set_servicegroup_level(self, group, level, user):
         setattr(group, 'level', level)
 
-        for g in sorted(group.get_servicegroup_members()):
+        for g in sorted(group.servicegroup_members):
             try:
                 child_group = self.get_servicegroup(g)
                 self.set_servicegroup_level(child_group, level + 1, user)
@@ -885,7 +885,7 @@ class WebUIDataManager(DataManager):
         if parent:
             group = self.get_servicegroups(user=user, name=parent)
             if group:
-                items = [self.get_servicegroup(g) for g in group.get_servicegroup_members()]
+                items = [self.get_servicegroup(g) for g in group.servicegroup_members]
             else:
                 return items
         else:
