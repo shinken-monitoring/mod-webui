@@ -194,7 +194,13 @@ class Regenerator(object):
 
         logger.debug("Got a brok: %s", brok.type)
 
-        return manage(brok)
+        try:
+            # Catch all the broks management exceptions to avoid breaking the module
+            rc = manage(brok)
+        except Exception as exp:
+            logger.error("Exception on brok management: %s", str(exp))
+            logger.error("Brok '%s': %s", brok.type, brok.data)
+        return rc
 
     # pylint: disable=no-self-use
     def update_element(self, element, data):
@@ -731,14 +737,14 @@ class Regenerator(object):
             host.downtimes = host.downtimes.values()
         for downtime in host.downtimes:
             downtime.ref = host
-            if 'uuid' in downtime:
+            if getattr(downtime, 'uuid', None) is not None:
                 downtime.id = downtime.uuid
 
         if isinstance(host.comments, dict):
             host.comments = host.comments.values()
         for comment in host.comments:
             comment.ref = host
-            if 'uuid' in comment:
+            if getattr(comment, 'uuid', None) is not None:
                 comment.id = comment.uuid
             comment.persistent = True
 
@@ -814,14 +820,14 @@ class Regenerator(object):
             service.downtimes = service.downtimes.values()
         for downtime in service.downtimes:
             downtime.ref = service
-            if 'uuid' in downtime:
+            if getattr(downtime, 'uuid', None) is not None:
                 downtime.id = downtime.uuid
 
         if isinstance(service.comments, dict):
             service.comments = service.comments.values()
         for comment in service.comments:
             comment.ref = service
-            if 'uuid' in comment:
+            if getattr(comment, 'uuid', None) is not None:
                 comment.id = comment.uuid
             comment.persistent = True
 
@@ -1237,14 +1243,14 @@ class Regenerator(object):
             host.downtimes = host.downtimes.values()
         for downtime in host.downtimes:
             downtime.ref = host
-            if 'uuid' in downtime:
+            if getattr(downtime, 'uuid', None) is not None:
                 downtime.id = downtime.uuid
 
         if isinstance(host.comments, dict):
             host.comments = host.comments.values()
         for comment in host.comments:
             comment.ref = host
-            if 'uuid' in comment:
+            if getattr(comment, 'uuid', None) is not None:
                 comment.id = comment.uuid
             comment.persistent = True
 
@@ -1291,14 +1297,14 @@ class Regenerator(object):
             service.downtimes = service.downtimes.values()
         for downtime in service.downtimes:
             downtime.ref = service
-            if 'uuid' in downtime:
+            if getattr(downtime, 'uuid', None) is not None:
                 downtime.id = downtime.uuid
 
         if isinstance(service.comments, dict):
             service.comments = service.comments.values()
         for comment in service.comments:
             comment.ref = service
-            if 'uuid' in comment:
+            if getattr(comment, 'uuid', None) is not None:
                 comment.id = comment.uuid
             comment.persistent = True
 
