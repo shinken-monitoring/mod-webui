@@ -41,7 +41,7 @@
            </td>
            <td>
              %for nw in contact.notificationways:
-             {{ nw }}
+             {{ nw.get_name() }}
              %end
            </td>
          </tr>
