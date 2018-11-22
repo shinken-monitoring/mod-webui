@@ -731,13 +731,15 @@ class Regenerator(object):
             host.downtimes = host.downtimes.values()
         for downtime in host.downtimes:
             downtime.ref = host
-            downtime.id = downtime.uuid
+            if 'uuid' in downtime:
+                downtime.id = downtime.uuid
 
         if isinstance(host.comments, dict):
-            host.downtimes = host.comments.values()
+            host.comments = host.comments.values()
         for comment in host.comments:
             comment.ref = host
-            comment.id = comment.uuid
+            if 'uuid' in comment:
+                comment.id = comment.uuid
             comment.persistent = True
 
         # Ok, put in in the in progress hosts
@@ -812,13 +814,15 @@ class Regenerator(object):
             service.downtimes = service.downtimes.values()
         for downtime in service.downtimes:
             downtime.ref = service
-            downtime.id = downtime.uuid
+            if 'uuid' in downtime:
+                downtime.id = downtime.uuid
 
         if isinstance(service.comments, dict):
             service.comments = service.comments.values()
         for comment in service.comments:
             comment.ref = service
-            comment.id = comment.uuid
+            if 'uuid' in comment:
+                comment.id = comment.uuid
             comment.persistent = True
 
         # Ok, put in in the in progress hosts
@@ -1233,13 +1237,15 @@ class Regenerator(object):
             host.downtimes = host.downtimes.values()
         for downtime in host.downtimes:
             downtime.ref = host
-            downtime.id = downtime.uuid
+            if 'uuid' in downtime:
+                downtime.id = downtime.uuid
 
         if isinstance(host.comments, dict):
-            host.downtimes = host.comments.values()
+            host.comments = host.comments.values()
         for comment in host.comments:
             comment.ref = host
-            comment.id = comment.uuid
+            if 'uuid' in comment:
+                comment.id = comment.uuid
             comment.persistent = True
 
     # In fact, an update of a service is like a check return
@@ -1285,13 +1291,15 @@ class Regenerator(object):
             service.downtimes = service.downtimes.values()
         for downtime in service.downtimes:
             downtime.ref = service
-            downtime.id = downtime.uuid
+            if 'uuid' in downtime:
+                downtime.id = downtime.uuid
 
         if isinstance(service.comments, dict):
             service.comments = service.comments.values()
         for comment in service.comments:
             comment.ref = service
-            comment.id = comment.uuid
+            if 'uuid' in comment:
+                comment.id = comment.uuid
             comment.persistent = True
 
     def manage_update_broker_status_brok(self, b):
