@@ -146,7 +146,7 @@
          %end
 
          %nHosts=h['nb_elts']
-         %nGroups=len(group.hostgroup_members)
+         %nGroups=len(group.get_hostgroup_members())
          %# Filter empty groups ?
          %#if nHosts > 0 or nGroups > 0:
          <li class=" list-group-item clearfix {{'alert-danger' if h['nb_elts'] == h['nb_down'] and h['nb_elts'] != 0 else ''}} {{even}}">

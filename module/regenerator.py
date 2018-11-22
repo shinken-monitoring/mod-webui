@@ -34,7 +34,6 @@ Some small modifications introduced by Alignak are managed in this class.
 """
 import os
 import time
-import uuid
 
 # Import all objects we will need
 from shinken.objects.host import Host, Hosts
@@ -45,9 +44,8 @@ from shinken.objects.contact import Contact, Contacts
 from shinken.objects.contactgroup import Contactgroup, Contactgroups
 from shinken.objects.notificationway import NotificationWay, NotificationWays
 from shinken.objects.timeperiod import Timeperiod, Timeperiods
-from shinken.daterange import Timerange, Daterange
+from shinken.daterange import Timerange
 from shinken.objects.command import Command, Commands
-from shinken.commandcall import CommandCall
 from shinken.objects.config import Config
 from shinken.objects.schedulerlink import SchedulerLink, SchedulerLinks
 from shinken.objects.reactionnerlink import ReactionnerLink, ReactionnerLinks
@@ -83,7 +81,6 @@ class Regenerator(object):
         self.contactgroups = Contactgroups([])
         self.timeperiods = Timeperiods([])
         self.commands = Commands([])
-        self.notificationways = NotificationWays([])
         self.schedulers = SchedulerLinks([])
         self.pollers = PollerLinks([])
         self.reactionners = ReactionnerLinks([])
@@ -138,7 +135,6 @@ class Regenerator(object):
         self.contactgroups = c.contactgroups
         self.timeperiods = c.timeperiods
         self.commands = c.commands
-        self.notificationways = c.notificationways
         # We also load the realm
         for h in self.hosts:
             if getattr(h, 'realm_name', None):
@@ -149,11 +145,14 @@ class Regenerator(object):
     # we will skip them
     def want_brok(self, brok):
         if self.in_scheduler_mode:
-            return brok.type not in ['program_status',
-                                     'initial_host_status', 'initial_hostgroup_status',
-                                     'initial_service_status', 'initial_servicegroup_status',
-                                     'initial_contact_status', 'initial_contactgroup_status',
-                                     'initial_timeperiod_status', 'initial_command_status']
+            return brok.type not in ['program_status', 'initial_host_status',
+                                     'initial_hostgroup_status', 'initial_service_status',
+                                     'initial_servicegroup_status', 'initial_contact_status',
+                                     'initial_contactgroup_status', 'initial_timeperiod_status',
+                                     'initial_command_status']
+        # Ok you are wondering why we don't add initial_broks_done?
+        # It's because the LiveSTatus modules need this part to do internal things.
+        # But don't worry, the vanilla regenerator will just skip it in all_done_linking :D
 
         # Not in don't want? so want! :)
         return True
@@ -161,10 +160,7 @@ class Regenerator(object):
     def manage_brok(self, brok):
         """ Look for a manager function for a brok, and call it """
         manage = getattr(self, 'manage_' + brok.type + '_brok', None)
-        # if not manage and brok.type not in ['log']:
         if not manage:
-            if brok.type not in ['log']:
-                logger.warning("Received an unmanaged brok: %s / %s", brok.type, brok.data)
             return None
 
         if not self.want_brok(brok):
@@ -172,28 +168,10 @@ class Regenerator(object):
 
         # If we can and want it, got for it :)
 
-        # Shinken uses id as a brok identifier
-        if getattr(brok, 'id', None):
-            brok.uuid = brok.id
-        else:
-            # whereas Alignak uses uuid!
-            if getattr(brok, 'uuid', None):
-                brok.id = brok.uuid
-
-        # Same identifier logic for the brok contained data identifier
-        if brok.data.get('id', None):
-            brok.data['uuid'] = brok.data['id']
-        else:
-            if brok.data.get('uuid', None):
-                brok.data['id'] = brok.data['uuid']
-
-        # No id for the data contained in the brok, force set an identifier.
-        if brok.data.get('id', None) is None:
-            brok.data['uuid'] = str(uuid.uuid4())
-            brok.data['id'] = brok.data['uuid']
-
+        # Alignak uses uuid as an object identifier
+        if getattr(brok, 'uuid', None):
+            brok.id = brok.uuid
         logger.debug("Got a brok: %s", brok.type)
-
         return manage(brok)
 
     # pylint: disable=no-self-use
@@ -243,82 +221,73 @@ class Regenerator(object):
                 else:
                     logger.warning("Unknown TP %s for TP: %s", exname, tp)
             tp.exclude = new_exclude
+            logger.info("Regenerated a timeperiod: %s", tp.timeperiod_name)
 
         # Link CONTACTGROUPS with contacts
         for cg in inp_contactgroups:
-            logger.debug("Contacts group: %s", cg.get_name())
             new_members = []
             for (i, cname) in cg.members:
                 c = self.contacts.find_by_name(cname)
                 if c:
+                    # new_members.append(c)
+                    # Name rather than object!
                     new_members.append(c)
                 else:
                     logger.warning("Unknown contact %s for contactgroup: %s", cname, cg)
             cg.members = new_members
+            # Information not received!
+            cg.contactgroup_members = ''
 
         # Merge contactgroups with real ones
         for group in inp_contactgroups:
-            logger.debug("Update existing contacts group: %s", group.get_name())
+            cgname = group.contactgroup_name
             # If the contactgroup already exist, just add the new contacts into it
-            cg = self.contactgroups.find_by_name(group.get_name())
+            cg = self.contactgroups.find_by_name(cgname)
             if cg:
-                logger.debug("- update members: %s / %s", group.members, group.contactgroup_members)
-                cg.members = group.members
-                cg.contactgroup_members = group.contactgroup_members
-                # Copy group identifiers because they will have changed after a restart
-                cg.id = group.id
-                cg.uuid = group.uuid
+                cg.members.extend(group.members)
+                cg.members = list(set(cg.members))
             else:
-                logger.debug("- add a group")
+                # else take the new one
                 self.contactgroups.add_item(group)
 
         # Link HOSTGROUPS with hosts
         for hg in inp_hostgroups:
-            logger.debug("Hosts group: %s", hg.get_name())
             new_members = []
             for (i, hname) in hg.members:
                 h = inp_hosts.find_by_name(hname)
                 if h:
                     new_members.append(h)
+                    # Name rather than object!
+                    new_members.append(hname)
                 else:
                     logger.warning("Unknown host %s for hostgroup: %s", hname, hg.get_name())
             hg.members = new_members
-            logger.debug("- group members: %s", hg.members)
+            # Information not received!
+            hg.hostgroup_members = ''
 
         # Merge HOSTGROUPS with real ones
         for group in inp_hostgroups:
-            logger.debug("Update existing hosts group: %s", group.get_name())
-            # If the hostgroup already exist, just add the new members and groups into it
-            hg = self.hostgroups.find_by_name(group.get_name())
+            # If the hostgroup already exist, just add the new hosts into it
+            hg = self.hostgroups.find_by_name(group.hostgroup_name)
             if hg:
-                logger.debug("- update members: %s / %s", group.members, group.hostgroup_members)
-                hg.members = group.members
-                hg.hostgroup_members = group.hostgroup_members
-                # Copy group identifiers because they will have changed after a restart
-                hg.id = group.id
-                hg.uuid = group.uuid
+                hg.members.extend(group.members)
             else:
-                logger.debug("- add a group")
+                # else take the new one
                 self.hostgroups.add_item(group)
 
         # Now link HOSTS with hostgroups, and commands
         for h in inp_hosts:
             if h.hostgroups:
-                hgs = h.hostgroups
-                if not isinstance(hgs, list):
-                    hgs = h.hostgroups.split(',')
                 new_groups = []
-                logger.debug("Searching hostgroup for the host %s, hostgroups: %s", h.get_name(), hgs)
-                for hgname in hgs:
+                for hgname in h.hostgroups:
                     for group in self.hostgroups:
-                        if hgname == group.get_name() or hgname == group.uuid:
+                        if hgname == group.uuid:
                             new_groups.append(group)
-                            logger.debug("Found hostgroup %s", group.get_name())
                             break
                     else:
                         logger.warning("No hostgroup %s for host: %s", hgname, h.get_name())
                 h.hostgroups = new_groups
-                logger.debug("Linked %s hostgroups %s", h.get_name(), h.hostgroups)
+                logger.debug("Linked %s groups %s", h.get_name(), h.hostgroups)
 
             # Now link Command() objects
             self.linkify_a_command(h, 'check_command')
@@ -331,7 +300,6 @@ class Regenerator(object):
 
             # And link contacts too
             self.linkify_contacts(h, 'contacts')
-            logger.debug("Host %s has contacts: %s", h.get_name(), h.contacts)
 
             # Linkify tags
             for t in h.tags:
@@ -347,31 +315,27 @@ class Regenerator(object):
 
         # Link SERVICEGROUPS with services
         for sg in inp_servicegroups:
-            logger.debug("Services group: %s", sg.get_name())
             new_members = []
             for (i, sname) in sg.members:
                 if i not in inp_services:
-                    logger.warning("Unknown service %s for services group: %s", sname, sg)
-                else:
-                    new_members.append(inp_services[i])
-
+                    # logger.warning("Unknown service %s for services group: %s", sname, sg)
+                    continue
+                s = inp_services[i]
+                new_members.append(s)
+                # Name rather than object!
+                # Not for services groups......!
             sg.members = new_members
-            logger.debug("- group members: %s", sg.members)
+            # Information not received!
+            sg.servicegroup_members = ''
 
         # Merge SERVICEGROUPS with real ones
         for group in inp_servicegroups:
-            logger.debug("Update existing services group: %s", group.get_name())
+            sgname = group.servicegroup_name
             # If the servicegroup already exist, just add the new services into it
-            sg = self.servicegroups.find_by_name(group.get_name())
+            sg = self.servicegroups.find_by_name(sgname)
             if sg:
-                logger.debug("- update members: %s / %s", group.members, group.servicegroup_members)
-                sg.members = group.members
-                sg.servicegroup_members = group.servicegroup_members
-                # Copy group identifiers because they will have changed after a restart
-                sg.id = group.id
-                sg.uuid = group.uuid
-            else:
-                logger.debug("- add a group")
+                sg.members.extend(group.members)
+            else:  # else take the new one
                 self.servicegroups.add_item(group)
 
         # Now link SERVICES with hosts, servicesgroups, and commands
@@ -407,7 +371,6 @@ class Regenerator(object):
 
             # And link contacts too
             self.linkify_contacts(s, 'contacts')
-            logger.debug("Service %s has contacts: %s", s.get_full_name(), s.contacts)
 
             # Linkify services tags
             for t in s.tags:
@@ -459,21 +422,17 @@ class Regenerator(object):
     # We look for o.prop (CommandCall) and we link the inner
     # Command() object with our real ones
     def linkify_a_command(self, o, prop):
-        logger.debug("Linkify a command: %s", prop)
         cc = getattr(o, prop, None)
+        # if the command call is void, bypass it
         if not cc:
             setattr(o, prop, None)
             return
-
-        cmdname = cc
-        if isinstance(cc, CommandCall):
-            cmdname = cc.command
-        cc.command = self.commands.find_by_name(cmdname)
-        logger.debug("- %s = %s", prop, cc.command.get_name() if cc.command else 'None')
+        cmdname = cc.command
+        c = self.commands.find_by_name(cmdname)
+        cc.command = c
 
     # We look at o.prop and for each command we relink it
     def linkify_commands(self, o, prop):
-        logger.debug("Linkify commands: %s", prop)
         v = getattr(o, prop, None)
         if not v:
             # If do not have a command list, put a void list instead
@@ -481,14 +440,9 @@ class Regenerator(object):
             return
 
         for cc in v:
-            cmdname = cc
-            if hasattr(cc, 'command'):
-                cmdname = cc.command
-            if hasattr(cmdname, 'uuid') and cmdname.uuid in self.commands:
-                cc.command = self.commands[cmdname.uuid]
-            else:
-                cc.command = self.commands.find_by_name(cmdname)
-            logger.debug("- %s = %s", prop, cc.command.get_name() if cc.command else 'None')
+            cmdname = cc.command
+            c = self.commands.find_by_name(cmdname)
+            cc.command = c
 
     # We look at the timeperiod() object of o.prop
     # and we replace it with our true one
@@ -497,12 +451,6 @@ class Regenerator(object):
         if not t:
             setattr(o, prop, None)
             return
-
-        logger.debug("Linkify a timeperiod: %s, found: %s", prop, t)
-        if t in self.timeperiods:
-            setattr(o, prop, self.timeperiods[t])
-            return
-
         tpname = t.timeperiod_name
         tp = self.timeperiods.find_by_name(tpname)
         setattr(o, prop, tp)
@@ -519,7 +467,8 @@ class Regenerator(object):
     # We look at o.prop and for each contacts in it,
     # we replace it with true object in self.contacts
     def linkify_contacts(self, o, prop):
-        v = getattr(o, prop, None)
+        v = getattr(o, prop)
+
         if not v:
             return
 
@@ -528,12 +477,6 @@ class Regenerator(object):
             c = self.contacts.find_by_name(cname)
             if c:
                 new_v.append(c)
-            else:
-                for contact in self.contacts:
-                    if cname == contact.uuid:
-                        new_v.append(contact)
-                        break
-
         setattr(o, prop, new_v)
 
     # We got a service/host dict, we want to get back to a flat list
@@ -673,17 +616,11 @@ class Regenerator(object):
             for hg in self.hostgroups:
                 logger.info("Cleaning hostgroup %s: %d members", hg.get_name(), len(hg.members))
                 try:
-                    # hg.members = [h for h in hg.members if h.instance_id != c_id]
-                    hg.members = []
-                    for h in hg.members:
-                        if h.instance_id != c_id:
-                            hg.members.append(h)
-                        else:
-                            logger.debug("- removing host: %s", h)
+                    hg.members = [h for h in hg.members if h.instance_id != c_id]
                 except Exception as exp:
                     logger.error("Exception when cleaning hostgroup: %s", str(exp))
 
-                logger.info("hostgroup members count after cleaning: %d members", len(hg.members))
+                logger.info("- members count after cleaning: %d members", len(hg.members))
 
         if to_del_srv:
             # Clean services from services and servicegroups
@@ -696,15 +633,9 @@ class Regenerator(object):
             for sg in self.servicegroups:
                 logger.info("Cleaning servicegroup %s: %d members", sg.get_name(), len(sg.members))
                 try:
-                    # sg.members = [s for s in sg.members if s.instance_id != c_id]
-                    sg.members = []
-                    for s in sg.members:
-                        if s.instance_id != c_id:
-                            sg.members.append(s)
-                        else:
-                            logger.debug("- removing service: %s", s)
+                    sg.members = [s for s in sg.members if s.instance_id != c_id]
                 except Exception as exp:
-                    logger.error("Exception when cleaning servicegroup: %s", str(exp))
+                    logger.error("Exception when cleaning hostgroup: %s", str(exp))
 
                 logger.info("- members count after cleaning: %d members", len(sg.members))
 
@@ -720,32 +651,24 @@ class Regenerator(object):
         except Exception as exp:
             logger.error("[Regenerator] initial_host_status:: Not good!  %s", str(exp))
             return
-        logger.info("Creating a host: %s - %s from scheduler %s", data['id'], hname, inst_id)
-        logger.debug("Creating a host: %s ", data)
+        logger.info("Creating a host: %s from instance %s", hname, inst_id)
 
         host = Host({})
         self.update_element(host, data)
 
         # We need to rebuild Downtime and Comment relationship
-        if isinstance(host.downtimes, dict):
-            host.downtimes = host.downtimes.values()
-        for downtime in host.downtimes:
+        for downtime in host.downtimes.values():
             downtime.ref = host
             downtime.id = downtime.uuid
-
-        if isinstance(host.comments, dict):
-            host.downtimes = host.comments.values()
-        for comment in host.comments:
+        host.downtimes = host.downtimes.values()
+        for comment in host.comments.values():
             comment.ref = host
             comment.id = comment.uuid
             comment.persistent = True
+        host.comments = host.comments.values()
 
         # Ok, put in in the in progress hosts
         inp_hosts[host.id] = host
-        logger.debug("- %s is member of hostgroups: %s", host.get_name(), host.hostgroups)
-
-        if host.uuid in inp_hosts:
-            logger.info("Created: %s ", host.get_name())
 
     # From now we only create a hostgroup in the in prepare
     # part. We will link at the end.
@@ -758,10 +681,9 @@ class Regenerator(object):
         try:
             inp_hostgroups = self.inp_hostgroups[inst_id]
         except Exception as exp:
-            logger.error("[Regenerator] initial_hostgroup_status:: Not good!   %s", str(exp))
+            logger.error("[Regenerator] initial_hostgroup_stqtus:: Not good!   %s", str(exp))
             return
-        logger.info("Creating a hostgroup: %s from scheduler %s", hgname, inst_id)
-        logger.debug("Creating a hostgroup: %s ", data)
+        logger.info("Creating a hostgroup: %s from instance%s", hgname, inst_id)
 
         # With void members
         hg = Hostgroup([])
@@ -772,19 +694,6 @@ class Regenerator(object):
         # We will link hosts into hostgroups later
         # so now only save it
         inp_hostgroups[hg.id] = hg
-
-        logger.debug("- group data: %s", hg.__dict__)
-        members = getattr(hg, 'members', [])
-        hg.members = members
-        logger.debug("- hostgroup host members: %s", hg.members)
-        # It looks like Shinken do not provide sub groups this information!
-        sub_groups = getattr(hg, 'hostgroup_members', [])
-        sub_groups = [] if (sub_groups and not sub_groups[0]) else sub_groups
-        hg.hostgroup_members = sub_groups
-        logger.debug("- hostgroup group members: %s", hg.hostgroup_members)
-
-        if hg.uuid in self.hostgroups:
-            logger.info("Created: %s ", hg.get_name())
 
     def manage_initial_service_status_brok(self, b):
         data = b.data
@@ -798,8 +707,7 @@ class Regenerator(object):
         except Exception as exp:
             logger.error("[Regenerator] host_check_result  Not good!  %s", str(exp))
             return
-        logger.info("Creating a service: %s - %s/%s from scheduler%s", data['id'], hname, sdesc, inst_id)
-        logger.debug("Creating a service: %s ", data)
+        logger.debug("Creating a service: %s/%s from instance%s", hname, sdesc, inst_id)
 
         if isinstance(data['display_name'], list):
             data['display_name'] = data['service_description']
@@ -808,24 +716,18 @@ class Regenerator(object):
         self.update_element(service, data)
 
         # We need to rebuild Downtime and Comment relationssip
-        if isinstance(service.downtimes, dict):
-            service.downtimes = service.downtimes.values()
-        for downtime in service.downtimes:
+        for downtime in service.downtimes.values():
             downtime.ref = service
             downtime.id = downtime.uuid
-
-        if isinstance(service.comments, dict):
-            service.comments = service.comments.values()
-        for comment in service.comments:
+        service.downtimes = service.downtimes.values()
+        for comment in service.comments.values():
             comment.ref = service
             comment.id = comment.uuid
             comment.persistent = True
+        service.comments = service.comments.values()
 
         # Ok, put in in the in progress hosts
         inp_services[service.id] = service
-
-        if service.uuid in inp_services:
-            logger.info("Created: %s ", service.get_name())
 
     # We create a servicegroup in our in progress part
     # we will link it after
@@ -840,8 +742,7 @@ class Regenerator(object):
         except Exception as exp:
             logger.error("[Regenerator] manage_initial_servicegroup_status_brok:: Not good!  %s", str(exp))
             return
-        logger.info("Creating a servicegroup: %s from scheduler%s", sgname, inst_id)
-        logger.debug("Creating a servicegroup: %s ", data)
+        logger.info("Creating a servicegroup: %s from instance%s", sgname, inst_id)
 
         # With void members
         sg = Servicegroup([])
@@ -853,32 +754,16 @@ class Regenerator(object):
         # so now only save it
         inp_servicegroups[sg.id] = sg
 
-        logger.debug("- group data: %s", sg.__dict__)
-        members = getattr(sg, 'members', [])
-        sg.members = members
-        logger.debug("- servicegroup service members: %s", sg.members)
-        # It looks like Shinken do not provide sub groups this information!
-        sub_groups = getattr(sg, 'servicegroup_members', [])
-        sub_groups = [] if (sub_groups and not sub_groups[0]) else sub_groups
-        sg.servicegroup_members = sub_groups
-        logger.debug("- servicegroup group members: %s", sg.servicegroup_members)
-
-        if sg.uuid in self.servicegroups:
-            logger.info("Created: %s ", sg.get_name())
-
+    # For Contacts, it's a global value, so 2 cases:
+    # We got it -> we update it
+    # We don't -> we create it
+    # In both cases we need to relink it
     def manage_initial_contact_status_brok(self, b):
-        """
-        For Contacts, it's a global value, so 2 cases:
-        We already got it from another scheduler instance -> we update it
-        We don't -> we create it
-        In both cases we need to relink it
-        """
         data = b.data
         cname = data['contact_name']
         inst_id = data['instance_id']
 
-        logger.info("Creating a contact: %s from scheduler %s", cname, inst_id)
-        logger.debug("Creating a contact: %s", data)
+        logger.info("Creating a host: %s from instance %s", cname, inst_id)
 
         c = self.contacts.find_by_name(cname)
         if c:
@@ -899,65 +784,60 @@ class Regenerator(object):
         # Same than for contacts. We create or
         # update
         nws = c.notificationways
-        if nws and not isinstance(nws, list):
-            logger.error("[WebUI] Contact %s, bad formed notification ways, ignoring!", c.get_name())
+        if nws:
+            # Alignak has a list of NW uuids whereas Shinken is expecting a list of objects!
+            # Rebuild notification ways from the simple arameters
+            logger.warning("[WebUI] Contact %s, the regenerator will not restore the notification ways, sorry!",
+                           c.get_name())
+
+            _simple_way_parameters = (
+                'service_notification_period', 'host_notification_period',
+                'service_notification_options', 'host_notification_options',
+                'service_notification_commands', 'host_notification_commands',
+                'min_business_impact'
+            )
+
+            params = {}
+            for p in _simple_way_parameters:
+                if hasattr(c, p):
+                    params[p] = getattr(c, p)
+
+            logger.info("Creating a notification way with: %s", params)
+
+            # todo - flatten the commands and periods...
+            # cname = getattr(c, 'contact_name', getattr(c, 'alias', ''))
+            nw_name = cname + '_inner_notificationway'
+            # params['notificationway_name'] = nw_name
+            # nw = NotificationWay(params)
+            # self.notificationways.add_item(nw)
+            c.notificationways = [nw_name]
+
             return
 
-        if nws and not isinstance(nws[0], NotificationWay):
-            new_notifways = []
-            for nw_uuid in nws:
-                if nw_uuid not in self.notificationways:
-                    logger.warning("[WebUI] Contact %s has an unknown NW: %s", c.get_name(), nws)
-                    continue
+        new_notifways = []
+        for cnw in nws:
+            nwname = cnw.notificationway_name
+            nw = self.notificationways.find_by_name(nwname)
+            if not nw:
+                logger.debug("Creating notif way %s", nwname)
+                nw = NotificationWay([])
+                self.notificationways.add_item(nw)
+            # Now update it
+            for prop in NotificationWay.properties:
+                if hasattr(cnw, prop):
+                    setattr(nw, prop, getattr(cnw, prop))
+            new_notifways.append(nw)
 
-                nw = self.notificationways[nw_uuid]
-                logger.debug("[WebUI] Contact %s, found the NW: %s", c.get_name(), nw.__dict__)
+            # Linking the notification way
+            # With commands
+            self.linkify_commands(nw, 'host_notification_commands')
+            self.linkify_commands(nw, 'service_notification_commands')
 
-                # Linking the notification way with commands
-                self.linkify_commands(nw, 'host_notification_commands')
-                self.linkify_commands(nw, 'service_notification_commands')
+            # Now link timeperiods
+            self.linkify_a_timeperiod(nw, 'host_notification_period')
+            self.linkify_a_timeperiod(nw, 'service_notification_period')
 
-                # Now link timeperiods
-                self.linkify_a_timeperiod(nw, 'host_notification_period')
-                self.linkify_a_timeperiod(nw, 'service_notification_period')
-
-                new_notifways.append(nw)
-
-            c.notificationways = new_notifways
-        else:
-            new_notifways = []
-            for cnw in nws:
-                nwname = cnw.get_name()
-                logger.info("- notification way: %s", nwname)
-
-                nw = self.notificationways.find_by_name(nwname)
-                if nw:
-                    # Update it...
-                    for prop in NotificationWay.properties:
-                        if hasattr(cnw, prop):
-                            setattr(nw, prop, getattr(cnw, prop))
-                else:
-                    self.notificationways.add_item(cnw)
-                    nw = self.notificationways.find_by_name(nwname)
-
-                # Linking the notification way with commands
-                self.linkify_commands(nw, 'host_notification_commands')
-                self.linkify_commands(nw, 'service_notification_commands')
-
-                # Now link timeperiods
-                self.linkify_a_timeperiod(nw, 'host_notification_period')
-                self.linkify_a_timeperiod(nw, 'service_notification_period')
-
-                # # Now update it
-                # for prop in NotificationWay.properties:
-                #     if hasattr(cnw, prop):
-                #         setattr(nw, prop, getattr(cnw, prop))
-                new_notifways.append(nw)
-
-            c.notificationways = new_notifways
-
-        if c.uuid in self.contacts:
-            logger.info("Created: %s ", c.get_name())
+        c.notificationways = new_notifways
 
     # From now we only create a hostgroup with unlink data in the
     # in prepare list. We will link all of them at the end.
@@ -972,8 +852,7 @@ class Regenerator(object):
         except Exception as exp:
             logger.error("[Regenerator] manage_initial_contactgroup_status_brok Not good!  %s", str(exp))
             return
-        logger.info("Creating a contactgroup: %s from scheduler%s", cgname, inst_id)
-        logger.debug("Creating a contactgroup: %s", data)
+        logger.info("Creating a contactgroup: %s from instance%s", cgname, inst_id)
 
         # With void members
         cg = Contactgroup([])
@@ -985,30 +864,15 @@ class Regenerator(object):
         # so now only save it
         inp_contactgroups[cg.id] = cg
 
-        logger.debug("- group data: %s", cg.__dict__)
-        members = getattr(cg, 'members', [])
-        cg.members = members
-        logger.debug("- contactgroup contact members: %s", cg.members)
-        sub_groups = getattr(cg, 'contactgroup_members', [])
-        sub_groups = [] if (sub_groups and not sub_groups[0]) else sub_groups
-        cg.contactgroup_members = sub_groups
-        logger.debug("- contactgroup group members: %s", cg.contactgroup_members)
-
-        if cg.uuid in self.contactgroups:
-            logger.info("Created: %s ", cg.get_name())
-
+    # For Timeperiods we got 2 cases: do we already got the command or not.
+    # if got: just update it
+    # if not: create it and declare it in our main commands
     def manage_initial_timeperiod_status_brok(self, b):
-        """
-        For Timeperiods we got 2 cases: do we already got it or not.
-        if got: just update it
-        if not: create it and declare it in our main timeperiods
-        """
         data = b.data
         tpname = data['timeperiod_name']
         inst_id = data['instance_id']
 
-        logger.info("Creating a timeperiod: %s from scheduler %s", tpname, inst_id)
-        logger.warning("Creating a timeperiod: %s ", data)
+        logger.info("Creating a timeperiod: %s from instance %s", tpname, inst_id)
 
         tp = self.timeperiods.find_by_name(tpname)
         if tp:
@@ -1020,54 +884,25 @@ class Regenerator(object):
             # so we must restore Timeranges from the dictionary
             logger.debug("Timeperiod: %s", tp)
 
-            # Alignak :
-            # - date range: <class 'alignak.daterange.MonthWeekDayDaterange'>
-            # - time range: <type 'dict'>
-            # Shinken :
-            # - date range: <class 'shinken.daterange.MonthWeekDayDaterange'>
-            # - time range: <class 'shinken.daterange.Timerange'>
             # Transform some inner items
-            new_drs = []
             for dr in tp.dateranges:
-                new_dr = dr
-                # new_dr = Daterange(dr.syear, dr.smon, dr.smday, dr.swday, dr.swday_offset,
-                #                    dr.eyear, dr.emon, dr.emday, dr.ewday, dr.ewday_offset,
-                #                    dr.skip_interval, dr.other)
-                logger.warning("- date range: %s (%s)", type(dr), dr.__dict__)
-                # logger.warning("- date range: %s (%s)", type(new_dr), new_dr.__dict__)
                 new_trs = []
                 for tr in dr.timeranges:
-                    # Time range may be a dictionary or an object
-                    logger.debug("  time range: %s - %s", type(tr), tr)
-                    try:
-                        # Dictionary for Alignak
-                        entry = "%02d:%02d-%02d:%02d" % (tr['hstart'], tr['mstart'], tr['hend'], tr['mend'])
-                    except TypeError:
-                        # Object for Shinken
-                        entry = "%02d:%02d-%02d:%02d" % (tr.hstart, tr.mstart, tr.hend, tr.mend)
-
-                    logger.debug("  time range: %s", entry)
+                    entry = "%02d:%02d-%02d:%02d" % (tr['hstart'], tr['mstart'], tr['hend'], tr['mend'])
                     new_trs.append(Timerange(entry))
-                new_dr.timeranges = new_trs
-                logger.debug("- date range: %s", dr.__dict__)
-                new_drs.append(new_dr)
+                dr.timeranges = new_trs
 
-            tp.dateranges = new_drs
             self.timeperiods.add_item(tp)
-            logger.info("created: %s", tp.get_name())
 
+    # For command we got 2 cases: do we already got the command or not.
+    # if got: just update it
+    # if not: create it and declare it in our main commands
     def manage_initial_command_status_brok(self, b):
-        """
-        For command we got 2 cases: do we already got it or not.
-        if got: just update it
-        if not: create it and declare it in our main commands
-        """
         data = b.data
         cname = data['command_name']
         inst_id = data['instance_id']
 
-        logger.info("Creating a command: %s from scheduler %s", cname, inst_id)
-        logger.debug("Creating a command: %s ", data)
+        logger.info("Creating a command: %s from instance %s", cname, inst_id)
 
         c = self.commands.find_by_name(cname)
         if c:
@@ -1076,40 +911,6 @@ class Regenerator(object):
             c = Command({})
             self.update_element(c, data)
             self.commands.add_item(c)
-
-        logger.info("Created: %s ", c.get_name())
-
-    def manage_initial_notificationway_status_brok(self, b):
-        """
-        For notification ways we got 2 cases: do we already got it or not.
-        if got: just update it
-        if not: create it and declare it in our main commands
-        """
-        data = b.data
-        nw_name = data['notificationway_name']
-        inst_id = data['instance_id']
-
-        logger.info("Creating a notification way: %s from scheduler %s", nw_name, inst_id)
-        logger.debug("Creating a notification way: %s ", data)
-
-        nw = self.notificationways.find_by_name(nw_name)
-        if nw:
-            self.update_element(nw, data)
-        else:
-            nw = NotificationWay({})
-            self.update_element(nw, data)
-            self.notificationways.add_item(nw)
-
-        # Linking the notification way with commands
-        self.linkify_commands(nw, 'host_notification_commands')
-        self.linkify_commands(nw, 'service_notification_commands')
-
-        # Now link timeperiods
-        self.linkify_a_timeperiod(nw, 'host_notification_period')
-        self.linkify_a_timeperiod(nw, 'service_notification_period')
-
-        if nw.uuid in self.notificationways:
-            logger.info("Created: %s ", nw.get_name())
 
     def manage_initial_scheduler_status_brok(self, b):
         data = b.data
@@ -1174,10 +975,7 @@ class Regenerator(object):
             # one a minute
             if time.time() - self.last_need_data_send > 60 and self.from_q is not None:
                 logger.debug("I ask the broker for instance id data: %s", c_id)
-                if ALIGNAK:
-                    msg = Message(_type='NeedData', data={'full_instance_id': c_id}, source='WebUI')
-                else:
-                    msg = Message(id=0, type='NeedData', data={'full_instance_id': c_id}, source='WebUI')
+                msg = Message(id=0, type='NeedData', data={'full_instance_id': c_id})
                 self.from_q.put(msg)
                 self.last_need_data_send = time.time()
             return
@@ -1229,18 +1027,15 @@ class Regenerator(object):
             self.linkify_dict_srv_and_hosts(host, 'child_dependencies')
 
         # We need to rebuild Downtime and Comment relationship
-        if isinstance(host.downtimes, dict):
-            host.downtimes = host.downtimes.values()
-        for downtime in host.downtimes:
+        for downtime in host.downtimes.values():
             downtime.ref = host
             downtime.id = downtime.uuid
-
-        if isinstance(host.comments, dict):
-            host.downtimes = host.comments.values()
-        for comment in host.comments:
+        host.downtimes = host.downtimes.values()
+        for comment in host.comments.values():
             comment.ref = host
             comment.id = comment.uuid
             comment.persistent = True
+        host.comments = host.comments.values()
 
     # In fact, an update of a service is like a check return
     def manage_update_service_status_brok(self, b):
@@ -1280,19 +1075,15 @@ class Regenerator(object):
             self.linkify_dict_srv_and_hosts(service, 'parent_dependencies')
             self.linkify_dict_srv_and_hosts(service, 'child_dependencies')
 
-        # We need to rebuild Downtime and Comment relationssip
-        if isinstance(service.downtimes, dict):
-            service.downtimes = service.downtimes.values()
-        for downtime in service.downtimes:
+        for downtime in service.downtimes.values():
             downtime.ref = service
             downtime.id = downtime.uuid
-
-        if isinstance(service.comments, dict):
-            service.comments = service.comments.values()
-        for comment in service.comments:
+        service.downtimes = service.downtimes.values()
+        for comment in service.comments.values():
             comment.ref = service
             comment.id = comment.uuid
             comment.persistent = True
+        service.comments = service.comments.values()
 
     def manage_update_broker_status_brok(self, b):
         data = b.data
@@ -1344,7 +1135,6 @@ class Regenerator(object):
 # Check result and schedule part
 #################
     def manage_host_check_result_brok(self, b):
-        """This brok contains the result of an host check"""
         data = b.data
         hname = data['host_name']
 
@@ -1356,13 +1146,12 @@ class Regenerator(object):
         self.before_after_hook(b, h)
         self.update_element(h, data)
 
+    # this brok should arrive within a second after the host_check_result_brok
     def manage_host_next_schedule_brok(self, b):
-        """This brok should arrive within a second after the host_check_result_brok.
-        It contains information about the next scheduled host check"""
         self.manage_host_check_result_brok(b)
 
+    # A service check have just arrived, we UPDATE data info with this
     def manage_service_check_result_brok(self, b):
-        """A service check have just arrived, we UPDATE data info with this"""
         data = b.data
         hname = data['host_name']
         sdesc = data['service_description']
@@ -1374,7 +1163,6 @@ class Regenerator(object):
         self.before_after_hook(b, s)
         self.update_element(s, data)
 
+    # A service check update have just arrived, we UPDATE data info with this
     def manage_service_next_schedule_brok(self, b):
-        """This brok should arrive within a second after the service_check_result_brok.
-        It contains information about the next scheduled service check"""
         self.manage_service_check_result_brok(b)
