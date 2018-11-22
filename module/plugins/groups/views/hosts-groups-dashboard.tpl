@@ -81,7 +81,7 @@
          %hosts = app.datamgr.search_hosts_and_services('type:host hg:'+group.get_name(), user)
          %h = app.datamgr.get_hosts_synthesis(user=user)
          %nHosts=h['nb_elts']
-         %nGroups=len(group.hostgroup_members)
+         %nGroups=len(group.get_hostgroup_members())
          %if (i % 6)==0:
          <tr data-row="{{i}}">
          %end

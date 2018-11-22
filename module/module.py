@@ -58,17 +58,24 @@ if os.environ.get('ALIGNAK_SHINKEN_UI', None):
     if os.environ.get('ALIGNAK_SHINKEN_UI') not in ['0']:
         ALIGNAK = True
 
-# Shinken logger configuration
-from shinken.log import ColorStreamHandler, logger
-
-# Alignak / Shinken base module are slightly different
+# Alignak
 if ALIGNAK:
     from alignak.basemodule import BaseModule
-else:
-    from shinken.basemodule import BaseModule
+    from regenerator import Regenerator
 
-# Regenerate objects from the received broks
-from regenerator import Regenerator
+    # Shinken logger configuration
+    from shinken.log import logger
+    logger.register_local_log('/tmp/var/log/alignak/shinken.log', 'WARNING')
+    logger.setLevel(logging.INFO)
+    logger.warning("Using the Web UI with an Alignak framework.")
+else:
+    # Shinken import
+    from shinken.basemodule import BaseModule
+    from shinken.misc.regenerator import Regenerator
+
+    # Shinken logger configuration
+    from shinken.log import logger
+    logger.warning("Using the Web UI with a Shinken framework.")
 
 from shinken.modulesctx import modulesctx
 from shinken.modulesmanager import ModulesManager
@@ -84,21 +91,24 @@ from datamanager import WebUIDataManager
 from ui_user import User
 from helper import helper
 
-# Sub modules
+# Unused import
+# from lib.md5crypt import apache_md5_crypt, unix_md5_crypt
+
 from submodules.prefs import PrefsMetaModule
 from submodules.auth import AuthMetaModule
 from submodules.logs import LogsMetaModule
 from submodules.graphs import GraphsMetaModule
 from submodules.helpdesk import HelpdeskMetaModule
 
-# WebUI application
 root_app = bottle.default_app()
+# WebUI application
 webui_app = bottle.Bottle()
 
 # Debug
 SHINKEN_UI_DEBUG = False
 if os.environ.get('SHINKEN_UI_DEBUG', None):
     SHINKEN_UI_DEBUG = True
+    logger.warning("Using Bottle Web framework in debug mode.")
     bottle.debug(True)
 
 # Look at the webui module root dir too
@@ -156,30 +166,12 @@ class Webui_broker(BaseModule, Daemon):
     def __init__(self, modconf):
         BaseModule.__init__(self, modconf)
 
-        if SHINKEN_UI_DEBUG:
-            logger.warning("Using Bottle Web framework in debug mode.")
-
         # For Alignak ModulesManager...
         # ---
         if ALIGNAK:
             # A daemon must have these properties
             self.type = 'webui'
             self.name = 'webui'
-
-            # Shinken logger configuration
-            log_console = (getattr(modconf, 'log_console', '0') == '1')
-            if not log_console:
-                # Remove the forced color log handler
-                for hdlr in logger.handlers:
-                    if isinstance(hdlr, ColorStreamHandler):
-                        logger.removeHandler(hdlr)
-
-            log_level = getattr(modconf, 'log_level', 'INFO')
-            log_file = getattr(modconf, 'log_file', '/tmp/var/log/alignak/shinken-webui.log')
-            logger.register_local_log(log_file, log_level)
-            logger.set_human_format()
-            logger.setLevel(log_level)
-
             # I may have some modules in my configuration or not...
             self.module_type = getattr(modconf, 'module_type', 'unset')
             self.module_name = getattr(modconf, 'module_name', 'unset')

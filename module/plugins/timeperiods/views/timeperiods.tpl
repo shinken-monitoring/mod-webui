@@ -22,6 +22,10 @@
                   <td>{{timeperiod.alias}}</td>
                 </tr>
                 %end
+                <tr>
+                  <td><strong>Valid:</strong></td>
+                  <td><span class="{{'glyphicon glyphicon-ok font-green' if timeperiod.is_correct() else 'glyphicon glyphicon-remove font-red'}}"></span></td>
+                </tr>
                 %if len(timeperiod.dateranges) > 0:
                 <tr>
                   <td colspan="2"><strong>Periods:</strong></td>
@@ -38,9 +42,13 @@
                     &nbsp;(
                     %idx=0
                     %for timerange in dr.timeranges:
-                    %hr_start = ("%02d:%02d" % (getattr(timerange, 'hstart', -1), getattr(timerange, 'mstart', -1)))
-                    %hr_end = ("%02d:%02d" % (getattr(timerange,'hend', -1), getattr(timerange,'mend', -1)))
+                    %if timerange.is_valid:
+                    %hr_start = ("%02d:%02d" % (timerange.hstart, timerange.mstart))
+                    %hr_end = ("%02d:%02d" % (timerange.hend, timerange.mend))
                     <strong>{{hr_start}}-{{hr_end}}&nbsp;</strong>
+                    %else:
+                    <strong>Invalid!&nbsp;</strong>
+                    %end
                     %', ' if idx == 0 else ''
                     %idx = idx+1
                     %end
