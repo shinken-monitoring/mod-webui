@@ -59,7 +59,8 @@ if os.environ.get('ALIGNAK_SHINKEN_UI', None):
         ALIGNAK = True
 
 # Shinken logger configuration
-from shinken.log import ColorStreamHandler, logger
+from shinken.log import BrokHandler, ColorStreamHandler, logger, defaultFormatter_named, humanFormatter_named
+from shinken.log import TimedRotatingFileHandler
 
 # Alignak / Shinken base module are slightly different
 if ALIGNAK:
@@ -189,6 +190,36 @@ class Webui_broker(BaseModule, Daemon):
             # todo: set default directory for the modules directory
             self.modules_dir = getattr(modconf, 'modules_dir', '/var/lib/shinken/modules')
             logger.info("[WebUI] modules: %s in %s", self.modules, self.modules_dir)
+        else:
+            # Shinken logger configuration dedicated for the webUI
+            log_file = getattr(modconf, 'log_file', None)
+            if log_file:
+                log_level = getattr(modconf, 'log_level', 'INFO')
+                log_human_date = (getattr(modconf, 'log_human_date', '0') == '1')
+                log_backup_count = int(getattr(modconf, 'log_backup_count', '7'))
+                logger.info("[WebUI] dedicated logger, level %s in %s", log_level, log_file)
+
+                # Store the former configured log level
+                former_log_level = logger.level
+                log_level = getattr(logging, log_level, None)
+                logger.level = log_level
+
+                for handler in logger.handlers:
+                    if isinstance(handler, BrokHandler):
+                        continue
+                    handler.setLevel(former_log_level)
+
+                # Create and set-up a new handler
+                handler = TimedRotatingFileHandler(log_file, 'midnight', backupCount=log_backup_count)
+                handler.setLevel(log_level)
+                handler.setFormatter(defaultFormatter_named)
+                if log_human_date:
+                    handler.setFormatter(humanFormatter_named)
+                logger.addHandler(handler)
+
+                logger.debug("--/-- former log level: %s / new: %s", former_log_level, log_level)
+                for handler in logger.handlers:
+                    logger.debug("Handler: %s", handler.__dict__)
         # ---
 
         self.plugins = []
