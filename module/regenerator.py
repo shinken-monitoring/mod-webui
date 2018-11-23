@@ -83,6 +83,7 @@ class Regenerator(object):
         self.contactgroups = Contactgroups([])
         self.timeperiods = Timeperiods([])
         self.commands = Commands([])
+        # WebUI - Manage notification ways
         self.notificationways = NotificationWays([])
         self.schedulers = SchedulerLinks([])
         self.pollers = PollerLinks([])
@@ -111,14 +112,22 @@ class Regenerator(object):
         # The Queue where to launch message, will be fill from the broker
         self.from_q = None
 
-    # Load an external queue for sending messages
     def load_external_queue(self, from_q):
+        """Load an external queue for sending messages"""
         self.from_q = from_q
 
-    # If we are called from a scheduler it self, we load the data from it
     def load_from_scheduler(self, sched):
+        """If we are called from a scheduler it self, we load the data from it
+
+        Note that this is only when the WebUI is declared as a module of a scheduler.
+        Never seen such a configuration!
+        """
         # Ok, we are in a scheduler, so we will skip some useless steps
         self.in_scheduler_mode = True
+
+        logger.warning("Using the WebUI as a module of a scheduler "
+                       "is not recommended because not enough tested! "
+                       "You should declare the WebUI as a module in your master broker.")
 
         # Go with the data creation/load
         c = sched.conf
@@ -138,16 +147,29 @@ class Regenerator(object):
         self.contactgroups = c.contactgroups
         self.timeperiods = c.timeperiods
         self.commands = c.commands
+        # WebUI - Manage notification ways
         self.notificationways = c.notificationways
+
         # We also load the realm
         for h in self.hosts:
+            # WebUI - Manage realms if declared (Alignak)
             if getattr(h, 'realm_name', None):
                 self.realms.add(h.realm_name)
+            else:
+                # WebUI - Manage realms if declared (Shinken)
+                if getattr(h, 'realm', None):
+                    self.realms.add(h.realm)
+            # WebUI - be aware that the realm may be a string or an object
+            # This will be managed later.
             break
 
-    # If we are in a scheduler mode, some broks are dangerous, so
-    # we will skip them
     def want_brok(self, brok):
+        """If we are in a scheduler mode, some broks are dangerous,
+        so we will skip them
+
+        Note that this is only when the WebUI is declared as a module of a scheduler.
+        Never seen such a configuration!
+        """
         if self.in_scheduler_mode:
             return brok.type not in ['program_status',
                                      'initial_host_status', 'initial_hostgroup_status',
@@ -161,16 +183,15 @@ class Regenerator(object):
     def manage_brok(self, brok):
         """ Look for a manager function for a brok, and call it """
         manage = getattr(self, 'manage_' + brok.type + '_brok', None)
-        # if not manage and brok.type not in ['log']:
+        # WebUI - do not make a log because Shinken creates a brok per log!
         if not manage:
-            if brok.type not in ['log']:
-                logger.warning("Received an unmanaged brok: %s / %s", brok.type, brok.data)
             return None
 
-        if not self.want_brok(brok):
-            return None
 
-        # If we can and want it, got for it :)
+        # WebUI - Shinken uses id as a brok identifier whereas Alignak uses uuid
+        # the idea is to make every regenerated object have both identifiers. It
+        # will make it easier to migrate from Shinken to Alignak objects.
+        # This is because some broks contain objects and not only dictionaries!
 
         # Shinken uses id as a brok identifier
         if getattr(brok, 'id', None):
@@ -187,7 +208,7 @@ class Regenerator(object):
             if brok.data.get('uuid', None):
                 brok.data['id'] = brok.data['uuid']
 
-        # No id for the data contained in the brok, force set an identifier.
+        # No id for the data contained in the brok, force set on identifier.
         if brok.data.get('id', None) is None:
             brok.data['uuid'] = str(uuid.uuid4())
             brok.data['id'] = brok.data['uuid']
@@ -204,10 +225,45 @@ class Regenerator(object):
 
     # pylint: disable=no-self-use
     def update_element(self, element, data):
-        if getattr(data, 'uuid', None):
-            element.id = data.uuid
         for prop in data:
             setattr(element, prop, data[prop])
+
+    def _set_daemon_realm(self, data):
+        """Set and return the realm the daemon is attached to
+        If no realm_name attribute exist, then use the realm attribute and set as default value All if it is empty
+        """
+        if 'realm_name' not in data:
+            if 'realm' in data:
+                if data['realm']:
+                    data['realm_name'] = data['realm']
+                else:
+                    data['realm_name'] = 'All'
+            else:
+                data['realm_name'] = 'All'
+
+        self.realms.add(data['realm_name'])
+
+        return data['realm_name']
+
+    def _update_events(self, element):
+        """Update downtimes and comments for an element
+        """
+        # WebUI - manage the different downtimes and comments structures
+        # We need to rebuild Downtime and Comment relationship with their parent element
+        if isinstance(element.downtimes, dict):
+            element.downtimes = element.downtimes.values()
+        for downtime in element.downtimes:
+            downtime.ref = element
+            if getattr(downtime, 'uuid', None) is not None:
+                downtime.id = downtime.uuid
+
+        if isinstance(element.comments, dict):
+            element.comments = element.comments.values()
+        for comment in element.comments:
+            comment.ref = element
+            if getattr(comment, 'uuid', None) is not None:
+                comment.id = comment.uuid
+            comment.persistent = True
 
     # Now we get all data about an instance, link all this stuff :)
     def all_done_linking(self, inst_id):
@@ -238,7 +294,12 @@ class Regenerator(object):
             logger.error("Warning all done: %s", str(exp))
             return
 
-        # Linking TIMEPERIOD exclude with real ones now
+        # WebUI - the linkify order in this function is important because of
+        # the relations that may exist between the objects. The order changed
+        # because it was more logical to linkify timeperiods and contacts
+        # stuff before hosts and services
+
+        # WebUI - linkiify timeperiods
         for tp in self.timeperiods:
             new_exclude = []
             for ex in tp.exclude:
@@ -250,7 +311,7 @@ class Regenerator(object):
                     logger.warning("Unknown TP %s for TP: %s", exname, tp)
             tp.exclude = new_exclude
 
-        # Link CONTACTGROUPS with contacts
+        # WebUI - linkify contacts groups with their contacts
         for cg in inp_contactgroups:
             logger.debug("Contacts group: %s", cg.get_name())
             new_members = []
@@ -269,6 +330,7 @@ class Regenerator(object):
             cg = self.contactgroups.find_by_name(group.get_name())
             if cg:
                 logger.debug("- update members: %s / %s", group.members, group.contactgroup_members)
+                # Update contacts and contacts groups members
                 cg.members = group.members
                 cg.contactgroup_members = group.contactgroup_members
                 # Copy group identifiers because they will have changed after a restart
@@ -278,7 +340,7 @@ class Regenerator(object):
                 logger.debug("- add a group")
                 self.contactgroups.add_item(group)
 
-        # Link HOSTGROUPS with hosts
+        # Linkify hosts groups with their hosts
         for hg in inp_hostgroups:
             logger.debug("Hosts group: %s", hg.get_name())
             new_members = []
@@ -291,13 +353,14 @@ class Regenerator(object):
             hg.members = new_members
             logger.debug("- group members: %s", hg.members)
 
-        # Merge HOSTGROUPS with real ones
+        # Merge hosts groups with real ones
         for group in inp_hostgroups:
             logger.debug("Update existing hosts group: %s", group.get_name())
             # If the hostgroup already exist, just add the new members and groups into it
             hg = self.hostgroups.find_by_name(group.get_name())
             if hg:
                 logger.debug("- update members: %s / %s", group.members, group.hostgroup_members)
+                # Update hosts and hosts groups members
                 hg.members = group.members
                 hg.hostgroup_members = group.hostgroup_members
                 # Copy group identifiers because they will have changed after a restart
@@ -307,7 +370,7 @@ class Regenerator(object):
                 logger.debug("- add a group")
                 self.hostgroups.add_item(group)
 
-        # Now link HOSTS with hostgroups, and commands
+        # Now link hosts with their hosts groups, commands and timeperiods
         for h in inp_hosts:
             if h.hostgroups:
                 hgs = h.hostgroups
@@ -333,6 +396,8 @@ class Regenerator(object):
             # Now link timeperiods
             self.linkify_a_timeperiod_by_name(h, 'notification_period')
             self.linkify_a_timeperiod_by_name(h, 'check_period')
+
+            # WebUI - todo, check if some other periods are necessary
             self.linkify_a_timeperiod_by_name(h, 'maintenance_period')
 
             # And link contacts too
@@ -351,7 +416,7 @@ class Regenerator(object):
                 self.hosts.remove_item(old_h)
             self.hosts.add_item(h)
 
-        # Link SERVICEGROUPS with services
+        # Linkify services groups with their services
         for sg in inp_servicegroups:
             logger.debug("Services group: %s", sg.get_name())
             new_members = []
@@ -371,6 +436,7 @@ class Regenerator(object):
             sg = self.servicegroups.find_by_name(group.get_name())
             if sg:
                 logger.debug("- update members: %s / %s", group.members, group.servicegroup_members)
+                # Update services and services groups members
                 sg.members = group.members
                 sg.servicegroup_members = group.servicegroup_members
                 # Copy group identifiers because they will have changed after a restart
@@ -380,16 +446,24 @@ class Regenerator(object):
                 logger.debug("- add a group")
                 self.servicegroups.add_item(group)
 
-        # Now link SERVICES with hosts, servicesgroups, and commands
+        # Now link services with hosts, servicesgroups, commands and timeperiods
         for s in inp_services:
             if s.servicegroups:
+                sgs = s.servicegroups
+                if not isinstance(sgs, list):
+                    sgs = s.servicegroups.split(',')
                 new_groups = []
-                for group_id in s.servicegroups:
+                logger.debug("Searching servicegroup for the service %s, servicegroups: %s", s.get_name(), sgs)
+                for sgname in sgs:
                     for group in self.servicegroups:
-                        if group_id == group.uuid:
+                        if sgname == group.get_name() or sgname == group.uuid:
                             new_groups.append(group)
+                            logger.debug("Found servicegroup %s", group.get_name())
                             break
-                s.servicegroups = new_groups
+                    else:
+                        logger.warning("No servicegroup %s for service: %s", sgname, h.get_name())
+                h.servicegroups = new_groups
+                logger.debug("Linked %s servicegroups %s", h.get_name(), h.servicegroups)
 
             # Now link with host
             hname = s.host_name
@@ -426,25 +500,37 @@ class Regenerator(object):
 
         # Add realm of the hosts
         for h in inp_hosts:
+            # WebUI - Manage realms if declared (Alignak)
             if getattr(h, 'realm_name', None):
                 self.realms.add(h.realm_name)
+            else:
+                # WebUI - Manage realms if declared (Shinken)
+                if getattr(h, 'realm', None):
+                    self.realms.add(h.realm)
 
         # Now we can link all impacts/source problem list
         # but only for the new ones here of course
         for h in inp_hosts:
             self.linkify_dict_srv_and_hosts(h, 'impacts')
             self.linkify_dict_srv_and_hosts(h, 'source_problems')
-            self.linkify_host_and_hosts(h, 'parent_dependencies')
-            self.linkify_host_and_hosts(h, 'child_dependencies')
+            # todo: refactor this part for Alignak - to be tested.
+            # self.linkify_host_and_hosts(h, 'parent_dependencies')
+            # self.linkify_host_and_hosts(h, 'child_dependencies')
             self.linkify_host_and_hosts(h, 'parents')
             self.linkify_host_and_hosts(h, 'childs')
+            self.linkify_dict_srv_and_hosts(h, 'parent_dependencies')
+            self.linkify_dict_srv_and_hosts(h, 'child_dependencies')
+
 
         # Now services too
         for s in inp_services:
             self.linkify_dict_srv_and_hosts(s, 'impacts')
             self.linkify_dict_srv_and_hosts(s, 'source_problems')
-            self.linkify_service_and_services(s, 'parent_dependencies')
-            self.linkify_service_and_services(s, 'child_dependencies')
+            # todo: refactor this part for Alignak - to be tested.
+            # self.linkify_service_and_services(s, 'parent_dependencies')
+            # self.linkify_service_and_services(s, 'child_dependencies')
+            self.linkify_dict_srv_and_hosts(s, 'parent_dependencies')
+            self.linkify_dict_srv_and_hosts(s, 'child_dependencies')
 
         # clean old objects
         del self.inp_hosts[inst_id]
@@ -462,23 +548,25 @@ class Regenerator(object):
 
         logger.info("Linking objects together, end. Duration: %s", time.time() - start)
 
-    # We look for o.prop (CommandCall) and we link the inner
-    # Command() object with our real ones
     def linkify_a_command(self, o, prop):
+        """We look for o.prop (CommandCall) and we link the inner
+        Command() object with our real ones"""
         logger.debug("Linkify a command: %s", prop)
         cc = getattr(o, prop, None)
         if not cc:
             setattr(o, prop, None)
             return
 
+        # WebUI - the command must has different representation
+        # (a simple name, an object or a simple identifier)
         cmdname = cc
         if isinstance(cc, CommandCall):
             cmdname = cc.command
         cc.command = self.commands.find_by_name(cmdname)
         logger.debug("- %s = %s", prop, cc.command.get_name() if cc.command else 'None')
 
-    # We look at o.prop and for each command we relink it
     def linkify_commands(self, o, prop):
+        """We look at o.prop and for each command we relink it"""
         logger.debug("Linkify commands: %s", prop)
         v = getattr(o, prop, None)
         if not v:
@@ -487,6 +575,8 @@ class Regenerator(object):
             return
 
         for cc in v:
+            # WebUI - the command must has different representation
+            # (a simple name, an object or a simple identifier)
             cmdname = cc
             if hasattr(cc, 'command'):
                 cmdname = cc.command
@@ -496,15 +586,16 @@ class Regenerator(object):
                 cc.command = self.commands.find_by_name(cmdname)
             logger.debug("- %s = %s", prop, cc.command.get_name() if cc.command else 'None')
 
-    # We look at the timeperiod() object of o.prop
-    # and we replace it with our true one
     def linkify_a_timeperiod(self, o, prop):
+        """We look at the timeperiod() object of o.property
+        and we replace it with our true one"""
         t = getattr(o, prop, None)
         if not t:
             setattr(o, prop, None)
             return
 
         logger.debug("Linkify a timeperiod: %s, found: %s", prop, t)
+        # WebUI - if the value is an identifier, update the existing TP
         if t in self.timeperiods:
             setattr(o, prop, self.timeperiods[t])
             return
@@ -522,9 +613,9 @@ class Regenerator(object):
         tp = self.timeperiods.find_by_name(tpname)
         setattr(o, prop, tp)
 
-    # We look at o.prop and for each contacts in it,
-    # we replace it with true object in self.contacts
     def linkify_contacts(self, o, prop):
+        """We look at o.prop and for each contacts in it,
+        we replace it with true object in self.contacts"""
         v = getattr(o, prop, None)
         if not v:
             return
@@ -535,6 +626,7 @@ class Regenerator(object):
             if c:
                 new_v.append(c)
             else:
+                # WebUI - search contact by id because we did not found by name
                 for contact in self.contacts:
                     if cname == contact.uuid:
                         new_v.append(contact)
@@ -542,8 +634,8 @@ class Regenerator(object):
 
         setattr(o, prop, new_v)
 
-    # We got a service/host dict, we want to get back to a flat list
     def linkify_dict_srv_and_hosts(self, o, prop):
+        """We got a service/host dict, we want to get back to a flat list"""
         v = getattr(o, prop, None)
         if not v:
             setattr(o, prop, [])
@@ -552,6 +644,7 @@ class Regenerator(object):
         logger.debug("Linkify Dict Srv/Host for %s - %s = %s", o.get_name(), prop, v)
         new_v = []
         if 'hosts' not in v or 'services' not in v:
+            # WebUI - Alignak do not use the same structure as Shinken
             for uuid in v:
                 for host in self.hosts:
                     if uuid == host.uuid:
@@ -563,6 +656,7 @@ class Regenerator(object):
                             new_v.append(service)
                             break
         else:
+            # WebUI - plain old Shinken structure
             for name in v['services']:
                 elts = name.split('/')
                 hname = elts[0]
@@ -589,6 +683,7 @@ class Regenerator(object):
             if h:
                 new_v.append(h)
             else:
+                # WebUI - we did not found by name, let's try with an identifier
                 for host in self.hosts:
                     if hname == host.uuid:
                         new_v.append(host)
@@ -597,6 +692,7 @@ class Regenerator(object):
         setattr(o, prop, new_v)
 
     def linkify_service_and_services(self, o, prop):
+        """TODO confirm this function is useful !"""
         v = getattr(o, prop)
         if not v:
             setattr(o, prop, [])
@@ -634,12 +730,15 @@ class Regenerator(object):
 #######
 
     def manage_program_status_brok(self, b):
+        """A scheduler provides its status"""
         data = b.data
         c_id = data['instance_id']
         logger.info("Got a configuration from %s", c_id)
 
         now = time.time()
         if c_id in self.configs:
+            # WebUI - it may happen that the same scheduler sends several times its initial status brok.
+            # Let's manage this and only consider one brok per minute!
             # We already have a configuration for this scheduler instance
             if now - self.configs[c_id].timestamp < 60:
                 logger.warning("Got near initial program status for %s. Ignoring this information.", c_id)
@@ -714,8 +813,8 @@ class Regenerator(object):
 
                 logger.info("- members count after cleaning: %d members", len(sg.members))
 
-    # Get a new host. Add in in in progress tab
     def manage_initial_host_status_brok(self, b):
+        """Got a new host"""
         data = b.data
         hname = data['host_name']
         inst_id = data['instance_id']
@@ -726,38 +825,20 @@ class Regenerator(object):
         except Exception as exp:
             logger.error("[Regenerator] initial_host_status:: Not good!  %s", str(exp))
             return
-        logger.info("Creating a host: %s - %s from scheduler %s", data['id'], hname, inst_id)
+        logger.debug("Creating a host: %s - %s from scheduler %s", data['id'], hname, inst_id)
         logger.debug("Creating a host: %s ", data)
 
         host = Host({})
         self.update_element(host, data)
 
-        # We need to rebuild Downtime and Comment relationship
-        if isinstance(host.downtimes, dict):
-            host.downtimes = host.downtimes.values()
-        for downtime in host.downtimes:
-            downtime.ref = host
-            if getattr(downtime, 'uuid', None) is not None:
-                downtime.id = downtime.uuid
-
-        if isinstance(host.comments, dict):
-            host.comments = host.comments.values()
-        for comment in host.comments:
-            comment.ref = host
-            if getattr(comment, 'uuid', None) is not None:
-                comment.id = comment.uuid
-            comment.persistent = True
+        # Update downtimes/comments
+        self._update_events(host)
 
         # Ok, put in in the in progress hosts
         inp_hosts[host.id] = host
-        logger.debug("- %s is member of hostgroups: %s", host.get_name(), host.hostgroups)
 
-        if host.uuid in inp_hosts:
-            logger.info("Created: %s ", host.get_name())
-
-    # From now we only create a hostgroup in the in prepare
-    # part. We will link at the end.
     def manage_initial_hostgroup_status_brok(self, b):
+        """Got a new hosts group"""
         data = b.data
         hgname = data['hostgroup_name']
         inst_id = data['instance_id']
@@ -768,7 +849,7 @@ class Regenerator(object):
         except Exception as exp:
             logger.error("[Regenerator] initial_hostgroup_status:: Not good!   %s", str(exp))
             return
-        logger.info("Creating a hostgroup: %s from scheduler %s", hgname, inst_id)
+        logger.debug("Creating a hostgroup: %s from scheduler %s", hgname, inst_id)
         logger.debug("Creating a hostgroup: %s ", data)
 
         # With void members
@@ -781,7 +862,6 @@ class Regenerator(object):
         # so now only save it
         inp_hostgroups[hg.id] = hg
 
-        logger.debug("- group data: %s", hg.__dict__)
         members = getattr(hg, 'members', [])
         hg.members = members
         logger.debug("- hostgroup host members: %s", hg.members)
@@ -791,10 +871,8 @@ class Regenerator(object):
         hg.hostgroup_members = sub_groups
         logger.debug("- hostgroup group members: %s", hg.hostgroup_members)
 
-        if hg.uuid in self.hostgroups:
-            logger.info("Created: %s ", hg.get_name())
-
     def manage_initial_service_status_brok(self, b):
+        """Got a new service"""
         data = b.data
         hname = data['host_name']
         sdesc = data['service_description']
@@ -806,7 +884,7 @@ class Regenerator(object):
         except Exception as exp:
             logger.error("[Regenerator] host_check_result  Not good!  %s", str(exp))
             return
-        logger.info("Creating a service: %s - %s/%s from scheduler%s", data['id'], hname, sdesc, inst_id)
+        logger.debug("Creating a service: %s - %s/%s from scheduler%s", data['id'], hname, sdesc, inst_id)
         logger.debug("Creating a service: %s ", data)
 
         if isinstance(data['display_name'], list):
@@ -815,31 +893,14 @@ class Regenerator(object):
         service = Service({})
         self.update_element(service, data)
 
-        # We need to rebuild Downtime and Comment relationssip
-        if isinstance(service.downtimes, dict):
-            service.downtimes = service.downtimes.values()
-        for downtime in service.downtimes:
-            downtime.ref = service
-            if getattr(downtime, 'uuid', None) is not None:
-                downtime.id = downtime.uuid
-
-        if isinstance(service.comments, dict):
-            service.comments = service.comments.values()
-        for comment in service.comments:
-            comment.ref = service
-            if getattr(comment, 'uuid', None) is not None:
-                comment.id = comment.uuid
-            comment.persistent = True
+        # Update downtimes/comments
+        self._update_events(service)
 
         # Ok, put in in the in progress hosts
         inp_services[service.id] = service
 
-        if service.uuid in inp_services:
-            logger.info("Created: %s ", service.get_name())
-
-    # We create a servicegroup in our in progress part
-    # we will link it after
     def manage_initial_servicegroup_status_brok(self, b):
+        """Got a new services group"""
         data = b.data
         sgname = data['servicegroup_name']
         inst_id = data['instance_id']
@@ -850,7 +911,7 @@ class Regenerator(object):
         except Exception as exp:
             logger.error("[Regenerator] manage_initial_servicegroup_status_brok:: Not good!  %s", str(exp))
             return
-        logger.info("Creating a servicegroup: %s from scheduler%s", sgname, inst_id)
+        logger.debug("Creating a servicegroup: %s from scheduler%s", sgname, inst_id)
         logger.debug("Creating a servicegroup: %s ", data)
 
         # With void members
@@ -863,7 +924,6 @@ class Regenerator(object):
         # so now only save it
         inp_servicegroups[sg.id] = sg
 
-        logger.debug("- group data: %s", sg.__dict__)
         members = getattr(sg, 'members', [])
         sg.members = members
         logger.debug("- servicegroup service members: %s", sg.members)
@@ -872,9 +932,6 @@ class Regenerator(object):
         sub_groups = [] if (sub_groups and not sub_groups[0]) else sub_groups
         sg.servicegroup_members = sub_groups
         logger.debug("- servicegroup group members: %s", sg.servicegroup_members)
-
-        if sg.uuid in self.servicegroups:
-            logger.info("Created: %s ", sg.get_name())
 
     def manage_initial_contact_status_brok(self, b):
         """
@@ -887,7 +944,7 @@ class Regenerator(object):
         cname = data['contact_name']
         inst_id = data['instance_id']
 
-        logger.info("Creating a contact: %s from scheduler %s", cname, inst_id)
+        logger.debug("Creating a contact: %s from scheduler %s", cname, inst_id)
         logger.debug("Creating a contact: %s", data)
 
         c = self.contacts.find_by_name(cname)
@@ -899,11 +956,11 @@ class Regenerator(object):
             self.contacts.add_item(c)
 
         # Delete some useless contact values
-        # Keep these values, may be interesting in the UI!
-        # del c.host_notification_commands
-        # del c.service_notification_commands
-        # del c.host_notification_period
-        # del c.service_notification_period
+        # WebUI - todo, perharps we should not nullify these values!
+        del c.host_notification_commands
+        del c.service_notification_commands
+        del c.host_notification_period
+        del c.service_notification_period
 
         # Now manage notification ways too
         # Same than for contacts. We create or
@@ -914,6 +971,7 @@ class Regenerator(object):
             return
 
         if nws and not isinstance(nws[0], NotificationWay):
+            # Alignak sends notification ways as dictionaries
             new_notifways = []
             for nw_uuid in nws:
                 if nw_uuid not in self.notificationways:
@@ -935,10 +993,11 @@ class Regenerator(object):
 
             c.notificationways = new_notifways
         else:
+            # Shinken old way...
             new_notifways = []
             for cnw in nws:
                 nwname = cnw.get_name()
-                logger.info("- notification way: %s", nwname)
+                logger.debug("- notification way: %s", nwname)
 
                 nw = self.notificationways.find_by_name(nwname)
                 if nw:
@@ -958,20 +1017,12 @@ class Regenerator(object):
                 self.linkify_a_timeperiod(nw, 'host_notification_period')
                 self.linkify_a_timeperiod(nw, 'service_notification_period')
 
-                # # Now update it
-                # for prop in NotificationWay.properties:
-                #     if hasattr(cnw, prop):
-                #         setattr(nw, prop, getattr(cnw, prop))
                 new_notifways.append(nw)
 
             c.notificationways = new_notifways
 
-        if c.uuid in self.contacts:
-            logger.info("Created: %s ", c.get_name())
-
-    # From now we only create a hostgroup with unlink data in the
-    # in prepare list. We will link all of them at the end.
     def manage_initial_contactgroup_status_brok(self, b):
+        """Got a new contacts group"""
         data = b.data
         cgname = data['contactgroup_name']
         inst_id = data['instance_id']
@@ -982,7 +1033,7 @@ class Regenerator(object):
         except Exception as exp:
             logger.error("[Regenerator] manage_initial_contactgroup_status_brok Not good!  %s", str(exp))
             return
-        logger.info("Creating a contactgroup: %s from scheduler%s", cgname, inst_id)
+        logger.debug("Creating a contactgroup: %s from scheduler%s", cgname, inst_id)
         logger.debug("Creating a contactgroup: %s", data)
 
         # With void members
@@ -995,7 +1046,6 @@ class Regenerator(object):
         # so now only save it
         inp_contactgroups[cg.id] = cg
 
-        logger.debug("- group data: %s", cg.__dict__)
         members = getattr(cg, 'members', [])
         cg.members = members
         logger.debug("- contactgroup contact members: %s", cg.members)
@@ -1003,9 +1053,6 @@ class Regenerator(object):
         sub_groups = [] if (sub_groups and not sub_groups[0]) else sub_groups
         cg.contactgroup_members = sub_groups
         logger.debug("- contactgroup group members: %s", cg.contactgroup_members)
-
-        if cg.uuid in self.contactgroups:
-            logger.info("Created: %s ", cg.get_name())
 
     def manage_initial_timeperiod_status_brok(self, b):
         """
@@ -1017,8 +1064,8 @@ class Regenerator(object):
         tpname = data['timeperiod_name']
         inst_id = data['instance_id']
 
-        logger.info("Creating a timeperiod: %s from scheduler %s", tpname, inst_id)
-        logger.warning("Creating a timeperiod: %s ", data)
+        logger.debug("Creating a timeperiod: %s from scheduler %s", tpname, inst_id)
+        logger.debug("Creating a timeperiod: %s ", data)
 
         tp = self.timeperiods.find_by_name(tpname)
         if tp:
@@ -1030,6 +1077,7 @@ class Regenerator(object):
             # so we must restore Timeranges from the dictionary
             logger.debug("Timeperiod: %s", tp)
 
+            # WebUI - try to manage time periods correctly!
             # Alignak :
             # - date range: <class 'alignak.daterange.MonthWeekDayDaterange'>
             # - time range: <type 'dict'>
@@ -1043,7 +1091,7 @@ class Regenerator(object):
                 # new_dr = Daterange(dr.syear, dr.smon, dr.smday, dr.swday, dr.swday_offset,
                 #                    dr.eyear, dr.emon, dr.emday, dr.ewday, dr.ewday_offset,
                 #                    dr.skip_interval, dr.other)
-                logger.warning("- date range: %s (%s)", type(dr), dr.__dict__)
+                logger.debug("- date range: %s (%s)", type(dr), dr.__dict__)
                 # logger.warning("- date range: %s (%s)", type(new_dr), new_dr.__dict__)
                 new_trs = []
                 for tr in dr.timeranges:
@@ -1064,7 +1112,6 @@ class Regenerator(object):
 
             tp.dateranges = new_drs
             self.timeperiods.add_item(tp)
-            logger.info("created: %s", tp.get_name())
 
     def manage_initial_command_status_brok(self, b):
         """
@@ -1076,7 +1123,7 @@ class Regenerator(object):
         cname = data['command_name']
         inst_id = data['instance_id']
 
-        logger.info("Creating a command: %s from scheduler %s", cname, inst_id)
+        logger.debug("Creating a command: %s from scheduler %s", cname, inst_id)
         logger.debug("Creating a command: %s ", data)
 
         c = self.commands.find_by_name(cname)
@@ -1086,8 +1133,6 @@ class Regenerator(object):
             c = Command({})
             self.update_element(c, data)
             self.commands.add_item(c)
-
-        logger.info("Created: %s ", c.get_name())
 
     def manage_initial_notificationway_status_brok(self, b):
         """
@@ -1122,6 +1167,7 @@ class Regenerator(object):
             logger.info("Created: %s ", nw.get_name())
 
     def manage_initial_scheduler_status_brok(self, b):
+        """Got a scheduler status"""
         data = b.data
         scheduler_name = data['scheduler_name']
         sched = SchedulerLink({})
@@ -1129,6 +1175,7 @@ class Regenerator(object):
         self.schedulers[scheduler_name] = sched
 
     def manage_initial_poller_status_brok(self, b):
+        """Got a poller status"""
         data = b.data
         poller_name = data['poller_name']
         poller = PollerLink({})
@@ -1136,6 +1183,7 @@ class Regenerator(object):
         self.pollers[poller_name] = poller
 
     def manage_initial_reactionner_status_brok(self, b):
+        """Got a reactionner status"""
         data = b.data
         reactionner_name = data['reactionner_name']
         reac = ReactionnerLink({})
@@ -1143,6 +1191,7 @@ class Regenerator(object):
         self.reactionners[reactionner_name] = reac
 
     def manage_initial_broker_status_brok(self, b):
+        """Got a broker status"""
         data = b.data
         broker_name = data['broker_name']
 
@@ -1154,15 +1203,17 @@ class Regenerator(object):
         self.brokers[broker_name] = broker
 
     def manage_initial_receiver_status_brok(self, b):
+        """Got a receiver status"""
         data = b.data
         receiver_name = data['receiver_name']
         receiver = ReceiverLink({})
         self.update_element(receiver, data)
         self.receivers[receiver_name] = receiver
 
-    # This brok is here when the WHOLE initial phase is done.
-    # So we got all data, we can link all together :)
     def manage_initial_broks_done_brok(self, b):
+        """This brok is here when the WHOLE initial phase is done.
+        It is the last brok sent by the scheduler.
+        So we got all data, we can link all together :)"""
         inst_id = b.data['instance_id']
         self.all_done_linking(inst_id)
 
@@ -1196,8 +1247,15 @@ class Regenerator(object):
         c = self.configs[c_id]
         self.update_element(c, data)
 
-    # In fact, an update of a host is like a check return
     def manage_update_host_status_brok(self, b):
+        """Got an host update
+        Something changed in the host configuration"""
+        data = b.data
+        hname = data['host_name']
+        host = self.hosts.find_by_name(hname)
+        if not host:
+            return
+
         # There are some properties that should not change and are already linked
         # so just remove them
         clean_prop = ['uuid', 'check_command', 'hostgroups',
@@ -1209,9 +1267,10 @@ class Regenerator(object):
         toplogy_change = b.data['topology_change']
         if not toplogy_change:
             # No childs property in Alignak hosts
-            # other_to_clean = ['childs', 'parents', 'child_dependencies', 'parent_dependencies']
-            other_to_clean = ['parents', 'child_dependencies', 'parent_dependencies']
-            clean_prop.extend(other_to_clean)
+            if ALIGNAK:
+                clean_prop.extend(['parents', 'child_dependencies', 'parent_dependencies'])
+            else:
+                clean_prop.extend(['childs', 'parents', 'child_dependencies', 'parent_dependencies'])
 
         data = b.data
         for prop in clean_prop:
@@ -1238,24 +1297,12 @@ class Regenerator(object):
             self.linkify_dict_srv_and_hosts(host, 'parent_dependencies')
             self.linkify_dict_srv_and_hosts(host, 'child_dependencies')
 
-        # We need to rebuild Downtime and Comment relationship
-        if isinstance(host.downtimes, dict):
-            host.downtimes = host.downtimes.values()
-        for downtime in host.downtimes:
-            downtime.ref = host
-            if getattr(downtime, 'uuid', None) is not None:
-                downtime.id = downtime.uuid
+        # Update downtimes/comments
+        self._update_events(host)
 
-        if isinstance(host.comments, dict):
-            host.comments = host.comments.values()
-        for comment in host.comments:
-            comment.ref = host
-            if getattr(comment, 'uuid', None) is not None:
-                comment.id = comment.uuid
-            comment.persistent = True
-
-    # In fact, an update of a service is like a check return
     def manage_update_service_status_brok(self, b):
+        """Got a service update
+        Something changed in the service configuration"""
         # There are some properties that should not change and are already linked
         # so just remove them
         clean_prop = ['uuid', 'check_command', 'servicegroups',
@@ -1266,8 +1313,7 @@ class Regenerator(object):
         # some are only use when a topology change happened
         toplogy_change = b.data['topology_change']
         if not toplogy_change:
-            other_to_clean = ['child_dependencies', 'parent_dependencies']
-            clean_prop.extend(other_to_clean)
+            clean_prop.extend(['child_dependencies', 'parent_dependencies'])
 
         data = b.data
         for prop in clean_prop:
@@ -1292,32 +1338,21 @@ class Regenerator(object):
             self.linkify_dict_srv_and_hosts(service, 'parent_dependencies')
             self.linkify_dict_srv_and_hosts(service, 'child_dependencies')
 
-        # We need to rebuild Downtime and Comment relationssip
-        if isinstance(service.downtimes, dict):
-            service.downtimes = service.downtimes.values()
-        for downtime in service.downtimes:
-            downtime.ref = service
-            if getattr(downtime, 'uuid', None) is not None:
-                downtime.id = downtime.uuid
-
-        if isinstance(service.comments, dict):
-            service.comments = service.comments.values()
-        for comment in service.comments:
-            comment.ref = service
-            if getattr(comment, 'uuid', None) is not None:
-                comment.id = comment.uuid
-            comment.persistent = True
+        # Update downtimes/comments
+        self._update_events(service)
 
     def manage_update_broker_status_brok(self, b):
+        """Got a broker status update"""
         data = b.data
         broker_name = data['broker_name']
         try:
             s = self.brokers[broker_name]
             self.update_element(s, data)
-        except Exception:
-            pass
+        except Exception as exp:
+            logger.warning("Failed updating daemon status: %s", exp)
 
     def manage_update_receiver_status_brok(self, b):
+        """Got a receiver status update"""
         data = b.data
         receiver_name = data['receiver_name']
         try:
@@ -1327,6 +1362,7 @@ class Regenerator(object):
             pass
 
     def manage_update_reactionner_status_brok(self, b):
+        """Got a reactionner status update"""
         data = b.data
         reactionner_name = data['reactionner_name']
         try:
@@ -1336,6 +1372,7 @@ class Regenerator(object):
             pass
 
     def manage_update_poller_status_brok(self, b):
+        """Got a poller status update"""
         data = b.data
         poller_name = data['poller_name']
         try:
@@ -1345,6 +1382,7 @@ class Regenerator(object):
             pass
 
     def manage_update_scheduler_status_brok(self, b):
+        """Got a scheduler status update"""
         data = b.data
         scheduler_name = data['scheduler_name']
         try:
