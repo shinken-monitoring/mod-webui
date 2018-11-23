@@ -82,7 +82,7 @@
       <li id="overall-framework-states">
          %state = app.datamgr.get_framework_status()
          %color = 'font-critical' if state == 2 else 'font-warning' if state > 0 else ''
-         <a id="framework-state" class="btn btn-primary" href="/system">
+         <a id="framework-state" class="btn btn-primary" href="/system" title="Monitoring framework status">
             <i class="fa fa-heartbeat {{ color }}"></i>
          </a>
       </li>
