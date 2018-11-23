@@ -71,6 +71,7 @@ pages = {
         'widget': ['dashboard'],
         'widget_desc': widget_desc,
         'widget_name': 'depgraph',
+        'widget_alias': 'Dependency graph',
         'widget_picture': '/static/depgraph/img/widget_depgraph.png',
         'deprecated': True
     }

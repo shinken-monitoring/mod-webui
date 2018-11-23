@@ -170,7 +170,10 @@ pages = {
     },
     get_graphs_widget: {
         'name': 'wid_Graph', 'route': '/widget/graphs', 'view': 'widget_graphs',
-        'widget': ['dashboard'], 'widget_desc': widget_desc, 'widget_name': 'graphs',
+        'widget': ['dashboard'],
+        'widget_desc': widget_desc,
+        'widget_name': 'graphs',
+        'widget_alias': 'Graphs',
         'widget_picture': '/static/graphs/img/widget_graphs.png',
         'static': True
     },

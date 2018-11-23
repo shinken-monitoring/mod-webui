@@ -521,14 +521,13 @@ class Webui_broker(BaseModule, Daemon):
             logger.warning("[WebUI] --------------------------------------------------")
         else:
             if ALIGNAK:
-                logger.warning("Sending command to Alignak: %s", e)
+                logger.info("Sending command to Alignak: %s", e)
                 req = requests.Session()
                 raw_data = req.get("http://localhost:7770/command",
                                    params={'command': e.cmd_line})
-                logger.warning("Result: %s", raw_data.content)
+                logger.info("Result: %s", raw_data.content)
             else:
                 try:
-                    logger.warning("[WebUI] from_q: %s", self.from_q)
                     self.from_q.put(e)
                 except Exception as exp:
                     logger.error("[WebUI] External command push, exception: %s", str(exp))
@@ -725,16 +724,18 @@ class Webui_broker(BaseModule, Daemon):
                 # It's a valid widget entry if it got all data, and at least one route
                 # ONLY the first route will be used for Add!
                 widget_lst = entry.get('widget', [])
-                widget_desc = entry.get('widget_desc', None)
                 widget_name = entry.get('widget_name', None)
+                widget_desc = entry.get('widget_desc', widget_name)
+                widget_alias = entry.get('widget_alias', widget_name)
                 widget_picture = entry.get('widget_picture', None)
                 deprecated = entry.get('deprecated', False)
-                if widget_name and widget_desc and widget_lst != [] and route:
+                if widget_name and widget_lst and route:
                     for place in widget_lst:
                         if place not in self.widgets:
                             self.widgets[place] = []
                         self.widgets[place].append({
                             'widget_name': widget_name,
+                            'widget_alias': widget_alias,
                             'widget_desc': widget_desc,
                             'base_uri': route,
                             'widget_picture': widget_picture,
