@@ -573,6 +573,9 @@ footer nav {
     bottom: 0%;
     /*left: 0px; bottom: 30px;*/
 }
+#action-menu {
+    margin-bottom: 75px;
+}
 #action-menu li {
     border-bottom: 1px solid #e7e7e7;
 }

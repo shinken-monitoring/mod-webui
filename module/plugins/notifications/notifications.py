@@ -58,6 +58,7 @@ pages = {
         'widget': ['dashboard'],
         'widget_desc': notification_toggle_widget_desc,
         'widget_name': 'notification_toggle',
+        'widget_alias': 'System notifications',
         'widget_picture': '/static/notifications/img/widget_notification_toggle.png',  # noqa
     }
 }

@@ -165,6 +165,7 @@ pages = {
         'widget': ['dashboard'],
         'widget_desc': widget_desc,
         'widget_name': 'worldmap',
+        'widget_alias': 'Worldmap',
         'widget_picture': '/static/worldmap/img/widget_worldmap.png',
         'static': True
     }

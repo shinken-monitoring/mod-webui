@@ -346,6 +346,7 @@ pages = {
         'widget': ['dashboard'],
         'widget_desc': widget_desc,
         'widget_name': 'helpdesk',
+        'widget_alias': 'Helpdesk',
         'widget_picture': '/static/helpdesk/img/widget_helpdesk.png',
         'static': True
     }
