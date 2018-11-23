@@ -150,18 +150,12 @@ class Regenerator(object):
         # WebUI - Manage notification ways
         self.notificationways = c.notificationways
 
-        # We also load the realm
+        # We also load the realms
         for h in self.hosts:
-            # WebUI - Manage realms if declared (Alignak)
-            if getattr(h, 'realm_name', None):
-                self.realms.add(h.realm_name)
-            else:
-                # WebUI - Manage realms if declared (Shinken)
-                if getattr(h, 'realm', None):
-                    self.realms.add(h.realm)
+            # WebUI - Manage realms if declared (use realm_name, or realm or default 'All')
+            self.realms.add(getattr(h, 'realm_name', getattr(h, 'realm', 'All')))
             # WebUI - be aware that the realm may be a string or an object
             # This will be managed later.
-            break
 
     def want_brok(self, brok):
         """If we are in a scheduler mode, some broks are dangerous,
@@ -185,7 +179,7 @@ class Regenerator(object):
         manage = getattr(self, 'manage_' + brok.type + '_brok', None)
         # WebUI - do not make a log because Shinken creates a brok per log!
         if not manage:
-            return None
+            return
 
 
         # WebUI - Shinken uses id as a brok identifier whereas Alignak uses uuid
@@ -217,33 +211,25 @@ class Regenerator(object):
 
         try:
             # Catch all the broks management exceptions to avoid breaking the module
-            rc = manage(brok)
+            manage(brok)
         except Exception as exp:
             logger.error("Exception on brok management: %s", str(exp))
             logger.error("Brok '%s': %s", brok.type, brok.data)
-        return rc
 
     # pylint: disable=no-self-use
     def update_element(self, element, data):
         for prop in data:
             setattr(element, prop, data[prop])
 
-    def _set_daemon_realm(self, data):
+    def _update_realm(self, data):
         """Set and return the realm the daemon is attached to
         If no realm_name attribute exist, then use the realm attribute and set as default value All if it is empty
         """
         if 'realm_name' not in data:
-            if 'realm' in data:
-                if data['realm']:
-                    data['realm_name'] = data['realm']
-                else:
-                    data['realm_name'] = 'All'
-            else:
-                data['realm_name'] = 'All'
+            data['realm_name'] = data.get('realm', None) or 'All'
 
+        # Update realms list
         self.realms.add(data['realm_name'])
-
-        return data['realm_name']
 
     def _update_events(self, element):
         """Update downtimes and comments for an element
@@ -604,8 +590,8 @@ class Regenerator(object):
         tp = self.timeperiods.find_by_name(tpname)
         setattr(o, prop, tp)
 
-    # same than before, but the value is a string here
     def linkify_a_timeperiod_by_name(self, o, prop):
+        """same than before, but the value is a string here"""
         tpname = getattr(o, prop, None)
         if not tpname:
             setattr(o, prop, None)
@@ -1170,7 +1156,9 @@ class Regenerator(object):
         """Got a scheduler status"""
         data = b.data
         scheduler_name = data['scheduler_name']
+
         sched = SchedulerLink({})
+        self._update_realm(data)
         self.update_element(sched, data)
         self.schedulers[scheduler_name] = sched
 
@@ -1178,7 +1166,9 @@ class Regenerator(object):
         """Got a poller status"""
         data = b.data
         poller_name = data['poller_name']
+
         poller = PollerLink({})
+        self._update_realm(data)
         self.update_element(poller, data)
         self.pollers[poller_name] = poller
 
@@ -1186,7 +1176,9 @@ class Regenerator(object):
         """Got a reactionner status"""
         data = b.data
         reactionner_name = data['reactionner_name']
+
         reac = ReactionnerLink({})
+        self._update_realm(data)
         self.update_element(reac, data)
         self.reactionners[reactionner_name] = reac
 
@@ -1196,17 +1188,17 @@ class Regenerator(object):
         broker_name = data['broker_name']
 
         broker = BrokerLink({})
-
+        self._update_realm(data)
         self.update_element(broker, data)
-
-        # print "CMD:", c
         self.brokers[broker_name] = broker
 
     def manage_initial_receiver_status_brok(self, b):
         """Got a receiver status"""
         data = b.data
         receiver_name = data['receiver_name']
+
         receiver = ReceiverLink({})
+        self._update_realm(data)
         self.update_element(receiver, data)
         self.receivers[receiver_name] = receiver
 
@@ -1341,56 +1333,42 @@ class Regenerator(object):
         # Update downtimes/comments
         self._update_events(service)
 
+    def _update_satellite_status(self, sat_list, sat_name, data):
+        """Update a satellite status"""
+        logger.debug("Update satellite '%s' status: %s", sat_name, data)
+
+        try:
+            # Get the satellite object
+            s = sat_list[sat_name]
+            # Update its realm
+            self._update_realm(data)
+            # Update its properties
+            self.update_element(s, data)
+        except KeyError:
+            # Not yet known
+            pass
+        except Exception as exp:
+            logger.warning("Failed updating %s satellite status: %s", sat_name, exp)
+
     def manage_update_broker_status_brok(self, b):
         """Got a broker status update"""
-        data = b.data
-        broker_name = data['broker_name']
-        try:
-            s = self.brokers[broker_name]
-            self.update_element(s, data)
-        except Exception as exp:
-            logger.warning("Failed updating daemon status: %s", exp)
+        self._update_satellite_status(self.brokers, b.data['broker_name'], b.data)
 
     def manage_update_receiver_status_brok(self, b):
         """Got a receiver status update"""
-        data = b.data
-        receiver_name = data['receiver_name']
-        try:
-            s = self.receivers[receiver_name]
-            self.update_element(s, data)
-        except Exception:
-            pass
+        self._update_satellite_status(self.receivers, b.data['receiver_name'], b.data)
 
     def manage_update_reactionner_status_brok(self, b):
         """Got a reactionner status update"""
-        data = b.data
-        reactionner_name = data['reactionner_name']
-        try:
-            s = self.reactionners[reactionner_name]
-            self.update_element(s, data)
-        except Exception:
-            pass
+        self._update_satellite_status(self.reactionners, b.data['reactionner_name'], b.data)
 
     def manage_update_poller_status_brok(self, b):
         """Got a poller status update"""
-        data = b.data
-        poller_name = data['poller_name']
-        try:
-            s = self.pollers[poller_name]
-            self.update_element(s, data)
-        except Exception:
-            pass
+        self._update_satellite_status(self.pollers, b.data['poller_name'], b.data)
 
     def manage_update_scheduler_status_brok(self, b):
         """Got a scheduler status update"""
-        data = b.data
-        scheduler_name = data['scheduler_name']
-        try:
-            s = self.schedulers[scheduler_name]
-            self.update_element(s, data)
-            # print "S:", s
-        except Exception:
-            pass
+        self._update_satellite_status(self.schedulers, b.data['scheduler_name'], b.data)
 
 #################
 # Check result and schedule part
