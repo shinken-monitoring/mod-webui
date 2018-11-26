@@ -1,4 +1,4 @@
-%rebase("fullscreen", css=['dashboard/css/currently.css'], js=['js/shinken-actions.js', 'dashboard/js/Chart.js'], title='Shinken currently')
+%rebase("fullscreen", css=['dashboard/css/currently.css'], js=['dashboard/js/Chart.js'], title='Shinken currently')
 %import json
 
 %user = app.get_user()
