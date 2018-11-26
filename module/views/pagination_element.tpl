@@ -2,14 +2,15 @@
 %setdefault('div_class', "pull-right")
 %setdefault('ul_class', "")
 %setdefault('div_style', "margin-top:-15px;")
+%setdefault('drop', "dropup")
 
 <div class="{{ div_class }}" style="{{ div_style }}">
   %if display_steps_form and elts_per_page is not None:
   <ul class="pagination {{ ul_class }}" >
     <li>
-      <form id="elts_per_page" class="pull-left">
+      <form id="elts_per_page" method="get" action="/{{page}}">
        <div class="input-group" style="width:120px">
-         <div class="input-group-btn dropup">
+         <div class="input-group-btn {{drop}}">
            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">#&nbsp;<span class="caret"></span></button>
            <ul class="dropdown-menu" role="menu">
              <li><a href="#" data-elts="5">5 elements</a></li>
@@ -19,7 +20,7 @@
              <li><a href="#" data-elts="100">100 elements</a></li>
            </ul>
          </div>
-         <input type="number" class="form-control" aria-label="Elements per page" placeholder="Elements per page ..." value="{{elts_per_page}}" style="max-width: 100px;">
+         <input id="step" name="step" type="number" class="form-control" aria-label="Elements per page" placeholder="Elements per page ..." value="{{elts_per_page}}" style="max-width: 100px;">
        </div>
       </form>
     </li>
@@ -27,19 +28,21 @@
     var current_elts_per_page = {{elts_per_page}};
     $("#elts_per_page li a").click(function(e){
       var value = $(this).data('elts');
-      
+
       // Save user preference
       save_user_preference('elts_per_page', value);
-      
+
       // Update input field
       $('#elts_per_page input').val(value);
-      
+
       current_elts_per_page = value;
 
-      e.preventDefault();
+      $("#elts_per_page").submit();
+      //e.preventDefault();
     });
     $('#elts_per_page form').submit(function(e){
       var value = $('#elts_per_page input').val();
+      console.log("Submit: ", value);
 
       if (value == parseInt(value)) {
          // Update input field
@@ -49,10 +52,12 @@
          $('#elts_per_page input').val(current_elts_per_page);
       }
 
-      e.preventDefault();
+      $("#elts_per_page").submit();
+      //e.preventDefault();
     });
     $('#elts_per_page input').blur(function(e){
       var value = $('#elts_per_page input').val();
+      console.log("Blur: ", value);
 
       if (value == parseInt(value)) {
          // Update input field
@@ -62,15 +67,16 @@
          $('#elts_per_page input').val(current_elts_per_page);
       }
 
-      e.preventDefault();
+      $("#elts_per_page").submit();
+      //e.preventDefault();
     });
     </script>
   </ul>
   %end
-  
+
   %if navi and len(navi) > 1:
   <ul class="pagination {{ ul_class }}" >
-    
+
     %from urllib import urlencode
 
     %for name, start, end, is_current in navi:
