@@ -35,6 +35,7 @@ Some small modifications introduced by Alignak are managed in this class.
 import os
 import time
 import uuid
+import traceback
 
 # Import all objects we will need
 from shinken.objects.host import Host, Hosts
@@ -214,6 +215,7 @@ class Regenerator(object):
             manage(brok)
         except Exception as exp:
             logger.error("Exception on brok management: %s", str(exp))
+            logger.error("Traceback: %s", traceback.format_exc())
             logger.error("Brok '%s': %s", brok.type, brok.data)
 
     # pylint: disable=no-self-use
@@ -326,6 +328,20 @@ class Regenerator(object):
                 logger.debug("- add a group")
                 self.contactgroups.add_item(group)
 
+        # Merge contactgroups with real ones
+        for group in inp_contactgroups:
+            # Link with the other groups
+            new_groups = []
+            for cgname in group.contactgroup_members:
+                for cg in self.contactgroups:
+                    if cgname == cg.get_name() or cgname == cg.uuid:
+                        new_groups.append(cg)
+                        logger.debug("Found contactgroup %s", cg.get_name())
+                        break
+                else:
+                    logger.warning("No contactgroup %s for contactgroup: %s", cgname, group.get_name())
+            group.contactgroup_members = new_groups
+
         # Linkify hosts groups with their hosts
         for hg in inp_hostgroups:
             logger.debug("Hosts group: %s", hg.get_name())
@@ -355,6 +371,20 @@ class Regenerator(object):
             else:
                 logger.debug("- add a group")
                 self.hostgroups.add_item(group)
+
+        # Merge hosts groups with real ones
+        for group in inp_hostgroups:
+            # Link with the other groups
+            new_groups = []
+            for hgname in group.hostgroup_members:
+                for hg in self.hostgroups:
+                    if hgname == hg.get_name() or hgname == hg.uuid:
+                        new_groups.append(hg)
+                        logger.debug("Found hostgroup %s", hg.get_name())
+                        break
+                else:
+                    logger.warning("No hostgroup %s for hostgroup: %s", hgname, group.get_name())
+            group.hostgroup_members = new_groups
 
         # Now link hosts with their hosts groups, commands and timeperiods
         for h in inp_hosts:
@@ -415,7 +445,7 @@ class Regenerator(object):
             sg.members = new_members
             logger.debug("- group members: %s", sg.members)
 
-        # Merge SERVICEGROUPS with real ones
+        # Merge services groups with real ones
         for group in inp_servicegroups:
             logger.debug("Update existing services group: %s", group.get_name())
             # If the servicegroup already exist, just add the new services into it
@@ -431,6 +461,20 @@ class Regenerator(object):
             else:
                 logger.debug("- add a group")
                 self.servicegroups.add_item(group)
+
+        # Merge services groups with real ones
+        for group in inp_servicegroups:
+            # Link with the other groups
+            new_groups = []
+            for sgname in group.servicegroup_members:
+                for sg in self.servicegroups:
+                    if sgname == sg.get_name() or sgname == sg.uuid:
+                        new_groups.append(sg)
+                        logger.debug("Found servicegroup %s", sg.get_name())
+                        break
+                else:
+                    logger.warning("No servicegroup %s for servicegroup: %s", sgname, group.get_name())
+            group.servicegroup_members = new_groups
 
         # Now link services with hosts, servicesgroups, commands and timeperiods
         for s in inp_services:
@@ -506,7 +550,6 @@ class Regenerator(object):
             self.linkify_host_and_hosts(h, 'childs')
             self.linkify_dict_srv_and_hosts(h, 'parent_dependencies')
             self.linkify_dict_srv_and_hosts(h, 'child_dependencies')
-
 
         # Now services too
         for s in inp_services:
@@ -849,11 +892,15 @@ class Regenerator(object):
         inp_hostgroups[hg.id] = hg
 
         members = getattr(hg, 'members', [])
+        if not isinstance(members, list):
+            members = members.split(',')
         hg.members = members
         logger.debug("- hostgroup host members: %s", hg.members)
         # It looks like Shinken do not provide sub groups this information!
         sub_groups = getattr(hg, 'hostgroup_members', [])
-        sub_groups = [] if (sub_groups and not sub_groups[0]) else sub_groups
+        if not isinstance(sub_groups, list):
+            sub_groups = sub_groups.split(',')
+        sub_groups = [] if (sub_groups and not sub_groups[0]) else [g.strip() for g in sub_groups]
         hg.hostgroup_members = sub_groups
         logger.debug("- hostgroup group members: %s", hg.hostgroup_members)
 
@@ -911,11 +958,15 @@ class Regenerator(object):
         inp_servicegroups[sg.id] = sg
 
         members = getattr(sg, 'members', [])
+        if not isinstance(members, list):
+            members = members.split(',')
         sg.members = members
         logger.debug("- servicegroup service members: %s", sg.members)
         # It looks like Shinken do not provide sub groups this information!
         sub_groups = getattr(sg, 'servicegroup_members', [])
-        sub_groups = [] if (sub_groups and not sub_groups[0]) else sub_groups
+        if not isinstance(sub_groups, list):
+            sub_groups = sub_groups.split(',')
+        sub_groups = [] if (sub_groups and not sub_groups[0]) else [g.strip() for g in sub_groups]
         sg.servicegroup_members = sub_groups
         logger.debug("- servicegroup group members: %s", sg.servicegroup_members)
 
@@ -1033,10 +1084,14 @@ class Regenerator(object):
         inp_contactgroups[cg.id] = cg
 
         members = getattr(cg, 'members', [])
+        if not isinstance(members, list):
+            members = members.split(',')
         cg.members = members
         logger.debug("- contactgroup contact members: %s", cg.members)
         sub_groups = getattr(cg, 'contactgroup_members', [])
-        sub_groups = [] if (sub_groups and not sub_groups[0]) else sub_groups
+        if not isinstance(sub_groups, list):
+            sub_groups = sub_groups.split(',')
+        sub_groups = [] if (sub_groups and not sub_groups[0]) else [g.strip() for g in sub_groups]
         cg.contactgroup_members = sub_groups
         logger.debug("- contactgroup group members: %s", cg.contactgroup_members)
 
