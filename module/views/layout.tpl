@@ -111,7 +111,7 @@
                   <!-- Page header -->
                   <section class="content-header">
                      %if navi:
-                     %include("pagination_element", navi=navi, page=page)
+                     %include("pagination_element", navi=navi, page=page, elts_per_page=elts_per_page, display_steps_form=True, drop="dropdown")
                      %end
                      <h3 class="page-header" style="margin-top: 10px">
                        <ol class="breadcrumb" style="margin:0px">
@@ -142,7 +142,7 @@
                   %if navi and len(navi) > 1:
                   <hr>
                   <section class="pagination-footer">
-                   %include("pagination_element", navi=navi, page=page, elts_per_page=elts_per_page, display_steps_form=True)
+                  %include("pagination_element", navi=navi, page=page, elts_per_page=elts_per_page, display_steps_form=True, drop="dropup")
                   </section>
                   %end
                </div>
@@ -212,6 +212,7 @@
       var app_refresh_period = {{app.refresh_period}};
       </script>
       <script src="/static/js/shinken-refresh.js?v={{app.app_version}}"></script>
+      <script src="/static/js/shinken-actions.js?v={{app.app_version}}"></script>
       %end
 
       <script src="/static/js/shinken-layout.js?v={{app.app_version}}"></script>

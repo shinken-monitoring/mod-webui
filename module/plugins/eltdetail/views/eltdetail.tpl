@@ -23,7 +23,7 @@ Invalid element name
 %breadcrumb += [[elt.display_name, '/service/'+helper.get_uri_name(elt)]]
 %end
 
-%js=['js/shinken-actions.js', 'js/jquery.sparkline.min.js', 'js/shinken-charts.js', 'availability/js/justgage.js', 'availability/js/raphael-2.1.4.min.js', 'cv_host/js/flot/jquery.flot.min.js', 'cv_host/js/flot/jquery.flot.tickrotor.js', 'cv_host/js/flot/jquery.flot.resize.min.js', 'cv_host/js/flot/jquery.flot.pie.min.js', 'cv_host/js/flot/jquery.flot.categories.min.js', 'cv_host/js/flot/jquery.flot.time.min.js', 'cv_host/js/flot/jquery.flot.stack.min.js', 'cv_host/js/flot/jquery.flot.valuelabels.js', 'eltdetail/js/custom_views.js', 'eltdetail/js/eltdetail.js', 'logs/js/history.js']
+%js=['js/jquery.sparkline.min.js', 'js/shinken-charts.js', 'availability/js/justgage.js', 'availability/js/raphael-2.1.4.min.js', 'cv_host/js/flot/jquery.flot.min.js', 'cv_host/js/flot/jquery.flot.tickrotor.js', 'cv_host/js/flot/jquery.flot.resize.min.js', 'cv_host/js/flot/jquery.flot.pie.min.js', 'cv_host/js/flot/jquery.flot.categories.min.js', 'cv_host/js/flot/jquery.flot.time.min.js', 'cv_host/js/flot/jquery.flot.stack.min.js', 'cv_host/js/flot/jquery.flot.valuelabels.js', 'eltdetail/js/custom_views.js', 'eltdetail/js/eltdetail.js', 'logs/js/history.js']
 %if app.logs_module.is_available():
 %js=js + ['availability/js/justgage.js', 'availability/js/raphael-2.1.4.min.js']
 %end
