@@ -18,11 +18,16 @@
    %if not pbs:
    <center>
      <div class="page-header">
+       %if problems_search:
+       <h3>Great! Everything is under control</h3>
+       <h3><small>No problems are currently unhandled on your monitored system.</small></h3>
+       %else:
        %if search_string:
        <h3>What a bummer! We couldn't find anything.</h3>
        <h3><small>Use the filters, the bookmarks, click on the links above, or try a new search query to find what you are looking for.</small></h3>
        %else:
        <h3>No host or service.</h3>
+       %end
        %end
      </div>
    </center>
