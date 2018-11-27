@@ -36,6 +36,12 @@
       <link href="/static/css/bootstrap-theme.min.css?v={{app.app_version}}" rel="stylesheet">
       <link href="/static/css/font-awesome.min.css?v={{app.app_version}}" rel="stylesheet">
       <link href="/static/css/shinken-layout.css?v={{app.app_version}}" rel="stylesheet">
+      <style>
+      .panel-default > .panel-heading-login {
+         background: #337ab7;
+         color: #fff;
+      }
+      </style>
 
       <!-- Scripts
       ================================================== -->
@@ -47,7 +53,7 @@
       <div class="container" style="padding-top: 100px;">
          <div class="col-md-4 col-md-offset-4 col-sm-8 col-sm-offset-2">
             <div class="login-panel panel panel-default">
-               <div class="panel-heading">
+               <div class="panel-heading panel-heading-login">
                   <center>
                      <img src="/static/logo/{{company_logo}}?v={{app.app_version}}" alt="Company logo" style="width: 80%"/>
                   </center>
@@ -61,14 +67,15 @@
                      {{msg_text}}
                   </div>
                   %end
-                    <!--<div class="form-group">-->
-                      <input class="form-control" placeholder="Username" name="login" type="text" required autofocus>
-                    <!--</div>-->
-                    <!--<div class="form-group">-->
-                      <input class="form-control" placeholder="Password" name="password" type="password" value="" required>
-                    <!--</div>-->
+                  %if login_text:
+                  <div>
+                     <p class="form-control-static">{{login_text}}</p>
+                  </div>
+                  %end
+                     <input class="form-control" placeholder="Username" name="login" type="text" required autofocus>
+                     <input class="form-control" placeholder="Password" name="password" type="password" value="" required>
 
-                    <button class="btn btn-lg btn-success btn-block" type="submit"><i class="fa fa-sign-in"></i> Login</button>
+                     <button class="btn btn-lg btn-success btn-block" type="submit"><i class="fa fa-sign-in"></i> Login</button>
                   </form>
                </div>
             </div>
