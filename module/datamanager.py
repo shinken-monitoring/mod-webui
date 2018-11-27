@@ -159,6 +159,8 @@ class WebUIDataManager(DataManager):
             # to make UI more consistent, build our own problems counter!
             h['nb_problems'] = 0
             for host in hosts:
+                if host.state_type.upper() not in ['HARD']:
+                    continue
                 if host.state.lower() in ['down', 'unreachable'] and not host.problem_has_been_acknowledged:
                     h['nb_problems'] += 1
                     logger.debug("[WebUI - datamanager] get_hosts_synthesis: %s: %s, %s, %s",
@@ -245,6 +247,8 @@ class WebUIDataManager(DataManager):
             # to make UI more consistent, build our own problems counter!
             s['nb_problems'] = 0
             for service in services:
+                if service.state_type.upper() not in ['HARD']:
+                    continue
                 if service.state.lower() in ['warning', 'critical'] and not service.problem_has_been_acknowledged:
                     s['nb_problems'] += 1
                     logger.debug("[WebUI - datamanager] get_services_synthesis: %s: %s, %s, %s",
