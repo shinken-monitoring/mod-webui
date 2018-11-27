@@ -286,6 +286,7 @@ class Helper(object):
                 'OK': 'arrow-up',
                 'CRITICAL': 'arrow-down',
                 'WARNING': 'exclamation',
+                'UNREACHABLE': 'question',
                 'ACK': 'check',
                 'DOWNTIME': 'clock-o',
                 'FLAPPING': 'cog fa-spin',
