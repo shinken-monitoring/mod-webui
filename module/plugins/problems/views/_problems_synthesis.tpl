@@ -15,7 +15,7 @@
             %if 'type:service' not in search_string:
             <tr>
                <td>
-               <b>{{h['nb_elts']}} hosts</b>
+               <strong>{{h['nb_elts']}}<small class='hidden-sm'> / {{h_all['nb_elts']}}</small> hosts</strong>
                </td>
 
                %if not widget:
@@ -46,7 +46,7 @@
             %if 'type:host' not in search_string:
             <tr>
                <td>
-                  <b>{{s['nb_elts']}} services</b>
+                  <strong>{{s['nb_elts']}}<small class='hidden-sm'> / {{s_all['nb_elts']}}</small> services</strong>
                </td>
 
                %if not widget:
