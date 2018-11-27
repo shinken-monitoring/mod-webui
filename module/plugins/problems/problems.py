@@ -31,10 +31,11 @@ from shinken.misc.sorter import hst_srv_sort, last_state_change_earlier
 # Will be populated by the UI with it's own value
 app = None
 
+DEFAULT_FILTER = "isnot:UP isnot:OK isnot:PENDING isnot:ACK isnot:DOWNTIME isnot:SOFT bp:>0"
+
 
 def get_page():
-    app.bottle.redirect("/all?search=isnot:UP isnot:OK isnot:PENDING "
-                        "isnot:ACK isnot:DOWNTIME isnot:SOFT bp:>0")
+    app.bottle.redirect("/all?search=%s" % DEFAULT_FILTER)
 
 
 def get_all():
@@ -87,6 +88,7 @@ def get_all():
 
     return {
         'pbs': pbs[start:end],
+        'problems_search': True if search == DEFAULT_FILTER else False,
         'all_pbs': items,
         'navi': navi,
         'title': title,
