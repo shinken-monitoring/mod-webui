@@ -101,7 +101,7 @@
             href="/all?search=type:host"
             data-toggle="popover popover-hosts" data-title="Overall hosts states: {{h['nb_elts']}} hosts, {{h["nb_problems"]}} problems" data-html="true">
             <i class="fa fa-server {{ color }}"></i>
-            %if color:
+            %if h['nb_problems']:
             <span class="badge">{{h["nb_problems"]}}</span>
             %end
          </a>
@@ -121,7 +121,7 @@
             href="/all?search=type:service"
             data-toggle="popover popover-services" data-title="Overall services states: {{s['nb_elts']}} services, {{s["nb_problems"]}} problems" data-html="true">
             <i class="fa fa-hdd-o {{ color }}"></i>
-            %if color:
+            %if s["nb_problems"]:
             <span class="badge label-{{label}}">{{s["nb_problems"]}}</span>
             %end
          </a>
