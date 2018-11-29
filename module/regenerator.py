@@ -329,7 +329,7 @@ class Regenerator(object):
                 self.contactgroups.add_item(group)
 
         # Merge contactgroups with real ones
-        for group in inp_contactgroups:
+        for group in self.contactgroups:
             # Link with the other groups
             new_groups = []
             for cgname in group.contactgroup_members:
@@ -341,6 +341,8 @@ class Regenerator(object):
                 else:
                     logger.warning("No contactgroup %s for contactgroup: %s", cgname, group.get_name())
             group.contactgroup_members = new_groups
+        for group in self.contactgroups:
+            logger.debug("- members: %s / %s", group.members, group.contactgroup_members)
 
         # Linkify hosts groups with their hosts
         for hg in inp_hostgroups:
@@ -373,7 +375,7 @@ class Regenerator(object):
                 self.hostgroups.add_item(group)
 
         # Merge hosts groups with real ones
-        for group in inp_hostgroups:
+        for group in self.hostgroups:
             # Link with the other groups
             new_groups = []
             for hgname in group.hostgroup_members:
@@ -385,6 +387,8 @@ class Regenerator(object):
                 else:
                     logger.warning("No hostgroup %s for hostgroup: %s", hgname, group.get_name())
             group.hostgroup_members = new_groups
+        for group in self.hostgroups:
+            logger.debug("- members: %s / %s", group.members, group.hostgroup_members)
 
         # Now link hosts with their hosts groups, commands and timeperiods
         for h in inp_hosts:
@@ -463,7 +467,7 @@ class Regenerator(object):
                 self.servicegroups.add_item(group)
 
         # Merge services groups with real ones
-        for group in inp_servicegroups:
+        for group in self.servicegroups:
             # Link with the other groups
             new_groups = []
             for sgname in group.servicegroup_members:
@@ -475,6 +479,8 @@ class Regenerator(object):
                 else:
                     logger.warning("No servicegroup %s for servicegroup: %s", sgname, group.get_name())
             group.servicegroup_members = new_groups
+        for group in self.servicegroups:
+            logger.debug("- members: %s / %s", group.members, group.servicegroup_members)
 
         # Now link services with hosts, servicesgroups, commands and timeperiods
         for s in inp_services:
