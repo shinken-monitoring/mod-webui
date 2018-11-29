@@ -1210,7 +1210,6 @@ class Regenerator(object):
     def manage_initial_scheduler_status_brok(self, b):
         """Got a scheduler status"""
         data = b.data
-        scheduler_name = data['scheduler_name']
 
         sched = SchedulerLink({})
         self._update_realm(data)
@@ -1220,7 +1219,6 @@ class Regenerator(object):
     def manage_initial_poller_status_brok(self, b):
         """Got a poller status"""
         data = b.data
-        poller_name = data['poller_name']
 
         poller = PollerLink({})
         self._update_realm(data)
@@ -1230,7 +1228,6 @@ class Regenerator(object):
     def manage_initial_reactionner_status_brok(self, b):
         """Got a reactionner status"""
         data = b.data
-        reactionner_name = data['reactionner_name']
 
         reac = ReactionnerLink({})
         self._update_realm(data)
@@ -1244,12 +1241,11 @@ class Regenerator(object):
         broker = BrokerLink({})
         self._update_realm(data)
         self.update_element(broker, data)
-        self.brokers[broker_name] = broker
+        self.brokers[data['broker_name']] = broker
 
     def manage_initial_receiver_status_brok(self, b):
         """Got a receiver status"""
         data = b.data
-        receiver_name = data['receiver_name']
 
         receiver = ReceiverLink({})
         self._update_realm(data)
