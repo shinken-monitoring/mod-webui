@@ -629,15 +629,18 @@ class Regenerator(object):
             setattr(o, prop, None)
             return
 
-        logger.debug("Linkify a timeperiod: %s, found: %s", prop, t)
-        # WebUI - if the value is an identifier, update the existing TP
-        if t in self.timeperiods:
-            setattr(o, prop, self.timeperiods[t])
+        if isinstance(t, Timeperiod):
+            logger.debug("- already linkified to an object")
             return
 
-        tpname = t.timeperiod_name
-        tp = self.timeperiods.find_by_name(tpname)
-        setattr(o, prop, tp)
+        logger.debug("Linkify a timeperiod: %s, found: %s", prop, type(t))
+        logger.debug("Linkify a timeperiod: %s, found: %s", prop, t)
+        for tp in self.timeperiods:
+            if t == tp.get_name() or t == tp.uuid:
+                setattr(o, prop, tp)
+                break
+        else:
+            logger.warning("Timeperiod not linkified: %s / %s !", type(t), t)
 
     def linkify_a_timeperiod_by_name(self, o, prop):
         """same than before, but the value is a string here"""
@@ -645,6 +648,7 @@ class Regenerator(object):
         if not tpname:
             setattr(o, prop, None)
             return
+
         tp = self.timeperiods.find_by_name(tpname)
         setattr(o, prop, tp)
 
@@ -1017,11 +1021,14 @@ class Regenerator(object):
             # Alignak sends notification ways as dictionaries
             new_notifways = []
             for nw_uuid in nws:
-                if nw_uuid not in self.notificationways:
+                nw = None
+                for nw in self.notificationways:
+                    if nw_uuid == nw.get_name() or nw_uuid == nw.uuid:
+                        break
+                else:
                     logger.warning("[WebUI] Contact %s has an unknown NW: %s", c.get_name(), nws)
                     continue
 
-                nw = self.notificationways[nw_uuid]
                 logger.debug("[WebUI] Contact %s, found the NW: %s", c.get_name(), nw.__dict__)
 
                 # Linking the notification way with commands
@@ -1120,45 +1127,46 @@ class Regenerator(object):
         else:
             tp = Timeperiod({})
             self.update_element(tp, data)
-            # Alignak do not keep the Timerange objects and serializes as dict...
-            # so we must restore Timeranges from the dictionary
-            logger.debug("Timeperiod: %s", tp)
-
-            # WebUI - try to manage time periods correctly!
-            # Alignak :
-            # - date range: <class 'alignak.daterange.MonthWeekDayDaterange'>
-            # - time range: <type 'dict'>
-            # Shinken :
-            # - date range: <class 'shinken.daterange.MonthWeekDayDaterange'>
-            # - time range: <class 'shinken.daterange.Timerange'>
-            # Transform some inner items
-            new_drs = []
-            for dr in tp.dateranges:
-                new_dr = dr
-                # new_dr = Daterange(dr.syear, dr.smon, dr.smday, dr.swday, dr.swday_offset,
-                #                    dr.eyear, dr.emon, dr.emday, dr.ewday, dr.ewday_offset,
-                #                    dr.skip_interval, dr.other)
-                logger.debug("- date range: %s (%s)", type(dr), dr.__dict__)
-                # logger.warning("- date range: %s (%s)", type(new_dr), new_dr.__dict__)
-                new_trs = []
-                for tr in dr.timeranges:
-                    # Time range may be a dictionary or an object
-                    logger.debug("  time range: %s - %s", type(tr), tr)
-                    try:
-                        # Dictionary for Alignak
-                        entry = "%02d:%02d-%02d:%02d" % (tr['hstart'], tr['mstart'], tr['hend'], tr['mend'])
-                    except TypeError:
-                        # Object for Shinken
-                        entry = "%02d:%02d-%02d:%02d" % (tr.hstart, tr.mstart, tr.hend, tr.mend)
-
-                    logger.debug("  time range: %s", entry)
-                    new_trs.append(Timerange(entry))
-                new_dr.timeranges = new_trs
-                logger.debug("- date range: %s", dr.__dict__)
-                new_drs.append(new_dr)
-
-            tp.dateranges = new_drs
             self.timeperiods.add_item(tp)
+
+        # Alignak do not keep the Timerange objects and serializes as dict...
+        # so we must restore Timeranges from the dictionary
+        logger.debug("Timeperiod: %s", tp)
+
+        # WebUI - try to manage time periods correctly!
+        # Alignak :
+        # - date range: <class 'alignak.daterange.MonthWeekDayDaterange'>
+        # - time range: <type 'dict'>
+        # Shinken :
+        # - date range: <class 'shinken.daterange.MonthWeekDayDaterange'>
+        # - time range: <class 'shinken.daterange.Timerange'>
+        # Transform some inner items
+        new_drs = []
+        for dr in tp.dateranges:
+            new_dr = dr
+            # new_dr = Daterange(dr.syear, dr.smon, dr.smday, dr.swday, dr.swday_offset,
+            #                    dr.eyear, dr.emon, dr.emday, dr.ewday, dr.ewday_offset,
+            #                    dr.skip_interval, dr.other)
+            logger.debug("- date range: %s (%s)", type(dr), dr.__dict__)
+            # logger.warning("- date range: %s (%s)", type(new_dr), new_dr.__dict__)
+            new_trs = []
+            for tr in dr.timeranges:
+                # Time range may be a dictionary or an object
+                logger.debug("  time range: %s - %s", type(tr), tr)
+                try:
+                    # Dictionary for Alignak
+                    entry = "%02d:%02d-%02d:%02d" % (tr['hstart'], tr['mstart'], tr['hend'], tr['mend'])
+                except TypeError:
+                    # Object for Shinken
+                    entry = "%02d:%02d-%02d:%02d" % (tr.hstart, tr.mstart, tr.hend, tr.mend)
+
+                logger.debug("  time range: %s", entry)
+                new_trs.append(Timerange(entry))
+            new_dr.timeranges = new_trs
+            logger.debug("- date range: %s", dr.__dict__)
+            new_drs.append(new_dr)
+
+        tp.dateranges = new_drs
 
     def manage_initial_command_status_brok(self, b):
         """
@@ -1191,11 +1199,12 @@ class Regenerator(object):
         nw_name = data['notificationway_name']
         inst_id = data['instance_id']
 
-        logger.info("Creating a notification way: %s from scheduler %s", nw_name, inst_id)
+        logger.debug("Creating a notification way: %s from scheduler %s", nw_name, inst_id)
         logger.debug("Creating a notification way: %s ", data)
 
         nw = self.notificationways.find_by_name(nw_name)
         if nw:
+            logger.debug("- updating a notification way: %s from scheduler %s", nw_name, inst_id)
             self.update_element(nw, data)
         else:
             nw = NotificationWay({})
@@ -1210,8 +1219,7 @@ class Regenerator(object):
         self.linkify_a_timeperiod(nw, 'host_notification_period')
         self.linkify_a_timeperiod(nw, 'service_notification_period')
 
-        if nw.uuid in self.notificationways:
-            logger.info("Created: %s ", nw.get_name())
+        logger.debug("Created: %s ", nw.get_name())
 
     def manage_initial_scheduler_status_brok(self, b):
         """Got a scheduler status"""
