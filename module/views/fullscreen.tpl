@@ -1,3 +1,14 @@
+%# Default is to consider that the underlying framework is not Alignak (hence Shinken)
+%setdefault('alignak', False)
+%setdefault('fmwk', 'Shinken')
+
+%if alignak:
+%from alignak.version import VERSION
+%fmwk="Alignak"
+%else:
+%from shinken.bin import VERSION
+%end
+
 <!DOCTYPE html>
 %#Set default values
 %#if not 'js' in locals(): js = []
@@ -10,7 +21,6 @@
 %setdefault('user', None)
 %setdefault('app', None)
 
-%from shinken.bin import VERSION
 %if app is not None:
 %helper = app.helper
 %refresh = app.refresh
@@ -24,14 +34,14 @@
       <title>{{title or 'No title'}}</title>
 
       <!--
-         This file is a part of Shinken.
+         This file is a part of Shinken WebUI.
 
          Shinken is free software: you can redistribute it and/or modify it under the terms of the
          GNU Affero General Public License as published by the Free Software Foundation, either
          version 3 of the License, or (at your option) any later version.
 
          WebUI Version: {{app.app_version if app is not None and app.app_version is not None else ''}}
-         Shinken Framework Version: {{VERSION}}
+         {{fmwk}} Framework Version: {{VERSION}}
       -->
 
       <link href="/static/images/favicon.ico" rel="shortcut icon">
@@ -67,20 +77,22 @@
       <script src="/static/js/alertify.js?v={{app.app_version}}"></script>
 
       <!--
-       Shinken globals ...
+       WebUI globals ...
       -->
       <script>
       var dashboard_currently = false;
       </script>
 
-      <!--Shinken ones : refresh pages -->
+      <!--WebUI ones : refresh pages -->
       %if refresh:
       <script>
       var app_refresh_period = {{app.refresh_period}};
       </script>
       <script src="/static/js/shinken-refresh.js?v={{app.app_version}}"></script>
       %end
+      <script src="/static/js/shinken-actions.js?v={{app.app_version}}"></script>
       <script src="/static/js/screenfull.js?v={{app.app_version}}"></script>
+      <script src="/static/js/shinken-tooltip.js?v={{app.app_version}}"></script>
 
       %# End of classic js import. Now call for specific ones ...
       %for p in js:

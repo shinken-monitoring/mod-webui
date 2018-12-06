@@ -10,6 +10,9 @@
    widget_context = 'dashboard';
 </script>
 
+%s = app.datamgr.get_services_synthesis(user=user)
+%h = app.datamgr.get_hosts_synthesis(user=user)
+
 <table class="table table-invisible table-condensed">
    <tbody>
       <tr>
@@ -17,8 +20,8 @@
             <center><a href="/all?search=type:host isnot:UP" class="btn btn-sm">
                <i class="fa fa-4x fa-server font-darkgrey"></i>
                <span class="badger-title hosts"><i class="fa fa-plus" style="color: #ccc"></i>&nbsp;Hosts</span>
+               <span class="badger-big badger-left">{{h['nb_elts']}}</span>
                %host_state = app.datamgr.get_percentage_hosts_state(user, False)
-               <span class="badger-big badger-left">{{len(app.datamgr.get_hosts(user))}}</span>
                <span class="badger-big badger-right background-{{'critical' if host_state <= app.hosts_states_warning else 'warning' if host_state <= app.hosts_states_critical else 'ok'}}">{{host_state}}%</span>
             </a></center>
          </td>
@@ -27,8 +30,8 @@
             <center><a href="/all?search=type:service isnot:OK" class="btn btn-sm">
                <i class="fa fa-4x fa-bars font-darkgrey"></i>
                <span class="badger-title services"><i class="fa fa-plus" style="color: #ccc"></i>&nbsp;Services</span>
+               <span class="badger-big badger-left">{{s['nb_elts']}}</span>
                %service_state = app.datamgr.get_percentage_service_state(user, False)
-               <span class="badger-big badger-left">{{len(app.datamgr.get_services(user))}}</span>
                <span class="badger-big badger-right background-{{'critical' if service_state <= app.services_states_warning else 'warning' if service_state <= app.services_states_critical else 'ok'}}">{{service_state}}%</span>
             </a></center>
          </td>
@@ -38,7 +41,7 @@
                <i class="fa fa-4x fa-exclamation-triangle font-darkgrey"></i>
                <span class="badger-title itproblem"><i class="fa fa-plus" style="color: #ccc"></i>&nbsp;IT Problems</span>
                %overall_itproblem = app.datamgr.get_overall_it_state(user)
-               <span title="Number of not acknowledged IT problems." class="badger-big background-{{'ok' if overall_itproblem == 0 else 'warning' if overall_itproblem == 1 else 'critical'}}">{{len(app.datamgr.get_problems(user, sorter=None))}}</span>
+               <span title="Number of not acknowledged IT problems." class="badger-big background-{{'ok' if overall_itproblem == 0 else 'warning' if overall_itproblem == 1 else 'critical'}}">{{h['nb_problems'] + s['nb_problems']}}</span>
             </a></center>
          </td>
 

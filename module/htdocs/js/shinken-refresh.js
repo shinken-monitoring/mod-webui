@@ -165,7 +165,9 @@ function do_refresh(forced){
 
       tooltips();
 
-      headerPopovers();
+      if (typeof headerPopovers !== 'undefined') {
+          headerPopovers();
+      }
 
       // Look at the hash part of the URI. If it match a nav name, go for it
       if (location.hash.length > 0) {

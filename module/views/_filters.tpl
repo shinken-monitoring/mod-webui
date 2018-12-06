@@ -24,7 +24,8 @@
               <li role="presentation"><a role="menuitem" href="/all?search=type:host&title=All hosts">All hosts</a></li>
               <li role="presentation"><a role="menuitem" href="/all?search=type:service&title=All services">All services</a></li>
               <li role="presentation" class="divider"></li>
-              <li role="presentation"><a role="menuitem" href="/all?search=isnot:0 isnot:ack isnot:downtime&title=New problems">New problems</a></li>
+              <li role="presentation"><a role="menuitem" href="/all?search=isnot:0 is:hard isnot:ack isnot:downtime&title=New problems">New problems</a></li>
+              <li role="presentation"><a role="menuitem" href="/all?search=isnot:0 is:soft isnot:ack isnot:downtime&title=Potential problems">Potential problems</a></li>
               <li role="presentation"><a role="menuitem" href="/all?search=is:ack&title=Acknowledged problems">Acknowledged problems</a></li>
               <li role="presentation"><a role="menuitem" href="/all?search=is:downtime&title=Scheduled downtimes">Scheduled downtimes</a></li>
               <li role="presentation" class="divider"></li>

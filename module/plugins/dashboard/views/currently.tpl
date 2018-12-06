@@ -1,4 +1,4 @@
-%rebase("fullscreen", css=['dashboard/css/currently.css'], js=['dashboard/js/Chart.js'], title='Shinken currently')
+%rebase("fullscreen", css=['dashboard/css/currently.css'], js=['dashboard/js/Chart.js'], title='Keep an eye on...')
 %import json
 
 %user = app.get_user()
@@ -22,10 +22,10 @@
 
 %create_graphs_preferences = False
 %if not 'pie_graph_hosts' in graphs:
-%graphs['pie_graph_hosts'] = {'legend': True, 'title': True, 'states': hosts_states}
-%graphs['pie_graph_services'] = {'legend': True, 'title': True, 'states': services_states}
-%graphs['line_graph_hosts'] = {'legend': True, 'title': True, 'states': hosts_states}
-%graphs['line_graph_services'] = {'legend': True, 'title': True, 'states': services_states}
+%graphs['pie_graph_hosts'] = {'legend': False, 'title': False, 'states': hosts_states}
+%graphs['pie_graph_services'] = {'legend': False, 'title': False, 'states': services_states}
+%graphs['line_graph_hosts'] = {'legend': False, 'title': False, 'states': hosts_states}
+%graphs['line_graph_services'] = {'legend': False, 'title': False, 'states': services_states}
 %create_graphs_preferences = True
 %end
 
@@ -61,13 +61,6 @@
 
     panels = {{ ! json.dumps(panels) }};
     graphs = {{ ! json.dumps(graphs) }};
-
-    %if create_panels_preferences:
-    save_user_preference('panels', JSON.stringify(panels));
-    %end
-    %if create_graphs_preferences:
-    save_user_preference('graphs', JSON.stringify(graphs));
-    %end
 
     // Function called on each page refresh ... update graphs!
     function on_page_refresh(forced) {
@@ -106,7 +99,7 @@
                     %if refresh:
                     message += " in the last " + app_refresh_period + " seconds."
                     %else:
-                    message += " in the last refresh."
+                    message += " since the last refresh."
                     %end
                     alertify.log(message, "error", 5000);
                     if (dashboard_logs) console.debug(message);
@@ -116,7 +109,7 @@
                     %if refresh:
                     message += " in the last " + app_refresh_period + " seconds."
                     %else:
-                    message += " in the last refresh."
+                    message += " since the last refresh."
                     %end
                     alertify.log(message, "success", 5000);
                     if (dashboard_logs) console.debug(message);
@@ -127,7 +120,7 @@
                     %if refresh:
                     message += " in the last " + app_refresh_period + " seconds."
                     %else:
-                    message += " in the last refresh."
+                    message += " since the last refresh."
                     %end
                     alertify.log(message, "error", 5000);
                     if (dashboard_logs) console.debug(message);
@@ -137,7 +130,7 @@
                     %if refresh:
                     message += " in the last " + app_refresh_period + " seconds."
                     %else:
-                    message += " in the last refresh."
+                    message += " since the last refresh."
                     %end
                     alertify.log(message, "success", 5000);
                     if (dashboard_logs) console.debug(message);
@@ -320,6 +313,13 @@
         $('#clock').jclock({ hour: 'numeric', minute: 'numeric', second: 'numeric', hour12: false });
         $('#date').jclock({ weekday:'long',year:'numeric',month:'long',day:'numeric' });
 
+        %if create_panels_preferences:
+        save_user_preference('panels', JSON.stringify(panels));
+        %end
+        %if create_graphs_preferences:
+        save_user_preference('graphs', JSON.stringify(graphs));
+        %end
+
         on_page_refresh();
 
         // Fullscreen management
@@ -453,7 +453,7 @@
                     </a>
                 </li>
                 <li>
-                    <a tabindex="0" class="font-darkgrey js-fullscreen-request" role="button" title="Got to fullscreen" href="#">
+                    <a tabindex="0" class="font-darkgrey js-fullscreen-request" role="button" title="Go to fullscreen" href="#">
                         <span id="go-fullscreen" class="fa-stack">
                             <i class="fa fa-desktop fa-stack-1x"></i>
                             <i class="fa fa-ban fa-stack-2x hidden"></i>
@@ -470,6 +470,14 @@
                     </a>
                 </li>
                 %end
+                <li>
+                    <a tabindex="0" class="font-darkgrey" role="button" title="Page refresh toggle and status" href="#">
+                        <span id="toggle-refresh" class="fa-stack">
+                            <i class="fa fa-refresh fa-stack-1x"></i>
+                            <i class="fa fa-ban fa-stack-2x hidden"></i>
+                        </span>
+                    </a>
+                </li>
             </ul>
 
             <ul class="nav navbar-nav navbar-right">
@@ -501,13 +509,15 @@
                 </div>
                 <div id="p_panel_counters_hosts" class="panel-collapse collapse {{'in' if not panels['panel_counters_hosts']['collapsed'] else ''}}">
                     <div class="panel-body">
-                        %for state in 'up', 'unreachable', 'down', 'unknown':
-                        <div class="col-xs-6 col-md-3 text-center">
+                        %for state in 'up', 'unreachable', 'down', 'pending', 'unknown':
+                        <div class="col-xs-6 col-md-4 text-center">
                             %label = "%d<br/><em>(%s)</em>" % (h['nb_' + state], state)
                             <a role="button" href="/all?search=type:host is:{{state}} isnot:ack isnot:downtime" class="font-{{state.lower()}}">
                                 <span class="hosts-count" data-count="{{ h['nb_' + state] }}" data-state="{{ state }}" style="font-size: 3em;">{{ h['nb_' + state] }}</span>
+                                <!-- No text information.. .color is enough
                                 <br/>
-                                <span style="font-size: 1.5em;">{{ state }}</span>
+                                <span style="font-size: 1.5em;">{{ state.capitalize() }}</span>
+                                -->
                             </a>
                         </div>
                         %end
@@ -528,13 +538,15 @@
                 </div>
                 <div id="p_panel_counters_services" class="panel-collapse collapse {{'in' if not panels['panel_counters_services']['collapsed'] else ''}}">
                     <div class="panel-body">
-                        %for state in 'ok', 'warning', 'critical', 'unknown':
-                        <div class="col-xs-6 col-md-3 text-center">
+                        %for state in 'ok', 'warning', 'critical':
+                        <div class="col-xs-6 col-md-4 text-center">
                             %label = "%d<br/><em>(%s)</em>" % (s['nb_' + state], state)
                             <a role="button" href="/all?search=type:service is:{{state}} isnot:ack isnot:downtime" class="font-{{state.lower()}}">
                                 <span class="services-count" data-count="{{ s['nb_' + state] }}" data-state="{{ state }}" style="font-size: 3em;">{{ s['nb_' + state] }}</span>
+                                <!-- No text information.. .color is enough
                                 <br/>
-                                <span style="font-size: 1.5em;">{{ state }}</span>
+                                <span style="font-size: 1.5em;">{{ state.capitalize() }}</span>
+                                -->
                             </a>
                         </div>
                         %end
@@ -578,19 +590,35 @@
                         </div>
 
                         %for state in 'up', 'unreachable', 'down':
+                        <!--
                         <div class="col-xs-4 col-sm-4 text-center">
                             <a role="button" href="/all?search=type:host is:{{state}} isnot:ack isnot:downtime" class="font-{{state.lower()}}">
                                 <span class="hosts-count" data-count="{{ h['nb_' + state] }}" data-state="{{ state }}" style="font-size: 1.8em;">{{ h['pct_' + state] }}%</span>
+                                <span style="font-size: 1em;"><em>({{ h['nb_' + state] }})</em></span>
                                 <br/>
-                                <span style="font-size: 1em;">{{ state }}</span>
+                                <span style="font-size: 1em;">{{ state.capitalize() }}</span>
                             </a>
                         </div>
+                        -->
                         %end
-                        %known_problems=h['nb_ack']+h['nb_downtime']+h['nb_unknown']
-                        %pct_known_problems=round(100.0 * known_problems / h['nb_elts'], 2)
-                        <div class="col-xs-4 col-sm-4 text-center">
-                            <a role="button" href="/all?search=type:host is:ack" class="font-unknown">
-                                <span class="hosts-count" data-count="{{ h['nb_' + state] }}" data-state="{{ state }}" style="font-size: 1.8em;">{{ pct_known_problems }}%</span>
+                        %known_problems=h['nb_problems']
+                        %pct_known_problems=round(100.0 * known_problems / h['nb_elts'], 2) if h['nb_elts'] else 0
+                        <div class="col-sm-4 text-center">
+                            <a role="button" href="/all?search=type:host isnot:ack isnot:downtime" class="font-problem">
+                                <span class="hosts-count" style="font-size: 3em;">{{ known_problems }}</span>
+                                <br/>
+                                <span style="font-size: 1em;"><em>({{ pct_known_problems }} %)</em></span>
+                                <br/>
+                                <span style="font-size: 1em;">Unhandled problems</span>
+                            </a>
+                        </div>
+                        %known_problems=h['nb_ack']+h['nb_downtime']
+                        %pct_known_problems=round(100.0 * known_problems / h['nb_elts'], 2) if h['nb_elts'] else 0
+                        <div class="col-sm-4 text-center">
+                            <a role="button" href="/all?search=type:host is:ack is:downtime" class="font-ack">
+                                <span class="hosts-count" style="font-size: 3em;">{{ known_problems }}</span>
+                                <br/>
+                                <span style="font-size: 1em;"><em>({{ pct_known_problems }} %)</em></span>
                                 <br/>
                                 <span style="font-size: 1em;">Known problems</span>
                             </a>
@@ -632,19 +660,35 @@
                         </div>
 
                         %for state in 'ok', 'warning', 'critical':
+                        <!--
                         <div class="col-xs-4 col-sm-4 text-center">
                             <a role="button" href="/all?search=type:service is:{{state}} isnot:ack isnot:downtime" class="font-{{state.lower()}}">
                                 <span class="services-count" data-count="{{ s['nb_' + state] }}" data-state="{{ state }}" style="font-size: 1.8em;">{{ s['pct_' + state] }}%</span>
+                                <span style="font-size: 1em;"><em>({{ s['nb_' + state] }})</em></span>
                                 <br/>
-                                <span style="font-size: 1em;">{{ state }}</span>
+                                <span style="font-size: 1em;">{{ state.capitalize() }}</span>
                             </a>
                         </div>
+                        -->
                         %end
-                        %known_problems=s['nb_ack']+s['nb_downtime']+s['nb_unknown']
+                        %known_problems=s['nb_problems']
                         %pct_known_problems=round(100.0 * known_problems / s['nb_elts'], 2) if s['nb_elts'] else 0
-                        <div class="col-xs-4 col-sm-4 text-center">
-                            <a role="button" href="/all?search=type:service is:ack" class="font-unknown">
-                                <span class="services-count" data-count="{{ s['nb_' + state] }}" data-state="{{ state }}" style="font-size: 1.8em;">{{ pct_known_problems }}%</span>
+                        <div class="col-sm-4 text-center">
+                            <a role="button" href="/all?search=type:host is:ack" class="font-problem">
+                                <span class="hosts-count" style="font-size: 3em;">{{ known_problems }}</span>
+                                <br/>
+                                <span style="font-size: 1em;"><em>({{ pct_known_problems }} %)</em></span>
+                                <br/>
+                                <span style="font-size: 1em;">Unhandled problems</span>
+                            </a>
+                        </div>
+                        %known_problems=s['nb_ack']+s['nb_downtime']
+                        %pct_known_problems=round(100.0 * known_problems / s['nb_elts'], 2) if s['nb_elts'] else 0
+                        <div class="col-sm-4 text-center">
+                            <a role="button" href="/all?search=type:host is:ack" class="font-ack">
+                                <span class="hosts-count" style="font-size: 3em;">{{ known_problems }}</span>
+                                <br/>
+                                <span style="font-size: 1em;"><em>({{ pct_known_problems }} %)</em></span>
                                 <br/>
                                 <span style="font-size: 1em;">Known problems</span>
                             </a>

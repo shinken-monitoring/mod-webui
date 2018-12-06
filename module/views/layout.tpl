@@ -46,7 +46,7 @@
       <title>{{title or 'No title'}}</title>
 
       <!--
-         This file is a part of Shinken.
+         This file is a part of Shinken WebUI.
 
          Shinken is free software: you can redistribute it and/or modify it under the terms of the
          GNU Affero General Public License as published by the Free Software Foundation, either
@@ -87,7 +87,7 @@
 
       <!-- Opensearch
       ================================================== -->
-      <link rel="search" type="application/opensearchdescription+xml" href="/opensearch.xml" title="Search for hosts and services in Shinken" />
+      <link rel="search" type="application/opensearchdescription+xml" href="/opensearch.xml" title="Search for hosts and services in {{fmwk}}" />
 
       <!-- Scripts
       ================================================== -->
@@ -171,7 +171,7 @@
       </div>
 
       <!--
-       Shinken scripts ...
+       WebUI scripts ...
       -->
 
       <script src="/static/js/bootstrap.min.js?v={{app.app_version}}"></script>
@@ -187,7 +187,7 @@
       <script src="/static/js/screenfull.js?v={{app.app_version}}"></script>
 
       <!--
-       Shinken globals ...
+       WebUI globals ...
       -->
       <script>
       var dashboard_currently = false;
@@ -204,7 +204,7 @@
       </script>
 
       <!--
-       Shinken scripts ...
+       WebUI scripts ...
       -->
       %if refresh:
       <script>
@@ -212,6 +212,13 @@
       </script>
       <script src="/static/js/shinken-refresh.js?v={{app.app_version}}"></script>
       <script src="/static/js/shinken-actions.js?v={{app.app_version}}"></script>
+      %end
+      <script src="/static/js/shinken-actions.js?v={{app.app_version}}"></script>
+
+      %if 'MSG' in app.request and app.request['MSG']:
+      <script>
+      alertify.log("{{app.request['MSG']}}", "error", 5000);;
+      </script>
       %end
 
       <script src="/static/js/shinken-layout.js?v={{app.app_version}}"></script>

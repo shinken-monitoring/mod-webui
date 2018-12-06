@@ -709,6 +709,10 @@ footer nav {
   color: #49afcd !important;
 }
 
+.font-problem {
+  color: #800080 !important;
+}
+
 .font-ack, .font-downtime {
   color: #777 !important;
 }

@@ -32,7 +32,7 @@
       <hr/>
       %last_was_bad = False
       %end
-      
+
       %if impact.state_id != 0:
       %last_was_bad = True
       %end
@@ -50,9 +50,7 @@
             <div class="impact-rows">
                <span>
                   {{impact.get_full_name()}}
-                  %if impact.business_impact > 2:
-                     {{!helper.get_business_impact_text(impact.business_impact)}}
-                  %end
+                  {{!helper.get_business_impact_text(impact.business_impact)}}
                </span> is <span class="font-{{impact.state.lower()}}">{{impact.state}}</span>
                <span>since {{helper.print_duration(impact.last_state_change, just_duration=True, x_elts=2)}}</span>
             </div>
@@ -78,7 +76,7 @@
                {{! helper.get_fa_icon_state(obj=impact)}} {{impact.get_full_name()}} is {{impact.state}}
             </h4>
          </div>
-         
+
          <div class="panel-body">
             <div class="row">
                <div class="col-sm-10 btn-group btn-group-justified">
@@ -86,7 +84,7 @@
                   <a href="/depgraph/{{impact.get_full_name()}}" class="btn btn-default" role="button" title="Impact map of {{impact.get_full_name()}}"> <i class="fa fa-map-marker"></i> Impact map</a>
                </div>
             </div>
-            
+
             %if len(impact.parent_dependencies) > 0:
             <hr/>
             Dependencies:
@@ -124,9 +122,7 @@
             %end
             <li class="list-group-item">
                {{! helper.get_fa_icon_state(obj=pb)}} {{!helper.get_link(pb)}}
-               %if pb.business_impact > 2:
-                  ({{!helper.get_business_impact_text(pb.business_impact)}})
-               %end
+               ({{!helper.get_business_impact_text(pb.business_impact)}})
                is <span class="font-{{pb.state.lower()}}"><strong>{{pb.state}}</strong></span>
                since <span title="{{time.strftime("%d %b %Y %H:%M:%S", time.localtime(pb.last_state_change))}}">{{helper.print_duration(pb.last_state_change, just_duration=True, x_elts=2)}}</span>
 
@@ -134,35 +130,35 @@
                   %disabled='' if pb.event_handler_enabled and pb.event_handler else 'disabled'
                   <button class="btn btn-default btn-xs {{disabled}} js-try-to-fix"
                         title="Try to fix (launch event handler)"
-                        data-element="{{helper.get_uri_name(pb)}}" 
+                        data-element="{{helper.get_uri_name(pb)}}"
                         >
                      <i class="fa fa-magic"></i><span class="hidden-sm hidden-xs"> Try to fix</span>
                   </button>
                   %disabled='' if pb.active_checks_enabled else 'disabled'
                   <button class="btn btn-default btn-xs {{disabled}} js-recheck"
                         title="Recheck"
-                        data-element="{{helper.get_uri_name(pb)}}" 
+                        data-element="{{helper.get_uri_name(pb)}}"
                         >
                      <i class="fa fa-refresh"></i><span class="hidden-sm hidden-xs"> Refresh</span>
                   </button>
                   <button class="btn btn-default btn-xs js-submit-ok"
                         title="Submit a check result"
-                        data-element="{{helper.get_uri_name(pb)}}" 
-                        data-user="{{user}}" 
+                        data-element="{{helper.get_uri_name(pb)}}"
+                        data-user="{{user}}"
                         >
                      <i class="fa fa-share"></i><span class="hidden-sm hidden-xs"> Submit check result</span>
                   </button>
                   %disabled='' if pb.state != pb.ok_up and not pb.problem_has_been_acknowledged else 'disabled'
                   <button class="btn btn-default btn-xs {{disabled}} js-add-acknowledge"
                         title="Acknowledge this problem"
-                        data-element="{{helper.get_uri_name(pb)}}" 
+                        data-element="{{helper.get_uri_name(pb)}}"
                         >
                      <i class="fa fa-check"></i><span class="hidden-sm hidden-xs"> Acknowledge</span>
                   </button>
 
                   <button class="btn btn-default btn-xs js-schedule-downtime"
                         title="Schedule a downtime for this element"
-                        data-element="{{helper.get_uri_name(pb)}}" 
+                        data-element="{{helper.get_uri_name(pb)}}"
                         >
                    <i class="fa fa-clock-o"></i><span class="hidden-sm hidden-xs"> Downtime</span>
                   </button>
