@@ -101,6 +101,9 @@ SHINKEN_UI_DEBUG = False
 if os.environ.get('SHINKEN_UI_DEBUG', None):
     SHINKEN_UI_DEBUG = True
     bottle.debug(True)
+# bottle.debug(True)
+# # Do not log the urllib3 requests on the console
+# logging.getLogger("urllib3").setLevel(logging.WARNING)
 
 # Look at the webui module root dir too
 webuimod_dir = os.path.abspath(os.path.dirname(__file__))
@@ -341,6 +344,10 @@ class Webui_broker(BaseModule, Daemon):
         logger.info("[WebUI] parameter timezone: %s", self.timezone)
 
         # Visual alerting thresholds
+        # --------------------------
+        # All the hosts and services that are in a HARD non OK/UP state are considered as problems if their
+        # business_impact is greater than or equal this value
+        self.min_business_impact = int(getattr(modconf, 'min_business_impact', '2'))
         # Used in the dashboard view to select background color for percentages
         self.hosts_states_warning = int(getattr(modconf, 'hosts_states_warning', '95'))
         self.hosts_states_critical = int(getattr(modconf, 'hosts_states_critical', '90'))
@@ -426,7 +433,7 @@ class Webui_broker(BaseModule, Daemon):
         else:
             self.debug_output = []
 
-            logger.info("[WebUI] configured modules %s", self.modules)
+            logger.info("[WebUI] configured modules %s", [m.get_name() for m in self.modules])
             self.modules_manager = ModulesManager('webui', self.find_modules_path(), [])
             self.modules_manager.set_modules(self.modules)
             # This function is loading all the installed 'webui' daemon modules...
@@ -434,12 +441,12 @@ class Webui_broker(BaseModule, Daemon):
             logger.info("[WebUI] imported %d modules", len(self.modules_manager.imported_modules))
 
             for inst in self.modules_manager.instances:
-                logger.info("[WebUI] loading %s", inst)
+                logger.info("[WebUI] loading %s", inst.get_name())
                 f = getattr(inst, 'load', None)
                 if f and callable(f):
                     logger.info("[WebUI] running module load function")
                     f(self)
-            logger.info("[WebUI] loaded modules %s", self.modules)
+            logger.info("[WebUI] loaded modules %s", [m.get_name() for m in self.modules])
 
             # We can now output some previously silenced debug output
             for debug_log in self.debug_output:
@@ -464,7 +471,7 @@ class Webui_broker(BaseModule, Daemon):
             self.modules_manager.get_internal_instances()), self)
 
         # Data manager
-        self.datamgr = WebUIDataManager(self.rg)
+        self.datamgr = WebUIDataManager(self.rg, self.min_business_impact)
         self.helper = helper
 
         # Check directories
@@ -511,14 +518,14 @@ class Webui_broker(BaseModule, Daemon):
             # Declare the whole app static files AFTER the plugin ones
             self.declare_common_static()
 
-            logger.info("[WebUI] declared routes:")
+            logger.debug("[WebUI] declared routes:")
             for route in webui_app.routes:
                 logger.debug("[WebUI] - %s", route.__dict__)
                 if route.name:
                     if route.config:
-                        logger.info("[WebUI] - %s for %s, configuration: %s", route.name, route.rule, route.config)
+                        logger.debug("[WebUI] - %s for %s, configuration: %s", route.name, route.rule, route.config)
                     else:
-                        logger.info("[WebUI] - %s for %s", route.name, route.rule)
+                        logger.debug("[WebUI] - %s for %s", route.name, route.rule)
 
             # We will protect the operations on
             # the non read+write with a lock and

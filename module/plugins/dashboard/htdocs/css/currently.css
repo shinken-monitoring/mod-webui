@@ -24,6 +24,12 @@
 *
 **/
 
+/* Change page layout */
+body, .container-fluid {
+    margin: 0;
+    padding: 0;
+}
+
 /*
  * Background layout
 body, section.content {

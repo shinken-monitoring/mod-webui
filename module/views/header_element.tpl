@@ -37,7 +37,7 @@
        <table class="table table-invisible table-condensed">
          <tbody>
             <tr>
-               %for state in "up", "unreachable", "down", "pending", "unknown", "ack", "downtime":
+               %for state in "up", "unreachable", "down", "unknown", "ack", "downtime":
                <td data-title="{{ h["pct_" + state] }}% {{ state }}">
                  %label = "%s" % h["nb_" + state]
                  %if state in ['ack', 'downtime']:
@@ -57,7 +57,7 @@
        <table class="table table-invisible table-condensed">
          <tbody>
             <tr>
-               %for state in "ok", "warning", "critical", "pending", "unknown", "ack", "downtime":
+               %for state in "ok", "warning", "critical", "unreachable", "unknown", "ack", "downtime":
                <td data-title="{{ s["pct_" + state] }}% {{ state }}">
                  %label = "%s" % s["nb_" + state]
                  %if state in ['ack', 'downtime']:
@@ -102,7 +102,7 @@
             data-toggle="popover popover-hosts" data-title="Overall hosts states: {{h['nb_elts']}} hosts, {{h["nb_problems"]}} problems" data-html="true">
             <i class="fa fa-server {{ color }}"></i>
             %if h['nb_problems']:
-            <span class="badge">{{h["nb_problems"]}}</span>
+            <span class="badge {{color}}">{{h["nb_problems"]}}</span>
             %end
          </a>
       </li>
@@ -122,7 +122,7 @@
             data-toggle="popover popover-services" data-title="Overall services states: {{s['nb_elts']}} services, {{s["nb_problems"]}} problems" data-html="true">
             <i class="fa fa-hdd-o {{ color }}"></i>
             %if s["nb_problems"]:
-            <span class="badge label-{{label}}">{{s["nb_problems"]}}</span>
+            <span class="badge {{color}}">{{s["nb_problems"]}}</span>
             %end
          </a>
       </li>

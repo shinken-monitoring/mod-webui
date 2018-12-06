@@ -36,8 +36,9 @@ def get_page():
     user = app.request.environ['USER']
 
     # Apply search filter if exists ...
-    search = app.request.query.get('search', "isnot:UP isnot:OK isnot:PENDING "
-                                             "isnot:ACK isnot:DOWNTIME isnot:SOFT bi:>=0 type:all")
+    search = app.request.query.get('search', "isnot:UP isnot:OK isnot:PENDING isnot:UNKNOWN is:HARD type:all",
+                                   "isnot:UP isnot:OK isnot:PENDING "
+                                   "isnot:ACK isnot:DOWNTIME isnot:SOFT bi:>=0 type:all")
     logger.debug("[WebUI-wall] search parameters '%s'", search)
 
     # Impacts

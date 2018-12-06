@@ -40,7 +40,7 @@
   </ul>
   <p><strong>Note:</strong> default search on state is made against HARD and SOFT states.</p>
   <p>Preceding the state with the letter <code>s</code> makes the search only consider SOFT states.</p>
-  <p>You can also preceding the state with the letter <code>h</code> to made the search only cosider HARD states.</p>
+  <p>You can also preceding the state with the letter <code>h</code> to made the search only consider HARD states.</p>
   <p>For example:</p>
   <ul>
     <li><code>is:sDOWN</code> Matches hosts that are SOFT state DOWN.</li>
