@@ -680,14 +680,14 @@ class Regenerator(object):
         new_v = []
         if 'hosts' not in v or 'services' not in v:
             # WebUI - Alignak do not use the same structure as Shinken
-            for uuid in v:
+            for id in v:
                 for host in self.hosts:
-                    if uuid == host.uuid:
+                    if id == host.id:
                         new_v.append(host)
                         break
                 else:
                     for service in self.services:
-                        if uuid == service.uuid:
+                        if id == service.id:
                             new_v.append(service)
                             break
         else:
@@ -811,7 +811,7 @@ class Regenerator(object):
 
             # Exclude from all hostgroups members the hosts of this scheduler instance
             for hg in self.hostgroups:
-                logger.info("Cleaning hostgroup %s: %d members", hg.get_name(), len(hg.members))
+                logger.debug("Cleaning hostgroup %s: %d members", hg.get_name(), len(hg.members))
                 try:
                     # hg.members = [h for h in hg.members if h.instance_id != c_id]
                     hg.members = []
@@ -823,18 +823,18 @@ class Regenerator(object):
                 except Exception as exp:
                     logger.error("Exception when cleaning hostgroup: %s", str(exp))
 
-                logger.info("hostgroup members count after cleaning: %d members", len(hg.members))
+                logger.debug("hostgroup members count after cleaning: %d members", len(hg.members))
 
         if to_del_srv:
             # Clean services from services and servicegroups
-            logger.info("Cleaning %d services", len(to_del_srv))
+            logger.debug("Cleaning %d services", len(to_del_srv))
 
             for s in to_del_srv:
                 self.services.remove_item(s)
 
             # Exclude from all servicegroups members the services of this scheduler instance
             for sg in self.servicegroups:
-                logger.info("Cleaning servicegroup %s: %d members", sg.get_name(), len(sg.members))
+                logger.debug("Cleaning servicegroup %s: %d members", sg.get_name(), len(sg.members))
                 try:
                     # sg.members = [s for s in sg.members if s.instance_id != c_id]
                     sg.members = []
@@ -846,7 +846,7 @@ class Regenerator(object):
                 except Exception as exp:
                     logger.error("Exception when cleaning servicegroup: %s", str(exp))
 
-                logger.info("- members count after cleaning: %d members", len(sg.members))
+                logger.debug("- members count after cleaning: %d members", len(sg.members))
 
     def manage_initial_host_status_brok(self, b):
         """Got a new host"""
@@ -1430,10 +1430,17 @@ class Regenerator(object):
 
         h = self.hosts.find_by_name(hname)
         if not h:
+            logger.warning("Got a check result brok for an unknown host: %s", hname)
             return
 
         logger.debug("Host check result: %s - %s (%s)", hname, h.state, h.state_type)
         self.before_after_hook(b, h)
+        # Remove identifiers if they exist in the data - it happens that the
+        # identifier is changing on a configuration reload!
+        if 'id' in data:
+            data.pop('id')
+        if 'uuid' in data:
+            data.pop('uuid')
         self.update_element(h, data)
 
     def manage_host_next_schedule_brok(self, b):
@@ -1448,10 +1455,18 @@ class Regenerator(object):
         sdesc = data['service_description']
         s = self.services.find_srv_by_name_and_hostname(hname, sdesc)
         if not s:
+            logger.warning("Got a check result brok for an unknown service: %s/%s", hname, sdesc)
             return
 
         logger.debug("Service check result: %s/%s - %s (%s)", hname, sdesc, s.state, s.state_type)
         self.before_after_hook(b, s)
+
+        # Remove identifiers if they exist in the data - it happens that the
+        # identifier is changing on a configuration reload!
+        if 'id' in data:
+            data.pop('id')
+        if 'uuid' in data:
+            data.pop('uuid')
         self.update_element(s, data)
 
     def manage_service_next_schedule_brok(self, b):
