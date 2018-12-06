@@ -219,6 +219,7 @@
           </ul>
         </li>
         %if user.is_administrator():
+        %if not app.alignak:
         <li> <a href="#"><i class="fa fa-gears sidebar-icon"></i>
         System<i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
@@ -229,6 +230,21 @@
             %end
           </ul>
         </li>
+        %else:
+        <li> <a href="#"><i class="fa fa-gears sidebar-icon"></i>
+        Alignak<i class="fa arrow"></i></a>
+          <ul class="nav nav-second-level">
+            <li> <a href="{{ app.get_url('System') }}"> <span class="fa fa-heartbeat sidebar-icon"></span> Status </a> </li>
+            <li> <a href="{{ app.get_url('AlignakStatus') }}"> <span class="fa fa-heartbeat sidebar-icon"></span> Status </a> </li>
+            %if app.logs_module.is_available():
+            <li> <a href="{{ app.get_url('History') }}"> <span class="fa fa-th-list sidebar-icon"></span> Mongo Logs </a> </li>
+            <li> <a href="{{ app.get_url('GlobalStats') }}"> <span class="fa fa-bell-o sidebar-icon"></span> Alerts </a> </li>
+            <li> <a href="{{ app.get_url('AlignakEvents') }}"> <span class="fa fa-th-list sidebar-icon"></span> Logs </a> </li>
+            <li> <a href="{{ app.get_url('GlobalStats') }}"> <span class="fa fa-bell-o sidebar-icon"></span> Alerts </a> </li>
+            %end
+          </ul>
+        </li>
+        %end
         <li> <a href="#"><i class="fa fa-wrench sidebar-icon"></i>
         Configuration<i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">

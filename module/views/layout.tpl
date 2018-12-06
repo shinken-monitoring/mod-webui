@@ -214,6 +214,12 @@
       <script src="/static/js/shinken-actions.js?v={{app.app_version}}"></script>
       %end
 
+      %if 'MSG' in app.request and app.request['MSG']:
+      <script>
+      alertify.log("{{app.request['MSG']}}", "error", 5000);;
+      </script>
+      %end
+
       <script src="/static/js/shinken-layout.js?v={{app.app_version}}"></script>
       <script src="/static/js/shinken-tooltip.js?v={{app.app_version}}"></script>
 

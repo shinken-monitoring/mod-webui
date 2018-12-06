@@ -26,6 +26,8 @@ from datetime import datetime, timedelta
 from collections import Counter, OrderedDict
 from itertools import groupby
 
+from shinken.log import logger
+
 # Will be populated by the UI with it's own value
 app = None
 
@@ -83,25 +85,53 @@ def get_global_stats():
     range_end = int(app.request.GET.get('range_end', time.time()))
     range_start = int(app.request.GET.get('range_start', range_end - (days * 86400)))
 
+    # logs = list(app.logs_module.get_ui_logs(
+    #     range_start=range_start, range_end=range_end,
+    #     filters={'type': 'SERVICE NOTIFICATION',
+    #              'command_name': {'$regex': 'notify-service-by-slack'}},
+    #     limit=None))
+    #
+    filters = {'type': 'SERVICE NOTIFICATION',
+               'command_name': {'$regex': 'notify-service-by-slack'}}
+    if app.alignak:
+        filters = {'alignak.event': {'$in': ['HOST NOTIFICATION', 'SERVICE NOTIFICATION']}}
+        filters = {
+            'alignak.event': {'$in': ['HOST NOTIFICATION']},
+            'alignak.host_name': 'south_host_001'
+        }
+
     logs = list(app.logs_module.get_ui_logs(
         range_start=range_start, range_end=range_end,
-        filters={'type': 'SERVICE NOTIFICATION',
-                 'command_name': {'$regex': 'notify-service-by-slack'}},
+        filters=filters,
         limit=None))
 
     hosts = Counter()
     services = Counter()
     hostsservices = Counter()
+    new_logs = []
     for l in logs:
+        # Alignak logstash parser....
+        if 'alignak' in l:
+            l = l['alignak']
+            if 'time' not in l:
+                l['time'] = int(time.mktime(l.pop('timestamp').timetuple()))
+
+            if 'service' in l:
+                l['service_description'] = l.pop('service')
+
         hosts[l['host_name']] += 1
-        services[l['service_description']] += 1
-        hostsservices[l['host_name'] + '/' + l['service_description']] += 1
+        if 'service_description' in l:
+            services[l['service_description']] += 1
+            hostsservices[l['host_name'] + '/' + l['service_description']] += 1
+        logger.info("Log: %s", l)
+        new_logs.append(l)
+
     return {
         'hosts': hosts,
         'services': services,
         'hostsservices': hostsservices,
         'days': days,
-        'graph': _graph(logs) if logs else None
+        'graph': _graph(new_logs) if new_logs else None
     }
 
 
@@ -136,17 +166,45 @@ def get_host_stats(name):
     range_end = int(app.request.GET.get('range_end', time.time()))
     range_start = int(app.request.GET.get('range_start', range_end - (days * 86400)))
 
+    filters = {'type': 'SERVICE NOTIFICATION',
+               'command_name': {'$regex': 'notify-service-by-slack'},
+               'host_name': name}
+    if app.alignak:
+        filters = {
+            'alignak.event': {'$in': ['HOST NOTIFICATION', 'SERVICE NOTIFICATION']},
+            'alignak.host_name': name
+        }
+        # filters = {
+        #     'alignak.event': {'$in': ['HOST NOTIFICATION']},
+        #     'alignak.host_name': name
+        # }
+
     logs = list(app.logs_module.get_ui_logs(
         range_start=range_start, range_end=range_end,
-        filters={'type': 'SERVICE NOTIFICATION',
-                 'command_name': {'$regex': 'notify-service-by-slack'},
-                 'host_name': name},
+        filters=filters,
         limit=None))
 
+    hosts = Counter()
     services = Counter()
     for l in logs:
-        services[l['service_description']] += 1
-    return {'host': name, 'services': services, 'days': days}
+        # Alignak logstash parser....
+        if 'alignak' in l:
+            l = l['alignak']
+            if 'time' not in l:
+                l['time'] = int(time.mktime(l.pop('timestamp').timetuple()))
+
+            if 'service' in l:
+                l['service_description'] = l.pop('service')
+
+        hosts[l['host_name']] += 1
+        if 'service_description' in l:
+            services[l['service_description']] += 1
+    return {
+        'host': name,
+        'hosts': hosts,
+        'services': services,
+        'days': days
+    }
 
 
 pages = {

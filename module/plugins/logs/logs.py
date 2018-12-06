@@ -35,6 +35,14 @@ from shinken.log import logger
 
 # Get plugin's parameters from configuration file
 params = {
+    # Shinken mongo logs module uses 'time' to store a timestamp date
+    'time_field': 'time',
+    # Alignak broker module uses '_created' to store an ISO date
+    # Logstash uses @timestamp to store an ISO date
+
+    # Shinken mongo logs module uses 'message' to store a log information
+    'other_fields': ['message'],
+
     'logs_type': ['INFO', 'WARNING', 'ERROR'],
     'logs_hosts': [],
     'logs_services': []
@@ -65,6 +73,7 @@ def load_config(app):
         z.update(scp.parse_config(configuration_file))
         params = z
 
+        params['other_fields'] = [item.strip() for item in params['other_fields'].split(',')]
         params['logs_type'] = [item.strip() for item in params['logs_type'].split(',')]
         if params['logs_hosts']:
             params['logs_hosts'] = [item.strip() for item in params['logs_hosts'].split(',')]
@@ -179,8 +188,13 @@ def get_history():
     limit = int(app.request.GET.get('limit', 100))
     offset = int(app.request.GET.get('offset', 0))
 
-    logs = _get_logs(filters=filters, limit=limit, offset=offset)
-    return {'records': logs}
+    logs = _get_logs(filters=filters, limit=limit, offset=offset, time_field=params['time_field'])
+
+    return {
+        'time_field': params['time_field'],
+        'other_fields': params['other_fields'],
+        'records': logs
+    }
 
 
 # :TODO:maethor:171017: This function should be merge in get_history
@@ -193,8 +207,11 @@ def get_global_history():
     range_end = int(app.request.GET.get('range_end', midnight_timestamp + 86399))
     logger.debug("[WebUI-logs] get_global_history, range: %d - %d", range_start, range_end)
 
-    logs = _get_logs(filters={'type': {'$in': params['logs_type']}},
-                     range_start=range_start, range_end=range_end)
+    filters = {}
+    if params['logs_type'] and params['logs_type'][0]:
+        filters = {'type': {'$in': params['logs_type']}}
+
+    logs = _get_logs(filters=filters, range_start=range_start, range_end=range_end, time_field=params['time_field'])
 
     if logs is None:
         message = "No module configured to get Shinken logs from database!"
@@ -203,6 +220,8 @@ def get_global_history():
 
     return {
         'records': logs,
+        'time_field': params['time_field'],
+        'other_fields': params['other_fields'],
         'params': params,
         'message': message,
         'range_start': range_start, 'range_end': range_end

@@ -1,0 +1,62 @@
+th.vertical {
+   height: 120px;
+   width: 15px;
+   vertical-align: bottom;
+   text-align: center;
+   overflow: visible!important;
+   white-space: nowrap;
+   border-top: 0;
+   padding-left: 2px;
+   padding-right: 2px;
+}
+
+/**
+* Works everywere ( IE7+, FF, Chrome, Safari, Opera )
+* Example: http://jsbin.com/afAQAWA/2/
+*/
+.rotated-text {
+   display: inline-block;
+   overflow: hidden;
+   font-weight: normal;
+   padding-left: 2px;
+   padding-right: 2px;
+   width: 18px;
+   margin: 0;
+   margin-bottom: 4px;
+}
+.rotated-text__inner {
+   display: inline-block;
+   white-space: nowrap;
+   /* this is for shity "non IE" browsers
+    that doesn't support writing-mode */
+   -webkit-transform: translate(1.1em,0) rotate(90deg);
+    -moz-transform: translate(1.1em,0) rotate(90deg);
+      -o-transform: translate(1.1em,0) rotate(90deg);
+         transform: translate(1.1em,0) rotate(90deg);
+   -webkit-transform-origin: 0 0;
+    -moz-transform-origin: 0 0;
+      -o-transform-origin: 0 0;
+         transform-origin: 0 0;
+   /* IE9+ */
+   -ms-transform: none;
+   -ms-transform-origin: none;
+   /* IE8+ */
+   -ms-writing-mode: tb-rl;
+   /* IE7 and below */
+   *writing-mode: tb-rl;
+}
+.rotated-text__inner:before {
+   content: "";
+   float: left;
+   margin-top: 100%;
+}
+
+
+/*
+ Fixed table header jQuery plugin when used with bootstrap requires this declaration ...
+ */
+table.floatThead-table {
+    border-top: none;
+    border-bottom: none;
+    background-color: #FFF;
+}

@@ -35,6 +35,7 @@ WEBUI_COPYRIGHT = "2009-2018"
 WEBUI_LICENSE = "License GNU AGPL as published by the FSF, minimum version 3 of the License."
 
 import os
+import json
 import string
 import random
 import traceback
@@ -44,6 +45,8 @@ import threading
 import imp
 import logging
 import requests
+
+from collections import deque
 
 try:
     from setproctitle import setproctitle
@@ -162,10 +165,20 @@ class Webui_broker(BaseModule, Daemon):
 
         # For Alignak ModulesManager...
         # ---
+        self.alignak = False
         if ALIGNAK:
+            self.alignak = True
             # A daemon must have these properties
             self.type = 'webui'
             self.name = 'webui'
+
+            # Configure Alignak Arbiter API endpoint
+            self.alignak_endpoint = getattr(modconf, 'alignak_endpoint', 'http://127.0.0.1:7770')
+            self.alignak_check_period = int(getattr(modconf, 'alignak_check_period', '10'))
+            self.alignak_livestate = {}
+            self.alignak_events_count = int(getattr(modconf, 'alignak_events_count', '1000'))
+            self.alignak_events = deque(maxlen=int(os.environ.get('ALIGNAK_EVENTS_LOG_COUNT',
+                                                                 self.alignak_events_count)))
 
             # Shinken logger configuration
             log_console = (getattr(modconf, 'log_console', '0') == '1')
@@ -176,7 +189,7 @@ class Webui_broker(BaseModule, Daemon):
                         logger.removeHandler(hdlr)
 
             log_level = getattr(modconf, 'log_level', 'INFO')
-            log_file = getattr(modconf, 'log_file', '/tmp/var/log/alignak/shinken-webui.log')
+            log_file = getattr(modconf, 'log_file', '/var/log/alignak/shinken-webui.log')
             logger.register_local_log(log_file, log_level)
             logger.set_human_format()
             logger.setLevel(log_level)
@@ -535,6 +548,11 @@ class Webui_broker(BaseModule, Daemon):
             self.data_thread.start()
             # TODO: look for alive and killing
 
+            # Launch the Alignak arbiter data thread ...
+            if self.alignak and self.alignak_endpoint:
+                self.fmwk_thread = threading.Thread(None, self.fmwk_thread, 'fmwk_hread')
+                self.fmwk_thread.start()
+
             logger.info("[WebUI] starting Web UI server on %s:%d ...", self.host, self.port)
             bottle.TEMPLATES.clear()
             webui_app.run(host=self.host, port=self.port, server=self.http_backend, **self.serveropts)
@@ -557,10 +575,10 @@ class Webui_broker(BaseModule, Daemon):
             logger.warning("[WebUI] TODO: notify external command: %s", e.__dict__)
             logger.warning("[WebUI] --------------------------------------------------")
         else:
-            if ALIGNAK:
+            if self.alignak:
                 logger.info("Sending command to Alignak: %s", e)
                 req = requests.Session()
-                raw_data = req.get("http://localhost:7770/command",
+                raw_data = req.get("%s/command" % self.alignak_endpoint,
                                    params={'command': e.cmd_line})
                 logger.info("Result: %s", raw_data.content)
             else:
@@ -695,6 +713,52 @@ class Webui_broker(BaseModule, Daemon):
                          len(message), time.clock() - start)
 
         logger.debug("[WebUI] manage_brok_thread end ...")
+
+    def fmwk_thread(self):
+        """A thread function that periodically gets its state from the Alignak arbiter
+
+        This function gets Alignak status in our alignak_livestate and
+        then it gets the Alignak events in our alignak_events queue
+        """
+        logger.debug("[WebUI] fmwk_thread start ...")
+
+        req = requests.Session()
+        alignak_timestamp = 0
+        while not self.interrupted:
+            # Get Alignak status
+            try:
+                raw_data = req.get("%s/status" % self.alignak_endpoint)
+                data = json.loads(raw_data.content)
+                self.alignak_livestate = data.get('livestate', 'Unknown')
+                logger.debug("[WebUI-fmwk_thread] Livestate: %s", data)
+            except Exception as exp:
+                logger.info("[WebUI-system] alignak_status, exception: %s", exp)
+
+            try:
+                # Get Alignak most recent events
+                # count is the maximum number of events we will be able to get
+                # timestamp is the most recent event we got
+                raw_data = req.get("%s/events_log?details=1&count=%d&timestamp=%d"
+                                   % (self.alignak_endpoint, self.alignak_events_count, alignak_timestamp))
+                data = json.loads(raw_data.content)
+                logger.debug("[WebUI-fmwk_thread] got %d event log", len(data))
+                for log in data:
+                    # Data contains: {
+                    #   u'date': u'2018-11-24 16:28:03', u'timestamp': 1543073283.434844,
+                    #   u'message': u'RETENTION LOAD: scheduler-master', u'level': u'info'
+                    # }
+                    alignak_timestamp = max(alignak_timestamp, log['timestamp'])
+                    if log not in self.alignak_events:
+                        logger.debug("[WebUI-fmwk_thread] New event log: %s", log)
+                        self.alignak_events.appendleft(log)
+                logger.debug("[WebUI-fmwk_thread] %d log events", len(self.alignak_events))
+            except Exception as exp:
+                logger.info("[WebUI-system] alignak_status, exception: %s", exp)
+
+            # Sleep for a while...
+            time.sleep(self.alignak_check_period)
+
+        logger.debug("[WebUI] fmwk_thread end ...")
 
     # Here we will load all plugins (pages) under the webui/plugins
     # directory. Each one can have a page, views and htdocs dir that we must
