@@ -47,10 +47,11 @@ from shinken.misc.sorter import worse_first, last_state_change_earlier
 
 class WebUIDataManager(DataManager):
 
-    def __init__(self, rg=None, min_business_impact=2):
+    def __init__(self, rg=None, min_business_impact=0, inner_problems_count=0):
         super(WebUIDataManager, self).__init__()
         self.rg = rg
         self.min_business_impact = min_business_impact
+        self.inner_problems_count = inner_problems_count
 
     @property
     def is_initialized(self):
@@ -83,27 +84,29 @@ class WebUIDataManager(DataManager):
         except TypeError:
             return items if user._is_related_to(items) else None
 
-    def set_logged_in_user(self, user):
-        """ Set the logged in user
-        """
-        self.logged_in_user = user
-
     ##
     # Hosts
     ##
-    def get_hosts(self, user=None, get_impacts=False):
+    def get_hosts(self, user=None, get_impacts=False, extra_search=''):
         """ Get a list of all hosts.
+
+            Default search is to get all hosts. extra_search allows to add some more
+            search criteria
 
             :param user: concerned user
             :param get_impacts: should impact hosts be included in the list?
+            :param extra_search: extra search criteria
             :returns: list of all hosts
         """
-        items = self.search_hosts_and_services(
-            'type:host' if not get_impacts else 'type:host is:impact',
-            user
-        )
+        search = 'type:host'
+        if get_impacts:
+            search = search + ' is:impact'
+        if "bi:" not in search:
+            search = search + " bi:>=%d " % (self.min_business_impact)
+        if extra_search:
+            search = search + " " + extra_search
 
-        return items
+        return self.search_hosts_and_services(search, user)
 
     def get_host(self, name, user=None):
         """ Get a host by its hostname. """
@@ -126,17 +129,18 @@ class WebUIDataManager(DataManager):
         if not h['nb_elts']:
             return 0
 
-        known_problems = h['nb_problems']
-        if not problem:
-            known_problems = h['nb_elts'] - h['nb_problems']
+        count = h['nb_elts'] - h['nb_problems']
+        if problem:
+            count = h['nb_problems']
 
-        return round(100.0 * (known_problems / h['nb_elts']), 1) if h['nb_elts'] else 0
+        logger.debug("Hosts count: %s / %s / %s", count, h['nb_problems'], h['nb_elts'])
+        return round(100.0 * (count / h['nb_elts']), 1)
 
-    def get_hosts_synthesis(self, elts=None, user=None):
+    def get_hosts_synthesis(self, elts=None, user=None, extra_search=''):
         if elts is not None:
             hosts = [item for item in elts if item.__class__.my_type == 'host']
         else:
-            hosts = self.get_hosts(user=user)
+            hosts = self.get_hosts(user=user, extra_search=extra_search)
         logger.debug("[WebUI - datamanager] get_hosts_synthesis, %d hosts", len(hosts))
 
         h = dict()
@@ -154,33 +158,37 @@ class WebUIDataManager(DataManager):
 
             # Our own computation !
             # ------
-            # Shinken does not always reflect the "problem" state ...
-            # to make UI more consistent, build our own problems counter!
-            # h['nb_ack'] = 0
-            # h['nb_problems'] = 0
-            # h['nb_impacts'] = 0
-            # for host in hosts:
-            #     if host.state_type.upper() not in ['HARD']:
-            #         continue
-            #     if host.state.lower() in ['down']:
-            #         host.is_problem = True
-            #     if host.state.lower() in ['unreachable']:
-            #         host.is_impact = True
-            #     if host.business_impact < self.min_business_impact:
-            #         continue
-            #
-            #     if host.is_problem and host.problem_has_been_acknowledged:
-            #         h['nb_ack'] += 1
-            #
-            #     if host.is_problem and not host.problem_has_been_acknowledged:
-            #         h['nb_problems'] += 1
-            #         if host.is_impact:
-            #             h['nb_impacts'] += 1
+            # Shinken/Alignak does not always reflect the "problem" state from a user point of view ...
+            # To make UI more consistent, build our own problems counter!
+            if self.inner_problems_count:
+                h['nb_ack'] = 0
+                h['nb_problems'] = 0
+                h['nb_impacts'] = 0
+                for host in hosts:
+                    if host.state_type.upper() not in ['HARD']:
+                        continue
+                    # An host is a problem if it is in a HARD DOWN or UNKNOWN state
+                    if host.state.lower() in ['down', 'unnown']:
+                        host.is_problem = True
+                    # An host is impacted if it is UNREACHABLE
+                    if host.state.lower() in ['unreachable']:
+                        host.is_impact = True
 
-            h['nb_problems'] = sum(1 for host in hosts if host.is_problem
-                                   and not host.problem_has_been_acknowledged)
+                    if host.is_problem and host.problem_has_been_acknowledged:
+                        h['nb_ack'] += 1
+
+                    if host.is_problem and not host.problem_has_been_acknowledged:
+                        h['nb_problems'] += 1
+                        if host.is_impact:
+                            h['nb_impacts'] += 1
+            else:
+                h['nb_problems'] = sum(1 for host in hosts if host.is_problem
+                                       and not host.problem_has_been_acknowledged)
+                h['nb_impacts'] = sum(1 for host in hosts if host.is_problem
+                                      and not host.problem_has_been_acknowledged and host.is_impact)
+                h['nb_ack'] = sum(1 for host in hosts if host.is_problem and host.problem_has_been_acknowledged)
+
             h['pct_problems'] = round(100.0 * h['nb_problems'] / h['nb_elts'], 1)
-            h['nb_ack'] = sum(1 for host in hosts if host.is_problem and host.problem_has_been_acknowledged)
             h['pct_ack'] = round(100.0 * h['nb_ack'] / h['nb_elts'], 1)
             h['nb_downtime'] = sum(1 for host in hosts if host.in_scheduled_downtime)
             h['pct_downtime'] = round(100.0 * h['nb_downtime'] / h['nb_elts'], 1)
@@ -196,19 +204,22 @@ class WebUIDataManager(DataManager):
     ##
     # Services
     ##
-    def get_services(self, user, get_impacts=False):
+    def get_services(self, user, get_impacts=False, extra_search=''):
         """ Get a list of all services.
 
             :param user: concerned user
             :param get_impacts: should impact services be included in the list?
             :returns: list of all services
         """
-        items = self.search_hosts_and_services(
-            'type:service' if not get_impacts else 'type:service is:impact',
-            user
-        )
+        search = 'type:service'
+        if get_impacts:
+            search = search + ' is:impact'
+        if "bi:" not in search:
+            search = search + " bi:>=%d " % (self.min_business_impact)
+        if extra_search:
+            search = search + " " + extra_search
 
-        return items
+        return self.search_hosts_and_services(search, user)
 
     def get_service(self, hname, sname, user):
         """ Get a service by its hostname and service description. """
@@ -226,17 +237,19 @@ class WebUIDataManager(DataManager):
         if not s['nb_elts']:
             return 0
 
-        known_problems = s['nb_problems']
-        if not problem:
-            known_problems = s['nb_elts'] - s['nb_problems']
+        # Services not in problem
+        count = s['nb_elts'] - s['nb_problems']
+        if problem:
+            count = s['nb_problems']
 
-        return round(100.0 * (known_problems / s['nb_elts']), 1) if s['nb_elts'] else 0
+        logger.debug("Services count: %s / %s / %s", count, s['nb_problems'], s['nb_elts'])
+        return round(100.0 * (count / s['nb_elts']), 1)
 
-    def get_services_synthesis(self, elts=None, user=None):
+    def get_services_synthesis(self, elts=None, user=None, extra_search=''):
         if elts is not None:
             services = [item for item in elts if item.__class__.my_type == 'service']
         else:
-            services = self.get_services(user=user)
+            services = self.get_services(user=user, extra_search=extra_search)
         logger.debug("[WebUI - datamanager] get_services_synthesis, %d services", len(services))
 
         s = dict()
@@ -252,41 +265,51 @@ class WebUIDataManager(DataManager):
                                        and not (service.problem_has_been_acknowledged or service.in_scheduled_downtime))
                 s['pct_' + state] = round(100.0 * s['nb_' + state] / s['nb_elts'], 1)
 
+            s['nb_impacts'] = 0
             # Our own computation !
             # ------
-            # Shinken does not always reflect the "problem" state ...
-            # to make UI more consistent, build our own problems counter!
-            # s['nb_ack'] = 0
-            # s['nb_problems'] = 0
-            # s['nb_impacts'] = 0
-            # for service in services:
-            #     if service.state_type.upper() not in ['HARD']:
-            #         continue
-            #     if service.state.lower() in ['warning', 'critical']:
-            #         service.is_problem = True
-            #     if service.state.lower() in ['unreachable']:
-            #         service.is_impact = True
-            #     if service.business_impact < self.min_business_impact:
-            #         continue
-            #
-            #     if service.is_problem and service.problem_has_been_acknowledged:
-            #         s['nb_ack'] += 1
-            #
-            #     if service.is_problem and not service.problem_has_been_acknowledged:
-            #         s['nb_problems'] += 1
-            #         if service.is_impact:
-            #             s['nb_impacts'] += 1
+            # Shinken/Alignak does not always reflect the "problem" state from a user point of view ...
+            # To make UI more consistent, build our own problems counter!
+            if self.inner_problems_count:
+                s['nb_ack'] = 0
+                s['nb_problems'] = 0
+                for service in services:
+                    if service.state_type.upper() not in ['HARD']:
+                        continue
+                    # A service is a problem if it is in a HARD WARNING, CRITICAL or UNKNOWN state
+                    if service.state.lower() in ['warning', 'critical', 'unknown']:
+                        service.is_problem = True
+                    # A service is impacted if its host is not UP
+                    if service.host.state not in ['up']:
+                        service.is_impact = True
+                    # A service is impacted if it is UNREACHABLE
+                    if service.state.lower() in ['unreachable']:
+                        service.is_impact = True
 
-            s['nb_problems'] = sum(1 for service in services if service.is_problem
-                                   and not service.problem_has_been_acknowledged)
+                    if service.is_problem and service.problem_has_been_acknowledged:
+                        s['nb_ack'] += 1
+
+                    if service.is_problem and not service.problem_has_been_acknowledged:
+                        s['nb_problems'] += 1
+                        if service.is_impact:
+                            s['nb_impacts'] += 1
+            else:
+                s['nb_problems'] = sum(1 for service in services if service.is_problem
+                                       and not service.problem_has_been_acknowledged)
+                s['nb_impacts'] = sum(1 for service in services if service.is_problem
+                                      and not service.problem_has_been_acknowledged and service.is_impact)
+                s['nb_ack'] = sum(1 for service in services if service.is_problem
+                                  and service.problem_has_been_acknowledged)
+
             s['pct_problems'] = round(100.0 * s['nb_problems'] / s['nb_elts'], 1)
-            s['nb_ack'] = sum(1 for service in services if service.is_problem and service.problem_has_been_acknowledged)
             s['pct_ack'] = round(100.0 * s['nb_ack'] / s['nb_elts'], 1)
             s['nb_downtime'] = sum(1 for service in services if service.in_scheduled_downtime)
             s['pct_downtime'] = round(100.0 * s['nb_downtime'] / s['nb_elts'], 1)
         else:
             s['bi'] = 0
-            for state in 'ok', 'warning', 'critical', 'pending', 'unknown', 'ack', 'downtime', 'problems':
+            for state in ['ok', 'warning', 'critical',
+                          'pending', 'unreachable', 'unknown',
+                          'ack', 'downtime', 'problems']:
                 s['nb_' + state] = 0
                 s['pct_' + state] = 0
 
@@ -332,6 +355,12 @@ class WebUIDataManager(DataManager):
         items = []
         items.extend(self._only_related_to(super(WebUIDataManager, self).get_hosts(), user))
         items.extend(self._only_related_to(super(WebUIDataManager, self).get_services(), user))
+
+        # Filter items according to the logged-in user minimum business impact
+        if user.min_business_impact:
+            logger.info("[WebUI - datamanager] user minimum business impact, filtering %d items >= %d",
+                         len(items), user.min_business_impact)
+            items = [i for i in items if i.business_impact >= user.min_business_impact]
 
         logger.debug("[WebUI - datamanager] search_hosts_and_services, search for %s in %d items", search, len(items))
 
@@ -773,7 +802,7 @@ class WebUIDataManager(DataManager):
 
             :param name: searched contacts group name
             :param user: concerned user
-            :returns: List of contacts groups related to the user
+            :returns: group which name matches else None
         """
         try:
             name = name.decode('utf8', 'ignore')
@@ -836,7 +865,7 @@ class WebUIDataManager(DataManager):
 
             :param name: searched hosts group name
             :param user: concerned user
-            :returns: List of hosts groups related to the user
+            :returns: group which name matches else None
         """
         try:
             name = name.decode('utf8', 'ignore')
@@ -895,7 +924,7 @@ class WebUIDataManager(DataManager):
 
             :param name: searched hosts group name
             :param user: concerned user
-            :returns: List of hosts groups related to the user
+            :returns: group which name matches else None
         """
         try:
             name = name.decode('utf8', 'ignore')
@@ -1026,40 +1055,39 @@ class WebUIDataManager(DataManager):
     def get_important_elements(self, user, type='all', sorter=worse_first):
         # BI is greater than the minimum business impact
         # todo: @maethor: why searching with ack:false ? an element is important whether it is ack or not...
-        search = "bi:>%d " % self.min_business_impact + 'ack:false type:%s' % type
+        search = "bi:>%d " % (self.min_business_impact) + 'ack:false type:%s' % type
         return self.search_hosts_and_services(search, user=user, sorter=sorter)
 
     def get_impacts(self, user, search='is:impact type:all', sorter=worse_first):
         if "is:impact" not in search:
-            search = "is:impact " + search
+            search = search +  " is:impact"
         if "bi:" not in search:
-            search = "bi:>=%d " % self.min_business_impact + search
+            search = search + " bi:>=%d " % (self.min_business_impact)
         return self.search_hosts_and_services(search, user=user, get_impacts=True, sorter=sorter)
 
-    def get_problems(self, user, search='isnot:UP isnot:OK isnot:PENDING isnot:UNKNOWN isnot:ACK isnot:DOWNTIME '
+    def get_problems(self, user, search='isnot:UP isnot:OK isnot:PENDING isnot:ACK isnot:DOWNTIME '
                                         'is:HARD type:all', get_acknowledged=False, get_downtimed=False,
                      sorter=worse_first):
         """What are problems:
         - hosts/services (type:all) that are not OK/UP in a HARD state (isnot:hUP isnot:hOK)
-        - and that are not PENDING or UNKNOWN
-        - and which business impact is greater than or equel the minimum business impact (defaults 2)
+        - and that are not PENDING
+        - and which business impact is greater than or equal the minimum business impact (defaults 0)
         """
         if "isnot:UP" not in search:
-            search = "isnot:UP " + search
+            search = search + " isnot:UP"
         if "isnot:OK" not in search:
-            search = "isnot:OK " + search
+            search = search + " isnot:OK"
         if "isnot:PENDING" not in search:
-            search = "isnot:PENDING " + search
-        if "isnot:UNKNOWN" not in search:
-            search = "isnot:UNKNOWN " + search
+            search = search + " isnot:PENDING"
         if "isnot:ACK" not in search:
-            search = "isnot:ACK " + search
+            search = search + " isnot:ACK"
         if "isnot:DOWNTIME" not in search:
-            search = "isnot:DOWNTIME " + search
+            search = search + " isnot:DOWNTIME"
         if "is:HARD" not in search:
-            search = "is:HARD" + search
+            search = search + " is:HARD"
         if "bi:" not in search:
-            search = "bi:>=%d " % self.min_business_impact + search
+            search = search + " bi:>=%d" % (self.min_business_impact)
+        logger.debug("Filter is: %s", search)
         return self.search_hosts_and_services('%s ack:%s downtime:%s'
                                               % (search, str(get_acknowledged), str(get_downtimed)),
                                               user=user, sorter=sorter)
