@@ -3,7 +3,7 @@
 
 %if with_contact_form:
 <form class="form-horizontal" class="js-comment-form" action="javascript:submit_comment_form('{{ helper.get_html_id(elt) }}');">
-  <input type="hidden" id="user_{{ helper.get_html_id(elt) }}" value="{{ user.get_name() }}">
+  <input type="hidden" id="user_{{ helper.get_html_id(elt) }}" value="{{ user.get_username() }}">
   <input type="hidden" id="name_{{ helper.get_html_id(elt) }}" value="{{ helper.get_uri_name(elt) }}">
   <div class="form-group">
     <label for="comment" class="col-sm-1 hidden-xs control-label">{{ !helper.get_contact_avatar(user, with_name=False, with_link=False, size=32) }}</label>
@@ -49,7 +49,7 @@
       %end
       <span class="comment-time">
         %if with_service_name:
-        by 
+        by
         {{ !helper.get_contact_avatar(c.author) }}
         %else:
         commented
