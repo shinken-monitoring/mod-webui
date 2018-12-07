@@ -39,6 +39,10 @@
                         <td><strong>Commands authorized:</strong></td>
                         <td>{{! app.helper.get_on_off(app.can_action(), "Is this contact allowed to launch commands from Web UI?")}}</td>
                      </tr>
+                     <tr>
+                        <td><strong>Minimum business impact:</strong></td>
+                        <td>{{!helper.get_business_impact_text(user.min_business_impact, text=True)}}</td>
+                     </tr>
 
                      <tr>
                         <td colspan="2"><h3>User attributes:</h3></td>

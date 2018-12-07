@@ -830,3 +830,19 @@ footer nav {
     font-size: 0.917em;
 }
 
+/* Override the default bootstrap badge */
+.badge {
+    font-size: 10px;
+    font-weight: 800;
+    color: #fff !important;
+    line-height: 0.9;
+    top: -6px !important;
+    border-radius: 5px;
+}
+.badge-warning {
+  background-color: #faa732 !important;
+}
+
+.badge-critical {
+  background-color: #da4f49 !important;
+}

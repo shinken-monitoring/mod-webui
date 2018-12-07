@@ -31,7 +31,7 @@ from shinken.misc.sorter import hst_srv_sort, last_state_change_earlier
 # Will be populated by the UI with it's own value
 app = None
 
-DEFAULT_FILTER = "isnot:UP isnot:OK isnot:PENDING isnot:ACK isnot:DOWNTIME isnot:SOFT bp:>0"
+DEFAULT_FILTER = "isnot:UP isnot:OK isnot:PENDING isnot:ACK isnot:DOWNTIME isnot:SOFT"
 
 
 def get_page():
@@ -40,6 +40,10 @@ def get_page():
 
 def get_all():
     user = app.bottle.request.environ['USER']
+
+    # Update the default filter according to the logged-in user minimum business impact
+    default_filtering = DEFAULT_FILTER + " bi:>=%d" % (user.min_business_impact)
+
     # Fetch elements per page preference for user, default is 25
     elts_per_page = app.prefs_module.get_ui_user_preference(user, 'elts_per_page', 25)
     display_impacts = app.prefs_module.get_ui_user_preference(user, 'display_impacts', True)
@@ -54,9 +58,11 @@ def get_all():
         sound_pref = sound
 
     # Set hostgroups level ...
+    # todo @mohierf: why here? Should be done only once on initialization...
     app.datamgr.set_hostgroups_level(user)
 
     # Set servicegroups level ...
+    # todo @mohierf: why here? Should be done only once on initialization...
     app.datamgr.set_servicegroups_level(user)
 
     # We want to limit the number of elements
@@ -72,7 +78,7 @@ def get_all():
     pbs = list(sorted(items, hst_srv_sort))
 
     if not display_impacts:
-        # Remove impacts when source of impact (dependancy) is in list
+        # Remove impacts when source of impact (dependency) is in list
         for pb in pbs:
             if pb.impacts:
                 for i in pb.impacts:
@@ -88,7 +94,7 @@ def get_all():
 
     return {
         'pbs': pbs[start:end],
-        'problems_search': True if search == DEFAULT_FILTER else False,
+        'problems_search': True if search == default_filtering else False,
         'all_pbs': items,
         'navi': navi,
         'title': title,

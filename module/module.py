@@ -347,7 +347,15 @@ class Webui_broker(BaseModule, Daemon):
         # --------------------------
         # All the hosts and services that are in a HARD non OK/UP state are considered as problems if their
         # business_impact is greater than or equal this value
-        self.min_business_impact = int(getattr(modconf, 'min_business_impact', '2'))
+        self.min_business_impact = int(getattr(modconf, 'min_business_impact', '0'))
+        # badge_business_impact is used to filter the alerting badges in the header bar (default is 2)
+        self.badge_business_impact = int(getattr(modconf, 'badge_business_impact', '2'))
+        logger.info("[WebUI] minimum business impacts, all UI: %s, badges: %s",
+                    self.min_business_impact, self.badge_business_impact)
+
+        # Inner computation rules for the problems
+        self.inner_problems_count = int(getattr(modconf, 'inner_problems_count', '1'))
+
         # Used in the dashboard view to select background color for percentages
         self.hosts_states_warning = int(getattr(modconf, 'hosts_states_warning', '95'))
         self.hosts_states_critical = int(getattr(modconf, 'hosts_states_critical', '90'))
@@ -471,7 +479,7 @@ class Webui_broker(BaseModule, Daemon):
             self.modules_manager.get_internal_instances()), self)
 
         # Data manager
-        self.datamgr = WebUIDataManager(self.rg, self.min_business_impact)
+        self.datamgr = WebUIDataManager(self.rg, self.min_business_impact, self.inner_problems_count)
         self.helper = helper
 
         # Check directories
@@ -1083,7 +1091,6 @@ def login_required():
     user = User.from_contact(contact)
     if app.user_session and app.user_info:
         user.set_information(app.user_session, app.user_info)
-    app.datamgr.set_logged_in_user(user)
 
     logger.debug("[WebUI] update current user: %s", user)
     request.environ['USER'] = user
