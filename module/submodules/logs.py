@@ -55,7 +55,7 @@ class LogsMetaModule(MetaModule):
 
 class MongoDBLogs(object):
     """
-    This module job is to get webui configuration data from a mongodb database:
+    This module job is to load framework events log from a mongodb database
     """
 
     def __init__(self, mod_conf):
@@ -123,23 +123,12 @@ class MongoDBLogs(object):
                 self.db.authenticate(self.username, self.password)
                 logger.info("[WebUI-mongo-logs] user authenticated: %s", self.username)
 
-            # Check if a document exists in the logs collection ...
-            logger.info('[WebUI-mongo-logs] searching connection test item in the collection ...')
-            u = self.db[self.logs_collection].find_one({'_id': 'shinken-test'})
-            if not u:
-                # No document ... create a new one!
-                logger.debug('[WebUI-mongo-logs] not found connection test item in the collection')
-                r = self.db[self.logs_collection].save({'_id': 'shinken-test',
-                                                        'last_test': time.time()})
-                logger.debug('[WebUI-mongo-logs] result: %s', r)
-                logger.info('[WebUI-mongo-logs] updated connection test item')
-            else:
-                # Found document ... update!
-                logger.debug('[WebUI-mongo-logs] found connection test item in the collection')
-                r = self.db[self.logs_collection].update({'_id': 'shinken-test'},
-                                                         {'$set': {'last_test': time.time()}})
-                logger.debug('[WebUI-mongo-logs] result: %s', r)
-                logger.info('[WebUI-mongo-logs] updated connection test item')
+            # Update a document test item in the collection to confirm correct connection
+            logger.info("[WebUI-MongoDBPreferences] updating connection test item in the collection ...")
+            self.db.ui_user_preferences.update_one({"_id": "test-ui_logs"},
+                                                   {"$set": {"last_test": time.time()}},
+                                                   upsert=True)
+            logger.info("[WebUI-MongoDBPreferences] updated connection test item")
 
             self.is_connected = True
             logger.info('[WebUI-mongo-logs] database connection established')
@@ -186,9 +175,7 @@ class MongoDBLogs(object):
         records = []
         try:
             records = self.db[self.logs_collection].find(query).sort([
-                ("time", pymongo.DESCENDING)]).skip(offset)
-            if limit:
-                records = records.limit(limit)
+                ("time", pymongo.DESCENDING)]).skip(offset).limit(limit)
 
             logger.debug("[mongo-logs] %d records fetched from database.", records.count())
         except Exception as exp:
