@@ -2,7 +2,7 @@
 %import time
 
 %# Specific content for breadcrumb
-%rebase("layout", title='Availability for all hosts', breadcrumb=[ ['All hosts', '/minemap'] ])
+%rebase("layout", title='Availability for all hosts', breadcrumb=[ ['Hosts availability', '/availability'] ])
 
 %states = ['Up', 'down', 'unreachable', 'unknown', 'unchecked']
 

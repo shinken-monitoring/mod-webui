@@ -115,8 +115,7 @@
                      %end
                      <h3 class="page-header" style="margin-top: 10px">
                        <ol class="breadcrumb" style="margin:0px">
-                         <li><a href="/">Home</a></li>
-                         %if breadcrumb == '':
+                         %if not breadcrumb:
                          <li class="active">{{title or 'No title'}}</li>
                          %else:
                          %_go_active = 'active'
