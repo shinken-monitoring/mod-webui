@@ -6,7 +6,7 @@
 %search_string = app.get_search_string()
 
 %# Specific content for breadrumb
-%rebase("layout", title='Minemap for hosts/services', css=['minemap/css/minemap.css'], js=['minemap/js/jquery.floatThead.min.js'], breadcrumb=[ ['All hosts', '/minemap'] ])
+%rebase("layout", title='Minemap for hosts/services', css=['minemap/css/minemap.css'], js=['minemap/js/jquery.floatThead.min.js'], breadcrumb=[ ['Minemap', '/minemap'] ])
 
 
 <div id="minemap">
