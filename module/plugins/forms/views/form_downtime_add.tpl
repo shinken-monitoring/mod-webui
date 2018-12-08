@@ -7,12 +7,12 @@
 
    function submit_local_form(){
       // Launch downtime request and bailout this modal view
-     do_schedule_downtime("{{name}}", downtime_start.format('X'), downtime_stop.format('X'), '{{user.get_name()}}', $('#reason').val(), '{{app.shinken_downtime_fixed}}', '{{app.shinken_downtime_trigger}}', '{{app.shinken_downtime_duration}}');
+     do_schedule_downtime("{{name}}", downtime_start.format('X'), downtime_stop.format('X'), '{{user.get_username()}}', $('#reason').val(), '{{app.shinken_downtime_fixed}}', '{{app.shinken_downtime_trigger}}', '{{app.shinken_downtime_duration}}');
 
       %if elt.__class__.my_type=='host':
       if ($('#dwn_services').is(":checked")) {
       %for service in elt.services:
-         do_schedule_downtime("{{name}}/{{service.get_name()}}", downtime_start.format('X'), downtime_stop.format('X'), '{{user.get_name()}}', $('#reason').val(), '{{app.shinken_downtime_fixed}}', '{{app.shinken_downtime_trigger}}', '{{app.shinken_downtime_duration}}');
+         do_schedule_downtime("{{name}}/{{service.get_name()}}", downtime_start.format('X'), downtime_stop.format('X'), '{{user.get_username()}}', $('#reason').val(), '{{app.shinken_downtime_fixed}}', '{{app.shinken_downtime_trigger}}', '{{app.shinken_downtime_duration}}');
       %end
       }
       %end

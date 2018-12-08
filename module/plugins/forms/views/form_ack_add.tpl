@@ -3,13 +3,13 @@
 <script type="text/javascript">
    function submit_local_form() {
       // Launch acknowledge request and bailout this modal view
-      do_acknowledge("{{name}}", $('#reason').val(), '{{user.get_name()}}', '{{app.default_ack_sticky}}', '{{app.default_ack_notify}}', '{{app.default_ack_persistent}}');
+      do_acknowledge("{{name}}", $('#reason').val(), '{{user.get_username()}}', '{{app.default_ack_sticky}}', '{{app.default_ack_notify}}', '{{app.default_ack_persistent}}');
 
       %if elt.__class__.my_type=='host':
       if ($('#ack_services').is(":checked")) {
       %for service in elt.services:
       %if service.state != service.ok_up and not service.problem_has_been_acknowledged:
-         do_acknowledge("{{name}}/{{service.get_name()}}", $('#reason').val(), '{{user.get_name()}}', '{{app.default_ack_sticky}}', '{{app.default_ack_notify}}', '{{app.default_ack_persistent}}');
+         do_acknowledge("{{name}}/{{service.get_name()}}", $('#reason').val(), '{{user.get_username()}}', '{{app.default_ack_sticky}}', '{{app.default_ack_notify}}', '{{app.default_ack_persistent}}');
       %end
       %end
       }

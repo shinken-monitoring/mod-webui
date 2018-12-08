@@ -5,7 +5,7 @@
       delete_all_downtimes("{{name}}");
       // If a comment is to be added ...
       if ($('#reason').val()) {
-         add_comment("{{name}}", '{{user.get_name()}}', $('#reason').val());
+         add_comment("{{name}}", '{{user.get_username()}}', $('#reason').val());
       }
 
       %if elt.__class__.my_type=='host':
@@ -39,7 +39,7 @@
       <div class="form-group">
          <textarea name="reason" id="reason" class="form-control" rows="5" placeholder="Comment…">All dowtimes deleted for {{name}} by {{user.get_name()}}.</textarea>
       </div>
-  
+
       <a href="javascript:submit_local_form();" class="btn btn-danger btn-lg btn-block"> <i class="fa fa-save"></i> Submit</a>
    </form>
 </div>
