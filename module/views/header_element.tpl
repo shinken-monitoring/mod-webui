@@ -19,12 +19,12 @@
       </button>
       <div class="navbar-brand-div">
         <a href="/" class="logo navbar-brand">
-           <img src="/static/logo/{{app.company_logo}}?v={{app.app_version}}" alt="Company logo" style="padding: 7px;" />
+           <img src="/static/logo/{{app.company_logo}}?v={{app.app_version}}" alt="Company logo" />
         </a>
       </div>
    </div>
 
-   <ul class="nav navbar-nav hidden-xs" id="nav-filters">
+   <ul id="nav-filters" class="nav navbar-nav navbar-search hidden-xs hidden-sm">
       <!-- Page filtering ... -->
       %include("_filters.tpl")
    </ul>
@@ -176,94 +176,120 @@
   <!--SIDEBAR-->
   <div class="navbar-default sidebar" role="navigation">
     <div class="sidebar-nav navbar-collapse collapse">
+      <div class="clearfix visible-xs sidebar-search">
+       <form class="navbar-form navbar-left" method="get" action="/all">
+         <div class="input-group custom-search-form">
+           <input class="form-control input-sm" type="search" id="search" name="search" value="{{ app.get_search_string() }}">
+           <span class="input-group-btn">
+             <button class="btn btn-default btn-sm" type="submit">
+               <i class="fa fa-search"></i>
+             </button>
+           </span>
+         </div>
+       </form>
+      </div>
+
       <ul class="nav" id="sidebar-menu">
-        <li class="sidebar-search visible-xs">
-          <form class="navbar-form navbar-left" method="get" action="/all">
-            <div class="input-group custom-search-form">
-              <input class="form-control" type="search" id="search" name="search" value="{{ app.get_search_string() }}">
-              <span class="input-group-btn">
-                <button class="btn btn-default" type="submit">
-                  <i class="fa fa-search"></i>
-                </button>
-              </span>
-            </div>
-          </form>
-        </li>
-      <!--%include("_filters.tpl")-->
         %if app:
-        <li> <a href="{{ app.get_url('Dashboard') }}"> <span class="fa fa-dashboard sidebar-icon font-unknown"></span>
-        Dashboard</a> </li>
-        <li> <a href="{{ app.get_url('Problems') }}"> <span class="fa fa-exclamation-circle sidebar-icon font-critical"></span>
-        Problems</a> </li>
+        <li> <a href="{{ app.get_url('Dashboard') }}"> <i class="fa fa-fw fa-dashboard sidebar-icon font-blue"></i>
+          &nbsp;Dashboard </a> </li>
+        <li> <a href="{{ app.get_url('Problems') }}"> <i class="fa fa-fw fa-exclamation-circle sidebar-icon font-red"></i>
+          &nbsp;Problems </a> </li>
+
         <li class="divider"></li>
+
         <!--<li>Groups and tags</li>-->
-        <li> <a href="#"><i class="fa fa-sitemap sidebar-icon"></i>
-        Groups and tags<i class="fa arrow"></i></a>
+        <li> <a href="#"><i class="fa fa-fw fa-sitemap sidebar-icon"></i>
+        &nbsp;Groups and tags<i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
-            <li> <a href="{{ app.get_url('HostsGroups') }}"> <span class="fa fa-sitemap sidebar-icon"></span> Hosts groups </a> </li>
-            <li> <a href="{{ app.get_url('ServicesGroups') }}"> <span class="fa fa-sitemap sidebar-icon"></span> Services groups </a> </li>
-            <li> <a href="{{ app.get_url('HostsTags') }}"> <span class="fa fa-tags sidebar-icon"></span> Hosts tags </a> </li>
-            <li> <a href="{{ app.get_url('ServicesTags') }}"> <span class="fa fa-tags sidebar-icon"></span> Services tags </a> </li>
+            <li> <a href="{{ app.get_url('HostsGroups') }}"> <i class="fa fa-fw fa-sitemap sidebar-icon"></i>
+               &nbsp;Hosts groups </a> </li>
+            <li> <a href="{{ app.get_url('ServicesGroups') }}"> <i class="fa fa-fw fa-sitemap sidebar-icon"></i>
+               &nbsp;Services groups </a> </li>
+            <li> <a href="{{ app.get_url('HostsTags') }}"> <i class="fa fa-fw fa-tags sidebar-icon"></i>
+               &nbsp;Hosts tags </a> </li>
+            <li> <a href="{{ app.get_url('ServicesTags') }}"> <i class="fa fa-fw fa-tags sidebar-icon"></i>
+               &nbsp;Services tags </a> </li>
           </ul>
         </li>
-        <li> <a href="#"><i class="fa fa-bar-chart sidebar-icon"></i>
-        Tactical views<i class="fa arrow"></i></a>
+        <li> <a href="#"><i class="fa fa-fw fa-bar-chart sidebar-icon"></i>
+        &nbsp;Tactical views<i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
-            <li> <a href="{{ app.get_url('Impacts') }}"> <span class="fa fa-bolt sidebar-icon"></span> Impacts </a> </li>
-            <li> <a href="{{ app.get_url('Minemap') }}"> <span class="fa fa-table sidebar-icon"></span> Minemap </a> </li>
-            <li> <a href="{{ app.get_url('Worldmap') }}"> <span class="fa fa-globe sidebar-icon"></span> World map </a> </li>
-            <li> <a href="{{ app.get_url('Wall') }}"> <span class="fa fa-th-large sidebar-icon"></span> Wall </a> </li>
+            <li> <a href="{{ app.get_url('Impacts') }}"> <i class="fa fa-fw fa-bolt sidebar-icon"></i>
+               &nbsp;Impacts </a> </li>
+            <li> <a href="{{ app.get_url('Minemap') }}"> <i class="fa fa-fw fa-table sidebar-icon"></i>
+               &nbsp;Minemap </a> </li>
+            <li> <a href="{{ app.get_url('Worldmap') }}"> <i class="fa fa-fw fa-globe sidebar-icon"></i>
+               &nbsp;World map </a> </li>
+            <li> <a href="{{ app.get_url('Wall') }}"> <i class="fa fa-fw fa-th-large sidebar-icon"></i>
+               &nbsp;Wall </a> </li>
             %if app.logs_module.is_available():
-            <li> <a href="{{ app.get_url('Availability') }}"> <span class="fa fa-bar-chart sidebar-icon"></span> Availability </a> </li>
+            <li> <a href="{{ app.get_url('Availability') }}"> <i class="fa fa-fw fa-bar-chart sidebar-icon"></i>
+               &nbsp;Availability </a> </li>
             %end
           </ul>
         </li>
         %if user.is_administrator():
         %if not app.alignak:
-        <li> <a href="#"><i class="fa fa-gears sidebar-icon"></i>
-        System<i class="fa arrow"></i></a>
+        <li> <a href="#"><i class="fa fa-fw fa-gears sidebar-icon"></i>
+        &nbsp;System<i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
-            <li> <a href="{{ app.get_url('System') }}"> <span class="fa fa-heartbeat sidebar-icon"></span> Status </a> </li>
+            <li> <a href="{{ app.get_url('System') }}"> <i class="fa fa-fw fa-heartbeat sidebar-icon"></i>
+               &nbsp;Status </a> </li>
             %if app.logs_module.is_available():
-            <li> <a href="{{ app.get_url('History') }}"> <span class="fa fa-th-list sidebar-icon"></span> Logs </a> </li>
-            <li> <a href="{{ app.get_url('GlobalStats') }}"> <span class="fa fa-bell-o sidebar-icon"></span> Alerts </a> </li>
+            <li> <a href="{{ app.get_url('History') }}"> <i class="fa fa-fw fa-th-list sidebar-icon"></i>
+               &nbsp;Logs </a> </li>
+            <li> <a href="{{ app.get_url('GlobalStats') }}"> <i class="fa fa-fw fa-bell-o sidebar-icon"></i>
+               &nbsp;Alerts </a> </li>
             %end
           </ul>
         </li>
         %else:
-        <li> <a href="#"><i class="fa fa-gears sidebar-icon"></i>
-        Alignak<i class="fa arrow"></i></a>
+        <li> <a href="#"><i class="fa fa-fw fa-gears sidebar-icon"></i>
+        &nbsp;Alignak<i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
-            <li> <a href="{{ app.get_url('System') }}"> <span class="fa fa-heartbeat sidebar-icon"></span> Status </a> </li>
-            <li> <a href="{{ app.get_url('AlignakStatus') }}"> <span class="fa fa-heartbeat sidebar-icon"></span> Status </a> </li>
+            <li> <a href="{{ app.get_url('System') }}"> <i class="fa fa-fw fa-heartbeat sidebar-icon"></i>
+               &nbsp;Status </a> </li>
+            <li> <a href="{{ app.get_url('AlignakStatus') }}"> <i class="fa fa-fw fa-heartbeat sidebar-icon"></i>
+               &nbsp;Status </a> </li>
             %if app.logs_module.is_available():
-            <li> <a href="{{ app.get_url('History') }}"> <span class="fa fa-th-list sidebar-icon"></span> Mongo Logs </a> </li>
-            <li> <a href="{{ app.get_url('GlobalStats') }}"> <span class="fa fa-bell-o sidebar-icon"></span> Alerts </a> </li>
-            <li> <a href="{{ app.get_url('AlignakEvents') }}"> <span class="fa fa-th-list sidebar-icon"></span> Logs </a> </li>
-            <li> <a href="{{ app.get_url('GlobalStats') }}"> <span class="fa fa-bell-o sidebar-icon"></span> Alerts </a> </li>
+            <li> <a href="{{ app.get_url('History') }}"> <i class="fa fa-fw fa-th-list sidebar-icon"></i>
+               &nbsp;Mongo Logs </a> </li>
+            <li> <a href="{{ app.get_url('GlobalStats') }}"> <i class="fa fa-fw fa-bell-o sidebar-icon"></i>
+               &nbsp;Alerts </a> </li>
+            <li> <a href="{{ app.get_url('AlignakEvents') }}"> <i class="fa fa-fw fa-th-list sidebar-icon"></i>
+               &nbsp;Logs </a> </li>
+            <li> <a href="{{ app.get_url('GlobalStats') }}"> <i class="fa fa-fw fa-bell-o sidebar-icon"></i>
+               &nbsp;Alerts </a> </li>
             %end
           </ul>
         </li>
         %end
-        <li> <a href="#"><i class="fa fa-wrench sidebar-icon"></i>
-        Configuration<i class="fa arrow"></i></a>
+        <li> <a href="#"><i class="fa fa-fw fa-wrench sidebar-icon"></i>
+        &nbsp;Configuration<i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
-            <li> <a href="{{ app.get_url('Parameters') }}"> <span class="fa fa-gears sidebar-icon"></span> Parameters </a> </li>
-            <li> <a href="{{ app.get_url('Contacts') }}"> <span class="fa fa-user sidebar-icon"></span> Contacts </a> </li>
-            <li> <a href="{{ app.get_url('ContactsGroups') }}"> <span class="fa fa-users sidebar-icon"></span> Contact Groups </a> </li>
-            <li> <a href="{{ app.get_url('Commands') }}"> <span class="fa fa-terminal sidebar-icon"></span> Commands </a> </li>
-            <li> <a href="{{ app.get_url('TimePeriods') }}"> <span class="fa fa-calendar sidebar-icon"></span> Time periods </a> </li>
+            <li> <a href="{{ app.get_url('Parameters') }}"> <i class="fa fa-fw fa-gears sidebar-icon"></i>
+               &nbsp;Parameters </a> </li>
+            <li> <a href="{{ app.get_url('Contacts') }}"> <i class="fa fa-fw fa-user sidebar-icon"></i>
+               &nbsp;Contacts </a> </li>
+            <li> <a href="{{ app.get_url('ContactsGroups') }}"> <i class="fa fa-fw fa-users sidebar-icon"></i>
+               &nbsp;Contact Groups </a> </li>
+            <li> <a href="{{ app.get_url('Commands') }}"> <i class="fa fa-fw fa-terminal sidebar-icon"></i>
+               &nbsp;Commands </a> </li>
+            <li> <a href="{{ app.get_url('TimePeriods') }}"> <i class="fa fa-fw fa-calendar sidebar-icon"></i>
+               &nbsp;Time periods </a> </li>
           </ul>
         </li>
         %end
         %other_uis = app.get_ui_external_links()
         %if len(other_uis) > 0:
-        <li> <a href="#"><i class="fa fa-rocket sidebar-icon"></i>
-        External<i class="fa arrow"></i></a>
+        <li> <a href="#"><i class="fa fa-fw fa-rocket sidebar-icon"></i>
+        &nbsp;External<i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
             %for c in other_uis:
             <li>
-              <a href="{{c['uri']}}" target="_blank"><span class="fa fa-rocket sidebar-icon"></span> {{c['label']}}</a>
+              <a href="{{c['uri']}}" target="_blank"><i class="fa fa-fw fa-rocket sidebar-icon"></i>
+              &nbsp;{{c['label']}}</a>
             </li>
             %end
           </ul>
@@ -271,7 +297,7 @@
         %end
         %end
         <li class="visible-xs">
-           <a href="/user/logout" data-toggle="modal" data-target="/user/logout"><i class="fa fa-sign-out sidebar-icon"></i> Logout</a>
+           <a href="/user/logout" data-toggle="modal" data-target="/user/logout"><i class="fa fa-fw fa-sign-out sidebar-icon"></i> Logout</a>
         </li>
 
       </ul>
