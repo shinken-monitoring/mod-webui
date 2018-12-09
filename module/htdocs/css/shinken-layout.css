@@ -40,6 +40,14 @@ body {
     padding-bottom: 70px;
 }
 
+.page-header {
+    margin-top:5px;
+}
+
+.breadcrumb {
+    margin:0;
+}
+
 .table-invisible > thead > tr > th,
 .table-invisible > tbody > tr > th,
 .table-invisible > tfoot > tr > th,
@@ -167,6 +175,10 @@ td .ellipsis > .long-output {
     /*padding: 0 15px;*/
 }
 
+.navbar-brand-div>a>img {
+   padding: 7px !important;
+}
+
 @media(min-width:768px) {
    #page-wrapper {
       margin: 0 0 0 220px;
@@ -187,21 +199,60 @@ td .ellipsis > .long-output {
     }
 }
 
-/*@media (max-width: 768px) {*/
-    /*#sidebar-menu > li  {*/
-        /*float:left;*/
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%;
+    }
+    /*.sidebar-search {*/
+        /*width: 100%;*/
+        /*height: 60px;*/
+        /*clear: both;*/
     /*}*/
-    /*#sidebar-menu {*/
-        /*height: 50px;*/
-        /*max-width: none;*/
-    /*}*/
-/*}*/
 
-/*@media(max-height:600px) {*/
-    /*.sidebar li  a {*/
+    .sidebar li {
+        width: 50%;
+        float: left;
+    }
+
+    #sidebar-menu .divider {
+        display:none;
+    }
+
+    #sidebar-menu {
+        height: 150px;
+        max-width: none;
+    }
+    /*.sidebar li.sidebar-search {*/
+        /*height: 50px;*/
+    /*}*/
+    /*.sidebar li.sidebar-search form {*/
         /*height: 30px;*/
     /*}*/
-/*}*/
+    #sidebar-menu li {
+        height: 40px;
+    }
+    #sidebar-menu li>a {
+        height: 40px;
+    }
+    .nav-second-level {
+        background: lightgrey;
+        position: relative;
+        z-index:10000;
+    }
+    .nav-second-level li {
+        float: left;
+        width: 50%;
+    }
+    .nav-second-level li a {
+        font-size: x-small;
+    }
+}
+
+@media(max-height:600px) {
+    .sidebar li  a {
+        height: 30px;
+    }
+}
 
 .sidebar .sidebar-icon {
     font-size: 18px;
@@ -357,16 +408,9 @@ td .ellipsis > .long-output {
     }
 }
 
-/*:TODO:maethor:170924: Make it work*/
-/*.navbar-nav #search-group .hidden-addons a {*/
-    /*display: none;*/
-/*}*/
+.navbar-search {
 
-/*.navbar-nav #search:focus + .input-group-addon .hidden-addons a,*/
-/*.navbar-nav #search:active + .input-group-addon .hidden-addons a,*/
-/*.navbar-nav .hidden-addons a:active {*/
-    /*display: inline;*/
-/*}*/
+}
 
 .navbar-nav .btn {
     background-color: #4D95BE;
@@ -492,22 +536,12 @@ td .ellipsis > .long-output {
         width: 160px;
     }
 }
-@media (min-width: 900px) {
+@media (min-width: 1024px) {
     input#search {
-        width: 260px;
+        width: 300px;
     }
 }
-@media (min-width: 1300px) {
-    input#search {
-        width: 400px;
-    }
-}
-@media (min-width: 1400px) {
-    input#search {
-        width: 500px;
-    }
-}
-@media (min-width: 1500px) {
+@media (min-width: 1366px) {
     input#search {
         width: 600px;
     }
