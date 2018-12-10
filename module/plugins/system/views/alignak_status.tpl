@@ -9,8 +9,8 @@
          <h3>No system information is available.</h3>
       </div>
    %else:
-      %ls = status['livestate']
-      %state = ls.get('state', 'unknown').lower()
+      %livestate = status['livestate']
+      %state = livestate.get('state', 'unknown').lower()
       <div class="panel-heading">
          <div style="display: table-cell; vertical-align: middle;">
             {{!helper.get_fa_icon_state_and_label(cls="host", state=state)}}
@@ -31,22 +31,18 @@
          </thead>
          <tbody>
          %for satellite in status['services']:
-            %ls = satellite['livestate']
-            %state = ls.get('state', 'unknown').lower()
-            %last_check = ls.get('timestamp', 0)
+            %livestate = satellite['livestate']
+            %state = livestate.get('state', 'unknown').lower()
+            %last_check = livestate.get('timestamp', 0)
             <tr>
-               <td>{{ls.get('name', satellite['name'])}}</td>
+               <td>{{livestate.get('name', satellite['name'])}}</td>
                <td>{{!helper.get_fa_icon_state_and_label(cls="service", state=state, label=state)}}</td>
                <td title='{{helper.print_date(last_check)}}' data-container="body">{{helper.print_duration(last_check, just_duration=True, x_elts=2)}}</td>
-               <td title="{{ls.get('long_output', 'n/a')}} - {{ls.get('perf_data', 'n/a')}}">{{ls.get('output', 'n/a')}}</td>
+               <td title="{{livestate.get('long_output', 'n/a')}} - {{livestate.get('perf_data', 'n/a')}}">{{livestate.get('output', 'n/a')}}</td>
             </tr>
          %end
          </tbody>
       </table>
-
-      <div class="panel-heading">
-         <h3 class="panel-title">{{ls['alignak']}}</h3>
-      </div>
 
       <!-- {{ls['alignak']}} - {{ls['version']}} - {{ls['type']}} - {{ls['name']}} - {{ls['start_time']}} -->
 

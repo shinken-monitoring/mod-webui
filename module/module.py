@@ -87,6 +87,7 @@ import bottle
 from datamanager import WebUIDataManager
 from ui_user import User
 from helper import helper
+from alignak_helper import alignak_helper
 
 # Sub modules
 from submodules.prefs import PrefsMetaModule
@@ -479,6 +480,7 @@ class Webui_broker(BaseModule, Daemon):
         # Data manager
         self.datamgr = WebUIDataManager(self.rg)
         self.helper = helper
+        self.alignak_helper = alignak_helper
 
         # Check directories
         # We check if the photo directory exists. If not, try to create it
@@ -667,6 +669,7 @@ class Webui_broker(BaseModule, Daemon):
                 continue
             except Exception as exp:
                 logger.warning("Broken module queue: %s", str(exp))
+                time.sleep(1.0)
                 continue
 
             # try to relaunch dead module

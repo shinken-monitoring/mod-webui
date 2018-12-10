@@ -251,14 +251,14 @@
             <li> <a href="{{ app.get_url('System') }}"> <i class="fa fa-fw fa-heartbeat sidebar-icon"></i>
                &nbsp;Status </a> </li>
             <li> <a href="{{ app.get_url('AlignakStatus') }}"> <i class="fa fa-fw fa-heartbeat sidebar-icon"></i>
-               &nbsp;Status </a> </li>
+               &nbsp;Live state</a> </li>
+            <li> <a href="{{ app.get_url('AlignakEvents') }}"> <i class="fa fa-fw fa-th-list sidebar-icon"></i>
+               &nbsp;Events log</a> </li>
+            <li> <a href="{{ app.get_url('AlignakStats') }}"> <i class="fa fa-fw fa-th-list sidebar-icon"></i>
+               &nbsp;Events stats</a> </li>
             %if app.logs_module.is_available():
             <li> <a href="{{ app.get_url('History') }}"> <i class="fa fa-fw fa-th-list sidebar-icon"></i>
                &nbsp;Mongo Logs </a> </li>
-            <li> <a href="{{ app.get_url('GlobalStats') }}"> <i class="fa fa-fw fa-bell-o sidebar-icon"></i>
-               &nbsp;Alerts </a> </li>
-            <li> <a href="{{ app.get_url('AlignakEvents') }}"> <i class="fa fa-fw fa-th-list sidebar-icon"></i>
-               &nbsp;Logs </a> </li>
             <li> <a href="{{ app.get_url('GlobalStats') }}"> <i class="fa fa-fw fa-bell-o sidebar-icon"></i>
                &nbsp;Alerts </a> </li>
             %end

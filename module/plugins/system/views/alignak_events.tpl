@@ -1,6 +1,6 @@
 %rebase("layout", title='Alignak events log', css=['system/css/multiselect.css'], js=['system/js/multiselect.js'], breadcrumb=[ ['Alignak events log', '/alignak/events'] ])
 
-%helper = app.helper
+%helper = app.alignak_helper
 
 <div class="col-sm-12 panel panel-default">
    <div class="panel-body">

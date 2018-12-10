@@ -128,7 +128,7 @@ def _get_alignak_livesynthesis():
         app.request.environ['MSG'] = "Alignak Error"
         app.bottle.redirect(app.get_url("Dashboard"))
 
-    return {'ls': data}
+    return data
 
 
 def _get_alignak_status():
@@ -237,7 +237,7 @@ def _get_alignak_status():
         app.request.environ['MSG'] = "Alignak Error"
         app.bottle.redirect(app.get_url("Dashboard"))
 
-    return {'status': data}
+    return data
 
 
 def alignak_status():
@@ -283,7 +283,6 @@ def alignak_events():
 
     # Fetch elements per page preference for user, default is 25
     elts_per_page = app.prefs_module.get_ui_user_preference(user, 'elts_per_page', 25)
-    logger.info("[WebUI-system] elts_per_page: %s", elts_per_page)
 
     # We want to limit the number of elements
     step = int(app.request.query.get('step', elts_per_page))
@@ -296,7 +295,7 @@ def alignak_events():
         try:
             logger.debug("Log: %s", log)
             event = LogEvent(log['message'])
-            logger.info("-> event: %s", event)
+            logger.debug("-> event: %s", event)
             if not event.valid:
                 logger.warning("No monitoring event detected from: %s", log['message'])
                 continue
@@ -386,7 +385,7 @@ def alignak_events():
                     "type": "comment",
                 })
 
-            if filters and data['type'] not in filters:
+            if filters and data.get('type', 'unknown') not in filters:
                 continue
 
             items.append(data)
