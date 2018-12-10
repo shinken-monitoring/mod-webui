@@ -1481,3 +1481,89 @@ class Regenerator(object):
         """This brok should arrive within a second after the service_check_result_brok.
         It contains information about the next scheduled service check"""
         self.manage_service_check_result_brok(b)
+
+#################
+# Acknowledge / downtime part
+# ---
+# Alignak raises broks for acknowledges and downtimes
+#################
+    def manage_acknowledge_raise_brok(self, b):
+        """An acknowledge has been set on an item"""
+        data = b.data
+        hname = data.get('host_name', data.get('host', None))
+        if hname:
+            h = self.hosts.find_by_name(hname)
+            if not h:
+                logger.warning("Got a acknowledge raise brok for an unknown host: %s", hname)
+                return
+
+        sdesc = data.get('service_description', data.get('service', None))
+        if sdesc:
+            s = self.services.find_srv_by_name_and_hostname(hname, sdesc)
+            if not s:
+                logger.warning("Got a acknowledge raise brok for an unknown service: %s/%s", hname, sdesc)
+                return
+            logger.info("Acknowledge set: %s/%s - %s", hname, sdesc, s.state)
+        else:
+            logger.info("Acknowledge set: %s - %s", hname, h.state)
+
+    def manage_acknowledge_expire_brok(self, b):
+        """An acknowledge has been set on an item"""
+        data = b.data
+        hname = data.get('host_name', data.get('host', None))
+        if hname:
+            h = self.hosts.find_by_name(hname)
+            if not h:
+                logger.warning("Got a acknowledge raise brok for an unknown host: %s", hname)
+                return
+
+        sdesc = data.get('service_description', data.get('service', None))
+        if sdesc:
+            s = self.services.find_srv_by_name_and_hostname(hname, sdesc)
+            if not s:
+                logger.warning("Got a acknowledge raise brok for an unknown service: %s/%s", hname, sdesc)
+                return
+            logger.info("Acknowledge expired: %s/%s - %s", hname, sdesc, s.state)
+        else:
+            logger.info("Acknowledge expired: %s - %s", hname, h.state)
+
+    def manage_downtime_raise_brok(self, b):
+        """A downtime has been set on an item"""
+        data = b.data
+        hname = data.get('host_name', data.get('host', None))
+        if hname:
+            h = self.hosts.find_by_name(hname)
+            if not h:
+                logger.warning("Got a downtime raise brok for an unknown host: %s", hname)
+                return
+
+        sdesc = data.get('service_description', data.get('service', None))
+        if sdesc:
+            s = self.services.find_srv_by_name_and_hostname(hname, sdesc)
+            if not s:
+                logger.warning("Got a downtime raise brok for an unknown service: %s/%s", hname, sdesc)
+                return
+            logger.info("Downtime set: %s/%s - %s", hname, sdesc, s.state)
+        else:
+            logger.info("Downtime set: %s - %s", hname, h.state)
+
+    def manage_downtime_expire_brok(self, b):
+        """A downtime has been set on an item"""
+        data = b.data
+        hname = data.get('host_name', data.get('host', None))
+        if hname:
+            h = self.hosts.find_by_name(hname)
+            if not h:
+                logger.warning("Got a downtime end brok for an unknown host: %s", hname)
+                return
+
+        sdesc = data.get('service_description', data.get('service', None))
+        if sdesc:
+            s = self.services.find_srv_by_name_and_hostname(hname, sdesc)
+            if not s:
+                logger.warning("Got a downtime end brok for an unknown service: %s/%s", hname, sdesc)
+                return
+            logger.info("Downtime end: %s/%s - %s", hname, sdesc, s.state)
+        else:
+            logger.info("Downtime end: %s - %s", hname, h.state)
+
