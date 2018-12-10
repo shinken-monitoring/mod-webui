@@ -174,8 +174,12 @@ class MongoDBLogs(object):
 
         records = []
         try:
-            records = self.db[self.logs_collection].find(query).sort([
-                ("time", pymongo.DESCENDING)]).skip(offset).limit(limit)
+            if limit:
+                records = self.db[self.logs_collection].find(query).sort([
+                    ("time", pymongo.DESCENDING)]).skip(offset).limit(limit)
+            else:
+                records = self.db[self.logs_collection].find(query).sort([
+                    ("time", pymongo.DESCENDING)]).skip(offset)
 
             logger.debug("[mongo-logs] %d records fetched from database.", records.count())
         except Exception as exp:
