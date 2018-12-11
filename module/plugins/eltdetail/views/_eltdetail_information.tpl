@@ -1,21 +1,23 @@
 <div class="tab-pane fade {{_go_active}} {{_go_fadein}}" id="information">
   <div class="panel panel-default" style="border-top:none; border-radius:0;">
     <div class="panel-body">
-      <div class="col-lg-6">
 
-        <div class="status-lead" style="margin-top: 20px;">
-          <div style="display: table-cell; vertical-align: middle; padding-right: 10px;">
+      <div class="row">
+        <div class="status-lead" style="margin-left: 10px; margin-top: 20px;">
+          <div style="display: table-cell; vertical-align: middle; ">
             {{!helper.get_fa_icon_state(elt, use_title=False)}}
           </div>
           <div style="display: table-cell; vertical-align: middle; padding-right: 10px;" class="font-{{elt.state.lower()}} text-center">
             <strong>{{ elt.state }}</strong><br>
             <span title="Since {{time.strftime("%d %b %Y %H:%M:%S", time.localtime(elt.last_state_change))}}">
+              <small>
               %if elt.state_type == 'HARD':
               {{!helper.print_duration(elt.last_state_change, just_duration=True, x_elts=2)}}
               %else:
               attempt {{elt.attempt}}/{{elt.max_check_attempts}}
               <!--soft state-->
               %end
+              </small>
             </span>
           </div>
           <div style="display: table-cell; vertical-align: middle;">
@@ -27,10 +29,13 @@
             ({{ elt.address }})
             %end
             <br>
-            <samp>{{! elt.output}}</samp></small>
+            <samp>{{! elt.output}}</samp>
+          </div>
         </div>
       </div>
 
+      <div class="row">
+      <div class="col-lg-6">
         <h4 class="page-header">Last check</h4>
         <table class="table table-condensed table-nowrap">
           <colgroup>
@@ -102,9 +107,9 @@
             <col style="width: 60%" />
           </colgroup>
           <tbody class="small">
-            %if hasattr(elt, "check_period") and hasattr(elt.check_period, "get_name"):
             <tr>
               <td><strong>Check period:</strong></td>
+              %if hasattr(elt, "check_period") and hasattr(elt.check_period, "get_name"):
               %tp=app.datamgr.get_timeperiod(elt.check_period.get_name())
               <td name="check_period" class="popover-dismiss"
                 data-html="true" data-toggle="popover" data-placement="left"
@@ -114,13 +119,12 @@
                 {{! helper.get_on_off(elt.check_period.is_time_valid(now), 'Is element check period currently active?')}}
                 <a href="/timeperiods">{{elt.check_period.alias}}</a>
               </td>
+              %else:
+              <td name="check_period">
+                Always
+              </td>
+              %end
             </tr>
-            %else:
-            <tr>
-              <td><strong>No defined check period!</strong></td>
-              <td></td>
-            </tr>
-            %end
             %if elt.maintenance_period is not None:
             <tr>
               <td><strong>Maintenance period:</strong></td>
@@ -319,9 +323,10 @@
                 >
               </td>
             </tr>
-            %if elt.notifications_enabled and elt.notification_period:
+            %if elt.notifications_enabled:
             <tr>
               <td><strong>Notification period:</strong></td>
+              %if elt.notification_period:
               %tp=app.datamgr.get_timeperiod(elt.notification_period.get_name())
               <td name="notification_period" class="popover-dismiss" data-html="true" data-toggle="popover" data-placement="left"
                 data-title='{{tp.alias if hasattr(tp, "alias") else tp.timeperiod_name}}'
@@ -329,6 +334,11 @@
                 {{! helper.get_on_off(elt.notification_period.is_time_valid(now), 'Is element notification period currently active?')}}
                 <a href="/timeperiods">{{elt.notification_period.alias}}</a>
               </td>
+              %else:
+              <td name="notification_period">
+                Always
+              </td>
+              %end
             </tr>
             <tr>
               %if elt_type=='host':
@@ -398,6 +408,7 @@
         %#<dd>(none)</dd>
         %#%end
 
+      </div>
       </div>
     </div>
   </div>

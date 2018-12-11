@@ -86,18 +86,6 @@ function on_page_refresh() {
       show_custom_view($(elt));
    });
 
-   /*
-    * Dependency graph
-    */
-   $('a[href="#depgraph"]').on('shown.bs.tab', function (e) {
-      // First we get the full name of the object from div data
-      var element = $('#inner_depgraph').data('element');
-      // Loading indicator ...
-      $("#inner_depgraph").html('<i class="fa fa-spinner fa-spin fa-3x"></i> Loading dependency graph ...');
-      // Then we load the inner depgraph page. Easy isn't it? :)
-      $('#inner_depgraph').load('/inner/depgraph/'+encodeURIComponent(element));
-   });
-
    // Fullscreen management
    $('button[action="fullscreen-request"]').click(function() {
       var elt = $(this).data('element');
@@ -114,7 +102,7 @@ function on_page_refresh() {
       var value = $(this).is(':checked');
       var func = $(this).data('action')
       if (eltdetail_logs) console.debug(func, " for: ", elt, ", to make it ", value);
-      
+
       window[func](elt, value);
    });
 
@@ -151,18 +139,6 @@ function on_page_refresh() {
             $('#inner_helpdesk').html('<div class="alert alert-danger">Sorry but there was an error: ' + xhr.status + ' ' + xhr.statusText+'</div>');
          }
       });
-   })
-
-
-   /*
-    * Timeline
-    */
-   $('a[data-toggle="tab"][href="#timeline"]').on('shown.bs.tab', function (e) {
-      // First we get the full name of the object from div data
-      var element = $('#inner_timeline').data('element');
-      // Get timeline tab content ...
-      $('#inner_timeline').load('/timeline/inner/'+encodeURIComponent(element));
-
    })
 
 

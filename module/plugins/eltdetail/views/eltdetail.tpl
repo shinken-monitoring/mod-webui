@@ -32,13 +32,84 @@ Invalid element name
 %rebase("layout", js=js, css=css, breadcrumb=breadcrumb, title=elt_type.title()+' detail: ' + elt.get_full_name())
 
 <div id="element" class="row container-fluid">
+
+   %setdefault('debug', False)
+   %if debug:
+   <div class="panel-group">
+      <div class="panel panel-default">
+         <div class="panel-heading">
+            <h4 class="panel-title">
+               <a data-toggle="collapse" href="#collapse_{{elt.id}}"><i class="fa fa-bug"></i> Host as dictionary</a>
+            </h4>
+         </div>
+         <div id="collapse_{{elt.id}}" class="panel-collapse collapse">
+            <dl class="dl-horizontal" style="height: 200px; overflow-y: scroll;">
+               %for k in sorted(elt.__slots__):
+                  %v=getattr(elt, k, 'unset')
+                  <dt>{{k}}</dt>
+                  <dd>{{v}}</dd>
+               %end
+            </dl>
+            <dl class="dl-horizontal" style="height: 100px; overflow-y: scroll;">
+               %for k,v in sorted(elt.__dict__.items()):
+                  <dt>{{k}}</dt>
+                  <dd>{{v}}</dd>
+               %end
+            </dl>
+         </div>
+      </div>
+      %if elt_type == 'host':
+      <div class="panel panel-default">
+         <div class="panel-heading">
+            <h4 class="panel-title">
+               <a data-toggle="collapse" href="#collapse_{{elt.id}}_services"><i class="fa fa-bug"></i> Host services as dictionary</a>
+            </h4>
+         </div>
+         <div id="collapse_{{elt.id}}_services" class="panel-collapse collapse" style="height: 200px; margin-left:20px;">
+            %for service in elt.services:
+            <div class="panel panel-default">
+               <div class="panel-heading">
+                  <h4 class="panel-title">
+                     <a data-toggle="collapse" href="#collapse{{service.id}}_services"><i class="fa fa-bug"></i> Service: {{service.get_name()}}</a>
+                  </h4>
+               </div>
+               <div id="collapse{{service.id}}_services" class="panel-collapse collapse" style="height: 200px;">
+                  <dl class="dl-horizontal" style="height: 200px; overflow-y: scroll;">
+                     %for k in sorted(service.__slots__):
+                        %v=getattr(elt, k, 'unset')
+                        <dt>{{k}}</dt>
+                        <dd>{{v}}</dd>
+                     %end
+                  </dl>
+                  <dl class="dl-horizontal" style="height: 100px; overflow-y: scroll;">
+                     %for k,v in sorted(service.__dict__.items()):
+                        <dt>{{k}}</dt>
+                        <dd>{{v}}</dd>
+                     %end
+                  </dl>
+               </div>
+            </div>
+            %end
+         </div>
+      </div>
+      %end
+   </div>
+   %end
+
+
    %if app.can_action() and elt.is_problem and elt.business_impact > 2 and not elt.problem_has_been_acknowledged:
    %disabled_ack = '' if not elt.problem_has_been_acknowledged else 'disabled'
    %disabled_fix = '' if elt.event_handler_enabled and elt.event_handler else 'disabled'
-   <div class="alert alert-danger"><i class="fa fa-warning"></i> This element has an important impact on your business, you may
-     <a href="#" class="{{disabled_ack}} btn btn-primary btn-xs js-add-acknowledge" title="Acknowledge this {{elt_type}} problem" data-element="{{helper.get_uri_name(elt)}}"><i class="fa fa-check"></i> acknowledge it</a>
-     or
-     <a href="#" class="{{disabled_fix}} btn btn-primary btn-xs js-try-to-fix" title="Launch the event handler for this {{elt_type}}" data-element="{{helper.get_uri_name(elt)}}"><i class="fa fa-magic"></i> try to fix it</a>.</div>
+   <div class="alert alert-danger">
+      <i class="fa fa-warning"></i> This element has an important impact on your business, you may
+      <a href="#" class="{{disabled_ack}} btn btn-primary btn-xs js-add-acknowledge"
+         title="Acknowledge this {{elt_type}} problem" data-element="{{helper.get_uri_name(elt)}}">
+         <i class="fa fa-check"></i> acknowledge it</a>
+      or
+      <a href="#" class="{{disabled_fix}} btn btn-primary btn-xs js-try-to-fix"
+         title="Launch the event handler for this {{elt_type}}" data-element="{{helper.get_uri_name(elt)}}">
+         <i class="fa fa-magic"></i> try to fix it</a>.
+   </div>
    %end
 
    %if elt.get_check_command().startswith('bp_rule'):
@@ -99,11 +170,9 @@ Invalid element name
             %end
             <li><a href="#comments" data-toggle="tab">Comments</a></li>
             <li><a href="#downtimes" data-toggle="tab">Downtimes</a></li>
-            <!--<li class="timeline_pane"><a href="#timeline" data-toggle="tab">Timeline</a></li>-->
             %if app.graphs_module.is_available():
             <li><a href="#graphs" data-toggle="tab">Graphs</a></li>
             %end
-            <!--<li><a href="#depgraph" data-toggle="tab">Impact graph</a></li>-->
             %if app.logs_module.is_available():
             <li><a href="#history" data-toggle="tab">History</a></li>
             %end
@@ -141,15 +210,23 @@ Invalid element name
 
             %include("_eltdetail_information.tpl")
             %include("_eltdetail_impacts.tpl")
+            %if elt.customs:
             %include("_eltdetail_configuration.tpl")
+            %end
             %include("_eltdetail_comments.tpl")
             %include("_eltdetail_downtimes.tpl")
+            %if app.graphs_module.is_available():
             %include("_eltdetail_graphs.tpl")
-            %#include("_eltdetail_timeline.tpl")
+            %end
+            %if app.logs_module.is_available():
             %include("_eltdetail_history.tpl")
-            <!--%include("_eltdetail_depgraph.tpl")-->
+            %end
+            %if app.logs_module.is_available() and elt_type=='host':
             %include("_eltdetail_availability.tpl")
+            %end
+            %if app.helpdesk_module.is_available():
             %include("_eltdetail_helpdesk.tpl")
+            %end
 
          </div>
       <!-- Detail info box end -->
