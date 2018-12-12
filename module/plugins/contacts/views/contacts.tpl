@@ -17,6 +17,7 @@
         <tr>
           <th>Name</th>
           <th>Alias</th>
+          <th>Business impact</th>
           <th>Email</th>
           <th>Notification way</th>
         </tr>
@@ -36,6 +37,7 @@
              %end
            </td>
            <td><strong>{{ contact.alias if contact.alias != "none" else "" }}</strong></td>
+           <td><strong>{{ contact.min_business_impact }}</strong></td>
            <td>
              %if contact.email != "none":
              <a href="mailto:{{contact.email}}?subject=Sent from {{fmwk}} WebUI">{{contact.email}}</a>

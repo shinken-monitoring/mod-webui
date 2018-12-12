@@ -39,8 +39,7 @@
     <li><code>is:downtime</code> Matches elements that are in a scheduled downtime.</li>
   </ul>
   <p><strong>Note:</strong> default search on state is made against HARD and SOFT states.</p>
-  <p>Preceding the state with the letter <code>s</code> makes the search only consider SOFT states.</p>
-  <p>You can also preceding the state with the letter <code>h</code> to made the search only consider HARD states.</p>
+  <p>Preceding the state with the letter <code>s</code> makes the search only consider SOFT states whereas the letter <code>h</code> makes the search only consider HARD states.</p>
   <p>For example:</p>
   <ul>
     <li><code>is:sDOWN</code> Matches hosts that are SOFT state DOWN.</li>
@@ -54,11 +53,13 @@
   </ul>
 
   <h4>Search by the business impact of an element</h4>
-  <p>The <code>bp</code> qualifier finds elements by it's business priority. For example:</p>
+  <p>The <code>bi</code> qualifier finds elements by it's business priority. For example:</p>
   <ul>
-    <li><code>bp:5</code> Matches hosts and services that are top for business.</li>
-    <li><code>bp:>1</code> Matches hosts and services with a business impact greater than 1.</li>
+    <li><code>bi:5</code> Matches hosts and services that are top for business.</li>
+    <li><code>bi:>1</code> Matches hosts and services with a business impact greater than 1.</li>
   </ul>
+
+  <p><strong>Note</strong> that the WebUI has a default configured filter. Hosts and services that do not have a BI greater than or equal this filter will not be dislayed in the UI. Currently, this filter is <code>bi>={{app.problems_business_impact}}</code>.</p>
 
   <h4>Search by duration</h4>
   <p>You can also search by the duration of the last state change. This is very useful to find elements that are warning or critical for a long time. For example:</p>

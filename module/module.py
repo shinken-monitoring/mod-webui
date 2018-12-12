@@ -347,14 +347,14 @@ class Webui_broker(BaseModule, Daemon):
         # --------------------------
         # All the hosts and services that are in a HARD non OK/UP state are considered as problems if their
         # business_impact is greater than or equal this value
-        self.min_business_impact = int(getattr(modconf, 'min_business_impact', '0'))
-        # badge_business_impact is used to filter the alerting badges in the header bar (default is 2)
-        self.badge_business_impact = int(getattr(modconf, 'badge_business_impact', '2'))
-        logger.info("[WebUI] minimum business impacts, all UI: %s, badges: %s",
-                    self.min_business_impact, self.badge_business_impact)
+        self.problems_business_impact = int(getattr(modconf, 'problems_business_impact', '1'))
+        # important_problems_business_impact is used to filter the alerting badges in the header bar (default is 3)
+        self.important_problems_business_impact = int(getattr(modconf, 'important_problems_business_impact', '3'))
+        logger.info("[WebUI] minimum business impacts, all UI: %s, most important: %s",
+                    self.problems_business_impact, self.important_problems_business_impact)
 
         # Inner computation rules for the problems
-        self.inner_problems_count = int(getattr(modconf, 'inner_problems_count', '1'))
+        self.disable_inner_problems_computation = int(getattr(modconf, 'disable_inner_problems_computation', '0'))
 
         # Used in the dashboard view to select background color for percentages
         self.hosts_states_warning = int(getattr(modconf, 'hosts_states_warning', '95'))
@@ -479,7 +479,8 @@ class Webui_broker(BaseModule, Daemon):
             self.modules_manager.get_internal_instances()), self)
 
         # Data manager
-        self.datamgr = WebUIDataManager(self.rg, self.min_business_impact, self.inner_problems_count)
+        self.datamgr = WebUIDataManager(self.rg, self.problems_business_impact,
+                                        self.disable_inner_problems_computation)
         self.helper = helper
 
         # Check directories

@@ -31,11 +31,8 @@
 
    <ul class="nav navbar-nav navbar-top-links navbar-right hidden-xs">
      <!-- Right part ... -->
-     %s = app.datamgr.get_services_synthesis(user=user)
-     %h = app.datamgr.get_hosts_synthesis(user=user)
-     %# Override the default problems count - badge minimum business impact
-     %h['nb_problems'] = len(app.datamgr.get_problems(user,'type:host bi:>%d' % app.badge_business_impact))
-     %s['nb_problems'] = len(app.datamgr.get_problems(user,'type:service bi:>%d' % app.badge_business_impact))
+     %s = app.datamgr.get_services_synthesis(user=user, extra_search='bi:>=%d' % app.important_problems_business_impact)
+     %h = app.datamgr.get_hosts_synthesis(user=user, extra_search='bi:>=%d' % app.important_problems_business_impact)
      <div id="hosts-states-popover-content" class="hidden">
        <table class="table table-invisible table-condensed">
          <tbody>
