@@ -1060,9 +1060,9 @@ class WebUIDataManager(DataManager):
 
     def get_impacts(self, user, search='is:impact type:all', sorter=worse_first):
         if "is:impact" not in search:
-            search = search +  " is:impact"
+            search = "is:impact " + search
         if "bi:" not in search:
-            search = search + " bi:>=%d " % (self.min_business_impact)
+            search = "bi:>=%d " % (self.min_business_impact) + search
         return self.search_hosts_and_services(search, user=user, get_impacts=True, sorter=sorter)
 
     def get_problems(self, user, search='isnot:UP isnot:OK isnot:PENDING isnot:ACK isnot:DOWNTIME '
@@ -1074,19 +1074,19 @@ class WebUIDataManager(DataManager):
         - and which business impact is greater than or equal the minimum business impact (defaults 0)
         """
         if "isnot:UP" not in search:
-            search = search + " isnot:UP"
+            search = "isnot:UP " + search
         if "isnot:OK" not in search:
-            search = search + " isnot:OK"
+            search = "isnot:OK " + search
         if "isnot:PENDING" not in search:
-            search = search + " isnot:PENDING"
+            search = "isnot:PENDING " + search
         if "isnot:ACK" not in search:
-            search = search + " isnot:ACK"
+            search = "isnot:ACK " + search
         if "isnot:DOWNTIME" not in search:
-            search = search + " isnot:DOWNTIME"
+            search = "isnot:DOWNTIME " + search
         if "is:HARD" not in search:
-            search = search + " is:HARD"
+            search = "is:HARD " + search
         if "bi:" not in search:
-            search = search + " bi:>=%d" % (self.min_business_impact)
+            search = "bi:>=%d " % (self.min_business_impact) + search
         logger.debug("Filter is: %s", search)
         return self.search_hosts_and_services('%s ack:%s downtime:%s'
                                               % (search, str(get_acknowledged), str(get_downtimed)),
