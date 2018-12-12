@@ -47,11 +47,11 @@ from shinken.misc.sorter import worse_first, last_state_change_earlier
 
 class WebUIDataManager(DataManager):
 
-    def __init__(self, rg=None, min_business_impact=0, inner_problems_count=0):
+    def __init__(self, rg=None, problems_business_impact=0, disable_inner_problems_computation=0):
         super(WebUIDataManager, self).__init__()
         self.rg = rg
-        self.min_business_impact = min_business_impact
-        self.inner_problems_count = inner_problems_count
+        self.problems_business_impact = problems_business_impact
+        self.disable_inner_problems_computation = disable_inner_problems_computation
 
     @property
     def is_initialized(self):
@@ -102,7 +102,7 @@ class WebUIDataManager(DataManager):
         if get_impacts:
             search = search + ' is:impact'
         if "bi:" not in search:
-            search = search + " bi:>=%d " % (self.min_business_impact)
+            search = search + " bi:>=%d " % (self.problems_business_impact)
         if extra_search:
             search = search + " " + extra_search
 
@@ -160,7 +160,7 @@ class WebUIDataManager(DataManager):
             # ------
             # Shinken/Alignak does not always reflect the "problem" state from a user point of view ...
             # To make UI more consistent, build our own problems counter!
-            if self.inner_problems_count:
+            if not self.disable_inner_problems_computation:
                 h['nb_ack'] = 0
                 h['nb_problems'] = 0
                 h['nb_impacts'] = 0
@@ -215,7 +215,7 @@ class WebUIDataManager(DataManager):
         if get_impacts:
             search = search + ' is:impact'
         if "bi:" not in search:
-            search = search + " bi:>=%d " % (self.min_business_impact)
+            search = search + " bi:>=%d " % (self.problems_business_impact)
         if extra_search:
             search = search + " " + extra_search
 
@@ -270,7 +270,7 @@ class WebUIDataManager(DataManager):
             # ------
             # Shinken/Alignak does not always reflect the "problem" state from a user point of view ...
             # To make UI more consistent, build our own problems counter!
-            if self.inner_problems_count:
+            if not self.disable_inner_problems_computation:
                 s['nb_ack'] = 0
                 s['nb_problems'] = 0
                 for service in services:
@@ -335,15 +335,22 @@ class WebUIDataManager(DataManager):
     ##
     # Searching
     ##
-    def search_hosts_and_services(self, search, user, get_impacts=True, sorter=None):
+    def search_hosts_and_services(self, search, user, get_impacts=True, sorter=None, important=False):
         """ Search hosts and services.
 
             This method is the heart of the datamanager. All other methods should be based on this one.
+
+            If important is True, only the most important items are filtered using the important
+            problems business impact (important_problems_business_impact) rather than the
+            default business impact (problems_business_impact).
+
+            Todo: the get_impacts parameter is not used into this function, should be removed!
 
             :search: Search string
             :user: concerned user
             :get_impacts: should impacts be included in the list?
             :sorter: function to sort the items. default=None (means no sorting)
+            :important: only get the most important items
             :returns: list of hosts and services
         """
         # Make user an User object ... simple protection.
@@ -356,11 +363,11 @@ class WebUIDataManager(DataManager):
         items.extend(self._only_related_to(super(WebUIDataManager, self).get_hosts(), user))
         items.extend(self._only_related_to(super(WebUIDataManager, self).get_services(), user))
 
-        # Filter items according to the logged-in user minimum business impact
-        if user.min_business_impact:
-            logger.info("[WebUI - datamanager] user minimum business impact, filtering %d items >= %d",
-                         len(items), user.min_business_impact)
-            items = [i for i in items if i.business_impact >= user.min_business_impact]
+        # Filter items according to the logged-in user minimum business impact or the minimum business impact
+        business_impact = max(user.min_business_impact, self.problems_business_impact)
+        logger.debug("[WebUI - datamanager] business impact, filtering %d items >= %d (user: %d, ui: %d)",
+                     len(items), business_impact, user.min_business_impact, self.problems_business_impact)
+        items = [i for i in items if i.business_impact >= business_impact]
 
         logger.debug("[WebUI - datamanager] search_hosts_and_services, search for %s in %d items", search, len(items))
 
@@ -1055,14 +1062,14 @@ class WebUIDataManager(DataManager):
     def get_important_elements(self, user, type='all', sorter=worse_first):
         # BI is greater than the minimum business impact
         # todo: @maethor: why searching with ack:false ? an element is important whether it is ack or not...
-        search = "bi:>%d " % (self.min_business_impact) + 'ack:false type:%s' % type
+        search = "bi:>=%d " % (self.problems_business_impact) + 'ack:false type:%s' % type
         return self.search_hosts_and_services(search, user=user, sorter=sorter)
 
     def get_impacts(self, user, search='is:impact type:all', sorter=worse_first):
         if "is:impact" not in search:
             search = "is:impact " + search
         if "bi:" not in search:
-            search = "bi:>=%d " % (self.min_business_impact) + search
+            search = "bi:>=%d " % (self.problems_business_impact) + search
         return self.search_hosts_and_services(search, user=user, get_impacts=True, sorter=sorter)
 
     def get_problems(self, user, search='isnot:UP isnot:OK isnot:PENDING isnot:ACK isnot:DOWNTIME '
@@ -1086,7 +1093,7 @@ class WebUIDataManager(DataManager):
         if "is:HARD" not in search:
             search = "is:HARD " + search
         if "bi:" not in search:
-            search = "bi:>=%d " % (self.min_business_impact) + search
+            search = "bi:>=%d " % (self.problems_business_impact) + search
         logger.debug("Filter is: %s", search)
         return self.search_hosts_and_services('%s ack:%s downtime:%s'
                                               % (search, str(get_acknowledged), str(get_downtimed)),
