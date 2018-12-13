@@ -20,7 +20,7 @@
              <li><a href="#" data-elts="100">100 elements</a></li>
            </ul>
          </div>
-         <input id="step" name="step" type="number" class="form-control" aria-label="Elements per page" placeholder="Elements per page ..." value="{{elts_per_page}}" style="max-width: 50px;">
+         <input id="step" name="step" type="number" class="form-control" aria-label="Elements per page" placeholder="Elements per page ..." value="{{elts_per_page}}">
        </div>
       </form>
     </li>

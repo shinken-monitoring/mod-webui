@@ -54,20 +54,20 @@ $('body').on('click', '.js-select-all', function (e) {
       $(this).html('Unselect all').data('state', 'on');
    } else {
       if (problems_logs) console.log('Unselect all elements ...', $(this).data('business-impact'));
-         
+
       // Remove elements from selection
       $('input[type=checkbox][data-type="problem"][data-business-impact="'+$(this).data('business-impact')+'"]').each(function() {
          remove_element($(this).data('item'));
       })
       $(this).html($(this).data('original-label')).data('state', 'off');
    }
-   
+
 });
 
 // Problems element check boxes
 $('body').on('click', 'input[type=checkbox][data-type="problem"]', function (e) {
    e.stopPropagation();
-   
+
    if (problems_logs) console.log('Clicked: ', $(this).data('item'))
    // Add/remove element from selection
    add_remove_elements($(this).data('item'));
@@ -146,18 +146,18 @@ function bootstrap_accordion_bookmark (selector) {
 
 function on_page_refresh(){
    if (problems_logs) console.log('Problems page - on_page_refresh')
-      
+
    // If actions are not allowed, disable the button 'select all' and the checkboxes
    if ("actions_enabled" in window && !actions_enabled) {
       // Get actions buttons bar ... to hide it!
       $('[data-type="actions"]').hide();
-      
+
       // Get all selection buttons ...
       $('button[data-type="business-impact"]').each(function(){
          // ... then disable and hide button
          $(this).prop("disabled", true).hide();
       });
-      
+
       // Get all elements ...
       $('input[type=checkbox]').each(function(){
          // ... then disable and hide checkbox

@@ -165,88 +165,8 @@ td .ellipsis > .long-output {
  */
 
 /*
- * Side bar menu - width 200px
+ * Side bar menu is configured in sb-admin-2.css!
  */
-
-#page-wrapper {
-    background-color: #F8F8F8;
-    border-left: 0;
-    padding: 0 15px;
-    /*padding: 0 15px;*/
-}
-
-.navbar-brand-div>a>img {
-   padding: 7px !important;
-}
-
-@media(min-width:768px) {
-   #page-wrapper {
-      margin: 0 0 0 220px;
-      padding: 0 50px;
-   }
-   #page-wrapper.fullscreen {
-      margin: 0 0 0 0;
-   }
-   .navbar-brand-div {
-       width:220px;
-       padding: 0 15px;
-       margin-right: 20px;
-   }
-}
-@media(min-width:768px) {
-    .sidebar {
-        width: 220px;
-    }
-}
-
-@media (max-width: 768px) {
-    .sidebar {
-        width: 100%;
-    }
-    /*.sidebar-search {*/
-        /*width: 100%;*/
-        /*height: 60px;*/
-        /*clear: both;*/
-    /*}*/
-
-    .sidebar li {
-        width: 50%;
-        float: left;
-    }
-
-    #sidebar-menu .divider {
-        display:none;
-    }
-
-    #sidebar-menu {
-        height: 150px;
-        max-width: none;
-    }
-    /*.sidebar li.sidebar-search {*/
-        /*height: 50px;*/
-    /*}*/
-    /*.sidebar li.sidebar-search form {*/
-        /*height: 30px;*/
-    /*}*/
-    #sidebar-menu li {
-        height: 40px;
-    }
-    #sidebar-menu li>a {
-        height: 40px;
-    }
-    .nav-second-level {
-        background: lightgrey;
-        position: relative;
-        z-index:10000;
-    }
-    .nav-second-level li {
-        float: left;
-        width: 50%;
-    }
-    .nav-second-level li a {
-        font-size: x-small;
-    }
-}
 
 @media(max-height:600px) {
     .sidebar li  a {
@@ -254,34 +174,16 @@ td .ellipsis > .long-output {
     }
 }
 
-.sidebar .sidebar-icon {
-    font-size: 18px;
-    padding: 0 15px;
+#side-filters {
+    padding: 0 10px;
+    margin: 0 10px;
+    border: none;
 }
-
-#sidebar-menu {
-    padding-top: 10px;
-}
-
-.sidebar ul li {
-    border-bottom: 0 !important;
-}
-
-.sidebar ul li.divider {
-    border-bottom: 1px solid #e7e7e7 !important;
-    margin: 10px;
-}
-
-.sidebar ul li a {
-    color: inherit;
-}
-
-.sidebar ul li a:hover {
-    cursor: pointer;
-}
-
-.sidebar ul li a.active {
-    font-weight: bold;
+#side-filters form {
+    background-color: #ccc;
+    border: none;
+    margin-top: 0;
+    margin-bottom: 0;
 }
 
 /*
@@ -292,7 +194,7 @@ td .ellipsis > .long-output {
 }
 .header .navbar-brand img {
   height: 48px;
-  padding: 1px;
+  padding: 5px;
   margin: 0;
 }
 
@@ -306,7 +208,7 @@ td .ellipsis > .long-output {
 }
 
 .navbar-inverse {
-    margin-bottom:0px;
+    margin-bottom: 0;
     background-color: #3371B7;
     border-bottom: none;
 }
@@ -319,30 +221,23 @@ td .ellipsis > .long-output {
     color: white;
 }
 
-.navbar-nav #search,
+#sidebar-search,
+#search,
 .navbar-nav .input-group-addon {
     background-color: #4D95BE;
     color: white;
+    height: 32px;
     border: none;
     box-shadow: none;
 }
 
-.navbar-nav #search {
+#search {
     font-size: 16px;
 }
-
-.navbar-nav .input-group-addon .fa {
-    font-size: 18px;
-    margin-left: 5px;
+#sidebar-search {
+    font-size: 14px;
 }
 
-.navbar-nav #search-group .input-group-addon a .fa {
-    color: white;
-}
-
-.navbar-nav #search-group .input-group-addon a:hover {
-    color: #333 !important;
-}
 
 .navbar-nav #search:hover,
 .navbar-nav #search:hover + .input-group-addon {
@@ -354,62 +249,10 @@ td .ellipsis > .long-output {
     color: black;
 }
 
-.navbar-nav #search:focus + .input-group-addon,
-.navbar-nav #search:focus + .input-group-addon a .fa {
-    background-color: white;
-    color: #888;
-}
-
-.navbar-nav #search:hover + .input-group-addon a:hover {
-    color: #333 !important;
-}
-
 .nav .input-group-addon .open>a,
 .nav .input-group-addon .open>a:hover,
 .nav .input-group-addon .open>a:focus {
     background-color: transparent;
-}
-
-#nav-actions {
-  float: left;
-  margin: 0;
-}
-#nav-actions > li {
-  float: left;
-}
-#nav-actions > li > a {
-  padding-top: 15px;
-  padding-bottom: 15px;
-}
-
-@media (max-width: 767px) {
-    #nav-actions .open .dropdown-menu {
-        position: absolute;
-        background-color: white;
-        left: 0px;
-        top: 100%;
-        border: 1px solid rgba(0,0,0,.15);
-        border-radius: 4px;
-        -webkit-box-shadow: 0 6px 12px rgba(0,0,0,.175);
-        box-shadow: 0 6px 12px rgba(0,0,0,.175);
-    }
-
-    #nav-actions .open .dropdown-menu .divider {
-        background-color: #e5e5e5;
-    }
-
-    #nav-actions .open .dropdown-menu > li > a,
-    #nav-actions .open .dropdown-menu .dropdown-header {
-        padding: 3px 20px;
-    }
-
-    #nav-actions .open .dropdown-menu > li > a {
-        color: #333;
-    }
-}
-
-.navbar-search {
-
 }
 
 .navbar-nav .btn {
@@ -432,8 +275,8 @@ td .ellipsis > .long-output {
 .navbar-nav > li .btn.focus,
 .navbar-nav > li .btn:active,
 .navbar-nav > li .btn.active {
-  color: #fff;
-  background-color: #4188b1;
+    color: #fff;
+    background-color: #4188b1;
 }
 
 .navbar-nav > li a.btn:hover,
@@ -441,10 +284,10 @@ td .ellipsis > .long-output {
 .navbar-nav > li a.btn.focus,
 .navbar-nav > li a.btn:active,
 .navbar-nav > li a.btn.active {
-  background-color: #4188b1 !important;
+    background-color: #4188b1 !important;
 }
 
-.navbar-nav > li .btn-ico {
+.navbar-nav .btn-ico {
     font-size: 16px;
     width: 32px;
     height: 32px;
@@ -452,9 +295,20 @@ td .ellipsis > .long-output {
     line-height: 1.33;
 }
 
-.navbar-nav > li > .btn-ico.js-toggle-sound-alert {
-    padding: 0;
+.navbar-nav > li .btn-badge {
+    width: 48px;
+    height: 32px;
 }
+
+.navbar-nav > li.divider {
+    width: 10px;
+    height: 32px;
+}
+
+
+/*.navbar-nav > li > .btn-ico.js-toggle-sound-alert {*/
+    /*padding: 0;*/
+/*}*/
 
 .navbar-nav > li .btn-ico:not(.btn-action) {
     padding: 5px 8px;
@@ -463,15 +317,6 @@ td .ellipsis > .long-output {
 .navbar-inverse-2 .btn {
     background-color: #555;
 }
-
-/*.btn-ico {*/
-    /*font-size: 16px;*/
-    /*[>width: 32px;<]*/
-    /*[>height: 32px;<]*/
-    /*padding: 6px;*/
-    /*text-align: center;*/
-    /*line-height: 1.33;*/
-/*}*/
 
 .navbar-inverse-2 .btn-action,
 .btn-action {
@@ -531,58 +376,30 @@ td .ellipsis > .long-output {
 /*
  * Navigation bar, responsive input field
  */
-/* Extra small devices (portrait phones, less than 576px) */
-@media (max-width: 575.98px) {
-    input#search {
-        display: none;
-    }
+#sidebar-search {
+    /*width: 250px;*/
 }
-
-/* Small devices (landscape phones, more than 768px) */
-@media (min-width: 768px) and (max-width: 859.9px) {
-    #nav-filters {
-        margin-left: -80px;
-    }
+#search {
+    width: 140px;
+}
+@media (min-width: 768px) {
     #search {
-        width: 190px;
+        width: 170px;
     }
 }
-
-@media (min-width: 860px) and (max-width: 991.98px) {
-    #nav-filters {
-        margin-left: -80px;
-    }
-    #search {
-        width: 260px;
-    }
-}
-
-/* Medium devices (tablets, more than 992px) */
 @media (min-width: 992px) {
     #search {
-        width: 280px;
+        width: 370px;
     }
 }
-@media (min-width: 1024px) {
+@media (min-width: 992px) {
     #search {
-        width: 320px;
+        width: 370px;
     }
 }
-
-/* Large devices (desktops, more than 1200px) */
-@media (min-width: 1200px) {
+@media (min-width: 1280px) {
     #search {
-        width: 500px;
-    }
-}
-@media (min-width: 1400px) {
-    #search {
-        width: 700px;
-    }
-}
-@media (min-width: 1600px) {
-    #search {
-        width: 900px;
+        width: 50vw;
     }
 }
 
@@ -598,38 +415,6 @@ td .ellipsis > .long-output {
 }
 
 /*
- * Navigation bar, user menu
- */
-/*.user-menu > .dropdown-menu {*/
-  /*-webkit-border-radius: 0;*/
-  /*-moz-border-radius: 0;*/
-  /*border-radius: 0;*/
-  /*padding: 1px 0 0 0;*/
-  /*border-top-width: 0;*/
-  /*width: 280px;*/
-/*}*/
-/*.user-menu > .dropdown-menu:after {*/
-  /*bottom: 100%;*/
-  /*right: 10px;*/
-  /*border: solid transparent;*/
-  /*content: " ";*/
-  /*height: 0;*/
-  /*width: 0;*/
-  /*position: absolute;*/
-  /*pointer-events: none;*/
-  /*border-color: rgba(255, 255, 255, 0);*/
-  /*border-bottom-color: #ffffff;*/
-  /*border-width: 10px;*/
-  /*margin-left: -10px;*/
-/*}*/
-/*.user-menu > .dropdown-menu > li.user-header {*/
-  /*height: auto;*/
-  /*padding: 10px;*/
-  /*background: #eeeeee;*/
-  /*text-align: center;*/
-/*}*/
-
-/*
  * Footer - make footer bar smaller than usual ...
  */
 footer nav {
@@ -637,36 +422,29 @@ footer nav {
     min-height: 25px !important;
 }
 
+/*
+ * Actions menu - used on the dashboard for the widgets selector and on the element view for the actions
+ */
 #action-menu, #action-btn {
     margin: 0;
     margin-bottom: 25px;
     position: fixed;
-    width: 220px;
+    width: 200px;
     left: 0;
-    bottom: 0%;
-    /*left: 0px; bottom: 30px;*/
-}
-#action-menu {
-    margin-bottom: 75px;
+    bottom: 0;
 }
 #action-menu li {
+    height: 25px;
     border-bottom: 1px solid #e7e7e7;
 }
+#action-menu li a {
+    font-size: small;
+}
 #action-menu li .fa {
-    padding: 0 15px;
-    font-size: 18px;
+    padding: 0 12px;
+    font-size: 12px;
 }
 @media(max-width:768px) {
-    /*footer nav.navbar-element {*/
-        /*z-index: 1;*/
-        /*position: absolute;*/
-        /*width: 250px;*/
-        /*margin-top: 51px;*/
-    /*}*/
-    #action-menu container {
-        border: none;
-    }
-
     #action-menu {
         width: 100%;
         border: none;
@@ -676,14 +454,12 @@ footer nav {
 
     #action-menu ul {
         list-style: none;
-        /*width: initial;*/
-        /*background: red;*/
-        /*margin: auto;*/
     }
 
     #action-menu li {
+        height: 40px;
         border: 1px solid #e7e7e7;
-        background: #f8f8f8;
+        background: #ccc;
         display: inline;
         margin: 2px;
         padding: 5px;
@@ -694,6 +470,7 @@ footer nav {
         display: inline;
     }
 }
+
 /*
  * Breadcrumb
  */
@@ -735,7 +512,6 @@ footer nav {
 /*
  * Status lead
  */
-
 .status-lead {
     margin-bottom: 20px;
     font-size: 14px;
@@ -909,7 +685,8 @@ footer nav {
     font-weight: 800;
     color: #fff !important;
     line-height: 0.9;
-    top: -6px !important;
+    top: -8px !important;
+    left: -8px !important;
     border-radius: 5px;
 }
 .badge-warning {

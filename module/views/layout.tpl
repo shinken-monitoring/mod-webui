@@ -56,7 +56,7 @@
          {{fmwk}} Framework Version: {{VERSION}}
       -->
 
-      <link href="/static/images/favicon.ico" rel="shortcut icon">
+      <link href="/favicon.ico" rel="shortcut icon">
 
       <!--[if lt IE 9]>
       <script src="/static/js/ie9/html5.js"></script>
@@ -106,46 +106,43 @@
                @mohierf: for future refresh implementation ... not used currently!
             -->
             <!--begin-page-content-->
-            <div id="page-content">
-               <div class="row">
-                  <!-- Page header -->
-                  <section class="content-header">
-                     %if navi:
-                     %include("pagination_element", navi=navi, page=page, elts_per_page=elts_per_page, display_steps_form=True, div_class="hidden-xs", drop="dropdown")
-                     %end
-                     <h3 class="page-header hidden-xs">
-                       <ol class="breadcrumb hidden-xs">
-                         <li><a href="/">Home</a></li>
-                         %if breadcrumb == '':
-                         <li class="active">{{title or 'No title'}}</li>
-                         %else:
-                         %_go_active = 'active'
-                         %for p in breadcrumb:
-                         %_go_active = ''
-                         %if p[0]:
-                         <li class="{{_go_active}}"><a href="{{p[1]}}">{{p[0]}}</a></li>
-                         %else:
-                         <li class="{{_go_active}}">{{p}}</li>
-                         %end
-                         %end
-                         %end
-                       </ol>
-                     </h3>
-
-                  </section>
-
-                  <!-- Page content -->
-                  <section class="content">
-                     {{!base}}
-                  </section>
-
-                  %if navi and len(navi) > 1:
-                  <hr>
-                  <section class="pagination-footer">
-                  %include("pagination_element", navi=navi, page=page, elts_per_page=elts_per_page, display_steps_form=True, drop="dropup")
-                  </section>
+            <div id="page-content" class="row">
+               <!-- Page header -->
+               <section class="content-header">
+                  %if navi:
+                  %include("pagination_element", navi=navi, page=page, elts_per_page=elts_per_page, display_steps_form=True, div_class="pull-right hidden-xs", drop="dropdown")
                   %end
-               </div>
+                  <h3 class="page-header hidden-xs">
+                    <ol class="breadcrumb hidden-xs">
+                      %if not breadcrumb:
+                      <li class="active">{{title or 'No title'}}</li>
+                      %else:
+                      %_go_active = 'active'
+                      %for p in breadcrumb:
+                      %_go_active = ''
+                      %if p[0]:
+                      <li class="{{_go_active}}"><a href="{{p[1]}}">{{p[0]}}</a></li>
+                      %else:
+                      <li class="{{_go_active}}">{{p}}</li>
+                      %end
+                      %end
+                      %end
+                    </ol>
+                  </h3>
+
+               </section>
+
+               <!-- Page content -->
+               <section class="content">
+                  {{!base}}
+               </section>
+
+               %if navi and len(navi) > 1:
+               <hr>
+               <section class="pagination-footer">
+               %include("pagination_element", navi=navi, page=page, elts_per_page=elts_per_page, display_steps_form=True, drop="dropup")
+               </section>
+               %end
             </div>
             <!--end-page-content-->
 

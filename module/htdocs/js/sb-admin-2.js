@@ -1,9 +1,3 @@
-$(function() {
-
-    $('#side-menu').metisMenu();
-
-});
-
 //Loads the correct sidebar on window load,
 //collapses the sidebar on window resize.
 // Sets the min-height of #page-wrapper to window size
@@ -13,9 +7,13 @@ $(function() {
         width = (this.window.innerWidth > 0) ? this.window.innerWidth : this.screen.width;
         if (width < 768) {
             $('div.navbar-collapse').addClass('collapse');
+            $('#search').hide();
+            $('#sidebar-search').show();
             topOffset = 100; // 2-row-menu
         } else {
             $('div.navbar-collapse').removeClass('collapse');
+            $('#search').show();
+            $('#sidebar-search').hide();
         }
 
         height = ((this.window.innerHeight > 0) ? this.window.innerHeight : this.screen.height) - 1;

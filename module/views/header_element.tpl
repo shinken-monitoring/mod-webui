@@ -25,8 +25,8 @@
    </div>
 
    <ul id="nav-filters" class="nav navbar-nav navbar-search hidden-xs">
-      <!-- Page filtering ... -->
-      %include("_filters.tpl")
+      <!-- Search engine and filtering ... -->
+      %include("_filters.tpl", search_id="search")
    </ul>
 
    <ul class="nav navbar-nav navbar-top-links navbar-right hidden-xs">
@@ -82,7 +82,7 @@
       <li id="overall-framework-states">
          %state = app.datamgr.get_framework_status()
          %color = 'font-critical' if state == 2 else 'font-warning' if state > 0 else ''
-         <a id="framework-state" class="btn btn-primary" href="/system" title="Monitoring framework status">
+         <a id="framework-state" class="btn btn-ico" href="/system" title="Monitoring framework status">
             <i class="fa fa-heartbeat {{ color }}"></i>
          </a>
       </li>
@@ -97,7 +97,7 @@
          %state = app.datamgr.get_percentage_hosts_state(user, False)
          %color = 'critical' if state <= app.hosts_states_warning else 'warning' if state <= app.hosts_states_critical else ''
          <a id="hosts-states-popover"
-            class="btn btn-primary hosts-all" data-count="{{ h['nb_elts'] }}" data-problems="{{ h['nb_problems'] }}"
+            class="btn btn-ico btn-badge hosts-all" data-count="{{ h['nb_elts'] }}" data-problems="{{ h['nb_problems'] }}"
             href="/all?search=type:host"
             data-toggle="popover popover-hosts" data-title="Overall hosts states: {{h['nb_elts']}} hosts, {{h["nb_problems"]}} problems" data-html="true">
             <i class="fa fa-server"></i>
@@ -113,11 +113,11 @@
          may be used by the layout page refresh.
       -->
       <!--begin-services-states-->
-      <li id="overall-services-states" style="margin-right: 15px;">
+      <li id="overall-services-states">
          %state = app.datamgr.get_percentage_service_state(user, False)
          %color = 'critical' if state <= app.services_states_warning else 'warning' if state <= app.services_states_critical else ''
          <a id="services-states-popover"
-            class="btn btn-primary services-all" data-count="{{ s['nb_elts'] }}" data-problems="{{ s['nb_problems'] }}"
+            class="btn btn-ico btn-badge services-all" data-count="{{ s['nb_elts'] }}" data-problems="{{ s['nb_problems'] }}"
             href="/all?search=type:service"
             data-toggle="popover popover-services" data-title="Overall services states: {{s['nb_elts']}} services, {{s["nb_problems"]}} problems" data-html="true">
             <i class="fa fa-hdd-o"></i>
@@ -127,6 +127,8 @@
          </a>
       </li>
       <!--end-services-states-->
+
+      <li role="separator" class="divider"></li>
 
       <li>
          <a class="btn btn-ico" href="/dashboard/currently" title="Dashboard currently">
@@ -143,15 +145,14 @@
       %end
 
       %if app.play_sound:
-      <li class="hidden-sm hidden-xs hidden-md">
-         <button class="btn btn-ico js-toggle-sound-alert" href="#">
-            <span id="sound_alerting" class="fa-stack">
-              <i class="fa fa-music fa-stack-1x"></i>
-              <i class="fa fa-ban fa-stack-2x text-danger"></i>
-            </span>
+      <li class="hidden-xs hidden-sm">
+         <button class="btn btn-ico js-toggle-sound-alert">
+            <i id="sound_alerting" class="fa fa-music"></i>
          </button>
       </li>
       %end
+
+      <li role="separator" class="divider"></li>
 
       <!-- User info -->
       <li class="dropdown">
@@ -176,18 +177,10 @@
   <!--SIDEBAR-->
   <div class="navbar-default sidebar" role="navigation">
     <div class="sidebar-nav navbar-collapse collapse">
-      <div class="clearfix visible-xs sidebar-search">
-       <form class="navbar-form navbar-left" method="get" action="/all">
-         <div class="input-group custom-search-form">
-           <input class="form-control input-sm" type="search" id="search" name="search" value="{{ app.get_search_string() }}">
-           <span class="input-group-btn">
-             <button class="btn btn-default btn-sm" type="submit">
-               <i class="fa fa-search"></i>
-             </button>
-           </span>
-         </div>
-       </form>
-      </div>
+      <ul id="side-filters" class="nav navbar-nav navbar-search visible-xs">
+         <!-- Search engine and filtering ... -->
+         %include("_filters.tpl", search_id="sidebar-search")
+      </ul>
 
       <ul class="nav" id="sidebar-menu">
         %if app:
@@ -199,7 +192,7 @@
         <li class="divider"></li>
 
         <!--<li>Groups and tags</li>-->
-        <li> <a href="#"><i class="fa fa-fw fa-sitemap sidebar-icon"></i>
+        <li> <a href="#" aria-expanded="false"><i class="fa fa-fw fa-sitemap sidebar-icon"></i>
         &nbsp;Groups and tags<i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
             <li> <a href="{{ app.get_url('HostsGroups') }}"> <i class="fa fa-fw fa-sitemap sidebar-icon"></i>
@@ -212,7 +205,7 @@
                &nbsp;Services tags </a> </li>
           </ul>
         </li>
-        <li> <a href="#"><i class="fa fa-fw fa-bar-chart sidebar-icon"></i>
+        <li> <a href="#" aria-expanded="false"><i class="fa fa-fw fa-bar-chart sidebar-icon"></i>
         &nbsp;Tactical views<i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
             <li> <a href="{{ app.get_url('Impacts') }}"> <i class="fa fa-fw fa-bolt sidebar-icon"></i>
@@ -230,7 +223,7 @@
           </ul>
         </li>
         %if user.is_administrator():
-        <li> <a href="#"><i class="fa fa-fw fa-gears sidebar-icon"></i>
+        <li> <a href="#" aria-expanded="false"><i class="fa fa-fw fa-gears sidebar-icon"></i>
         &nbsp;System<i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
             <li> <a href="{{ app.get_url('System') }}"> <i class="fa fa-fw fa-heartbeat sidebar-icon"></i>
@@ -243,7 +236,7 @@
             %end
           </ul>
         </li>
-        <li> <a href="#"><i class="fa fa-fw fa-wrench sidebar-icon"></i>
+        <li> <a href="#" aria-expanded="false"><i class="fa fa-fw fa-wrench sidebar-icon"></i>
         &nbsp;Configuration<i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
             <li> <a href="{{ app.get_url('Parameters') }}"> <i class="fa fa-fw fa-gears sidebar-icon"></i>
@@ -261,7 +254,7 @@
         %end
         %other_uis = app.get_ui_external_links()
         %if len(other_uis) > 0:
-        <li> <a href="#"><i class="fa fa-fw fa-rocket sidebar-icon"></i>
+        <li> <a href="#" aria-expanded="false"><i class="fa fa-fw fa-rocket sidebar-icon"></i>
         &nbsp;External<i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
             %for c in other_uis:
@@ -277,12 +270,9 @@
         <li class="visible-xs">
            <a href="/user/logout" data-toggle="modal" data-target="/user/logout"><i class="fa fa-fw fa-sign-out sidebar-icon"></i> Logout</a>
         </li>
-
       </ul>
     </div>
-    <!-- /.sidebar-collapse -->
   </div>
-  <!-- /.navbar-static-side -->
 </nav>
 
 %if app.play_sound:
