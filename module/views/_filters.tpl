@@ -16,7 +16,7 @@
       <input class="form-control" type="search" id="search" name="search" value="{{ app.get_search_string() }}">
       <span class="input-group-addon">
         <span class="hidden-addons">
-          <div class="dropdown form-group text-left">
+          <div class="dropdown form-group text-left hidden-sm">
             <a href="#" class="dropdown-toggle" type="button" id="filters_menu" data-toggle="dropdown" aria-expanded="false" title="Filters"><i class="fa fa-filter"></i><span class="hidden-sm hidden-xs hidden-md"></a>
             <ul class="dropdown-menu" role="menu" aria-labelledby="filters_menu">
               <li role="presentation"><a role="menuitem" href="/all?search=&title=All resources">All resources</a></li>
@@ -38,7 +38,7 @@
               <li role="presentation"><a role="menuitem" onclick="display_modal('/modal/helpsearch')"><strong><i class="fa fa-question-circle"></i> Search syntax</strong></a></li>
             </ul>
           </div>
-          <div class="dropdown form-group text-left">
+          <div class="dropdown form-group text-left hidden-sm">
             <a href="#" class="dropdown-toggle" type="button" id="bookmarks_menu" data-toggle="dropdown" aria-expanded="false" title="Bookmarks"><i class="fa fa-bookmark-o"></i><span class="hidden-sm hidden-xs hidden-md"></a>
             <ul class="dropdown-menu" role="menu" aria-labelledby="bookmarks_menu">
               <script type="text/javascript">
