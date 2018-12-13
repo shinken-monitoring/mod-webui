@@ -111,12 +111,11 @@
                   <!-- Page header -->
                   <section class="content-header">
                      %if navi:
-                     %include("pagination_element", navi=navi, page=page, elts_per_page=elts_per_page, display_steps_form=True, div_class="hidden-xs", drop="dropdown")
+                     %include("pagination_element", navi=navi, page=page, elts_per_page=elts_per_page, display_steps_form=True, drop="dropdown")
                      %end
-                     <h3 class="page-header hidden-xs">
-                       <ol class="breadcrumb hidden-xs">
-                         <li><a href="/">Home</a></li>
-                         %if breadcrumb == '':
+                     <h3 class="page-header" style="margin-top: 10px">
+                       <ol class="breadcrumb" style="margin:0px">
+                         %if not breadcrumb:
                          <li class="active">{{title or 'No title'}}</li>
                          %else:
                          %_go_active = 'active'
