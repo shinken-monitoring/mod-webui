@@ -24,7 +24,7 @@
       </div>
    </div>
 
-   <ul id="nav-filters" class="nav navbar-nav navbar-search hidden-xs hidden-sm">
+   <ul id="nav-filters" class="nav navbar-nav navbar-search hidden-xs">
       <!-- Page filtering ... -->
       %include("_filters.tpl")
    </ul>

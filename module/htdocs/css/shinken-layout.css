@@ -531,19 +531,58 @@ td .ellipsis > .long-output {
 /*
  * Navigation bar, responsive input field
  */
-@media (min-width: 768px) {
+/* Extra small devices (portrait phones, less than 576px) */
+@media (max-width: 575.98px) {
     input#search {
-        width: 160px;
+        display: none;
+    }
+}
+
+/* Small devices (landscape phones, more than 768px) */
+@media (min-width: 768px) and (max-width: 859.9px) {
+    #nav-filters {
+        margin-left: -80px;
+    }
+    #search {
+        width: 190px;
+    }
+}
+
+@media (min-width: 860px) and (max-width: 991.98px) {
+    #nav-filters {
+        margin-left: -80px;
+    }
+    #search {
+        width: 260px;
+    }
+}
+
+/* Medium devices (tablets, more than 992px) */
+@media (min-width: 992px) {
+    #search {
+        width: 280px;
     }
 }
 @media (min-width: 1024px) {
-    input#search {
-        width: 300px;
+    #search {
+        width: 320px;
     }
 }
-@media (min-width: 1366px) {
-    input#search {
-        width: 600px;
+
+/* Large devices (desktops, more than 1200px) */
+@media (min-width: 1200px) {
+    #search {
+        width: 500px;
+    }
+}
+@media (min-width: 1400px) {
+    #search {
+        width: 700px;
+    }
+}
+@media (min-width: 1600px) {
+    #search {
+        width: 900px;
     }
 }
 
