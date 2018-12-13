@@ -65,7 +65,7 @@
             <h3>You don't have any widget yet ...</h3>
          </center>
          <hr/>
-         <p>In the sidebar menu, click on <strong>Add a new widget</strong> to list all the available widgets.</p>
+         <p>Use the <strong>widget selector</strong> to list all the available widgets.</p>
          <p>Select a proposed widget to view the widget description.</p>
          <p>Click the <strong>Add widget</strong> button on top of the description to include the widget in your dashboard.</p>
       </div>
@@ -100,7 +100,9 @@
     </div>
 </div>
 
+%if app.can_action():
 %include("_dashboard_action-menu.tpl")
+%end
 
 <script type="text/javascript">
     var dashboard_logs = false;

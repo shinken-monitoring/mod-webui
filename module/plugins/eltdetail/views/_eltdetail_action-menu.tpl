@@ -1,5 +1,5 @@
 %if app.can_action():
-<nav id="action-menu" class="navbar navbar-default navbar-element dropup" role="navigation">
+<nav id="action-menu" class="navbar navbar-default sidebar dropup" role="navigation">
   <ul class="nav">
     %if elt.is_problem and elt.event_handler_enabled and elt.event_handler:
     <li> <a href="#" class="js-try-to-fix" title="Try to fix the current problem for this {{elt_type}}"

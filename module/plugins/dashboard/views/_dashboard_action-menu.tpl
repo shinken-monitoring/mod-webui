@@ -1,6 +1,5 @@
 <a id="action-btn" class="btn" data-toggle="collapse" href="#action-menu">Widgets selector</a>
-
-<nav id="action-menu" style="z-index:15000;" class="collapse navbar navbar-default navbar-element hidden-xs" role="navigation">
+<nav id="action-menu" class="collapse navbar navbar-default sidebar dropup" role="navigation">
   <ul class="nav">
     %for w in app.get_widgets_for('dashboard'):
     %if not w['deprecated']:
@@ -20,7 +19,7 @@
         </button>"
         data-widget-description='{{!w["widget_desc"]}} <hr/> <div class="center-block"><img class="text-center" src="{{w["widget_picture"]}}"/></div>'
         >
-        <span class="fa fa-plus"></span> {{w['widget_alias'] if 'widget_alias' in w else w['widget_name']}}
+        <span class="fa fa-fw fa-globe fa-{{w.get('widget_icon', 'plus')}}"></span> {{w.get('widget_alias', w.get('widget_name', ''))}}
       </a>
     </li>
     %end

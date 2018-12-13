@@ -5,7 +5,7 @@
   <Tags>Shinken Monitoring</Tags>
   <Url type="text/html" template="{{ base_url }}all?search={searchTerms}"/>
   <Language>fr-fr</Language>
-  <Image height="16" width="16" type="image/vnd.microsoft.icon">{{ base_url }}favicon.ico</Image>
+  <Image height="16" width="16" type="image/vnd.microsoft.icon">/favicon.ico</Image>
   <Query role="example" searchTerms="web01" />
 </OpenSearchDescription>
 
