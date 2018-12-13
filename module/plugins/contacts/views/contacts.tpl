@@ -29,12 +29,14 @@
          %for contact in contacts:
          <tr>
            <td>
-             {{ !helper.get_contact_avatar(contact) }}
              %if contact.is_admin:
-             <i class="fa font-warning fa-star" title="This user is an administrator"></i>
+             <i class="fa fa-fw font-black fa-eye" title="This user is an administrator"></i>
              %elif app.can_action(contact.contact_name):
-             <i class="fa font-ok fa-star" title="This user is allowed to launch commands"></i>
+             <i class="fa fa-fw font-black fa-bullhorn" title="This user is allowed to launch commands"></i>
+             %else:
+             <i class="fa fa-fw font-black fa-" title="This user is allowed to launch commands"></i>
              %end
+             {{ !helper.get_contact_avatar(contact) }}
            </td>
            <td><strong>{{ contact.alias if contact.alias != "none" else "" }}</strong></td>
            <td><strong>{{ contact.min_business_impact }}</strong></td>
