@@ -8,8 +8,8 @@
   %if display_steps_form and elts_per_page is not None:
   <ul class="pagination {{ ul_class }}" >
     <li>
-      <form id="elts_per_page" method="get" action="{{page}}">
-       <div class="input-group" style="width:100px">
+      <form id="elts_per_page" method="get" action="/{{page}}">
+       <div class="input-group" style="width:120px">
          <div class="input-group-btn {{drop}}">
            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">#&nbsp;<span class="caret"></span></button>
            <ul class="dropdown-menu" role="menu">
@@ -20,7 +20,7 @@
              <li><a href="#" data-elts="100">100 elements</a></li>
            </ul>
          </div>
-         <input id="step" name="step" type="number" class="form-control" aria-label="Elements per page" placeholder="Elements per page ..." value="{{elts_per_page}}" style="max-width: 50px;">
+         <input id="step" name="step" type="number" class="form-control" aria-label="Elements per page" placeholder="Elements per page ..." value="{{elts_per_page}}" style="max-width: 100px;">
        </div>
       </form>
     </li>
@@ -38,7 +38,7 @@
       current_elts_per_page = value;
 
       $("#elts_per_page").submit();
-      e.preventDefault();
+      //e.preventDefault();
     });
     $('#elts_per_page form').submit(function(e){
       var value = $('#elts_per_page input').val();
@@ -53,7 +53,7 @@
       }
 
       $("#elts_per_page").submit();
-      e.preventDefault();
+      //e.preventDefault();
     });
     $('#elts_per_page input').blur(function(e){
       var value = $('#elts_per_page input').val();
@@ -68,7 +68,7 @@
       }
 
       $("#elts_per_page").submit();
-      e.preventDefault();
+      //e.preventDefault();
     });
     </script>
   </ul>
@@ -89,7 +89,8 @@
     %query = app.request.query
     %query['start'] = start
     %query['end'] = end
-    <li><a href="{{ page }}?{{ urlencode(query) }}" title="Page {{ name }}">{{ name }}</a></li>
+    %query_string = urlencode(query)
+    <li><a href="{{page}}?{{query_string}}" title="Page {{ name }}">{{name}}</a></li>
     %end
     %end
   </ul>

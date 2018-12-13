@@ -13,6 +13,7 @@
   <div class="form-group">
     <label class="sr-only" for="search">Filter</label>
     <div class="input-group" id="search-group">
+      <!--<span class="input-group-addon hidden-xs hidden-sm"><i class="fa fa-search"></i> {{ search_name }}</span>-->
       <input class="form-control" type="search" id="search" name="search" value="{{ app.get_search_string() }}">
       <span class="input-group-addon">
         <span class="hidden-addons">
