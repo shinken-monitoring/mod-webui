@@ -60,7 +60,6 @@
                </div>
                <div class="panel-body">
                   <form role="form" class="form-signin" method="post" action="/user/auth">
-                    <!--<h2>Please sign in</h2>-->
                   %if msg_text:
                   <div class="alert alert-danger" role="alert">
                      <strong>Warning!</strong>
@@ -72,8 +71,10 @@
                      <p class="form-control-static">{{login_text}}</p>
                   </div>
                   %end
-                     <input class="form-control" placeholder="Username" name="login" type="text" required autofocus>
-                     <input class="form-control" placeholder="Password" name="password" type="password" value="" required>
+                     <input class="form-control" placeholder="Username" name="login" type="text"
+                           autocomplete="username" required autofocus>
+                     <input class="form-control" placeholder="Password" name="password" type="password"
+                           autocomplete="current-password" value="" required>
 
                      <button class="btn btn-lg btn-success btn-block" type="submit"><i class="fa fa-sign-in"></i> Login</button>
                   </form>

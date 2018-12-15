@@ -213,9 +213,10 @@
       %end
       <script src="/static/js/shinken-actions.js?v={{app.app_version}}"></script>
 
-      %if 'MSG' in app.request and app.request['MSG']:
+      %if app.request.get('MSG', None):
       <script>
-      alertify.log("{{app.request['MSG']}}", "error", 5000);;
+      console.log("{{app.request.get('MSG')}}"),
+      alertify.log("{{app.request.get('MSG')}}", "error", 5000);;
       </script>
       %end
 
