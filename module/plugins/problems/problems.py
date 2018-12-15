@@ -262,6 +262,7 @@ pages = {
         'widget': ['dashboard'], 'widget_desc': widget_desc,
         'widget_name': 'problems',
         'widget_alias': 'Current problems',
+        'widget_icon': 'exclamation',
         'widget_picture': '/static/problems/img/widget_problems.png',
         'static': True
     },
@@ -270,6 +271,7 @@ pages = {
         'widget': ['dashboard'], 'widget_desc': last_widget_desc,
         'widget_name': 'last_problems',
         'widget_alias': 'Most recent problems',
+        'widget_icon': 'exclamation-circle',
         'widget_picture': '/static/problems/img/widget_last_problems.png',
         'static': True
     }

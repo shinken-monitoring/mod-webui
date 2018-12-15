@@ -174,6 +174,7 @@ pages = {
         'widget_desc': widget_desc,
         'widget_name': 'graphs',
         'widget_alias': 'Graphs',
+        'widget_icon': 'bar-chart',
         'widget_picture': '/static/graphs/img/widget_graphs.png',
         'static': True
     },

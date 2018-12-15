@@ -113,6 +113,7 @@ pages = {
         'widget_desc': widget_desc,
         'widget_name': 'system',
         'widget_alias': 'Framework status',
+        'widget_icon': 'heartbeat',
         'widget_picture': '/static/system/img/widget_system.png',
         'static': True
     }

@@ -93,6 +93,7 @@ pages = {
         'widget_desc': widget_desc,
         'widget_name': 'impacts',
         'widget_alias': 'Impacts',
+        'widget_icon': 'bolt',
         'widget_picture': '/static/impacts/img/widget_impacts.png',
         'static': True
     }
