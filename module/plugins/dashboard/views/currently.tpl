@@ -426,10 +426,18 @@
    $('body').on('click', '.js-toggle-sound-alert', function (e, data) {
       if (sessionStorage.getItem("sound_play") == '1') {
          sessionStorage.setItem("sound_play", "0");
-         $('#sound_alerting i.fa-ban').removeClass('hidden');
+         $('#sound_alerting').addClass('fa-striked');
+         $('#sound_alerting').parent().data('tooltip', false)
+                                      .attr('data-original-title', "Enable sound alert")
+                                      .tooltip({html: 'true', placement: 'bottom'});
+         //$('#sound_alerting i.fa-ban').removeClass('hidden');
       } else {
          playAlertSound();
-         $('#sound_alerting i.fa-ban').addClass('hidden');
+         $('#sound_alerting').removeClass('fa-striked');
+         $('#sound_alerting').parent().data('tooltip', false)
+                                      .attr('data-original-title', "Enable sound alert")
+                                      .tooltip({html: 'true', placement: 'bottom'});
+         //$('#sound_alerting i.fa-ban').addClass('hidden');
       }
    });
 </script>

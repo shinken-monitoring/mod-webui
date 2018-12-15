@@ -126,22 +126,38 @@ function headerPopovers() {
 }
 
 
+// Play alerting sound ...
+function playAlertSound() {
+    if (layout_logs) console.debug("Play sound");
+    var audio = document.getElementById('alert-sound');
+    var canPlay = audio && !!audio.canPlayType && audio.canPlayType('audio/wav') != "";
+    if (canPlay) {
+        audio.play();
+    }
+}
+
+function disable_sound() {
+   if (layout_logs) console.debug("Disabling sound");
+   $('#sound_alerting')
+       .addClass('fa-striked')
+       .parent().data('tooltip', false)
+       .attr('data-original-title', "Enable sound alert").tooltip({html: 'true', placement: 'bottom'});
+   sessionStorage.setItem("sound_play", '0');
+}
+
+
+function enable_sound() {
+   if (layout_logs) console.debug("Enabling sound");
+   $('#sound_alerting')
+       .removeClass('fa-striked')
+       .parent().data('tooltip', false)
+       .attr('data-original-title', "Disable sound alert").tooltip({html: 'true', placement: 'bottom'});
+   sessionStorage.setItem("sound_play", '1');
+   playAlertSound();
+}
+
+
 $(document).ready(function(){
-   // When modal box is hidden ...
-   $('#modal').on('hidden.bs.modal', function () {
-      // Show sidebar menu ...
-      $('.sidebar').show();
-
-      // Clean modal box content ...
-      $(this).removeData('bs.modal');
-   });
-
-   // When modal box is displayed ...
-   $('#modal').on('shown.bs.modal', function () {
-      // Hide sidebar menu ...
-      $('.sidebar').hide();
-   });
-
    // Sidebar menu
    $('#sidebar-menu').metisMenu();
 
@@ -150,23 +166,15 @@ $(document).ready(function(){
   if ($(".js-toggle-sound-alert").length) {
     // Set alerting sound icon ...
     if (! sessionStorage.getItem("sound_play")) {
-      // Default is to play ...
-      sessionStorage.setItem("sound_play", 1);
+        disable_sound();
     }
 
-    // Toggle sound ...
-    if (sessionStorage.getItem("sound_play") == '1') {
-      $('#sound_alerting i.fa-ban').addClass('hidden');
-    } else {
-      $('#sound_alerting i.fa-ban').removeClass('hidden');
-    }
-    $('.js-toggle-sound-alert').on('click', function (e, data) {
+    $('body').on("click", '.js-toggle-sound-alert', function (e, data) {
       if (sessionStorage.getItem("sound_play") == '1') {
-        sessionStorage.setItem("sound_play", "0");
-        $('#sound_alerting i.fa-ban').removeClass('hidden');
+          disable_sound();
       } else {
-        playAlertSound();
-        $('#sound_alerting i.fa-ban').addClass('hidden');
+          playAlertSound();
+          enable_sound();
       }
     });
   }

@@ -24,6 +24,8 @@
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 
 import time
+from shinken.log import logger
+
 
 # Will be populated by the UI with it's own value
 app = None
@@ -45,7 +47,12 @@ def show_host(host_name):
 
     configs = app.datamgr.get_configs()
     if configs:
-        configintervallength = vars(configs[0])['interval_length']
+        config = vars(configs[0])
+        logger.info("Config: %s", config)
+        if '_config' in config:
+            configintervallength = config['_config'].get('interval_length', 60)
+        else:
+            configintervallength = config.get('interval_length', 60)
     else:
         configintervallength = 1
 
