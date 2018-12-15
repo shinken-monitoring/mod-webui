@@ -778,21 +778,18 @@ class Webui_broker(BaseModule, Daemon):
                 # ONLY the first route will be used for Add!
                 widget_lst = entry.get('widget', [])
                 widget_name = entry.get('widget_name', None)
-                widget_desc = entry.get('widget_desc', widget_name)
-                widget_alias = entry.get('widget_alias', widget_name)
-                widget_picture = entry.get('widget_picture', None)
-                deprecated = entry.get('deprecated', False)
                 if widget_name and widget_lst and route:
                     for place in widget_lst:
                         if place not in self.widgets:
                             self.widgets[place] = []
                         self.widgets[place].append({
                             'widget_name': widget_name,
-                            'widget_alias': widget_alias,
-                            'widget_desc': widget_desc,
+                            'widget_alias': entry.get('widget_alias', widget_name),
+                            'widget_icon': entry.get('widget_icon', 'plus'),
+                            'widget_desc': entry.get('widget_desc', widget_name),
                             'base_uri': route,
-                            'widget_picture': widget_picture,
-                            'deprecated': deprecated
+                            'widget_picture': entry.get('widget_picture', None),
+                            'deprecated': entry.get('deprecated', False)
                         })
 
             # And we add the views dir of this plugin in our TEMPLATE
@@ -903,7 +900,7 @@ class Webui_broker(BaseModule, Daemon):
         @webui_app.route('/favicon.ico')
         def give_favicon():
             """
-            Returns the favicon patha according to the Shinken/Alignak framework configuration
+            Returns the favicon path according to the Shinken/Alignak framework configuration
             :return:
             """
             if ALIGNAK:
