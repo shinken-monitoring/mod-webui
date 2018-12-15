@@ -56,6 +56,7 @@
       <link href="/static/css/bootstrap.min.css?v={{app.app_version}}" rel="stylesheet">
       <!--<link href="/static/css/bootstrap-theme.min.css?v={{app.app_version}}" rel="stylesheet">-->
       <link href="/static/css/font-awesome.min.css?v={{app.app_version}}" rel="stylesheet">
+      <link href="/static/css/metisMenu.min.css?v={{app.app_version}}" rel="stylesheet">
 
       <link href="/static/css/shinken-layout.css?v={{app.app_version}}" rel="stylesheet">
       <link href="/static/css/alertify.css?v={{app.app_version}}" rel="stylesheet">
@@ -70,6 +71,7 @@
       <script src="/static/js/jquery-1.12.0.min.js?v={{app.app_version}}"></script>
       <script src="/static/js/jquery-ui-1.11.4.min.js?v={{app.app_version}}"></script>
       <script src="/static/js/bootstrap.min.js?v={{app.app_version}}"></script>
+      <script src="/static/js/metisMenu.min.js?v={{app.app_version}}"></script>
 
       <script src="/static/js/moment.min.js?v={{app.app_version}}"></script>
 
@@ -90,6 +92,7 @@
       </script>
       <script src="/static/js/shinken-refresh.js?v={{app.app_version}}"></script>
       %end
+      <script src="/static/js/shinken-layout.js?v={{app.app_version}}"></script>
       <script src="/static/js/shinken-actions.js?v={{app.app_version}}"></script>
       <script src="/static/js/screenfull.js?v={{app.app_version}}"></script>
       <script src="/static/js/shinken-tooltip.js?v={{app.app_version}}"></script>
