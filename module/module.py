@@ -227,6 +227,7 @@ class Webui_broker(BaseModule, Daemon):
 
         self.plugins = []
         self.modconf = modconf
+        logger.debug("[WebUI] configuration: %s", self.modconf)
 
         # Web server configuration
         self.host = getattr(modconf, 'host', '0.0.0.0')
@@ -248,6 +249,7 @@ class Webui_broker(BaseModule, Daemon):
         logger.info("[WebUI] cookie: %s", self.session_cookie)
         # TODO : common preferences
         self.play_sound = to_bool(getattr(modconf, 'play_sound', '0'))
+        logger.info("[WebUI] sound: %s", self.play_sound)
         # TODO : common preferences
         self.login_text = getattr(modconf, 'login_text', None)
         # TODO : common preferences
@@ -263,6 +265,7 @@ class Webui_broker(BaseModule, Daemon):
         # self.max_output_length = int(getattr(modconf, 'max_output_length', '100'))
         # TODO : common preferences
         self.refresh_period = int(getattr(modconf, 'refresh_period', '60'))
+        logger.info("[WebUI] refresh period: %s", self.refresh_period)
         self.refresh = False if self.refresh_period == 0 else True
         # Use element tag as image or use text
         self.tag_as_image = to_bool(getattr(modconf, 'tag_as_image', '0'))
