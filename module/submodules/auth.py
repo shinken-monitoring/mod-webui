@@ -55,14 +55,16 @@ class AuthMetaModule(MetaModule):
         self._user_info = None
         logger.info("[WebUI] Authenticating user '%s'", username)
 
+        self.app.request.environ['MSG'] = "Unable to authenticate a user"
+
         if self.modules:
             for mod in self.modules:
                 try:
                     logger.info("[WebUI] Authenticating user '%s' with %s",
                                 username, mod.get_name())
                     if mod.check_auth(username, password):
-                        logger.info("[WebUI] User '%s' is authenticated by %s",
-                                    username, mod.get_name())
+                        logger.debug("[WebUI] User '%s' is authenticated thanks to %s",
+                                     username, mod.get_name())
                         self._authenticator = mod.get_name()
                         self._user_login = username
 
@@ -95,6 +97,7 @@ class AuthMetaModule(MetaModule):
 
         if self._user_login:
             logger.info("[WebUI] user authenticated thanks to %s", self._authenticator)
+            self.app.request.environ['MSG'] = "Welcome to the WebUI"
             return self._user_login
 
         return None
@@ -129,8 +132,14 @@ class AuthMetaModule(MetaModule):
 
         c = self.app.datamgr.get_contact(name=username)
         if not c:
-            logger.error("[WebUI-auth-cfg-password] You need to have a contact "
-                         "having the same name as your user: %s", username)
+            c = self.app.datamgr.get_contacts()
+            if not c:
+                logger.error("[WebUI] the WebUI do not know any user! "
+                             "Are you sure it is correctly initialized?")
+            else:
+                logger.error("[WebUI-auth-cfg-password] You need to have a contact "
+                             "having the same name as your user: %s", username)
+            self.app.request.environ['MSG'] = "You are not allowed to connect."
             return False
         p = None
         if isinstance(c, dict):
@@ -142,17 +151,20 @@ class AuthMetaModule(MetaModule):
         if not p:
             logger.error("[WebUI-auth-cfg-password] User %s does not have a password: connection refused",
                          username)
+            self.app.request.environ['MSG'] = "No user password set"
             return False
 
         if p == 'NOPASSWORDSET':
             logger.error("[WebUI-auth-cfg-password] User %s still has the default password: connection refused",
                          username)
+            self.app.request.environ['MSG'] = "Default user password set"
             return False
 
         if p == password:
             logger.info("[WebUI-auth-cfg-password] Authenticated")
             return True
 
+        self.app.request.environ['MSG'] = "Access denied"
         logger.warning("[WebUI-auth-cfg-password] Authentication failed, password mismatch ")
         return False
 

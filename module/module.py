@@ -39,6 +39,7 @@ import string
 import random
 import traceback
 import sys
+import signal
 import time
 import threading
 import imp
@@ -232,15 +233,6 @@ class Webui_broker(BaseModule, Daemon):
         self.host = getattr(modconf, 'host', '0.0.0.0')
         self.port = int(getattr(modconf, 'port', '7767'))
         logger.info("[WebUI] server: %s:%d", self.host, self.port)
-        # todo: remove this feature from source code!
-        self.endpoint = getattr(modconf, 'endpoint', None)
-        if self.endpoint:
-            if self.endpoint.endswith('/'):
-                self.endpoint = self.endpoint[:-1]
-            logger.info("[WebUI] configured endpoint: %s", self.endpoint)
-            logger.warning("[WebUI] endpoint feature is not implemented! "
-                           "WebUI is served from root URL: http://%s:%d/", self.host, self.port)
-            self.endpoint = None
 
         # Build session cookie
         self.session_cookie = getattr(modconf, 'cookie_name', 'user')
@@ -383,12 +375,13 @@ class Webui_broker(BaseModule, Daemon):
     # Called by Broker so we can do init stuff
     def init(self):
         logger.info("[WebUI] Initializing ...")
-        if ALIGNAK:
+        if self.alignak:
             logger.warning("Running the Web UI for the Alignak framework.")
         else:
             logger.warning("Running the Web UI for the Shinken framework.")
 
         self.rg.load_external_queue(self.from_q)
+        # Return True to confirm correct initialization
         return True
 
     # This is called only when we are in a scheduler
@@ -403,24 +396,41 @@ class Webui_broker(BaseModule, Daemon):
     def want_brok(self, b):
         return self.rg.want_brok(b)
 
+    def manage_signal(self, sig, frame):  # pylint: disable=unused-argument
+        """Generic function to handle signals
+        Only called when the module process received SIGINT or SIGKILL. Note that
+        Alignak may also notify other signas like SIGHUP
+
+        :param sig: signal sent
+        :type sig:
+        :param frame: frame before catching signal
+        :type frame:
+        :return: None
+        """
+        logger.debug("received a signal: %s", sig)
+
+        if sig == signal.SIGHUP:
+            # if SIGHUP, try to reload the configuration
+            logger.info("The WebUI is not able to reload its configuration...")
+
+        if not self.interrupted:
+            logger.info("The WebUI received a request to stop.")
+        super(BaseModule, self).manage_signal(sig=sig, frame=frame)
+
     # pylint: disable=global-statement
-    def main(self, stand_alone=False):
+    def main(self):
         """
             Module main function
         """
-        global ALIGNAK
-        self.stand_alone = stand_alone
-        if self.stand_alone:
-            setproctitle(self.name)
-        else:
-            self.set_proctitle(self.name)
+        logger.info("starting...")
+        logger.debug("I (%s) am now running as a process, pid=%d", self.name, os.getpid())
 
         # Modules management
         # ---
         # I used a large If/Else to avoid breaking the existing behavior but I am quite sure
         # that the Alignak branch code is fully compatible with Shinken. I prefer separating
         # to avoid too many testings...
-        if not ALIGNAK:
+        if not self.alignak:
             self.debug_output = []
             self.modules_dir = modulesctx.get_modulesdir()
             self.modules_manager = ModulesManager('webui', self.find_modules_path(), [])
@@ -820,10 +830,6 @@ class Webui_broker(BaseModule, Daemon):
         logger.debug("[WebUI] get_url for '%s'", name)
 
         try:
-            if self.endpoint:
-                logger.debug("[WebUI] get_url, url name: %s, route: %s -> %s",
-                             name, webui_app.get_url(name), ''.join([self.endpoint, webui_app.get_url(name)]))
-                return ''.join([self.endpoint, webui_app.get_url(name)])
             return webui_app.get_url(name)
         except Exception as e:
             logger.error("[WebUI] get_url, exception: %s", str(e))
@@ -930,7 +936,6 @@ class Webui_broker(BaseModule, Daemon):
     # 1/ one of the WebUI modules providing a 'check_auth' method must authenticate the user
     # 2/ username must be in the known contacts of Shinken
     ##
-    # :TODO:maethor:150727: Remove this method - @mohierf: why?
     def check_authentication(self, username, password):
         logger.info("[WebUI] Checking authentication for user: %s", username)
         self.user_session = None
@@ -939,7 +944,6 @@ class Webui_broker(BaseModule, Daemon):
         logger.info("[WebUI] Requesting authentication for user: %s", username)
         user = self.auth_module.check_auth(username, password)
         if user:
-            # logger.info("[WebUI] user authenticated through %s", self.auth_module._authenticator)
             # Check existing contact ...
             c = self.datamgr.get_contact(name=username)
             if not c:

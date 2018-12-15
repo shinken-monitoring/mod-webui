@@ -77,6 +77,8 @@ def user_login():
                                         secret=app.auth_secret, path='/')
                 bottle.redirect(app.get_url("Dashboard"))
 
+    logger.info("[WebUI] session user message - get: %s", app.request.environ.get('MSG', 'None...'))
+
     return {'msg_text': err, 'login_text': app.login_text, 'company_logo': app.company_logo}
 
 
@@ -117,9 +119,11 @@ def user_auth():
             logger.debug("[WebUI]  user '%s' signed in: %s", login, cookie_value)
             bottle.redirect(app.get_url("Dashboard"))
     else:
-        logger.warning("[WebUI]  user '%s' access denied, redirection to: %s",
-                       login, app.get_url("GetLogin") + "?error=Invalid user or Password")
-        bottle.redirect(app.get_url("GetLogin") + "?error=Invalid user or Password")
+        logger.debug("[WebUI]  user '%s' access denied, redirection to: %s", login, app.get_url("GetLogin"))
+        # bottle.redirect(app.get_url("GetLogin") + "?error=%s" % app.request.environ.get('MSG', 'No message'))
+
+        logger.info("[WebUI] refused login message: %s", app.request.environ.get('MSG', ''))
+        bottle.redirect(app.get_url("GetLogin") + "?error=%s" % app.request.environ.get('MSG', ''))
 
     return {'is_auth': is_authenticated}
 
