@@ -29,7 +29,7 @@ class LogsMetaModule(MetaModule):
         self.module = None
         if modules:
             if len(modules) > 1:
-                logger.warning("[WebUI] Too much prefs modules declared (%s > 1). Using %s.",
+                logger.warning("[WebUI] Too much logs modules declared (%s > 1). Using %s.",
                                len(modules), modules[0])
             self.module = modules[0]
         else:
@@ -90,7 +90,7 @@ class MongoDBLogs(object):
         self.db = None
 
         if not self.uri:
-            logger.warning("[WebUI-MongoDBPreferences] No Mongodb connection configured!")
+            logger.warning("[WebUI-mongo-logs] No Mongodb connection configured!")
             return
 
         if self.uri:
@@ -123,15 +123,14 @@ class MongoDBLogs(object):
                 self.db.authenticate(self.username, self.password)
                 logger.info("[WebUI-mongo-logs] user authenticated: %s", self.username)
 
-            # Update a document test item in the collection to confirm correct connection
-            logger.info("[WebUI-MongoDBPreferences] updating connection test item in the collection ...")
-            self.db.ui_user_preferences.update_one({"_id": "test-ui_logs"},
-                                                   {"$set": {"last_test": time.time()}},
-                                                   upsert=True)
-            logger.info("[WebUI-MongoDBPreferences] updated connection test item")
-
-            self.is_connected = True
-            logger.info('[WebUI-mongo-logs] database connection established')
+            # Check if the configured logs collection exist
+            logger.info("[WebUI-mongo-logs] DB collections: %s", self.db.collection_names())
+            if self.logs_collection not in self.db.collection_names():
+                logger.warning("[WebUI-mongo-logs] configured logs collection '%s' "
+                               "does not exist in the database", self.logs_collection)
+            else:
+                self.is_connected = True
+                logger.info('[WebUI-mongo-logs] database connection established')
         except Exception as e:
             logger.error("[WebUI-mongo-logs] Exception: %s", str(e))
             logger.debug("[WebUI-mongo-logs] Exception type: %s", type(e))
@@ -218,7 +217,7 @@ class MongoDBLogs(object):
                 if '_id' in log:
                     del log['_id']
                 records.append(log)
-            logger.debug("[mongo-logs] %d records fetched from database.", records.count())
+            logger.debug("[mongo-logs] %d records fetched from database.", len(records))
         except Exception as exp:
             logger.error("[mongo-logs] Exception when querying database: %s", str(exp))
 
