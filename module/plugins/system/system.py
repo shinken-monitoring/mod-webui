@@ -24,6 +24,12 @@
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 
 import time
+import datetime
+import json
+import requests
+import traceback
+
+from copy import deepcopy
 
 from shinken.log import logger
 
@@ -41,6 +47,33 @@ def system_parameters():
         return {'configs': configs}
 
     return {'configs': None}
+
+
+def alignak_parameters():
+    """Get the configuration information received from the schedulers and prepare to display
+    in a clean fashion. All schedulers provide the same configuration and maco information
+    that may be displayed separately to the end user.
+    """
+    user = app.request.environ['USER']
+    _ = user.is_administrator() or app.redirect403()
+
+    # All the received scheduler configurations send their configuratio nwhich is composed of:
+    # _macros: a global part for the macro definition
+    # _config: a global part for the framework configuration
+    # _running: a scheduler specific part
+    configuration = {
+        '_config': {},
+        '_macros': {},
+        '_schedulers': deepcopy(app.datamgr.get_configs())
+    }
+
+    for config in configuration['_schedulers']:
+        logger.debug("Got a scheduler configuration: %s", config)
+        configuration['_macros'] = config.pop('_macros')
+        configuration['_config'] = config.pop('_config')
+    logger.debug("Global configuration: %s", configuration)
+
+    return {'configuration': configuration}
 
 
 def system_page():
@@ -115,6 +148,10 @@ pages = {
         'widget_alias': 'Framework status',
         'widget_icon': 'heartbeat',
         'widget_picture': '/static/system/img/widget_system.png',
+        'static': True
+    },
+    alignak_parameters: {
+        'name': 'AlignakParameters', 'route': '/alignak/parameters', 'view': 'alignak-parameters',
         'static': True
     }
 }

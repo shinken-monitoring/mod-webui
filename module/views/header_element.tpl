@@ -239,8 +239,13 @@
         <li> <a href="#" aria-expanded="false"><i class="fa fa-fw fa-wrench sidebar-icon"></i>
         &nbsp;Configuration<i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
+            %if not app.alignak:
             <li> <a href="{{ app.get_url('Parameters') }}"> <i class="fa fa-fw fa-gears sidebar-icon"></i>
                &nbsp;Parameters </a> </li>
+            %else:
+            <li> <a href="{{ app.get_url('AlignakParameters') }}"> <i class="fa fa-fw fa-gears sidebar-icon"></i>
+               &nbsp;Parameters </a> </li>
+            %end
             <li> <a href="{{ app.get_url('Contacts') }}"> <i class="fa fa-fw fa-user sidebar-icon"></i>
                &nbsp;Contacts </a> </li>
             <li> <a href="{{ app.get_url('ContactsGroups') }}"> <i class="fa fa-fw fa-users sidebar-icon"></i>

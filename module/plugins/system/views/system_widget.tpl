@@ -2,14 +2,12 @@
 
 %rebase("widget")
 
-%types = [ ('scheduler', schedulers), ('poller', pollers), ('broker', brokers), ('reactionner', reactionners), ('receiver', receivers)]
-
 %daemons = [ ('scheduler', schedulers), ('poller', pollers), ('broker', brokers), ('reactionner', reactionners), ('receiver', receivers)]
 %present = sum(1 for (type, satellites) in daemons if satellites)
 %if not present:
-  <center>
-    <h3>No system information is available.</h3>
-  </center>
+   <div class="text-center">
+      <h3>No system information is available.</h3>
+   </div>
 %else:
     <table class="table table-condensed no-bottommargin topmmargin">
        <thead>
@@ -45,7 +43,7 @@
                 %end
              </td>
              <td title='{{helper.print_date(s.last_check)}}' data-container="body">{{helper.print_duration(s.last_check, just_duration=True, x_elts=2)}}</td>
-             <td>{{s.realm}}</td>
+             <td>{{s.realm_name}}</td>
           </tr>
           %# End of this satellite
           %end

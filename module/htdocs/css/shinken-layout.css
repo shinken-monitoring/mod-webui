@@ -696,3 +696,16 @@ footer nav {
 .badge-critical {
   background-color: #da4f49 !important;
 }
+
+@media (min-width: 768px) {
+    .dl-horizontal dt {
+        font-size:x-small;
+        /* Default bootstrap is a fixed width 160px */
+        width: 180px;
+    }
+    .dl-horizontal dd {
+        font-size:small;
+        /* Default bootstrap is a fixed width 180px */
+        margin-left: 200px;
+    }
+}
