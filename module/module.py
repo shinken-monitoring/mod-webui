@@ -180,8 +180,15 @@ class Webui_broker(BaseModule, Daemon):
                         logger.removeHandler(hdlr)
 
             log_level = getattr(modconf, 'log_level', 'INFO')
-            log_file = getattr(modconf, 'log_file', '/tmp/var/log/alignak/shinken-webui.log')
-            logger.register_local_log(log_file, log_level)
+            log_file = getattr(modconf, 'log_file', '/var/log/alignak/alignak-webui.log')
+            try:
+                logger.register_local_log(log_file, log_level)
+            except IOError:
+                cfg_log_file = log_file
+                log_file = '/tmp/alignak-webui.log'
+                logger.register_local_log(log_file, log_level)
+                logger.error("[WebUI] configured log_file is incorrect: %s. "
+                             "Will log to %s", cfg_log_file, log_file)
             logger.set_human_format()
             logger.setLevel(log_level)
 
