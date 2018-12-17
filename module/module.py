@@ -166,7 +166,9 @@ class Webui_broker(BaseModule, Daemon):
 
         # For Alignak ModulesManager...
         # ---
+        self.alignak = False
         if ALIGNAK:
+            self.alignak = True
             # A daemon must have these properties
             self.type = 'webui'
             self.name = 'webui'
@@ -593,7 +595,7 @@ class Webui_broker(BaseModule, Daemon):
             logger.warning("[WebUI] TODO: notify external command: %s", e.__dict__)
             logger.warning("[WebUI] --------------------------------------------------")
         else:
-            if ALIGNAK:
+            if self.alignak:
                 logger.info("Sending command to Alignak: %s", e)
                 req = requests.Session()
                 raw_data = req.get("http://localhost:7770/command",
@@ -610,7 +612,7 @@ class Webui_broker(BaseModule, Daemon):
     # It will say if we can launch a page rendering or not.
     # We can only if there is no writer running from now
     def wait_for_no_writers(self):
-        while True:
+        while not self.interrupted:
             self.global_lock.acquire()
             # We will be able to run
             if self.nb_writers == 0:
@@ -630,7 +632,7 @@ class Webui_broker(BaseModule, Daemon):
     # We can only if there is no readers running from now
     def wait_for_no_readers(self):
         start = time.time()
-        while True:
+        while not self.interrupted:
             self.global_lock.acquire()
             # We will be able to run
             if self.nb_readers == 0:
@@ -685,6 +687,7 @@ class Webui_broker(BaseModule, Daemon):
                 continue
             except Exception as exp:
                 logger.warning("Broken module queue: %s", str(exp))
+                time.sleep(1.0)
                 continue
 
             # try to relaunch dead module
