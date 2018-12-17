@@ -93,6 +93,21 @@
           </tbody>
         </table>
 
+        %if elt.customs and ('_IMPACT' in elt.customs or '_DETAILLEDESC' in elt.customs or '_FIXACTIONS' in elt.customs):
+        <h4 class="page-header"><i class="fa fa-question-circle-o"></i> Documentation</h4>
+        <dl class="dl-horizontal">
+          %if '_DETAILLEDESC' in elt.customs:
+          <dt style="width: 100px;">Description </dt><dd style="margin-left: 120px;"> {{ elt.customs['_DETAILLEDESC'] }}</dd>
+          %end
+          %if '_IMPACT' in elt.customs:
+          <dt style="width: 100px;">Impact </dt><dd style="margin-left: 120px;"> {{ elt.customs['_IMPACT'] }}</dd>
+          %end
+          %if '_FIXACTIONS' in elt.customs:
+          <dt style="width: 100px;">How to fix </dt><dd style="margin-left: 120px;"> {{ elt.customs['_FIXACTIONS'] }}</dd>
+          %end
+        </dl>
+        %end
+
         %if elt.perf_data:
         <h4 class="page-header">Performance data</h4>
         <div>

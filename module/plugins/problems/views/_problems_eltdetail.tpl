@@ -79,7 +79,7 @@
   %end
 
   %if pb.perf_data:
-  <h4 class="page-header">Performance data</h4>
+  <h4 class="page-header"><i class="fa fa-line-chart"></i> Performance data</h4>
   <div>
     {{!helper.get_perfdata_table(pb)}}
   </div>
@@ -91,6 +91,21 @@
     <i class="fa fa-exclamation-circle"></i> {{ len(pb.impacts) }} impacts
   </h4>
   %include("_problems_table.tpl", pbs=pb.impacts)
+  %end
+
+  %if pb.customs and ('_IMPACT' in pb.customs or '_DETAILLEDESC' in pb.customs or '_FIXACTIONS' in pb.customs):
+  <h4 class="page-header"><i class="fa fa-question-circle-o"></i> Documentation</h4>
+  <dl class="dl-horizontal">
+  %if '_DETAILLEDESC' in pb.customs:
+  <dt style="width: 80px;">Description </dt><dd style="margin-left: 100px;"> {{ pb.customs['_DETAILLEDESC'] }}</dd>
+  %end
+  %if '_IMPACT' in pb.customs:
+  <dt style="width: 80px;">Impact </dt><dd style="margin-left: 100px;"> {{ pb.customs['_IMPACT'] }}</dd>
+  %end
+  %if '_FIXACTIONS' in pb.customs:
+  <dt style="width: 80px;">How to fix </dt><dd style="margin-left: 100px;"> {{ pb.customs['_FIXACTIONS'] }}</dd>
+  %end
+  </dl>
   %end
 
   <h4 class="page-header"><i class="fa fa-comment-o"></i> Recent comments</h4>
