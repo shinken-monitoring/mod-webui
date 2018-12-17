@@ -245,6 +245,8 @@
                &nbsp;Live state</a> </li>
             <li> <a href="{{ app.get_url('AlignakEvents') }}"> <i class="fa fa-fw fa-th-list sidebar-icon"></i>
                &nbsp;Events log</a> </li>
+            <li> <a href="{{ app.get_url('AlignakStats') }}"> <i class="fa fa-fw fa-th-list sidebar-icon"></i>
+               &nbsp;Events stats</a> </li>
             %if app.logs_module.is_available():
             <li> <a href="{{ app.get_url('History') }}"> <i class="fa fa-fw fa-th-list sidebar-icon"></i>
                &nbsp;Mongo Logs </a> </li>
