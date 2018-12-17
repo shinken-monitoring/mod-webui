@@ -142,7 +142,11 @@
             <tr>
               <td><strong>Check command:</strong></td>
               <td>
+                %if elt.check_command:
                 <a href="/commands#{{elt.get_check_command()}}">{{elt.get_check_command()}}</a>
+                %else:
+                <strong>No check command</strong>
+                %end
               </td>
               <td>
               </td>
