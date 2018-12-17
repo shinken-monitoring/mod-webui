@@ -16,7 +16,7 @@
 
       %else:
       <div class="page-header">
-        <h3>No downtime available on this {{ elt_type }}</h3>
+        <h4 class="page-header">No downtimes for this {{ elt_type }}</h4>
       </div>
 
       <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary btn-sm js-schedule-downtime"
@@ -28,13 +28,12 @@
       %end
 
       %if elt_type=='host' and elt.services:
+      %servicedowntimes = [d for sublist in [s.downtimes for s in elt.services] for d in sublist]
+      %if servicedowntimes:
       <br/><br/>
       <h4 class="page-header">Downtimes on {{ elt.get_name() }} services</h4>
-
-      %setdefault('servicedowntimes', None)
-      %servicedowntimes = [d for sublist in [s.downtimes for s in elt.services] for d in sublist]
       %include("_eltdetail_downtime_table.tpl", downtimes=servicedowntimes, with_service_name=True)
-
+      %end
       %end
     </div>
 

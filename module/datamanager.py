@@ -1000,6 +1000,21 @@ class WebUIDataManager(DataManager):
         """Return the scheduler configurations received during the initialisation phase"""
         return self.rg.configs.values()
 
+    def get_configuration_parameter(self, parameter):
+        """Search for the required configuration parameter in the received scheduler
+        configurations
+        Returns None if the parameter is not found or no configuration yet received
+        """
+        configs = self.get_configs()
+        if configs:
+            config = configs[0]
+            if '_config' in config:
+                return config['_config'].get(parameter, None)
+            else:
+                return config.get(parameter, None)
+
+        return None
+
     def get_framework_status(self):
         """Return a status for the underlying monitoring framework
 

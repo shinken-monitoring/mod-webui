@@ -24,7 +24,6 @@
 # along with Shinken.  If not, see <http://www.gnu.org/licenses/>.
 
 import time
-from shinken.log import logger
 
 
 # Will be populated by the UI with it's own value
@@ -45,21 +44,10 @@ def show_host(host_name):
     graphstart = int(app.request.GET.get('graphstart', str(now - 4 * 3600)))
     graphend = int(app.request.GET.get('graphend', str(now)))
 
-    configs = app.datamgr.get_configs()
-    if configs:
-        config = vars(configs[0])
-        logger.info("Config: %s", config)
-        if '_config' in config:
-            configintervallength = config['_config'].get('interval_length', 60)
-        else:
-            configintervallength = config.get('interval_length', 60)
-    else:
-        configintervallength = 1
-
     return {
         'elt': h,
         'graphstart': graphstart, 'graphend': graphend,
-        'configintervallength': configintervallength
+        'configintervallength': app.datamgr.get_configuration_parameter('interval_length')
     }
 
 
@@ -76,16 +64,10 @@ def show_service(host_name, service):
     graphstart = int(app.request.GET.get('graphstart', str(now - 4 * 3600)))
     graphend = int(app.request.GET.get('graphend', str(now)))
 
-    configs = app.datamgr.get_configs()
-    if configs:
-        configintervallength = vars(configs[0])['interval_length']
-    else:
-        configintervallength = 1
-
     return {
         'elt': s,
         'graphstart': graphstart, 'graphend': graphend,
-        'configintervallength': configintervallength
+        'configintervallength': app.datamgr.get_configuration_parameter('interval_length')
     }
 
 

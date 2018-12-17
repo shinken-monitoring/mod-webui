@@ -112,7 +112,7 @@ Invalid element name
    </div>
    %end
 
-   %if elt.get_check_command().startswith('bp_rule'):
+   %if elt.check_command and elt.get_check_command().startswith('bp_rule'):
    <div class="alert alert-warning"><i class="fa fa-warning"></i> This element is a business rule.</div>
    %end
 
