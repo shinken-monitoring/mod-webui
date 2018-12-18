@@ -489,7 +489,7 @@ class Regenerator(object):
                 if not isinstance(sgs, list):
                     sgs = s.servicegroups.split(',')
                 new_groups = []
-                logger.debug("Searching servicegroup for the service %s, servicegroups: %s", s.get_name(), sgs)
+                logger.debug("Searching servicegroup for the service %s, servicegroups: %s", s.get_full_name(), sgs)
                 for sgname in sgs:
                     for group in self.servicegroups:
                         if sgname == group.get_name() or sgname == group.uuid:
@@ -497,9 +497,9 @@ class Regenerator(object):
                             logger.debug("Found servicegroup %s", group.get_name())
                             break
                     else:
-                        logger.warning("No servicegroup %s for service: %s", sgname, h.get_name())
-                h.servicegroups = new_groups
-                logger.debug("Linked %s servicegroups %s", h.get_name(), h.servicegroups)
+                        logger.warning("No servicegroup %s for service: %s", sgname, s.get_full_name())
+                s.servicegroups = new_groups
+                logger.debug("Linked %s servicegroups %s", s.get_full_name(), s.servicegroups)
 
             # Now link with host
             hname = s.host_name
