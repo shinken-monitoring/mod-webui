@@ -26,12 +26,13 @@
                <li role="presentation"><a role="menuitem" href="/all?search=is:ack&title=Acknowledged problems">Acknowledged problems</a></li>
                <li role="presentation"><a role="menuitem" href="/all?search=is:downtime&title=Scheduled downtimes">Scheduled downtimes</a></li>
                <li role="presentation" class="divider"></li>
-               <li role="presentation"><a role="menuitem" href="?search=bp:>=5">Impact : {{!helper.get_business_impact_text(5, text=True)}}</a></li>
-               <li role="presentation"><a role="menuitem" href="?search=bp:>=4">Impact : {{!helper.get_business_impact_text(4, text=True)}}</a></li>
-               <li role="presentation"><a role="menuitem" href="?search=bp:>=3">Impact : {{!helper.get_business_impact_text(3, text=True)}}</a></li>
-               <li role="presentation"><a role="menuitem" href="?search=bp:>=2">Impact : {{!helper.get_business_impact_text(2, text=True)}}</a></li>
-               <li role="presentation"><a role="menuitem" href="?search=bp:>=1">Impact : {{!helper.get_business_impact_text(1, text=True)}}</a></li>
-               <li role="presentation"><a role="menuitem" href="?search=bp:>=0">Impact : {{!helper.get_business_impact_text(0, text=True)}}</a></li>
+               %business_impact = max(user.min_business_impact, app.problems_business_impact)
+               %for idx in range(5, business_impact - 1, -1):
+               <li role="presentation"><a role="menuitem" href="?search=bi:>={{ idx }}">Impact : {{! helper.get_business_impact_text(idx, text=True)}}</a></li>
+               %end
+               %for idx in range(business_impact - 1, -1, -1):
+               <li role="presentation" class="disabled"><a role="menuitem" class="disabled" href="?search=bi:>={{ idx }}">Impact : {{! helper.get_business_impact_text(idx, text=True)}}</a></li>
+               %end
                <li role="presentation" class="divider"></li>
                <li role="presentation"><a role="menuitem" onclick="display_modal('/modal/helpsearch')"><strong><i class="fa fa-question-circle"></i> Search syntax</strong></a></li>
             </ul>

@@ -15,13 +15,8 @@
       <div class="panel panel-default">
          <div class="panel-heading">
            <h2 class="panel-title">
-             {{ !helper.get_contact_avatar(user, with_name=False, with_link=False) }}
+             {{ ! helper.get_contact_avatar(user, with_name=False, with_link=False) }}
              {{ user.get_name() }}
-             %if user.is_admin:
-             <i class="fa font-warning fa-star" title="This user is an administrator"></i>
-             %elif app.can_action(username):
-             <i class="fa font-ok fa-star" title="This user is allowed to launch commands"></i>
-             %end
            </h2>
          </div>
          <div class="panel-body">
@@ -36,13 +31,33 @@
                         <td>{{"%s (%s)" % (user.alias, user.contact_name) if user.alias != 'none' else user.contact_name}}</td>
                      </tr>
                      <tr>
+                        <td><strong>Administrator:</strong></td>
+                        <td>{{! app.helper.get_on_off(user.is_admin, "Is this contact an administrator?")}}
+                        %if user.is_admin:
+                        <i class="fa fa-fw font-black fa-eye" title="This user is an administrator"></i>
+                        %end
+                        </td>
+                     </tr>
+                     <tr>
                         <td><strong>Commands authorized:</strong></td>
-                        <td>{{! app.helper.get_on_off(app.can_action(), "Is this contact allowed to launch commands from Web UI?")}}</td>
+                        <td>{{! app.helper.get_on_off(app.can_action(), "Is this contact allowed to launch commands from Web UI?")}}
+                        %if app.can_action(username):
+                        <i class="fa fa-fw font-black fa-bullhorn" title="This user is allowed to launch commands"></i>
+                        %end
+                        </td>
                      </tr>
                      <tr>
                         <td><strong>Minimum business impact:</strong></td>
                         <td>{{!helper.get_business_impact_text(user.min_business_impact, text=True)}}</td>
                      </tr>
+                     %# Raise an alert if the user has a BI defined and this BI is lower than the UI's one
+                     %if user.min_business_impact and user.min_business_impact < app.problems_business_impact:
+                     <tr>
+                        <td colspan="2"><span class="alert-warning">
+                        The UI is configured for a minimum business impact ({{! helper.get_business_impact_text(app.problems_business_impact, text=True) }}). You may not view some hosts/services that you are searching for...
+                        </span></td>
+                     </tr>
+                     %end
 
                      <tr>
                         <td colspan="2"><h3>User attributes:</h3></td>
@@ -53,7 +68,11 @@
                      %end
                      <tr>
                         <td><strong>{{attr}}:</strong></td>
+                        %if value or (isinstance(value, list) and value[0]):
                         <td>{{value}}</td>
+                        %else:
+                        <td>-</td>
+                        %end
                      </tr>
                      %end
 
