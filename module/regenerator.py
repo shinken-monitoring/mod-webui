@@ -769,24 +769,64 @@ class Regenerator(object):
 #######
 
     def manage_program_status_brok(self, b):
-        """A scheduler provides its status"""
+        """A scheduler provides its initial status
+
+        Shinken brok contains:
+        data = {"is_running": 1,
+                "instance_id": self.instance_id,
+                "instance_name": self.instance_name,
+                "last_alive": now,
+                "interval_length": self.conf.interval_length,
+                "program_start": self.program_start,
+                "pid": os.getpid(),
+                "daemon_mode": 1,
+                "last_command_check": now,
+                "last_log_rotation": now,
+                "notifications_enabled": self.conf.enable_notifications,
+                "active_service_checks_enabled": self.conf.execute_service_checks,
+                "passive_service_checks_enabled": self.conf.accept_passive_service_checks,
+                "active_host_checks_enabled": self.conf.execute_host_checks,
+                "passive_host_checks_enabled": self.conf.accept_passive_host_checks,
+                "event_handlers_enabled": self.conf.enable_event_handlers,
+                "flap_detection_enabled": self.conf.enable_flap_detection,
+                "failure_prediction_enabled": 0,
+                "process_performance_data": self.conf.process_performance_data,
+                "obsess_over_hosts": self.conf.obsess_over_hosts,
+                "obsess_over_services": self.conf.obsess_over_services,
+                "modified_host_attributes": 0,
+                "modified_service_attributes": 0,
+                "global_host_event_handler": self.conf.global_host_event_handler,
+                'global_service_event_handler': self.conf.global_service_event_handler,
+                'check_external_commands': self.conf.check_external_commands,
+                'check_service_freshness': self.conf.check_service_freshness,
+                'check_host_freshness': self.conf.check_host_freshness,
+                'command_file': self.conf.command_file
+                }
+        Note that some parameters values are hard-coded and useless ... and some configuration
+        parameters are missing!
+
+        Alignak brok contains many more information:
+        _config: all the more interesting configuration parameters
+        are pushed in the program status brok sent by each scheduler. At minimum, the UI will receive
+        all the framework configuration parameters.
+        _running: all the running scheduler information: checks count, results, live synthesis
+        _macros: the configure Alignak macros and their value
+
+        """
         data = b.data
         c_id = data['instance_id']
-        logger.info("Got a configuration from %s", c_id)
+        c_name = data.get('instance_name', c_id)
+        logger.info("Got a configuration from %s", c_name)
+        logger.debug("Data: %s", data)
 
         now = time.time()
         if c_id in self.configs:
             # WebUI - it may happen that the same scheduler sends several times its initial status brok.
             # Let's manage this and only consider one brok per minute!
             # We already have a configuration for this scheduler instance
-            if now - self.configs[c_id].timestamp < 60:
-                logger.warning("Got near initial program status for %s. Ignoring this information.", c_id)
+            if now - self.configs[c_id]['_timestamp'] < 60:
+                logger.info("Got near initial program status for %s. Ignoring this information.", c_name)
                 return
-
-        # We get a real Conf object to store our data
-        c = Config()
-        c.timestamp = now
-        self.update_element(c, data)
 
         # Clean all in_progress things.
         # And in progress one
@@ -796,10 +836,9 @@ class Regenerator(object):
         self.inp_servicegroups[c_id] = Servicegroups([])
         self.inp_contactgroups[c_id] = Contactgroups([])
 
-        # And we save it
-        self.configs[c_id] = c
-
-        # Clean the old "hard" objects
+        # And we save the data in the configurations
+        data['_timestamp'] = now
+        self.configs[c_id] = data
 
         # We should clean all previously added hosts and services
         logger.debug("Cleaning hosts/service of %s", c_id)
@@ -1280,9 +1319,13 @@ class Regenerator(object):
     def manage_update_program_status_brok(self, b):
         """Each scheduler sends us a "I'm alive" brok.
         If we never heard about this one, we got some problem and we ask him some initial data :)
+
         """
         data = b.data
         c_id = data['instance_id']
+        c_name = data.get('instance_name', c_id)
+        logger.debug("Got a scheduler update status from %s", c_name)
+        logger.debug("Data: %s", data)
 
         # If we got an update about an unknown instance, cry and ask for a full version!
         # Checked that Alignak will also provide information if it gets such a message...
@@ -1299,9 +1342,9 @@ class Regenerator(object):
                 self.last_need_data_send = time.time()
             return
 
-        # Ok, good conf, we can update it
-        c = self.configs[c_id]
-        self.update_element(c, data)
+        # Tag with the update time and store the configuration
+        data['_timestamp'] = time.time()
+        self.configs[c_id].update(data)
 
     def manage_update_host_status_brok(self, b):
         """Got an host update
