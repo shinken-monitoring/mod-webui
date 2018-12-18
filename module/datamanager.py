@@ -478,34 +478,34 @@ class WebUIDataManager(DataManager):
             if (t in ['hg', 'hgroup', 'hostgroup']) and s.lower() != 'all':
                 logger.debug("[WebUI - datamanager] searching for items in the hostgroup %s", s)
                 group = self.get_hostgroup(s)
-                if not group:
-                    return []
-                logger.debug("[WebUI - datamanager] found the group: %s", group.get_name())
-
-                items = [i for i in items if i in group.members]
+                if group:
+                    logger.debug("[WebUI - datamanager] found the group: %s", group.get_name())
+                    # This filters items that are related with the hostgroup only
+                    # if the item has an hostgroups property
+                    items = [i for i in items if getattr(i, 'get_hostgroups') and
+                             group.get_name() in [g.get_name() for g in i.get_hostgroups()]]
 
             if (t in ['sg', 'sgroup', 'servicegroup']) and s.lower() != 'all':
-                logger.info("[WebUI - datamanager] searching for items in the servicegroup %s", s)
+                logger.debug("[WebUI - datamanager] searching for items in the servicegroup %s", s)
                 group = self.get_servicegroup(s)
-                if not group:
-                    return []
-                logger.debug("[WebUI - datamanager] found the group: %s", group.get_name())
+                if group:
+                    logger.debug("[WebUI - datamanager] found the group: %s", group.get_name())
+                    # Only the items that have a servicegroups property
+                    items = [i for i in items if getattr(i, 'servicegroups') and
+                             group.get_name() in [g.get_name() for g in i.servicegroups]]
 
-                items = [i for i in items if i in group.members]
-                # items = [i for i in items if i.__class__.my_type == 'service'
-
-            # @mohierf: to be refactored!
             if (t in ['cg', 'cgroup', 'contactgroup']) and s.lower() != 'all':
-                logger.info("[WebUI - datamanager] searching for items related with the contactgroup %s", s)
+                logger.debug("[WebUI - datamanager] searching for items related with the contactgroup %s", s)
                 group = self.get_contactgroup(s, user)
-                if not group:
-                    return []
-                logger.debug("[WebUI - datamanager] found the group: %s", group.get_name())
+                if group:
+                    logger.debug("[WebUI - datamanager] found the group: %s", group.get_name())
 
-                contacts = [c for c in self.get_contacts(user=user) if c in group.members]
-                items = list(set(itertools.chain(*[self._only_related_to(items,
-                                                                         self.rg.contacts.find_by_name(c))
-                                                   for c in contacts])))
+                    contacts = [c for c in self.get_contacts(user=user) if c in group.members]
+                    logger.info("[WebUI - datamanager] contacts: %s", contacts)
+
+                    items = list(set(itertools.chain(*[self._only_related_to(items,
+                                                                             self.rg.contacts.find_by_name(c))
+                                                       for c in contacts])))
 
             if t == 'realm':
                 r = self.get_realm(s)
@@ -514,10 +514,10 @@ class WebUIDataManager(DataManager):
                 items = [i for i in items if i.get_realm() == r]
 
             if t == 'htag' and s.lower() != 'all':
-                items = [i for i in items if s in i.get_host_tags()]
+                items = [i for i in items if getattr(i, 'get_host_tags') and s in i.get_host_tags()]
 
             if t == 'stag' and s.lower() != 'all':
-                items = [i for i in items if i.__class__.my_type == 'service' and s in i.get_service_tags()]
+                items = [i for i in items if getattr(i, 'get_service_tags') and s in i.get_service_tags()]
 
             if t == 'ctag' and s.lower() != 'all':
                 contacts = [c for c in self.get_contacts(user=user) if s in c.tags]
