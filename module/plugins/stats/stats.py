@@ -26,6 +26,11 @@ from datetime import datetime, timedelta
 from collections import Counter, OrderedDict
 from itertools import groupby
 
+from shinken.log import logger
+
+from copy import deepcopy
+from logevent import LogEvent
+
 # Will be populated by the UI with it's own value
 app = None
 
@@ -74,6 +79,79 @@ def _graph(logs):
     return graph
 
 
+def get_alignak_stats():
+    user = app.bottle.request.environ['USER']
+    _ = user.is_administrator() or app.redirect403()
+
+    logger.info("Get Alignak stats")
+
+    days = int(app.request.GET.get('days', 30))
+
+    range_end = int(app.request.GET.get('range_end', time.time()))
+    range_start = int(app.request.GET.get('range_start', range_end - (days * 86400)))
+
+    # Restrictive filter on contact name
+    filters = ['notification']
+
+    logs = []
+    for log in app.alignak_events:
+        # Try to get a monitoring event
+        try:
+            logger.debug("Log: %s", log)
+            event = LogEvent(log['message'])
+            logger.debug("-> event: %s", event)
+            if not event.valid:
+                logger.warning("No monitoring event detected from: %s", log['message'])
+                continue
+
+            # -------------------------------------------
+            data = deepcopy(log)
+
+            if event.event_type == 'ALERT':
+                data.update({
+                    "host_name": event.data['hostname'],
+                    "service_name": event.data['service_desc'] or 'n/a',
+                    "state": event.data['state'],
+                    "state_type": event.data['state_type'],
+                    "type": "alert",
+                })
+
+            if event.event_type == 'NOTIFICATION':
+                data.update({
+                    "host_name": event.data['hostname'],
+                    "service_name": event.data['service_desc'] or 'n/a',
+                    "type": "notification",
+                })
+
+            if filters and data.get('type', 'unknown') not in filters:
+                continue
+
+            logs.append(data)
+            logger.info(data)
+        except ValueError:
+            logger.warning("Unable to decode a monitoring event from: %s", log['message'])
+            continue
+
+    hosts = Counter()
+    services = Counter()
+    hostsservices = Counter()
+    new_logs = []
+    for l in logs:
+        hosts[l['host_name']] += 1
+        if 'service_description' in l:
+            services[l['service_description']] += 1
+            hostsservices[l['host_name'] + '/' + l['service_description']] += 1
+        new_logs.append(l)
+
+    return {
+        'hosts': hosts,
+        'services': services,
+        'hostsservices': hostsservices,
+        'days': days,
+        'graph': _graph(new_logs) if new_logs else None
+    }
+
+
 def get_global_stats():
     user = app.bottle.request.environ['USER']
     _ = user.is_administrator() or app.redirect403()
@@ -83,25 +161,44 @@ def get_global_stats():
     range_end = int(app.request.GET.get('range_end', time.time()))
     range_start = int(app.request.GET.get('range_start', range_end - (days * 86400)))
 
-    logs = list(app.logs_module.get_ui_logs(
-        range_start=range_start, range_end=range_end,
-        filters={'type': 'SERVICE NOTIFICATION',
-                 'command_name': {'$regex': 'notify-service-by-slack'}},
-        limit=None))
+    filters = {'type': 'SERVICE NOTIFICATION',
+               'command_name': {'$regex': 'notify-service-by-slack'}}
+    if app.alignak:
+        # Restrictive filter on contact name
+        filters = {
+            'alignak.event': {'$in': ['HOST NOTIFICATION', 'SERVICE NOTIFICATION']},
+            'alignak.contact': 'notified'
+        }
+
+    logs = list(app.logs_module.get_ui_logs(range_start=range_start, range_end=range_end,
+                                            filters=filters, limit=None))
 
     hosts = Counter()
     services = Counter()
     hostsservices = Counter()
+    new_logs = []
     for l in logs:
+        # Alignak logstash parser....
+        if 'alignak' in l:
+            l = l['alignak']
+            if 'time' not in l:
+                l['time'] = int(time.mktime(l.pop('timestamp').timetuple()))
+
+            if 'service' in l:
+                l['service_description'] = l.pop('service')
+
         hosts[l['host_name']] += 1
-        services[l['service_description']] += 1
-        hostsservices[l['host_name'] + '/' + l['service_description']] += 1
+        if 'service_description' in l:
+            services[l['service_description']] += 1
+            hostsservices[l['host_name'] + '/' + l['service_description']] += 1
+        new_logs.append(l)
+
     return {
         'hosts': hosts,
         'services': services,
         'hostsservices': hostsservices,
         'days': days,
-        'graph': _graph(logs) if logs else None
+        'graph': _graph(new_logs) if new_logs else None
     }
 
 
@@ -136,20 +233,50 @@ def get_host_stats(name):
     range_end = int(app.request.GET.get('range_end', time.time()))
     range_start = int(app.request.GET.get('range_start', range_end - (days * 86400)))
 
+    filters = {'type': 'SERVICE NOTIFICATION',
+               'command_name': {'$regex': 'notify-service-by-slack'},
+               'host_name': name}
+    if app.alignak:
+        # Restrictive filter on contact name
+        filters = {
+            'alignak.event': {'$in': ['HOST NOTIFICATION', 'SERVICE NOTIFICATION']},
+            'alignak.contact': 'notified',
+            'alignak.host_name': name
+        }
+
     logs = list(app.logs_module.get_ui_logs(
         range_start=range_start, range_end=range_end,
-        filters={'type': 'SERVICE NOTIFICATION',
-                 'command_name': {'$regex': 'notify-service-by-slack'},
-                 'host_name': name},
+        filters=filters,
         limit=None))
 
+    hosts = Counter()
     services = Counter()
     for l in logs:
-        services[l['service_description']] += 1
-    return {'host': name, 'services': services, 'days': days}
+        # Alignak logstash parser....
+        if 'alignak' in l:
+            l = l['alignak']
+            if 'time' not in l:
+                l['time'] = int(time.mktime(l.pop('timestamp').timetuple()))
+
+            if 'service' in l:
+                l['service_description'] = l.pop('service')
+
+        hosts[l['host_name']] += 1
+        if 'service_description' in l:
+            services[l['service_description']] += 1
+    return {
+        'host': name,
+        'hosts': hosts,
+        'services': services,
+        'days': days
+    }
 
 
 pages = {
+    get_alignak_stats: {
+        'name': 'AlignakStats', 'route': '/alignak/stats', 'view': 'stats'
+    },
+
     get_global_stats: {
         'name': 'GlobalStats', 'route': '/stats', 'view': 'stats'
     },

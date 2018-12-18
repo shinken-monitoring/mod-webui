@@ -224,6 +224,7 @@
         </li>
         %if user.is_administrator():
         <li> <a href="#" aria-expanded="false"><i class="fa fa-fw fa-gears sidebar-icon"></i>
+        %if not app.alignak:
         &nbsp;System<i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
             <li> <a href="{{ app.get_url('System') }}"> <i class="fa fa-fw fa-heartbeat sidebar-icon"></i>
@@ -235,12 +236,36 @@
                &nbsp;Alerts </a> </li>
             %end
           </ul>
+        %else:
+        &nbsp;Alignak<i class="fa arrow"></i></a>
+          <ul class="nav nav-second-level">
+            <li> <a href="{{ app.get_url('System') }}"> <i class="fa fa-fw fa-heartbeat sidebar-icon"></i>
+               &nbsp;Status </a> </li>
+            <li> <a href="{{ app.get_url('AlignakStatus') }}"> <i class="fa fa-fw fa-heartbeat sidebar-icon"></i>
+               &nbsp;Live state</a> </li>
+            <li> <a href="{{ app.get_url('AlignakEvents') }}"> <i class="fa fa-fw fa-th-list sidebar-icon"></i>
+               &nbsp;Events log</a> </li>
+            <li> <a href="{{ app.get_url('AlignakStats') }}"> <i class="fa fa-fw fa-th-list sidebar-icon"></i>
+               &nbsp;Events stats</a> </li>
+            %if app.logs_module.is_available():
+            <li> <a href="{{ app.get_url('History') }}"> <i class="fa fa-fw fa-th-list sidebar-icon"></i>
+               &nbsp;Mongo Logs </a> </li>
+            <li> <a href="{{ app.get_url('GlobalStats') }}"> <i class="fa fa-fw fa-bell-o sidebar-icon"></i>
+               &nbsp;Alerts </a> </li>
+            %end
+          </ul>
+        %end
         </li>
         <li> <a href="#" aria-expanded="false"><i class="fa fa-fw fa-wrench sidebar-icon"></i>
         &nbsp;Configuration<i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
+            %if not app.alignak:
             <li> <a href="{{ app.get_url('Parameters') }}"> <i class="fa fa-fw fa-gears sidebar-icon"></i>
                &nbsp;Parameters </a> </li>
+            %else:
+            <li> <a href="{{ app.get_url('AlignakParameters') }}"> <i class="fa fa-fw fa-gears sidebar-icon"></i>
+               &nbsp;Parameters </a> </li>
+            %end
             <li> <a href="{{ app.get_url('Contacts') }}"> <i class="fa fa-fw fa-user sidebar-icon"></i>
                &nbsp;Contacts </a> </li>
             <li> <a href="{{ app.get_url('ContactsGroups') }}"> <i class="fa fa-fw fa-users sidebar-icon"></i>

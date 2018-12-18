@@ -1,6 +1,8 @@
+%setdefault("time_field", 'time')
+%setdefault("other_fields", ['message'])
+
 %rebase("layout", css=['logs/css/logs.css','logs/css/sliding_navigation.css','logs/css/bootstrap-multiselect.css'], js=['logs/js/bootstrap-multiselect.js'], title='System logs')
 
-%from shinken.bin import VERSION
 %helper = app.helper
 %import time
 %import datetime
@@ -53,7 +55,7 @@
   %end
   %if len(params['logs_services']) > 0:
   <li class="sliding-element">
-    <a href="/logs/services_list" data-toggle="modal" data-target="#modal"><i class="fa fa-gear"></i> Services filter: 
+    <a href="/logs/services_list" data-toggle="modal" data-target="#modal"><i class="fa fa-gear"></i> Services filter:
     <ul>
     %for log_service in params['logs_services']:
       <li class="sliding-element">{{log_service}}</li>
@@ -64,7 +66,7 @@
   %end
   %if len(params['logs_type']) > 0:
   <li class="sliding-element">
-    <a href="/logs/logs_type_list" data-toggle="modal" data-target="#modal"><i class="fa fa-gear"></i> Logs type filter: 
+    <a href="/logs/logs_type_list" data-toggle="modal" data-target="#modal"><i class="fa fa-gear"></i> Logs type filter:
     <ul>
     %for log_type in params['logs_type']:
       <li class="sliding-element">{{log_type}}</li>
@@ -99,12 +101,6 @@
 
 <div class="panel panel-default">
   <div class="panel-body">
-   <script type="text/javascript">
-      // Initial start/stop range ...
-      var range_start = moment.unix({{range_start}}, 'YYYY-MM-DD');
-      // Set default downtime period as two days
-      var range_end = moment.unix({{range_end}}, 'YYYY-MM-DD');
-   </script>
 
    <div class="row row-fluid">
      <div class="col-md-6">
@@ -112,7 +108,7 @@
          <div class="form-group">
            <div class="input-group">
              <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-             <input type="text" class="form-control" id="dtr_downtime" placeholder="..." />
+             <input type="text" class="form-control" id="dtr_ranges" placeholder="..." />
            </div>
            <input type="hidden" id="range_start" name="range_start" />
            <input type="hidden" id="range_end" name="range_end" />
@@ -126,18 +122,33 @@
       <table class="table table-condensed">
          <colgroup>
             <col style="width: 10%" />
-            <col style="width: 90%" />
+            <!-- <col style="width: 90%" /> -->
          </colgroup>
          <thead>
             <tr>
-               <th colspan="2"><em>{{message}}</em></th>
+               <th colspan="20"><em>{{message}}</em></th>
             </tr>
          </thead>
          <tbody style="font-size:x-small;">
             %for log in records:
             <tr>
+            %if not app.alignak:
                <td>{{time.strftime(date_format, time.localtime(log['time']))}}</td>
                <td>{{log['message']}}</td>
+            %else:
+               <td>{{log[time_field]}}</td>
+               %for field in other_fields:
+                  %if '.' in field:
+                  %before = field.split('.')[0]
+                  %after = field.split('.')[1]
+                  %before_value = log.get(before, None)
+                  %value = before_value.get(after, '') if before else ''
+                  %else:
+                  %value = log.get(field, '')
+                  %end
+                  <td>{{value}}</td>
+               %end
+            %end
             </tr>
             %end
          </tbody>
@@ -148,7 +159,14 @@
 
 
    <script type="text/javascript">
-      $("#dtr_downtime").daterangepicker({
+   $(document).ready(function() {
+      // Initial start/stop range ...
+      var range_start = moment.unix({{range_start}}, 'YYYY-MM-DD');
+      // Set default downtime period as two days
+      var range_end = moment.unix({{range_end}}, 'YYYY-MM-DD');
+
+
+      $("#dtr_ranges").daterangepicker({
          ranges: {
             '1 day':         [moment().add('days', -1), moment()],
             '2 days':        [moment().add('days', -2), moment()],
@@ -167,24 +185,24 @@
          showWeekNumbers: false,
          opens: 'right',
          },
-         
+
          function(start, end, label) {
             range_start = start; range_end = end;
          }
       );
-    
+
       // Set default date range values
-      $('#dtr_downtime').val(range_start.format('YYYY-MM-DD') + ' to ' +  range_end.format('YYYY-MM-DD'));
+      $('#dtr_ranges').val(range_start.format('YYYY-MM-DD') + ' to ' +  range_end.format('YYYY-MM-DD'));
       $('#range_start').val(range_start.format('X'));
       $('#range_end').val(range_end.format('X'));
-    
+
       // Update dates on apply button ...
-      $('#dtr_downtime').on('apply.daterangepicker', function(ev, picker) {
+      $('#dtr_ranges').on('apply.daterangepicker', function(ev, picker) {
          range_start = picker.startDate; range_end = picker.endDate;
-         console.log(range_start, range_end)
          $('#range_start').val(range_start.unix());
          $('#range_end').val(range_end.unix());
       });
+   });
    </script>
 
   </div>

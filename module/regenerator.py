@@ -1481,7 +1481,7 @@ class Regenerator(object):
 
         h = self.hosts.find_by_name(hname)
         if not h:
-            logger.warning("Got a check result brok for an unknown host: %s", hname)
+            logger.debug("Got a check result brok for an unknown host: %s", hname)
             return
 
         logger.debug("Host check result: %s - %s (%s)", hname, h.state, h.state_type)
@@ -1506,7 +1506,7 @@ class Regenerator(object):
         sdesc = data['service_description']
         s = self.services.find_srv_by_name_and_hostname(hname, sdesc)
         if not s:
-            logger.warning("Got a check result brok for an unknown service: %s/%s", hname, sdesc)
+            logger.debug("Got a check result brok for an unknown service: %s/%s", hname, sdesc)
             return
 
         logger.debug("Service check result: %s/%s - %s (%s)", hname, sdesc, s.state, s.state_type)
