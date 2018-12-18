@@ -590,22 +590,17 @@ class Webui_broker(BaseModule, Daemon):
         """
         global ALIGNAK
         logger.debug("[WebUI] Got an external command: %s", e.__dict__)
-        if self.stand_alone:
-            logger.warning("[WebUI] --------------------------------------------------")
-            logger.warning("[WebUI] TODO: notify external command: %s", e.__dict__)
-            logger.warning("[WebUI] --------------------------------------------------")
+        if self.alignak:
+            logger.info("Sending command to Alignak: %s", e)
+            req = requests.Session()
+            raw_data = req.get("http://localhost:7770/command",
+                               params={'command': e.cmd_line})
+            logger.info("Result: %s", raw_data.content)
         else:
-            if self.alignak:
-                logger.info("Sending command to Alignak: %s", e)
-                req = requests.Session()
-                raw_data = req.get("http://localhost:7770/command",
-                                   params={'command': e.cmd_line})
-                logger.info("Result: %s", raw_data.content)
-            else:
-                try:
-                    self.from_q.put(e)
-                except Exception as exp:
-                    logger.error("[WebUI] External command push, exception: %s", str(exp))
+            try:
+                self.from_q.put(e)
+            except Exception as exp:
+                logger.error("[WebUI] External command push, exception: %s", str(exp))
 
     # Shinken broker module only
     # -----------------------------------------------------
