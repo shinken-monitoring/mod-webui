@@ -3,10 +3,12 @@
     <div class="panel-body">
 
       %if not elt.comments:
-         <h4 class="page-header">No comments for this {{ elt_type }}</h4>
-      %else:
-         %include("_eltdetail_comment_table.tpl", comments=elt.comments)
+         <div class="text-center">
+           <h3>No comment available on this {{ elt_type }}</h3>
+         </div>
       %end
+
+      %include("_eltdetail_comment_table.tpl", comments=elt.comments)
 
       %if elt_type=='host' and elt.services:
       %servicecomments = [c for sublist in [s.comments for s in elt.services] for c in sublist]
