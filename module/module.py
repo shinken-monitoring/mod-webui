@@ -1018,12 +1018,20 @@ class Webui_broker(BaseModule, Daemon):
                 return False
 
             user = User.from_contact(c)
+            logger.info("[WebUI] User minimum business impact: %s", user.min_business_impact)
 
             self.user_session = self.auth_module.get_session()
             logger.info("[WebUI] User session: %s", self.user_session)
             self.user_info = self.auth_module.get_user_info()
             logger.info("[WebUI] User information: %s", self.user_info)
 
+            # Raise an lert if the user has a BI defined and this BI is lower than the UI's one
+            if user.min_business_impact and user.min_business_impact < self.problems_business_impact:
+                logger.warning("[WebUI] the user minimum business impact (%d) is lower than "
+                               "the UI configured business impact (%d). You should update the UI "
+                               "configuration to suit your users configuration. Some items will be "
+                               "filtered wheres the user may expect to view them!",
+                               user.min_business_impact, self.problems_business_impact)
             return True
 
         logger.warning("[WebUI] The user '%s' has not been authenticated.", username)
