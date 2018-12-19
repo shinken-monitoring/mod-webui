@@ -44,6 +44,22 @@ from shinken.objects.timeperiod import Timeperiod, Timeperiods
 from shinken.objects.command import Command, Commands
 from shinken.misc.sorter import worse_first, last_state_change_earlier
 
+# Search patterns like: isnot:0 isnot:ack isnot:"downtime fred" name "vm fred"
+SEARCH_QUERY_PATTERNS = r'''
+                            # 1/ Search a key:value pattern.
+        (?P<key>\w+):       # Key consists of only a word followed by a colon
+        (?P<quote2>["']?)   # Optional quote character.
+        (?P<value>.*?)      # Value is a non greedy match
+        (?P=quote2)         # Closing quote equals the first.
+        ($|\s)              # Entry ends with whitespace or end of string
+        |                   # OR
+                            # 2/ Search a single string quoted or not
+        (?P<quote>["']?)    # Optional quote character.
+        (?P<name>.*?)       # Name is a non greedy match
+        (?P=quote)          # Closing quote equals the opening one.
+        ($|\s)              # Entry ends with whitespace or end of string
+    '''
+
 
 class WebUIDataManager(DataManager):
 
@@ -363,31 +379,10 @@ class WebUIDataManager(DataManager):
         items.extend(self._only_related_to(super(WebUIDataManager, self).get_hosts(), user))
         items.extend(self._only_related_to(super(WebUIDataManager, self).get_services(), user))
 
-        # Filter items according to the logged-in user minimum business impact or the minimum business impact
-        business_impact = max(user.min_business_impact, self.problems_business_impact)
-        logger.debug("[WebUI - datamanager] business impact, filtering %d items >= %d (user: %d, ui: %d)",
-                     len(items), business_impact, user.min_business_impact, self.problems_business_impact)
-        items = [i for i in items if i.business_impact >= business_impact]
-
         logger.debug("[WebUI - datamanager] search_hosts_and_services, search for %s in %d items", search, len(items))
 
         # Search patterns like: isnot:0 isnot:ack isnot:"downtime fred" name "vm fred"
-        regex = re.compile(
-            r'''
-                                    # 1/ Search a key:value pattern.
-                (?P<key>\w+):       # Key consists of only a word followed by a colon
-                (?P<quote2>["']?)   # Optional quote character.
-                (?P<value>.*?)      # Value is a non greedy match
-                (?P=quote2)         # Closing quote equals the first.
-                ($|\s)              # Entry ends with whitespace or end of string
-                |                   # OR
-                                    # 2/ Search a single string quoted or not
-                (?P<quote>["']?)    # Optional quote character.
-                (?P<name>.*?)       # Name is a non greedy match
-                (?P=quote)          # Closing quote equals the opening one.
-                ($|\s)              # Entry ends with whitespace or end of string
-            ''',
-            re.VERBOSE)
+        regex = re.compile(SEARCH_QUERY_PATTERNS, re.VERBOSE)
 
         # Replace "NOT foo" by "^((?!foo).)*$" to ignore foo
         search = re.sub(r'NOT ([^\ ]*)', r'^((?!\1).)*$', search)

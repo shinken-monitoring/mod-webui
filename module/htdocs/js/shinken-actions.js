@@ -609,9 +609,11 @@ $("body").on("click", ".js-recheck", function () {
     var elt = get_action_element($(this));
 
     if (elt) {
+        console.log(elt);
         recheck_now(elt);
     } else {
         $.each(selected_elements, function(idx, name){
+            console.log("Recheck selected", elt);
             recheck_now(name);
         });
     }

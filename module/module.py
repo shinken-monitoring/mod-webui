@@ -36,6 +36,7 @@ WEBUI_LICENSE = "License GNU AGPL as published by the FSF, minimum version 3 of 
 
 import os
 import json
+import re
 import string
 import random
 import traceback
@@ -85,7 +86,7 @@ from bottle import route, request, response, template
 import bottle
 
 # Local import
-from datamanager import WebUIDataManager
+from datamanager import WebUIDataManager, SEARCH_QUERY_PATTERNS
 from ui_user import User
 from helper import helper
 
@@ -1114,7 +1115,56 @@ class Webui_broker(BaseModule, Daemon):
         return lst
 
     def get_search_string(self, default=""):
-        return self.request.query.get('search', default)
+        """Manage the query parameter `search`
+
+        The business impact logic behind this:
+        - the UI defined BI (problems_business_impact) is considered first
+        - the user minimum BI is then considered
+
+        Thus, the maximum value of both BIs is added as a filter in the search query if no
+        BI is specified in the search query. If more than one bi: exist in the search query
+        the last one is the only one that is kept in the query parameter.
+        """
+        if not self.request.route.config.get('search_engine', None):
+            # Requested URL do not include the search engine
+            logger.debug("No search engine on this page!")
+            return ''
+
+        search_string = self.request.query.get('search', default)
+
+        # Force include the UI BI in the search query if it is not yet present
+        bi = self.problems_business_impact
+        if "bi:" not in search_string:
+            # Include BI as the first search criterion
+            return ("bi:>=%d " % bi) + search_string
+
+        # Search patterns like: isnot:0 isnot:ack isnot:"downtime fred" name "vm fred"
+        regex = re.compile(SEARCH_QUERY_PATTERNS, re.VERBOSE)
+        logger.debug("Search string: %s", search_string)
+        new_ss = ''
+        for match in regex.finditer(search_string):
+            if not match.group('key'):
+                continue
+            if match.group('key') not in ['bp', 'bi']:
+                logger.debug("- match: %s / %s", match.group('key'), match.group('value'))
+                new_ss += match.group('key')
+                new_ss += match.group('value')
+                continue
+            logger.debug("Found BI filter: %s", match.group('value'))
+            s = match.group('value')
+            bi = self.problems_business_impact
+            try:
+                if s.startswith('>=') or s.startswith('<='):
+                    bi = int(s[2:])
+                elif s.startswith('>') or s.startswith('<') or s.startswith('='):
+                    bi = int(s[1:]) + 1
+            except ValueError:
+                pass
+            logger.debug("- search BI is >=%d", bi)
+        new_ss = ("bi:>=%d " % bi) + new_ss
+        logger.debug("- updated search string: %s", new_ss)
+
+        return new_ss
 
     def redirect404(self, msg="Not found"):
         raise self.bottle.HTTPError(404, msg)

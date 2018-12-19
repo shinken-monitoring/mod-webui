@@ -35,7 +35,7 @@ DEFAULT_FILTER = "isnot:UP isnot:OK isnot:PENDING isnot:ACK isnot:DOWNTIME isnot
 
 
 def get_page():
-    app.bottle.redirect("/all?search=%s" % DEFAULT_FILTER)
+    app.bottle.redirect("/all?search=bi:>=%d %s" % (app.problems_business_impact, DEFAULT_FILTER))
 
 
 def get_all():
