@@ -45,6 +45,7 @@ except ImportError:
 
 from shinken.misc.sorter import hst_srv_sort
 from shinken.misc.perfdata import PerfDatas
+from shinken.macroresolver import MacroResolver
 
 
 # pylint: disable=no-self-use
@@ -748,6 +749,100 @@ class Helper(object):
         s = '<span class="user-avatar" title="%s">%s</span>' % (title, s)
 
         return s
+
+    def render_url(self, obj, items, css=''):
+        """Returns formatted HTML for an element URL
+
+        """
+        result = []
+        for (icon, title, url) in items:
+            if not url:
+                # Nothing to do here!
+                continue
+
+            # Replace MACROS in url, title and description
+            if hasattr(obj, 'get_data_for_checks'):
+                if url:
+                    url = MacroResolver().resolve_simple_macros_in_string(
+                        url, obj.get_data_for_checks())
+                if title:
+                    title = MacroResolver().resolve_simple_macros_in_string(
+                        title, obj.get_data_for_checks())
+
+            link = 'href="%s" target="_blank" ' % url
+            if not url:
+                link = 'href="#" '
+
+            if icon:
+                icon = '<i class="fa fa-%s"></i>' % icon
+            else:
+                icon = ''
+
+            if not title:
+                result.append('<a %s>%s&nbsp;%s</a>' % (link, icon, url))
+            else:
+                result.append('<a %s %s>%s&nbsp;%s</a>' % (link, css, icon, title))
+
+        return result
+
+    def get_element_urls(self, obj, property, title=None, icon=None, css=''):
+        """"Return list of element notes urls
+
+        The notes_url or actions_url fields are containing a simple url or a string in which
+        individual url are separated with a | character.
+
+        Each url must contain an URI string and may also contain an icon and a title:
+
+        action_url URL1,ICON1,ALT1|URL2,ICON2,ALT2|URL3,ICON3,ALT3
+
+        As documented in Shinken:
+        * URLx are the url you want to use
+        * ICONx are the images you want to display the link as. It can be either a local
+         file, relative to the folder webui/plugins/eltdetail/htdocs/ or an url.
+        * ALTx are the alternative texts you want to display when the ICONx file is missing,
+         or not set.
+
+        The UI do not use any icon file but the font-awesome icons font. As such, ICONx information
+        is the name of an icon in the font awesome icons list.
+
+        The ALTx information is the text label used for the hyperlink or button on the page.
+
+        """
+        if not obj or not hasattr(obj, property):
+            return []
+
+        # We build a list of: title, icon, description, url
+        notes = []
+
+        # Several notes are defined in the notes attribute with | character
+        for item in getattr(obj, property).split('|'):
+            # An element is: url[,icon][,title] - icon and title are optional
+            try:
+                (url, icon, title) = item.split(',')
+            except ValueError:
+                try:
+                    (url, icon) = item.split(',')
+                except ValueError:
+                    url = item
+
+            notes.append((icon, title, url))
+
+        return self.render_url(obj, notes, css=css)
+
+    def get_element_notes(self, obj, title=None, icon=None, css=''):
+        """"See the comment of get_element_urls"""
+        return self.get_element_urls(obj, 'notes',
+                                     title=title, icon=icon, css=css)
+
+    def get_element_notes_url(self, obj, title=None, icon=None, css=''):
+        """"See the comment of get_element_urls"""
+        return self.get_element_urls(obj, 'notes_url',
+                                     title=title, icon=icon, css=css)
+
+    def get_element_actions_url(self, obj, title=None, icon=None, css=''):
+        """"See the comment of get_element_urls"""
+        return self.get_element_urls(obj, 'action_url',
+                                     title=title, icon=icon, css=css)
 
 
 helper = Helper()
