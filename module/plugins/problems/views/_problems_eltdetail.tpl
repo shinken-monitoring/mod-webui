@@ -71,11 +71,28 @@
   %end
 </div>
 
-  %if pb.notes or pb.notes_url:
-  <blockquote style="font-size: 14px;">
-    {{ pb.notes }}<br>
-    <a href="{{ pb.notes_url }}" target="_blank"><i class="fa fa-external-link"></i> {{ pb.notes_url }}</a>
-  </blockquote>
+  %if pb.notes:
+  <ul class="list-group">
+  %for note in helper.get_element_notes(pb, popover=False, css='class="list-group-item"'):
+    {{! note}}
+  %end
+  </ul>
+  %end
+
+  %if pb.notes_url:
+  <ul class="list-inline">
+  %for note in helper.get_element_notes_url(pb, default_title="More notes", default_icon="external-link-square", popover=True, css='class="btn btn-info"'):
+    <li>{{! note}}</li>
+  %end
+  </ul>
+  %end
+
+  %if pb.action_url:
+  <ul class="list-inline">
+  %for action in helper.get_element_actions_url(pb, default_title="Launch custom action", default_icon="cogs", popover=True, css='class="btn btn-warning"'):
+    <li>{{! action}}</li>
+  %end
+  </ul>
   %end
 
   %if pb.perf_data:
