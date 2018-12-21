@@ -409,21 +409,23 @@ class WebUIDataManager(DataManager):
                 # Case insensitive
                 pat = re.compile(s, re.IGNORECASE)
                 new_items = []
+                # Ordered search in all the items for: displa_name, alias, name and notes
                 for i in items:
-                    if (pat.search(i.get_full_name())
-                            or (i.__class__.my_type == 'host' and i.alias and pat.search(i.alias))):
+                    if (pat.search(getattr(i, 'display_name', '')) or pat.search(getattr(i, 'alias', ''))
+                            or pat.search(i.get_full_name()) or pat.search(getattr(i, 'notes', ''))):
                         new_items.append(i)
-                    else:
-                        for j in i.impacts + i.source_problems:
-                            if (pat.search(j.get_full_name())
-                                    or (j.__class__.my_type == 'host' and j.alias and pat.search(j.alias))):
-                                new_items.append(i)
 
+                # Nothing found in all the items
                 if not new_items:
                     for i in items:
+                        # Search in the last check output
                         if pat.search(i.output):
                             new_items.append(i)
-                        else:
+
+                    if not new_items:
+                        # Nothing found in the checks output
+                        for i in items:
+                            # Search in the impacts and source problems last check output
                             for j in i.impacts + i.source_problems:
                                 if pat.search(j.output):
                                     new_items.append(i)
