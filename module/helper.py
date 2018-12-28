@@ -327,6 +327,9 @@ class Helper(object):
         else:
             icon = icons[cls].get(state, 'UNKNOWN')
 
+        if obj and not (obj.active_checks_enabled or obj.passive_checks_enabled):
+            icon_color = 'bg-lightgrey'
+
         front = '''<i class="fa fa-%s fa-stack-1x %s"></i>''' % (icon, icon_color)
 
         if use_title:

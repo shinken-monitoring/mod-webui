@@ -123,7 +123,11 @@ Next check <strong>{{helper.print_duration(pb.next_chk)}}</strong>
                </td>
                %aka = ''
                %if pb_host.alias and not pb_host.alias.startswith(pb_host.get_name()):
+                 %if pb_host.display_name:
+                 %aka = 'Aka %s (%s)' % (pb_host.alias.replace(' ', '<br>'), pb_host.get_name())
+                 %else:
                  %aka = 'Aka %s' % pb_host.alias.replace(' ', '<br>')
+                 %end
                %end
                <td class="hidden-sm hidden-xs hidden-md">
                   %if pb.host_name != previous_pb_host_name:
