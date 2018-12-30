@@ -209,7 +209,6 @@
       var app_refresh_period = {{app.refresh_period}};
       </script>
       <script src="/static/js/shinken-refresh.js?v={{app.app_version}}"></script>
-      <script src="/static/js/shinken-actions.js?v={{app.app_version}}"></script>
       %end
       <script src="/static/js/shinken-actions.js?v={{app.app_version}}"></script>
 
