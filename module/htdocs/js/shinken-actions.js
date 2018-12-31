@@ -502,6 +502,16 @@ function get_action_element(btn) {
     return elt;
 }
 
+$("body").on("click", ".js-external-command", function (e) {
+    // Command ...
+    var command = $(this).data('command')
+    console.log(command, e);
+    e.preventDefault();
+
+    var url = '/action/' + command
+    launch(url, 'Command ' + command + ' notified.');
+});
+
 $("body").on("click", ".js-delete-comment", function () {
     var elt = $(this).data('element');
     var comment = $(this).data('comment');
