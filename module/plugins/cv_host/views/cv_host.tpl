@@ -71,7 +71,7 @@
       <div class="col-sm-10" name="host_information">
          <dl class="dl-horizontal">
             <dt>Alias:</dt>
-            <dd>{{elt.alias}}</dd>
+            <dd>{{elt.display_name if elt.display_name else elt.alias if elt.alias else ''}}</dd>
 
             <dt>Address:</dt>
             <dd>{{elt.address}}</dd>
@@ -114,18 +114,21 @@
             </dd>
             %end
          </dl>
+
          <dl class="dl-horizontal">
+            %if elt.get_host_tags():
             <dt>Tags:</dt>
             <dd>
               %for t in sorted(elt.get_host_tags()):
               <a href="/all?search=htag:{{t}}">
-                <button class="btn btn-default btn-xs"><i class="fa fa-tag"></i> {{t.lower()}}</button>
+                <button class="btn btn-default btn-xs bg-host"><i class="fa fa-tag"></i> {{t.lower()}}</button>
               </a>
               %end
             </dd>
+            %end
 
+            %if elt.hostgroups:
             <dt>Groups:</dt>
-            %if len(elt.hostgroups) > 0:
             <dd>
             %i=0
             %for hg in elt.hostgroups:
@@ -134,15 +137,34 @@
             %i=i+1
             %end
             </dd>
-            %else:
-            <dd>(none)</dd>
             %end
 
             %if elt.notes or elt.notes_url:
-            <blockquote style="font-size: 14px;">
-              {{ elt.notes }}<br>
-              <a href="{{ elt.notes_url }}" target="_blank"><i class="fa fa-external-link"></i> {{ elt.notes_url }}</a>
-            </blockquote>
+            <dt>Notes:</dt>
+            %if elt.notes:
+            <dd><ul class="list-group">
+            %for note in app.helper.get_element_notes(elt, popover=False, css='class="list-group-item"'):
+               {{! note}}
+            %end
+            </ul></dd>
+            %end
+
+            %if elt.notes_url:
+            <dd><ul class="list-inline">
+            %for note in app.helper.get_element_notes_url(elt, default_title="More notes", default_icon="external-link-square", popover=True, css='class="btn btn-info btn-xs"'):
+               <li>{{! note}}</li>
+            %end
+            </ul></dd>
+            %end
+            %end
+
+            %if elt.action_url:
+            <dt>Actions:</dt>
+            <dd><ul class="list-inline">
+            %for action in app.helper.get_element_actions_url(elt, default_title="Launch custom action", default_icon="cogs", popover=True, css='class="btn btn-warning btn-xs"'):
+               <li>{{! action}}</li>
+            %end
+            </ul></dd>
             %end
          </dl>
       </div>
@@ -150,6 +172,14 @@
 
    <div class="row" name="services_layout">
       <div class="col-sm-6" name="left_metrics">
+         %if 'services' in all_states:
+         <div class="well well-sm services-tree" name="services_container">
+           {{!app.helper.print_aggregation_tree(app.helper.get_host_service_aggregation_tree(elt, app), app.helper.get_html_id(elt), expanded=True, max_sons=3)}}
+         </div>
+         %end
+      </div>
+
+      <div class="col-sm-6" name="right_metrics">
          %if 'load' in all_states and all_perfs['load']:
          <div class="well well-sm" name="load_container">
             <span class="pull-right">{{!app.helper.get_fa_icon_state_and_label(cls='service', state=all_states['load'])}}</span>
@@ -422,14 +452,6 @@
                }
             );
          </script>
-         %end
-      </div>
-
-      <div class="col-sm-6" name="right_metrics">
-         %if 'services' in all_states:
-         <div class="well well-sm services-tree" name="services_container">
-           {{!app.helper.print_aggregation_tree(app.helper.get_host_service_aggregation_tree(elt, app), app.helper.get_html_id(elt), expanded=True, max_sons=3)}}
-         </div>
          %end
       </div>
    </div>
