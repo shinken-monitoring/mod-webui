@@ -18,7 +18,10 @@
           {{!helper.print_aggregation_tree(helper.get_host_service_aggregation_tree(elt, app), helper.get_html_id(elt), expanded=False, max_sons=3)}}
         </div>
         %elif not elt.parent_dependencies:
-        <h4>No services!</h4>
+        %if not elt.services:
+        %displayed_services=True
+        <h4>No services</h4>
+        %end
         %end
         %end #of the only host part
 

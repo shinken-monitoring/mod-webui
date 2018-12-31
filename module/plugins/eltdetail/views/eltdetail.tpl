@@ -4,23 +4,27 @@
 
 %if not elt:
 %rebase("layout", title='Invalid element name')
-
 Invalid element name
+%end
 
-%else:
 %user = app.get_user()
 %helper = app.helper
 
-%from shinken.macroresolver import MacroResolver
-
+%# Element information
+%# - type
 %elt_type = elt.__class__.my_type
+%# - is monitored
+%elt_monitored = elt.active_checks_enabled or elt.passive_checks_enabled
+%# - defined check command
+%elt_checked = True if elt.check_command else False
 
-%breadcrumb = [['All '+elt_type.title()+'s', '/'+elt_type+'s-groups']]
+%breadcrumb = [[elt_type.title(), '/'+elt_type+'s-groups']]
 %if elt_type == 'host':
-%breadcrumb += [[elt.display_name if elt.display_name else elt.get_name(), '/host/'+elt.host_name]]
+%#breadcrumb += [[elt.display_name if elt.display_name else elt.get_name(), '/host/'+elt.host_name]]
+%breadcrumb += [[elt.host_name, '/host/'+elt.host_name]]
 %elif elt_type == 'service':
-%breadcrumb += [[elt.host.display_name if elt.host.display_name else elt.host.get_name(), '/host/'+elt.host_name]]
-%breadcrumb += [[elt.display_name, '/service/'+helper.get_uri_name(elt)]]
+%breadcrumb += [[elt.host_name, '/host/'+elt.host_name]]
+%breadcrumb += [[elt.service_description, '/service/'+helper.get_uri_name(elt)]]
 %end
 
 %js=['js/jquery.sparkline.min.js', 'js/shinken-charts.js', 'cv_host/js/flot/jquery.flot.min.js', 'cv_host/js/flot/jquery.flot.tickrotor.js', 'cv_host/js/flot/jquery.flot.resize.min.js', 'cv_host/js/flot/jquery.flot.pie.min.js', 'cv_host/js/flot/jquery.flot.categories.min.js', 'cv_host/js/flot/jquery.flot.time.min.js', 'cv_host/js/flot/jquery.flot.stack.min.js', 'cv_host/js/flot/jquery.flot.valuelabels.js', 'eltdetail/js/custom_views.js', 'eltdetail/js/eltdetail.js', 'logs/js/history.js']
@@ -39,7 +43,7 @@ Invalid element name
       <div class="panel panel-default">
          <div class="panel-heading">
             <h4 class="panel-title">
-               <a data-toggle="collapse" href="#collapse_{{elt.id}}"><i class="fa fa-bug"></i> Host as dictionary</a>
+               <a data-toggle="collapse" href="#collapse_{{elt.id}}"><i class="fa fa-bug"></i> {{elt_type.title()}} as dictionary</a>
             </h4>
          </div>
          <div id="collapse_{{elt.id}}" class="panel-collapse collapse">
@@ -112,7 +116,7 @@ Invalid element name
    </div>
    %end
 
-   %if elt.check_command and elt.get_check_command().startswith('bp_rule'):
+   %if elt_checked and elt.get_check_command().startswith('bp_rule'):
    <div class="alert alert-warning"><i class="fa fa-warning"></i> This element is a business rule.</div>
    %end
 
@@ -234,5 +238,3 @@ Invalid element name
 </div>
 
 %include("_eltdetail_action-menu.tpl")
-
-%end
