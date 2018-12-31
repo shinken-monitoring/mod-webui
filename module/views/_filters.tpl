@@ -26,12 +26,20 @@
                <li role="presentation"><a role="menuitem" href="/all?search=is:ack&title=Acknowledged problems">Acknowledged problems</a></li>
                <li role="presentation"><a role="menuitem" href="/all?search=is:downtime&title=Scheduled downtimes">Scheduled downtimes</a></li>
                <li role="presentation" class="divider"></li>
-               %business_impact = max(user.min_business_impact, app.problems_business_impact)
+               %if user.is_administrator():
+               %# Only administrators are allowed to view any BI
+               %for idx in range(5, -1, -1):
+               <li role="presentation"><a role="menuitem" href="?search=bi:>={{ idx }}">Impact : {{! helper.get_business_impact_text(idx, text=True)}}</a></li>
+               %end
+               %else:
+               %# Other users are restricted to their own BI or the UI's configured BI
+               %business_impact = user.min_business_impact or app.problems_business_impact
                %for idx in range(5, business_impact - 1, -1):
                <li role="presentation"><a role="menuitem" href="?search=bi:>={{ idx }}">Impact : {{! helper.get_business_impact_text(idx, text=True)}}</a></li>
                %end
                %for idx in range(business_impact - 1, -1, -1):
                <li role="presentation" class="disabled"><a role="menuitem" class="disabled" href="?search=bi:>={{ idx }}">Impact : {{! helper.get_business_impact_text(idx, text=True)}}</a></li>
+               %end
                %end
                <li role="presentation" class="divider"></li>
                <li role="presentation"><a role="menuitem" onclick="display_modal('/modal/helpsearch')"><strong><i class="fa fa-question-circle"></i> Search syntax</strong></a></li>
