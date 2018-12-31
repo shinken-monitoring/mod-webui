@@ -35,14 +35,18 @@ DEFAULT_FILTER = "isnot:UP isnot:OK isnot:PENDING isnot:ACK isnot:DOWNTIME isnot
 
 
 def get_page():
-    app.bottle.redirect("/all?search=bi:>=%d %s" % (app.problems_business_impact, DEFAULT_FILTER))
+    user = app.bottle.request.environ['USER']
+    app.bottle.redirect("/all?search=%s bi:>=%d"
+                        % (DEFAULT_FILTER,
+                           user.min_business_impact or app.problems_business_impact))
 
 
 def get_all():
     user = app.bottle.request.environ['USER']
 
     # Update the default filter according to the logged-in user minimum business impact
-    default_filtering = DEFAULT_FILTER + " bi:>=%d" % (user.min_business_impact)
+    default_filtering = DEFAULT_FILTER + " bi:>=%d" \
+                        % (user.min_business_impact or app.problems_business_impact)
 
     # Fetch elements per page preference for user, default is 25
     elts_per_page = app.prefs_module.get_ui_user_preference(user, 'elts_per_page', 25)

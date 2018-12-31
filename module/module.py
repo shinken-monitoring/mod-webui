@@ -1133,10 +1133,11 @@ class Webui_broker(BaseModule, Daemon):
         search_string = self.request.query.get('search', default)
 
         # Force include the UI BI in the search query if it is not yet present
-        bi = self.problems_business_impact
+        user = self.request.environ['USER']
+        bi = user.min_business_impact or self.problems_business_impact
         if "bi:" not in search_string:
-            # Include BI as the first search criterion
-            return ("bi:>=%d " % bi) + search_string
+            # Include BI as the last search criterion
+            return search_string + (" bi:>=%d" % bi)
 
         # Search patterns like: isnot:0 isnot:ack isnot:"downtime fred" name "vm fred"
         regex = re.compile(SEARCH_QUERY_PATTERNS, re.VERBOSE)
@@ -1147,8 +1148,8 @@ class Webui_broker(BaseModule, Daemon):
                 continue
             if match.group('key') not in ['bp', 'bi']:
                 logger.debug("- match: %s / %s", match.group('key'), match.group('value'))
-                new_ss += match.group('key')
-                new_ss += match.group('value')
+                new_ss += match.group('key') + ':'
+                new_ss += match.group('value') + ' '
                 continue
             logger.debug("Found BI filter: %s", match.group('value'))
             s = match.group('value')
@@ -1161,7 +1162,7 @@ class Webui_broker(BaseModule, Daemon):
             except ValueError:
                 pass
             logger.debug("- search BI is >=%d", bi)
-        new_ss = ("bi:>=%d " % bi) + new_ss
+        new_ss = new_ss + ("bi:>=%d" % bi)
         logger.debug("- updated search string: %s", new_ss)
 
         return new_ss

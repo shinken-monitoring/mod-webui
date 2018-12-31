@@ -613,7 +613,6 @@ $("body").on("click", ".js-recheck", function () {
         recheck_now(elt);
     } else {
         $.each(selected_elements, function(idx, name){
-            console.log("Recheck selected", elt);
             recheck_now(name);
         });
     }
