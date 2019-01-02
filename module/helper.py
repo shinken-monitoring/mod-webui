@@ -45,7 +45,6 @@ except ImportError:
 
 from shinken.misc.sorter import hst_srv_sort
 from shinken.misc.perfdata import PerfDatas
-from shinken.macroresolver import MacroResolver
 
 
 # pylint: disable=no-self-use
