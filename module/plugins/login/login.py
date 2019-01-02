@@ -77,20 +77,22 @@ def user_login():
                                         secret=app.auth_secret, path='/')
                 bottle.redirect(app.get_url("Dashboard"))
 
-    logger.info("[WebUI] session user message - get: %s", app.request.environ.get('MSG', 'None...'))
+    logger.debug("[WebUI] session user message - get: %s",
+                 app.request.environ.get('MSG', 'None...'))
 
     return {'msg_text': err, 'login_text': app.login_text, 'company_logo': app.company_logo}
 
 
 def user_logout():
-    # To delete it, send the same, with different date
-    user_name = app.request.get_cookie(app.session_cookie, secret=app.auth_secret)
-    if user_name:
-        app.response.set_cookie(str(app.session_cookie), False, secret=app.auth_secret, path='/')
+    # To delete the cookie, send the same, with different date
+    cookie_value = app.request.get_cookie(app.session_cookie, secret=app.auth_secret)
+    if cookie_value:
+        app.response.set_cookie(app.session_cookie, False, secret=app.auth_secret, path='/')
     else:
-        app.response.set_cookie(str(app.session_cookie), '', secret=app.auth_secret, path='/')
+        app.response.set_cookie(app.session_cookie, '', secret=app.auth_secret, path='/')
 
-    logger.info("[WebUI]  user '%s' signed out", user_name)
+    contact_name = cookie_value.get('login', cookie_value)
+    logger.info("[WebUI] user '%s' signed out", contact_name)
     bottle.redirect(app.get_url("GetLogin"))
     return {}
 
@@ -120,7 +122,6 @@ def user_auth():
             bottle.redirect(app.get_url("Dashboard"))
     else:
         logger.debug("[WebUI]  user '%s' access denied, redirection to: %s", login, app.get_url("GetLogin"))
-        # bottle.redirect(app.get_url("GetLogin") + "?error=%s" % app.request.environ.get('MSG', 'No message'))
 
         logger.info("[WebUI] refused login message: %s", app.request.environ.get('MSG', ''))
         bottle.redirect(app.get_url("GetLogin") + "?error=%s" % app.request.environ.get('MSG', ''))
@@ -128,9 +129,8 @@ def user_auth():
     return {'is_auth': is_authenticated}
 
 
-# manage the /. If the user is known, go to home page.
-# Should be /dashboard in the future. If not, go login :)
 def get_root():
+    """Navigating to the root is redirecting to the Dashboard view"""
     bottle.redirect(app.get_url("Dashboard"))
 
 
