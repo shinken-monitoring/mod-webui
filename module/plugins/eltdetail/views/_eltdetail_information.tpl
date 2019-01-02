@@ -223,49 +223,17 @@
       </div>
 
       <div class="col-lg-6">
-        %if elt.notes or elt.notes_url:
+        %if elt.notes_url or elt.action_url or elt.notes:
         <h4 class="page-header">Notes</h4>
-
-        %if elt.notes:
-        <ul class="list-group">
-        %for note in helper.get_element_notes(elt, popover=False, css='class="list-group-item"'):
-          {{! note}}
+        %if elt.notes != '':
+        <p>{{ elt.notes }}</p>
         %end
-        </ul>
-        %end
-
-        %if elt.notes_url:
-        <ul class="list-inline">
-        %for note in helper.get_element_notes_url(elt, default_title="More notes", default_icon="external-link-square", popover=True, css='class="btn btn-info"'):
-          <li>{{! note}}</li>
-        %end
-        </ul>
-        %end
-        %end
-
-        %if elt.action_url:
-        <h4 class="page-header">Actions</h4>
-        <ul class="list-inline">
-        %for action in helper.get_element_actions_url(elt, default_title="Launch custom action", default_icon="cogs", popover=True, css='class="btn btn-warning"'):
-          <li>{{! action}}</li>
-        %end
-        </ul>
-        %end
-
-        %elt_type = elt.__class__.my_type
-        %tags = elt.get_service_tags() if elt_type=='service' else elt.get_host_tags()
-        %if tags:
-        %tag='stag' if elt_type=='service' else 'htag'
-        <h4 class="page-header">Tags</h4>
-        <div class="btn-group">
-          %for t in sorted(tags):
-            <a href="/all?search={{tag}}:{{t}}">
-            %if app.tag_as_image:
-               <img src="/tag/{{t.lower()}}" alt="{{t.lower()}}" =title="Tag: {{t.lower()}}" style="height: 24px"></img>
-            %else:
-               <button class="btn btn-default btn-xs bg-{{elt_type}}"><i class="fa fa-tag"></i> {{t.lower()}}</button>
-            %end
-            </a>
+        <div>
+          %if elt.notes_url != '':
+          <a class="btn btn-info" href="{{elt.notes_url}}" target=_blank><i class="fa fa-external-link-square"></i> More notes</a>
+          %end
+          %if elt.action_url != '':
+          <a class="btn btn-warning" href="{{elt.action_url}}" target=_blank title="{{ elt.action_url }}"><i class="fa fa-cogs"></i> Launch custom action</a>
           %end
         </div>
         %end
