@@ -32,7 +32,7 @@ app = None
 
 # Our page
 def get_page():
-    user = app.request.environ['USER']
+    user = app.request.environ.get('USER', None)
 
     # Look for the widgets as the json entry
     s = app.prefs_module.get_ui_user_preference(user, 'widgets')
@@ -69,7 +69,7 @@ def get_page():
 
 
 def get_currently():
-    user = app.request.environ['USER']
+    user = app.request.environ.get('USER', None)
 
     # Search panels preferences
     s = app.prefs_module.get_ui_user_preference(user, 'panels')

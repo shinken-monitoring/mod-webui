@@ -257,9 +257,9 @@ class Webui_broker(BaseModule, Daemon):
         logger.info("[WebUI] server: %s:%d", self.host, self.port)
 
         # Build session cookie
-        self.session_cookie = getattr(modconf, 'cookie_name', 'user')
+        self.session_cookie = getattr(modconf, 'cookie_name', 'user_session')
         self.auth_secret = resolve_auth_secret(modconf)
-        logger.info("[WebUI] cookie: %s", self.session_cookie)
+        logger.info("[WebUI] user session cookie name: %s", self.session_cookie)
         # TODO : common preferences
         self.play_sound = to_bool(getattr(modconf, 'play_sound', '0'))
         logger.info("[WebUI] sound: %s", self.play_sound)
@@ -1026,7 +1026,10 @@ class Webui_broker(BaseModule, Daemon):
             self.user_info = self.auth_module.get_user_info()
             logger.info("[WebUI] User information: %s", self.user_info)
 
-            # Raise an lert if the user has a BI defined and this BI is lower than the UI's one
+            if self.user_session and self.user_info:
+                user.set_information(self.user_session, self.user_info)
+
+            # Raise an alert if the user has a BI defined and this BI is lower than the UI's one
             if user.min_business_impact and user.min_business_impact < self.problems_business_impact:
                 logger.warning("[WebUI] the user minimum business impact (%d) is lower than "
                                "the UI configured business impact (%d). You should update the UI "
@@ -1037,36 +1040,6 @@ class Webui_broker(BaseModule, Daemon):
 
         logger.warning("[WebUI] The user '%s' has not been authenticated.", username)
         return False
-
-    ##
-    # For compatibility with previous defined views ...
-    ##
-    # pylint: disable=undefined-variable
-    def get_user_auth(self):
-        logger.warning("[WebUI] Deprecated - Getting authenticated user ...")
-        self.user_session = None
-        self.user_info = None
-
-        cookie_value = webui_app.request.get_cookie(str(app.session_cookie), secret=app.auth_secret)
-        if cookie_value:
-            if 'session' in cookie_value:
-                self.user_session = cookie_value['session']
-                logger.debug("[WebUI] user session: %s", cookie_value['session'])
-            if 'info' in cookie_value:
-                self.user_info = cookie_value['info']
-                logger.debug("[WebUI] user info: %s", cookie_value['info'])
-            if 'login' in cookie_value:
-                logger.debug("[WebUI] user login: %s", cookie_value['login'])
-                contact = app.datamgr.get_contact(name=cookie_value['login'])
-            else:
-                contact = app.datamgr.get_contact(name=cookie_value)
-        else:
-            contact = app.datamgr.get_contact(name='anonymous')
-        if not contact:
-            return None
-
-        user = User.from_contact(contact)
-        return user
 
     ##
     # Current user can launch commands ?
@@ -1133,7 +1106,7 @@ class Webui_broker(BaseModule, Daemon):
         search_string = self.request.query.get('search', default)
 
         # Force include the UI BI in the search query if it is not yet present
-        user = self.request.environ['USER']
+        user = self.request.environ.get('USER', None)
         bi = user.min_business_impact or self.problems_business_impact
         if "bi:" not in search_string:
             # Include BI as the last search criterion
@@ -1175,7 +1148,7 @@ class Webui_broker(BaseModule, Daemon):
 
     # pylint: disable=no-self-use
     def get_user(self):
-        return request.environ['USER']
+        return request.environ.get('USER', None)
 
 
 @webui_app.hook('before_request')
@@ -1184,40 +1157,40 @@ def login_required():
     app = bottle.BaseTemplate.defaults['app']
 
     logger.debug("[WebUI] login_required, requested URL: %s", request.urlparts.path)
-    if request.urlparts.path == "/user/logout" or request.urlparts.path == app.get_url("Logout"):
-        return
-    if request.urlparts.path == "/user/login" or request.urlparts.path == app.get_url("GetLogin"):
-        return
-    if request.urlparts.path == "/user/auth" or request.urlparts.path == app.get_url("SetLogin"):
-        return
+    # No static route need user authentication...
     if request.urlparts.path.startswith('/static'):
         return
+    # Nor some specific routes
+    if request.urlparts.path in ['/favicon.ico', '/gotfirstdata', '/user/get_pref', '/user/set_pref',
+                                 app.get_url("Logout"),
+                                 app.get_url("GetLogin"),
+                                 app.get_url("SetLogin")]:
+        return
 
-    logger.debug("[WebUI] login_required, getting user cookie ...")
+    logger.debug("[WebUI] login_required for %s, getting user cookie ...", request.urlparts.path)
     cookie_value = bottle.request.get_cookie(str(app.session_cookie), secret=app.auth_secret)
-    if not cookie_value and not app.allow_anonymous:
-        bottle.redirect('/user/login')
     if cookie_value:
-        if 'session' in cookie_value:
-            app.user_session = cookie_value['session']
-            logger.debug("[WebUI] user session: %s", cookie_value['session'])
-        if 'info' in cookie_value:
-            app.user_info = cookie_value['info']
-            logger.debug("[WebUI] user info: %s", cookie_value['info'])
-        if 'login' in cookie_value:
-            logger.debug("[WebUI] user login: %s", cookie_value['login'])
-            contact = app.datamgr.get_contact(name=cookie_value['login'])
-        else:
-            contact = app.datamgr.get_contact(name=cookie_value)
+        app.user_session = cookie_value.get('session', '')
+        logger.debug("[WebUI] user session: %s", app.user_session)
+        app.user_info = cookie_value.get('info', '')
+        logger.debug("[WebUI] user info: %s", app.user_info)
+        contact_name = cookie_value.get('login', cookie_value)
+        logger.debug("[WebUI] user login: %s", contact_name)
     else:
         # Only the /dashboard/currently should be accessible to anonymous users
-        if request.urlparts.path != "/dashboard/currently":
-            bottle.redirect("/user/login")
-        contact = app.datamgr.get_contact(name='anonymous')
+        contact_name = 'anonymous'
+        if not app.allow_anonymous:
+            logger.info("[WebUI] anonymous access is forbidden. Redirecting to %s", app.get_url("GetLogin"))
+            bottle.redirect(app.get_url("GetLogin"))
+        if request.urlparts.path not in [app.get_url("Currently")]:
+            logger.info("[WebUI] anonymous access is allowed only for the dashboard, not for %s",
+                        request.urlparts.path)
+            bottle.redirect(app.get_url("GetLogin"))
 
+    contact = app.datamgr.get_contact(name=contact_name)
     if not contact:
-        app.redirect403()
-        bottle.redirect('/user/login')
+        logger.info("[WebUI] contact does not exist: %s", contact_name)
+        bottle.redirect(app.get_url("GetLogin"))
 
     user = User.from_contact(contact)
     if app.user_session and app.user_info:
