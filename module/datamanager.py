@@ -162,7 +162,7 @@ class WebUIDataManager(DataManager):
                     if host.state_type.upper() not in ['HARD']:
                         continue
                     # An host is a problem if it is in a HARD DOWN or UNKNOWN state
-                    if host.state.lower() in ['down', 'unnown']:
+                    if host.state.lower() in ['down', 'unknown']:
                         host.is_problem = True
                     # An host is impacted if it is UNREACHABLE
                     if host.state.lower() in ['unreachable']:
