@@ -1048,10 +1048,15 @@ class Webui_broker(BaseModule, Daemon):
 
     def get_search_string(self):
         '''Return the search query from get parameters.'''
-        return ' '.join(self.request.GET.getall('search')) or ''
+        search_params = self.request.GET.getall('search')
+
+        if search_params:
+            return ' '.join(self.request.GET.getall('search'))
+        else:
+            return None
 
     def update_search_string_with_default_search(self, requested_search, default_search='', redirect=True):
-        search = requested_search or default_search
+        search = default_search if requested_search is None else requested_search
 
         if search != requested_search:
             if redirect:
@@ -1060,13 +1065,15 @@ class Webui_broker(BaseModule, Daemon):
         return search
 
     def update_search_string_with_default_filters(self, requested_search, filters=[], prepend=True, redirect=True):
-        search = requested_search
+        search = requested_search or ''
 
-        for f in filters:
-            if f not in search:
-                if prepend:
+        if prepend:
+            for f in reversed(filters):
+                if f not in search:
                     search = f + " " + search
-                else:
+        else:
+            for f in filters:
+                if f not in search:
                     search = search + " " + f
 
         if search != requested_search:
@@ -1076,7 +1083,7 @@ class Webui_broker(BaseModule, Daemon):
         return search
 
     def update_search_string_with_default_bi_filter(self, requested_search, redirect=True):
-        search = requested_search
+        search = requested_search or ''
 
         if "bi:" not in requested_search:
             search = requested_search + " bi:>=%d" % self.problems_business_impact

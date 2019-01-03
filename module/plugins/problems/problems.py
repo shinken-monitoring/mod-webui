@@ -31,18 +31,16 @@ from shinken.misc.sorter import hst_srv_sort, last_state_change_earlier
 # Will be populated by the UI with it's own value
 app = None
 
-DEFAULT_FILTER = "isnot:UP isnot:OK isnot:PENDING isnot:ACK isnot:DOWNTIME isnot:SOFT"
-
 
 def get_page():
-    app.bottle.redirect("/all?search=%s" % DEFAULT_FILTER)
+    app.bottle.redirect("/all?search=%s" % app.PROBLEMS_SEARCH_STRING)
 
 
 def get_all():
     user = app.bottle.request.environ['USER']
 
     # Update the default filter according to the logged-in user minimum business impact
-    default_filtering = DEFAULT_FILTER + " bi:>=%d" % (user.min_business_impact)
+    default_filtering = app.PROBLEMS_SEARCH_STRING
 
     # Fetch elements per page preference for user, default is 25
     elts_per_page = app.prefs_module.get_ui_user_preference(user, 'elts_per_page', 25)
@@ -72,7 +70,7 @@ def get_all():
 
     title = app.request.GET.get('title', 'All problems')
 
-    search = ' '.join(app.request.GET.getall('search')) or ""
+    search = app.get_search_string() or ""
     items = list(app.datamgr.search_hosts_and_services(search, user))
 
     pbs = list(sorted(items, hst_srv_sort))
@@ -113,8 +111,7 @@ def get_pbs_widget():
     nb_elements = max(0, int(app.request.GET.get('nb_elements', '10')))
     refine_search = app.request.GET.get('search', '')
 
-    items = app.datamgr.search_hosts_and_services("isnot:UP isnot:OK isnot:PENDING "
-                                                  "isnot:ACK isnot:DOWNTIME isnot:SOFT bi:>0",
+    items = app.datamgr.search_hosts_and_services(app.PROBLEMS_SEARCH_STRING,
                                                   user)
 
     # Sort it now
@@ -195,8 +192,7 @@ def get_last_errors_widget():
     refine_search = app.request.GET.get('search', '')
 
     # Apply search filter if exists ...
-    items = app.datamgr.search_hosts_and_services("isnot:UP isnot:OK isnot:PENDING "
-                                                  "isnot:ACK isnot:DOWNTIME isnot:SOFT bp:>0",
+    items = app.datamgr.search_hosts_and_services(app.PROBLEMS_SEARCH_STRING,
                                                   user)
 
     # Sort it now
