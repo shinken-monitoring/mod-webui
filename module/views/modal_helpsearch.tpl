@@ -59,8 +59,6 @@
     <li><code>bi:>1</code> Matches hosts and services with a business impact greater than 1.</li>
   </ul>
 
-  <p><strong>Note</strong> that the WebUI has a default configured filter. Hosts and services that do not have a BI greater than or equal this filter will not be dislayed in the UI. Currently, this filter is <code>bi>={{app.problems_business_impact}}</code>.</p>
-
   <h4>Search by duration</h4>
   <p>You can also search by the duration of the last state change. This is very useful to find elements that are warning or critical for a long time. For example:</p>
   <ul>

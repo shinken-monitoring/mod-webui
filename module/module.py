@@ -502,6 +502,7 @@ class Webui_broker(BaseModule, Daemon):
 
         # Data manager
         self.datamgr = WebUIDataManager(self.rg, self.problems_business_impact,
+                                        self.important_problems_business_impact,
                                         self.disable_inner_problems_computation)
         self.helper = helper
 

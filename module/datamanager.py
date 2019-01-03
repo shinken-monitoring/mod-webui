@@ -47,10 +47,11 @@ from shinken.misc.sorter import worse_first, last_state_change_earlier
 
 class WebUIDataManager(DataManager):
 
-    def __init__(self, rg=None, problems_business_impact=0, disable_inner_problems_computation=0):
+    def __init__(self, rg=None, problems_business_impact=0, important_problems_business_impact=0, disable_inner_problems_computation=0):
         super(WebUIDataManager, self).__init__()
         self.rg = rg
         self.problems_business_impact = problems_business_impact
+        self.important_problems_business_impact = important_problems_business_impact
         self.disable_inner_problems_computation = disable_inner_problems_computation
 
     @property
@@ -87,26 +88,23 @@ class WebUIDataManager(DataManager):
     ##
     # Hosts
     ##
-    def get_hosts(self, user=None, get_impacts=False, extra_search=''):
+    def get_hosts(self, user=None, get_impacts=False):
         """ Get a list of all hosts.
-
-            Default search is to get all hosts. extra_search allows to add some more
-            search criteria
 
             :param user: concerned user
             :param get_impacts: should impact hosts be included in the list?
-            :param extra_search: extra search criteria
             :returns: list of all hosts
         """
-        search = 'type:host'
-        if get_impacts:
-            search = search + ' is:impact'
-        if "bi:" not in search:
-            search = search + " bi:>=%d " % (self.problems_business_impact)
-        if extra_search:
-            search = search + " " + extra_search
+        return self.search_hosts_and_services(
+                'type:host' if not get_impacts else 'type:host is:impact',
+                user
+                )
 
-        return self.search_hosts_and_services(search, user)
+    def get_important_hosts(self, user=None):
+        return self.search_hosts_and_services(
+                'type:host bi:>%d' % self.important_problems_business_impact,
+                user
+                )
 
     def get_host(self, name, user=None):
         """ Get a host by its hostname. """
@@ -136,11 +134,11 @@ class WebUIDataManager(DataManager):
         logger.debug("Hosts count: %s / %s / %s", count, h['nb_problems'], h['nb_elts'])
         return round(100.0 * (count / h['nb_elts']), 1)
 
-    def get_hosts_synthesis(self, elts=None, user=None, extra_search=''):
+    def get_hosts_synthesis(self, elts=None, user=None):
         if elts is not None:
             hosts = [item for item in elts if item.__class__.my_type == 'host']
         else:
-            hosts = self.get_hosts(user=user, extra_search=extra_search)
+            hosts = self.get_hosts(user=user)
         logger.debug("[WebUI - datamanager] get_hosts_synthesis, %d hosts", len(hosts))
 
         h = dict()
@@ -201,25 +199,29 @@ class WebUIDataManager(DataManager):
         logger.debug("[WebUI - datamanager] get_hosts_synthesis: %s", h)
         return h
 
+    def get_important_hosts_synthesis(self, user=None):
+        return self.get_hosts_synthesis(elts=self.get_important_hosts(user))
+
     ##
     # Services
     ##
-    def get_services(self, user, get_impacts=False, extra_search=''):
+    def get_services(self, user=None, get_impacts=False):
         """ Get a list of all services.
 
             :param user: concerned user
             :param get_impacts: should impact services be included in the list?
             :returns: list of all services
         """
-        search = 'type:service'
-        if get_impacts:
-            search = search + ' is:impact'
-        if "bi:" not in search:
-            search = search + " bi:>=%d " % (self.problems_business_impact)
-        if extra_search:
-            search = search + " " + extra_search
+        return self.search_hosts_and_services(
+                'type:service' if not get_impacts else 'type:service is:impact',
+                user
+                )
 
-        return self.search_hosts_and_services(search, user)
+    def get_important_services(self, user=None):
+        return self.search_hosts_and_services(
+                'type:service bi:>%d' % self.important_problems_business_impact,
+                user
+                )
 
     def get_service(self, hname, sname, user):
         """ Get a service by its hostname and service description. """
@@ -245,11 +247,11 @@ class WebUIDataManager(DataManager):
         logger.debug("Services count: %s / %s / %s", count, s['nb_problems'], s['nb_elts'])
         return round(100.0 * (count / s['nb_elts']), 1)
 
-    def get_services_synthesis(self, elts=None, user=None, extra_search=''):
+    def get_services_synthesis(self, elts=None, user=None):
         if elts is not None:
             services = [item for item in elts if item.__class__.my_type == 'service']
         else:
-            services = self.get_services(user=user, extra_search=extra_search)
+            services = self.get_services(user=user)
         logger.debug("[WebUI - datamanager] get_services_synthesis, %d services", len(services))
 
         s = dict()
@@ -316,6 +318,9 @@ class WebUIDataManager(DataManager):
         logger.debug("[WebUI - datamanager] get_services_synthesis: %s", s)
         return s
 
+    def get_important_services_synthesis(self, user=None):
+        return self.get_services_synthesis(elts=self.get_important_services(user))
+
     ##
     # Elements
     ##
@@ -335,14 +340,10 @@ class WebUIDataManager(DataManager):
     ##
     # Searching
     ##
-    def search_hosts_and_services(self, search, user, get_impacts=True, sorter=None, important=False):
+    def search_hosts_and_services(self, search, user, get_impacts=True, sorter=None):
         """ Search hosts and services.
 
             This method is the heart of the datamanager. All other methods should be based on this one.
-
-            If important is True, only the most important items are filtered using the important
-            problems business impact (important_problems_business_impact) rather than the
-            default business impact (problems_business_impact).
 
             Todo: the get_impacts parameter is not used into this function, should be removed!
 
@@ -350,7 +351,6 @@ class WebUIDataManager(DataManager):
             :user: concerned user
             :get_impacts: should impacts be included in the list?
             :sorter: function to sort the items. default=None (means no sorting)
-            :important: only get the most important items
             :returns: list of hosts and services
         """
         # Make user an User object ... simple protection.
@@ -362,12 +362,6 @@ class WebUIDataManager(DataManager):
         items = []
         items.extend(self._only_related_to(super(WebUIDataManager, self).get_hosts(), user))
         items.extend(self._only_related_to(super(WebUIDataManager, self).get_services(), user))
-
-        # Filter items according to the logged-in user minimum business impact or the minimum business impact
-        business_impact = max(user.min_business_impact, self.problems_business_impact)
-        logger.debug("[WebUI - datamanager] business impact, filtering %d items >= %d (user: %d, ui: %d)",
-                     len(items), business_impact, user.min_business_impact, self.problems_business_impact)
-        items = [i for i in items if i.business_impact >= business_impact]
 
         logger.debug("[WebUI - datamanager] search_hosts_and_services, search for %s in %d items", search, len(items))
 
