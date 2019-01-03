@@ -114,7 +114,7 @@ def get_pbs_widget():
     refine_search = app.request.GET.get('search', '')
 
     items = app.datamgr.search_hosts_and_services("isnot:UP isnot:OK isnot:PENDING "
-                                                  "isnot:ACK isnot:DOWNTIME isnot:SOFT bp:>0",
+                                                  "isnot:ACK isnot:DOWNTIME isnot:SOFT bi:>0",
                                                   user)
 
     # Sort it now
