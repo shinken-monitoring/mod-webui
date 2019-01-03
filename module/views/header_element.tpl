@@ -99,7 +99,7 @@
          <a id="hosts-states-popover"
             class="btn btn-ico btn-badge hosts-all" data-count="{{ h['nb_elts'] }}" data-problems="{{ h['nb_problems'] }}"
             href="/all?search=type:host"
-            data-toggle="popover popover-hosts" data-title="Overall hosts states: {{h['nb_elts']}} hosts, {{h["nb_problems"]}} problems" data-html="true">
+            data-toggle="popover popover-hosts" data-title="Important hosts (bi >= {{ app.important_problems_business_impact }}): {{h['nb_elts']}} hosts, {{h["nb_problems"]}} problems" data-html="true">
             <i class="fa fa-server"></i>
             %if h['nb_problems']:
             <span class="badge badge-{{color}}">{{h["nb_problems"]}}</span>
@@ -119,7 +119,7 @@
          <a id="services-states-popover"
             class="btn btn-ico btn-badge services-all" data-count="{{ s['nb_elts'] }}" data-problems="{{ s['nb_problems'] }}"
             href="/all?search=type:service"
-            data-toggle="popover popover-services" data-title="Overall services states: {{s['nb_elts']}} services, {{s["nb_problems"]}} problems" data-html="true">
+            data-toggle="popover popover-services" data-title="Important services (bi >= {{ app.important_problems_business_impact }}): {{s['nb_elts']}} services, {{s["nb_problems"]}} problems" data-html="true">
             <i class="fa fa-hdd-o"></i>
             %if s["nb_problems"]:
             <span class="badge badge-{{color}}">{{s["nb_problems"]}}</span>
