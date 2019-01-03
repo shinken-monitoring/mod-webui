@@ -138,13 +138,11 @@
             <dd>(none)</dd>
             %end
 
-            %if elt.notes_url:
-            <dt>Notes:</dt>
-            <dd>
-            %for note_url in elt.notes_url:
-               <button class="btn btn-default btn-xs">{{! note_url}}</button>
-            %end
-            </dd>
+            %if elt.notes or elt.notes_url:
+            <blockquote style="font-size: 14px;">
+              {{ elt.notes }}<br>
+              <a href="{{ elt.notes_url }}" target="_blank"><i class="fa fa-external-link"></i> {{ elt.notes_url }}</a>
+            </blockquote>
             %end
          </dl>
       </div>

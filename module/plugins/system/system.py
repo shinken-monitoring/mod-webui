@@ -35,12 +35,12 @@ def system_parameters():
     user = app.request.environ['USER']
     _ = user.is_administrator() or app.redirect403()
 
-    configs = app.datamgr.get_configs()
-    if configs:
-        configs = sorted(vars(configs[0]).iteritems())
-        return {'configs': configs}
+    # configs = app.datamgr.get_configs()
+    # if configs:
+    #     configs = sorted(vars(configs[0]).iteritems())
+    #     return {'configs': configs}
 
-    return {'configs': None}
+    return {'configs': app.datamgr.get_configs()}
 
 
 def system_page():
