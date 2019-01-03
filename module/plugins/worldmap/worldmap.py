@@ -58,7 +58,7 @@ def load_config(app):
 
 def search_hosts_with_coordinates(search, user):
     logger.debug("[WebUI-worldmap] search parameters '%s'", search)
-    items = app.datamgr.search_hosts_and_services(search, user, get_impacts=True)
+    items = app.datamgr.search_hosts_and_services(search, user)
 
     # We are looking for hosts with valid GPS coordinates,
     # and we just give them to the template to print them.

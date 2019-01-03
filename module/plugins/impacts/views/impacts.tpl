@@ -104,7 +104,7 @@
 
             %guessed = []
             %if impact.state_id != 0 and len(unack_pbs+ack_pbs) == 0:
-            %guessed = datamgr.guess_root_problems(impact)
+            %guessed = datamgr.guess_root_problems(user, impact)
             %end
 
             <ul class="list-group">

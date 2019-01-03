@@ -33,7 +33,7 @@ def show_minemap():
     if "type:host" not in search:
         search = "type:host " + search
     logger.debug("[WebUI-minemap] search parameters '%s'", search)
-    items = app.datamgr.search_hosts_and_services(search, user, get_impacts=False)
+    items = app.datamgr.search_hosts_and_services(search, user)
     logger.info("[WebUI-minemap] got %d matching items: %s", len(items), items)
 
     # Fetch elements per page preference for user, default is 25

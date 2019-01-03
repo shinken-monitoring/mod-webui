@@ -357,6 +357,8 @@ class Webui_broker(BaseModule, Daemon):
         logger.info("[WebUI] minimum business impacts, all UI: %s, most important: %s",
                     self.problems_business_impact, self.important_problems_business_impact)
 
+        self.PROBLEMS_SEARCH_STRING = "isnot:UP isnot:OK isnot:PENDING isnot:ACK isnot:DOWNTIME isnot:SOFT bi:>=%d" % self.problems_business_impact
+
         # Inner computation rules for the problems
         self.disable_inner_problems_computation = int(getattr(modconf, 'disable_inner_problems_computation', '0'))
 
@@ -1086,13 +1088,12 @@ class Webui_broker(BaseModule, Daemon):
         return search
 
     def get_and_update_search_string_with_problems_filters(self, redirect=True):
-        DEFAULT_SEARCH = "isnot:UP isnot:OK isnot:PENDING isnot:ACK isnot:DOWNTIME isnot:SOFT bi:>=%d" % self.problems_business_impact
-        DEFAULT_FILTERS = ['isnot:UP', 'isnot:OK', 'isnot:PENDING', 'isnot:ACK', 'isnot:DOWNTIME', 'isnot:SOFT']
+        PROBLEMS_FILTERS = ['isnot:UP', 'isnot:OK', 'isnot:PENDING', 'isnot:ACK', 'isnot:DOWNTIME', 'isnot:SOFT']
 
         requested_search = self.get_search_string()
 
-        search = self.update_search_string_with_default_search(requested_search, DEFAULT_SEARCH, redirect=False)
-        search = self.update_search_string_with_default_filters(search, DEFAULT_FILTERS, redirect=False)
+        search = self.update_search_string_with_default_search(requested_search, self.PROBLEMS_SEARCH_STRING, redirect=False)
+        search = self.update_search_string_with_default_filters(search, PROBLEMS_FILTERS, redirect=False)
         search = self.update_search_string_with_default_bi_filter(search, redirect=False)
 
         if search != requested_search:

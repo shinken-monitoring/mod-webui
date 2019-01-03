@@ -88,17 +88,13 @@ class WebUIDataManager(DataManager):
     ##
     # Hosts
     ##
-    def get_hosts(self, user=None, get_impacts=False):
+    def get_hosts(self, user=None):
         """ Get a list of all hosts.
 
             :param user: concerned user
-            :param get_impacts: should impact hosts be included in the list?
             :returns: list of all hosts
         """
-        return self.search_hosts_and_services(
-                'type:host' if not get_impacts else 'type:host is:impact',
-                user
-                )
+        return self.search_hosts_and_services('type:host', user)
 
     def get_important_hosts(self, user=None):
         return self.search_hosts_and_services(
@@ -205,17 +201,13 @@ class WebUIDataManager(DataManager):
     ##
     # Services
     ##
-    def get_services(self, user=None, get_impacts=False):
+    def get_services(self, user=None):
         """ Get a list of all services.
 
             :param user: concerned user
-            :param get_impacts: should impact services be included in the list?
             :returns: list of all services
         """
-        return self.search_hosts_and_services(
-                'type:service' if not get_impacts else 'type:service is:impact',
-                user
-                )
+        return self.search_hosts_and_services('type:service', user)
 
     def get_important_services(self, user=None):
         return self.search_hosts_and_services(
@@ -340,16 +332,13 @@ class WebUIDataManager(DataManager):
     ##
     # Searching
     ##
-    def search_hosts_and_services(self, search, user, get_impacts=True, sorter=None):
+    def search_hosts_and_services(self, search, user, sorter=None):
         """ Search hosts and services.
 
             This method is the heart of the datamanager. All other methods should be based on this one.
 
-            Todo: the get_impacts parameter is not used into this function, should be removed!
-
             :search: Search string
             :user: concerned user
-            :get_impacts: should impacts be included in the list?
             :sorter: function to sort the items. default=None (means no sorting)
             :returns: list of hosts and services
         """
@@ -1054,32 +1043,18 @@ class WebUIDataManager(DataManager):
     ##
     def get_overall_state(self, user):
         ''' Get the worst state of all business impacting elements. '''
-        impacts = self.get_impacts(user, sorter=worse_first)
-        if impacts:
-            return impacts[0].state_id
-
-        return 0
+        # :TODO:maethor:190103: Could be moved into dashboard
+        impacts = self.search_hosts_and_services('isnot:ACK isnot:DOWNTIME is:impact', user, sorter=worse_first)
+        return impacts[0].state_id if impacts else 0
 
     def get_overall_it_state(self, user):
         ''' Get the worst state of IT problems. '''
-        hosts = self.get_important_elements(user, type='host', sorter=worse_first)
-        services = self.get_important_elements(user, type='service', sorter=worse_first)
+        # :TODO:maethor:190103: Could be moved into dashboard
+        hosts = self.search_hosts_and_services('type:host isnot:ACK isnot:DOWNTIME isnot:impact', user, sorter=worse_first)
+        services = self.search_hosts_and_services('type:service isnot:ACK isnot:DOWNTIME isnot:impact', user, sorter=worse_first)
         hosts_state = hosts[0].state_id if hosts else 0
         services_state = services[0].state_id if services else 0
         return hosts_state, services_state
-
-    def get_important_elements(self, user, type='all', sorter=worse_first):
-        # BI is greater than the minimum business impact
-        # todo: @maethor: why searching with ack:false ? an element is important whether it is ack or not...
-        search = "bi:>=%d " % (self.problems_business_impact) + 'ack:false type:%s' % type
-        return self.search_hosts_and_services(search, user=user, sorter=sorter)
-
-    def get_impacts(self, user, search='is:impact type:all', sorter=worse_first):
-        if "is:impact" not in search:
-            search = "is:impact " + search
-        if "bi:" not in search:
-            search = "bi:>=%d " % (self.problems_business_impact) + search
-        return self.search_hosts_and_services(search, user=user, get_impacts=True, sorter=sorter)
 
     def guess_root_problems(self, user, obj):
         ''' Returns the root problems for a service. '''

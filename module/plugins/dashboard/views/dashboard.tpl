@@ -50,7 +50,7 @@
                <i class="fa fa-4x fa-flash font-darkgrey"></i>
                <span class="badger-title impacts"><i class="fa fa-plus" style="color: #ccc"></i>&nbsp;Impacts</span>
                %overall_state = app.datamgr.get_overall_state(user)
-               <span title="Number of not acknownledged IT problems." class="badger-big background-{{'ok' if overall_state == 0 else 'warning' if overall_state == 1 else 'critical'}}">{{len(app.datamgr.get_impacts(user))}}</span>
+               <span title="Number of not acknownledged Impacts." class="badger-big background-{{'ok' if overall_state == 0 else 'warning' if overall_state == 1 else 'critical'}}">{{len(app.datamgr.search_hosts_and_services(app.PROBLEMS_SEARCH_STRING + ' is:impact', user))}}</span>
             </a></center>
          </td>
       </tr>

@@ -38,7 +38,7 @@ def get_page():
     search = app.get_and_update_search_string_with_problems_filters()
 
     # Impacts
-    impacts = app.datamgr.get_impacts(user, search)
+    impacts = app.datamgr.search_hosts_and_services(search + ' is:impact', user)
 
     # Last problems
     problems = app.datamgr.search_hosts_and_services(search, user)

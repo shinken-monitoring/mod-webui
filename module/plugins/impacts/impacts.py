@@ -33,11 +33,8 @@ app = None
 def show_impacts():
     user = app.request.environ['USER']
 
-    # Apply search filter if exists ...
-    search = app.request.query.get('search', "bi:>=0 type:all isnot:ACK isnot:DOWNTIME")
-    logger.debug("[WebUI-impacts] search parameters '%s'", search)
-
-    items = app.datamgr.get_impacts(user, search)
+    search = app.get_and_update_search_string_with_problems_filters()
+    items = app.datamgr.search_hosts_and_services(search + ' is:impact', user)
 
     impacts = {}
 

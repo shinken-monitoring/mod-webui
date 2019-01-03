@@ -115,7 +115,7 @@ def get_pbs_widget():
 
     items = app.datamgr.search_hosts_and_services("isnot:UP isnot:OK isnot:PENDING "
                                                   "isnot:ACK isnot:DOWNTIME isnot:SOFT bp:>0",
-                                                  user, get_impacts=False)
+                                                  user)
 
     # Sort it now
     items.sort(hst_srv_sort)
@@ -197,7 +197,7 @@ def get_last_errors_widget():
     # Apply search filter if exists ...
     items = app.datamgr.search_hosts_and_services("isnot:UP isnot:OK isnot:PENDING "
                                                   "isnot:ACK isnot:DOWNTIME isnot:SOFT bp:>0",
-                                                  user, get_impacts=False)
+                                                  user)
 
     # Sort it now
     items.sort(last_state_change_earlier)
