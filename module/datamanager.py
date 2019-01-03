@@ -1081,33 +1081,6 @@ class WebUIDataManager(DataManager):
             search = "bi:>=%d " % (self.problems_business_impact) + search
         return self.search_hosts_and_services(search, user=user, get_impacts=True, sorter=sorter)
 
-    def get_problems(self, user, search='isnot:UP isnot:OK isnot:PENDING isnot:ACK isnot:DOWNTIME '
-                                        'is:HARD type:all', get_acknowledged=False, get_downtimed=False,
-                     sorter=worse_first):
-        """What are problems:
-        - hosts/services (type:all) that are not OK/UP in a HARD state (isnot:hUP isnot:hOK)
-        - and that are not PENDING
-        - and which business impact is greater than or equal the minimum business impact (defaults 0)
-        """
-        if "isnot:UP" not in search:
-            search = "isnot:UP " + search
-        if "isnot:OK" not in search:
-            search = "isnot:OK " + search
-        if "isnot:PENDING" not in search:
-            search = "isnot:PENDING " + search
-        if "isnot:ACK" not in search:
-            search = "isnot:ACK " + search
-        if "isnot:DOWNTIME" not in search:
-            search = "isnot:DOWNTIME " + search
-        if "is:HARD" not in search:
-            search = "is:HARD " + search
-        if "bi:" not in search:
-            search = "bi:>=%d " % (self.problems_business_impact) + search
-        logger.debug("Filter is: %s", search)
-        return self.search_hosts_and_services('%s ack:%s downtime:%s'
-                                              % (search, str(get_acknowledged), str(get_downtimed)),
-                                              user=user, sorter=sorter)
-
     def guess_root_problems(self, user, obj):
         ''' Returns the root problems for a service. '''
         if obj.__class__.my_type != 'service':
