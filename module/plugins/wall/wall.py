@@ -35,17 +35,13 @@ app = None
 def get_page():
     user = app.request.environ['USER']
 
-    # Apply search filter if exists ...
-    search = app.request.query.get('search', "isnot:UP isnot:OK isnot:PENDING isnot:UNKNOWN is:HARD type:all",
-                                   "isnot:UP isnot:OK isnot:PENDING "
-                                   "isnot:ACK isnot:DOWNTIME isnot:SOFT bi:>=0 type:all")
-    logger.debug("[WebUI-wall] search parameters '%s'", search)
+    search = app.get_and_update_search_string_with_problems_filters()
 
     # Impacts
     impacts = app.datamgr.get_impacts(user, search)
 
     # Last problems
-    problems = app.datamgr.get_problems(user, search, get_acknowledged=False, get_downtimed=False)
+    problems = app.datamgr.search_hosts_and_services(search, user)
 
     # Get only the last hour problems
     now = time.time()
