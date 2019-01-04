@@ -9,7 +9,7 @@
 <form id="{{ search_id }}-form" class="navbar-form form-inline" method="get" action="{{ search_action }}">
 
    <div class="input-group input-group-sm">
-      <input class="form-control" type="search" id="{{ search_id }}" name="{{ search_id }}" value="{{ app.get_search_string() }}" aria-label="Monitoring items search engine">
+      <input class="form-control" type="search" id="{{ search_id }}" name="{{ search_id }}" value="{{ app.get_search_string() or '' }}" aria-label="Monitoring items search engine">
 
       <div class="input-group-btn">
          <div class="btn-group btn-group-sm">
