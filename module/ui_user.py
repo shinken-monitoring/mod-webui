@@ -62,10 +62,20 @@ class User(Contact):
             name = getattr(self, 'alias', name)
         return name
 
+    def is_anonymous(self):
+        """
+        Is contact an anonymous user?
+        """
+        return self.get_username() == 'anonymous'
+
     def is_administrator(self):
         """
         Is contact an administrator?
         """
+        # Protecting for anonymous access
+        if self.is_anonymous():
+            return False
+
         if isinstance(getattr(self, 'is_admin', '0'), bool):
             return self.is_admin
 
@@ -75,6 +85,10 @@ class User(Contact):
         """
         Is contact allowed to use commands?
         """
+        # Protecting for anonymous access
+        if self.is_anonymous():
+            return False
+
         if self.is_administrator():
             return True
 
