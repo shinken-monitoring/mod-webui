@@ -38,27 +38,27 @@ def show_pref():
 
 
 def get_pref():
-    user = app.request.environ['USER']
+    user = app.request.environ.get('USER', None)
     key = app.request.query.get('key', None)
 
-    if not key:
+    if not key or not user:
         return ''
 
     return app.prefs_module.get_ui_user_preference(user, key)
 
 
 def get_common_pref():
-    user = app.request.environ['USER']
+    user = app.request.environ.get('USER', None)
     key = app.request.query.get('key', None)
 
-    if not key:
+    if not key or not user:
         return ''
 
     return app.prefs_module.get_ui_common_preference(user, key)
 
 
 def save_pref():
-    user = app.request.environ['USER']
+    user = app.request.environ.get('USER', None)
     key = app.request.query.get('key', None)
     value = app.request.query.get('value', None)
 
@@ -72,7 +72,7 @@ def save_pref():
 
 
 def save_common_pref():
-    user = app.request.environ['USER']
+    user = app.request.environ.get('USER', None)
     key = app.request.query.get('key', None)
     value = app.request.query.get('value', None)
 
