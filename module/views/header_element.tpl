@@ -31,8 +31,10 @@
 
    <ul class="nav navbar-nav navbar-top-links navbar-right hidden-xs">
      <!-- Right part ... -->
-     %s = app.datamgr.get_important_services_synthesis(user=user)
-     %h = app.datamgr.get_important_hosts_synthesis(user=user)
+     %s = app.datamgr.get_services_synthesis(user=user)
+     %s_count = s['nb_elts']
+     %h = app.datamgr.get_hosts_synthesis(user=user)
+     %h_count = h['nb_elts']
      <div id="hosts-states-popover-content" class="hidden">
        <table class="table table-invisible table-condensed">
          <tbody>
@@ -94,12 +96,14 @@
       -->
       <!--begin-hosts-states-->
       <li id="overall-hosts-states">
+         %h = app.datamgr.get_important_hosts_synthesis(user=user)
          %state = app.datamgr.get_percentage_hosts_state(user, False)
          %color = 'critical' if state <= app.hosts_states_warning else 'warning' if state <= app.hosts_states_critical else ''
          <a id="hosts-states-popover"
             class="btn btn-ico btn-badge hosts-all" data-count="{{ h['nb_elts'] }}" data-problems="{{ h['nb_problems'] }}"
             href="/all?search=type:host"
-            data-toggle="popover popover-hosts" data-title="Important hosts (bi >= {{ app.important_problems_business_impact }}): {{h['nb_elts']}} hosts, {{h["nb_problems"]}} problems" data-html="true">
+            data-toggle="popover popover-hosts" data-title="Important hosts (bi >= {{ app.important_problems_business_impact }}):
+            <strong>{{h['nb_elts']}}</strong> <em>(out of {{h_count}})</em> hosts, {{h["nb_problems"] if h["nb_problems"] else 'no'}} problems" data-html="true">
             <i class="fa fa-server"></i>
             %if h['nb_problems']:
             <span class="badge badge-{{color}}">{{h["nb_problems"]}}</span>
@@ -114,12 +118,14 @@
       -->
       <!--begin-services-states-->
       <li id="overall-services-states">
+         %s = app.datamgr.get_important_services_synthesis(user=user)
          %state = app.datamgr.get_percentage_service_state(user, False)
          %color = 'critical' if state <= app.services_states_warning else 'warning' if state <= app.services_states_critical else ''
          <a id="services-states-popover"
             class="btn btn-ico btn-badge services-all" data-count="{{ s['nb_elts'] }}" data-problems="{{ s['nb_problems'] }}"
             href="/all?search=type:service"
-            data-toggle="popover popover-services" data-title="Important services (bi >= {{ app.important_problems_business_impact }}): {{s['nb_elts']}} services, {{s["nb_problems"]}} problems" data-html="true">
+            data-toggle="popover popover-services" data-title="Important services (bi >= {{ app.important_problems_business_impact }}):
+            <strong>{{s['nb_elts']}}</strong> <em>(out of {{s_count}})</em> services, {{s["nb_problems"] if s["nb_problems"] else 'no'}} problems" data-html="true">
             <i class="fa fa-hdd-o"></i>
             %if s["nb_problems"]:
             <span class="badge badge-{{color}}">{{s["nb_problems"]}}</span>

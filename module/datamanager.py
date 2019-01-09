@@ -98,7 +98,7 @@ class WebUIDataManager(DataManager):
 
     def get_important_hosts(self, user=None):
         return self.search_hosts_and_services(
-                'type:host bi:>%d' % self.important_problems_business_impact,
+                'type:host bi:>=%d' % self.important_problems_business_impact,
                 user
                 )
 
@@ -211,7 +211,7 @@ class WebUIDataManager(DataManager):
 
     def get_important_services(self, user=None):
         return self.search_hosts_and_services(
-                'type:service bi:>%d' % self.important_problems_business_impact,
+                'type:service bi:>=%d' % self.important_problems_business_impact,
                 user
                 )
 
