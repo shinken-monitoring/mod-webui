@@ -208,8 +208,6 @@ Next check <strong>{{helper.print_duration(pb.next_chk)}}</strong>
    </div>
 
    %end
- </div>
+</div>
 
- <ul class='nav navbar-nav hidden' id='nav-actions'>
-   %include('_problems_actions-navbar.tpl')
- </ul>
+%include('_problems_actions-navbar.tpl')
