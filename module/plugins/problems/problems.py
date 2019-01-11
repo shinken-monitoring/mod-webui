@@ -65,6 +65,8 @@ def get_all():
 
     # We want to limit the number of elements
     step = int(app.request.GET.get('step', elts_per_page))
+    if step != elts_per_page:
+        elts_per_page = step
     start = int(app.request.GET.get('start', '0'))
     end = int(app.request.GET.get('end', start + step))
 
