@@ -1019,11 +1019,10 @@ class Webui_broker(BaseModule, Daemon):
     def get_search_string(self):
         '''Return the search query from get parameters.'''
         search_params = self.request.GET.getall('search')
-
         if search_params:
             return ' '.join(self.request.GET.getall('search'))
-        else:
-            return None
+
+        return ''
 
     def update_search_string_with_default_search(self, requested_search, default_search='', redirect=True):
         search = default_search if requested_search is None else requested_search
