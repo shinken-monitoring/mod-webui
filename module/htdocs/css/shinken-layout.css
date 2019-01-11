@@ -446,8 +446,16 @@ footer nav {
         background: none;
         text-align: center;
     }
+    #nav-actions {
+        position: fixed;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
 
-    #action-menu ul {
+        margin: 0; padding: 0;
+    }
+
+    #nav-actions ul, #action-menu ul {
         list-style: none;
     }
 
@@ -461,7 +469,11 @@ footer nav {
         font-size: 16px;
     }
 
-    #action-menu li a {
+    #nav-actions li {
+        display: inline;
+    }
+
+    #nav-actions li a, #action-menu li a {
         display: inline;
     }
 }

@@ -79,7 +79,7 @@
          may be used by the layout page refresh.
       -->
       <!--begin-framework-states-->
-      <li id="overall-framework-states">
+      <li id="overall-framework-states" class="hidden-sm">
          %state = app.datamgr.get_framework_status()
          %color = 'font-critical' if state == 2 else 'font-warning' if state > 0 else ''
          <a id="framework-state" class="btn btn-ico" href="/system" title="Monitoring framework status">
@@ -128,16 +128,16 @@
       </li>
       <!--end-services-states-->
 
-      <li role="separator" class="divider"></li>
+      <li role="separator" class="divider hidden-sm"></li>
 
-      <li>
+      <li class="hidden-sm">
          <a class="btn btn-ico" href="/dashboard/currently" title="Dashboard currently">
             <i class="fa fa-eye"></i>
          </a>
       </li>
 
       %if refresh:
-      <li>
+      <li class="hidden-sm">
          <button class="btn btn-ico js-toggle-page-refresh">
             <i id="header_loading" class="fa fa-refresh"></i>
          </button>
@@ -145,7 +145,7 @@
       %end
 
       %if app.play_sound:
-      <li class="hidden-xs hidden-sm">
+      <li class="hidden-sm">
          <button class="btn btn-ico js-toggle-sound-alert">
             <i id="sound_alerting" class="fa fa-music"></i>
          </button>
