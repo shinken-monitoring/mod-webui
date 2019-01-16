@@ -72,16 +72,12 @@
 </div>
 
   %if pb.notes:
-  <ul class="list-group">
-  %for note in helper.get_element_notes(pb, popover=False, css='class="list-group-item"'):
-    {{! note}}
-  %end
-  </ul>
+  <p>{{! pb.notes}}</p>
   %end
 
   %if pb.notes_url:
   <ul class="list-inline">
-  %for note in helper.get_element_notes_url(pb, default_title="More notes", default_icon="external-link-square", popover=True, css='class="btn btn-info"'):
+  %for note in helper.get_element_notes_url(pb, icon="external-link-square", css='class="btn btn-info btn-xs"'):
     <li>{{! note}}</li>
   %end
   </ul>
@@ -89,7 +85,7 @@
 
   %if pb.action_url:
   <ul class="list-inline">
-  %for action in helper.get_element_actions_url(pb, default_title="Launch custom action", default_icon="cogs", popover=True, css='class="btn btn-warning"'):
+  %for action in helper.get_element_actions_url(pb, title="", icon="cogs", css='class="btn btn-warning btn-xs"'):
     <li>{{! action}}</li>
   %end
   </ul>
