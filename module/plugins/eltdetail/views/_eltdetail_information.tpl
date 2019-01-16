@@ -415,17 +415,18 @@
           </tbody>
         </table>
 
-        %# Could be displayed here
-        %#<dt>Member of:</dt>
-        %#%if elt_service.servicegroups:
-        %#<dd>
-          %#%for sg in elt_service.servicegroups:
-          %#<a href="/services-group/{{sg.get_name()}}" class="link">{{sg.alias}} ({{sg.get_name()}})</a>
-          %#%end
-          %#</dd>
-        %#%else:
-        %#<dd>(none)</dd>
-        %#%end
+        %if getattr(elt, 'hostgroups', None):
+        <h4 class="page-header">Member of:</h4>
+        <ul class="list-inline">
+          %for hg in elt.hostgroups:
+          <li class="list-inline-item">
+          <a href="/hosts-group/{{hg.get_name()}}" class="link">{{hg.alias}} ({{hg.get_name()}})</a>
+          {{", " if hg != elt.hostgroups[-1] else ""}}
+          </li>
+          %end
+        </ul>
+
+        %end
 
       </div>
       </div>
