@@ -97,7 +97,7 @@ Invalid element name
    %end
 
 
-   %if app.can_action() and elt.is_problem and elt.business_impact > 2 and not elt.problem_has_been_acknowledged:
+   %if app.can_action() and elt.is_problem and elt.business_impact >= app.important_problems_business_impact and not elt.problem_has_been_acknowledged:
    %disabled_ack = '' if not elt.problem_has_been_acknowledged else 'disabled'
    %disabled_fix = '' if elt.event_handler_enabled and elt.event_handler else 'disabled'
    <div class="alert alert-danger">
