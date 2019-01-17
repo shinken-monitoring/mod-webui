@@ -533,7 +533,7 @@ class Helper(object):
             states.append(s.state.lower())
 
         # ok now look at what is worse here
-        order = ['critical', 'warning', 'unknown', 'ok', 'pending']
+        order = ['critical', 'warning', 'unknown', 'unreachable', 'ok', 'pending']
         for o in order:
             if o in states:
                 tree['state'] = o
@@ -590,12 +590,12 @@ class Helper(object):
         list_state = 'expanded'
 
         if path != '/':
-            # If our state is OK, hide our sons
-            if state == 'ok' and (not expanded or len(sons) >= max_sons):
-                display = 'none'
-                img = 'expand.png'
-                icon = 'plus'
-                list_state = 'collapsed'
+            # # If our state is OK, hide our sons
+            # if state == 'ok' and (not expanded or len(sons) >= max_sons):
+            #     display = 'none'
+            #     img = 'expand.png'
+            #     icon = 'plus'
+            #     list_state = 'collapsed'
 
             s += """<a class="toggle-list" data-state="%s" data-target="ag-%s">
             <span class="alert-small alert-%s"> <i class="fa fa-%s"></i> %s&nbsp;</span> </a>""" \
