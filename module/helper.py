@@ -46,6 +46,7 @@ except ImportError:
 from shinken.misc.sorter import hst_srv_sort
 from shinken.misc.perfdata import PerfDatas
 from shinken.macroresolver import MacroResolver
+from shinken.log import logger
 
 
 # pylint: disable=no-self-use
@@ -53,9 +54,15 @@ class Helper(object):
     def __init__(self):
         pass
 
-    # For a unix time return something like
-    # Tue Aug 16 13:56:08 2011
     def print_date(self, t, format='%Y-%m-%d %H:%M:%S'):
+        """
+        For a unix time return something like
+        Tue Aug 16 13:56:08 2011
+
+        :param t:
+        :param format:
+        :return:
+        """
         if t == 0 or t is None:
             return 'N/A'
 
@@ -64,14 +71,21 @@ class Helper(object):
 
         return time.asctime(time.localtime(t))
 
-    # For a time, print something like
-    # 10m 37s  (just duration = True)
-    # N/A if got bogus number (like 1970 or None)
-    # 1h 30m 22s ago (if t < now)
-    # Now (if t == now)
-    # in 1h 30m 22s
-    # Or in 1h 30m (no sec, if we ask only_x_elements=2, 0 means all)
     def print_duration(self, t, just_duration=False, x_elts=0):
+        """
+        For a time, print something like
+        10m 37s  (just duration = True)
+        N/A if got bogus number (like 1970 or None)
+        1h 30m 22s ago (if t < now)
+        Now (if t == now)
+        in 1h 30m 22s
+        Or in 1h 30m (no sec, if we ask only_x_elements=2, 0 means all)
+
+        :param t:
+        :param just_duration:
+        :param x_elts:
+        :return:
+        """
         if t == 0 or t is None:
             return 'N/A'
 
@@ -137,8 +151,15 @@ class Helper(object):
 
         return ' '.join(duration) + ' ago'
 
-    # Prints the duration with the date as title
     def print_duration_and_date(self, t, just_duration=False, x_elts=2):
+        """
+        Prints the duration with the date as title
+
+        :param t:
+        :param just_duration:
+        :param x_elts:
+        :return:
+        """
         return "<span title='%s'>%s</span>" \
                % (self.print_date(t, format="%d %b %Y %H:%M:%S"), self.print_duration(t, just_duration, x_elts=x_elts))
 
@@ -174,9 +195,13 @@ class Helper(object):
 
         return groups
 
-    # Get the small state for host/service icons
-    # and satellites ones
     def get_small_icon_state(self, obj):
+        """
+        Get the small state for host/service icons and satellites ones
+
+        :param obj:
+        :return:
+        """
         if obj.__class__.my_type in ['service', 'host']:
             if obj.state == 'PENDING':
                 return 'unknown'
@@ -204,9 +229,14 @@ class Helper(object):
             return 'ok'
         return 'unknown'
 
-    # Give a business impact as text and stars if need
-    # If text=True, returns text+stars, else returns stars only ...
     def get_business_impact_text(self, business_impact, text=False):
+        """
+        Give a business impact as text and stars if need
+        If text=True, returns text+stars, else returns stars only ...
+        :param business_impact:
+        :param text:
+        :return:
+        """
         txts = {0: 'None', 1: 'Low', 2: 'Normal',
                 3: 'Important', 4: 'Very important', 5: 'Business critical'}
         nb_stars = max(0, business_impact - 2)
@@ -218,8 +248,15 @@ class Helper(object):
             res = stars
         return res
 
-    # Give an enabled/disabled state based on font-awesome with optional title and message
     def get_on_off(self, status=False, title=None, message=''):
+        """
+        Give an enabled/disabled state based on font-awesome with optional title and message
+
+        :param status:
+        :param title:
+        :param message:
+        :return:
+        """
         if not title:
             if status:
                 title = 'Enabled'
@@ -243,8 +280,13 @@ class Helper(object):
         # if not service, host
         return '<a href="/host/%s"> %s </a>' % (obj.get_full_name(), obj.get_full_name())
 
-    # Give only the /service/blabla or /host blabla string, like for buttons inclusion
     def get_link_dest(self, obj):
+        """
+        Give only the /service/blabla or /host blabla string, like for buttons inclusion
+
+        :param obj:
+        :return:
+        """
         return "/%s/%s" % (obj.__class__.my_type, obj.get_full_name())
 
     def get_fa_icon_state(self, obj=None, cls='host', state='UP', disabled=False, label='', use_title=True):
@@ -357,8 +399,15 @@ class Helper(object):
                  label)
 
     # :TODO:maethor:150609: Rewrite this function
-    # Get
     def get_navi(self, total, pos, step=30):
+        """
+        Get the pages navigation HTML widget
+
+        :param total:
+        :param pos:
+        :param step:
+        :return:
+        """
         step = float(step)
         nb_pages = math.ceil(total / step) if step != 0 else 0
         current_page = int(pos / step) if step != 0 else 0
@@ -497,20 +546,35 @@ class Helper(object):
 
         return s
 
-    # We want the html id of an host or a service. It's basically
-    # the full_name with / changed as -- (because in html, / is not valid :) )
     def get_html_id(self, elt):
+        """
+        We want the html id of an host or a service. It's basically
+        the full_name with / changed as -- (because in html, / is not valid :) )
+
+        :param elt:
+        :return:
+        """
         return self.strip_html_id(elt.get_full_name())
 
     def strip_html_id(self, s):
         return s.replace('/', '--').replace(' ', '_').replace('.', '_').replace(':', '_')
 
-    # Make an HTML element identifier
     def make_html_id(self, s):
+        """
+        Make an HTML element identifier
+
+        :param s:
+        :return:
+        """
         return re.sub('[^A-Za-z0-9]', '', s)
 
-    # URI with spaces are BAD, must change them with %20
     def get_uri_name(self, elt):
+        """
+        URI with spaces are BAD, must change them with %20
+
+        :param elt:
+        :return:
+        """
         return elt.get_full_name().replace(' ', '%20')
 
     def get_aggregation_paths(self, p):
