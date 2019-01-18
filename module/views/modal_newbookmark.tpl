@@ -10,6 +10,6 @@
       <input class="form-control input-sm" id="new_bookmark_name" name="bookmark_name" placeholder="..." aria-describedby="help_bookmark_name">
       <span id="help_bookmark_name" class="help-block">Use an identifier to create a bookmark referencing the current applied filters.</span>
     </div>
-    <a class='btn btn-success' action="add-bookmark" data-bookmark_type="user" data-filter=""> <i class="fa fa-save"></i> Save</a>
+    <a class='btn btn-success' action="add-bookmark" data-bookmark_type="user" data-filter=""> <i class="fas fa-save"></i> Save</a>
   </form>
 </div>

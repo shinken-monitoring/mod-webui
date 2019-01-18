@@ -22,7 +22,7 @@
       </div>
 
       <div class="text-center" id="loading-spinner">
-        <h3><i class="fa fa-spinner fa-spin"></i> Loading history data…</h3>
+        <h3><i class="fas fa-spinner fa-spin"></i> Loading history data…</h3>
       </div>
     </div>
   </div>

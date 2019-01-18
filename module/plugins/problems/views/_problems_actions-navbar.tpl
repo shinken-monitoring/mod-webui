@@ -7,18 +7,18 @@
    %if app.can_action():
    <li>
      <button class="btn btn-ico btn-action js-recheck" title="Recheck">
-       <i class="fa fa-refresh"></i>
+       <i class="fas fa-sync"></i>
      </button>
    </li>
    <li>
      <button class="btn btn-ico btn-action js-add-acknowledge" title="Acknowledge">
-       <i class="fa fa-check"></i>
+       <i class="fas fa-check"></i>
      </button>
    </li>
    <li>
      <div class="dropdown" style="display: inline; padding: 0; margin: 0;">
        <button class="btn btn-ico btn-action dropdown-toggle" type="button" id="dropdown-downtime" data-toggle="dropdown" title="Schedule a downtime">
-         <i class="fa fa-clock-o"></i>
+         <i class="fas fa-clock"></i>
        </button>
        <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdown-downtime" style="margin-top: 15px;">
          <li class="dropdown-header">Set a downtime for…</li>
@@ -36,12 +36,12 @@
    </li>
    <li>
      <button class="btn btn-ico btn-action js-try-to-fix" title="Try to fix">
-       <i class="fa fa-magic"></i>
+       <i class="fas fa-magic"></i>
      </button>
    </li>
    <li>
      <button class="btn btn-ico btn-action js-submit-ok" title="Set to OK/UP">
-       <i class="fa fa-share"></i>
+       <i class="fas fa-share"></i>
      </button>
    </li>
    %s = app.datamgr.get_services_synthesis(user=user, elts=all_pbs)
@@ -49,14 +49,14 @@
    %if s and s['nb_ack']:
    <li>
      <button class="btn btn-ico btn-action js-remove-acknowledge" title="Remove all acknowledges">
-       <i class="fa fa-check text-danger"></i>
+       <i class="fas fa-check text-danger"></i>
      </button>
    </li>
    %end
    %if s and s['nb_downtime']:
    <li>
      <button class="btn btn-ico btn-action js-delete-all-downtimes" title="Remove all downtimes">
-       <i class="fa fa-clock-o text-danger"></i>
+       <i class="fas fa-clock text-danger"></i>
      </button>
    </li>
    %end

@@ -114,7 +114,7 @@ function on_page_refresh() {
       var element = $('#inner_availability').data('element');
 
       // Loading indicator ...
-      $("#inner_availability").html('<i class="fa fa-spinner fa-spin fa-3x"></i> Loading availability data ...');
+      $("#inner_availability").html('<i class="fas fa-spinner fa-spin fa-3x"></i> Loading availability data ...');
 
       $("#inner_availability").load('/availability/inner/'+encodeURIComponent(element), function(response, status, xhr) {
          if (status == "error") {
@@ -132,7 +132,7 @@ function on_page_refresh() {
       var element = $('#inner_helpdesk').data('element');
 
       // Loading indicator ...
-      $("#inner_helpdesk").html('<i class="fa fa-spinner fa-spin fa-3x"></i> Loading helpdesk data ...');
+      $("#inner_helpdesk").html('<i class="fas fa-spinner fa-spin fa-3x"></i> Loading helpdesk data ...');
 
       $("#inner_helpdesk").load('/helpdesk/tickets/'+encodeURIComponent(element), function(response, status, xhr) {
          if (status == "error") {

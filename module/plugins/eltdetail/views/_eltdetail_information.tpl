@@ -36,7 +36,7 @@
 
       <div class="row">
       <div class="col-lg-6">
-        <h4 class="page-header"><i class="fa fa-bolt"></i> Last check</h4>
+        <h4 class="page-header"><i class="fas fa-bolt"></i> Last check</h4>
         <table class="table table-condensed table-nowrap">
           <colgroup>
             <col style="width: 40%" />
@@ -94,13 +94,13 @@
         </table>
 
         %if elt.perf_data:
-        <h4 class="page-header"><i class="fa fa-line-chart"></i> Performance data</h4>
+        <h4 class="page-header"><i class="fas fa-chart-line"></i> Performance data</h4>
         <div>
           {{!helper.get_perfdata_table(elt)}}
         </div>
         %end
 
-        <h4 class="page-header"><i class="fa fa-cogs"></i> Checks configuration</h4>
+        <h4 class="page-header"><i class="fas fa-cogs"></i> Checks configuration</h4>
         <table class="table table-condensed">
           <colgroup>
             <col style="width: 40%" />
@@ -211,7 +211,7 @@
         %some_doc = elt.notes or elt.notes_url or elt.action_url or elt.customs and ('_IMPACT' in elt.customs or '_DETAILLEDESC' in elt.customs or '_FIXACTIONS' in elt.customs)
 
         %if some_doc:
-         <h4 class="page-header"><i class="fa fa-question-circle"></i> Documentation</h4>
+         <h4 class="page-header"><i class="fas fa-question-circle"></i> Documentation</h4>
          %if elt.notes or elt.notes_url:
          %if elt.notes:
          <p>{{! elt.notes}}</p>
@@ -253,14 +253,14 @@
         %tags = elt.get_service_tags() if elt_type=='service' else elt.get_host_tags()
         %if tags:
         %tag='stag' if elt_type=='service' else 'htag'
-        <h4 class="page-header"><i class="fa fa-tag"></i> Tags</h4>
+        <h4 class="page-header"><i class="fas fa-tag"></i> Tags</h4>
         <div class="btn-group">
           %for t in sorted(tags):
             <a href="/all?search={{tag}}:{{t}}">
             %if app.tag_as_image:
                <img src="/tag/{{t.lower()}}" alt="{{t.lower()}}" =title="Tag: {{t.lower()}}" style="height: 24px"></img>
             %else:
-               <button class="btn btn-default btn-xs bg-{{elt_type}}"><i class="fa fa-tag"></i> {{t.lower()}}</button>
+               <button class="btn btn-default btn-xs bg-{{elt_type}}"><i class="fas fa-tag"></i> {{t.lower()}}</button>
             %end
             </a>
           %end
@@ -296,7 +296,7 @@
         </table>
         %end
 
-        <h4 class="page-header"><i class="fa fa-arrows-alt-v"></i> Flapping detection</h4>
+        <h4 class="page-header"><i class="fas fa-arrows-alt-v"></i> Flapping detection</h4>
         <table class="table table-condensed">
           <colgroup>
             <col style="width: 40%" />
@@ -332,7 +332,7 @@
         </table>
 
         %if elt.stalking_options and elt.stalking_options[0]:
-        <h4 class="page-header"><i class="fa fa-cogs"></i> Stalking options</h4>
+        <h4 class="page-header"><i class="fas fa-cogs"></i> Stalking options</h4>
         <table class="table table-condensed">
           <colgroup>
             <col style="width: 40%" />
@@ -347,7 +347,7 @@
         </table>
         %end
 
-        <h4 class="page-header"><i class="fa fa-paper-plane"></i> Notifications</h4>
+        <h4 class="page-header"><i class="fas fa-paper-plane"></i> Notifications</h4>
         <table class="table table-condensed">
           <colgroup>
             <col style="width: 40%" />
@@ -445,7 +445,7 @@
         </table>
 
         %if getattr(elt, 'hostgroups', None):
-        <h4 class="page-header"><i class="fa fa-sitemap"></i> Member of:</h4>
+        <h4 class="page-header"><i class="fas fa-sitemap"></i> Member of:</h4>
         <ul class="list-inline">
           %for hg in elt.hostgroups:
           <li class="list-inline-item">

@@ -42,7 +42,7 @@
   <li class="sliding-element"><h3>Parameters</h3></li>
   %if len(params['logs_hosts']) > 0:
   <li class="sliding-element">
-    <a href="/logs/hosts_list" data-toggle="modal" data-target="#modal"><i class="fa fa-gear"></i> Hosts filter: {{len(params['logs_hosts'])}}
+    <a href="/logs/hosts_list" data-toggle="modal" data-target="#modal"><i class="fas fa-gear"></i> Hosts filter: {{len(params['logs_hosts'])}}
     <ul>
     %for log_host in params['logs_hosts']:
       <li class="sliding-element">{{log_host}}</li>
@@ -53,7 +53,7 @@
   %end
   %if len(params['logs_services']) > 0:
   <li class="sliding-element">
-    <a href="/logs/services_list" data-toggle="modal" data-target="#modal"><i class="fa fa-gear"></i> Services filter: 
+    <a href="/logs/services_list" data-toggle="modal" data-target="#modal"><i class="fas fa-gear"></i> Services filter:
     <ul>
     %for log_service in params['logs_services']:
       <li class="sliding-element">{{log_service}}</li>
@@ -64,7 +64,7 @@
   %end
   %if len(params['logs_type']) > 0:
   <li class="sliding-element">
-    <a href="/logs/logs_type_list" data-toggle="modal" data-target="#modal"><i class="fa fa-gear"></i> Logs type filter: 
+    <a href="/logs/logs_type_list" data-toggle="modal" data-target="#modal"><i class="fas fa-gear"></i> Logs type filter:
     <ul>
     %for log_type in params['logs_type']:
       <li class="sliding-element">{{log_type}}</li>
@@ -111,7 +111,7 @@
        <form class="form-inline pull-left" role="form" method="get" action="/logs">
          <div class="form-group">
            <div class="input-group">
-             <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+             <span class="input-group-addon"><i class="fas fa-calendar"></i></span>
              <input type="text" class="form-control" id="dtr_downtime" placeholder="..." />
            </div>
            <input type="hidden" id="range_start" name="range_start" />
@@ -167,17 +167,17 @@
          showWeekNumbers: false,
          opens: 'right',
          },
-         
+
          function(start, end, label) {
             range_start = start; range_end = end;
          }
       );
-    
+
       // Set default date range values
       $('#dtr_downtime').val(range_start.format('YYYY-MM-DD') + ' to ' +  range_end.format('YYYY-MM-DD'));
       $('#range_start').val(range_start.format('X'));
       $('#range_end').val(range_end.format('X'));
-    
+
       // Update dates on apply button ...
       $('#dtr_downtime').on('apply.daterangepicker', function(ev, picker) {
          range_start = picker.startDate; range_end = picker.endDate;

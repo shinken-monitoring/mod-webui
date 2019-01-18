@@ -67,7 +67,8 @@
       ================================================== -->
       <link href="/static/css/bootstrap.min.css?v={{app.app_version}}" rel="stylesheet">
       <!--<link href="/static/css/bootstrap-theme.min.css" rel="stylesheet">-->
-      <link href="/static/css/font-awesome.min.css?v={{app.app_version}}" rel="stylesheet">
+      <!-- <link href="/static/css/fontawesome.min.css?v={{app.app_version}}" rel="stylesheet"> -->
+      <link href="/static/css/font-awesome-all.min.css?v={{app.app_version}}" rel="stylesheet">
       <link href="/static/css/metisMenu.min.css?v={{app.app_version}}" rel="stylesheet">
       <link href="/static/css/sb-admin-2.css?v={{app.app_version}}" rel="stylesheet">
       <link href="/static/css/typeahead.css?v={{app.app_version}}" rel="stylesheet">

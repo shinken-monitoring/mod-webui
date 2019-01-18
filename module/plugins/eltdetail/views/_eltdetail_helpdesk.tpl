@@ -9,7 +9,7 @@
         title="Create a ticket for this {{elt_type}}"
         data-element="{{helper.get_uri_name(elt)}}"
         >
-        <i class="fa fa-medkit"></i> Create a ticket
+        <i class="fas fa-medkit"></i> Create a ticket
       </button>
     </div>
   </div>

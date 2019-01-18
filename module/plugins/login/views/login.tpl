@@ -76,7 +76,7 @@
                      <input class="form-control" placeholder="Password" name="password" type="password"
                            autocomplete="current-password" value="" required>
 
-                     <button class="btn btn-lg btn-success btn-block" type="submit"><i class="fa fa-sign-in"></i> Login</button>
+                     <button class="btn btn-lg btn-success btn-block" type="submit"><i class="fas fa-sign-in"></i> Login</button>
                   </form>
                </div>
             </div>

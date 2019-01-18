@@ -240,7 +240,7 @@ class Helper(object):
         txts = {0: 'None', 1: 'Low', 2: 'Normal',
                 3: 'Important', 4: 'Very important', 5: 'Business critical'}
         nb_stars = max(0, business_impact - 2)
-        stars = '<small style="vertical-align: middle;"><i class="fa fa-star"></i></small>' * nb_stars
+        stars = '<small style="vertical-align: middle;"><i class="fas fa-star"></i></small>' * nb_stars
 
         if text:
             res = "%s %s" % (txts.get(business_impact, 'Unknown'), stars)
@@ -264,9 +264,9 @@ class Helper(object):
                 title = 'Disabled'
 
         if status:
-            return '''<i title="%s" class="fa fa-check font-green">%s</i>''' % (title, message)
+            return '''<i title="%s" class="fas fa-check font-green">%s</i>''' % (title, message)
 
-        return '''<i title="%s" class="fa fa-times font-red">%s</i>''' % (title, message)
+        return '''<i title="%s" class="fas fa-times font-red">%s</i>''' % (title, message)
 
     def get_link(self, obj, short=False):
         if obj.__class__.my_type == 'service':
@@ -320,7 +320,7 @@ class Helper(object):
                 'DOWN': 'server',
                 'UNREACHABLE': 'server',
                 'ACK': 'check',
-                'DOWNTIME': 'clock-o',
+                'DOWNTIME': 'clock',
                 'FLAPPING': 'cog fa-spin',
                 'PENDING': 'server',
                 'UNKNOWN': 'server'
@@ -331,7 +331,7 @@ class Helper(object):
                 'WARNING': 'exclamation',
                 'UNREACHABLE': 'question',
                 'ACK': 'check',
-                'DOWNTIME': 'clock-o',
+                'DOWNTIME': 'clock',
                 'FLAPPING': 'cog fa-spin',
                 'PENDING': 'spinner fa-circle-o-notch',
                 'UNKNOWN': 'question'
@@ -340,11 +340,11 @@ class Helper(object):
 
         cls = obj.__class__.my_type if obj is not None else cls
 
-        back = '''<i class="fa fa-%s fa-stack-2x font-%s"></i>''' \
+        back = '''<i class="fas fa-%s fa-stack-2x font-%s"></i>''' \
                % (icons[cls]['FLAPPING'] if flapping else 'circle',
                   state.lower() if not disabled else 'greyed')
         if flapping:
-            back += '''<i class="fa fa-circle fa-stack-1x font-%s"></i>''' \
+            back += '''<i class="fas fa-circle fa-stack-1x font-%s"></i>''' \
                     % (state.lower() if not disabled else 'greyed')
 
         title = "%s is %s" % (cls, state)
@@ -369,7 +369,7 @@ class Helper(object):
         else:
             icon = icons[cls].get(state, 'UNKNOWN')
 
-        front = '''<i class="fa fa-%s fa-stack-1x %s"></i>''' % (icon, icon_color)
+        front = '''<i class="fas fa-%s fa-stack-1x %s"></i>''' % (icon, icon_color)
 
         if use_title:
             icon_text = '''<span class="fa-stack" %s title="%s">%s%s</span>''' % (icon_style, title, back, front)
@@ -662,7 +662,7 @@ class Helper(object):
             #     list_state = 'collapsed'
 
             s += """<a class="toggle-list" data-state="%s" data-target="ag-%s">
-            <span class="alert-small alert-%s"> <i class="fa fa-%s"></i> %s&nbsp;</span> </a>""" \
+            <span class="alert-small alert-%s"> <i class="fas fa-%s"></i> %s&nbsp;</span> </a>""" \
                  % (list_state, _id, state, icon, path)
 
         s += """<ul name="ag-%s" class="list-group" style="display: %s;">""" % (_id, display)
@@ -741,7 +741,7 @@ class Helper(object):
             # If we are the root, we already got this
             if level != 0:
                 s += '<a class="pull-right toggle-list" data-state="%s" data-target="bp-%s">' \
-                     '<i class="fa fa-%s"></i></a>' % (list_state, self.make_html_id(name), icon)
+                     '<i class="fas fa-%s"></i></a>' % (list_state, self.make_html_id(name), icon)
 
             s += """<ul class="list-group" name="bp-%s" style="display: %s;">""" % (self.make_html_id(name), display)
 
@@ -791,11 +791,11 @@ class Helper(object):
         if contact == '(Nagios Process)':
             name = "Nagios Process"
             title = name
-            s = '<i class="fa fa-server"></i>'
+            s = '<i class="fas fa-server"></i>'
         elif contact == 'Alignak':
             name = "Alignak"
             title = name
-            s = '<i class="fa fa-server"></i>'
+            s = '<i class="fas fa-server"></i>'
         else:
             # pylint: disable=undefined-variable
             name = contact
@@ -842,7 +842,7 @@ class Helper(object):
                 link = 'href="#" '
 
             if icon:
-                icon = '<i class="fa fa-%s"></i>' % icon
+                icon = '<i class="fas fa-%s"></i>' % icon
             else:
                 icon = ''
 

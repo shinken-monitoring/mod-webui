@@ -10,7 +10,7 @@
           title="Delete all the downtimes of this {{elt_type}}"
           data-element="{{helper.get_uri_name(elt)}}"
           >
-          <i class="fa fa-minus"></i> Delete all downtimes
+          <i class="fas fa-minus"></i> Delete all downtimes
         </button>
       </div>
 
@@ -23,7 +23,7 @@
         title="Schedule a downtime for this {{elt_type}}"
         data-element="{{helper.get_uri_name(elt)}}"
         >
-        <i class="fa fa-plus"></i> Schedule a downtime
+        <i class="fas fa-plus"></i> Schedule a downtime
       </button>
       %end
 

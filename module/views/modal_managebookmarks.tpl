@@ -25,22 +25,22 @@
    <ul class="list-group">
       %for b in user_bookmarks:
       <li class="list-group-item" role="presentation">
-         <a role="menuitem" tabindex="-1" href="/all?search={{b['uri']}}"><i class="fa fa-bookmark"></i> {{b['name']}}</a>
-         <button action="delete-bookmark" data-bookmark="{{b['name']}}" data-bookmark_type="user" class="btn btn-xs btn-danger pull-right"><i class="fa fa-minus"></i> Delete</button>
+         <a role="menuitem" tabindex="-1" href="/all?search={{b['uri']}}"><i class="fas fa-bookmark"></i> {{b['name']}}</a>
+         <button action="delete-bookmark" data-bookmark="{{b['name']}}" data-bookmark_type="user" class="btn btn-xs btn-danger pull-right"><i class="fas fa-minus"></i> Delete</button>
          <span class="pull-right">&nbsp;</span>
-         <button action="globalize-bookmark" data-bookmark="{{b['name']}}" data-bookmark_type="user" class="btn btn-xs btn-info pull-right"><i class="fa fa-plus"> Make it global</i></button>
+         <button action="globalize-bookmark" data-bookmark="{{b['name']}}" data-bookmark_type="user" class="btn btn-xs btn-info pull-right"><i class="fas fa-plus"> Make it global</i></button>
       </li>
       %end
    </ul>
    %end
-   
+
    %if common_bookmarks:
    <h4>Global bookmarks</h4>
    <ul class="list-group">
       %for b in common_bookmarks:
       <li class="list-group-item" role="presentation">
-         <a role="menuitem" tabindex="-1" href="/all?search={{b['uri']}}"><i class="fa fa-bookmark"></i> {{b['name']}}</a>
-         <button action="delete-bookmark" data-bookmark="{{b['name']}}" data-bookmark_type="global" class="btn btn-xs btn-danger pull-right"><i class="fa fa-minus"></i> Delete</button>
+         <a role="menuitem" tabindex="-1" href="/all?search={{b['uri']}}"><i class="fas fa-bookmark"></i> {{b['name']}}</a>
+         <button action="delete-bookmark" data-bookmark="{{b['name']}}" data-bookmark_type="global" class="btn btn-xs btn-danger pull-right"><i class="fas fa-minus"></i> Delete</button>
       </li>
       %end
    </ul>

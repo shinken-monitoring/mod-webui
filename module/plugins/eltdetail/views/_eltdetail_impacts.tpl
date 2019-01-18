@@ -3,6 +3,11 @@
     <div class="panel-body">
       <div class="{{'col-lg-6'}} if elt_type =='host' else 'col-lg-12'">
         %displayed_services=False
+        %if elt.got_business_rule:
+        <div class="alert alert-warning"><i class="fas fa-warning"></i> This element is a business rule.</div>
+        {{!helper.print_business_rules(app.datamgr.get_business_parents(user, elt))}}
+        %end
+
         <!-- Show our father dependencies if we got some -->
         %if elt.parent_dependencies:
         <h4>Root cause:</h4>
@@ -45,7 +50,7 @@
       </div>
       %if elt_type=='host':
       <div class="col-lg-6">
-        %if not displayed_services:
+        %if not displayed_services and elt.services:
         <!-- Show our own services  -->
         <h4>My services:</h4>
         <div>

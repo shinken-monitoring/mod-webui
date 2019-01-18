@@ -120,7 +120,7 @@
                %if elt.get_host_tags():
                   %for t in sorted(elt.get_host_tags()):
                   <a href="/all?search=htag:{{t}}">
-                     <button class="btn btn-default btn-xs bg-host"><i class="fa fa-tag"></i> {{t.lower()}}</button>
+                     <button class="btn btn-default btn-xs bg-host"><i class="fas fa-tag"></i> {{t.lower()}}</button>
                   </a>
                   %end
                %else:

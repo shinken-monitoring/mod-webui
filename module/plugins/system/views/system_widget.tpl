@@ -28,7 +28,7 @@
           <tr>
              <td>{{s.get_name()}}</td>
              %if not s.spare:
-             <td><i title="Is not a spare daemon" class="fa fa-check font-green"></i></td>
+             <td><i title="Is not a spare daemon" class="fas fa-check font-green"></i></td>
              %else:
              <td></td>
              <!--<td>{{!helper.get_on_off(status=s.spare)}}</td>-->

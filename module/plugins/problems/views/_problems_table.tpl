@@ -26,10 +26,10 @@
       </td>
       <td class="text-muted" width="20px">
         %if pb.problem_has_been_acknowledged:
-        <i class="fa fa-check" title="Acknowledged"></i><br>
+        <i class="fas fa-check" title="Acknowledged"></i><br>
         %end
         %if pb.in_scheduled_downtime:
-        <i class="fa fa-clock-o" title="In scheduled downtime"></i><br>
+        <i class="fas fa-clock-o" title="In scheduled downtime"></i><br>
         %end
       </td>
       <td width="100%">

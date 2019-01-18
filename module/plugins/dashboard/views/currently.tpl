@@ -455,16 +455,16 @@
                 <li>
                     <a tabindex="0" class="font-darkgrey" role="button" title="Close" href="/dashboard">
                      <span id="back-dashboard" class="fa-stack">
-                         <i class="fa fa-home fa-stack-1x"></i>
-                         <i class="fa fa-ban fa-stack-2x hidden"></i>
+                         <i class="fas fa-home fa-stack-1x"></i>
+                         <i class="fas fa-ban fa-stack-2x hidden"></i>
                      </span>
                     </a>
                 </li>
                 <li>
                     <a tabindex="0" class="font-darkgrey js-fullscreen-request" role="button" title="Go to fullscreen" href="#">
                      <span id="go-fullscreen" class="fa-stack">
-                         <i class="fa fa-desktop fa-stack-1x"></i>
-                         <i class="fa fa-ban fa-stack-2x hidden"></i>
+                         <i class="fas fa-desktop fa-stack-1x"></i>
+                         <i class="fas fa-ban fa-stack-2x hidden"></i>
                      </span>
                     </a>
                 </li>
@@ -472,8 +472,8 @@
                 <li>
                     <a tabindex="0" class="font-darkgrey js-toggle-sound-alert" role="button" title="Sound alerting" href="#">
                      <span id="sound_alerting" class="fa-stack">
-                         <i class="fa fa-music fa-stack-1x"></i>
-                         <i class="fa fa-ban fa-stack-2x text-danger hidden"></i>
+                         <i class="fas fa-music fa-stack-1x"></i>
+                         <i class="fas fa-ban fa-stack-2x text-danger hidden"></i>
                      </span>
                     </a>
                 </li>
@@ -481,8 +481,8 @@
                 <li>
                     <a tabindex="0" class="font-darkgrey" role="button" title="Page refresh toggle and status" href="#">
                      <span id="toggle-refresh" class="fa-stack">
-                         <i class="fa fa-refresh fa-stack-1x"></i>
-                         <i class="fa fa-ban fa-stack-2x hidden"></i>
+                         <i class="fas fa-refresh fa-stack-1x"></i>
+                         <i class="fas fa-ban fa-stack-2x hidden"></i>
                      </span>
                     </a>
                 </li>
@@ -507,7 +507,7 @@
         <div class="col-md-6" id="panel_counters_hosts">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <i class="fa fa-server"></i>
+                    <i class="fas fa-server"></i>
                     <span class="hosts-all" data-count="{{ h['nb_elts'] }}" data-problems="{{ h['nb_problems'] }}">
                         {{h['nb_elts']}} hosts{{! "<em class='font-down'> (%d problems).</em>" % (h['nb_problems']) if h['nb_problems'] else '.'}}
                     </span>
@@ -536,7 +536,7 @@
         <div class="col-md-6" id="panel_counters_services">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <i class="fa fa-cubes"></i>
+                    <i class="fas fa-cubes"></i>
                     <span class="services-all" data-count="{{ s['nb_elts'] }}" data-problems="{{ s['nb_problems'] }}">
                         {{s['nb_elts']}} services{{! "<em class='font-down'> (%d problems).</em>" % (s['nb_problems']) if s['nb_problems'] else '.'}}
                     </span>
@@ -568,7 +568,7 @@
         <div class="col-md-6" id="panel_percentage_hosts">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <i class="fa fa-server"></i>
+                    <i class="fas fa-server"></i>
                     <span class="hosts-all" data-count="{{ h['nb_elts'] }}" data-problems="{{ h['nb_problems'] }}">
                         {{h['nb_elts']}} hosts{{! "<em class='font-down'> (%d problems).</em>" % (h['nb_problems']) if h['nb_problems'] else '.'}}
                     </span>
@@ -589,7 +589,7 @@
                                   <span class="badger-big badger-right font-{{font}}">{{state}}%</span>
                                </div>
 
-                               <i class="fa fa-4x fa-server font-{{font}}"></i>
+                               <i class="fas fa-4x fa-server font-{{font}}"></i>
                                <p class="badger-title font-{{font}}">&nbsp;SLA</p>
 
                             %if not user.is_anonymous():
@@ -634,7 +634,7 @@
         <div class="col-md-6" id="panel_percentage_services">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <i class="fa fa-cubes"></i>
+                    <i class="fas fa-cubes"></i>
                     <span class="services-all" data-count="{{ s['nb_elts'] }}" data-problems="{{ s['nb_problems'] }}">
                         {{s['nb_elts']}} services{{! "<em class='font-down'> (%d problems).</em>" % (s['nb_problems']) if s['nb_problems'] else '.'}}
                     </span>
@@ -655,7 +655,7 @@
                                   <span class="badger-big badger-right font-{{font}}">{{state}}%</span>
                                </div>
 
-                               <i class="fa fa-4x fa-server font-{{font}}"></i>
+                               <i class="fas fa-4x fa-server font-{{font}}"></i>
                                <p class="badger-title font-{{font}}">&nbsp;SLA</p>
 
                             %if not user.is_anonymous():
@@ -703,14 +703,14 @@
         <div class="col-md-6" id="panel_pie_graph_hosts">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <i class="fa fa-pie-chart"></i>
+                    <i class="fas fa-pie-chart"></i>
                     <span class="hosts-all" data-count="{{ h['nb_elts'] }}" data-problems="{{ h['nb_problems'] }}">
                         {{h['nb_elts']}} hosts{{! "<em class='font-down'> (%d problems).</em>" % (h['nb_problems']) if h['nb_problems'] else '.'}}
                     </span>
                     <div class="pull-right">
                         <div class="btn-group">
                             <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
-                                <i class="fa fa-gear fa-fw"></i>
+                                <i class="fas fa-gear fa-fw"></i>
                                 <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu pull-right" role="menu">
@@ -761,14 +761,14 @@
         <div class="col-md-6" id="panel_pie_graph_services">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <i class="fa fa-pie-chart"></i>
+                    <i class="fas fa-pie-chart"></i>
                     <span class="services-all" data-count="{{ s['nb_elts'] }}" data-problems="{{ s['nb_problems'] }}">
                         {{s['nb_elts']}} services{{! "<em class='font-down'> (%d problems).</em>" % (s['nb_problems']) if s['nb_problems'] else '.'}}
                     </span>
                     <div class="pull-right">
                         <div class="btn-group">
                             <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
-                                <i class="fa fa-gear fa-fw"></i>
+                                <i class="fas fa-gear fa-fw"></i>
                                 <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu pull-right" role="menu">
@@ -819,14 +819,14 @@
         <div class="col-md-6" id="panel_line_graph_hosts">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <i class="fa fa-bar-chart"></i>
+                    <i class="fas fa-bar-chart"></i>
                     <span class="hosts-all" data-count="{{ h['nb_elts'] }}" data-problems="{{ h['nb_problems'] }}">
                         {{h['nb_elts']}} hosts{{! "<em class='font-down'> (%d problems).</em>" % (h['nb_problems']) if h['nb_problems'] else '.'}}
                     </span>
                     <div class="pull-right">
                         <div class="btn-group">
                             <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
-                                <i class="fa fa-gear fa-fw"></i>
+                                <i class="fas fa-gear fa-fw"></i>
                                 <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu pull-right" role="menu">
@@ -877,14 +877,14 @@
         <div class="col-md-6" id="panel_line_graph_services">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <i class="fa fa-bar-chart"></i>
+                    <i class="fas fa-bar-chart"></i>
                     <span class="services-all" data-count="{{ s['nb_elts'] }}" data-problems="{{ s['nb_problems'] }}">
                         {{s['nb_elts']}} services{{! "<em class='font-down'> (%d problems).</em>" % (s['nb_problems']) if s['nb_problems'] else '.'}}
                     </span>
                     <div class="pull-right">
                         <div class="btn-group">
                             <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
-                                <i class="fa fa-gear fa-fw"></i>
+                                <i class="fas fa-gear fa-fw"></i>
                                 <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu pull-right" role="menu">

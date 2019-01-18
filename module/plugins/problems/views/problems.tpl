@@ -46,7 +46,7 @@
          {{!helper.get_business_impact_text(business_impact, text=True)}}
        </span>
        <span class="onhover-label">
-         <i class="fa fa-check"></i> Select all {{len(bi_pbs)}} elements
+         <i class="fas fa-check"></i> Select all {{len(bi_pbs)}} elements
        </span>
      </a>
    </h4>
@@ -115,10 +115,10 @@ Next check <strong>{{helper.print_duration(pb.next_chk)}}</strong>
                </td>
                <td class="text-muted">
                  %if pb.problem_has_been_acknowledged:
-                 <i class="fa fa-check" title="Acknowledged"></i><br>
+                 <i class="fas fa-check" title="Acknowledged"></i><br>
                  %end
                  %if pb.in_scheduled_downtime:
-                 <i class="fa fa-clock-o" title="In scheduled downtime"></i><br>
+                 <i class="fas fa-clock-o" title="In scheduled downtime"></i><br>
                  %end
                </td>
                %aka = ''
@@ -149,7 +149,7 @@ Next check <strong>{{helper.print_duration(pb.next_chk)}}</strong>
                   %end
                   <!--:TODO:maethor:170924: -->
                   <!--<div class="pull-right problem-actions">-->
-                    <!--<i class="fa fa-plus"></i>-->
+                    <!--<i class="fas fa-plus"></i>-->
                   <!--</div>-->
                </td>
                <td class="row">
@@ -162,7 +162,7 @@ Next check <strong>{{helper.print_duration(pb.next_chk)}}</strong>
                            data-trigger="hover" data-placement="left"
                            data-item="{{pb.get_full_name()}}"
                            href="{{!helper.get_link_dest(pb)}}#graphs">
-                           <i class="fa fa-line-chart"></i>
+                           <i class="fas fa-line-chart"></i>
                         </a>
                      %end
                      %end

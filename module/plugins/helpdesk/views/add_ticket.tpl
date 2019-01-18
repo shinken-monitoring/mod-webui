@@ -222,7 +222,7 @@
 
        <label class="sr-only" for="dtr_downtime">Downtime date range</label>
        <div class="input-group">
-          <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+          <span class="input-group-addon"><i class="fas fa-calendar"></i></span>
           <input type="text" name="dtr_downtime" id="dtr_downtime" class="form-control" />
        </div>
     </div>

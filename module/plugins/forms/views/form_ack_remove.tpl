@@ -43,6 +43,6 @@
       <textarea name="reason" id="reason" class="form-control" rows="5" placeholder="Comment ...">Acknowledge deleted from WebUI by {{user.get_name()}}.</textarea>
     </div>
 
-    <a href="javascript:submit_local_form();" class="btn btn-danger btn-lg btn-block"> <i class="fa fa-save"></i> Submit</a>
+    <a href="javascript:submit_local_form();" class="btn btn-danger btn-lg btn-block"> <i class="fas fa-save"></i> Submit</a>
   </form>
 </div>

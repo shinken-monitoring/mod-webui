@@ -88,25 +88,25 @@ function refresh_bookmarks(_search_string){
    if (bookmarks.length) {
       $('ul [aria-labelledby="bookmarks_menu"]').append('<li role="presentation" class="dropdown-header"><strong>User bookmarks:</strong></li>');
       $.each(bookmarks, function(idx, bkm){
-         $('ul [aria-labelledby="bookmarks_menu"]').append('<li role="presentation"><a role="menuitem" tabindex="-1" href="/all?search=' + bkm.uri + '"><i class="fa fa-bookmark"></i> ' + bkm.name + '</a></li>');
+         $('ul [aria-labelledby="bookmarks_menu"]').append('<li role="presentation"><a role="menuitem" tabindex="-1" href="/all?search=' + bkm.uri + '"><i class="fas fa-bookmark"></i> ' + bkm.name + '</a></li>');
          if (bkm_logs) console.debug('Display user bookmark:', bkm.name);
       });
    }
    if (bookmarksro.length) {
       $('ul [aria-labelledby="bookmarks_menu"]').append('<li role="presentation" class="dropdown-header"><strong>Global bookmarks:</strong></li>');
       $.each(bookmarksro, function(idx, bkm){
-         $('ul [aria-labelledby="bookmarks_menu"]').append('<li role="presentation"><a role="menuitem" tabindex="-1" href="/all?search=' + bkm.uri + '"><i class="fa fa-bookmark"></i> ' + bkm.name + '</a></li>');
+         $('ul [aria-labelledby="bookmarks_menu"]').append('<li role="presentation"><a role="menuitem" tabindex="-1" href="/all?search=' + bkm.uri + '"><i class="fas fa-bookmark"></i> ' + bkm.name + '</a></li>');
          if (bkm_logs) console.debug('Display global bookmark:', bkm.name);
       });
    }
 
    if (_search_string) {
       $('ul [aria-labelledby="bookmarks_menu"]').append('<li role="presentation" class="divider"></li>');
-      $('ul [aria-labelledby="bookmarks_menu"]').append('<li role="presentation"><a role="menuitem" href="#" action="display-add-bookmark" data-filter="'+_search_string+'"><i class="fa fa-plus"></i> Bookmark the current filter</a></li>');
+      $('ul [aria-labelledby="bookmarks_menu"]').append('<li role="presentation"><a role="menuitem" href="#" action="display-add-bookmark" data-filter="'+_search_string+'"><i class="fas fa-plus"></i> Bookmark the current filter</a></li>');
    }
    if (bookmarks.length || bookmarksro.length) {
       $('ul [aria-labelledby="bookmarks_menu"]').append('<li role="presentation" class="divider"></li>');
-      $('ul [aria-labelledby="bookmarks_menu"]').append('<li role="presentation"><a role="menuitem" href="#" action="manage-bookmarks" data-filter="'+_search_string+'"><i class="fa fa-tags"></i> Manage bookmarks</a></li>');
+      $('ul [aria-labelledby="bookmarks_menu"]').append('<li role="presentation"><a role="menuitem" href="#" action="manage-bookmarks" data-filter="'+_search_string+'"><i class="fas fa-tags"></i> Manage bookmarks</a></li>');
    }
 }
 
@@ -139,7 +139,7 @@ var search_string='';
 $(document).ready(function(){
    search_string = safe_string($('#search').val());
    refresh_bookmarks(search_string);
-   
+
    // Display modal to add a new bookmark ...
    $('body').on("click", '[action="display-add-bookmark"]', function (e, data) {
       search_string = safe_string($(this).data('filter'));
@@ -149,7 +149,7 @@ $(document).ready(function(){
    // Add a new bookmark ...
    $('body').on("click", '[action="add-bookmark"]', function (e, data) {
       var bkm_type = $(this).data('bookmark_type');
-      
+
       var name = safe_string($('#new_bookmark_name').val());
       if (name=='') return;
 
@@ -168,7 +168,7 @@ $(document).ready(function(){
       // Ok we can save bookmarks in our preferences
       declare_bookmark(name, search_string);
       save_bookmarks();
-      
+
       // Refresh the bookmarks HTML
       $('#modal').modal('hide');
       refresh_bookmarks(search_string);
@@ -221,12 +221,12 @@ $(document).ready(function(){
                declare_bookmarksro(bookmark.name, bookmark.uri);
                delete_bookmark(bkm);
                save_bookmarksro();
-            } else { 
+            } else {
                alert('This common bookmark name already exists!');
             }
          }
       }
-      
+
       // Refresh the bookmarks HTML
       $('#modal').modal('hide');
       refresh_bookmarks(search_string);

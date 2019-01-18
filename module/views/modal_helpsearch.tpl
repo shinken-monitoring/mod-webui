@@ -17,7 +17,7 @@
     <li><code>name:www name:server</code> or <code>www server</code> Matches hosts and services with "www" or "server" in their name.</li>
   </ul>
 
-  <p><i class="fa fa-thumbs-up"></i> The name qualifier is optional and may be omitted, as used in the two last examples.</p>
+  <p><i class="fas fa-thumbs-up"></i> The name qualifier is optional and may be omitted, as used in the two last examples.</p>
 
   <p>
     By default, searching for elements will return both hosts and services. However, you can use the type qualifier to restrict search results to hosts or services only.
@@ -78,7 +78,7 @@
     <li><code>stag:mysql</code> Matches services tagged "mysql".</li>
   </ul>
 
-  <p><i class="fa fa-thumbs-up"></i> Obviously, you can't combine htag and stag qualifiers in a search and expect to get results.</p>
+  <p><i class="fas fa-thumbs-up"></i> Obviously, you can't combine htag and stag qualifiers in a search and expect to get results.</p>
 
   <h4>Search by contact group and contact tag</h4>
   <p>Examples:</p>

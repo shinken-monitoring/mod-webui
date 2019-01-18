@@ -43,12 +43,12 @@
          <li class="all_groups list-group-item clearfix {{even}} {{'alert-danger' if h['nb_elts'] == h['nb_down'] and h['nb_elts'] != 0 else ''}}">
             <section class="left">
                <h3>
-                  <a role="menuitem" href="/all?search=type:host"><i class="fa fa-angle-double-down"></i>
+                  <a role="menuitem" href="/all?search=type:host"><i class="fas fa-angle-double-down"></i>
                      All hosts {{!helper.get_business_impact_text(h['bi'])}}
                   </a>
 
                <span class="btn-group pull-right">
-                  <a href="{{app.get_url("HostsGroups")}}" class="btn btn-small switcher quickinfo pull-right" data-original-title='List'> <i class="fa fa-align-justify"></i> </a>
+                  <a href="{{app.get_url("HostsGroups")}}" class="btn btn-small switcher quickinfo pull-right" data-original-title='List'> <i class="fas fa-align-justify"></i> </a>
                </span>
                </h3>
                <div>
@@ -92,7 +92,7 @@
          <td data-column="{{i%6}}" data-worst-state="{{worst_state}}" class="{{bg_colors[worst_state]}}">
             <div>
             <div class="col-sm-6 text-center btn">
-               <a href="hosts-groups?level={{int(group.level)}}"><i class="fa fa-sitemap"></i>&nbsp;{{group.level}}</a>
+               <a href="hosts-groups?level={{int(group.level)}}"><i class="fas fa-sitemap"></i>&nbsp;{{group.level}}</a>
             </div>
 
             %html=''
@@ -105,7 +105,7 @@
                   data-html="true" data-toggle="popover" data-trigger="hover" data-placement="bottom"
                   data-title="Hosts status"
                   data-content='{{!html}}' >
-               <i class="fa fa-server"></i>&nbsp;{{h['nb_elts']}}
+               <i class="fas fa-server"></i>&nbsp;{{h['nb_elts']}}
             </div>
 
             <h5 class="ellipsis" style="display:inline-block">

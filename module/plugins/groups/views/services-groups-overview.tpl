@@ -98,11 +98,11 @@
 
                <section class="col-sm-12 col-xs-12">
                   <div class="btn-group btn-group-justified" role="group" aria-label="Minemap" title="View minemap for all services">
-                     <a class="btn btn-default" href="/minemap?search=type:service"><i class="fa fa-table"></i> <span class="hidden-xs">Minemap</span></a>
+                     <a class="btn btn-default" href="/minemap?search=type:service"><i class="fas fa-table"></i> <span class="hidden-xs">Minemap</span></a>
                   </div>
 
                   <div class="btn-group btn-group-justified" role="group" aria-label="Resources" title="View resources for all services">
-                     <a class="btn btn-default" href="/all?search=type:service"><i class="fa fa-ambulance"></i> <span class="hidden-xs">Resources</span></a>
+                     <a class="btn btn-default" href="/all?search=type:service"><i class="fas fa-ambulance"></i> <span class="hidden-xs">Resources</span></a>
                   </div>
 
                   <ul class="list-group">
@@ -140,11 +140,11 @@
          <li class=" list-group-item clearfix {{even}}">
             <h3>
                %if sub_groups:
-               <a class="btn btn-default btn-xs" href="services-groups?level={{int(level+1)}}&parent={{group.get_name()}}" title="View contained groups"><i class="fa fa-angle-double-down"></i></a>
+               <a class="btn btn-default btn-xs" href="services-groups?level={{int(level+1)}}&parent={{group.get_name()}}" title="View contained groups"><i class="fas fa-angle-double-down"></i></a>
                %end
 
                %if group.has('level') and group.level > 0:
-               <a class="btn btn-default btn-xs" href="services-groups?level={{int(level-1)}}" title="View parent group"><i class="fa fa-angle-double-up"></i></a>
+               <a class="btn btn-default btn-xs" href="services-groups?level={{int(level-1)}}" title="View parent group"><i class="fas fa-angle-double-up"></i></a>
                %end
 
                <span>
@@ -170,11 +170,11 @@
          <li class="group list-group-item clearfix {{'alert-danger' if s['nb_elts'] == s['nb_critical'] and s['nb_elts'] != 0 else ''}} {{even}}">
             <h3>
                %if sub_groups:
-               <a class="btn btn-default btn-xs" href="services-groups?level={{int(level+1)}}&parent={{group.get_name()}}" title="View contained groups"><i class="fa fa-angle-double-down"></i></a>
+               <a class="btn btn-default btn-xs" href="services-groups?level={{int(level+1)}}&parent={{group.get_name()}}" title="View contained groups"><i class="fas fa-angle-double-down"></i></a>
                %end
 
                %if group.has('level') and group.level > 0:
-               <a class="btn btn-default btn-xs" href="services-groups?level={{int(level-1)}}" title="View parent group"><i class="fa fa-angle-double-up"></i></a>
+               <a class="btn btn-default btn-xs" href="services-groups?level={{int(level-1)}}" title="View parent group"><i class="fas fa-angle-double-up"></i></a>
                %end
 
                <a role="menuitem" href="/all?search=type:service sg:{{'"%s"' % group.get_name()}}">
@@ -230,11 +230,11 @@
 
                <section class="col-sm-12 col-xs-12">
                   <div class="btn-group btn-group-justified" role="group" aria-label="Minemap" title="View minemap for this group">
-                     <a class="btn btn-default" href="/minemap?search=type:service sg:{{'"%s"' % group.get_name()}}"><i class="fa fa-table"></i> <span class="hidden-xs">Minemap</span></a>
+                     <a class="btn btn-default" href="/minemap?search=type:service sg:{{'"%s"' % group.get_name()}}"><i class="fas fa-table"></i> <span class="hidden-xs">Minemap</span></a>
                   </div>
 
                   <div class="btn-group btn-group-justified" role="group" aria-label="Resources" title="View resources for this group">
-                     <a class="btn btn-default" href="/all?search=type:service sg:{{'"%s"' % group.get_name()}}"><i class="fa fa-ambulance"></i> <span class="hidden-xs">Resources</span></a>
+                     <a class="btn btn-default" href="/all?search=type:service sg:{{'"%s"' % group.get_name()}}"><i class="fas fa-ambulance"></i> <span class="hidden-xs">Resources</span></a>
                   </div>
 
                   <ul class="list-group">
