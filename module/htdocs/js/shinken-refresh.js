@@ -62,6 +62,7 @@ if (sessionStorage.getItem("refresh_enabled") == '1') {
  * ---------------------------------------------------------------------------
  */
 var processing_refresh = false;
+var nb_refresh = 0;
 function do_refresh(forced){
    if (processing_refresh) {
       if (refresh_logs) console.debug("Avoid simultaneous refreshes ...");
@@ -72,6 +73,15 @@ function do_refresh(forced){
    // Refresh starting indicator ...
    $('#header_loading').addClass('fa-spin');
    processing_refresh = true;
+
+   // Because of mem leak, we avoid to do to much soft refreshes and sometimes we force a full reload
+   if (nb_refresh > 10){
+       if (document.visibilityState == 'hidden'){
+           if (refresh_logs) console.debug("Reloading page: ", document.URL);
+           location.reload();
+       }
+   }
+   nb_refresh += 1;
 
    $.ajax({
      url: document.URL,
