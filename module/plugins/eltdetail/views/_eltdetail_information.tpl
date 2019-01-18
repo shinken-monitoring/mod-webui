@@ -36,7 +36,7 @@
 
       <div class="row">
       <div class="col-lg-6">
-        <h4 class="page-header">Last check</h4>
+        <h4 class="page-header"><i class="fa fa-bolt"></i> Last check</h4>
         <table class="table table-condensed table-nowrap">
           <colgroup>
             <col style="width: 40%" />
@@ -93,29 +93,14 @@
           </tbody>
         </table>
 
-        %if elt.customs and ('_IMPACT' in elt.customs or '_DETAILLEDESC' in elt.customs or '_FIXACTIONS' in elt.customs):
-        <h4 class="page-header"><i class="fa fa-question-circle-o"></i> Documentation</h4>
-        <dl class="dl-horizontal">
-          %if '_DETAILLEDESC' in elt.customs:
-          <dt style="width: 100px;">Description </dt><dd style="margin-left: 120px;"> {{ elt.customs['_DETAILLEDESC'] }}</dd>
-          %end
-          %if '_IMPACT' in elt.customs:
-          <dt style="width: 100px;">Impact </dt><dd style="margin-left: 120px;"> {{ elt.customs['_IMPACT'] }}</dd>
-          %end
-          %if '_FIXACTIONS' in elt.customs:
-          <dt style="width: 100px;">How to fix </dt><dd style="margin-left: 120px;"> {{ elt.customs['_FIXACTIONS'] }}</dd>
-          %end
-        </dl>
-        %end
-
         %if elt.perf_data:
-        <h4 class="page-header">Performance data</h4>
+        <h4 class="page-header"><i class="fa fa-line-chart"></i> Performance data</h4>
         <div>
           {{!helper.get_perfdata_table(elt)}}
         </div>
         %end
 
-        <h4 class="page-header">Checks configuration</h4>
+        <h4 class="page-header"><i class="fa fa-cogs"></i> Checks configuration</h4>
         <table class="table table-condensed">
           <colgroup>
             <col style="width: 40%" />
@@ -223,36 +208,52 @@
       </div>
 
       <div class="col-lg-6">
-        %if elt.notes or elt.notes_url:
-        <h4 class="page-header">Notes</h4>
+        %some_doc = elt.notes or elt.notes_url or elt.action_url or elt.customs and ('_IMPACT' in elt.customs or '_DETAILLEDESC' in elt.customs or '_FIXACTIONS' in elt.customs)
 
-        %if elt.notes:
-        <p>{{! elt.notes}}</p>
-        %end
+        %if some_doc:
+         <h4 class="page-header"><i class="fa fa-question-circle"></i> Documentation</h4>
+         %if elt.notes or elt.notes_url:
+         %if elt.notes:
+         <p>{{! elt.notes}}</p>
+         %end
 
-        %if elt.notes_url:
-        <ul class="list-inline">
-        %for note in helper.get_element_notes_url(elt, icon="external-link-square", css='class="btn btn-info btn-xs"'):
-          <li>{{! note}}</li>
-        %end
-        </ul>
-        %end
-        %end
+         %if elt.notes_url:
+         <ul class="list-inline">
+         %for note in helper.get_element_notes_url(elt, icon="external-link-square", css='class="btn btn-info btn-xs"'):
+         <li>{{! note}}</li>
+         %end
+         </ul>
+         %end
+         %end
 
-        %if elt.action_url:
-        <h4 class="page-header">Actions</h4>
-        <ul class="list-inline">
-        %for action in helper.get_element_actions_url(elt, title="", icon="cogs", css='class="btn btn-warning btn-xs"'):
-          <li>{{! action}}</li>
-        %end
-        </ul>
-        %end
+         %if elt.action_url:
+         <ul class="list-inline">
+         %for action in helper.get_element_actions_url(elt, title="", icon="cogs", css='class="btn btn-warning btn-xs"'):
+         <li>{{! action}}</li>
+         %end
+         </ul>
+         %end
+
+         %if elt.customs and ('_IMPACT' in elt.customs or '_DETAILLEDESC' in elt.customs or '_FIXACTIONS' in elt.customs):
+         <dl class="dl-horizontal">
+          %if '_DETAILLEDESC' in elt.customs:
+          <dt style="width: 100px;">Description </dt><dd style="margin-left: 120px;"> {{ elt.customs['_DETAILLEDESC'] }}</dd>
+          %end
+          %if '_IMPACT' in elt.customs:
+          <dt style="width: 100px;">Impact </dt><dd style="margin-left: 120px;"> {{ elt.customs['_IMPACT'] }}</dd>
+          %end
+          %if '_FIXACTIONS' in elt.customs:
+          <dt style="width: 100px;">How to fix </dt><dd style="margin-left: 120px;"> {{ elt.customs['_FIXACTIONS'] }}</dd>
+          %end
+         </dl>
+         %end
+      %end
 
         %elt_type = elt.__class__.my_type
         %tags = elt.get_service_tags() if elt_type=='service' else elt.get_host_tags()
         %if tags:
         %tag='stag' if elt_type=='service' else 'htag'
-        <h4 class="page-header">Tags</h4>
+        <h4 class="page-header"><i class="fa fa-tag"></i> Tags</h4>
         <div class="btn-group">
           %for t in sorted(tags):
             <a href="/all?search={{tag}}:{{t}}">
@@ -295,7 +296,7 @@
         </table>
         %end
 
-        <h4 class="page-header">Flapping detection</h4>
+        <h4 class="page-header"><i class="fa fa-arrows-alt-v"></i> Flapping detection</h4>
         <table class="table table-condensed">
           <colgroup>
             <col style="width: 40%" />
@@ -331,7 +332,7 @@
         </table>
 
         %if elt.stalking_options and elt.stalking_options[0]:
-        <h4 class="page-header">Stalking options</h4>
+        <h4 class="page-header"><i class="fa fa-cogs"></i> Stalking options</h4>
         <table class="table table-condensed">
           <colgroup>
             <col style="width: 40%" />
@@ -346,7 +347,7 @@
         </table>
         %end
 
-        <h4 class="page-header">Notifications</h4>
+        <h4 class="page-header"><i class="fa fa-paper-plane"></i> Notifications</h4>
         <table class="table table-condensed">
           <colgroup>
             <col style="width: 40%" />
@@ -444,7 +445,7 @@
         </table>
 
         %if getattr(elt, 'hostgroups', None):
-        <h4 class="page-header">Member of:</h4>
+        <h4 class="page-header"><i class="fa fa-sitemap"></i> Member of:</h4>
         <ul class="list-inline">
           %for hg in elt.hostgroups:
           <li class="list-inline-item">
