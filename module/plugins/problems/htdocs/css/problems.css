@@ -128,11 +128,14 @@ tr.selected .item-checkbox,
 }
 
 .eltdetail-action-buttons {
-    text-align: right;
+    text-align: left;
+    border-bottom: 1px solid #e7e7e7;
 }
 
 @media(max-width:768px) {
-    text-align: center;
+    .eltdetail-action-buttons {
+        text-align: center;
+    }
 }
 
 /*

@@ -321,8 +321,14 @@ td .ellipsis > .long-output {
 .navbar-inverse-2 .btn-action,
 .btn-action {
     background: none;
-    /*color: #555;*/
     padding: 6px;
+}
+
+.eltdetail-action-buttons .btn-action {
+    color: #555;
+}
+.eltdetail-action-buttons .btn-action {
+    color: #fff;
 }
 
 .navbar-inverse-2 .navbar-text {

@@ -29,7 +29,10 @@
     <td width="30px" class="text-center" style="vertical-align: middle;">
       %setdefault('comment_icon', 'fa-comment')
       %setdefault('comment_title', 'User comment')
-      %if c.entry_type == 2:
+      %if c.entry_type == 1:
+      %comment_title = 'User'
+      %comment_icon = "fa-comment"
+      %elif c.entry_type == 2:
       %comment_title = 'Downtime'
       %comment_icon = "fa-clock-o"
       %elif c.entry_type == 3:

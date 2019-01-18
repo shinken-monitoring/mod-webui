@@ -26,14 +26,14 @@
         created
         %end
         {{!helper.print_duration_and_date(d.entry_time)}}
-        | 
+        |
         %if not d.is_in_effect:
-        scheduled 
+        scheduled
         %else:
-        started 
+        started
         %end
         {{!helper.print_duration_and_date(d.start_time)}},
-        expires in 
+        expires in
         {{!helper.print_duration_and_date(d.end_time, just_duration=True)}}
       </span>
       <span class="pull-right">
