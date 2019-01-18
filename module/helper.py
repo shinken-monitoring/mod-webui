@@ -792,22 +792,26 @@ class Helper(object):
             name = "Nagios Process"
             title = name
             s = '<i class="fa fa-server"></i>'
+        elif contact == 'Alignak':
+            name = "Alignak"
+            title = name
+            s = '<i class="fa fa-server"></i>'
         else:
             # pylint: disable=undefined-variable
-            # Because unicode...
-            if isinstance(contact, (unicode, str)):
-                name = contact
-                title = name
-            else:
-                name = contact.contact_name
-                title = name
+            name = contact
+            title = name
+            if not isinstance(contact, (unicode, str)):
+                # It is a UI contact
+                name = contact.get_username()
+                title = contact.get_name()
+
             s = '<img src="/avatar/%s?s=%s" class="img-circle">' % (name, size)
 
         if with_name:
             s += '&nbsp;'
-            s += name
+            s += title
 
-        if with_link and contact != '(Nagios Process)':
+        if with_link and contact not in ['(Nagios Process)', 'Alignak']:
             s = '<a href="/contact/%s">%s</a>' % (name, s)
 
         s = '<span class="user-avatar" title="%s">%s</span>' % (title, s)

@@ -193,6 +193,7 @@
       // Configuration for shinken-actions.js
       %user = app.get_user()
       var user='{{ user.alias if hasattr(user, "alias") and user.alias != "none" else user.get_name() }}';
+      var g_user_name='{{ user.get_username() }}';
       var shinken_downtime_fixed='{{ app.shinken_downtime_fixed}}';
       var shinken_downtime_trigger='{{ app.shinken_downtime_trigger }}';
       var shinken_downtime_duration='{{ app.shinken_downtime_duration }}';
