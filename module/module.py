@@ -594,11 +594,12 @@ class Webui_broker(BaseModule, Daemon):
         global ALIGNAK
         logger.debug("[WebUI] Got an external command: %s", e.__dict__)
         if self.alignak:
-            logger.info("Sending command to Alignak: %s", e)
+            logger.info("Sending a command to Alignak")
             req = requests.Session()
             raw_data = req.get("http://localhost:7770/command",
                                params={'command': e.cmd_line})
-            logger.info("Result: %s", raw_data.content)
+            logger.debug("Result: %s", raw_data.content)
+            logger.info("Sent")
         else:
             try:
                 self.from_q.put(e)
