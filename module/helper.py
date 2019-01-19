@@ -333,7 +333,7 @@ class Helper(object):
                 'ACK': 'check',
                 'DOWNTIME': 'clock',
                 'FLAPPING': 'cog fa-spin',
-                'PENDING': 'spinner fa-circle-o-notch',
+                'PENDING': 'spinner fa-circle-notch',
                 'UNKNOWN': 'question'
             }
         }

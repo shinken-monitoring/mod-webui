@@ -327,9 +327,9 @@ td .ellipsis > .long-output {
 .eltdetail-action-buttons .btn-action {
     color: #555;
 }
-.eltdetail-action-buttons .btn-action {
-    color: #fff;
-}
+/*.eltdetail-action-buttons .btn-action {*/
+    /*color: #fff;*/
+/*}*/
 
 .navbar-inverse-2 .navbar-text {
     color: white;

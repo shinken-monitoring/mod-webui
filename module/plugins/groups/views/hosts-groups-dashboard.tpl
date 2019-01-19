@@ -4,13 +4,14 @@
 %helper = app.helper
 %h = app.datamgr.get_hosts_synthesis(user=user)
 
+%view_empty = (getattr(app.modconf, 'plugin.hostgroups.view_empty', '0') == '1')
 
 <div id="hostsgroups">
    <!-- Progress bar -->
    <div class="panel panel-default">
       <div class="panel-body">
-         <div class="pull-left col-sm-2">
-            <span class="pull-right">Total hosts: {{h['nb_elts']}}</span>
+         <div class="pull-left col-sm-2 hidden-sm hidden-xs text-center">
+            {{h['nb_elts']}} hosts
          </div>
          <div class="progress" style="margin-bottom: 0px;">
             <div title="{{h['nb_up']}} hosts Up" class="progress-bar progress-bar-success quickinfo" role="progressbar"

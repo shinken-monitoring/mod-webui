@@ -37,13 +37,13 @@
     <li> <a href="#" class="js-schedule-downtime" title="Schedule a downtime for this {{elt_type}}"
         data-placement="right"
         data-element="{{helper.get_uri_name(elt)}}" >
-        <i class="fas fa-clock-o"></i> <span class="hidden-xs">Schedule a downtime</span>
+        <i class="fas fa-clock"></i> <span class="hidden-xs">Schedule a downtime</span>
     </a> </li>
     %if elt.downtimes:
     <li> <a href="#" class="js-delete-all-downtimes" title="Delete all downtimes for this {{elt_type}}"
         data-placement="right"
         data-element="{{helper.get_uri_name(elt)}}" >
-        <i class="fas fa-clock-o"></i> <span class="hidden-xs">Delete all downtimes</span>
+        <i class="fas fa-clock"></i> <span class="hidden-xs">Delete all downtimes</span>
     </a> </li>
     %end
     %if elt_type=='host' and app.helpdesk_module.is_available():

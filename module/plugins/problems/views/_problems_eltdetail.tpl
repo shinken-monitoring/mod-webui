@@ -1,5 +1,5 @@
 <div class="eltdetail-content">
-  <div class="eltdetail-action-buttons navbar-inverse-2">
+  <div class="eltdetail-action-buttons">
   %if app.can_action():
     <button class="btn btn-lg btn-ico btn-action js-recheck"
       title="Recheck"
@@ -54,7 +54,7 @@
     <a class="btn btn-lg btn-ico btn-action" href="{{!helper.get_link_dest(pb)}}#history title="Element history"><i class="fas fa-th-list"></i></a>
     %end
     %if app.helpdesk_module.is_available():
-    <a class="btn btn-lg btn-ico btn-action" href="{{!helper.get_link_dest(pb)}}#helpdesk title="Element helpdesk"></a>
+    <a class="btn btn-lg btn-ico btn-action" href="{{!helper.get_link_dest(pb)}}#helpdesk title="Element helpdesk"><i class="fas fa-ambulance"></i></a>
     %end
   %end
   </div>
@@ -125,7 +125,7 @@
      %include("_eltdetail_comment_table.tpl", elt=pb, comments=[ c for c in pb.comments if c.entry_time > since])
 
      %if pb.downtimes:
-     <h4 class="page-header"><i class="fas fa-clock-o"></i></i> Downtimes</h4>
+     <h4 class="page-header"><i class="fas fa-clock"></i></i> Downtimes</h4>
      %include("_eltdetail_downtime_table.tpl", downtimes=pb.downtimes)
      %end
   </div>

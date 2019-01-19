@@ -118,7 +118,7 @@ Next check <strong>{{helper.print_duration(pb.next_chk)}}</strong>
                  <i class="fas fa-check" title="Acknowledged"></i><br>
                  %end
                  %if pb.in_scheduled_downtime:
-                 <i class="fas fa-clock-o" title="In scheduled downtime"></i><br>
+                 <i class="fas fa-clock" title="In scheduled downtime"></i><br>
                  %end
                </td>
                %aka = ''

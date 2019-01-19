@@ -58,14 +58,14 @@
            %if 'sms' in log['command_name']:
            %icon = 'fa-mobile'
            %elif 'mail' in log['command_name']:
-           %icon = 'fa-envelope-o'
+           %icon = 'fa-envelope'
            %elif 'slack' in log['command_name']:
            %icon = 'fa-slack'
            %else:
-           %icon = 'fa-bell-o'
+           %icon = 'fa-bell'
            %end
            <td width="40px" class="text-center" style="vertical-align: middle;">
-             <i class="fas fa-bell-o fa-2x font-{{ log['state_type'].lower() }}" title="Notification"></i>
+             <i class="fas fa-bell fa-2x font-{{ log['state_type'].lower() }}" title="Notification"></i>
            </td>
            <td width="100px" class="text-center" style="vertical-align: middle;">
              <strong class="font-{{ log['state_type'].lower() }}">

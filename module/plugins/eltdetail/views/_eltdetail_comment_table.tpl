@@ -34,7 +34,7 @@
       %comment_icon = "fa-comment"
       %elif c.entry_type == 2:
       %comment_title = 'Downtime'
-      %comment_icon = "fa-clock-o"
+      %comment_icon = "fa-clock"
       %elif c.entry_type == 3:
       %comment_title = 'Flapping'
       %comment_icon = "fa-cog"

@@ -43,12 +43,12 @@
                 %end
                 </td>
                 %if s.alive:
-                <td><i title="Is alive" class="glyphicon glyphicon-ok font-green"></i></td>
+                <td><i title="Is alive" class="fas fa-check font-green"></i></td>
                 %else:
-                <td><i title="Is dead!" class="glyphicon glyphicon-ko font-red"></i></td>
+                <td><i title="Is dead!" class="fas fa-times font-red"></i></td>
                 %end
                 %if not s.spare:
-                <td><i title="Is not a spare daemon" class="glyphicon glyphicon-ok font-green"></i></td>
+                <td><i title="Is not a spare daemon" class="fas fa-check font-green"></i></td>
                 %else:
                 <td></td>
                 %end
