@@ -390,17 +390,20 @@ td .ellipsis > .long-output {
 }
 @media (min-width: 768px) {
     #search {
-        width: 170px;
+        /*width: 170px;*/
+        width: calc(100vw - 450px);
     }
 }
 @media (min-width: 992px) {
     #search {
-        width: 360px;
+        /*width: 360px;*/
+        width: calc(100vw - 650px);
     }
 }
 @media (min-width: 1280px) {
     #search {
-        width: 50vw;
+        /*width: 50vw;*/
+        width: calc(100vw - 750px);
     }
 }
 
