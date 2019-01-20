@@ -1138,10 +1138,17 @@ def login_required():
     if request.urlparts.path.startswith('/static'):
         return
     # Nor some specific routes
-    if request.urlparts.path in ['/favicon.ico', '/gotfirstdata', '/user/get_pref', '/user/set_pref',
+    if request.urlparts.path in ['/favicon.ico', '/gotfirstdata',
+                                 '/user/get_pref', '/user/set_pref',
                                  app.get_url("Logout"),
                                  app.get_url("GetLogin"),
                                  app.get_url("SetLogin")]:
+        return
+    # No static route need user authentication...
+    if request.urlparts.path in [app.get_url("Loading")]:
+        if app.rg.initialized:
+            time.sleep(2.0)
+            bottle.redirect(app.get_url("Dashboard"))
         return
 
     logger.debug("[WebUI] login_required for %s, getting user cookie ...", request.urlparts.path)
@@ -1166,8 +1173,13 @@ def login_required():
 
     contact = app.datamgr.get_contact(name=contact_name)
     if not contact:
-        logger.info("[WebUI] contact does not exist: %s", contact_name)
-        bottle.redirect(app.get_url("GetLogin"))
+        # If we got the data from our schedulers, the contact does not exist
+        if app.rg.initialized:
+            logger.info("[WebUI] contact does not exist: %s", contact_name)
+            bottle.redirect(app.get_url("GetLogin"))
+        else:
+            # we did not yet received all data
+            bottle.redirect(app.get_url("Loading"))
 
     user = User.from_contact(contact)
     if app.user_session and app.user_info:

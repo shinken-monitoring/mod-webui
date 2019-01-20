@@ -103,6 +103,9 @@ class Regenerator(object):
         self.inp_servicegroups = {}
         self.inp_contactgroups = {}
 
+        # Not yet initialized at least once
+        self.initialized = False
+
         # Do not ask for full data resent too much
         self.last_need_data_send = time.time()
 
@@ -253,8 +256,8 @@ class Regenerator(object):
                 comment.id = comment.uuid
             comment.persistent = True
 
-    # Now we get all data about an instance, link all this stuff :)
     def all_done_linking(self, inst_id):
+        """Now we get all data about an instance, link all this stuff :)"""
 
         # In a scheduler we are already "linked" so we can skip this
         if self.in_scheduler_mode:
@@ -269,6 +272,11 @@ class Regenerator(object):
         if inst_id not in self.configs.keys():
             logger.warning("Warning: the instance %d is not fully given, bailout", inst_id)
             return
+
+        self.configs[inst_id]['_all_data_received'] = True
+
+        # We consider the regenerator as initilized once a scheduler has finished to push its data!
+        self.initialized = True
 
         # Try to load the in progress list and make them available for
         # finding
@@ -838,6 +846,7 @@ class Regenerator(object):
 
         # And we save the data in the configurations
         data['_timestamp'] = now
+        data['_all_data_received'] = False
         self.configs[c_id] = data
 
         # We should clean all previously added hosts and services

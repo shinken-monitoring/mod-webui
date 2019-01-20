@@ -2,6 +2,8 @@
 %setdefault('alignak', False)
 %setdefault('fmwk', 'Shinken')
 
+%setdefault('auto_refresh', 0)
+
 %if alignak:
 %from alignak.version import VERSION
 %fmwk="Alignak"
@@ -31,6 +33,9 @@
       <meta charset="utf-8">
       <meta http-equiv="X-UA-Compatible" content="IE=edge">
       <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+      %if auto_refresh:
+      <meta http-equiv="refresh" content="{{auto_refresh}}" >
+      %end
       <title>{{title or 'No title'}}</title>
 
       <!--

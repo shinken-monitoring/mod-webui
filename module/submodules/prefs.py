@@ -190,7 +190,7 @@ class MongoDBPreferences(object):
                 return None
 
         if not user:
-            logger.error("[WebUI-MongoDBPreferences]: error get_ui_user_preference, no defined user")
+            # logger.error("[WebUI-MongoDBPreferences]: error get_ui_user_preference, no defined user")
             return None
 
         try:
@@ -222,7 +222,7 @@ class MongoDBPreferences(object):
                 return
 
         if not user:
-            logger.warning("[WebUI-MongoDBPreferences] error set_ui_user_preference, no user!")
+            # logger.warning("[WebUI-MongoDBPreferences] error set_ui_user_preference, no user!")
             return
 
         try:
