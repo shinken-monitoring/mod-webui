@@ -1,7 +1,7 @@
 <a id="action-btn" class="btn" data-toggle="collapse" href="#action-menu">Widgets selector</a>
 <nav id="action-menu" class="collapse navbar navbar-default sidebar dropup" role="navigation">
   <ul class="nav">
-    %for w in app.get_widgets_for('dashboard'):
+    %for w in app.widgets.get('dashboard', []):
     %if not w['deprecated']:
     <li >
       <a href="#"
