@@ -44,7 +44,7 @@ params = {
     'svc_load_name': "load",
     'svc_load_used': "load1|load5|load15",
     'svc_load_uom': "",
-    'svc_cpu_name': "cpu|CPU",
+    'svc_cpu_name': "Cpu|cpu|CPU",
     'svc_cpu_used': "^cpu_all_idle|cpu_all_iowait|cpu_all_usr|cpu_all_nice",
     'svc_cpu_uom': "^%$",
     'svc_dsk_name': "disks|Disks",
@@ -60,8 +60,10 @@ params = {
 
 
 def _findServiceByName(host, service):
+    logger.debug("[WebUI-cvhost], search service %s", service)
     for s in host.services:
         if re.search(service, s.get_name()):
+            logger.debug("[WebUI-cvhost], found!")
             return s
     return None
 
@@ -299,10 +301,10 @@ def get_page(name, type):
         logger.warning("[WebUI-cvhost] configuration file (%s) not available or bad formed: %s",
                        configuration_file, str(exp))
         app.redirect404()
-        return {
-            'app': app, 'config': type,
-            'all_perfs': {}, 'all_states': {}
-        }
+        # return {
+        #     'app': app, 'config': type,
+        #     'all_perfs': {}, 'all_states': {}
+        # }
 
     all_perfs = {}
     all_states = {
