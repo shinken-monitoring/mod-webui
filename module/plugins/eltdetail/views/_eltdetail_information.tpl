@@ -260,7 +260,7 @@
             %if app.tag_as_image:
                <img src="/tag/{{t.lower()}}" alt="{{t.lower()}}" =title="Tag: {{t.lower()}}" style="height: 24px"></img>
             %else:
-               <button class="btn btn-default btn-xs bg-{{elt_type}}"><i class="fas fa-tag"></i> {{t.lower()}}</button>
+               <button class="btn btn-default btn-xs bg-lightgrey"><i class="fas fa-tag"></i> {{t.lower()}}</button>
             %end
             </a>
           %end
