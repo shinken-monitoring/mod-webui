@@ -1,3 +1,5 @@
+%elt_type = elt.__class__.my_type
+
 <div class="tab-pane fade {{_go_active}} {{_go_fadein}}" id="information">
   <div class="panel panel-default" style="border-top:none; border-radius:0;">
     <div class="panel-body">
@@ -151,15 +153,19 @@
               <td>
               </td>
             </tr>
+            %enabled = app.datamgr.get_configuration_parameter('execute_host_checks' if elt_type == 'host' else 'execute_service_checks')
             <tr>
-              <td><strong>Active checks:</strong></td>
+              <td><strong>Active checks:{{enabled}}</strong></td>
               <td>
                 <input type="checkbox" class="js-toggle-parameter"
                 {{'checked' if elt.active_checks_enabled else ''}}
-                {{'readonly' if not app.can_action() else ''}}
+                title="{{'Disable active checks' if elt.active_checks_enabled else 'Enable active checks'}}"
+                {{'disabled' if not (enabled and app.can_action()) else ''}}
                 data-action="toggle_active_checks"
-                data-element="{{helper.get_uri_name(elt)}}"
-                >
+                data-element="{{helper.get_uri_name(elt)}}">
+                %if not enabled:
+                <em>&nbsp;Globally disabled by configuration</em>
+                %end
               </td>
             </tr>
             %if (elt.active_checks_enabled):
@@ -176,21 +182,31 @@
               <td>{{elt.max_check_attempts}}</td>
             </tr>
             %end
+            %enabled = app.datamgr.get_configuration_parameter('accept_passive_host_checks' if elt_type == 'host' else 'accept_passive_service_checks')
             <tr>
               <td><strong>Passive checks:</strong></td>
               <td>
                 <input type="checkbox" class="js-toggle-parameter"
                 {{'checked' if elt.passive_checks_enabled else ''}}
-                {{'readonly' if not app.can_action() else ''}}
+                title="{{'Disable passive checks' if elt.passive_checks_enabled else 'Enable passive checks'}}"
+                {{'disabled' if not (enabled and app.can_action()) else ''}}
                 data-action="toggle_passive_checks"
-                data-element="{{helper.get_uri_name(elt)}}"
-                >
+                data-element="{{helper.get_uri_name(elt)}}">
+                %if not enabled:
+                <em>&nbsp;Globally disabled by configuration</em>
+                %end
               </td>
             </tr>
             %if (elt.passive_checks_enabled):
+            %enabled = app.datamgr.get_configuration_parameter('check_host_freshness' if elt_type == 'host' else 'check_service_freshness')
             <tr>
               <td><strong>Freshness check:</strong></td>
-              <td>{{! helper.get_on_off(elt.check_freshness, 'Is freshness check enabled?')}}</td>
+              <td>
+                {{! helper.get_on_off(elt.check_freshness, 'Is freshness check enabled?')}}
+                %if not enabled:
+                <em>&nbsp;Globally disabled by configuration</em>
+                %end
+              </td>
             </tr>
             %if (elt.check_freshness):
             <tr>
@@ -249,7 +265,6 @@
          %end
       %end
 
-        %elt_type = elt.__class__.my_type
         %tags = elt.get_service_tags() if elt_type=='service' else elt.get_host_tags()
         %if tags:
         %tag='stag' if elt_type=='service' else 'htag'
@@ -275,15 +290,19 @@
             <col style="width: 60%" />
           </colgroup>
           <tbody class="small">
+            %enabled = app.datamgr.get_configuration_parameter('enable_flap_detection')
             <tr>
               <td><strong>Event handler enabled:</strong></td>
               <td>
                 <input type="checkbox" class="js-toggle-parameter"
                 {{'checked' if elt.event_handler_enabled else ''}}
-                {{'readonly' if not app.can_action() else ''}}
+                title="{{'Disable event handler' if elt.event_handler_enabled else 'Enable event handler'}}"
+                {{'disabled' if not (enabled and app.can_action()) else ''}}
                 data-action="toggle_event_handlers"
-                data-element="{{helper.get_uri_name(elt)}}"
-                >
+                data-element="{{helper.get_uri_name(elt)}}">
+                %if not enabled:
+                <em>&nbsp;Globally disabled by configuration</em>
+                %end
               </td>
             </tr>
             <tr>
@@ -303,15 +322,19 @@
             <col style="width: 60%" />
           </colgroup>
           <tbody class="small">
+            %enabled = app.datamgr.get_configuration_parameter('enable_flap_detection')
             <tr>
               <td><strong>Flapping detection:</strong></td>
               <td>
                 <input type="checkbox" class="js-toggle-parameter"
                 {{'checked' if elt.flap_detection_enabled else ''}}
-                {{'readonly' if not app.can_action() else ''}}
+                title="{{'Disable flapping detection' if elt.flap_detection_enabled else 'Enable flapping detection'}}"
+                {{'disabled' if not (enabled and app.can_action()) else ''}}
                 data-action="toggle_flap_detection"
-                data-element="{{helper.get_uri_name(elt)}}"
-                >
+                data-element="{{helper.get_uri_name(elt)}}">
+                %if not enabled:
+                <em>&nbsp;Globally disabled by configuration</em>
+                %end
               </td>
             </tr>
             %if elt.flap_detection_enabled:
@@ -360,15 +383,19 @@
                 {{!helper.get_business_impact_text(elt.business_impact, True)}}
               </td>
             </tr>
+            %enabled = app.datamgr.get_configuration_parameter('enable_notifications')
             <tr>
               <td><strong>Notifications:</strong></td>
               <td>
                 <input type="checkbox" class="js-toggle-parameter"
                 {{'checked' if elt.notifications_enabled else ''}}
-                {{'readonly' if not app.can_action() else ''}}
+                title="{{'Disable notifications' if elt.notifications_enabled else 'Enable notifications'}}"
+                {{'disabled' if not (enabled and app.can_action()) else ''}}
                 data-action="toggle_notifications"
-                data-element="{{helper.get_uri_name(elt)}}"
-                >
+                data-element="{{helper.get_uri_name(elt)}}">
+                %if not enabled:
+                <em>&nbsp;Globally disabled by configuration</em>
+                %end
               </td>
             </tr>
             %if elt.notifications_enabled:
@@ -391,18 +418,18 @@
             <tr>
               %if elt_type=='host':
               %message = {}
-              %# [d,u,r,f,s,n]
               %message['d'] = 'Down'
               %message['u'] = 'Unreachable'
+              %message['x'] = 'Unreachable'
               %message['r'] = 'Recovery'
               %message['f'] = 'Flapping'
               %message['s'] = 'Downtimes'
               %message['n'] = 'None'
               %else:
               %message = {}
-              %# [w,u,c,r,f,s,n]
               %message['w'] = 'Warning'
               %message['u'] = 'Unknown'
+              %message['x'] = 'Unreachable'
               %message['c'] = 'Critical'
               %message['r'] = 'Recovery'
               %message['f'] = 'Flapping'

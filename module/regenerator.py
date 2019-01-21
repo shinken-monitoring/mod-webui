@@ -847,6 +847,23 @@ class Regenerator(object):
         # And we save the data in the configurations
         data['_timestamp'] = now
         data['_all_data_received'] = False
+
+        # Shinken renames some "standard" parameters, restore the common name...
+        if 'notifications_enabled' in data:
+            data['enable_notifications'] = data.pop('notifications_enabled')
+        if 'event_handlers_enabled' in data:
+            data['enable_event_handlers'] = data.pop('event_handlers_enabled')
+        if 'flap_detection_enabled' in data:
+            data['enable_flap_detection'] = data.pop('flap_detection_enabled')
+        if 'active_service_checks_enabled' in data:
+            data['execute_service_checks'] = data.pop('active_service_checks_enabled')
+        if 'active_host_checks_enabled' in data:
+            data['execute_host_checks'] = data.pop('active_host_checks_enabled')
+        if 'passive_service_checks_enabled' in data:
+            data['accept_passive_service_checks'] = data.pop('passive_service_checks_enabled')
+        if 'passive_host_checks_enabled' in data:
+            data['accept_passive_host_checks'] = data.pop('passive_host_checks_enabled')
+
         self.configs[c_id] = data
 
         # We should clean all previously added hosts and services
@@ -1490,7 +1507,7 @@ class Regenerator(object):
 
         h = self.hosts.find_by_name(hname)
         if not h:
-            logger.warning("Got a check result brok for an unknown host: %s", hname)
+            logger.debug("Got a check result brok for an unknown host: %s", hname)
             return
 
         logger.debug("Host check result: %s - %s (%s)", hname, h.state, h.state_type)
@@ -1515,7 +1532,7 @@ class Regenerator(object):
         sdesc = data['service_description']
         s = self.services.find_srv_by_name_and_hostname(hname, sdesc)
         if not s:
-            logger.warning("Got a check result brok for an unknown service: %s/%s", hname, sdesc)
+            logger.debug("Got a check result brok for an unknown service: %s/%s", hname, sdesc)
             return
 
         logger.debug("Service check result: %s/%s - %s (%s)", hname, sdesc, s.state, s.state_type)
