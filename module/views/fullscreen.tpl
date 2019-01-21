@@ -3,6 +3,7 @@
 %setdefault('fmwk', 'Shinken')
 
 %setdefault('auto_refresh', 0)
+%setdefault('css_body', '')
 
 %if alignak:
 %from alignak.version import VERSION
@@ -107,12 +108,12 @@
       %end
    </head>
 
-   <body>
+   <body style="{{css_body if css_body else ''}}">
       <div class="container-fluid">
          <div id="page-wrapper" class="fullscreen">
             <!-- Page content -->
             <section class="content">
-            %include
+               {{!base}}
             </section>
             %#include("footer_element")
          </div>
