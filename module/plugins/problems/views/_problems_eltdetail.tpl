@@ -1,6 +1,6 @@
 <div class="eltdetail-content">
-  <div class="eltdetail-action-buttons">
   %if app.can_action():
+  <div class="eltdetail-action-buttons pull-right">
     <button class="btn btn-lg btn-ico btn-action js-recheck"
       title="Recheck"
       data-element="{{helper.get_uri_name(pb)}}">
@@ -56,8 +56,8 @@
     %if app.helpdesk_module.is_available():
     <a class="btn btn-lg btn-ico btn-action" href="{{!helper.get_link_dest(pb)}}#helpdesk title="Element helpdesk"><i class="fas fa-ambulance"></i></a>
     %end
-  %end
   </div>
+  %end
 
 %some_doc = pb.notes or pb.notes_url or pb.action_url or pb.customs and ('_IMPACT' in pb.customs or '_DETAILLEDESC' in pb.customs or '_FIXACTIONS' in pb.customs)
 <div class="row">
