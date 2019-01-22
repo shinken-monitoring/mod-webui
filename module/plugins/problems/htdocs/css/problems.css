@@ -122,22 +122,34 @@ tr.selected .item-checkbox,
     display: none;
 }
 
-.eltdetail-content {
+.pb_detail-content {
     font-size: 14px;
     padding: 20px;
 }
 
-.eltdetail-action-buttons {
-    text-align: left;
-    border-bottom: 1px solid #e7e7e7;
+.pb_detail-action-buttons {
+    margin-top: -30px;
+    width: 100%;
 }
 
+.pb_detail-action-buttons .btn-action {
+    color: #555;
+}
 @media(max-width:768px) {
-    .eltdetail-action-buttons {
-        text-align: center;
+    .pb_detail-action-buttons {
+        /*text-align: center;*/
     }
 }
 
+.pb_detail-top {
+    margin-top: 10px;
+}
+.pb_detail-bottom-left {
+    margin-top: -10px;
+}
+.pb_detail-bottom-right {
+    margin-top: -10px;
+}
 /*
  * Problems table, responsive table columns
  */
