@@ -4,7 +4,7 @@
 %helper = app.helper
 %h = app.datamgr.get_hosts_synthesis(user=user)
 
-%view_empty = (getattr(app.modconf, 'plugin.hostgroups.view_empty', '0') == '1')
+%hide_empty = (getattr(app.modconf, 'plugin.hostgroups.hide_empty', '0') == '1')
 
 <div id="hostsgroups">
    <!-- Progress bar -->
@@ -48,9 +48,9 @@
                      All hosts {{!helper.get_business_impact_text(h['bi'])}}
                   </a>
 
-               <span class="btn-group pull-right">
-                  <a href="{{app.get_url("HostsGroups")}}" class="btn btn-small switcher quickinfo pull-right" data-original-title='List'> <i class="fas fa-align-justify"></i> </a>
-               </span>
+                  <span class="btn-group pull-right">
+                     <a href="{{app.get_url("HostsGroups")}}" class="btn btn-small switcher quickinfo pull-right" data-original-title='List'> <i class="fas fa-align-justify"></i> </a>
+                  </span>
                </h3>
                <div>
                   %for state in 'up', 'unreachable', 'down', 'pending', 'unknown', 'ack', 'downtime':
@@ -83,6 +83,10 @@
       %for group in hostgroups:
          %hosts = app.datamgr.search_hosts_and_services('type:host hg:'+group.get_name(), user)
          %h = app.datamgr.get_hosts_synthesis(elts=hosts, user=user)
+         %if not hosts and hide_empty:
+         %continue
+         %end
+
          %if (i % 6)==0:
          <tr data-row="{{i}}">
          %end
