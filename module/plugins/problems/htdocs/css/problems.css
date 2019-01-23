@@ -128,28 +128,13 @@ tr.selected .item-checkbox,
 }
 
 .pb_detail-action-buttons {
-    margin-top: -30px;
-    width: 100%;
+    text-align: right;
 }
 
-.pb_detail-action-buttons .btn-action {
-    color: #555;
-}
 @media(max-width:768px) {
-    .pb_detail-action-buttons {
-        /*text-align: center;*/
-    }
+    text-align: center;
 }
 
-.pb_detail-top {
-    margin-top: 10px;
-}
-.pb_detail-bottom-left {
-    margin-top: -10px;
-}
-.pb_detail-bottom-right {
-    margin-top: -10px;
-}
 /*
  * Problems table, responsive table columns
  */
