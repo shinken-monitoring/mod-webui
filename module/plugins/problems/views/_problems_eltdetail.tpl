@@ -21,7 +21,7 @@
          <button class="btn btn-lg btn-ico btn-action dropdown-toggle" type="button" id="dropdown-downtime-{{ helper.get_html_id(pb) }}" data-toggle="dropdown"
            title="Schedule a downtime for this element"
            data-element="{{helper.get_uri_name(pb)}}">
-           <i class="fas fa-clock"></i>
+           <i class="far fa-clock"></i>
          </button>
          <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdown-downtime-{{ helper.get_html_id(pb) }}" style="margin-top: 15px;">
            <li class="dropdown-header">Set a downtime for…</li>
@@ -55,7 +55,7 @@
        <a class="btn btn-lg btn-ico btn-action" href="{{!helper.get_link_dest(pb)}}#graphs" title="Element graphs"><i class="fas fa-chart-line"></i></a>
        %end
        %if app.logs_module.is_available():
-       <a class="btn btn-lg btn-ico btn-action" href="{{!helper.get_link_dest(pb)}}#history title="Element history"><i class="fas fa-th-list"></i></a>
+       <a class="btn btn-lg btn-ico btn-action" href="{{!helper.get_link_dest(pb)}}#history" title="Element history"><i class="fas fa-list"></i></a>
        %end
        %if app.helpdesk_module.is_available():
        <a class="btn btn-lg btn-ico btn-action" href="{{!helper.get_link_dest(pb)}}#helpdesk title="Element helpdesk"><i class="fas fa-ambulance"></i></a>
@@ -131,7 +131,7 @@
         %include("_eltdetail_comment_table.tpl", elt=pb, comments=[ c for c in pb.comments if c.entry_time > since])
 
         %if pb.downtimes:
-        <h4 class="page-header"><i class="fas fa-clock"></i></i> Downtimes</h4>
+        <h4 class="page-header"><i class="far fa-clock"></i></i> Downtimes</h4>
         %include("_eltdetail_downtime_table.tpl", downtimes=pb.downtimes)
         %end
      </div>

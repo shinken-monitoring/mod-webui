@@ -235,7 +235,7 @@
             <li> <a href="{{ app.get_url('System') }}"> <i class="fas fa-fw fa-heartbeat sidebar-icon"></i>
                &nbsp;Status </a> </li>
             %if app.logs_module.is_available():
-            <li> <a href="{{ app.get_url('History') }}"> <i class="fas fa-fw fa-th-list sidebar-icon"></i>
+            <li> <a href="{{ app.get_url('History') }}"> <i class="fas fa-fw fa-list sidebar-icon"></i>
                &nbsp;Logs </a> </li>
             <li> <a href="{{ app.get_url('GlobalStats') }}"> <i class="fas fa-fw fa-bell sidebar-icon"></i>
                &nbsp;Alerts </a> </li>

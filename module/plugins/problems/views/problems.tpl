@@ -56,7 +56,7 @@
 
       <table class="table table-condensed table-hover problems-table">
         <colgroup>
-            <col style="width: 120px;"/>
+            <col style="width: 122px;"/>
             <col style="width: 30px;"/>
             <col class="host-column hidden-sm hidden-xs hidden-md"/>
             <col class="service-column hidden-sm hidden-xs"/>
@@ -106,7 +106,7 @@ Next check <strong>{{helper.print_duration(pb.next_chk)}}</strong>
                          %if pb.state_type == 'HARD':
                          {{!helper.print_duration(pb.last_state_change, just_duration=True, x_elts=2)}}
                          %else:
-                         attempt {{pb.attempt}}/{{pb.max_check_attempts}}
+                         <small>attempt {{pb.attempt}}/{{pb.max_check_attempts}}</small>
                          <!--soft state-->
                          %end
                        <!--</span>-->
@@ -118,7 +118,7 @@ Next check <strong>{{helper.print_duration(pb.next_chk)}}</strong>
                  <i class="fas fa-check" title="Acknowledged"></i><br>
                  %end
                  %if pb.in_scheduled_downtime:
-                 <i class="fas fa-clock" title="In scheduled downtime"></i><br>
+                 <i class="far fa-clock" title="In scheduled downtime"></i><br>
                  %end
                </td>
                %aka = ''
@@ -166,7 +166,7 @@ Next check <strong>{{helper.print_duration(pb.next_chk)}}</strong>
                            data-trigger="hover" data-placement="left"
                            data-item="{{pb.get_full_name()}}"
                            href="{{!helper.get_link_dest(pb)}}#graphs">
-                           <i class="fas fa-line-chart"></i>
+                           <i class="fas fa-chart-line"></i>
                         </a>
                      %end
                      %end

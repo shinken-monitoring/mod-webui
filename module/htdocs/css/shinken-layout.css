@@ -44,6 +44,10 @@ body {
     margin-top:15px;
 }
 
+.page-header .fas {
+    margin-right: 10px;
+}
+
 .breadcrumb {
     margin:0;
 }
@@ -198,13 +202,13 @@ td .ellipsis > .long-output {
   margin: 0;
 }
 
-.fa.fa-striked:after {
+.fas.fa-striked:after {
     position: absolute;
     content: "/";
     font-weight: bold;
-    font-size: 1.7em;
+    font-size: 2em;
     left: 16px;
-    top: 11px;
+    top: 7px;
 }
 
 .navbar-inverse {
@@ -348,8 +352,8 @@ td .ellipsis > .long-output {
 }
 
 
-.navbar-inverse-2 .btn-action .fa,
-.btn-action .fa {
+.navbar-inverse-2 .btn-action .far,
+.btn-action .far {
     font-size: 20px;
     height: 22px;
     width: 22px;
@@ -437,9 +441,10 @@ footer nav {
 #action-menu li a {
     font-size: small;
 }
-#action-menu li .fa {
-    padding: 0 12px;
-    font-size: 12px;
+#action-menu li .fas,
+#action-menu li .far {
+    padding: 1px;
+    margin: 1px;
 }
 @media(max-width:768px) {
     #action-menu {

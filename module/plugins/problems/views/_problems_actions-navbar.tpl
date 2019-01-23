@@ -18,7 +18,7 @@
    <li>
      <div class="dropdown" style="display: inline; padding: 0; margin: 0;">
        <button class="btn btn-ico btn-action dropdown-toggle" type="button" id="dropdown-downtime" data-toggle="dropdown" title="Schedule a downtime">
-         <i class="fas fa-clock"></i>
+         <i class="far fa-clock"></i>
        </button>
        <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdown-downtime" style="margin-top: 15px;">
          <li class="dropdown-header">Set a downtime for…</li>
@@ -56,7 +56,7 @@
    %if s and s['nb_downtime']:
    <li>
      <button class="btn btn-ico btn-action js-delete-all-downtimes" title="Remove all downtimes">
-       <i class="fas fa-clock text-danger"></i>
+       <i class="far fa-clock text-danger"></i>
      </button>
    </li>
    %end
