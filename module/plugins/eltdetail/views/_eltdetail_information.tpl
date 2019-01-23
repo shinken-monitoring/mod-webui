@@ -4,7 +4,8 @@
   <div class="panel panel-default" style="border-top:none; border-radius:0;">
     <div class="panel-body">
 
-      <div class="row">
+      <div class="col-lg-6">
+
         <div class="status-lead" style="margin-left: 10px; margin-top: 20px;">
           <div style="display: table-cell; vertical-align: middle; ">
             {{!helper.get_fa_icon_state(elt, use_title=False)}}
@@ -34,10 +35,7 @@
             <samp>{{! elt.output}}</samp>
           </div>
         </div>
-      </div>
 
-      <div class="row">
-      <div class="col-lg-6">
         <h4 class="page-header"><i class="fas fa-bolt"></i> Last check</h4>
         <table class="table table-condensed table-nowrap">
           <colgroup>
@@ -227,147 +225,42 @@
         %some_doc = elt.notes or elt.notes_url or elt.action_url or elt.customs and ('_IMPACT' in elt.customs or '_DETAILLEDESC' in elt.customs or '_FIXACTIONS' in elt.customs)
 
         %if some_doc:
-         <h4 class="page-header"><i class="fas fa-question-circle"></i> Documentation</h4>
-         %if elt.notes or elt.notes_url:
-         %if elt.notes:
-         <p>{{! elt.notes}}</p>
-         %end
-
-         %if elt.notes_url:
-         <ul class="list-inline">
-         %for note in helper.get_element_notes_url(elt, icon="external-link-square", css='class="btn btn-info btn-xs"'):
-         <li>{{! note}}</li>
-         %end
-         </ul>
-         %end
-         %end
-
-         %if elt.action_url:
-         <ul class="list-inline">
-         %for action in helper.get_element_actions_url(elt, title="", icon="cogs", css='class="btn btn-warning btn-xs"'):
-         <li>{{! action}}</li>
-         %end
-         </ul>
-         %end
-
-         %if elt.customs and ('_IMPACT' in elt.customs or '_DETAILLEDESC' in elt.customs or '_FIXACTIONS' in elt.customs):
-         <dl class="dl-horizontal">
-          %if '_DETAILLEDESC' in elt.customs:
-          <dt style="width: 100px;">Description </dt><dd style="margin-left: 120px;"> {{ elt.customs['_DETAILLEDESC'] }}</dd>
-          %end
-          %if '_IMPACT' in elt.customs:
-          <dt style="width: 100px;">Impact </dt><dd style="margin-left: 120px;"> {{ elt.customs['_IMPACT'] }}</dd>
-          %end
-          %if '_FIXACTIONS' in elt.customs:
-          <dt style="width: 100px;">How to fix </dt><dd style="margin-left: 120px;"> {{ elt.customs['_FIXACTIONS'] }}</dd>
-          %end
-         </dl>
-         %end
-      %end
-
-        %tags = elt.get_service_tags() if elt_type=='service' else elt.get_host_tags()
-        %if tags:
-        %tag='stag' if elt_type=='service' else 'htag'
-        <h4 class="page-header"><i class="fas fa-tag"></i> Tags</h4>
-        <div class="btn-group">
-          %for t in sorted(tags):
-            <a href="/all?search={{tag}}:{{t}}">
-            %if app.tag_as_image:
-               <img src="/tag/{{t.lower()}}" alt="{{t.lower()}}" =title="Tag: {{t.lower()}}" style="height: 24px"></img>
-            %else:
-               <button class="btn btn-default btn-xs bg-lightgrey"><i class="fas fa-tag"></i> {{t.lower()}}</button>
+          <h4 class="page-header"><i class="fas fa-question-circle"></i> Documentation</h4>
+          %if elt.notes or elt.notes_url:
+            %if elt.notes:
+            <p>{{! elt.notes}}</p>
             %end
-            </a>
-          %end
-        </div>
-        %end
 
-        %if elt.event_handler:
-        <h4 class="page-header">Event handler</h4>
-        <table class="table table-condensed">
-          <colgroup>
-            <col style="width: 40%" />
-            <col style="width: 60%" />
-          </colgroup>
-          <tbody class="small">
-            %enabled = app.datamgr.get_configuration_parameter('enable_flap_detection')
-            <tr>
-              <td><strong>Event handler enabled:</strong></td>
-              <td>
-                <input type="checkbox" class="js-toggle-parameter"
-                {{'checked' if elt.event_handler_enabled else ''}}
-                title="{{'Disable event handler' if elt.event_handler_enabled else 'Enable event handler'}}"
-                {{'disabled' if not (enabled and app.can_action()) else ''}}
-                data-action="toggle_event_handlers"
-                data-element="{{helper.get_uri_name(elt)}}">
-                %if not enabled:
-                <em>&nbsp;Globally disabled by configuration</em>
-                %end
-              </td>
-            </tr>
-            <tr>
-              <td><strong>Event handler:</strong></td>
-              <td>
-                <a href="/commands#{{elt.event_handler.get_name()}}">{{ elt.event_handler.get_name() }}</a>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        %end
-
-        <h4 class="page-header"><i class="fas fa-arrows-alt-v"></i> Flapping detection</h4>
-        <table class="table table-condensed">
-          <colgroup>
-            <col style="width: 40%" />
-            <col style="width: 60%" />
-          </colgroup>
-          <tbody class="small">
-            %enabled = app.datamgr.get_configuration_parameter('enable_flap_detection')
-            <tr>
-              <td><strong>Flapping detection:</strong></td>
-              <td>
-                <input type="checkbox" class="js-toggle-parameter"
-                {{'checked' if elt.flap_detection_enabled else ''}}
-                title="{{'Disable flapping detection' if elt.flap_detection_enabled else 'Enable flapping detection'}}"
-                {{'disabled' if not (enabled and app.can_action()) else ''}}
-                data-action="toggle_flap_detection"
-                data-element="{{helper.get_uri_name(elt)}}">
-                %if not enabled:
-                <em>&nbsp;Globally disabled by configuration</em>
-                %end
-              </td>
-            </tr>
-            %if elt.flap_detection_enabled:
-            <tr>
-              <td><strong>Options:</strong></td>
-              <td>{{', '.join(elt.flap_detection_options)}}</td>
-            </tr>
-            <tr>
-              <td><strong>Low threshold:</strong></td>
-              <td>{{elt.low_flap_threshold}}</td>
-            </tr>
-            <tr>
-              <td><strong>High threshold:</strong></td>
-              <td>{{elt.high_flap_threshold}}</td>
-            </tr>
+            %if elt.notes_url:
+              <ul class="list-inline">
+              %for note in helper.get_element_notes_url(elt, icon="external-link-square", css='class="btn btn-info btn-xs"'):
+              <li>{{! note}}</li>
+              %end
+              </ul>
             %end
-          </tbody>
-        </table>
+          %end
 
-        %if elt.stalking_options and elt.stalking_options[0]:
-        <h4 class="page-header"><i class="fas fa-cogs"></i> Stalking options</h4>
-        <table class="table table-condensed">
-          <colgroup>
-            <col style="width: 40%" />
-            <col style="width: 60%" />
-          </colgroup>
-          <tbody class="small">
-            <tr>
-              <td><strong>Options:</strong></td>
-              <td>{{', '.join(elt.stalking_options)}}</td>
-            </tr>
-          </tbody>
-        </table>
+          %if elt.action_url:
+            <ul class="list-inline">
+            %for action in helper.get_element_actions_url(elt, title="", icon="cogs", css='class="btn btn-warning btn-xs"'):
+            <li>{{! action}}</li>
+            %end
+            </ul>
+          %end
+
+          %if elt.customs and ('_IMPACT' in elt.customs or '_DETAILLEDESC' in elt.customs or '_FIXACTIONS' in elt.customs):
+          <dl class="dl-horizontal">
+           %if '_DETAILLEDESC' in elt.customs:
+           <dt style="width: 100px;">Description </dt><dd style="margin-left: 120px;"> {{ elt.customs['_DETAILLEDESC'] }}</dd>
+           %end
+           %if '_IMPACT' in elt.customs:
+           <dt style="width: 100px;">Impact </dt><dd style="margin-left: 120px;"> {{ elt.customs['_IMPACT'] }}</dd>
+           %end
+           %if '_FIXACTIONS' in elt.customs:
+           <dt style="width: 100px;">How to fix </dt><dd style="margin-left: 120px;"> {{ elt.customs['_FIXACTIONS'] }}</dd>
+           %end
+          </dl>
+          %end
         %end
 
         <h4 class="page-header"><i class="fas fa-paper-plane"></i> Notifications</h4>
@@ -471,20 +364,122 @@
           </tbody>
         </table>
 
-        %if getattr(elt, 'hostgroups', None):
-        <h4 class="page-header"><i class="fas fa-sitemap"></i> Member of:</h4>
-        <ul class="list-inline">
-          %for hg in elt.hostgroups:
-          <li class="list-inline-item">
-          <a href="/hosts-group/{{hg.get_name()}}" class="link">{{hg.alias}} ({{hg.get_name()}})</a>
-          {{", " if hg != elt.hostgroups[-1] else ""}}
-          </li>
+        %if elt.event_handler:
+        <h4 class="page-header">Event handler</h4>
+        <table class="table table-condensed">
+          <colgroup>
+            <col style="width: 40%" />
+            <col style="width: 60%" />
+          </colgroup>
+          <tbody class="small">
+            %enabled = app.datamgr.get_configuration_parameter('enable_flap_detection')
+            <tr>
+              <td><strong>Event handler enabled:</strong></td>
+              <td>
+                <input type="checkbox" class="js-toggle-parameter"
+                {{'checked' if elt.event_handler_enabled else ''}}
+                title="{{'Disable event handler' if elt.event_handler_enabled else 'Enable event handler'}}"
+                {{'disabled' if not (enabled and app.can_action()) else ''}}
+                data-action="toggle_event_handlers"
+                data-element="{{helper.get_uri_name(elt)}}">
+                %if not enabled:
+                <em>&nbsp;Globally disabled by configuration</em>
+                %end
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Event handler:</strong></td>
+              <td>
+                <a href="/commands#{{elt.event_handler.get_name()}}">{{ elt.event_handler.get_name() }}</a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        %end
+
+        <h4 class="page-header"><i class="fas fa-arrows-alt-v"></i> Flapping detection</h4>
+        <table class="table table-condensed">
+          <colgroup>
+            <col style="width: 40%" />
+            <col style="width: 60%" />
+          </colgroup>
+          <tbody class="small">
+            %enabled = app.datamgr.get_configuration_parameter('enable_flap_detection')
+            <tr>
+              <td><strong>Flapping detection:</strong></td>
+              <td>
+                <input type="checkbox" class="js-toggle-parameter"
+                {{'checked' if elt.flap_detection_enabled else ''}}
+                title="{{'Disable flapping detection' if elt.flap_detection_enabled else 'Enable flapping detection'}}"
+                {{'disabled' if not (enabled and app.can_action()) else ''}}
+                data-action="toggle_flap_detection"
+                data-element="{{helper.get_uri_name(elt)}}">
+                %if not enabled:
+                <em>&nbsp;Globally disabled by configuration</em>
+                %end
+              </td>
+            </tr>
+            %if elt.flap_detection_enabled:
+            <tr>
+              <td><strong>Options:</strong></td>
+              <td>{{', '.join(elt.flap_detection_options)}}</td>
+            </tr>
+            <tr>
+              <td><strong>Low threshold:</strong></td>
+              <td>{{elt.low_flap_threshold}}</td>
+            </tr>
+            <tr>
+              <td><strong>High threshold:</strong></td>
+              <td>{{elt.high_flap_threshold}}</td>
+            </tr>
+            %end
+          </tbody>
+        </table>
+
+        %if elt.stalking_options and elt.stalking_options[0]:
+        <h4 class="page-header"><i class="fas fa-cogs"></i> Stalking options</h4>
+        <table class="table table-condensed">
+          <colgroup>
+            <col style="width: 40%" />
+            <col style="width: 60%" />
+          </colgroup>
+          <tbody class="small">
+            <tr>
+              <td><strong>Options:</strong></td>
+              <td>{{', '.join(elt.stalking_options)}}</td>
+            </tr>
+          </tbody>
+        </table>
+        %end
+        %tags = elt.get_service_tags() if elt_type=='service' else elt.get_host_tags()
+        %if tags:
+        %tag='stag' if elt_type=='service' else 'htag'
+        <h4 class="page-header"><i class="fas fa-tag"></i> Tags</h4>
+        <ul class="list-inline" style="line-height: 2;">
+        %for t in sorted(tags):
+        <li class="list-inline-item">
+          %if app.tag_as_image:
+          <a href="/all?search={{tag}}:{{t}}"><img src="/tag/{{t.lower()}}" alt="{{t.lower()}}" title="Tag: {{t.lower()}}" style="height: 24px"></img></a>
+          %else:
+          <a href="/all?search={{tag}}:{{t}}" class="btn btn-xs btn-default">{{t.lower()}}</a>
           %end
+        </li>
+        %end
+        </ul>
+        %end
+
+        %if getattr(elt, 'hostgroups', None):
+        <h4 class="page-header"><i class="fas fa-sitemap"></i> Hostgroups</h4>
+        <ul class="list-inline" style="line-height: 2;">
+        %for hg in elt.hostgroups:
+        <li class="list-inline-item">
+          <a href="/hosts-group/{{hg.get_name()}}" class="btn btn-xs btn-default">{{hg.get_name()}}{{" (%s)" % hg.alias if hg.alias != hg.get_name() else ""}}</a>
+        </li>
+        %end
         </ul>
 
         %end
 
-      </div>
       </div>
     </div>
   </div>

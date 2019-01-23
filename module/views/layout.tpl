@@ -113,7 +113,7 @@
                   %if navi:
                   %include("pagination_element", navi=navi, page=page, elts_per_page=elts_per_page, display_steps_form=True, div_class="pull-right hidden-xs", drop="dropdown")
                   %end
-                  <h3 class="page-header hidden-xs">
+                  <h3 class="page-header hidden-xs" style="margin-top: 10px;">
                     <ol class="breadcrumb hidden-xs">
                       %if not breadcrumb:
                       <li class="active">{{title or 'No title'}}</li>
