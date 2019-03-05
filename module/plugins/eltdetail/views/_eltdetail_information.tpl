@@ -153,7 +153,7 @@
             </tr>
             %enabled = app.datamgr.get_configuration_parameter('execute_host_checks' if elt_type == 'host' else 'execute_service_checks')
             <tr>
-              <td><strong>Active checks:{{enabled}}</strong></td>
+              <td><strong>Active checks:</strong></td>
               <td>
                 <input type="checkbox" class="js-toggle-parameter"
                 {{'checked' if elt.active_checks_enabled else ''}}

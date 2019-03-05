@@ -41,16 +41,18 @@ def load_config(app):
     logger.info("[WebUI-worldmap] loading configuration ...")
 
     properties = {
-        'worldmap-zoom': '{"default_zoom": 16}',
-        'worldmap-lng': '{"default_lng": 5.080625}',
-        'worldmap-lat': '{"default_lat": 45.054148}',
-        'worldmap-hosts': '{"hosts_level": [1,2,3,4,5]}',
-        'worldmap-services': '{"services_level": [1,2,3,4,5]}',
-        'worldmap-layer': '{"layer": ""}',
+        'worldmap-zoom': 16,
+        'worldmap-lng': 2.293858,
+        'worldmap-lat': 48.858674,
+        'worldmap-hosts_level': [0, 1, 2, 3, 4, 5],
+        'worldmap-services_level': [0, 1, 2, 3, 4, 5]
     }
 
     for p, default in properties.items():
-        params.update(json.loads(app.prefs_module.get_ui_common_preference(p, default)))
+        try:
+            params.update({p : app.prefs_module.get_ui_common_preference(p, default)})
+        except Exception as exp:
+            logger.info("[WebUI-worldmap] error, params: %s / %s", p, exp)
 
     logger.info("[WebUI-worldmap] configuration loaded.")
     logger.info("[WebUI-worldmap] configuration, params: %s", params)
@@ -71,7 +73,17 @@ def search_hosts_with_coordinates(search, user):
         if h.business_impact not in params['hosts_level']:
             continue
 
+        if '_GPS' not in h.customs and ('_LOC_LAT' not in h.customs and '_LOC_LNG' not in h.customs):
+            continue
+
         try:
+            if '_GPS' in h.customs:
+                gps = h.customs.get('_GPS')
+                gps = gps.split(',')
+
+                h.customs['_LOC_LAT'] = float(gps[0])
+                h.customs['_LOC_LNG'] = float(gps[1])
+
             _lat = float(h.customs.get('_LOC_LAT', None))
             _lng = float(h.customs.get('_LOC_LNG', None))
             # lat/long must be between -180/180

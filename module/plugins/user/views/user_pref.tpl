@@ -43,6 +43,14 @@
                         <td><strong>Minimum business impact:</strong></td>
                         <td>{{!helper.get_business_impact_text(user.min_business_impact, text=True)}}</td>
                      </tr>
+                     %# Raise an alert if the user has a BI defined and this BI is lower than the UI's one
+                     %if user.min_business_impact and user.min_business_impact < app.problems_business_impact:
+                     <tr>
+                        <td colspan="2"><span class="alert-warning">
+                        The UI is configured for a minimum business impact ({{! helper.get_business_impact_text(app.problems_business_impact, text=True) }}). You may not view some hosts/services that you are searching for...
+                        </span></td>
+                     </tr>
+                     %end
 
                      <tr>
                         <td colspan="2"><h3>User attributes:</h3></td>
@@ -53,15 +61,36 @@
                      %end
                      <tr>
                         <td><strong>{{attr}}:</strong></td>
+                        %if value or (isinstance(value, list) and value[0]):
                         <td>{{value}}</td>
+                        %else:
+                        <td>-</td>
+                        %end
                      </tr>
                      %end
 
                   %if app.prefs_module.is_available():
                      <tr>
+                        <td colspan="2"><h3>Common preferences:</h3></td>
+                     </tr>
+                     %common_preferences = app.prefs_module.get_ui_common_preference(None)
+                     %if common_preferences is None:
+                     %common_preferences = []
+                     %end
+                     %for preference in sorted(common_preferences):
+                     %if preference in ['_id', 'uuid']:
+                     %continue
+                     %end
+                     <tr>
+                        <td>{{preference}}</td>
+                        <td>{{app.prefs_module.get_ui_common_preference(preference)}}</td>
+                     </tr>
+                     %end
+
+                     <tr>
                         <td colspan="2"><h3>User preferences:</h3></td>
                      </tr>
-                     %for preference in app.prefs_module.get_ui_user_preference(user, default=[]):
+                     %for preference in sorted(app.prefs_module.get_ui_user_preference(user, default=[])):
                      %if preference in ['_id', 'uuid']:
                      %continue
                      %end

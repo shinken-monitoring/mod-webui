@@ -821,6 +821,162 @@ class Helper(object):
 
         return s
 
+    def get_event_icon(self, event, disabled=False, label='', use_title=True):
+        '''
+            Get an Html formatted string to display a monitoring event
+
+            If disabled is True, the font used is greyed
+
+            If label is empty, only an icon is returned
+            If label is set as 'state', the icon title is used as text
+            Else, the content of label is used as text near the icon.
+
+            If use_title is False, do not include title attribute.
+
+            Returns a span element containing a Font Awesome icon that depicts
+           consistently the event and its state
+        '''
+        cls = event.get('type', 'unknown').lower()
+        state = event.get('state', 'n/a').upper()
+        state_type = event.get('state_type', 'n/a').upper()
+        hard = (state_type == 'HARD')
+
+        # Icons depending upon element and real state ...
+        # ; History
+        icons = {
+            "unknown": {
+                "class": "history_Unknown",
+                "text": "Unknown event",
+                "icon": "question"
+            },
+
+            "retention_load": {
+                "class": "history_RetentionLoad",
+                "text": "Retention load",
+                "icon": "save"
+            },
+            "retention_save": {
+                "class": "history_RetentionSave",
+                "text": "Retention save",
+                "icon": "save"
+            },
+
+            "alert": {
+                "class": "history_Alert",
+                "text": "Monitoring alert",
+                "icon": "bolt"
+            },
+
+            "notification": {
+                "class": "history_Notification",
+                "text": "Monitoring notification sent",
+                "icon": "paper-plane"
+            },
+
+            "check_result": {
+                "class": "history_CheckResult",
+                "text": "Check result",
+                "icon": "bolt"
+            },
+
+            "comment": {
+                "class": "history_WebuiComment",
+                "text": "WebUI comment",
+                "icon": "send"
+            },
+            "timeperiod_transition": {
+                "class": "history_TimeperiodTransition",
+                "text": "Timeperiod transition",
+                "icon": "clock-o"
+            },
+            "external_command": {
+                "class": "history_ExternalCommand",
+                "text": "External command",
+                "icon": "wrench"
+            },
+
+            "event_handler": {
+                "class": "history_EventHandler",
+                "text": "Monitoring event handler",
+                "icon": "bolt"
+            },
+            "flapping_start": {
+                "class": "history_FlappingStart",
+                "text": "Monitoring flapping start",
+                "icon": "flag"
+            },
+            "flapping_stop": {
+                "class": "history_FlappingStop",
+                "text": "Monitoring flapping stop",
+                "icon": "flag-o"
+            },
+            "downtime_start": {
+                "class": "history_DowntimeStart",
+                "text": "Monitoring downtime start",
+                "icon": "ambulance"
+            },
+            "downtime_cancelled": {
+                "class": "history_DowntimeCancelled",
+                "text": "Monitoring downtime cancelled",
+                "icon": "ambulance"
+            },
+            "downtime_end": {
+                "class": "history_DowntimeEnd",
+                "text": "Monitoring downtime stopped",
+                "icon": "ambulance"
+            },
+            "acknowledge_start": {
+                "class": "history_AckStart",
+                "text": "Monitoring acknowledge start",
+                "icon": "check"
+            },
+            "acknowledge_cancelled": {
+                "class": "history_AckCancelled",
+                "text": "Monitoring acknowledge cancelled",
+                "icon": "check"
+            },
+            "acknowledge_end": {
+                "class": "history_AckEnd",
+                "text": "Monitoring acknowledge expired",
+                "icon": "check"
+            },
+        }
+
+        back = '''<i class="fa fa-circle fa-stack-2x font-%s"></i>''' \
+               % (state.lower() if not disabled else 'greyed')
+
+        icon_color = 'fa-inverse'
+        icon_style = ""
+        if not hard:
+            icon_style = 'style="opacity: 0.5"'
+
+        try:
+            icon = icons[cls]['icon']
+            title = icons[cls]['text']
+        except KeyError:
+            cls = 'unknown'
+            icon = icons[cls]['icon']
+            title = icons[cls]['text']
+
+        front = '''<i class="fa fa-%s fa-stack-1x %s"></i>''' % (icon, icon_color)
+
+        if use_title:
+            icon_text = '''<span class="fa-stack" %s title="%s">%s%s</span>''' % (icon_style, title, back, front)
+        else:
+            icon_text = '''<span class="fa-stack" %s>%s%s</span>''' % (icon_style, back, front)
+
+        if label == '':
+            return icon_text
+
+        color = state.lower() if not disabled else 'greyed'
+        if label == 'title':
+            label = title
+        return '''
+          <span class="font-%s">
+             %s&nbsp;<span class="num">%s</span>
+          </span>
+          ''' % (color, icon_text, label)
+
     def render_url(self, obj, items, css=''):
         """Returns formatted HTML for an element URL
 

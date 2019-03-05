@@ -33,13 +33,22 @@ class LogsMetaModule(MetaModule):
                                len(modules), modules[0])
             self.module = modules[0]
         else:
-            try:
-                self.module = MongoDBLogs(app.modconf)
-            except Exception as exp:
-                logger.warning('[WebUI] Exception %s', str(exp))
+            if self.app.alignak:
+                try:
+                    self.module = AlignakLogs(app.modconf)
+                except Exception as exp:
+                    logger.warning('[WebUI] Exception %s', str(exp))
+            else:
+                try:
+                    self.module = MongoDBLogs(app.modconf)
+                except Exception as exp:
+                    logger.warning('[WebUI] Exception %s', str(exp))
 
     def is_available(self):
         if isinstance(self.module, MongoDBLogs):
+            return self.module.is_connected
+
+        if isinstance(self.module, AlignakLogs):
             return self.module.is_connected
 
         return self.module is not None
@@ -146,7 +155,8 @@ class MongoDBLogs(object):
         self.con.close()
 
     # We will get in the mongodb database the logs
-    def get_ui_logs(self, filters=None, range_start=None, range_end=None, limit=200, offset=0):
+    def get_ui_logs(self, filters=None, range_start=None, range_end=None,
+                    limit=200, offset=0, time_field="time"):
         if not self.uri:
             return None
 
@@ -163,13 +173,14 @@ class MongoDBLogs(object):
         for k, v in filters.items():
             query.append({k: v})
         if range_start:
-            query.append({'time': {'$gte': range_start}})
+            query.append({time_field: {'$gte': range_start}})
         if range_end:
-            query.append({'time': {'$lte': range_end}})
+            query.append({time_field: {'$lte': range_end}})
 
-        query = {'$and': query} if query else None
-        logger.debug("[mongo-logs] Fetching %limit records from database with query: "
-                     "'%s' and offset %s", limit, query, offset)
+        query = {'$and': query} if len(query) > 1 else query[0]
+        # query = { "_created": {"$gte" : datetime.datetime(2018, 1, 1), "$lt": datetime.datetime(2018, 12, 31)}}
+        logger.info("[mongo-logs] Fetching %d records from collection %s/%s with "
+                    "query: '%s' and offset %s", limit, self.database, self.logs_collection, query, offset)
 
         records = []
         try:
@@ -257,3 +268,22 @@ class MongoDBLogs(object):
                 record['first_check_state'] = log['first_check_state']
 
         return record
+
+
+class AlignakLogs(MongoDBLogs):
+    """
+    This module job is to get Alignak logs from a mongodb database.
+    """
+
+    def __init__(self, mod_conf):
+        super(AlignakLogs, self).__init__(mod_conf=mod_conf)
+
+    # We will get in the mongodb database the logs
+    def get_ui_logs(self, filters=None, range_start=None, range_end=None,
+                    limit=200, offset=0, time_field="@timestamp"):
+        return super(AlignakLogs, self).get_ui_logs(filters=filters, range_start=range_start, range_end=range_end,
+                                                    limit=limit, offset=offset, time_field=time_field)
+
+    # We will get in the mongodb database the host availability
+    def get_ui_availability(self, elt, range_start=None, range_end=None):
+        logger.error("[WebUI-alignak-mongo-logs] availability feature is not yet available!")
