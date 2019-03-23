@@ -83,6 +83,10 @@
               <td><span class="popover-dismiss" data-html="true" data-toggle="popover" data-placement="bottom" data-content="Last state change at {{time.asctime(time.localtime(elt.last_state_change))}}">{{helper.print_duration(elt.last_state_change)}}</span></td>
             </tr>
             <tr>
+              <td><strong>Last State Update:</strong></td>
+              <td><span class="popover-dismiss" data-html="true" data-toggle="popover" data-placement="bottom" data-content="Last state update at {{time.asctime(time.localtime(elt.last_state_update))}}">{{helper.print_duration(elt.last_state_update)}}</span></td>
+            </tr>
+            <tr>
               <td><strong>Current Attempt:</strong></td>
               <td>{{elt.attempt}}/{{elt.max_check_attempts}} ({{elt.state_type}} state)</td>
             </tr>
@@ -211,6 +215,12 @@
               <td><strong>Freshness threshold:</strong></td>
               <td>{{elt.freshness_threshold}} seconds</td>
             </tr>
+            %if (getattr(elt, 'freshness_state')):
+            <tr>
+              <td><strong>Freshness state:</strong></td>
+              <td>{{elt.freshness_state}}</td>
+            </tr>
+            %end
             %end
             %end
             <tr>

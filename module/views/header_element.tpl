@@ -251,8 +251,10 @@
                &nbsp;Live state</a> </li>
             <li> <a href="{{ app.get_url('AlignakEvents') }}"> <i class="fas fa-fw fa-th-list sidebar-icon"></i>
                &nbsp;Events log</a> </li>
+            <!--
             <li> <a href="{{ app.get_url('AlignakStats') }}"> <i class="fas fa-fw fa-th-list sidebar-icon"></i>
                &nbsp;Events stats</a> </li>
+               -->
             %if app.logs_module.is_available():
             <li> <a href="{{ app.get_url('History') }}"> <i class="fas fa-fw fa-th-list sidebar-icon"></i>
                &nbsp;Mongo Logs </a> </li>
@@ -266,10 +268,10 @@
         &nbsp;Configuration<i class="fa arrow"></i></a>
           <ul class="nav nav-second-level">
             %if not app.alignak:
-            <li> <a href="{{ app.get_url('Parameters') }}"> <i class="fas fa-fw fa-gears sidebar-icon"></i>
+            <li> <a href="{{ app.get_url('Parameters') }}"> <i class="fas fa-fw fa-cogs sidebar-icon"></i>
                &nbsp;Parameters </a> </li>
             %else:
-            <li> <a href="{{ app.get_url('AlignakParameters') }}"> <i class="fas fa-fw fa-gears sidebar-icon"></i>
+            <li> <a href="{{ app.get_url('AlignakParameters') }}"> <i class="fas fa-fw fa-cogs sidebar-icon"></i>
                &nbsp;Parameters </a> </li>
             %end
             <li> <a href="{{ app.get_url('Contacts') }}"> <i class="fas fa-fw fa-user sidebar-icon"></i>

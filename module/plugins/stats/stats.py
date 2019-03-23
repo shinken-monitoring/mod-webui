@@ -26,6 +26,11 @@ from datetime import datetime, timedelta
 from collections import Counter, OrderedDict
 from itertools import groupby
 
+from shinken.log import logger
+
+from copy import deepcopy
+from logevent import LogEvent
+
 # Will be populated by the UI with it's own value
 app = None
 
