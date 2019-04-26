@@ -69,15 +69,20 @@ from shinken.log import TimedRotatingFileHandler
 # Alignak / Shinken base module are slightly different
 if ALIGNAK:
     from alignak.basemodule import BaseModule
+    from alignak.modulesmanager import ModulesManager
+    from alignak.daemon import Daemon
+    from alignak.external_command import ExternalCommandManager
 else:
     from shinken.basemodule import BaseModule
+    from shinken.modulesmanager import ModulesManager
+    from shinken.daemon import Daemon
 
 # Regenerate objects from the received broks
 from regenerator import Regenerator
 
 from shinken.modulesctx import modulesctx
-from shinken.modulesmanager import ModulesManager
-from shinken.daemon import Daemon
+
+
 from shinken.util import to_bool
 
 # Bottle import
@@ -489,12 +494,12 @@ class Webui_broker(BaseModule, Daemon):
         else:
             self.debug_output = []
 
+            for m in self.modules:
+                m.enabled = True
+
             logger.info("[WebUI] configured modules %s", [m.get_name() for m in self.modules])
-            self.modules_manager = ModulesManager('webui', self.find_modules_path(), [])
-            self.modules_manager.set_modules(self.modules)
-            # This function is loading all the installed 'webui' daemon modules...
-            self.do_load_modules()
-            logger.info("[WebUI] imported %d modules", len(self.modules_manager.imported_modules))
+            self.modules_manager = ModulesManager(self)
+            self.modules_manager.load_and_init(self.modules)
 
             for inst in self.modules_manager.instances:
                 logger.info("[WebUI] loading %s", inst.get_name())
@@ -733,6 +738,7 @@ class Webui_broker(BaseModule, Daemon):
                 continue
 
             # try to relaunch dead module
+            self.max_queue_size = 42000 #FIXME to make check_and_del_zombie_modules to finish (Daemon.__init__ is not called)
             self.check_and_del_zombie_modules()
 
             if not message:
