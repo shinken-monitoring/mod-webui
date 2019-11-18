@@ -2,12 +2,12 @@
 name: Bug report
 about: Create a report to help us improve
 title: ''
-labels: ''
+labels: bug
 assignees: ''
 
 ---
 
-*Feel free to not follow the template below, but please note that this is the Shinken's Web Interface repository, and it is dedicated only to the web interface. If you have bugs or questions related to anything else in Shinken, you should submit them in [Shinken's repository](https://github.com/naparuba/shinken).
+*Feel free to not follow the template below, but please note that this is the Shinken's Web Interface repository, and it is dedicated only to the web interface. If you have bugs or questions related to anything else in Shinken, you should submit them in [Shinken's repository](https://github.com/naparuba/shinken).*
 
 **Describe the bug**
 A clear and concise description of what the bug is.
