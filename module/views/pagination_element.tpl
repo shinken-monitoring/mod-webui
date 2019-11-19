@@ -89,7 +89,16 @@
     %query = app.request.query
     %query['start'] = start
     %query['end'] = end
-    <li><a href="{{ page }}?{{ urlencode(query) }}" title="Page {{ name }}">{{ name }}</a></li>
+
+    %if name == u'«':
+    %pagetitle = "First page"
+    %elif name == u'»':
+    %pagetitle = "Last page"
+    %else:
+    %pagetitle = "Page " + name
+    %end
+
+    <li><a href="{{ page }}?{{ urlencode(query) }}" title="{{ pagetitle }}">{{ name }}</a></li>
     %end
     %end
   </ul>
