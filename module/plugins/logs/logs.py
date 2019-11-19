@@ -54,31 +54,67 @@ def _get_logs(*args, **kwargs):
 
 # pylint: disable=global-statement
 def load_config(app):
+    """Load the configuration from specific parameters used in the global WebUI configuration
+    :param app: the current application
+    :return:
+    """
     global params
 
-    currentdir = os.path.dirname(os.path.realpath(__file__))
-    configuration_file = "%s/%s" % (currentdir, 'plugin.cfg')
-    logger.info("[WebUI-logs] Plugin configuration file: %s", configuration_file)
     try:
-        scp = ConfigParser('#', '=')
-        z = params.copy()
-        z.update(scp.parse_config(configuration_file))
-        params = z
+        logger.info("[WebUI-logs] loading configuration...")
 
-        params['logs_type'] = [item.strip() for item in params['logs_type'].split(',')]
-        if params['logs_hosts']:
-            params['logs_hosts'] = [item.strip() for item in params['logs_hosts'].split(',')]
-        if params['logs_services']:
-            params['logs_services'] = [item.strip() for item in params['logs_services'].split(',')]
+        # Get the WebUI configuration parameters
+        app_conf = app.modconf.__dict__
+        logger.debug("[WebUI-logs] configuration parameters: %s", app_conf)
+        for key, value in app_conf.items():
+            if not key.startswith('plugin.logs'):
+                continue
+            logger.info("[WebUI-logs] configuration parameter: %s = %s", key, value)
 
-        logger.info("[WebUI-logs] configuration loaded.")
+        params['time_field'] = app_conf.get('plugin.logs.time_field', 'time')
+
+        params['date_format'] = app_conf.get('plugin.logs.date_format', 'timestamp')
+
+        params['other_fields'] = app_conf.get('plugin.logs.other_fields', 'message')
+        if isinstance(params['other_fields'], basestring):
+            if ',' in params['other_fields']:
+                params['other_fields'] = [item.strip() for item in params['other_fields'].split(',')]
+            else:
+                params['other_fields'] = [params['other_fields']]
+
+        params['logs_type'] = app_conf.get('plugin.logs.types', ['INFO', 'WARNING', 'ERROR'])
+        if isinstance(params['logs_type'], basestring):
+            if ',' in params['logs_type']:
+                params['logs_type'] = [item.strip() for item in params['logs_type'].split(',')]
+            else:
+                params['logs_type'] = [params['logs_type']]
+
+        params['logs_hosts'] = app_conf.get('plugin.logs.hosts', [])
+        if isinstance(params['logs_hosts'], basestring):
+            if ',' in params['logs_hosts']:
+                params['logs_hosts'] = [item.strip() for item in params['logs_hosts'].split(',')]
+            else:
+                params['logs_hosts'] = [params['logs_hosts']]
+
+        params['logs_services'] = app_conf.get('plugin.logs.services', [])
+        if isinstance(params['logs_services'], basestring):
+            if ',' in params['logs_services']:
+                params['logs_services'] = [item.strip() for item in params['logs_services'].split(',')]
+            else:
+                params['logs_services'] = [params['logs_services']]
+
+        logger.info("[WebUI-logs] configuration, timestamp field: %s", params['time_field'])
+        logger.info("[WebUI-logs] configuration, date format: %s", params['date_format'])
+        logger.info("[WebUI-logs] configuration, other fields: %s", params['other_fields'])
         logger.info("[WebUI-logs] configuration, fetching types: %s", params['logs_type'])
         logger.info("[WebUI-logs] configuration, hosts: %s", params['logs_hosts'])
         logger.info("[WebUI-logs] configuration, services: %s", params['logs_services'])
+
+        logger.info("[WebUI-logs] configuration loaded.")
         return True
     except Exception as exp:
-        logger.warning("[WebUI-logs] configuration file (%s) not available: %s",
-                       configuration_file, str(exp))
+        logger.warning("[WebUI-logs] configuration exception: %s", str(exp))
+        logger.error("[WebUI-logs] traceback: %s", traceback.format_exc())
         return False
 
 
@@ -147,8 +183,8 @@ def get_history():
 
     filters = dict()
 
-    service = app.request.GET.get('service', None)
-    host = app.request.GET.get('host', None)
+    service = app.request.query.get('service', None)
+    host = app.request.query.get('host', None)
 
     if host:
         if service:
@@ -164,11 +200,11 @@ def get_history():
     if host:
         filters['host_name'] = host
 
-    logclass = app.request.GET.get('logclass', None)
+    logclass = app.request.query.get('logclass', None)
     if logclass is not None:
         filters['logclass'] = int(logclass)
 
-    command_name = app.request.GET.get('commandname', None)
+    command_name = app.request.query.get('commandname', None)
     if command_name is not None:
         try:
             command_name = json.loads(command_name)
@@ -176,11 +212,16 @@ def get_history():
             pass
         filters['command_name'] = command_name
 
-    limit = int(app.request.GET.get('limit', 100))
-    offset = int(app.request.GET.get('offset', 0))
+    limit = int(app.request.query.get('limit', 100))
+    offset = int(app.request.query.get('offset', 0))
 
-    logs = _get_logs(filters=filters, limit=limit, offset=offset)
-    return {'records': logs}
+    logs = _get_logs(filters=filters, limit=limit, offset=offset, time_field=params['time_field'])
+
+    return {
+        'time_field': params['time_field'],
+        'other_fields': params['other_fields'],
+        'records': logs
+    }
 
 
 # :TODO:maethor:171017: This function should be merge in get_history
@@ -189,20 +230,35 @@ def get_global_history():
     _ = user.is_administrator() or app.redirect403()
 
     midnight_timestamp = time.mktime(datetime.date.today().timetuple())
-    range_start = int(app.request.GET.get('range_start', midnight_timestamp))
-    range_end = int(app.request.GET.get('range_end', midnight_timestamp + 86399))
+
+    # Date search range
+    range_start = int(app.request.query.get('range_start', midnight_timestamp))
+    search_range_start = range_start
+    range_end = int(app.request.query.get('range_end', midnight_timestamp + 86399))
+    search_range_end = range_end
+    if params['date_format'] in ['datetime']:
+        search_range_start = datetime.datetime.fromtimestamp(range_start)
+        search_range_end = datetime.datetime.fromtimestamp(range_end)
+
     logger.debug("[WebUI-logs] get_global_history, range: %d - %d", range_start, range_end)
 
-    logs = _get_logs(filters={'type': {'$in': params['logs_type']}},
-                     range_start=range_start, range_end=range_end)
+    filters = {}
+    if params['logs_type'] and params['logs_type'][0]:
+        filters = {'type': {'$in': params['logs_type']}}
 
+    # logs is a pymongo Cursor object
+    logs = _get_logs(filters=filters, range_start=search_range_start, range_end=search_range_end,
+                     time_field=params['time_field'])
+    logger.info("[WebUI-logs] got %d records.", logs.count())
+
+    message = ""
     if logs is None:
         message = "No module configured to get Shinken logs from database!"
-    else:
-        message = ""
 
     return {
         'records': logs,
+        'time_field': params['time_field'],
+        'other_fields': params['other_fields'],
         'params': params,
         'message': message,
         'range_start': range_start, 'range_end': range_end

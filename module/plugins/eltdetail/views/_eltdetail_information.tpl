@@ -83,6 +83,10 @@
               <td><span class="popover-dismiss" data-html="true" data-toggle="popover" data-placement="bottom" data-content="Last state change at {{time.asctime(time.localtime(elt.last_state_change))}}">{{helper.print_duration(elt.last_state_change)}}</span></td>
             </tr>
             <tr>
+              <td><strong>Last State Update:</strong></td>
+              <td><span class="popover-dismiss" data-html="true" data-toggle="popover" data-placement="bottom" data-content="Last state update at {{time.asctime(time.localtime(elt.last_state_update))}}">{{helper.print_duration(elt.last_state_update)}}</span></td>
+            </tr>
+            <tr>
               <td><strong>Current Attempt:</strong></td>
               <td>{{elt.attempt}}/{{elt.max_check_attempts}} ({{elt.state_type}} state)</td>
             </tr>
@@ -153,7 +157,7 @@
             </tr>
             %enabled = app.datamgr.get_configuration_parameter('execute_host_checks' if elt_type == 'host' else 'execute_service_checks')
             <tr>
-              <td><strong>Active checks:{{enabled}}</strong></td>
+              <td><strong>Active checks:</strong></td>
               <td>
                 <input type="checkbox" class="js-toggle-parameter"
                 {{'checked' if elt.active_checks_enabled else ''}}
@@ -211,6 +215,12 @@
               <td><strong>Freshness threshold:</strong></td>
               <td>{{elt.freshness_threshold}} seconds</td>
             </tr>
+            %if (getattr(elt, 'freshness_state')):
+            <tr>
+              <td><strong>Freshness state:</strong></td>
+              <td>{{elt.freshness_state}}</td>
+            </tr>
+            %end
             %end
             %end
             <tr>

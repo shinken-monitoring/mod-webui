@@ -7,9 +7,9 @@
 %daemons = [ ('scheduler', schedulers), ('poller', pollers), ('broker', brokers), ('reactionner', reactionners), ('receiver', receivers)]
 %present = sum(1 for (type, satellites) in daemons if satellites)
 %if not present:
-  <center>
-    <h3>No system information is available.</h3>
-  </center>
+   <div class="text-center">
+      <h3>No system information is available.</h3>
+   </div>
 %else:
     <table class="table table-condensed no-bottommargin topmmargin">
        <thead>
