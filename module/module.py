@@ -379,6 +379,10 @@ class Webui_broker(BaseModule, Daemon):
         self.services_states_warning = int(getattr(modconf, 'services_states_warning', '95'))
         self.services_states_critical = int(getattr(modconf, 'services_states_critical', '90'))
 
+        # Used by statistics view to compute notification statistics
+        self.stats_command_name_filter = getattr(modconf, 'stats_command_name_filter', '')
+        self.stats_contact_name_filter = getattr(modconf, 'stats_contact_name_filter', '')
+
         # Web UI information
         self.app_version = getattr(modconf, 'about_version', WEBUI_VERSION)
         self.app_copyright = getattr(modconf, 'about_copyright', WEBUI_COPYRIGHT)
@@ -393,6 +397,8 @@ class Webui_broker(BaseModule, Daemon):
 
         # My bottle object ...
         self.bottle = bottle
+
+        bottle.debug(True)
 
         bottle.BaseTemplate.defaults['app'] = self
         bottle.BaseTemplate.defaults['alignak'] = ALIGNAK

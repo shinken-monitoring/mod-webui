@@ -35,7 +35,7 @@
 <div class="col-xs-12">
   <div class="panel panel-default">
     <div class="panel-body">
-      <div id="inner_history" data-host='{{ host }}' data-logclass="3" data-commandname="{%22$regex%22:%22notify-service-by-slack%22}">
+      <div id="inner_history" data-host='{{ host }}' data-logclass="3" data-commandname="{%22$regex%22:%22{{ app.stats_command_name_filter }}%22}" data-contactname="{%22$regex%22:%22{{ app.stats_contact_name_filter }}%22}">
       </div>
 
       <div class="text-center" id="loading-spinner">

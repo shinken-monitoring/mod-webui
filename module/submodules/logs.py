@@ -195,7 +195,7 @@ class MongoDBLogs(object):
         except Exception as exp:
             logger.error("[mongo-logs] Exception when querying database: %s", str(exp))
 
-        return records
+        return records, query
 
     # We will get in the mongodb database the host availability
     def get_ui_availability(self, elt, range_start=None, range_end=None):

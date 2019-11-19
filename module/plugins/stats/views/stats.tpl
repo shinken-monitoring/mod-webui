@@ -2,6 +2,27 @@
 
 %total = sum(hosts.values())
 
+%if not hosts and not services:
+<div class="col-lg-8 col-lg-offset-2">
+  <div class="page-header">
+    <h3>What a bummer! We couldn't find any log.</h3>
+  </div>
+
+  <div class="panel panel-default">
+    <div class="panel-heading"><h3 class="panel-title">What you can do</h3></div>
+    <div class="panel-body">
+      The WebUI is looking for logs in MongoDB. Please check :
+      <ul>
+        <li>That mongo-logs module is enable in the broker</li>
+        <li>That this query returns stuff in mongo shinken database : <br>&nbsp;<code>db.logs.find({{ query }})</code>
+      </ul>
+
+      You can adjust <code>command_name</code> and <code>contact_name</code> regexes in webui configuration.
+    </div>
+  </div>
+</div>
+%else:
+
 <div class="col-lg-4">
   <div class="panel panel-default">
     %total = sum(hosts.values())
@@ -90,7 +111,7 @@
 <div class="col-xs-12">
   <div class="panel panel-default">
     <div class="panel-body">
-      <div id="inner_history" data-logclass="3" data-commandname="{%22$regex%22:%22notify-service-by-slack%22}">
+      <div id="inner_history" data-logclass="3" data-commandname="{%22$regex%22:%22{{ app.stats_command_name_filter }}%22}" data-contactname="{%22$regex%22:%22{{ app.stats_contact_name_filter }}%22}">
       </div>
 
       <div class="text-center" id="loading-spinner">
@@ -99,3 +120,15 @@
     </div>
   </div>
 </div>
+
+<div class="col-xs-12">
+  <center>
+    <small>
+      This page has been generated using the following MongoDB query :<br>
+      <code>{{ query }}</code><br>
+      You can customize this query in the webui config with <code>stats_command_name_filter</code> and <code>stats_contact_name_filter</code> variables.
+    </small>
+  </center>
+</div>
+
+%end

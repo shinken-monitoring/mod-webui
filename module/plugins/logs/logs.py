@@ -46,7 +46,7 @@ app = None
 
 def _get_logs(*args, **kwargs):
     if app.logs_module.is_available():
-        return app.logs_module.get_ui_logs(*args, **kwargs)
+        return app.logs_module.get_ui_logs(*args, **kwargs)[0]
 
     logger.warning("[WebUI-logs] no get history external module defined!")
     return None
@@ -211,6 +211,14 @@ def get_history():
         except Exception:
             pass
         filters['command_name'] = command_name
+
+    contact_name = app.request.query.get('contactname', None)
+    if contact_name is not None:
+        try:
+            contact_name = json.loads(contact_name)
+        except Exception:
+            pass
+        filters['contact_name'] = contact_name
 
     limit = int(app.request.query.get('limit', 100))
     offset = int(app.request.query.get('offset', 0))
