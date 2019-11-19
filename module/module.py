@@ -398,8 +398,6 @@ class Webui_broker(BaseModule, Daemon):
         # My bottle object ...
         self.bottle = bottle
 
-        bottle.debug(True)
-
         bottle.BaseTemplate.defaults['app'] = self
         bottle.BaseTemplate.defaults['alignak'] = ALIGNAK
 
