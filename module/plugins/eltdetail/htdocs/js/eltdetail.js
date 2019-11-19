@@ -141,22 +141,6 @@ function on_page_refresh() {
       });
    })
 
-
-   /*
-    * Graphs
-    */
-   // Change graph
-   $('a[data-type="graph"]').click(function (e) {
-      current_graph=$(this).data('period');
-
-      // Update graphs
-      $("#real_graphs").html( html_graphes[current_graph] );
-
-      // Update active period selected
-      $('#graph_periods li').removeClass('active');
-      $(this).parent('li').addClass('active');
-   });
-
    // Restore previously selected tab
    bootstrap_tab_bookmark();
 }
