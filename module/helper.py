@@ -761,7 +761,7 @@ class Helper(object):
             return ''
 
         # Build a definition list ...
-        content = '''<dl>'''
+        content = '''<dl class="dl-horizontal">'''
         for dr in sorted(tp.dateranges, key=operator.methodcaller("get_start_and_end_time")):
             (dr_start, dr_end) = dr.get_start_and_end_time()
             dr_start = time.strftime("%d %b %Y", time.localtime(dr_start))
@@ -783,7 +783,7 @@ class Helper(object):
 
         # Build a definition list ...
         if tp.exclude:
-            content += '''<dl> Excluded: '''
+            content += '''<dl class="dl-horizontal"> Excluded: '''
             for excl in tp.exclude:
                 content += self.get_timeperiod_html(excl)
             content += '''</dl>'''
