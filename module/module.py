@@ -30,7 +30,7 @@ This Class is a plugin for the Shinken Broker. It is in charge
 to get broks and recreate real objects, and propose a Web User Interface :)
 """
 
-WEBUI_VERSION = "2.7.2"
+WEBUI_VERSION = "2.8.0"
 WEBUI_COPYRIGHT = "2009-2019"
 WEBUI_LICENSE = "License GNU AGPL as published by the FSF, minimum version 3 of the License."
 
