@@ -46,7 +46,7 @@
          {{!helper.get_business_impact_text(business_impact, text=True)}}
        </span>
        <span class="onhover-label">
-         <i class="fa fa-check"></i> Select all {{len(bi_pbs)}} elements
+         <i class="fas fa-check"></i> Select all {{len(bi_pbs)}} elements
        </span>
      </a>
    </h4>
@@ -56,7 +56,7 @@
 
       <table class="table table-condensed table-hover problems-table">
         <colgroup>
-            <col style="width: 120px;"/>
+            <col style="width: 122px;"/>
             <col style="width: 30px;"/>
             <col class="host-column hidden-sm hidden-xs hidden-md"/>
             <col class="service-column hidden-sm hidden-xs"/>
@@ -106,7 +106,7 @@ Next check <strong>{{helper.print_duration(pb.next_chk)}}</strong>
                          %if pb.state_type == 'HARD':
                          {{!helper.print_duration(pb.last_state_change, just_duration=True, x_elts=2)}}
                          %else:
-                         attempt {{pb.attempt}}/{{pb.max_check_attempts}}
+                         <small>attempt {{pb.attempt}}/{{pb.max_check_attempts}}</small>
                          <!--soft state-->
                          %end
                        <!--</span>-->
@@ -115,27 +115,31 @@ Next check <strong>{{helper.print_duration(pb.next_chk)}}</strong>
                </td>
                <td class="text-muted">
                  %if pb.problem_has_been_acknowledged:
-                 <i class="fa fa-check" title="Acknowledged"></i><br>
+                 <i class="fas fa-check" title="Acknowledged"></i><br>
                  %end
                  %if pb.in_scheduled_downtime:
-                 <i class="fa fa-clock-o" title="In scheduled downtime"></i><br>
+                 <i class="far fa-clock" title="In scheduled downtime"></i><br>
                  %end
                </td>
                %aka = ''
                %if pb_host.alias and not pb_host.alias.startswith(pb_host.get_name()):
+                 %if pb_host.display_name:
+                 %aka = 'Aka %s (%s)' % (pb_host.alias.replace(' ', '<br>'), pb_host.get_name())
+                 %else:
                  %aka = 'Aka %s' % pb_host.alias.replace(' ', '<br>')
+                 %end
                %end
                <td class="hidden-sm hidden-xs hidden-md">
                   %if pb.host_name != previous_pb_host_name:
                      <a href="/host/{{ pb.host_name }}" title="{{!aka}}">
-                       {{ pb_host.get_name() if pb_host.display_name == '' else pb_host.display_name }}
+                       {{ pb_host.display_name if pb_host.display_name else pb_host.get_name() }}
                      </a>
                   %end
                </td>
                <td class="hidden-sm hidden-xs">
                  <span class="hidden-lg">
                    <a href="/host/{{ pb.host_name }}" title="{{!aka}}">
-                     {{ pb_host.get_name() if pb_host.display_name == '' else pb_host.display_name }}
+                     {{ pb_host.display_name if pb_host.display_name else pb_host.get_name() }}
                    </a>
                    %if pb.__class__.my_type == 'service':
                    /
@@ -149,7 +153,7 @@ Next check <strong>{{helper.print_duration(pb.next_chk)}}</strong>
                   %end
                   <!--:TODO:maethor:170924: -->
                   <!--<div class="pull-right problem-actions">-->
-                    <!--<i class="fa fa-plus"></i>-->
+                    <!--<i class="fas fa-plus"></i>-->
                   <!--</div>-->
                </td>
                <td class="row">
@@ -162,7 +166,7 @@ Next check <strong>{{helper.print_duration(pb.next_chk)}}</strong>
                            data-trigger="hover" data-placement="left"
                            data-item="{{pb.get_full_name()}}"
                            href="{{!helper.get_link_dest(pb)}}#graphs">
-                           <i class="fa fa-line-chart"></i>
+                           <i class="fas fa-chart-line"></i>
                         </a>
                      %end
                      %end
@@ -208,8 +212,6 @@ Next check <strong>{{helper.print_duration(pb.next_chk)}}</strong>
    </div>
 
    %end
- </div>
+</div>
 
- <ul class='nav navbar-nav hidden' id='nav-actions'>
-   %include('_problems_actions-navbar.tpl')
- </ul>
+%include('_problems_actions-navbar.tpl')

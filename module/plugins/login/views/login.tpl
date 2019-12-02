@@ -33,8 +33,6 @@
       <!-- Stylesheets
       ================================================== -->
       <link href="/static/css/bootstrap.min.css?v={{app.app_version}}" rel="stylesheet">
-      <link href="/static/css/bootstrap-theme.min.css?v={{app.app_version}}" rel="stylesheet">
-      <link href="/static/css/font-awesome.min.css?v={{app.app_version}}" rel="stylesheet">
       <link href="/static/css/shinken-layout.css?v={{app.app_version}}" rel="stylesheet">
       <style>
       .panel-default > .panel-heading-login {
@@ -76,7 +74,7 @@
                      <input class="form-control" placeholder="Password" name="password" type="password"
                            autocomplete="current-password" value="" required>
 
-                     <button class="btn btn-lg btn-success btn-block" type="submit"><i class="fa fa-sign-in"></i> Login</button>
+                     <button class="btn btn-lg btn-success btn-block" type="submit"><i class="fas fa-sign-in"></i> Login</button>
                   </form>
                </div>
             </div>

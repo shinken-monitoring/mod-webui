@@ -16,13 +16,13 @@
            %if log['logclass'] == 1 and log['state_type'] in ['SOFT', 'HARD']:
            %state = log['message'].split(';')[2]
            <td width="40px" class="text-center" style="vertical-align: middle;">
-             <i class="fa fa-warning fa-2x font-{{ state.lower() }}" title="State change"></i>
+             <i class="fas fa-warning fa-2x font-{{ state.lower() }}" title="State change"></i>
            </td>
            <td width="100px" class="text-center" style="vertical-align: middle;">
              <strong class="font-{{ state.lower() }}">
                {{ state }}<br>
                <small>
-                 {{ log['state_type'] }} 
+                 {{ log['state_type'] }}
                  %if log['state_type'] == 'SOFT':
                  {{ log['attempt'] }}
                  %end
@@ -36,7 +36,7 @@
            %# FLAPPING/DOWNTIME
            %elif log['logclass'] == 1:
            <td width="40px" class="text-center" style="vertical-align: middle;">
-             <i class="fa fa-info-circle text-primary fa-2x" title="State change"></i>
+             <i class="fas fa-info-circle text-primary fa-2x" title="State change"></i>
            </td>
            <td width="100px" class="text-center text-primary" style="vertical-align: middle;">
              <strong>
@@ -58,14 +58,14 @@
            %if 'sms' in log['command_name']:
            %icon = 'fa-mobile'
            %elif 'mail' in log['command_name']:
-           %icon = 'fa-envelope-o'
+           %icon = 'fa-envelope'
            %elif 'slack' in log['command_name']:
            %icon = 'fa-slack'
            %else:
-           %icon = 'fa-bell-o'
+           %icon = 'fa-bell'
            %end
            <td width="40px" class="text-center" style="vertical-align: middle;">
-             <i class="fa fa-bell-o fa-2x font-{{ log['state_type'].lower() }}" title="Notification"></i>
+             <i class="fas fa-bell fa-2x font-{{ log['state_type'].lower() }}" title="Notification"></i>
            </td>
            <td width="100px" class="text-center" style="vertical-align: middle;">
              <strong class="font-{{ log['state_type'].lower() }}">

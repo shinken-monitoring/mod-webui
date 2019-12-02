@@ -41,11 +41,11 @@
 
                <section class="col-sm-12 col-xs-12">
                   <div class="btn-group btn-group-justified" role="group" aria-label="Minemap" title="View minemap for hosts related with all contacts">
-                     <a class="btn btn-default" href="/minemap?search=type:host"><i class="fa fa-table"></i> <span class="hidden-xs">Minemap</span></a>
+                     <a class="btn btn-default" href="/minemap?search=type:host"><i class="fas fa-table"></i> <span class="hidden-xs">Minemap</span></a>
                   </div>
 
-                  <div class="btn-group btn-group-justified" role="group" aria-label="Resources" title="View resources for hosts related with all contacts">
-                     <a class="btn btn-default" href="/all?search=type:host"><i class="fa fa-clock-o"></i> <span class="hidden-xs">Resources</span></a>
+                  <div class="btn-group btn-group-justified" role="group" aria-label="Elements" title="View elements for hosts related with all contacts">
+                     <a class="btn btn-default" href="/all?search=type:host"><i class="fas fa-clock"></i> <span class="hidden-xs">Elements</span></a>
                   </div>
 
                   <ul class="list-group">
@@ -87,11 +87,11 @@
 
                <section class="col-sm-12 col-xs-12">
                   <div class="btn-group btn-group-justified" role="group" aria-label="Minemap" title="View minemap for hosts related with this contact group">
-                     <a class="btn btn-default" href="/minemap?search=type:host cg:{{'"%s"' % group.get_name()}}"><i class="fa fa-table"></i> <span class="hidden-xs">Minemap</span></a>
+                     <a class="btn btn-default" href="/minemap?search=type:host cg:{{'"%s"' % group.get_name()}}"><i class="fas fa-table"></i> <span class="hidden-xs">Minemap</span></a>
                   </div>
 
-                  <div class="btn-group btn-group-justified" role="group" aria-label="Resources" title="View resources for contacts related with this contact group">
-                     <a class="btn btn-default" href="/all?search=type:host cg:{{'"%s"' % group.get_name()}}"><i class="fa fa-clock-o"></i> <span class="hidden-xs">Resources</span></a>
+                  <div class="btn-group btn-group-justified" role="group" aria-label="Elements" title="View elements for contacts related with this contact group">
+                     <a class="btn btn-default" href="/all?search=type:host cg:{{'"%s"' % group.get_name()}}"><i class="fas fa-clock"></i> <span class="hidden-xs">Elements</span></a>
                   </div>
 
                   <ul class="list-group">

@@ -51,7 +51,7 @@ function AddWidget(url, options, placeId, replace){
    // a spinner
    nb_widgets_loading += 1;
    // Loading indicator ...
-   $("#widgets_loading").html('<i class="fa fa-spinner fa-spin fa-3x"></i> <span class="lead">Loading widgets ... </span>').show();
+   $("#widgets_loading").html('<i class="fas fa-spinner fa-spin fa-3x"></i> <span class="lead">Loading widgets ... </span>').show();
 
    // We also hide the widgets proposal area ...
    $('#propose-widgets').hide();
@@ -207,11 +207,11 @@ $(function(){
    // Very basic usage
    var easy_widget_mgr = $.fn.EasyWidgets({
       i18n : {
-            editText : '<i class="fa fa-edit font-grey"></i>',
-            closeText : '<i class="fa fa-trash-o font-grey"></i>',
-            collapseText : '<i class="fa fa-chevron-up font-grey"></i>',
-            cancelEditText : '<i class="fa fa-edit font-grey"></i>',
-            extendText : '<i class="fa fa-chevron-down font-grey"></i>'
+            editText : '<i class="fas fa-edit font-grey"></i>',
+            closeText : '<i class="fas fa-trash font-grey"></i>',
+            collapseText : '<i class="fas fa-chevron-up font-grey"></i>',
+            cancelEditText : '<i class="fas fa-edit font-grey"></i>',
+            extendText : '<i class="fas fa-chevron-down font-grey"></i>'
       },
       effects : {
             effectDuration : 100,

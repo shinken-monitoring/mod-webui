@@ -101,7 +101,7 @@ def get_page(cmd=None):
 
     # Expand macros
     extcmd = expand_macros(extcmd)
-    logger.info("[WebUI-actions] external command: %s.", extcmd)
+    logger.debug("[WebUI-actions] external command: %s.", extcmd)
     e = ExternalCommand(extcmd)
     app.push_external_command(e)
 

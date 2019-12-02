@@ -6,13 +6,13 @@
   <input type="hidden" id="user_{{ helper.get_html_id(elt) }}" value="{{ user.get_username() }}">
   <input type="hidden" id="name_{{ helper.get_html_id(elt) }}" value="{{ helper.get_uri_name(elt) }}">
   <div class="form-group">
-    <label for="comment" class="col-sm-1 hidden-xs control-label">{{ !helper.get_contact_avatar(user, with_name=False, with_link=False, size=32) }}</label>
-    <div class="col-sm-10">
+    <label for="comment_{{ helper.get_html_id(elt) }}" class="col-sm-1 hidden-xs control-label">{{ !helper.get_contact_avatar(user, with_name=False, with_link=False, size=32) }}&nbsp;&nbsp;&nbsp;</label>
+    <div class="col-xs-12 col-sm-11">
       <textarea class="form-control" id="comment_{{ helper.get_html_id(elt) }}" placeholder="Write a comment…" rows="3"></textarea>
     </div>
   </div>
   <div class="form-group">
-    <div class="col-sm-offset-1 col-sm-10">
+    <div class="col-sm-offset-1 col-sm-11">
       <input type="submit" class="btn btn-default" value="Save">
     </div>
   </div>
@@ -29,9 +29,12 @@
     <td width="30px" class="text-center" style="vertical-align: middle;">
       %setdefault('comment_icon', 'fa-comment')
       %setdefault('comment_title', 'User comment')
-      %if c.entry_type == 2:
+      %if c.entry_type == 1:
+      %comment_title = 'User'
+      %comment_icon = "fa-comment"
+      %elif c.entry_type == 2:
       %comment_title = 'Downtime'
-      %comment_icon = "fa-clock-o"
+      %comment_icon = "fa-clock"
       %elif c.entry_type == 3:
       %comment_title = 'Flapping'
       %comment_icon = "fa-cog"
@@ -62,7 +65,7 @@
       </span>
       <span class="pull-right">
         %if c.persistent:
-        <i class="fa fa-sticky-note-o" title="This comment is persistent"></i>&nbsp;
+        <i class="fas fa-sticky-note-o" title="This comment is persistent"></i>&nbsp;
         %end
         %if app.can_action():
         <a class="{{'disabled' if not app.can_action() else ''}} js-delete-comment text-danger"
@@ -70,7 +73,7 @@
           data-element="{{helper.get_uri_name(c.ref)}}" data-comment="{{c.id}}"
           style="cursor: pointer;"
           >
-          <i class="fa fa-remove"></i>
+          <i class="fas fa-remove"></i>
         </a>
         %end
       </span><br>

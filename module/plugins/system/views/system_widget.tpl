@@ -7,9 +7,9 @@
 %daemons = [ ('scheduler', schedulers), ('poller', pollers), ('broker', brokers), ('reactionner', reactionners), ('receiver', receivers)]
 %present = sum(1 for (type, satellites) in daemons if satellites)
 %if not present:
-  <center>
-    <h3>No system information is available.</h3>
-  </center>
+   <div class="text-center">
+      <h3>No system information is available.</h3>
+   </div>
 %else:
     <table class="table table-condensed no-bottommargin topmmargin">
        <thead>
@@ -28,7 +28,7 @@
           <tr>
              <td>{{s.get_name()}}</td>
              %if not s.spare:
-             <td><i title="Is not a spare daemon" class="fa fa-check font-green"></i></td>
+             <td><i title="Is not a spare daemon" class="fas fa-check font-green"></i></td>
              %else:
              <td></td>
              <!--<td>{{!helper.get_on_off(status=s.spare)}}</td>-->

@@ -67,7 +67,8 @@
       ================================================== -->
       <link href="/static/css/bootstrap.min.css?v={{app.app_version}}" rel="stylesheet">
       <!--<link href="/static/css/bootstrap-theme.min.css" rel="stylesheet">-->
-      <link href="/static/css/font-awesome.min.css?v={{app.app_version}}" rel="stylesheet">
+      <!-- <link href="/static/css/fontawesome.min.css?v={{app.app_version}}" rel="stylesheet"> -->
+      <link href="/static/css/font-awesome-all.min.css?v={{app.app_version}}" rel="stylesheet">
       <link href="/static/css/metisMenu.min.css?v={{app.app_version}}" rel="stylesheet">
       <link href="/static/css/sb-admin-2.css?v={{app.app_version}}" rel="stylesheet">
       <link href="/static/css/typeahead.css?v={{app.app_version}}" rel="stylesheet">
@@ -112,7 +113,7 @@
                   %if navi:
                   %include("pagination_element", navi=navi, page=page, elts_per_page=elts_per_page, display_steps_form=True, div_class="pull-right hidden-xs", drop="dropdown")
                   %end
-                  <h3 class="page-header hidden-xs">
+                  <h3 class="page-header hidden-xs" style="margin-top: 10px;">
                     <ol class="breadcrumb hidden-xs">
                       %if not breadcrumb:
                       <li class="active">{{title or 'No title'}}</li>
@@ -193,6 +194,7 @@
       // Configuration for shinken-actions.js
       %user = app.get_user()
       var user='{{ user.alias if hasattr(user, "alias") and user.alias != "none" else user.get_name() }}';
+      var g_user_name='{{ user.get_username() }}';
       var shinken_downtime_fixed='{{ app.shinken_downtime_fixed}}';
       var shinken_downtime_trigger='{{ app.shinken_downtime_trigger }}';
       var shinken_downtime_duration='{{ app.shinken_downtime_duration }}';
@@ -209,7 +211,6 @@
       var app_refresh_period = {{app.refresh_period}};
       </script>
       <script src="/static/js/shinken-refresh.js?v={{app.app_version}}"></script>
-      <script src="/static/js/shinken-actions.js?v={{app.app_version}}"></script>
       %end
       <script src="/static/js/shinken-actions.js?v={{app.app_version}}"></script>
 

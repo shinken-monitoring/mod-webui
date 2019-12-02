@@ -40,8 +40,8 @@ body {
     padding-bottom: 70px;
 }
 
-.page-header {
-    margin-top:5px;
+.page-header .fas {
+    margin-right: 10px;
 }
 
 .breadcrumb {
@@ -198,13 +198,13 @@ td .ellipsis > .long-output {
   margin: 0;
 }
 
-.fa.fa-striked:after {
+.fas.fa-striked:after {
     position: absolute;
     content: "/";
     font-weight: bold;
-    font-size: 1.7em;
+    font-size: 2em;
     left: 16px;
-    top: 11px;
+    top: 7px;
 }
 
 .navbar-inverse {
@@ -321,7 +321,6 @@ td .ellipsis > .long-output {
 .navbar-inverse-2 .btn-action,
 .btn-action {
     background: none;
-    /*color: #555;*/
     padding: 6px;
 }
 
@@ -349,8 +348,8 @@ td .ellipsis > .long-output {
 }
 
 
-.navbar-inverse-2 .btn-action .fa,
-.btn-action .fa {
+.navbar-inverse-2 .btn-action .far,
+.btn-action .far {
     font-size: 20px;
     height: 22px;
     width: 22px;
@@ -384,17 +383,20 @@ td .ellipsis > .long-output {
 }
 @media (min-width: 768px) {
     #search {
-        width: 170px;
+        /*width: 170px;*/
+        width: calc(100vw - 500px);
     }
 }
 @media (min-width: 992px) {
     #search {
-        width: 360px;
+        /*width: 360px;*/
+        width: calc(100vw - 700px);
     }
 }
 @media (min-width: 1280px) {
     #search {
-        width: 50vw;
+        /*width: 50vw;*/
+        width: calc(100vw - 800px);
     }
 }
 
@@ -435,9 +437,10 @@ footer nav {
 #action-menu li a {
     font-size: small;
 }
-#action-menu li .fa {
-    padding: 0 12px;
-    font-size: 12px;
+#action-menu li .fas,
+#action-menu li .far {
+    padding: 1px;
+    margin: 1px;
 }
 @media(max-width:768px) {
     #action-menu {
@@ -446,8 +449,16 @@ footer nav {
         background: none;
         text-align: center;
     }
+    #nav-actions {
+        position: fixed;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
 
-    #action-menu ul {
+        margin: 0; padding: 0;
+    }
+
+    #nav-actions ul, #action-menu ul {
         list-style: none;
     }
 
@@ -461,7 +472,11 @@ footer nav {
         font-size: 16px;
     }
 
-    #action-menu li a {
+    #nav-actions li {
+        display: inline;
+    }
+
+    #nav-actions li a, #action-menu li a {
         display: inline;
     }
 }

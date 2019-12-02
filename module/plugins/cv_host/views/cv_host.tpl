@@ -36,8 +36,8 @@
          // Red    : '#dc4950', '#e05e65'
          // Orange : '#F1B16E', '#EC9054'
          // Grey   : '#dddddd', '#666666'
-         var main_colors = {'UNKNOWN' : '#c1bad9', 'OK' : '#A6CE8D', 'UP' : '#A6CE8D', 'WARNING' : '#F1B16E', 'CRITICAL' : '#dc4950', 'DOWN' : '#dc4950', 'ACK' : '#dddddd', 'DOWNTIME' : '#666666'};
-         var huge_colors = {'UNKNOWN' : '#a79fcb', 'OK' : '#81BA6B', 'UP' : '#81BA6B', 'WARNING' : '#EC9054', 'CRITICAL' : '#e05e65', 'DOWN' : '#e05e65', 'ACK' : '#666666', 'DOWNTIME' : '#dddddd'};
+         var main_colors = {'UNKNOWN' : '#c1bad9', 'OK' : '#A6CE8D', 'UP' : '#A6CE8D', 'WARNING' : '#F1B16E', 'UNREACHABLE' : '#F1B16E', 'CRITICAL' : '#dc4950', 'DOWN' : '#dc4950', 'ACK' : '#dddddd', 'DOWNTIME' : '#666666'};
+         var huge_colors = {'UNKNOWN' : '#a79fcb', 'OK' : '#81BA6B', 'UP' : '#81BA6B', 'WARNING' : '#EC9054', 'UNREACHABLE' : '#F1B16E', 'CRITICAL' : '#e05e65', 'DOWN' : '#e05e65', 'ACK' : '#666666', 'DOWNTIME' : '#dddddd'};
 
          var global_state = "{{all_states['host']}}";
          var main_color = main_colors[global_state];
@@ -117,32 +117,58 @@
          <dl class="dl-horizontal">
             <dt>Tags:</dt>
             <dd>
-              %for t in sorted(elt.get_host_tags()):
-              <a href="/all?search=htag:{{t}}">
-                <button class="btn btn-default btn-xs"><i class="fa fa-tag"></i> {{t.lower()}}</button>
-              </a>
-              %end
+               %if elt.get_host_tags():
+                  %for t in sorted(elt.get_host_tags()):
+                  <a href="/all?search=htag:{{t}}">
+                     <button class="btn btn-default btn-xs bg-host"><i class="fas fa-tag"></i> {{t.lower()}}</button>
+                  </a>
+                  %end
+               %else:
+               (none)
+               %end
             </dd>
-
-            <dt>Groups:</dt>
-            %if len(elt.hostgroups) > 0:
-            <dd>
-            %i=0
-            %for hg in elt.hostgroups:
-            {{',' if i != 0 else ''}}
-            <a href="/hosts-group/{{hg.get_name()}}" class="link">{{hg.alias if hg.alias else hg.get_name()}}</a>
-            %i=i+1
-            %end
-            </dd>
-            %else:
-            <dd>(none)</dd>
             %end
 
             %if elt.notes or elt.notes_url:
-            <blockquote style="font-size: 14px;">
-              {{ elt.notes }}<br>
-              <a href="{{ elt.notes_url }}" target="_blank"><i class="fa fa-external-link"></i> {{ elt.notes_url }}</a>
-            </blockquote>
+            <dt>Notes:</dt>
+            <dd>
+               %if elt.notes:
+               <p>{{! elt.notes}}</p>
+               %end
+
+               %if elt.notes_url:
+               <ul class="list-inline">
+               %for note in app.helper.get_element_notes_url(elt, icon="external-link-square", css='class="btn btn-info btn-xs"'):
+                 <li>{{! note}}</li>
+               %end
+               </ul>
+               %end
+            </dd>
+            %end
+
+            %if elt.action_url:
+            <dt>Actions:</dt>
+            <dd>
+               <ul class="list-inline">
+               %for action in app.helper.get_element_actions_url(elt, title="", icon="cogs", css='class="btn btn-warning btn-xs"'):
+                 <li>{{! action}}</li>
+               %end
+               </ul>
+            </dd>
+            %end
+
+            <dt>Groups:</dt>
+            %if elt.hostgroups:
+               <dd>
+               %i=0
+               %for hg in elt.hostgroups:
+               {{',' if i != 0 else ''}}
+               <a href="/hosts-group/{{hg.get_name()}}" class="link">{{hg.alias if hg.alias else hg.get_name()}}</a>
+               %i=i+1
+               %end
+               </dd>
+            %else:
+               <dd>(none)</dd>
             %end
          </dl>
       </div>

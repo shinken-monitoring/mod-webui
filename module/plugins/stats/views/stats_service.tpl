@@ -18,11 +18,11 @@
 <div class="col-xs-12">
   <div class="panel panel-default">
     <div class="panel-body">
-      <div id="inner_history" data-service='{{ service }}' data-logclass="3" data-commandname="{%22$regex%22:%22notify-service-by-slack%22}">
+      <div id="inner_history" data-service='{{ service }}' data-logclass="3" data-commandname="{%22$regex%22:%22{{ app.stats_command_name_filter }}%22}" data-contactname="{%22$regex%22:%22{{ app.stats_contact_name_filter }}%22}">
       </div>
 
       <div class="text-center" id="loading-spinner">
-        <h3><i class="fa fa-spinner fa-spin"></i> Loading history data…</h3>
+        <h3><i class="fas fa-spinner fa-spin"></i> Loading history data…</h3>
       </div>
     </div>
   </div>

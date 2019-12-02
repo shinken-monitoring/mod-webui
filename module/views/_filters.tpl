@@ -14,7 +14,7 @@
       <div class="input-group-btn">
          <div class="btn-group btn-group-sm">
             <button id="{{ search_id }}_filters" class="btn btn-ico dropdown-toggle" data-toggle="dropdown" aria-expanded="false" title="Filters">
-               <i class="fa fa-filter"></i>
+               <i class="fas fa-filter"></i>
             </button>
             <ul class="dropdown-menu" role="menu" aria-labelledby="{{ search_id }}_filters">
                <li role="presentation"><a role="menuitem" href="/all?search=&title=All resources">All resources</a></li>
@@ -33,13 +33,13 @@
                <li role="presentation"><a role="menuitem" href="?search=bi:>=1">Impact : {{!helper.get_business_impact_text(1, text=True)}}</a></li>
                <li role="presentation"><a role="menuitem" href="?search=bi:>=0">Impact : {{!helper.get_business_impact_text(0, text=True)}}</a></li>
                <li role="presentation" class="divider"></li>
-               <li role="presentation"><a role="menuitem" onclick="display_modal('/modal/helpsearch')"><strong><i class="fa fa-question-circle"></i> Search syntax</strong></a></li>
+               <li role="presentation"><a role="menuitem" onclick="display_modal('/modal/helpsearch')"><strong><i class="fas fa-question-circle"></i> Search syntax</strong></a></li>
             </ul>
          </div>
 
          <div class="btn-group btn-group-sm">
             <button id="bookmarks_menu" class="btn btn-ico dropdown-toggle" data-toggle="dropdown" aria-expanded="false" title="Bookmarks">
-               <i class="fa fa-bookmark-o"></i>
+               <i class="fas fa-bookmark"></i>
             </button>
             <ul class="dropdown-menu" role="menu" aria-labelledby="bookmarks_menu">
                <script type="text/javascript">
@@ -55,7 +55,7 @@
 
          <div class="btn-group btn-group-sm">
             <button class="btn btn-ico" type="submit">
-               <i class="fa fa-search"></i>
+               <i class="fas fa-search"></i>
             </button>
          </div>
       </div>

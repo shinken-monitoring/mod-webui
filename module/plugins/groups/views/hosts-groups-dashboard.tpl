@@ -4,13 +4,14 @@
 %helper = app.helper
 %h = app.datamgr.get_hosts_synthesis(user=user)
 
+%hide_empty = (getattr(app.modconf, 'plugin.hostgroups.hide_empty', '0') == '1')
 
 <div id="hostsgroups">
    <!-- Progress bar -->
    <div class="panel panel-default">
       <div class="panel-body">
-         <div class="pull-left col-sm-2">
-            <span class="pull-right">Total hosts: {{h['nb_elts']}}</span>
+         <div class="pull-left col-sm-2 hidden-sm hidden-xs text-center">
+            {{h['nb_elts']}} hosts
          </div>
          <div class="progress" style="margin-bottom: 0px;">
             <div title="{{h['nb_up']}} hosts Up" class="progress-bar progress-bar-success quickinfo" role="progressbar"
@@ -43,13 +44,13 @@
          <li class="all_groups list-group-item clearfix {{even}} {{'alert-danger' if h['nb_elts'] == h['nb_down'] and h['nb_elts'] != 0 else ''}}">
             <section class="left">
                <h3>
-                  <a role="menuitem" href="/all?search=type:host"><i class="fa fa-angle-double-down"></i>
+                  <a role="menuitem" href="/all?search=type:host"><i class="fas fa-angle-double-down"></i>
                      All hosts {{!helper.get_business_impact_text(h['bi'])}}
                   </a>
 
-               <span class="btn-group pull-right">
-                  <a href="{{app.get_url("HostsGroups")}}" class="btn btn-small switcher quickinfo pull-right" data-original-title='List'> <i class="fa fa-align-justify"></i> </a>
-               </span>
+                  <span class="btn-group pull-right">
+                     <a href="{{app.get_url("HostsGroups")}}" class="btn btn-small switcher quickinfo pull-right" data-original-title='List'> <i class="fas fa-align-justify"></i> </a>
+                  </span>
                </h3>
                <div>
                   %for state in 'up', 'unreachable', 'down', 'pending', 'unknown', 'ack', 'downtime':
@@ -82,6 +83,10 @@
       %for group in hostgroups:
          %hosts = app.datamgr.search_hosts_and_services('type:host hg:'+group.get_name(), user)
          %h = app.datamgr.get_hosts_synthesis(elts=hosts, user=user)
+         %if not hosts and hide_empty:
+         %continue
+         %end
+
          %if (i % 6)==0:
          <tr data-row="{{i}}">
          %end
@@ -92,7 +97,7 @@
          <td data-column="{{i%6}}" data-worst-state="{{worst_state}}" class="{{bg_colors[worst_state]}}">
             <div>
             <div class="col-sm-6 text-center btn">
-               <a href="hosts-groups?level={{int(group.level)}}"><i class="fa fa-sitemap"></i>&nbsp;{{group.level}}</a>
+               <a href="hosts-groups?level={{int(group.level)}}"><i class="fas fa-sitemap"></i>&nbsp;{{group.level}}</a>
             </div>
 
             %html=''
@@ -105,7 +110,7 @@
                   data-html="true" data-toggle="popover" data-trigger="hover" data-placement="bottom"
                   data-title="Hosts status"
                   data-content='{{!html}}' >
-               <i class="fa fa-server"></i>&nbsp;{{h['nb_elts']}}
+               <i class="fas fa-server"></i>&nbsp;{{h['nb_elts']}}
             </div>
 
             <h5 class="ellipsis" style="display:inline-block">

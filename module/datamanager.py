@@ -98,7 +98,7 @@ class WebUIDataManager(DataManager):
 
     def get_important_hosts(self, user=None):
         return self.search_hosts_and_services(
-                'type:host bi:>%d' % self.important_problems_business_impact,
+                'type:host bi:>=%d' % self.important_problems_business_impact,
                 user
                 )
 
@@ -211,7 +211,7 @@ class WebUIDataManager(DataManager):
 
     def get_important_services(self, user=None):
         return self.search_hosts_and_services(
-                'type:service bi:>%d' % self.important_problems_business_impact,
+                'type:service bi:>=%d' % self.important_problems_business_impact,
                 user
                 )
 
@@ -529,9 +529,12 @@ class WebUIDataManager(DataManager):
                 except ValueError:
                     items = []
 
-            if t == 'duration':
+            if t in ['duration', 'last_check']:
                 seconds_per_unit = {"s": 1, "m": 60, "h": 3600, "d": 86400, "w": 604800}
-                times = [(i, time.time() - int(i.last_state_change)) for i in items]
+                if t == 'duration':
+                    times = [(i, time.time() - int(i.last_state_change)) for i in items]
+                else:
+                    times = [(i, time.time() - int(i.last_chk)) for i in items]
                 try:
                     if s.startswith('>='):
                         s = int(s[2:-1]) * seconds_per_unit[s[-1].lower()]

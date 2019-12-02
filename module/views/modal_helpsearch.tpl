@@ -17,7 +17,7 @@
     <li><code>name:www name:server</code> or <code>www server</code> Matches hosts and services with "www" or "server" in their name.</li>
   </ul>
 
-  <p><i class="fa fa-thumbs-up"></i> The name qualifier is optional and may be omitted, as used in the two last examples.</p>
+  <p><i class="fas fa-thumbs-up"></i> The name qualifier is optional and may be omitted, as used in the two last examples.</p>
 
   <p>
     By default, searching for elements will return both hosts and services. However, you can use the type qualifier to restrict search results to hosts or services only.
@@ -60,10 +60,11 @@
   </ul>
 
   <h4>Search by duration</h4>
-  <p>You can also search by the duration of the last state change. This is very useful to find elements that are warning or critical for a long time. For example:</p>
+  <p>You can also search by the duration of the last state change or by the elapsed time since the last check. This is very useful to find elements that are warning or critical for a long time or that did not get checked since a while. For example:</p>
   <ul>
     <li><code>isnot:OK duration:>1w</code> Matches hosts and services not OK for at least one week.</li>
     <li><code>isnot:OK duration:<1h</code> Matches hosts and services not OK for less than one hour.</li>
+    <li><code>last_check:>1d</code> Matches hosts and services not checked in the last day.</li>
   </ul>
   <p>You can use the following time units: s(econds), m(inutes), h(ours), d(ays), w(eeks).</p>
 
@@ -78,7 +79,7 @@
     <li><code>stag:mysql</code> Matches services tagged "mysql".</li>
   </ul>
 
-  <p><i class="fa fa-thumbs-up"></i> Obviously, you can't combine htag and stag qualifiers in a search and expect to get results.</p>
+  <p><i class="fas fa-thumbs-up"></i> Obviously, you can't combine htag and stag qualifiers in a search and expect to get results.</p>
 
   <h4>Search by contact group and contact tag</h4>
   <p>Examples:</p>

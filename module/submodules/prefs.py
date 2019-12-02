@@ -57,7 +57,15 @@ class PrefsMetaModule(MetaModule):
 
     def get_ui_common_preference(self, key=None, default=None):
         if self.is_available():
-            return self.module.get_ui_common_preference(key) or default
+            # return self.module.get_ui_common_preference(key) or default
+            logger.debug("[WebUI-prefs] get common preference: %s", key)
+            value = self.module.get_ui_common_preference(key)
+            if value is None and default is not None:
+                logger.debug("[WebUI-prefs] set default value: %s", default)
+                self.set_ui_common_preference(key, default)
+                value = default
+            logger.debug("[WebUI-prefs] got: %s", value)
+            return value
         return default
 
     def set_ui_common_preference(self, key, value):
@@ -172,6 +180,10 @@ class MongoDBPreferences(object):
             self.is_connected = False
             return None
 
+        # If no specific key is required, returns all parameters ...
+        if key is None:
+            return doc
+
         # Maybe it"s a new entry or missing this parameter, bail out
         if not doc or key not in doc:
             logger.debug("[WebUI-MongoDBPreferences] new parameter of not stored preference: %s", key)
@@ -190,7 +202,7 @@ class MongoDBPreferences(object):
                 return None
 
         if not user:
-            logger.error("[WebUI-MongoDBPreferences]: error get_ui_user_preference, no defined user")
+            # logger.error("[WebUI-MongoDBPreferences]: error get_ui_user_preference, no defined user")
             return None
 
         try:
@@ -222,7 +234,7 @@ class MongoDBPreferences(object):
                 return
 
         if not user:
-            logger.warning("[WebUI-MongoDBPreferences] error set_ui_user_preference, no user!")
+            # logger.warning("[WebUI-MongoDBPreferences] error set_ui_user_preference, no user!")
             return
 
         try:

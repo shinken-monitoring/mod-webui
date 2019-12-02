@@ -6,13 +6,14 @@
 %helper = app.helper
 %h = app.datamgr.get_hosts_synthesis(user=user)
 
+%hide_empty = (getattr(app.modconf, 'plugin.hostgroups.hide_empty', '0') == '1')
 
 <div id="hostsgroups">
    <!-- Progress bar -->
    <div class="panel panel-default">
       <div class="panel-body">
-         <div class="pull-left col-sm-2">
-            <span class="pull-right">Total hosts: {{h['nb_elts']}}</span>
+         <div class="pull-left col-sm-2 hidden-sm hidden-xs text-center">
+            {{h['nb_elts']}} hosts
          </div>
          <div class="progress" style="margin-bottom: 0px;">
             <div title="{{h['nb_up']}} hosts Up" class="progress-bar progress-bar-success quickinfo" role="progressbar"
@@ -62,7 +63,7 @@
                </a>
 
                <span class="btn-group pull-right">
-                  <a href="{{app.get_url("HostsGroupsDashboard")}}" class="btn btn-small switcher quickinfo pull-right" data-original-title='List'> <i class="fa fa-align-justify"></i> </a>
+                  <a href="{{app.get_url("HostsGroupsDashboard")}}" class="btn btn-small switcher quickinfo pull-right" data-original-title='List'> <i class="fas fa-align-justify"></i> </a>
                </span>
             </h3>
             <section class="col-md-8 col-sm-6 col-xs-6">
@@ -103,11 +104,11 @@
 
                <section class="col-sm-12 col-xs-12">
                   <div class="btn-group btn-group-justified" role="group" aria-label="Minemap" title="View minemap for all hosts">
-                     <a class="btn btn-default" href="/minemap?search=type:host"><i class="fa fa-table"></i> <span class="hidden-xs">Minemap</span></a>
+                     <a class="btn btn-default" href="/minemap?search=type:host"><i class="fas fa-table"></i> <span class="hidden-xs">Minemap</span></a>
                   </div>
 
-                  <div class="btn-group btn-group-justified" role="group" aria-label="Resources" title="View resources for all hosts">
-                     <a class="btn btn-default" href="/all?search=type:host"><i class="fa fa-clock-o"></i> <span class="hidden-xs">Resources</span></a>
+                  <div class="btn-group btn-group-justified" role="group" aria-label="Elements" title="View elements for all hosts">
+                     <a class="btn btn-default" href="/all?search=type:host"><i class="fas fa-server"></i> <span class="hidden-xs">Elements</span></a>
                   </div>
 
                   <ul class="list-group">
@@ -129,27 +130,31 @@
          %continue
          %end
 
+         %hosts = app.datamgr.search_hosts_and_services('type:host hg:"'+group.get_name()+'"', user)
+         %h = app.datamgr.get_hosts_synthesis(hosts, user=user)
+         %sub_groups = group.hostgroup_members
+         %sub_groups = [] if (sub_groups and not sub_groups[0]) else sub_groups
+
+         %if not hosts and hide_empty:
+         %continue
+         %end
+
          %if even =='':
            %even='alt'
          %else:
            %even=''
          %end
 
-         %hosts = app.datamgr.search_hosts_and_services('type:host hg:"'+group.get_name()+'"', user)
-         %h = app.datamgr.get_hosts_synthesis(hosts, user=user)
-         %sub_groups = group.hostgroup_members
-         %sub_groups = [] if (sub_groups and not sub_groups[0]) else sub_groups
-
          %if not hosts:
          %# Empty group: no hosts
          <li class=" list-group-item clearfix {{even}}">
             <h3>
                %if sub_groups:
-               <a class="btn btn-default btn-xs" href="hosts-groups?level={{int(level+1)}}&parent={{group.get_name()}}" title="View contained groups"><i class="fa fa-angle-double-down"></i></a>
+               <a class="btn btn-default btn-xs" href="hosts-groups?level={{int(level+1)}}&parent={{group.get_name()}}" title="View contained groups"><i class="fas fa-angle-double-down"></i></a>
                %end
 
                %if group.has('level') and group.level > 0:
-               <a class="btn btn-default btn-xs" href="hosts-groups?level={{int(level-1)}}" title="View parent group"><i class="fa fa-angle-double-up"></i></a>
+               <a class="btn btn-default btn-xs" href="hosts-groups?level={{int(level-1)}}" title="View parent group"><i class="fas fa-angle-double-up"></i></a>
                %end
 
                <span>
@@ -175,11 +180,11 @@
          <li class=" list-group-item clearfix {{'alert-danger' if h['nb_elts'] == h['nb_down'] and h['nb_elts'] else ''}} {{even}}">
             <h3>
                %if sub_groups:
-               <a class="btn btn-default btn-xs" href="hosts-groups?level={{int(level+1)}}&parent={{group.get_name()}}" title="View contained groups"><i class="fa fa-angle-double-down"></i></a>
+               <a class="btn btn-default btn-xs" href="hosts-groups?level={{int(level+1)}}&parent={{group.get_name()}}" title="View contained groups"><i class="fas fa-angle-double-down"></i></a>
                %end
 
                %if group.has('level') and group.level > 0:
-               <a class="btn btn-default btn-xs" href="hosts-groups?level={{int(level-1)}}" title="View parent group"><i class="fa fa-angle-double-up"></i></a>
+               <a class="btn btn-default btn-xs" href="hosts-groups?level={{int(level-1)}}" title="View parent group"><i class="fas fa-angle-double-up"></i></a>
                %end
 
                <a role="menuitem" href="/all?search=type:host hg:{{'"%s"' % group.get_name()}}">
@@ -235,11 +240,11 @@
 
                <section class="col-sm-12 col-xs-12">
                   <div class="btn-group btn-group-justified" role="group" aria-label="Minemap" title="View minemap for this group">
-                     <a class="btn btn-default" href="/minemap?search=type:host hg:{{'"%s"' % group.get_name()}}"><i class="fa fa-table"></i> <span class="hidden-xs">Minemap</span></a>
+                     <a class="btn btn-default" href="/minemap?search=type:host hg:{{'"%s"' % group.get_name()}}"><i class="fas fa-table"></i> <span class="hidden-xs">Minemap</span></a>
                   </div>
 
-                  <div class="btn-group btn-group-justified" role="group" aria-label="Resources" title="View resources for this group">
-                     <a class="btn btn-default" href="/all?search=type:host hg:{{'"%s"' % group.get_name()}}"><i class="fa fa-clock-o"></i> <span class="hidden-xs">Resources</span></a>
+                  <div class="btn-group btn-group-justified" role="group" aria-label="Elements" title="View elements for this group">
+                     <a class="btn btn-default" href="/all?search=type:host hg:{{'"%s"' % group.get_name()}}"><i class="fas fa-server"></i> <span class="hidden-xs">Elements</span></a>
                   </div>
 
                   <ul class="list-group">

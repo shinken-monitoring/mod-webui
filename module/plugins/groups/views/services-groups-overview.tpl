@@ -6,13 +6,14 @@
 %helper = app.helper
 %s = app.datamgr.get_services_synthesis(user=user)
 
+%hide_empty = (getattr(app.modconf, 'plugin.servicegroups.hide_empty', '0') == '1')
 
 <div id="servicesgroups">
    <!-- Progress bar -->
    <div class="panel panel-default">
       <div class="panel-body">
-         <div class="pull-left col-sm-2">
-            <span class="pull-right">Total services: {{s['nb_elts']}}</span>
+         <div class="pull-left col-sm-2 hidden-sm hidden-xs text-center">
+            {{s['nb_elts']}} services
          </div>
          <div class="progress" style="margin-bottom: 0px;">
             <div title="{{s['nb_ok']}} services Ok" class="progress-bar progress-bar-success quickinfo" role="progressbar"
@@ -98,11 +99,11 @@
 
                <section class="col-sm-12 col-xs-12">
                   <div class="btn-group btn-group-justified" role="group" aria-label="Minemap" title="View minemap for all services">
-                     <a class="btn btn-default" href="/minemap?search=type:service"><i class="fa fa-table"></i> <span class="hidden-xs">Minemap</span></a>
+                     <a class="btn btn-default" href="/minemap?search=type:service"><i class="fas fa-table"></i> <span class="hidden-xs">Minemap</span></a>
                   </div>
 
-                  <div class="btn-group btn-group-justified" role="group" aria-label="Resources" title="View resources for all services">
-                     <a class="btn btn-default" href="/all?search=type:service"><i class="fa fa-ambulance"></i> <span class="hidden-xs">Resources</span></a>
+                  <div class="btn-group btn-group-justified" role="group" aria-label="Elements" title="View elements for all services">
+                     <a class="btn btn-default" href="/all?search=type:service"><i class="fas fa-hdd"></i> <span class="hidden-xs">Elements</span></a>
                   </div>
 
                   <ul class="list-group">
@@ -124,27 +125,31 @@
          %continue
          %end
 
+         %services = app.datamgr.search_hosts_and_services('type:service sg:"'+group.get_name()+'"', user)
+         %s = app.datamgr.get_services_synthesis(services, user=user)
+         %sub_groups = group.servicegroup_members
+         %sub_groups = [] if (sub_groups and not sub_groups[0]) else sub_groups
+
+         %if not services and hide_empty:
+         %continue
+         %end
+
          %if even =='':
            %even='alt'
          %else:
            %even=''
          %end
 
-         %services = app.datamgr.search_hosts_and_services('type:service sg:"'+group.get_name()+'"', user)
-         %s = app.datamgr.get_services_synthesis(services, user=user)
-         %sub_groups = group.servicegroup_members
-         %sub_groups = [] if (sub_groups and not sub_groups[0]) else sub_groups
-
          %if not services:
          %# Empty group: no service
          <li class=" list-group-item clearfix {{even}}">
             <h3>
                %if sub_groups:
-               <a class="btn btn-default btn-xs" href="services-groups?level={{int(level+1)}}&parent={{group.get_name()}}" title="View contained groups"><i class="fa fa-angle-double-down"></i></a>
+               <a class="btn btn-default btn-xs" href="services-groups?level={{int(level+1)}}&parent={{group.get_name()}}" title="View contained groups"><i class="fas fa-angle-double-down"></i></a>
                %end
 
                %if group.has('level') and group.level > 0:
-               <a class="btn btn-default btn-xs" href="services-groups?level={{int(level-1)}}" title="View parent group"><i class="fa fa-angle-double-up"></i></a>
+               <a class="btn btn-default btn-xs" href="services-groups?level={{int(level-1)}}" title="View parent group"><i class="fas fa-angle-double-up"></i></a>
                %end
 
                <span>
@@ -170,11 +175,11 @@
          <li class="group list-group-item clearfix {{'alert-danger' if s['nb_elts'] == s['nb_critical'] and s['nb_elts'] != 0 else ''}} {{even}}">
             <h3>
                %if sub_groups:
-               <a class="btn btn-default btn-xs" href="services-groups?level={{int(level+1)}}&parent={{group.get_name()}}" title="View contained groups"><i class="fa fa-angle-double-down"></i></a>
+               <a class="btn btn-default btn-xs" href="services-groups?level={{int(level+1)}}&parent={{group.get_name()}}" title="View contained groups"><i class="fas fa-angle-double-down"></i></a>
                %end
 
                %if group.has('level') and group.level > 0:
-               <a class="btn btn-default btn-xs" href="services-groups?level={{int(level-1)}}" title="View parent group"><i class="fa fa-angle-double-up"></i></a>
+               <a class="btn btn-default btn-xs" href="services-groups?level={{int(level-1)}}" title="View parent group"><i class="fas fa-angle-double-up"></i></a>
                %end
 
                <a role="menuitem" href="/all?search=type:service sg:{{'"%s"' % group.get_name()}}">
@@ -230,11 +235,11 @@
 
                <section class="col-sm-12 col-xs-12">
                   <div class="btn-group btn-group-justified" role="group" aria-label="Minemap" title="View minemap for this group">
-                     <a class="btn btn-default" href="/minemap?search=type:service sg:{{'"%s"' % group.get_name()}}"><i class="fa fa-table"></i> <span class="hidden-xs">Minemap</span></a>
+                     <a class="btn btn-default" href="/minemap?search=type:service sg:{{'"%s"' % group.get_name()}}"><i class="fas fa-table"></i> <span class="hidden-xs">Minemap</span></a>
                   </div>
 
-                  <div class="btn-group btn-group-justified" role="group" aria-label="Resources" title="View resources for this group">
-                     <a class="btn btn-default" href="/all?search=type:service sg:{{'"%s"' % group.get_name()}}"><i class="fa fa-ambulance"></i> <span class="hidden-xs">Resources</span></a>
+                  <div class="btn-group btn-group-justified" role="group" aria-label="Elements" title="View elements for this group">
+                     <a class="btn btn-default" href="/all?search=type:service sg:{{'"%s"' % group.get_name()}}"><i class="fas fa-hdd"></i> <span class="hidden-xs">Elements</span></a>
                   </div>
 
                   <ul class="list-group">

@@ -26,19 +26,19 @@
         created
         %end
         {{!helper.print_duration_and_date(d.entry_time)}}
-        | 
+        |
         %if not d.is_in_effect:
-        scheduled 
+        scheduled
         %else:
-        started 
+        started
         %end
         {{!helper.print_duration_and_date(d.start_time)}},
-        expires in 
+        expires in
         {{!helper.print_duration_and_date(d.end_time, just_duration=True)}}
       </span>
       <span class="pull-right">
         %if not d.is_in_effect:
-        <i class="fa fa-calendar" title="This downtime is scheduled but not in effect at the moment"></i>&nbsp;
+        <i class="fas fa-calendar" title="This downtime is scheduled but not in effect at the moment"></i>&nbsp;
         %end
         %if app.can_action():
         <a class="{{'disabled' if not app.can_action() else ''}} js-delete-downtime text-danger"
@@ -46,7 +46,7 @@
           data-element="{{helper.get_uri_name(d.ref)}}" data-downtime="{{d.id}}"
           style="cursor: pointer;"
           >
-          <i class="fa fa-remove"></i>
+          <i class="fas fa-remove"></i>
         </a>
         %end
       </span><br>

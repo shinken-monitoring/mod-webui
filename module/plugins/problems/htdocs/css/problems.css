@@ -99,6 +99,10 @@ tr.selected {
     border-right: 1px solid red;
 }
 
+.fa-stack {
+    width: 2em;
+}
+
 tr.selected .item-icon,
 .item-state:hover .item-icon {
     display: none;
@@ -113,6 +117,10 @@ tr.selected .item-checkbox,
     display: none;
 }
 
+.js-select-all .onhover-label .fas {
+    line-height: 0.9;
+}
+
 .js-select-all:hover .onhover-label {
     display: inline-block;
     width: 200px;
@@ -122,13 +130,18 @@ tr.selected .item-checkbox,
     display: none;
 }
 
-.eltdetail-content {
+.pb_detail-content {
     font-size: 14px;
     padding: 20px;
 }
 
-.eltdetail-action-buttons {
+.pb_detail-action-buttons {
     text-align: right;
+}
+
+.pb_detail-action-buttons .btn-action {
+    padding: 8px;
+    color: #555;
 }
 
 @media(max-width:768px) {

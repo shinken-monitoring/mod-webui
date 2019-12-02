@@ -26,7 +26,12 @@
                %for state in states:
                <td>
                  %label = "%s hosts %s (%s%%)<br>%s with current filter" % (h_all['nb_' + state], state, h_all['pct_' + state], h['nb_' + state])
-                 <a style="text-decoration: none;" href="/all?search=type:host is:{{state}} isnot:ack isnot:downtime" title="{{!label}}">
+                 %if not h['nb_' + state]:
+                 %link = "/all?search=type:host is:" + state + " isnot:ack isnot:downtime"
+                 %else:
+                 %link = "/all?search=" + search_string + " is:" + state
+                 %end
+                 <a style="text-decoration: none;" href="{{ link }}" title="{{!label}}">
                    {{! helper.get_fa_icon_state_and_label(cls='host', state=state, label="%s<small class='hidden-sm'> / %s</small>" % (h['nb_' + state], h_all['nb_'+state]), use_title=False, disabled=(not h['nb_' + state]))}}
                  </a>
                </td>
@@ -35,8 +40,13 @@
                %for state in 'ack', 'downtime':
                <td>
                  %label = "%s hosts %s (%s%%)<br>%s with current filter" % (h_all['nb_' + state], state, h_all['pct_' + state], h['nb_' + state])
-                 <a style="text-decoration: none;" class="font-{{ state.lower() if h['nb_' + state] else 'greyed' }}" href="/all?search=type:host is:{{state}}" title="{{!label}}">
-                   <i class="fa {{ 'fa-check' if state == 'ack' else 'fa-clock-o' }}"></i> {{ h['nb_' + state] }} <small class='hidden-sm'> / {{ h_all['nb_'+state] }}</small>
+                 %if not h['nb_' + state]:
+                 %link = "/all?search=type:host is:" + state
+                 %else:
+                 %link = "/all?search=" + search_string + " is:" + state
+                 %end
+                 <a style="text-decoration: none;" class="font-{{ state.lower() if h['nb_' + state] else 'greyed' }}" href="{{ link }}" title="{{!label}}">
+                   <i class="fa fa-2x {{ 'fa-check' if state == 'ack' else 'fa-clock' }}"></i> {{ h['nb_' + state] }} <small class='hidden-sm'> / {{ h_all['nb_'+state] }}</small>
                  </a>
                </td>
                %end
@@ -57,7 +67,12 @@
                %for state in states:
                <td>
                  %label = "%s services %s (%s%%)<br>%s with current filter" % (s_all['nb_' + state], state, s_all['pct_' + state], s['nb_' + state])
-                 <a style="text-decoration: none;" href="/all?search=type:service is:{{state}} isnot:ack isnot:downtime" title="{{!label}}">
+                 %if not s['nb_' + state]:
+                 %link = "/all?search=type:service is:" + state + " isnot:ack isnot:downtime"
+                 %else:
+                 %link = "/all?search=" + search_string + " is:" + state
+                 %end
+                 <a style="text-decoration: none;" href="{{ link }}" title="{{!label}}">
                    {{!helper.get_fa_icon_state_and_label(cls='service', state=state, label="%s<small class='hidden-sm'> / %s</small>" % (s['nb_' + state], s_all['nb_'+state]), use_title=False, disabled=(not s['nb_' + state]))}}
                  </a>
                </td>
@@ -66,8 +81,13 @@
                %for state in 'ack', 'downtime':
                <td>
                  %label = "%s services %s (%s%%)<br>%s with current filter" % (s_all['nb_' + state], state, s_all['pct_' + state], s['nb_' + state])
-                 <a style="text-decoration: none;" class="font-{{ state.lower() if s['nb_' + state] else 'greyed' }}" href="/all?search=type:service is:{{state}}" title="{{!label}}">
-                   <i class="fa {{ 'fa-check' if state == 'ack' else 'fa-clock-o' }}"></i> {{ s['nb_' + state] }} <small class='hidden-sm'> / {{ s_all['nb_'+state] }}</small>
+                 %if not s['nb_' + state]:
+                 %link = "/all?search=type:service is:" + state
+                 %else:
+                 %link = "/all?search=" + search_string + " is:" + state
+                 %end
+                 <a style="text-decoration: none;" class="font-{{ state.lower() if s['nb_' + state] else 'greyed' }}" href="{{ link }}" title="{{!label}}">
+                   <i class="fa fa-2x {{ 'fa-check' if state == 'ack' else 'fa-clock' }}"></i> {{ s['nb_' + state] }} <small class='hidden-sm'> / {{ s_all['nb_'+state] }}</small>
                  </a>
                </td>
                %end

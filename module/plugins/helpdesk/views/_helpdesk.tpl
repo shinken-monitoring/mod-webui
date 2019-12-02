@@ -165,7 +165,7 @@
                         data-ticket="{{ticket['id']}}"
                         data-status="{{ticket['status']}}"
                         >
-                        <i class="fa fa-medkit"></i> Add a follow-up
+                        <i class="fas fa-medkit"></i> Add a follow-up
                      </button>
                      <button class="{{'disabled' if not app.can_action() else ''}} btn btn-primary create-ticket-followup"
                         title="Create a follow-up for this ticket"
@@ -174,7 +174,7 @@
                         data-status="{{ticket['status']}}"
                         data-type="solution"
                         >
-                        <i class="fa fa-medkit"></i> Set a solution
+                        <i class="fas fa-medkit"></i> Set a solution
                      </button>
                   </div>
                </div>

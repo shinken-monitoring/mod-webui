@@ -3,7 +3,7 @@
 {{ daterange }}
 <dl class="comment-list">
   %for c in comments:
-  <dt>{{ c.author }} 
+  <dt>{{ c.author }}
     <span class="comment-time">
       commented
       {{!helper.print_duration_and_date(c.entry_time)}},
@@ -14,7 +14,7 @@
     </span>
     <span class="pull-right">
       %if c.persistent:
-      <i class="fa fa-flag-o" title="This comment is persistent"></i>
+      <i class="fas fa-flag-o" title="This comment is persistent"></i>
       %end
       %if app.can_action():
       <a class="{{'disabled' if not app.can_action() else ''}} js-delete-comment text-danger"
@@ -22,7 +22,7 @@
         data-element="{{helper.get_uri_name(c.ref)}}" data-comment="{{c.id}}"
         style="cursor: pointer;"
         >
-        <i class="fa fa-remove"></i>
+        <i class="fas fa-remove"></i>
       </a>
       %end
     </span>

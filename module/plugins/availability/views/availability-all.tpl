@@ -29,7 +29,7 @@
          <form class="form-inline pull-left" role="form" method="get" action="/availability">
             <div class="form-group">
                <div class="input-group">
-                  <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                  <span class="input-group-addon"><i class="fas fa-calendar"></i></span>
                   <input type="text" class="form-control" id="dtr_downtime" placeholder="..." />
                </div>
                <input type="hidden" id="range_start" name="range_start" />

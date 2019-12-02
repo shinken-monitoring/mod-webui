@@ -522,10 +522,10 @@ $("body").on("click", ".js-schedule-downtime", function () {
         var downtime_stop = moment().seconds(0).add('minutes', duration).format('X');
         var comment = $(this).text() + " downtime scheduled from WebUI by " + user;
         if (elt) {
-            do_schedule_downtime(elt, downtime_start, downtime_stop, user, comment, shinken_downtime_fixed, shinken_downtime_trigger, shinken_downtime_duration);
+            do_schedule_downtime(elt, downtime_start, downtime_stop, g_user_name, comment, shinken_downtime_fixed, shinken_downtime_trigger, shinken_downtime_duration);
         } else {
             $.each(selected_elements, function(idx, name){
-                do_schedule_downtime(name, downtime_start, downtime_stop, user, comment, shinken_downtime_fixed, shinken_downtime_trigger, shinken_downtime_duration);
+                do_schedule_downtime(name, downtime_start, downtime_stop, g_user_name, comment, shinken_downtime_fixed, shinken_downtime_trigger, shinken_downtime_duration);
             });
         }
     } else {
@@ -549,7 +549,7 @@ $("body").on("click", ".js-delete-downtime", function () {
 
     if (strconfirm == true) {
         delete_downtime(elt, downtime);
-        add_comment(elt, user, "Dowtime "+ downtime + " for " + elt + " deleted by " + user);
+        add_comment(elt, g_user_name, "Dowtime "+ downtime + " for " + elt + " deleted by " + user);
     }
 });
 
@@ -574,7 +574,7 @@ $("body").on("click", ".js-add-acknowledge", function () {
         display_modal("/forms/acknowledge/add/"+elt);
     } else {
         $.each(selected_elements, function(idx, name){
-            do_acknowledge(name, 'Acknowledged by '+user, user, default_ack_sticky, default_ack_notify, default_ack_persistent);
+            do_acknowledge(name, 'Acknowledged by '+user, g_user_name, default_ack_sticky, default_ack_notify, default_ack_persistent);
         });
     }
 

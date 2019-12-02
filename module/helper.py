@@ -45,6 +45,8 @@ except ImportError:
 
 from shinken.misc.sorter import hst_srv_sort
 from shinken.misc.perfdata import PerfDatas
+from shinken.macroresolver import MacroResolver
+from shinken.log import logger
 
 
 # pylint: disable=no-self-use
@@ -52,9 +54,15 @@ class Helper(object):
     def __init__(self):
         pass
 
-    # For a unix time return something like
-    # Tue Aug 16 13:56:08 2011
     def print_date(self, t, format='%Y-%m-%d %H:%M:%S'):
+        """
+        For a unix time return something like
+        Tue Aug 16 13:56:08 2011
+
+        :param t:
+        :param format:
+        :return:
+        """
         if t == 0 or t is None:
             return 'N/A'
 
@@ -63,14 +71,21 @@ class Helper(object):
 
         return time.asctime(time.localtime(t))
 
-    # For a time, print something like
-    # 10m 37s  (just duration = True)
-    # N/A if got bogus number (like 1970 or None)
-    # 1h 30m 22s ago (if t < now)
-    # Now (if t == now)
-    # in 1h 30m 22s
-    # Or in 1h 30m (no sec, if we ask only_x_elements=2, 0 means all)
     def print_duration(self, t, just_duration=False, x_elts=0):
+        """
+        For a time, print something like
+        10m 37s  (just duration = True)
+        N/A if got bogus number (like 1970 or None)
+        1h 30m 22s ago (if t < now)
+        Now (if t == now)
+        in 1h 30m 22s
+        Or in 1h 30m (no sec, if we ask only_x_elements=2, 0 means all)
+
+        :param t:
+        :param just_duration:
+        :param x_elts:
+        :return:
+        """
         if t == 0 or t is None:
             return 'N/A'
 
@@ -136,8 +151,15 @@ class Helper(object):
 
         return ' '.join(duration) + ' ago'
 
-    # Prints the duration with the date as title
     def print_duration_and_date(self, t, just_duration=False, x_elts=2):
+        """
+        Prints the duration with the date as title
+
+        :param t:
+        :param just_duration:
+        :param x_elts:
+        :return:
+        """
         return "<span title='%s'>%s</span>" \
                % (self.print_date(t, format="%d %b %Y %H:%M:%S"), self.print_duration(t, just_duration, x_elts=x_elts))
 
@@ -173,9 +195,13 @@ class Helper(object):
 
         return groups
 
-    # Get the small state for host/service icons
-    # and satellites ones
     def get_small_icon_state(self, obj):
+        """
+        Get the small state for host/service icons and satellites ones
+
+        :param obj:
+        :return:
+        """
         if obj.__class__.my_type in ['service', 'host']:
             if obj.state == 'PENDING':
                 return 'unknown'
@@ -203,13 +229,18 @@ class Helper(object):
             return 'ok'
         return 'unknown'
 
-    # Give a business impact as text and stars if need
-    # If text=True, returns text+stars, else returns stars only ...
     def get_business_impact_text(self, business_impact, text=False):
+        """
+        Give a business impact as text and stars if need
+        If text=True, returns text+stars, else returns stars only ...
+        :param business_impact:
+        :param text:
+        :return:
+        """
         txts = {0: 'None', 1: 'Low', 2: 'Normal',
                 3: 'Important', 4: 'Very important', 5: 'Business critical'}
         nb_stars = max(0, business_impact - 2)
-        stars = '<small style="vertical-align: middle;"><i class="fa fa-star"></i></small>' * nb_stars
+        stars = '<small style="vertical-align: middle;"><i class="fas fa-star"></i></small>' * nb_stars
 
         if text:
             res = "%s %s" % (txts.get(business_impact, 'Unknown'), stars)
@@ -217,8 +248,15 @@ class Helper(object):
             res = stars
         return res
 
-    # Give an enabled/disabled state based on font-awesome with optional title and message
     def get_on_off(self, status=False, title=None, message=''):
+        """
+        Give an enabled/disabled state based on font-awesome with optional title and message
+
+        :param status:
+        :param title:
+        :param message:
+        :return:
+        """
         if not title:
             if status:
                 title = 'Enabled'
@@ -226,9 +264,9 @@ class Helper(object):
                 title = 'Disabled'
 
         if status:
-            return '''<i title="%s" class="fa fa-check font-green">%s</i>''' % (title, message)
+            return '''<i title="%s" class="fas fa-check font-green">%s</i>''' % (title, message)
 
-        return '''<i title="%s" class="fa fa-times font-red">%s</i>''' % (title, message)
+        return '''<i title="%s" class="fas fa-times font-red">%s</i>''' % (title, message)
 
     def get_link(self, obj, short=False):
         if obj.__class__.my_type == 'service':
@@ -242,8 +280,13 @@ class Helper(object):
         # if not service, host
         return '<a href="/host/%s"> %s </a>' % (obj.get_full_name(), obj.get_full_name())
 
-    # Give only the /service/blabla or /host blabla string, like for buttons inclusion
     def get_link_dest(self, obj):
+        """
+        Give only the /service/blabla or /host blabla string, like for buttons inclusion
+
+        :param obj:
+        :return:
+        """
         return "/%s/%s" % (obj.__class__.my_type, obj.get_full_name())
 
     def get_fa_icon_state(self, obj=None, cls='host', state='UP', disabled=False, label='', use_title=True):
@@ -277,7 +320,7 @@ class Helper(object):
                 'DOWN': 'server',
                 'UNREACHABLE': 'server',
                 'ACK': 'check',
-                'DOWNTIME': 'clock-o',
+                'DOWNTIME': 'clock',
                 'FLAPPING': 'cog fa-spin',
                 'PENDING': 'server',
                 'UNKNOWN': 'server'
@@ -288,20 +331,20 @@ class Helper(object):
                 'WARNING': 'exclamation',
                 'UNREACHABLE': 'question',
                 'ACK': 'check',
-                'DOWNTIME': 'clock-o',
+                'DOWNTIME': 'clock',
                 'FLAPPING': 'cog fa-spin',
-                'PENDING': 'spinner fa-circle-o-notch',
+                'PENDING': 'spinner fa-circle-notch',
                 'UNKNOWN': 'question'
             }
         }
 
         cls = obj.__class__.my_type if obj is not None else cls
 
-        back = '''<i class="fa fa-%s fa-stack-2x font-%s"></i>''' \
+        back = '''<i class="fas fa-%s fa-stack-2x font-%s"></i>''' \
                % (icons[cls]['FLAPPING'] if flapping else 'circle',
                   state.lower() if not disabled else 'greyed')
         if flapping:
-            back += '''<i class="fa fa-circle fa-stack-1x font-%s"></i>''' \
+            back += '''<i class="fas fa-circle fa-stack-1x font-%s"></i>''' \
                     % (state.lower() if not disabled else 'greyed')
 
         title = "%s is %s" % (cls, state)
@@ -326,7 +369,10 @@ class Helper(object):
         else:
             icon = icons[cls].get(state, 'UNKNOWN')
 
-        front = '''<i class="fa fa-%s fa-stack-1x %s"></i>''' % (icon, icon_color)
+        if obj and not (obj.active_checks_enabled or obj.passive_checks_enabled):
+            icon_color = 'bg-lightgrey'
+
+        front = '''<i class="fas fa-%s fa-stack-1x %s"></i>''' % (icon, icon_color)
 
         if use_title:
             icon_text = '''<span class="fa-stack" %s title="%s">%s%s</span>''' % (icon_style, title, back, front)
@@ -356,8 +402,15 @@ class Helper(object):
                  label)
 
     # :TODO:maethor:150609: Rewrite this function
-    # Get
     def get_navi(self, total, pos, step=30):
+        """
+        Get the pages navigation HTML widget
+
+        :param total:
+        :param pos:
+        :param step:
+        :return:
+        """
         step = float(step)
         nb_pages = math.ceil(total / step) if step != 0 else 0
         current_page = int(pos / step) if step != 0 else 0
@@ -496,20 +549,35 @@ class Helper(object):
 
         return s
 
-    # We want the html id of an host or a service. It's basically
-    # the full_name with / changed as -- (because in html, / is not valid :) )
     def get_html_id(self, elt):
+        """
+        We want the html id of an host or a service. It's basically
+        the full_name with / changed as -- (because in html, / is not valid :) )
+
+        :param elt:
+        :return:
+        """
         return self.strip_html_id(elt.get_full_name())
 
     def strip_html_id(self, s):
         return s.replace('/', '--').replace(' ', '_').replace('.', '_').replace(':', '_')
 
-    # Make an HTML element identifier
     def make_html_id(self, s):
+        """
+        Make an HTML element identifier
+
+        :param s:
+        :return:
+        """
         return re.sub('[^A-Za-z0-9]', '', s)
 
-    # URI with spaces are BAD, must change them with %20
     def get_uri_name(self, elt):
+        """
+        URI with spaces are BAD, must change them with %20
+
+        :param elt:
+        :return:
+        """
         return elt.get_full_name().replace(' ', '%20')
 
     def get_aggregation_paths(self, p):
@@ -532,7 +600,7 @@ class Helper(object):
             states.append(s.state.lower())
 
         # ok now look at what is worse here
-        order = ['critical', 'warning', 'unknown', 'ok', 'pending']
+        order = ['critical', 'warning', 'unknown', 'unreachable', 'ok', 'pending']
         for o in order:
             if o in states:
                 tree['state'] = o
@@ -589,15 +657,15 @@ class Helper(object):
         list_state = 'expanded'
 
         if path != '/':
-            # If our state is OK, hide our sons
-            if state == 'ok' and (not expanded or len(sons) >= max_sons):
-                display = 'none'
-                img = 'expand.png'
-                icon = 'plus'
-                list_state = 'collapsed'
+            # # If our state is OK, hide our sons
+            # if state == 'ok' and (not expanded or len(sons) >= max_sons):
+            #     display = 'none'
+            #     img = 'expand.png'
+            #     icon = 'plus'
+            #     list_state = 'collapsed'
 
             s += """<a class="toggle-list" data-state="%s" data-target="ag-%s">
-            <span class="alert-small alert-%s"> <i class="fa fa-%s"></i> %s&nbsp;</span> </a>""" \
+            <span class="alert-small alert-%s"> <i class="fas fa-%s"></i> %s&nbsp;</span> </a>""" \
                  % (list_state, _id, state, icon, path)
 
         s += """<ul name="ag-%s" class="list-group" style="display: %s;">""" % (_id, display)
@@ -676,7 +744,7 @@ class Helper(object):
             # If we are the root, we already got this
             if level != 0:
                 s += '<a class="pull-right toggle-list" data-state="%s" data-target="bp-%s">' \
-                     '<i class="fa fa-%s"></i></a>' % (list_state, self.make_html_id(name), icon)
+                     '<i class="fas fa-%s"></i></a>' % (list_state, self.make_html_id(name), icon)
 
             s += """<ul class="list-group" name="bp-%s" style="display: %s;">""" % (self.make_html_id(name), display)
 
@@ -693,7 +761,7 @@ class Helper(object):
             return ''
 
         # Build a definition list ...
-        content = '''<dl>'''
+        content = '''<dl class="dl-horizontal">'''
         for dr in sorted(tp.dateranges, key=operator.methodcaller("get_start_and_end_time")):
             (dr_start, dr_end) = dr.get_start_and_end_time()
             dr_start = time.strftime("%d %b %Y", time.localtime(dr_start))
@@ -715,7 +783,7 @@ class Helper(object):
 
         # Build a definition list ...
         if tp.exclude:
-            content += '''<dl> Excluded: '''
+            content += '''<dl class="dl-horizontal"> Excluded: '''
             for excl in tp.exclude:
                 content += self.get_timeperiod_html(excl)
             content += '''</dl>'''
@@ -726,28 +794,282 @@ class Helper(object):
         if contact == '(Nagios Process)':
             name = "Nagios Process"
             title = name
-            s = '<i class="fa fa-server"></i>'
+            s = '<i class="fas fa-server"></i>'
+        elif contact == 'Alignak':
+            name = "Alignak"
+            title = name
+            s = '<i class="fas fa-server"></i>'
         else:
             # pylint: disable=undefined-variable
-            # Because unicode...
-            if isinstance(contact, (unicode, str)):
-                name = contact
-                title = name
-            else:
-                name = contact.contact_name
-                title = name
+            name = contact
+            title = name
+            if not isinstance(contact, (unicode, str)):
+                # It is a UI contact
+                name = contact.get_username()
+                title = contact.get_name()
+
             s = '<img src="/avatar/%s?s=%s" class="img-circle">' % (name, size)
 
         if with_name:
             s += '&nbsp;'
-            s += name
+            s += title
 
-        if with_link and contact != '(Nagios Process)':
+        if with_link and contact not in ['(Nagios Process)', 'Alignak']:
             s = '<a href="/contact/%s">%s</a>' % (name, s)
 
         s = '<span class="user-avatar" title="%s">%s</span>' % (title, s)
 
         return s
+
+    def get_event_icon(self, event, disabled=False, label='', use_title=True):
+        '''
+            Get an Html formatted string to display a monitoring event
+
+            If disabled is True, the font used is greyed
+
+            If label is empty, only an icon is returned
+            If label is set as 'state', the icon title is used as text
+            Else, the content of label is used as text near the icon.
+
+            If use_title is False, do not include title attribute.
+
+            Returns a span element containing a Font Awesome icon that depicts
+           consistently the event and its state
+        '''
+        cls = event.get('type', 'unknown').lower()
+        state = event.get('state', 'n/a').upper()
+        state_type = event.get('state_type', 'n/a').upper()
+        hard = (state_type == 'HARD')
+
+        # Icons depending upon element and real state ...
+        # ; History
+        icons = {
+            "unknown": {
+                "class": "history_Unknown",
+                "text": "Unknown event",
+                "icon": "question"
+            },
+
+            "retention_load": {
+                "class": "history_RetentionLoad",
+                "text": "Retention load",
+                "icon": "save"
+            },
+            "retention_save": {
+                "class": "history_RetentionSave",
+                "text": "Retention save",
+                "icon": "save"
+            },
+
+            "alert": {
+                "class": "history_Alert",
+                "text": "Monitoring alert",
+                "icon": "bolt"
+            },
+
+            "notification": {
+                "class": "history_Notification",
+                "text": "Monitoring notification sent",
+                "icon": "paper-plane"
+            },
+
+            "check_result": {
+                "class": "history_CheckResult",
+                "text": "Check result",
+                "icon": "bolt"
+            },
+
+            "comment": {
+                "class": "history_WebuiComment",
+                "text": "WebUI comment",
+                "icon": "send"
+            },
+            "timeperiod_transition": {
+                "class": "history_TimeperiodTransition",
+                "text": "Timeperiod transition",
+                "icon": "clock-o"
+            },
+            "external_command": {
+                "class": "history_ExternalCommand",
+                "text": "External command",
+                "icon": "wrench"
+            },
+
+            "event_handler": {
+                "class": "history_EventHandler",
+                "text": "Monitoring event handler",
+                "icon": "bolt"
+            },
+            "flapping_start": {
+                "class": "history_FlappingStart",
+                "text": "Monitoring flapping start",
+                "icon": "flag"
+            },
+            "flapping_stop": {
+                "class": "history_FlappingStop",
+                "text": "Monitoring flapping stop",
+                "icon": "flag-o"
+            },
+            "downtime_start": {
+                "class": "history_DowntimeStart",
+                "text": "Monitoring downtime start",
+                "icon": "ambulance"
+            },
+            "downtime_cancelled": {
+                "class": "history_DowntimeCancelled",
+                "text": "Monitoring downtime cancelled",
+                "icon": "ambulance"
+            },
+            "downtime_end": {
+                "class": "history_DowntimeEnd",
+                "text": "Monitoring downtime stopped",
+                "icon": "ambulance"
+            },
+            "acknowledge_start": {
+                "class": "history_AckStart",
+                "text": "Monitoring acknowledge start",
+                "icon": "check"
+            },
+            "acknowledge_cancelled": {
+                "class": "history_AckCancelled",
+                "text": "Monitoring acknowledge cancelled",
+                "icon": "check"
+            },
+            "acknowledge_end": {
+                "class": "history_AckEnd",
+                "text": "Monitoring acknowledge expired",
+                "icon": "check"
+            },
+        }
+
+        back = '''<i class="fa fa-circle fa-stack-2x font-%s"></i>''' \
+               % (state.lower() if not disabled else 'greyed')
+
+        icon_color = 'fa-inverse'
+        icon_style = ""
+        if not hard:
+            icon_style = 'style="opacity: 0.5"'
+
+        try:
+            icon = icons[cls]['icon']
+            title = icons[cls]['text']
+        except KeyError:
+            cls = 'unknown'
+            icon = icons[cls]['icon']
+            title = icons[cls]['text']
+
+        front = '''<i class="fa fa-%s fa-stack-1x %s"></i>''' % (icon, icon_color)
+
+        if use_title:
+            icon_text = '''<span class="fa-stack" %s title="%s">%s%s</span>''' % (icon_style, title, back, front)
+        else:
+            icon_text = '''<span class="fa-stack" %s>%s%s</span>''' % (icon_style, back, front)
+
+        if label == '':
+            return icon_text
+
+        color = state.lower() if not disabled else 'greyed'
+        if label == 'title':
+            label = title
+        return '''
+          <span class="font-%s">
+             %s&nbsp;<span class="num">%s</span>
+          </span>
+          ''' % (color, icon_text, label)
+
+    def render_url(self, obj, items, css=''):
+        """Returns formatted HTML for an element URL
+
+        """
+        result = []
+        for (icon, title, url) in items:
+            if not url:
+                # Nothing to do here!
+                continue
+
+            # Replace MACROS in url, title and description
+            if hasattr(obj, 'get_data_for_checks'):
+                if url:
+                    url = MacroResolver().resolve_simple_macros_in_string(
+                        url, obj.get_data_for_checks())
+                if title:
+                    title = MacroResolver().resolve_simple_macros_in_string(
+                        title, obj.get_data_for_checks())
+
+            link = 'href="%s" target="_blank" ' % url
+            if not url:
+                link = 'href="#" '
+
+            if icon:
+                icon = '<i class="fas fa-%s"></i>' % icon
+            else:
+                icon = ''
+
+            if not title:
+                result.append('<a %s>%s&nbsp;%s</a>' % (link, icon, url))
+            else:
+                result.append('<a %s %s>%s&nbsp;%s</a>' % (link, css, icon, title))
+
+        return result
+
+    def get_element_urls(self, obj, property, title=None, icon=None, css=''):
+        """"Return list of element notes urls
+
+        The notes_url or actions_url fields are containing a simple url or a string in which
+        individual url are separated with a | character.
+
+        Each url must contain an URI string and may also contain an icon and a title:
+
+        action_url URL1,ICON1,ALT1|URL2,ICON2,ALT2|URL3,ICON3,ALT3
+
+        As documented in Shinken:
+        * URLx are the url you want to use
+        * ICONx are the images you want to display the link as. It can be either a local
+         file, relative to the folder webui/plugins/eltdetail/htdocs/ or an url.
+        * ALTx are the alternative texts you want to display when the ICONx file is missing,
+         or not set.
+
+        The UI do not use any icon file but the font-awesome icons font. As such, ICONx information
+        is the name of an icon in the font awesome icons list.
+
+        The ALTx information is the text label used for the hyperlink or button on the page.
+
+        """
+        if not obj or not hasattr(obj, property):
+            return []
+
+        # We build a list of: title, icon, description, url
+        notes = []
+
+        # Several notes are defined in the notes attribute with | character
+        for item in getattr(obj, property).split('|'):
+            # An element is: url[,icon][,title] - icon and title are optional
+            try:
+                (url, icon, title) = item.split(',')
+            except ValueError:
+                try:
+                    (url, icon) = item.split(',')
+                except ValueError:
+                    url = item
+
+            notes.append((icon, title, url))
+
+        return self.render_url(obj, notes, css=css)
+
+    def get_element_notes(self, obj, title=None, icon=None, css=''):
+        """"See the comment of get_element_urls"""
+        return self.get_element_urls(obj, 'notes',
+                                     title=title, icon=icon, css=css)
+
+    def get_element_notes_url(self, obj, title=None, icon=None, css=''):
+        """"See the comment of get_element_urls"""
+        return self.get_element_urls(obj, 'notes_url',
+                                     title=title, icon=icon, css=css)
+
+    def get_element_actions_url(self, obj, title=None, icon=None, css=''):
+        """"See the comment of get_element_urls"""
+        return self.get_element_urls(obj, 'action_url',
+                                     title=title, icon=icon, css=css)
 
 
 helper = Helper()

@@ -71,7 +71,7 @@
 
 <div class="widget movable collapsable removable {{editable}} closeconfirm {{collapsed_s}}" id="{{wid}}">
     <div class="widget-header">
-        <span class="icon"><i class="fa fa-leaf"></i> </span>
+        <span class="icon"><i class="fas fa-leaf"></i> </span>
         <strong>{{title}}</strong>
     </div>
     <div class="widget-editbox">
@@ -159,7 +159,7 @@
                 %end
             %end
 
-            <a class="widget-close-editbox btn btn-success" onclick="return submit_{{wid}}_form();" title="Save changes"><i class="fa fa-save fa-white"></i> Save changes</a>
+            <a class="widget-close-editbox btn btn-success" onclick="return submit_{{wid}}_form();" title="Save changes"><i class="fas fa-save fa-white"></i> Save changes</a>
         </form>
     </div>
     <div class="widget-content">

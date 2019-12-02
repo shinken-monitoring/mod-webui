@@ -85,7 +85,7 @@
       <div class="form-group">
          <label for="dtr_downtime">Downtime date range</label>
          <div class="input-group">
-            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+            <span class="input-group-addon"><i class="fas fa-calendar"></i></span>
             <input type="text" name="dtr_downtime" id="dtr_downtime" class="form-control" />
          </div>
       </div>
@@ -94,6 +94,6 @@
          <textarea name="reason" id="reason" class="form-control" rows="5" placeholder="Downtime comment…">Downtime scheduled from WebUI by {{user.get_name()}}</textarea>
       </div>
 
-      <a href="javascript:submit_local_form();" class="btn btn-primary btn-lg btn-block"> <i class="fa fa-save"></i> Submit</a>
+      <a href="javascript:submit_local_form();" class="btn btn-primary btn-lg btn-block"> <i class="fas fa-save"></i> Submit</a>
    </form>
 </div>

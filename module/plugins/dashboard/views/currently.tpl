@@ -395,7 +395,7 @@
 
 %setdefault('user', None)
 %username = 'anonymous'
-%if user is not None:
+%if user is not None and not user.is_anonymous():
 %if hasattr(user, 'alias'):
 %  username = user.alias
 %else:
@@ -446,7 +446,7 @@
 %s = app.datamgr.get_services_synthesis(None, user)
 %h = app.datamgr.get_hosts_synthesis(None, user)
 
-%if username != 'anonymous':
+%if not user.is_anonymous():
 <div class="container-fluid">
 <div class="row">
     <div id="one-eye-toolbar" class="col-xs-12">
@@ -454,36 +454,36 @@
             <ul class="nav navbar-nav navbar-left">
                 <li>
                     <a tabindex="0" class="font-darkgrey" role="button" title="Close" href="/dashboard">
-                        <span id="back-dashboard" class="fa-stack">
-                            <i class="fa fa-home fa-stack-1x"></i>
-                            <i class="fa fa-ban fa-stack-2x hidden"></i>
-                        </span>
+                     <span id="back-dashboard" class="fa-stack">
+                         <i class="fas fa-home fa-stack-1x"></i>
+                         <i class="fas fa-ban fa-stack-2x hidden"></i>
+                     </span>
                     </a>
                 </li>
                 <li>
                     <a tabindex="0" class="font-darkgrey js-fullscreen-request" role="button" title="Go to fullscreen" href="#">
-                        <span id="go-fullscreen" class="fa-stack">
-                            <i class="fa fa-desktop fa-stack-1x"></i>
-                            <i class="fa fa-ban fa-stack-2x hidden"></i>
-                        </span>
+                     <span id="go-fullscreen" class="fa-stack">
+                         <i class="fas fa-desktop fa-stack-1x"></i>
+                         <i class="fas fa-ban fa-stack-2x hidden"></i>
+                     </span>
                     </a>
                 </li>
                 %if app.play_sound:
                 <li>
                     <a tabindex="0" class="font-darkgrey js-toggle-sound-alert" role="button" title="Sound alerting" href="#">
-                        <span id="sound_alerting" class="fa-stack">
-                            <i class="fa fa-music fa-stack-1x"></i>
-                            <i class="fa fa-ban fa-stack-2x text-danger hidden"></i>
-                        </span>
+                     <span id="sound_alerting" class="fa-stack">
+                         <i class="fas fa-music fa-stack-1x"></i>
+                         <i class="fas fa-ban fa-stack-2x text-danger hidden"></i>
+                     </span>
                     </a>
                 </li>
                 %end
                 <li>
                     <a tabindex="0" class="font-darkgrey" role="button" title="Page refresh toggle and status" href="#">
-                        <span id="toggle-refresh" class="fa-stack">
-                            <i class="fa fa-refresh fa-stack-1x"></i>
-                            <i class="fa fa-ban fa-stack-2x hidden"></i>
-                        </span>
+                     <span id="toggle-refresh" class="fa-stack">
+                         <i class="fas fa-refresh fa-stack-1x"></i>
+                         <i class="fas fa-ban fa-stack-2x hidden"></i>
+                     </span>
                     </a>
                 </li>
             </ul>
@@ -507,7 +507,7 @@
         <div class="col-md-6" id="panel_counters_hosts">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <i class="fa fa-server"></i>
+                    <i class="fas fa-server"></i>
                     <span class="hosts-all" data-count="{{ h['nb_elts'] }}" data-problems="{{ h['nb_problems'] }}">
                         {{h['nb_elts']}} hosts{{! "<em class='font-down'> (%d problems).</em>" % (h['nb_problems']) if h['nb_problems'] else '.'}}
                     </span>
@@ -520,13 +520,13 @@
                         %for state in 'up', 'unreachable', 'down', 'pending', 'unknown':
                         <div class="col-xs-6 col-md-4 text-center">
                             %label = "%d<br/><em>(%s)</em>" % (h['nb_' + state], state)
-                            <a role="button" href="/all?search=type:host is:{{state}} isnot:ack isnot:downtime" class="font-{{state.lower()}}">
-                                <span class="hosts-count" data-count="{{ h['nb_' + state] }}" data-state="{{ state }}" style="font-size: 3em;">{{ h['nb_' + state] }}</span>
-                                <!-- No text information.. .color is enough
-                                <br/>
-                                <span style="font-size: 1.5em;">{{ state.capitalize() }}</span>
-                                -->
+                            %if not user.is_anonymous():
+                            <a role="button" href="/all?search=type:host is:{{state}} isnot:ack isnot:downtime">
+                            %end
+                                <span class="hosts-count font-{{state.lower()}}" data-count="{{ h['nb_' + state] }}" data-state="{{ state }}" style="font-size: 3em;">{{ h['nb_' + state] }}</span>
+                            %if not user.is_anonymous():
                             </a>
+                            %end
                         </div>
                         %end
                     </div>
@@ -536,7 +536,7 @@
         <div class="col-md-6" id="panel_counters_services">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <i class="fa fa-cubes"></i>
+                    <i class="fas fa-cubes"></i>
                     <span class="services-all" data-count="{{ s['nb_elts'] }}" data-problems="{{ s['nb_problems'] }}">
                         {{s['nb_elts']}} services{{! "<em class='font-down'> (%d problems).</em>" % (s['nb_problems']) if s['nb_problems'] else '.'}}
                     </span>
@@ -549,13 +549,13 @@
                         %for state in 'ok', 'warning', 'critical':
                         <div class="col-xs-6 col-md-4 text-center">
                             %label = "%d<br/><em>(%s)</em>" % (s['nb_' + state], state)
-                            <a role="button" href="/all?search=type:service is:{{state}} isnot:ack isnot:downtime" class="font-{{state.lower()}}">
-                                <span class="services-count" data-count="{{ s['nb_' + state] }}" data-state="{{ state }}" style="font-size: 3em;">{{ s['nb_' + state] }}</span>
-                                <!-- No text information.. .color is enough
-                                <br/>
-                                <span style="font-size: 1.5em;">{{ state.capitalize() }}</span>
-                                -->
+                            %if not user.is_anonymous():
+                            <a role="button" href="/all?search=type:service is:{{state}} isnot:ack isnot:downtime">
+                            %end
+                                <span class="services-count font-{{state.lower()}}" data-count="{{ s['nb_' + state] }}" data-state="{{ state }}" style="font-size: 3em;">{{ s['nb_' + state] }}</span>
+                            %if not user.is_anonymous():
                             </a>
+                            %end
                         </div>
                         %end
                     </div>
@@ -568,7 +568,7 @@
         <div class="col-md-6" id="panel_percentage_hosts">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <i class="fa fa-server"></i>
+                    <i class="fas fa-server"></i>
                     <span class="hosts-all" data-count="{{ h['nb_elts'] }}" data-problems="{{ h['nb_problems'] }}">
                         {{h['nb_elts']}} hosts{{! "<em class='font-down'> (%d problems).</em>" % (h['nb_problems']) if h['nb_problems'] else '.'}}
                     </span>
@@ -580,7 +580,7 @@
                     <div class="panel-body">
                         <!-- Hosts SLA icons -->
                         <div class="col-xs-4 col-sm-4 text-center">
-                            %if username != 'anonymous':
+                            %if not user.is_anonymous():
                             <a href="/all?search=type:host" class="btn">
                             %end
                                <div>
@@ -589,47 +589,43 @@
                                   <span class="badger-big badger-right font-{{font}}">{{state}}%</span>
                                </div>
 
-                               <i class="fa fa-4x fa-server font-{{font}}"></i>
+                               <i class="fas fa-4x fa-server font-{{font}}"></i>
                                <p class="badger-title font-{{font}}">&nbsp;SLA</p>
 
-                            %if username != 'anonymous':
+                            %if not user.is_anonymous():
                             </a>
                             %end
                         </div>
 
-                        %for state in 'up', 'unreachable', 'down':
-                        <!--
-                        <div class="col-xs-4 col-sm-4 text-center">
-                            <a role="button" href="/all?search=type:host is:{{state}} isnot:ack isnot:downtime" class="font-{{state.lower()}}">
-                                <span class="hosts-count" data-count="{{ h['nb_' + state] }}" data-state="{{ state }}" style="font-size: 1.8em;">{{ h['pct_' + state] }}%</span>
-                                <span style="font-size: 1em;"><em>({{ h['nb_' + state] }})</em></span>
-                                <br/>
-                                <span style="font-size: 1em;">{{ state.capitalize() }}</span>
-                            </a>
-                        </div>
-                        -->
-                        %end
                         %known_problems=h['nb_problems']
                         %pct_known_problems=round(100.0 * known_problems / h['nb_elts'], 2) if h['nb_elts'] else 0
                         <div class="col-sm-4 text-center">
-                            <a role="button" href="/all?search=type:host isnot:ack isnot:downtime" class="font-problem">
-                                <span class="hosts-count" style="font-size: 3em;">{{ known_problems }}</span>
+                            %if not user.is_anonymous():
+                            <a role="button" href="/all?search=type:host isnot:ack isnot:downtime">
+                            %end
+                                <span class="hosts-count font-problem" style="font-size: 3em;">{{ known_problems }}</span>
                                 <br/>
-                                <span style="font-size: 1em;"><em>({{ pct_known_problems }} %)</em></span>
+                                <span class="font-problem" style="font-size: 1em;"><em>({{ pct_known_problems }} %)</em></span>
                                 <br/>
-                                <span style="font-size: 1em;">Unhandled problems</span>
+                                <span class="font-problem" style="font-size: 1em;">Unhandled problems</span>
+                            %if not user.is_anonymous():
                             </a>
+                            %end
                         </div>
                         %known_problems=h['nb_ack']+h['nb_downtime']
                         %pct_known_problems=round(100.0 * known_problems / h['nb_elts'], 2) if h['nb_elts'] else 0
                         <div class="col-sm-4 text-center">
-                            <a role="button" href="/all?search=type:host is:ack is:downtime" class="font-ack">
-                                <span class="hosts-count" style="font-size: 3em;">{{ known_problems }}</span>
+                            %if not user.is_anonymous():
+                            <a role="button" href="/all?search=type:host is:ack is:downtime">
+                            %end
+                                <span class="hosts-count font-ack" style="font-size: 3em;">{{ known_problems }}</span>
                                 <br/>
-                                <span style="font-size: 1em;"><em>({{ pct_known_problems }} %)</em></span>
+                                <span class="font-ack" style="font-size: 1em;"><em>({{ pct_known_problems }} %)</em></span>
                                 <br/>
-                                <span style="font-size: 1em;">Known problems</span>
+                                <span class="font-ack" style="font-size: 1em;">Known problems</span>
+                            %if not user.is_anonymous():
                             </a>
+                            %end
                         </div>
                     </div>
                 </div>
@@ -638,7 +634,7 @@
         <div class="col-md-6" id="panel_percentage_services">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <i class="fa fa-cubes"></i>
+                    <i class="fas fa-cubes"></i>
                     <span class="services-all" data-count="{{ s['nb_elts'] }}" data-problems="{{ s['nb_problems'] }}">
                         {{s['nb_elts']}} services{{! "<em class='font-down'> (%d problems).</em>" % (s['nb_problems']) if s['nb_problems'] else '.'}}
                     </span>
@@ -650,7 +646,7 @@
                     <div class="panel-body">
                         <!-- Services SLA icons -->
                         <div class="col-xs-4 col-sm-4 text-center">
-                            %if username != 'anonymous':
+                            %if not user.is_anonymous():
                             <a href="/all?search=type:service" class="btn">
                             %end
                                <div>
@@ -659,47 +655,43 @@
                                   <span class="badger-big badger-right font-{{font}}">{{state}}%</span>
                                </div>
 
-                               <i class="fa fa-4x fa-server font-{{font}}"></i>
+                               <i class="fas fa-4x fa-server font-{{font}}"></i>
                                <p class="badger-title font-{{font}}">&nbsp;SLA</p>
 
-                            %if username != 'anonymous':
+                            %if not user.is_anonymous():
                             </a>
                             %end
                         </div>
 
-                        %for state in 'ok', 'warning', 'critical':
-                        <!--
-                        <div class="col-xs-4 col-sm-4 text-center">
-                            <a role="button" href="/all?search=type:service is:{{state}} isnot:ack isnot:downtime" class="font-{{state.lower()}}">
-                                <span class="services-count" data-count="{{ s['nb_' + state] }}" data-state="{{ state }}" style="font-size: 1.8em;">{{ s['pct_' + state] }}%</span>
-                                <span style="font-size: 1em;"><em>({{ s['nb_' + state] }})</em></span>
-                                <br/>
-                                <span style="font-size: 1em;">{{ state.capitalize() }}</span>
-                            </a>
-                        </div>
-                        -->
-                        %end
                         %known_problems=s['nb_problems']
                         %pct_known_problems=round(100.0 * known_problems / s['nb_elts'], 2) if s['nb_elts'] else 0
                         <div class="col-sm-4 text-center">
+                            %if not user.is_anonymous():
                             <a role="button" href="/all?search=type:host is:ack" class="font-problem">
-                                <span class="hosts-count" style="font-size: 3em;">{{ known_problems }}</span>
+                            %end
+                                <span class="hosts-count font-problem" style="font-size: 3em;">{{ known_problems }}</span>
                                 <br/>
-                                <span style="font-size: 1em;"><em>({{ pct_known_problems }} %)</em></span>
+                                <span class="font-problem" style="font-size: 1em;"><em>({{ pct_known_problems }} %)</em></span>
                                 <br/>
-                                <span style="font-size: 1em;">Unhandled problems</span>
+                                <span class="font-problem" style="font-size: 1em;">Unhandled problems</span>
+                            %if not user.is_anonymous():
                             </a>
+                            %end
                         </div>
                         %known_problems=s['nb_ack']+s['nb_downtime']
                         %pct_known_problems=round(100.0 * known_problems / s['nb_elts'], 2) if s['nb_elts'] else 0
                         <div class="col-sm-4 text-center">
+                            %if not user.is_anonymous():
                             <a role="button" href="/all?search=type:host is:ack" class="font-ack">
-                                <span class="hosts-count" style="font-size: 3em;">{{ known_problems }}</span>
+                            %end
+                                <span class="hosts-count font-ack" style="font-size: 3em;">{{ known_problems }}</span>
                                 <br/>
-                                <span style="font-size: 1em;"><em>({{ pct_known_problems }} %)</em></span>
+                                <span class="font-ack" style="font-size: 1em;"><em>({{ pct_known_problems }} %)</em></span>
                                 <br/>
-                                <span style="font-size: 1em;">Known problems</span>
+                                <span class="font-ack" style="font-size: 1em;">Known problems</span>
+                            %if not user.is_anonymous():
                             </a>
+                            %end
                         </div>
                     </div>
                 </div>
@@ -711,14 +703,14 @@
         <div class="col-md-6" id="panel_pie_graph_hosts">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <i class="fa fa-pie-chart"></i>
+                    <i class="fas fa-pie-chart"></i>
                     <span class="hosts-all" data-count="{{ h['nb_elts'] }}" data-problems="{{ h['nb_problems'] }}">
                         {{h['nb_elts']}} hosts{{! "<em class='font-down'> (%d problems).</em>" % (h['nb_problems']) if h['nb_problems'] else '.'}}
                     </span>
                     <div class="pull-right">
                         <div class="btn-group">
                             <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
-                                <i class="fa fa-gear fa-fw"></i>
+                                <i class="fas fa-gear fa-fw"></i>
                                 <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu pull-right" role="menu">
@@ -749,18 +741,18 @@
                     <div class="panel-body">
                         <!-- Chart -->
                         <div id="pie-graph-hosts" style="padding: 15px;">
-                                <canvas></canvas>
-                                <div class="row title" style="display:none">
-                                    <div class="text-center">
-                                        <h4>Hosts states</h4>
-                                        <span class="text-muted">-/-</span>
-                                    </div>
-                                </div>
-                                <div class="row legend" style="display-none">
-                                    <div class="pull-left well well-sm" style="margin-bottom: 0px">
-                                        <span class="legend hidden-sm hidden-xs"></span>
-                                    </div>
-                                </div>
+                             <canvas></canvas>
+                             <div class="row title" style="display:none">
+                                 <div class="text-center">
+                                     <h4>Hosts states</h4>
+                                     <span class="text-muted">-/-</span>
+                                 </div>
+                             </div>
+                             <div class="row legend" style="display-none">
+                                 <div class="pull-left well well-sm" style="margin-bottom: 0px">
+                                     <span class="legend hidden-sm hidden-xs"></span>
+                                 </div>
+                             </div>
                         </div>
                     </div>
                 </div>
@@ -769,14 +761,14 @@
         <div class="col-md-6" id="panel_pie_graph_services">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <i class="fa fa-pie-chart"></i>
+                    <i class="fas fa-pie-chart"></i>
                     <span class="services-all" data-count="{{ s['nb_elts'] }}" data-problems="{{ s['nb_problems'] }}">
                         {{s['nb_elts']}} services{{! "<em class='font-down'> (%d problems).</em>" % (s['nb_problems']) if s['nb_problems'] else '.'}}
                     </span>
                     <div class="pull-right">
                         <div class="btn-group">
                             <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
-                                <i class="fa fa-gear fa-fw"></i>
+                                <i class="fas fa-gear fa-fw"></i>
                                 <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu pull-right" role="menu">
@@ -807,18 +799,18 @@
                     <div class="panel-body">
                         <!-- Chart -->
                         <div id="pie-graph-services" style="padding: 15px;">
-                                <canvas></canvas>
-                                <div class="row title" style="display:none">
-                                    <div class="text-center">
-                                        <h4 class="title">Services states</h4>
-                                        <span class="subtitle text-muted">-/-</span>
-                                    </div>
-                                </div>
-                                <div class="row legend" style="display:none">
-                                    <div class="pull-left well well-sm" style="margin-bottom: 0px">
-                                        <span class="legend hidden-sm hidden-xs"></span>
-                                    </div>
-                                </div>
+                             <canvas></canvas>
+                             <div class="row title" style="display:none">
+                                 <div class="text-center">
+                                     <h4 class="title">Services states</h4>
+                                     <span class="subtitle text-muted">-/-</span>
+                                 </div>
+                             </div>
+                             <div class="row legend" style="display:none">
+                                 <div class="pull-left well well-sm" style="margin-bottom: 0px">
+                                     <span class="legend hidden-sm hidden-xs"></span>
+                                 </div>
+                             </div>
                         </div>
                     </div>
                 </div>
@@ -827,14 +819,14 @@
         <div class="col-md-6" id="panel_line_graph_hosts">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <i class="fa fa-bar-chart"></i>
+                    <i class="fas fa-bar-chart"></i>
                     <span class="hosts-all" data-count="{{ h['nb_elts'] }}" data-problems="{{ h['nb_problems'] }}">
                         {{h['nb_elts']}} hosts{{! "<em class='font-down'> (%d problems).</em>" % (h['nb_problems']) if h['nb_problems'] else '.'}}
                     </span>
                     <div class="pull-right">
                         <div class="btn-group">
                             <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
-                                <i class="fa fa-gear fa-fw"></i>
+                                <i class="fas fa-gear fa-fw"></i>
                                 <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu pull-right" role="menu">
@@ -865,18 +857,18 @@
                     <div class="panel-body">
                         <!-- Chart -->
                         <div id="line-graph-hosts" style="padding: 15px;">
-                                <canvas></canvas>
-                                <div class="row title" style="display:none">
-                                    <div class="text-center">
-                                        <h4 class="title">Hosts states monitoring</h4>
-                                        <span class="subtitle text-muted">-/-</span>
-                                    </div>
-                                </div>
-                                <div class="row legend" style="display:none">
-                                    <div class="pull-left well well-sm" style="margin-bottom: 0px">
-                                        <span class="legend hidden-sm hidden-xs"></span>
-                                    </div>
-                                </div>
+                             <canvas></canvas>
+                             <div class="row title" style="display:none">
+                                 <div class="text-center">
+                                     <h4 class="title">Hosts states monitoring</h4>
+                                     <span class="subtitle text-muted">-/-</span>
+                                 </div>
+                             </div>
+                             <div class="row legend" style="display:none">
+                                 <div class="pull-left well well-sm" style="margin-bottom: 0px">
+                                     <span class="legend hidden-sm hidden-xs"></span>
+                                 </div>
+                             </div>
                         </div>
                     </div>
                 </div>
@@ -885,14 +877,14 @@
         <div class="col-md-6" id="panel_line_graph_services">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <i class="fa fa-bar-chart"></i>
+                    <i class="fas fa-bar-chart"></i>
                     <span class="services-all" data-count="{{ s['nb_elts'] }}" data-problems="{{ s['nb_problems'] }}">
                         {{s['nb_elts']}} services{{! "<em class='font-down'> (%d problems).</em>" % (s['nb_problems']) if s['nb_problems'] else '.'}}
                     </span>
                     <div class="pull-right">
                         <div class="btn-group">
                             <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
-                                <i class="fa fa-gear fa-fw"></i>
+                                <i class="fas fa-gear fa-fw"></i>
                                 <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu pull-right" role="menu">
@@ -923,18 +915,18 @@
                     <div class="panel-body">
                         <!-- Chart -->
                         <div id="line-graph-services" style="padding: 15px;">
-                                <canvas></canvas>
-                                <div class="row title" style="display:none">
-                                    <div class="text-center">
-                                        <h4 class="title">Services states monitoring</h4>
-                                        <span class="subtitle text-muted">-/-</span>
-                                    </div>
-                                </div>
-                                <div class="row legend" style="display:none">
-                                    <div class="pull-left well well-sm" style="margin-bottom: 0px">
-                                        <span class="legend hidden-sm hidden-xs"></span>
-                                    </div>
-                                </div>
+                             <canvas></canvas>
+                             <div class="row title" style="display:none">
+                                 <div class="text-center">
+                                     <h4 class="title">Services states monitoring</h4>
+                                     <span class="subtitle text-muted">-/-</span>
+                                 </div>
+                             </div>
+                             <div class="row legend" style="display:none">
+                                 <div class="pull-left well well-sm" style="margin-bottom: 0px">
+                                     <span class="legend hidden-sm hidden-xs"></span>
+                                 </div>
+                             </div>
                         </div>
                     </div>
                 </div>
