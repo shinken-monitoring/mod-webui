@@ -803,10 +803,12 @@ class Helper(object):
             # pylint: disable=undefined-variable
             name = contact
             title = name
-            if not isinstance(contact, (unicode, str)):
-                # It is a UI contact
-                name = contact.get_username()
+            # Maybe it is a UI contact
+            try:
                 title = contact.get_name()
+                name = contact.get_username()
+            except Exception:
+                pass
 
             s = '<img src="/avatar/%s?s=%s" class="img-circle">' % (name, size)
 
