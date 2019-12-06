@@ -70,7 +70,7 @@ def search_hosts_with_coordinates(search, user):
     for h in items:
         logger.debug("[WebUI-worldmap] found host '%s'", h.get_name())
 
-        if h.business_impact not in params['hosts_level']:
+        if h.business_impact not in params['worldmap-hosts_level']:
             continue
 
         if '_GPS' not in h.customs and ('_LOC_LAT' not in h.customs and '_LOC_LNG' not in h.customs):

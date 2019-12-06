@@ -5,7 +5,7 @@
     alert('Your web browser does not have any console object ... you should stop using IE ;-) !');
   }
 
-  var servicesLevel = {{ params['services_level'] }};
+  var servicesLevel = {{ params['worldmap-services_level'] }};
 
   %# List hosts and their services
     var hosts = [
