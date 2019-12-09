@@ -71,8 +71,9 @@
 
         $("body").on("click", ".js-graph-right", function () {
           delta = Math.floor((graphend - graphstart)/4);
+          diff = graphend - graphstart;
           graphend = Math.min(graphend + delta, graphmax);
-          graphstart = graphend - (delta*2);
+          graphstart = Math.min(graphend - diff, graphstart + delta);
 
           refreshGraphs();
         });
