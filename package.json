@@ -1,7 +1,7 @@
 {
   "name": "webui2",
   "types": ["module"],
-  "version": "2.8.1",
+  "version": "2.8.2",
   "homepage": "https://github.com/shinken-monitoring/mod-webui/wiki",
   "author": "Guillaume Subiron",
   "description": "Web User Interface for Shinken",
