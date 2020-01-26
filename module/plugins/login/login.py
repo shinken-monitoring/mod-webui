@@ -87,9 +87,9 @@ def user_logout():
     # To delete the cookie, send the same, with different date
     cookie_value = app.request.get_cookie(app.session_cookie, secret=app.auth_secret)
     if cookie_value:
-        app.response.set_cookie(app.session_cookie, False, secret=app.auth_secret, path='/')
+        app.response.set_cookie(str(app.session_cookie), False, secret=app.auth_secret, path='/')
     else:
-        app.response.set_cookie(app.session_cookie, '', secret=app.auth_secret, path='/')
+        app.response.set_cookie(str(app.session_cookie), '', secret=app.auth_secret, path='/')
 
     contact_name = cookie_value.get('login', cookie_value)
     logger.info("[WebUI] user '%s' signed out", contact_name)
