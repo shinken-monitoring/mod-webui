@@ -30,9 +30,9 @@
            <li><a href="#" class="js-schedule-downtime" data-element="{{helper.get_uri_name(pb)}}" data-duration="180">3 hours</a></li>
            <li><a href="#" class="js-schedule-downtime" data-element="{{helper.get_uri_name(pb)}}" data-duration="720">12 hours</a></li>
            <li><a href="#" class="js-schedule-downtime" data-element="{{helper.get_uri_name(pb)}}" data-duration="1440">24 hours</a></li>
-           <li><a href="#" class="js-schedule-downtime" data-element="{{helper.get_uri_name(pb)}}" data-duration="2160">3 days</a></li>
-           <li><a href="#" class="js-schedule-downtime" data-element="{{helper.get_uri_name(pb)}}" data-duration="5040">7 days</a></li>
-           <li><a href="#" class="js-schedule-downtime" data-element="{{helper.get_uri_name(pb)}}" data-duration="21600">30 days</a></li>
+           <li><a href="#" class="js-schedule-downtime" data-element="{{helper.get_uri_name(pb)}}" data-duration="2880">3 days</a></li>
+           <li><a href="#" class="js-schedule-downtime" data-element="{{helper.get_uri_name(pb)}}" data-duration="10080">7 days</a></li>
+           <li><a href="#" class="js-schedule-downtime" data-element="{{helper.get_uri_name(pb)}}" data-duration="43200">30 days</a></li>
            <li role="separator" class="divider"></li>
            <li><a href="#" class="js-schedule-downtime" data-element="{{helper.get_uri_name(pb)}}">Custom timeperiod</a></li>
          </ul>
