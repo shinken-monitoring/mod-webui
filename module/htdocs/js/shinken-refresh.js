@@ -189,25 +189,25 @@ function do_refresh(forced){
 
 
 function check_refresh(){
-   // We first test if the backend is available
-   $.ajax({
-      url: '/gotfirstdata?callback=?',
-      dataType: "jsonp",
-      method: "GET"
-   })
-   .done(function( data, textStatus, jqXHR ) {
-      if (sessionStorage.getItem("refresh_enabled") == '1') {
-         // Go Refresh
-         do_refresh();
-      }
-   })
-   .fail(function( jqXHR, textStatus, errorThrown ) {
-      if (refresh_logs) console.error('UI backend is not available for refresh, retrying later ...');
-      if (nb_refresh_try > 0){
-          alertify.log("The Web UI backend is not available", "info", 5000);
-      }
-      nb_refresh_try += 1;
-   });
+    // We first test if the backend is available
+    if (sessionStorage.getItem("refresh_enabled") == '1') {
+        $.ajax({
+            url: '/gotfirstdata?callback=?',
+            dataType: "jsonp",
+            method: "GET"
+        })
+        .done(function( data, textStatus, jqXHR ) {
+            // Go Refresh
+            do_refresh();
+        })
+        .fail(function( jqXHR, textStatus, errorThrown ) {
+            if (refresh_logs) console.error('UI backend is not available for refresh, retrying later ...');
+            if (nb_refresh_try > 0){
+                alertify.log("The Web UI backend is not available", "info", 5000);
+            }
+            nb_refresh_try += 1;
+        });
+    }
 }
 
 
@@ -223,12 +223,12 @@ function disable_refresh() {
 
 
 function enable_refresh() {
-   if (refresh_logs) console.debug("Stop refresh");
+   if (refresh_logs) console.debug("Start refresh");
    $('#header_loading').removeClass('fa-striked');
    $('#header_loading').parent().data('tooltip', false)
                                 .attr('data-original-title', "Disable auto-refresh")
                                 .tooltip({html: 'true', placement: 'bottom'});
-   sessionStorage.setItem("refresh_enabled", '1');
+   sessionStorage.setItem("refresh_enabled", app_refresh_period==0 ? '0' : '1');
 }
 
 
