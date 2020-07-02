@@ -281,7 +281,7 @@
           </colgroup>
           <tbody class="small">
             <tr>
-              <td><strong>Importance:</strong></td>
+              <td><strong>Business impact:</strong></td>
               <td>
                 {{!helper.get_business_impact_text(elt.business_impact, True)}}
               </td>
