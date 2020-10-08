@@ -439,9 +439,6 @@ class Regenerator(object):
                 self.tags[t] += 1
 
             # We can really declare this host OK now
-            old_h = self.hosts.find_by_name(h.get_name())
-            if old_h is not None:
-                self.hosts.remove_item(old_h)
             self.hosts.add_item(h)
 
         # Linkify services groups with their services
@@ -589,7 +586,8 @@ class Regenerator(object):
             for item in getattr(self, "%ss" % item_type):
                 logger.debug("- %s", item)
 
-        logger.info("Linking objects together, end. Duration: %s", time.time() - start)
+        logger.info("Linking objects together, end. Duration: %3.3fs", time.time() - start)
+        logger.info("Now we have %d hosts and %d services in regenerator", len(self.hosts), len(self.services))
 
     def linkify_a_command(self, o, prop):
         """We look for o.prop (CommandCall) and we link the inner
@@ -827,6 +825,8 @@ class Regenerator(object):
         logger.info("Got a configuration from %s", c_name)
         logger.debug("Data: %s", data)
 
+        logger.info("Before manage_program_status_brok we have %d hosts and %d services in regenerator", len(self.hosts), len(self.services))
+
         now = time.time()
         if c_id in self.configs:
             # WebUI - it may happen that the same scheduler sends several times its initial status brok.
@@ -866,56 +866,20 @@ class Regenerator(object):
 
         self.configs[c_id] = data
 
-        # We should clean all previously added hosts and services
-        logger.debug("Cleaning hosts/service of %s", c_id)
-        to_del_h = [h for h in self.hosts if h.instance_id == c_id]
-        to_del_srv = [s for s in self.services if s.instance_id == c_id]
 
-        if to_del_h:
-            # Clean hosts from hosts and hostgroups
-            logger.info("Cleaning %d hosts", len(to_del_h))
+        # We need to clean all previously added hosts and services
+        # We use this algo because remove_item doesn't work as expected
+        # and sometimes would leave the item in the collection
+        self.hosts = Hosts([h for h in self.hosts if h.instance_id != c_id])
+        self.services = Services([s for s in self.services if s.instance_id != c_id])
 
-            for h in to_del_h:
-                self.hosts.remove_item(h)
+        for hg in self.hostgroups:
+            hg.members = [h for h in hg.members if h.instance_id != c_id]
 
-            # Exclude from all hostgroups members the hosts of this scheduler instance
-            for hg in self.hostgroups:
-                logger.debug("Cleaning hostgroup %s: %d members", hg.get_name(), len(hg.members))
-                try:
-                    # hg.members = [h for h in hg.members if h.instance_id != c_id]
-                    hg.members = []
-                    for h in hg.members:
-                        if h.instance_id != c_id:
-                            hg.members.append(h)
-                        else:
-                            logger.debug("- removing host: %s", h)
-                except Exception as exp:
-                    logger.error("Exception when cleaning hostgroup: %s", str(exp))
+        for sg in self.servicegroups:
+            sg.members = [s for s in sg.members if s.instance_id != c_id]
 
-                logger.debug("hostgroup members count after cleaning: %d members", len(hg.members))
-
-        if to_del_srv:
-            # Clean services from services and servicegroups
-            logger.debug("Cleaning %d services", len(to_del_srv))
-
-            for s in to_del_srv:
-                self.services.remove_item(s)
-
-            # Exclude from all servicegroups members the services of this scheduler instance
-            for sg in self.servicegroups:
-                logger.debug("Cleaning servicegroup %s: %d members", sg.get_name(), len(sg.members))
-                try:
-                    # sg.members = [s for s in sg.members if s.instance_id != c_id]
-                    sg.members = []
-                    for s in sg.members:
-                        if s.instance_id != c_id:
-                            sg.members.append(s)
-                        else:
-                            logger.debug("- removing service: %s", s)
-                except Exception as exp:
-                    logger.error("Exception when cleaning servicegroup: %s", str(exp))
-
-                logger.debug("- members count after cleaning: %d members", len(sg.members))
+        logger.info("After manage_program_status_brok we have %d hosts and %d services in regenerator", len(self.hosts), len(self.services))
 
     def manage_initial_host_status_brok(self, b):
         """Got a new host"""
