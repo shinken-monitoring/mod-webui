@@ -1,4 +1,4 @@
-bottle==0.12.8
+bottle==0.12.19
 pymongo>=3.0.3
 requests
 arrow
