@@ -190,7 +190,7 @@ Next check <strong>{{helper.print_duration(pb.next_chk)}}</strong>
                     <samp style="font-size:0.95em;">{{! pb.output}}</samp>
                      %if pb.long_output:
                      <div class="long-output">
-                        {{! pb.long_output}}
+                       {{! pb.long_output.replace('\n', '<br>')}}
                      </div>
                      %end
                   </div>
