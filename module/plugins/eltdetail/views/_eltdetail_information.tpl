@@ -45,7 +45,7 @@
           <tbody class="small">
             <tr>
               <td><strong>Last Check:</strong></td>
-              <td><span class="popover-dismiss" data-html="true" data-toggle="popover" data-placement="bottom" data-content="Last check was at {{time.asctime(time.localtime(elt.last_chk))}}">was {{helper.print_duration(elt.last_chk)}}</span></td>
+              <td>{{!helper.print_duration_and_date(elt.last_chk)}}</td>
             </tr>
             <!--
             <tr>
@@ -80,11 +80,11 @@
 
             <tr>
               <td><strong>Last State Change:</strong></td>
-              <td><span class="popover-dismiss" data-html="true" data-toggle="popover" data-placement="bottom" data-content="Last state change at {{time.asctime(time.localtime(elt.last_state_change))}}">{{helper.print_duration(elt.last_state_change)}}</span></td>
+              <td>{{!helper.print_duration_and_date(elt.last_state_change)}}</td>
             </tr>
             <tr>
               <td><strong>Last State Update:</strong></td>
-              <td><span class="popover-dismiss" data-html="true" data-toggle="popover" data-placement="bottom" data-content="Last state update at {{time.asctime(time.localtime(elt.last_state_update))}}">{{helper.print_duration(elt.last_state_update)}}</span></td>
+              <td>{{!helper.print_duration_and_date(elt.last_state_update)}}</td>
             </tr>
             <tr>
               <td><strong>Current Attempt:</strong></td>
@@ -92,7 +92,7 @@
             </tr>
             <tr>
               <td><strong>Next Active Check:</strong></td>
-              <td><span class="popover-dismiss" data-html="true" data-toggle="popover" data-placement="bottom" data-content="Next active check at {{time.asctime(time.localtime(elt.next_chk))}}">{{helper.print_duration(elt.next_chk)}}</span></td>
+              <td>{{!helper.print_duration_and_date(elt.next_chk)}}</td>
             </tr>
           </tbody>
         </table>

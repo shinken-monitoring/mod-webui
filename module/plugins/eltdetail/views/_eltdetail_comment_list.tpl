@@ -6,10 +6,10 @@
   <dt>{{ c.author }}
     <span class="comment-time">
       commented
-      {{!helper.print_duration_and_date(c.entry_time)}},
+      {{!helper.print_duration_and_date(c.entry_time)}}
       %if c.expires:
       | expires
-      {{!helper.print_duration_and_date(c.expire_time)}},
+      {{!helper.print_duration_and_date(c.expire_time)}}
       %end
     </span>
     <span class="pull-right">
