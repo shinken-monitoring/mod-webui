@@ -22,6 +22,9 @@ function more_history() {
     if ($('#inner_history').data('commandname') !== undefined) {
         var url = url + '&commandname=' + $('#inner_history').data('commandname');
     }
+    if ($('#inner_history').data('contactname') !== undefined) {
+        var url = url + '&contactname=' + $('#inner_history').data('contactname');
+    }
 
     $.get(url, function(data){
         if (data.indexOf('table') !== -1) {

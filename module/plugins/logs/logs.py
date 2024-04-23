@@ -205,7 +205,7 @@ def get_history():
         filters['logclass'] = int(logclass)
 
     command_name = app.request.query.get('commandname', None)
-    if command_name is not None:
+    if command_name:
         try:
             command_name = json.loads(command_name)
         except Exception:
@@ -213,11 +213,7 @@ def get_history():
         filters['command_name'] = command_name
 
     contact_name = app.request.query.get('contactname', None)
-    if contact_name is not None:
-        try:
-            contact_name = json.loads(contact_name)
-        except Exception:
-            pass
+    if contact_name:
         filters['contact_name'] = contact_name
 
     limit = int(app.request.query.get('limit', 100))
