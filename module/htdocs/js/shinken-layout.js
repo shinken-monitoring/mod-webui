@@ -179,5 +179,22 @@ $(document).ready(function(){
     });
   }
 
+  // Notifications
+  if ($(".js-disable-notifications").length) {
+    $('body').on("click", '.js-disable-notifications', function (e, data) {
+        toggle_all_notifications(false);
+    });
+  }
+  if ($(".js-enable-notifications").length) {
+    $('body').on("click", '.js-enable-notifications', function (e, data) {
+        toggle_all_notifications(true);
+    });
+  }
+
+  // Reset modal when closed
+  $('body').on('hidden.bs.modal', '#modal', function () {
+     $(this).removeData('bs.modal');
+  });
+
   headerPopovers();
 });

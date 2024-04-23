@@ -90,6 +90,24 @@
       </li>
       <!--end-framework-states-->
 
+      <li id="overall-toggle-notifications" class="hidden-sm">
+         <!--%state = app.datamgr.get_framework_status()-->
+         <!--%color = 'font-critical' if state == 2 else 'font-warning' if state > 0 else ''-->
+         <!--<a id="toggle-notifications" class="btn btn-ico" href="/system" title="Toggle notifications">-->
+            <!--<i class="fas fa-envelope {{ color }}"></i>-->
+         <!--</a>-->
+
+          %if 'notifications_enabled' not in app.datamgr.get_configs()[0] or app.datamgr.get_configs()[0]['notifications_enabled']:
+         <button class="btn btn-ico js-disable-notifications" title="Disable all notifications">
+            <i class="fas fa-bell-slash"></i>
+         </button>
+          %else:
+         <button class="btn btn-ico js-enable-notifications" title="Enable all notifications">
+            <i class="fas fa-bell text-success"></i>
+         </button>
+         %end
+      </li>
+
       <!-- Do not remove the next comment!
          Everything between 'begin-hosts-states' comment and 'end-hosts-states' comment
          may be used by the layout page refresh.

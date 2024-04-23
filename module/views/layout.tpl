@@ -101,6 +101,10 @@
          %include("header_element")
          <div id="page-wrapper">
 
+            %if 'notifications_enabled' in app.datamgr.get_configs()[0] and not app.datamgr.get_configs()[0]['notifications_enabled']:
+            <div class="alert alert-danger"><i class="fas fa-exclamation-circle"></i> <strong>Notifications are disabled globally! Please enable notifications as soon as possible.</strong></div>
+            %end
+
             <!-- Do not remove the next comment!
                Everything between 'begin-page-content' comment and 'end-page-content' comment
                is used by the layout page refresh.
