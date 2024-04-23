@@ -40,6 +40,7 @@ def proxy_graph():
         route should not be usefull anywhere else.
     """
     url = app.request.GET.get('url', '')
+    filename = app.request.GET.get('filename', 'graph.png')
 
     try:
         r = requests.get(url)
@@ -61,6 +62,7 @@ def proxy_graph():
 
     app.response.content_type = str(r.headers['content-type'])
     app.response.set_header("Cache-Control", "public, max-age=300")
+    app.response.set_header("Content-Disposition", 'inline; filename="%s"' % filename)
     return r.content
 
 

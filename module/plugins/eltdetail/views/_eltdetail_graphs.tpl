@@ -45,7 +45,7 @@
 
           html_graphs = '<p>';
           %for g in graph_uris:
-          html_graphs +=  '<img src="{{g['img_src']}}" class="img-thumbnail"><p></p>';
+          html_graphs +=  '<img src="{{g['img_src']}}&filename=graph-{{ helper.get_uri_name(elt).replace("%20", "_") }}.png" class="img-thumbnail"><p></p>';
           %end
           html_graphs += '</p>';
 
