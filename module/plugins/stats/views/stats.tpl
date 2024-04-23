@@ -30,7 +30,7 @@
     %if total:
     <table class="table table-striped table-condensed">
       %for l in hosts.most_common(15):
-      <tr><td width="160px">{{ l[1] }} ({{ round((l[1] / float(total)) * 100, 1) }}%)</td><td><a href="/stats/host/{{ l[0] }}?days={{ days }}">{{ l[0] }}</a></td></tr>
+      <tr><td width="160px">{{ l[1] }} ({{ round((l[1] / float(total)) * 100, 1) }}%)</td><td><a href="/stats/host/{{ l[0] }}?days={{ days }}&command={{ command_name }}&contact={{ contact_name }}">{{ l[0] }}</a></td></tr>
       %end
       %other = sum((h[1] for h in hosts.most_common()[15:]))
       <tr><td>{{ other }} ({{ round((other / float(total)) * 100, 1) }}%)</td><td><strong>Others</strong></td></tr>
@@ -46,7 +46,7 @@
     %if total:
     <table class="table table-striped table-condensed">
       %for l in services.most_common(15):
-      <tr><td width="160px">{{ l[1] }} ({{ round((l[1] / float(total)) * 100, 1) }}%)</td><td><a href="/stats/service/{{ l[0] }}?days={{ days }}">{{ l[0] }}</a></td></tr>
+      <tr><td width="160px">{{ l[1] }} ({{ round((l[1] / float(total)) * 100, 1) }}%)</td><td><a href="/stats/service/{{ l[0] }}?days={{ days }}&command={{ command_name }}&contact={{ contact_name }}">{{ l[0] }}</a></td></tr>
       %end
       %other = sum((s[1] for s in services.most_common()[15:]))
       <tr><td>{{ other }} ({{ round((other / float(total)) * 100, 1) }}%)</td><td><strong>Others</strong></td></tr>
@@ -111,7 +111,7 @@
 <div class="col-xs-12">
   <div class="panel panel-default">
     <div class="panel-body">
-      <div id="inner_history" data-logclass="3" data-commandname="{%22$regex%22:%22{{ app.stats_command_name_filter }}%22}" data-contactname="{%22$regex%22:%22{{ app.stats_contact_name_filter }}%22}">
+      <div id="inner_history" data-logclass="3" data-commandname="{%22$regex%22:%22{{ command_name }}%22}" data-contactname="{{ contact_name }}">
       </div>
 
       <div class="text-center" id="loading-spinner">

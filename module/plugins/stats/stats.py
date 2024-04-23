@@ -78,7 +78,6 @@ def _graph(logs):
 
     return graph
 
-
 def get_alignak_stats():
     user = app.bottle.request.environ['USER']
     _ = user.is_administrator() or app.redirect403()
@@ -148,6 +147,8 @@ def get_alignak_stats():
         'services': services,
         'hostsservices': hostsservices,
         'days': days,
+        'command_name': command_name,
+        'contact_name': contact_name,
         'graph': _graph(new_logs) if new_logs else None
     }
 
@@ -161,6 +162,9 @@ def get_global_stats():
     range_end = int(app.request.GET.get('range_end', time.time()))
     range_start = int(app.request.GET.get('range_start', range_end - (days * 86400)))
 
+    command_name = app.request.GET.get('command', app.stats_command_name_filter)
+    contact_name = app.request.GET.get('contact', app.stats_contact_name_filter)
+
     if app.alignak:
         # Restrictive filter on contact name
         filters = {
@@ -168,9 +172,12 @@ def get_global_stats():
             'alignak.contact': 'notified'
         }
     else:
-        filters = {'type': 'SERVICE NOTIFICATION',
-                   'command_name': {'$regex': app.stats_command_name_filter},
-                   'contact_name': {'$regex': app.stats_contact_name_filter}}
+        filters = dict()
+        filters['type'] = 'SERVICE NOTIFICATION'
+        if command_name:
+            filters['command_name'] = command_name
+        if contact_name:
+            filters['contact_name'] = contact_name
 
     logs, query = list(app.logs_module.get_ui_logs(range_start=range_start, range_end=range_end,
                                             filters=filters, limit=None))
@@ -200,6 +207,8 @@ def get_global_stats():
         'services': services,
         'hostsservices': hostsservices,
         'days': days,
+        'command_name': command_name,
+        'contact_name': contact_name,
         'graph': _graph(new_logs) if new_logs else None,
         'query': query
     }
@@ -214,18 +223,33 @@ def get_service_stats(name):
     range_end = int(app.request.GET.get('range_end', time.time()))
     range_start = int(app.request.GET.get('range_start', range_end - (days * 86400)))
 
+    command_name = app.request.GET.get('command', app.stats_command_name_filter)
+    contact_name = app.request.GET.get('contact', app.stats_contact_name_filter)
+
+    filters = dict()
+    filters['type'] = 'SERVICE NOTIFICATION'
+    filters['service_description'] = name
+    if command_name:
+        filters['command_name'] = command_name
+    if contact_name:
+        filters['contact_name'] = contact_name
+
     logs, query = list(app.logs_module.get_ui_logs(
         range_start=range_start, range_end=range_end,
-        filters={'type': 'SERVICE NOTIFICATION',
-                 'command_name': {'$regex': app.stats_command_name_filter},
-                 'command_name': {'$regex': app.stats_contact_name_filter},
-                 'service_description': name},
+        filters=filters,
         limit=None))
 
     hosts = Counter()
     for l in logs:
         hosts[l['host_name']] += 1
-    return {'service': name, 'hosts': hosts, 'days': days, 'query': query}
+    return {
+        'service': name,
+        'hosts': hosts,
+        'days': days,
+        'command_name': command_name,
+        'contact_name': contact_name,
+        'query': query
+    }
 
 
 def get_host_stats(name):
@@ -237,6 +261,9 @@ def get_host_stats(name):
     range_end = int(app.request.GET.get('range_end', time.time()))
     range_start = int(app.request.GET.get('range_start', range_end - (days * 86400)))
 
+    command_name = app.request.GET.get('command', app.stats_command_name_filter)
+    contact_name = app.request.GET.get('contact', app.stats_contact_name_filter)
+
     if app.alignak:
         # Restrictive filter on contact name
         filters = {
@@ -245,10 +272,13 @@ def get_host_stats(name):
             'alignak.host_name': name
         }
     else:
-        filters = {'type': 'SERVICE NOTIFICATION',
-                   'command_name': {'$regex': app.stats_command_name_filter},
-                   'command_name': {'$regex': app.stats_contact_name_filter},
-                   'host_name': name}
+        filters = dict()
+        filters['type'] = 'SERVICE NOTIFICATION'
+        filters['host_name'] = name
+        if command_name:
+            filters['command_name'] = command_name
+        if contact_name:
+            filters['contact_name'] = contact_name
 
     logs, query = list(app.logs_module.get_ui_logs(
         range_start=range_start, range_end=range_end,
@@ -275,6 +305,8 @@ def get_host_stats(name):
         'hosts': hosts,
         'services': services,
         'days': days,
+        'command_name': command_name,
+        'contact_name': contact_name,
         'query': query
     }
 
