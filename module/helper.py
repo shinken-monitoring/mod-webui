@@ -195,6 +195,21 @@ class Helper(object):
 
         return groups
 
+    # We should use elt.get_ack_comment(), but elt.acknowledgement is always None. Maybe a bug?
+    def get_acknowledge_comment(self, obj):
+        if obj.problem_has_been_acknowledged:
+            for c in reversed(obj.comments):
+                if c.comment.startswith('Acknowledged '):
+                    return c.comment
+            return "Acknowledged"
+        return None
+
+    def get_downtime_comments(self, obj):
+        return ["%s %s until %s" % (d.comment, self.print_duration_and_date(d.start_time), time.strftime("%Y-%m-%d %H:%M", time.localtime(d.end_time))) for d in obj.downtimes if d.is_in_effect]
+        # for d in obj.downtimes:
+            # if d.is_in_effect:
+                # yield "%s %s until %s" % (d.comment, print_duration_and_date(d.start_time), time.strftime("%Y-%m-%d %H:%M", time.localtime(d.end_time)))
+
     def get_small_icon_state(self, obj):
         """
         Get the small state for host/service icons and satellites ones

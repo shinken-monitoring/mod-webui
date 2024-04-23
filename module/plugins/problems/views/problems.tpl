@@ -115,10 +115,10 @@ Next check <strong>{{helper.print_duration(pb.next_chk)}}</strong>
                </td>
                <td class="text-muted">
                  %if pb.problem_has_been_acknowledged:
-                 <i class="fas fa-check" title="Acknowledged"></i><br>
+                 <i class="fas fa-check" title="{{ helper.get_acknowledge_comment(pb) }}"></i><br>
                  %end
                  %if pb.in_scheduled_downtime:
-                 <i class="far fa-clock" title="In scheduled downtime"></i><br>
+                 <i class="far fa-clock" title="{{ helper.get_downtime_comments(pb)[-1] }}"></i><br>
                  %end
                </td>
                %aka = ''

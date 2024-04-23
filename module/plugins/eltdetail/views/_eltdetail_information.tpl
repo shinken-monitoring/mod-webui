@@ -34,6 +34,18 @@
             <br>
             <samp>{{! elt.output}}</samp>
           </div>
+          <div style="padding-top: 10px; padding-left: 15px;">
+          %if elt.problem_has_been_acknowledged:
+          <p><samp><i class="fas fa-check"></i> {{ helper.get_acknowledge_comment(elt) }}</samp></p>
+          %end
+          %if elt.in_scheduled_downtime:
+          <p>
+          %for d in helper.get_downtime_comments(elt):
+          <samp><i class="fas fa-clock"></i> {{! d }}</samp><br>
+          %end
+          </p>
+          %end
+          </div>
         </div>
 
         <h4 class="page-header"><i class="fas fa-bolt"></i> Last check</h4>
