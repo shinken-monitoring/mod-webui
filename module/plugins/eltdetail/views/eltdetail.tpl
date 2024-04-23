@@ -18,9 +18,11 @@ Invalid element name
 %breadcrumb = [['All '+elt_type.title()+'s', '/'+elt_type+'s-groups']]
 %if elt_type == 'host':
 %breadcrumb += [[elt.display_name if elt.display_name else elt.get_name(), '/host/'+elt.host_name]]
+%search_string = 'host:' + elt.host_name
 %elif elt_type == 'service':
 %breadcrumb += [[elt.host.display_name if elt.host.display_name else elt.host.get_name(), '/host/'+elt.host_name]]
 %breadcrumb += [[elt.display_name, '/service/'+helper.get_uri_name(elt)]]
+%search_string = 'host:%s service:%s' % (elt.host_name, elt.display_name)
 %end
 
 %js=['js/jquery.sparkline.min.js', 'js/shinken-charts.js', 'cv_host/js/flot/jquery.flot.min.js', 'cv_host/js/flot/jquery.flot.tickrotor.js', 'cv_host/js/flot/jquery.flot.resize.min.js', 'cv_host/js/flot/jquery.flot.pie.min.js', 'cv_host/js/flot/jquery.flot.categories.min.js', 'cv_host/js/flot/jquery.flot.time.min.js', 'cv_host/js/flot/jquery.flot.stack.min.js', 'cv_host/js/flot/jquery.flot.valuelabels.js', 'eltdetail/js/custom_views.js', 'eltdetail/js/eltdetail.js', 'logs/js/history.js']

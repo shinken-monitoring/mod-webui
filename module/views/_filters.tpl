@@ -6,10 +6,15 @@
 %if 'search_engine' in app.request.route.config and app.request.route.config['search_engine']:
 %search_action = app.request.fullpath
 %end
+
+%if 'search_string' not in locals():
+%search_string = app.get_search_string()
+%end
+
 <form id="{{ search_id }}-form" class="navbar-form form-inline" method="get" action="{{ search_action }}">
 
    <div class="input-group input-group-sm">
-      <input class="form-control" type="search" id="{{ search_id }}" name="search" value="{{ app.get_search_string() or '' }}" aria-label="Monitoring items search engine">
+      <input class="form-control" type="search" id="{{ search_id }}" name="search" value="{{ search_string }}" aria-label="Monitoring items search engine">
 
       <div class="input-group-btn">
          <div class="btn-group btn-group-sm">
