@@ -9,7 +9,7 @@
       if ($('#ack_services').is(":checked")) {
       %for service in elt.services:
       %if service.state != service.ok_up and not service.problem_has_been_acknowledged:
-         do_acknowledge("{{name}}/{{service.get_name()}}", $('#reason').val(), '{{user.get_username()}}', '{{app.default_ack_sticky}}', '{{app.default_ack_notify}}', '{{app.default_ack_persistent}}');
+        do_acknowledge("{{name}}/{{service.get_name()}}", $('#reason').val(), '{{user.get_username()}}', '{{app.default_ack_sticky}}', '{{app.default_ack_notify}}', '{{app.default_ack_persistent}}', '{{ack_expire}}');
       %end
       %end
       }
@@ -40,7 +40,11 @@
       </div>
 
       <div class="form-group">
-         <textarea name="reason" id="reason" class="form-control" rows="5" placeholder="Reason…">Acknowledged from WebUI by {{user.get_name()}}.</textarea>
+        %if ack_expire:
+        %from datetime import datetime
+        %ack_expire=str(datetime.fromtimestamp(int(ack_expire)))
+        %end
+        <textarea name="reason" id="reason" class="form-control" rows="5" placeholder="Reason…">Acknowledged from WebUI by {{user.get_name()}}{{ ' until ' + ack_expire if ack_expire else '' }}</textarea>
       </div>
 
       <a href="javascript:submit_local_form();" class="btn btn-primary btn-lg btn-block"> <i class="fas fa-save"></i> Submit</a>

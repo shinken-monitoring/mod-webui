@@ -39,7 +39,8 @@ def form_submit_check(name):
 def form_ack_add(name):
     user = app.request.environ['USER']
     elt = app.datamgr.get_element(name, user) or app.redirect404()
-    return {'elt': elt, 'name': name}
+    ack_expire = app.request.GET.get('ack_expire', None)
+    return {'elt': elt, 'name': name, 'ack_expire': ack_expire}
 
 
 def form_ack_remove(name):

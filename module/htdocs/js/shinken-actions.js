@@ -400,10 +400,15 @@ are disabled.
  acknowledgement will survive across restarts of the Shinken process.
  If not, the comment will be deleted the next time Shinken restarts.
 */
-function do_acknowledge(name, text, user, shinken_acknowledge_sticky, shinken_acknowledge_notify, shinken_acknowledge_persistent){
+function do_acknowledge(name, text, user, shinken_acknowledge_sticky, shinken_acknowledge_notify, shinken_acknowledge_persistent, end_time){
    var elt = get_element(name);
-   var url = '/action/ACKNOWLEDGE_'+elt.type+'_PROBLEM/'+elt.name+'/'+shinken_acknowledge_sticky+'/'+shinken_acknowledge_notify+'/'+shinken_acknowledge_persistent+'/'+user+'/'+text;
-   launch(url, elt.type+': '+name+', acknowledged');
+   if (end_time) {
+       var url = '/action/ACKNOWLEDGE_'+elt.type+'_PROBLEM_EXPIRE/'+elt.name+'/'+shinken_acknowledge_sticky+'/'+shinken_acknowledge_notify+'/'+shinken_acknowledge_persistent+'/'+end_time+'/'+user+'/'+text;
+       launch(url, elt.type+': '+name+', acknowledged until '+end_time);
+   } else {
+       var url = '/action/ACKNOWLEDGE_'+elt.type+'_PROBLEM/'+elt.name+'/'+shinken_acknowledge_sticky+'/'+shinken_acknowledge_notify+'/'+shinken_acknowledge_persistent+'/'+user+'/'+text;
+       launch(url, elt.type+': '+name+', acknowledged');
+   }
 }
 
 /* The command that will delete an acknowledge */
@@ -516,11 +521,16 @@ $("body").on("click", ".js-delete-comment", function () {
 $("body").on("click", ".js-schedule-downtime", function () {
     var elt = get_action_element($(this));
 
+    var downtime_start = moment().seconds(0).format('X');
+    var downtime_stop = $(this).data('until');
+
     var duration = $(this).data('duration');
     if (duration) {
-        var downtime_start = moment().seconds(0).format('X');
         var downtime_stop = moment().seconds(0).add('minutes', duration).format('X');
-        var comment = $(this).text() + " downtime scheduled from WebUI by " + user;
+    }
+
+    if (downtime_stop) {
+        var comment = $(this).text() + " downtime scheduled by " + user;
         if (elt) {
             do_schedule_downtime(elt, downtime_start, downtime_stop, g_user_name, comment, shinken_downtime_fixed, shinken_downtime_trigger, shinken_downtime_duration);
         } else {
@@ -570,11 +580,27 @@ $("body").on("click", ".js-delete-all-downtimes", function () {
 $("body").on("click", ".js-add-acknowledge", function () {
     var elt = get_action_element($(this));
 
+    var ack_expire = $(this).data('until');
+    var duration = $(this).data('duration');
+    if (duration) {
+        var ack_expire = moment().seconds(0).add('minutes', duration).format('X');
+    }
+
+    if (ack_expire) {
+        var comment = "Acknowledged by " + user + " until " + moment.unix(ack_expire).format("YYYY-MM-DD HH:mm");
+    } else {
+        var comment = "Acknowledged by " + user;
+    }
+
     if (elt) {
-        display_modal("/forms/acknowledge/add/"+elt);
+        if (ack_expire) {
+            do_acknowledge(elt, comment, g_user_name, default_ack_sticky, default_ack_notify, default_ack_persistent, ack_expire);
+        } else {
+            display_modal("/forms/acknowledge/add/"+elt);
+        }
     } else {
         $.each(selected_elements, function(idx, name){
-            do_acknowledge(name, 'Acknowledged by '+user, g_user_name, default_ack_sticky, default_ack_notify, default_ack_persistent);
+            do_acknowledge(name, comment, g_user_name, default_ack_sticky, default_ack_notify, default_ack_persistent, ack_expire);
         });
     }
 
