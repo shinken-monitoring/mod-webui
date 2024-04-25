@@ -204,6 +204,10 @@ def get_history():
     if logclass is not None:
         filters['logclass'] = int(logclass)
 
+    logtype = app.request.query.get('logtype', None)
+    if logtype:
+        filters['type'] = { '$regex': '.*%s.*' % logtype }
+
     command_name = app.request.query.get('commandname', None)
     if command_name:
         try:

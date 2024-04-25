@@ -2,7 +2,15 @@
 <div class="tab-pane fade" id="history">
   <div class="panel panel-default" style="border-top:none; border-radius:0;">
     <div class="panel-body">
-      <div id="inner_history" data-host='{{ elt.host_name }}' data-service='{{ elt.service_description if elt_type == 'service' else '' }}'>
+      <div class="pull-right">
+      %if app.request.query.get('logtype', ''):
+      <a class="btn btn-default btn-sm" href="?logtype=#history"><i class="fas fa-filter"></i> Display host with all services</a>
+      %else:
+      <a class="btn btn-default btn-sm" href="?logtype=HOST#history"><i class="fas fa-filter"></i> Display host only</a>
+      %end
+      </div>
+
+      <div id="inner_history" data-host='{{ elt.host_name }}' data-service='{{ elt.service_description if elt_type == 'service' else '' }}' data-logtype='{{ app.request.query.get('logtype', '') }}'>
       </div>
 
       <div class="text-center" id="loading-spinner">

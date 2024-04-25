@@ -19,6 +19,9 @@ function more_history() {
     if ($('#inner_history').data('logclass') !== undefined) {
         var url = url + '&logclass=' + $('#inner_history').data('logclass');
     }
+    if ($('#inner_history').data('logtype') !== undefined) {
+        var url = url + '&logtype=' + $('#inner_history').data('logtype');
+    }
     if ($('#inner_history').data('commandname') !== undefined) {
         var url = url + '&commandname=' + $('#inner_history').data('commandname');
     }
