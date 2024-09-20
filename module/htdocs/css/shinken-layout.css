@@ -44,8 +44,28 @@ body {
     margin-right: 10px;
 }
 
+.content-header .page-header {
+    font-size: 36px;
+}
+
+.content-header .breadcrumb > .active,
+.content-header .breadcrumb a {
+    color: #ddd;
+}
+
+.page-subheader {
+    color: #777;
+    margin: 40px 0 20px;
+}
+
+.page-subheader .fas {
+    margin-right: 10px;
+}
+
 .breadcrumb {
     margin:0;
+    padding-bottom: 0;
+    padding-top: 0;
 }
 
 .table-invisible > thead > tr > th,
@@ -238,7 +258,6 @@ td .ellipsis > .long-output {
     font-size: 14px;
 }
 
-
 .navbar-nav #search:hover,
 .navbar-nav #search:hover + .input-group-addon {
     background-color: #60a0c5;
@@ -412,6 +431,49 @@ td .ellipsis > .long-output {
 }
 
 /*
+ * Sidebar menu
+ */
+
+.sidebar ul li a {
+    color: #777;
+}
+
+.sidebar ul li a.active {
+    background-color: inherit;
+    /*font-weight: inherit;*/
+}
+
+/*.sidebar ul li a.active:hover {*/
+    /*background-color: inherit;*/
+    /*font-weight: inherit;*/
+/*}*/
+
+.sidebar .fa.arrow:before {
+    content: "\f105";
+}
+
+.sidebar .sidebar-icon {
+}
+
+.sidebar .sidebar-label {
+    padding-left: 4px;
+}
+
+@media(min-width:768px) {
+    #wrapper.sidebar-reduced #page-wrapper {
+        margin-left: 60px;
+    }
+
+    #wrapper.sidebar-reduced .sidebar {
+        width: 60px;
+    }
+
+    #wrapper.sidebar-reduced .sidebar .sidebar-label {
+        display: None;
+    }
+}
+
+/*
  * Footer - make footer bar smaller than usual ...
  */
 footer nav {
@@ -546,6 +608,18 @@ footer nav {
 
 .info {
     cursor: help;
+}
+
+/*
+ * Modals
+ */
+
+.modal-header {
+    border-bottom: none;
+}
+
+.modal-xl {
+width: 95%;
 }
 
 /*

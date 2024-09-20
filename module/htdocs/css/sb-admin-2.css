@@ -23,6 +23,7 @@ body {
 }
 
 @media(min-width:768px) {
+/*@media(min-width:992px) {*/
     #page-wrapper {
         position: inherit;
         margin: 0 0 0 200px;
@@ -30,6 +31,7 @@ body {
         /*border-left: 1px solid #e7e7e7;*/
     }
 }
+
 
 .navbar-top-links {
     margin-right: 0;

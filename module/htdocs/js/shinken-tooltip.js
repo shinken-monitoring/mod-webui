@@ -1,7 +1,7 @@
 $.fn.tooltip.Constructor.DEFAULTS.placement = 'auto';
 
 function tooltips(){
-   $('[title]').tooltip({
+   $('#page-content [title]').tooltip({
        html: 'true'
    });
 }
