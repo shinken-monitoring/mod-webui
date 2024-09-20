@@ -515,8 +515,12 @@ class Helper(object):
                    % (title, color, used_value, unused_value)
         return ""
 
-    def get_perfdata_pies(self, elt):
-        return " ".join([self.get_perfdata_pie(p) for p in PerfDatas(elt.perf_data)])
+    def get_perfdata_pies(self, elt, maximum=5):
+        perfdatas = PerfDatas(elt.perf_data)
+        if len(perfdatas) <= maximum:
+            return " ".join([self.get_perfdata_pie(p) for p in PerfDatas(elt.perf_data)])
+        else:
+            return ""
 
     def get_perfdata_table(self, elt):
         perfdatas = PerfDatas(elt.perf_data)
