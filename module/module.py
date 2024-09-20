@@ -1256,3 +1256,8 @@ def login_required():
 
     logger.debug("[WebUI] update current user: %s", user)
     request.environ['USER'] = user
+
+@webui_app.hook('before_request')
+def register_start_time():
+    request.start_time = time.time()
+    request.environ['START_TIME'] = time.time()
