@@ -130,8 +130,8 @@ def user_auth():
 
 
 def get_root():
-    """Navigating to the root is redirecting to the Dashboard view"""
-    bottle.redirect(app.get_url("Dashboard"))
+    """Navigating to the root is redirecting to the Problems view"""
+    bottle.redirect(app.get_url("Problems"))
 
 
 pages = {
