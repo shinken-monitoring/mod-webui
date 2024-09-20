@@ -361,7 +361,7 @@ function submit_comment_form(id){
 */
 function do_schedule_downtime(name, start_time, end_time, user, comment, shinken_downtime_fixed, shinken_downtime_trigger, shinken_downtime_duration){
    var elt = get_element(name);
-   var url = '/action/SCHEDULE_'+elt.type+'_DOWNTIME/'+elt.name+'/'+start_time+'/'+end_time+'/'+shinken_downtime_fixed+'/'+shinken_downtime_trigger+'/'+shinken_downtime_duration+'/'+user+'/'+comment;
+   var url = '/act/SCHEDULE_'+elt.type+'_DOWNTIME/'+elt.name+'/'+start_time+'/'+end_time+'/'+shinken_downtime_fixed+'/'+shinken_downtime_trigger+'/'+shinken_downtime_duration+'/'+user+'/'+comment;
    launch(url, elt.type+': '+name+', downtime scheduled');
 }
 

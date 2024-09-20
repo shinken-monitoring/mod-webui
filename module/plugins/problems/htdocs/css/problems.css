@@ -11,7 +11,11 @@
     padding-right: 0px !important;
 }
 
-.panel > table > tbody > tr:not(.hiddenRow) {
+/*.panel > table > tbody > tr:not(.hiddenRow) {*/
+    /*cursor: pointer;*/
+/*}*/
+
+.panel > table > tbody .js-select-elt {
     cursor: pointer;
 }
 

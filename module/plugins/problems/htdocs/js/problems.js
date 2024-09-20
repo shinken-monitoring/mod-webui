@@ -64,6 +64,14 @@ $('body').on('click', '.js-select-all', function (e) {
 
 });
 
+$('body').on('click', '.js-open-elt', function(e) {
+    if (!e.ctrlKey && !e.shiftKey) {
+        e.preventDefault();
+        e.stopPropagation();
+        display_eltdetail_modal($(this)[0].pathname);
+    }
+});
+
 // Problems element check boxes
 $('body').on('click', 'input[type=checkbox][data-type="problem"]', function (e) {
    e.stopPropagation();
@@ -74,16 +82,15 @@ $('body').on('click', 'input[type=checkbox][data-type="problem"]', function (e) 
 });
 
 $('body').on('click', '.js-select-elt', function(e) {
-    document.onselectstart = function() {
-        return false;
-    }
     if (e.ctrlKey) {
         e.stopPropagation();
         if (problems_logs) console.log('CTRL-Clicked: ', $(this).data('item'))
         $(this).focus(); // This is used to avoid text selection
         add_remove_elements($(this).data('item'));
-    }
-    if (e.shiftKey) {
+    } else if (e.shiftKey) {
+        document.onselectstart = function() {
+            return false;
+        }
         e.stopPropagation();
         if (problems_logs) console.log('Shift-Clicked: ', $(this).data('item'))
         $(this).focus(); // This is used to avoid text selection
@@ -102,6 +109,11 @@ $('body').on('click', '.js-select-elt', function(e) {
                     add_remove_elements($(e).data('item'));
                 });
             }
+        }
+    } else {
+        if (window.getSelection().toString().length === 0){
+            e.preventDefault();
+            display_eltdetail_modal($(this).data('link'));
         }
     }
 });
@@ -143,6 +155,24 @@ function bootstrap_accordion_bookmark (selector) {
     $('body').on('hide.bs.collapse', '.collapse', reset_location);
 }
 
+function eltdetail_modal_bookmark () {
+    $(document).ready(function() {
+        if (location.hash && location.hash != '#_') {
+            display_eltdetail_modal(location.hash.substring(1));
+        }
+    });
+
+    var update_modal_bookmark = function (event) {
+        document.location.hash = "test";
+    }
+
+    var reset_modal_bookmark = function (event) {
+        document.location.hash = "#_";
+    }
+
+    $('body').on('show.bs.modal', '#modal', update_modal_bookmark);
+    $('body').on('hide.bs.modal', '#modal', reset_modal_bookmark);
+}
 
 function on_page_refresh(){
    if (problems_logs) console.log('Problems page - on_page_refresh')
@@ -165,7 +195,8 @@ function on_page_refresh(){
       });
    }
 
-   bootstrap_accordion_bookmark();
+   //bootstrap_accordion_bookmark();
+   eltdetail_modal_bookmark();
 
    // Graphs popover
    $('[data-toggle="popover-elt-graphs"]').popover({

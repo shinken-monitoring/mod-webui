@@ -102,14 +102,39 @@ def get_page(cmd=None):
     # Expand macros
     extcmd = expand_macros(extcmd)
     logger.debug("[WebUI-actions] external command: %s.", extcmd)
+    logger.info("[WebUI-actions] external command: %s.", extcmd) # :TODO:maethor:240415: To remove
     e = ExternalCommand(extcmd)
     app.push_external_command(e)
 
     return forge_response(callback, 200, response_text)
 
+def schedule_service_downtime(host_name, service, start_time, end_time, fixed, trigger, duration, user, comment):
+    user = app.bottle.request.environ['USER']
+    s = app.datamgr.get_service(host_name, service, user) or app.redirect404()
+    for dep in s.child_dependencies: 
+        cmd = 'SCHEDULE_SVC_DOWNTIME/'+dep.host_name+'/'+dep.get_name()+'/'+start_time+'/'+end_time+'/'+fixed+'/'+trigger+'/'+duration+'/'+user.get_username()+'/'+comment+" as a dependency of "+host_name+"/"+service;
+        get_page(cmd)
+    cmd = 'SCHEDULE_SVC_DOWNTIME/'+host_name+'/'+service+'/'+start_time+'/'+end_time+'/'+fixed+'/'+trigger+'/'+duration+'/'+user.get_username()+'/'+comment;
+    return get_page(cmd)
+
+def schedule_host_downtime(host_name, start_time, end_time, fixed, trigger, duration, user, comment):
+    user = app.bottle.request.environ['USER']
+    s = app.datamgr.get_host(host_name, user) or app.redirect404()
+    # for dep in s.child_dependencies: 
+        # cmd = 'SCHEDULE_SVC_DOWNTIME/'+dep.host_name+'/'+dep.get_name()+'/'+start_time+'/'+end_time+'/'+fixed+'/'+trigger+'/'+duration+'/'+user.get_username()+'/'+comment+" as a dependency of "+host_name+"/"+service;
+        # get_page(cmd)
+    cmd = 'SCHEDULE_HOST_DOWNTIME/'+host_name+'/'+start_time+'/'+end_time+'/'+fixed+'/'+trigger+'/'+duration+'/'+user.get_username()+'/'+comment;
+    return get_page(cmd)
+
 
 pages = {
     get_page: {
         'name': 'Action', 'route': '/action/:cmd#.+#'
+    },
+    schedule_service_downtime: {
+        'name': 'schedule_service_downtime', 'route': '/act/SCHEDULE_SVC_DOWNTIME/:host_name/:service/:start_time/:end_time/:fixed/:trigger/:duration/:user/:comment'
+    },
+    schedule_host_downtime: {
+        'name': 'schedule_host_downtime', 'route': '/act/SCHEDULE_HOST_DOWNTIME/:host_name/:start_time/:end_time/:fixed/:trigger/:duration/:user/:comment'
     }
 }

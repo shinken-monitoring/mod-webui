@@ -1,4 +1,4 @@
-<table class="table table-condensed" style="table-layout:fixed; width:100%;">
+<table class="table table-condensed table-hover" style="table-layout:fixed; width:100%;">
   <tbody>
     %for pb in pbs:
     <tr>
@@ -7,8 +7,17 @@
       {{pb}}
       </td>
     %else:
-      <td width="130px" title="{{pb.get_name()}} - {{pb.state}}<br> Since {{helper.print_date(pb.last_state_change, format="%d %b %Y %H:%M:%S")}}<br> Last check {{helper.print_duration(pb.last_chk)}}<br> Next check {{helper.print_duration(pb.next_chk)}}"
-        class="font-{{pb.state.lower()}} text-center">
+      <td width="130px" title="{{pb.get_name()}} - {{pb.state}}
+Since {{helper.print_date(pb.last_state_change, format="%d %b %Y %H:%M:%S")}}
+
+Last check <strong>{{helper.print_duration(pb.last_chk)}}</strong>
+Next check <strong>{{helper.print_duration(pb.next_chk)}}</strong>
+%if (pb.check_freshness):
+(Freshness threshold: {{pb.freshness_threshold}} seconds)
+%end
+"
+        data-placement="right"
+        data-container="body"class="font-{{pb.state.lower()}} text-center">
         <div style="display: table-cell; vertical-align: middle; padding-right: 10px;">
           {{!helper.get_fa_icon_state(pb, use_title=False)}}
         </div>

@@ -1,54 +1,11 @@
 %elt_type = elt.__class__.my_type
 
-<div class="tab-pane fade {{_go_active}} {{_go_fadein}}" id="information">
+<div class="tab-pane fade" id="information">
   <div class="panel panel-default" style="border-top:none; border-radius:0;">
     <div class="panel-body">
 
       <div class="col-lg-6">
-
-        <div class="status-lead" style="margin-left: 10px; margin-top: 20px;">
-          <div style="display: table-cell; vertical-align: middle; ">
-            {{!helper.get_fa_icon_state(elt, use_title=False)}}
-          </div>
-          <div style="display: table-cell; vertical-align: middle; padding-right: 10px;" class="font-{{elt.state.lower()}} text-center">
-            <strong>{{ elt.state }}</strong><br>
-            <span title="Since {{time.strftime("%d %b %Y %H:%M:%S", time.localtime(elt.last_state_change))}}">
-              <small>
-              %if elt.state_type == 'HARD':
-              {{!helper.print_duration(elt.last_state_change, just_duration=True, x_elts=2)}}
-              %else:
-              attempt {{elt.attempt}}/{{elt.max_check_attempts}}
-              <!--soft state-->
-              %end
-              </small>
-            </span>
-          </div>
-          <div style="display: table-cell; vertical-align: middle;">
-            %if elt_type == 'service':
-            <a href="{{'/host/'+elt.host_name }}">{{ elt.host.display_name if elt.host.display_name else elt.host.get_name() }}</a>:
-            %end
-            {{ elt.display_name }}
-            %if elt_type == 'host':
-            ({{ elt.address }})
-            %end
-            <br>
-            <samp>{{! elt.output}}</samp>
-          </div>
-          <div style="padding-top: 10px; padding-left: 15px;">
-          %if elt.problem_has_been_acknowledged:
-          <p><samp><i class="fas fa-check"></i> {{ helper.get_acknowledge_comment(elt) }}</samp></p>
-          %end
-          %if elt.in_scheduled_downtime:
-          <p>
-          %for d in helper.get_downtime_comments(elt):
-          <samp><i class="fas fa-clock"></i> {{! d }}</samp><br>
-          %end
-          </p>
-          %end
-          </div>
-        </div>
-
-        <h4 class="page-header"><i class="fas fa-bolt"></i> Last check</h4>
+        <h4 class="page-subheader"><i class="fas fa-bolt"></i> Last check</h4>
         <table class="table table-condensed table-nowrap">
           <colgroup>
             <col style="width: 40%" />
@@ -110,13 +67,13 @@
         </table>
 
         %if elt.perf_data:
-        <h4 class="page-header"><i class="fas fa-chart-line"></i> Performance data</h4>
+        <h4 class="page-subheader"><i class="fas fa-chart-line"></i> Performance data</h4>
         <div>
           {{!helper.get_perfdata_table(elt)}}
         </div>
         %end
 
-        <h4 class="page-header"><i class="fas fa-cogs"></i> Checks configuration</h4>
+        <h4 class="page-subheader"><i class="fas fa-cogs"></i> Checks configuration</h4>
         <table class="table table-condensed">
           <colgroup>
             <col style="width: 40%" />
@@ -247,7 +204,7 @@
         %some_doc = elt.notes or elt.notes_url or elt.action_url or elt.customs and ('_IMPACT' in elt.customs or '_DETAILLEDESC' in elt.customs or '_FIXACTIONS' in elt.customs)
 
         %if some_doc:
-          <h4 class="page-header"><i class="fas fa-question-circle"></i> Documentation</h4>
+          <h4 class="page-subheader"><i class="fas fa-question-circle"></i> Documentation</h4>
           %if elt.notes or elt.notes_url:
             %if elt.notes:
             <p>{{! elt.notes}}</p>
@@ -285,7 +242,7 @@
           %end
         %end
 
-        <h4 class="page-header"><i class="fas fa-paper-plane"></i> Notifications</h4>
+        <h4 class="page-subheader"><i class="fas fa-paper-plane"></i> Notifications</h4>
         <table class="table table-condensed">
           <colgroup>
             <col style="width: 40%" />
@@ -382,12 +339,48 @@
                 {{!', '.join(contact_groups)}}
               </td>
             </tr>
+            <tr>
+              <td><strong>Escalations:</strong></td>
+              <td>
+                {{! ', '.join((e.display_name for e in elt.escalations)) }}
+              </td>
+            </tr>
+            <!--<tr>-->
+              <!--<td><strong>Depends of me:</strong></td>-->
+              <!--<td>-->
+                <!--{{ elt.act_depend_of_me }}-->
+              <!--</td>-->
+            <!--</tr>-->
+            <!--<tr>-->
+              <!--<td><strong>Childs:</strong></td>-->
+              <!--<td>-->
+                <!--{{ elt.child_dependencies }}-->
+              <!--</td>-->
+            <!--</tr>-->
+            <!--<tr>-->
+              <!--<td><strong>Parents:</strong></td>-->
+              <!--<td>-->
+                <!--{{ elt.parent_dependencies }}-->
+              <!--</td>-->
+            <!--</tr>-->
+            <tr>
+              <td><strong>Source problems:</strong></td>
+              <td>
+                {{ elt.source_problems }}
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Impacts:</strong></td>
+              <td>
+                {{ elt.impacts }}
+              </td>
+            </tr>
             %end
           </tbody>
         </table>
 
         %if elt.event_handler:
-        <h4 class="page-header">Event handler</h4>
+        <h4 class="page-subheader">Event handler</h4>
         <table class="table table-condensed">
           <colgroup>
             <col style="width: 40%" />
@@ -419,7 +412,7 @@
         </table>
         %end
 
-        <h4 class="page-header"><i class="fas fa-arrows-alt-v"></i> Flapping detection</h4>
+        <h4 class="page-subheader"><i class="fas fa-arrows-alt-v"></i> Flapping detection</h4>
         <table class="table table-condensed">
           <colgroup>
             <col style="width: 40%" />
@@ -459,7 +452,7 @@
         </table>
 
         %if elt.stalking_options and elt.stalking_options[0]:
-        <h4 class="page-header"><i class="fas fa-cogs"></i> Stalking options</h4>
+        <h4 class="page-subheader"><i class="fas fa-cogs"></i> Stalking options</h4>
         <table class="table table-condensed">
           <colgroup>
             <col style="width: 40%" />
@@ -476,7 +469,7 @@
         %tags = elt.get_service_tags() if elt_type=='service' else elt.get_host_tags()
         %if tags:
         %tag='stag' if elt_type=='service' else 'htag'
-        <h4 class="page-header"><i class="fas fa-tag"></i> Tags</h4>
+        <h4 class="page-subheader"><i class="fas fa-tag"></i> Tags</h4>
         <ul class="list-inline" style="line-height: 2;">
         %for t in sorted(tags):
         <li class="list-inline-item">
@@ -491,7 +484,7 @@
         %end
 
         %if getattr(elt, 'hostgroups', None):
-        <h4 class="page-header"><i class="fas fa-sitemap"></i> Hostgroups</h4>
+        <h4 class="page-subheader"><i class="fas fa-sitemap"></i> Hostgroups</h4>
         <ul class="list-inline" style="line-height: 2;">
         %for hg in elt.hostgroups:
         <li class="list-inline-item">

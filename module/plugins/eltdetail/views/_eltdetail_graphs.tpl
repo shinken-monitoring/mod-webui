@@ -9,11 +9,8 @@
 <div class="tab-pane fade" id="graphs">
   <div class="panel panel-default" style="border-top:none; border-radius:0;">
     <div class="panel-body">
-      %# Set source as '' or module ui-graphite will try to fetch templates from default 'detail'
-      %uris = app.graphs_module.get_graph_uris(elt, graphstart=graphstart, graphend=graphend)
-      %if uris:
-
-      <p class="col-xs-12">
+      %if graph_uris:
+      <div class="text-center" style="margin-bottom: 10px;">
         <div class="btn-group" role="group" aria-label="...">
           <button type="button" class="btn btn-default js-graph-left" title="Pan Left"><i class="fa fa-backward"></i></button>
           <button type="button" class="btn btn-default js-graph-right" title="Pan Right"><i class="fa fa-forward"></i></button>
@@ -32,26 +29,33 @@
             </ul>
           </div>
         </div>
-      </p>
+      </div>
 
-      <div id='graph_images' class="col-xs-12">
+      <div id='graph_images'>
+        %include("_eltdetail_service_graphs.tpl")
+        %if elt_type == 'host':
+        %include("_eltdetail_host_graphs.tpl")
+        %end
+
+        %if elt_type == 'service':
+        %twin_elts=app.datamgr.get_twin_elts(elt, user)
+        %if twin_elts:
+        <hr>
+        <h4 class="page-subheader">Twin graphs</h4>
+        %for twin_elt in twin_elts:
+        %include("_eltdetail_service_graphs.tpl", elt=twin_elt)
+        %end
+        %end
+        %end
+
+        %for related_host in app.datamgr.get_related_hosts(elt, user):
+        <hr>
+        <h4 class="page-subheader">Related graphs for {{ related_host.get_full_name() }}</h4>
+        %include("_eltdetail_host_graphs.tpl", elt=related_host)
+        %end
       </div>
 
       <script>
-        %# We do this in JS to avoid loading graphs when we are not on the graph tab
-        $('a[href="#graphs"]').on('shown.bs.tab', function (e) {
-          %graph_uris = dict();
-          %graph_uris = app.graphs_module.get_graph_uris(elt, graphstart, graphend);
-
-          html_graphs = '<p>';
-          %for g in graph_uris:
-          html_graphs +=  '<img src="{{g['img_src']}}&filename=graph-{{ helper.get_uri_name(elt).replace("%20", "_") }}.png" class="img-thumbnail"><p></p>';
-          %end
-          html_graphs += '</p>';
-
-          $("#graph_images").html( html_graphs );
-        });
-
         function refreshGraphs() {
           $('#graph_images img').each(function () {
             graphurl = $(this).attr('src');

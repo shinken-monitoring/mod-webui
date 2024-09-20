@@ -198,6 +198,7 @@ class WebUIDataManager(DataManager):
     def get_important_hosts_synthesis(self, user=None):
         return self.get_hosts_synthesis(elts=self.get_important_hosts(user))
 
+
     ##
     # Services
     ##
@@ -497,10 +498,10 @@ class WebUIDataManager(DataManager):
                 items = [i for i in items if i.get_realm() == r]
 
             if t == 'htag' and s.lower() != 'all':
-                items = [i for i in items if getattr(i, 'get_host_tags') and s in i.get_host_tags()]
+                items = [i for i in items if i.__class__.my_type == 'host' and s in i.get_host_tags()]
 
             if t == 'stag' and s.lower() != 'all':
-                items = [i for i in items if getattr(i, 'get_service_tags') and s in i.get_service_tags()]
+                items = [i for i in items if i.__class__.my_type == 'service' and s in i.get_service_tags()]
 
             if t == 'ctag' and s.lower() != 'all':
                 contacts = [c for c in self.get_contacts(user=user) if s in c.tags]
@@ -1082,3 +1083,44 @@ class WebUIDataManager(DataManager):
                 res['fathers'].append(par_elts)
 
         return res
+
+    # RELATED_HOSTS are hosts that can impact the object.
+    # For instance, example-www01 server is related to www.example.com
+    # So example-www01 main graphs will be displayed below www.example.com/Http
+    # This allows to easily compare service (Http) and servers (Load, Memory…) graphs
+    def get_related_hosts(self, obj, user):
+        related_hosts = []
+        if '_RELATED_HOSTS' in obj.customs:
+            for h in obj.customs['_RELATED_HOSTS'].split(','):
+                related_host = self.get_host(h, user)
+                if related_host:
+                    related_hosts.append(related_host)
+        elif obj.__class__.my_type == 'service':
+            related_hosts = self.get_related_hosts(obj.host, user)
+
+        return related_hosts
+
+    # TWIN_HOSTS are hosts that are identical in type and usage to the object.
+    # For instance, example-www01 and example-www02 are both behind a HaProxy to serve www.example.com
+    # So example-www01 and example-www02 graphs will be displayed together.
+    # example-www02/Memory graph will be displayed below example-www01/Memory graph.
+    # This allows to easily study the same graph (Load, Memory…) on a cluster of servers
+    def get_twin_hosts(self, obj, user):
+        twin_hosts = []
+        if '_TWIN_HOSTS' in obj.customs:
+            for h in obj.customs['_TWIN_HOSTS'].split(','):
+                twin_host = self.get_host(h, user)
+                if twin_host:
+                    twin_hosts.append(twin_host)
+        elif obj.__class__.my_type == 'service' and '_TWIN_HOSTS' in obj.host.customs:
+            twin_hosts = self.get_twin_hosts(obj.host, user)
+
+        return twin_hosts
+
+    def get_twin_elts(self, obj, user):
+        twin_elts = []
+        for twin_host in self.get_twin_hosts(obj, user):
+            twin_elt = self.get_service(twin_host.get_full_name(), obj.service_description, user)
+            if twin_elt:
+                twin_elts.append(twin_elt)
+        return twin_elts

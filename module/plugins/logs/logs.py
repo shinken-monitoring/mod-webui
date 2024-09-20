@@ -33,6 +33,8 @@ from config_parser import ConfigParser
 
 from shinken.log import logger
 
+from bson import json_util
+
 # Get plugin's parameters from configuration file
 params = {
     'logs_type': ['INFO', 'WARNING', 'ERROR'],
@@ -177,8 +179,7 @@ def set_logs_type_list():
 
     app.bottle.redirect("/logs")
 
-
-def get_history():
+def _get_history(app):
     user = app.request.environ['USER']
 
     filters = dict()
@@ -225,11 +226,27 @@ def get_history():
 
     logs = _get_logs(filters=filters, limit=limit, offset=offset, time_field=params['time_field'])
 
+    return logs;
+
+
+def get_history():
+    logs = _get_history(app)
+
     return {
         'time_field': params['time_field'],
         'other_fields': params['other_fields'],
         'records': logs
     }
+
+
+def get_history_json():
+    logs = _get_history(app)
+    filename = "%s_%s_history.json" % (app.request.query.get('host'), app.request.query.get('service', 'all'))
+
+    app.response.content_type = "application/json"
+    app.response.set_header("Content-Disposition", 'attachment; filename="%s"' % filename)
+
+    return json_util.dumps(logs)
 
 
 # :TODO:maethor:171017: This function should be merge in get_history
@@ -282,6 +299,10 @@ pages = {
     get_history: {
         'name': 'HistoryHost', 'route': '/logs/inner',
         'view': 'history',
+        'static': True
+    },
+    get_history_json: {
+        'name': 'HistoryHostJson', 'route': '/logs/json',
         'static': True
     },
     form_hosts_list: {

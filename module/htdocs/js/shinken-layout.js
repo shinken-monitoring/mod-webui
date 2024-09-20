@@ -62,15 +62,25 @@ function loadjscssfile(filename, filetype){
 /**
  * Display the layout modal form
  */
-function display_modal(inner_url) {
+function display_modal(inner_url, size="") {
    if (layout_logs) console.debug('Displaying modal: ', inner_url);
+   console.debug('Displaying modal: ', inner_url);
    disable_refresh();
+   $('#modal .modal-dialog').addClass("modal-" + size);
+   $('#modal').data('bs.modal', null);
    $('#modal').modal({
       keyboard: true,
       show: true,
       backdrop: 'static',
       remote: inner_url
    });
+   $('#modal').data('link', inner_url);
+   $('.modal-backdrop').slice(1).remove();
+}
+
+function display_eltdetail_modal(inner_url) {
+    display_modal(inner_url + '?modal=true', 'xl');
+    document.location.hash = inner_url;
 }
 
 function headerPopovers() {

@@ -1,0 +1,14 @@
+%include("_eltdetail_service_graphs.tpl", service_description="Load per CPU")
+%include("_eltdetail_service_graphs.tpl", service_description="Memory")
+%include("_eltdetail_service_graphs.tpl", service_description="Linux procstat", condition=lambda x: x in [0])
+%include("_eltdetail_service_graphs.tpl", service_description="Linux diskstats", condition=lambda x: (x % 3) == 0)
+%include("_eltdetail_service_graphs.tpl", service_description="Mysql-slow-queries")
+%include("_eltdetail_service_graphs.tpl", service_description="PG-Slow-Queries")
+%include("_eltdetail_service_graphs.tpl", service_description="Apache2 Logs", condition=lambda x: x in [0])
+%include("_eltdetail_service_graphs.tpl", service_description="nginx-status", condition=lambda x: x in [0])
+%include("_eltdetail_service_graphs.tpl", service_description="Web Logs for .*")
+
+
+%include("_eltdetail_service_graphs.tpl", service_description="Http", condition=lambda x: x in [0])
+%include("_eltdetail_service_graphs.tpl", service_description="Http .*", condition=lambda x: x in [0])
+%include("_eltdetail_service_graphs.tpl", service_description="Haproxy Logs")
