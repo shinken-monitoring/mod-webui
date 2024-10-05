@@ -1217,9 +1217,37 @@ def login_required():
     if request.urlparts.path in [app.get_url("Loading")]:
         if app.rg.initialized:
             time.sleep(2.0)
-            bottle.redirect(app.get_url("Dashboard"))
+            bottle.redirect(app.get_url("Dashboard")) # TODO revenir à la page d'origine
         return
 
+    # API
+    if request.urlparts.path.startswith('/api/'): # TODO Filtrer sur un paramètre de la route
+        logger.debug("[WebUI] login_required for %s, getting user and api key", request.urlparts.path)
+        api_user = app.request.forms.get('api_user', '')
+        api_key = app.request.forms.get('api_key', '')
+        if not api_user or not api_key:
+            logger.info("[WebUI] no api_user or no api_key")
+            app.redirect403(msg="Please provide api_user and api_key")
+        contact = app.datamgr.get_contact(name=api_user)
+        # logger.info("[WebUI] contact %s" % contact) # :TODO:maethor:240927: Remove this
+        if not contact:
+            if app.rg.initialized:
+                logger.info("[WebUI] contact does not exist: %s", contact_name)
+                app.redirect403()
+            else:
+                # we did not yet received all data
+                app.redirect403(msg="App is loading…")
+
+        if '_API_KEY' not in contact.customs or contact.customs['_API_KEY'] != api_key:
+            logger.info("[WebUI] api_key provided for %s doesn't not match" % contact.contact_name)
+            app.redirect403()
+
+        user = User.from_contact(contact)
+        logger.debug("[WebUI] update current user: %s", user)
+        request.environ['USER'] = user
+        return
+
+    # Main URLS
     logger.debug("[WebUI] login_required for %s, getting user cookie ...", request.urlparts.path)
     cookie_value = bottle.request.get_cookie(str(app.session_cookie), secret=app.auth_secret)
     if cookie_value:
