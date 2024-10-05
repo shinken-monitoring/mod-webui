@@ -10,7 +10,7 @@
 
 %helper=app.helper
 
-%rebase("layout", css=['user/css/user.css'], breadcrumb=[ ['User preferences', '/user/pref'] ], title='User preferences')
+%rebase("layout", css=['user/css/user.css'], js=['user/js/user.js'], breadcrumb=[ ['User preferences', '/user/pref'] ], title='User preferences')
 
       <div class="panel panel-default">
          <div class="panel-heading">
@@ -111,6 +111,18 @@
                      <tr>
                         <td>elts_per_page</td>
                         <td>{{app.prefs_module.get_ui_user_preference(user, 'elts_per_page')}}</td>
+                     </tr>
+                     <tr>
+                        <td>show_deprecated_views</td>
+                        <td>
+                          <input type="checkbox" {{ 'checked' if app.prefs_module.get_ui_user_preference(user, 'show_deprecated_views') == 'true' else '' }} class="js-set-user-show-deprecated-views">
+                        </td>
+                     </tr>
+                     <tr>
+                        <td>show_wip_views</td>
+                        <td>
+                          <input type="checkbox" {{ 'checked' if app.prefs_module.get_ui_user_preference(user, 'show_wip_views') == 'true' else '' }} class="js-set-user-show-wip-views">
+                        </td>
                      </tr>
                   %end
                   </tbody>
