@@ -35,9 +35,8 @@ html, body {
     background: #f8f8f8;
 }
 
-body {
-    padding-top: 70px;
-    padding-bottom: 70px;
+#page-wrapper {
+    margin-top: 72px;
 }
 
 .page-header .fas {
@@ -111,6 +110,11 @@ body {
 .tooltip-inner {
     white-space:pre;
     max-width:none;
+}
+
+.panel {
+    box-shadow: none;
+    -webkit-box-shadow: none;
 }
 
 .panel > table tr:first-child td,
@@ -458,6 +462,12 @@ td .ellipsis > .long-output {
  * Sidebar menu
  */
 
+#sidebar-menu {
+    padding-top: 8px;
+    border-right: 1px solid #ddd;
+    height: 100vh;
+}
+
 .sidebar ul li a {
     color: #777;
 }
@@ -485,16 +495,34 @@ td .ellipsis > .long-output {
 
 @media(min-width:768px) {
     #wrapper.sidebar-reduced #page-wrapper {
-        margin-left: 60px;
+        margin-left: 64px;
     }
 
-    #wrapper.sidebar-reduced .sidebar {
-        width: 60px;
+    #wrapper.sidebar-reduced .sidebar,
+    #wrapper.sidebar-reduced .sidebar #sidebar-menu-bottom {
+        width: 64px;
     }
+
+    #wrapper.sidebar-reduced .sidebar ul li {
+        padding: 0 8px;
+        text-align: center;
+    }
+
+    #wrapper.sidebar-reduced .sidebar .nav-second-level li a {
+        padding-left: 24px;
+    }
+
 
     #wrapper.sidebar-reduced .sidebar .sidebar-label {
         display: None;
     }
+}
+
+#sidebar-menu-bottom {
+    position: fixed;
+    bottom: 0;
+    z-index: 1030;
+    padding: 16px;
 }
 
 /*

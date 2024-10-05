@@ -27,7 +27,7 @@ body {
     #page-wrapper {
         position: inherit;
         margin: 0 0 0 200px;
-        padding: 0 30px;
+        padding: 0 32px;
         /*border-left: 1px solid #e7e7e7;*/
     }
 }
@@ -89,10 +89,6 @@ body {
 .navbar-top-links .dropdown-user {
     right: 0;
     left: auto;
-}
-
-.sidebar {
-    padding-top: 10px;
 }
 
 .sidebar .sidebar-nav.navbar-collapse {

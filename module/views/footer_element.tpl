@@ -1,7 +1,7 @@
 <!-- Footer -->
 %import time
 <footer>
-   <nav class="navbar navbar-default navbar-fixed-bottom">
+   <nav class="navbar navbar-default">
       <div class="container-fluid">
          <div onclick="display_modal('/modal/about')">
             <small><em class="text-muted">
