@@ -1,7 +1,7 @@
 %setdefault('display_steps_form', False)
 %setdefault('div_class', "pull-right")
 %setdefault('ul_class', "")
-%setdefault('div_style', "margin-top:-15px;")
+%setdefault('div_style', "margin-top:-24px;")
 %setdefault('drop', "dropup")
 
 <div class="{{ div_class }}" style="{{ div_style }}">

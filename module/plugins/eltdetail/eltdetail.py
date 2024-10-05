@@ -41,7 +41,7 @@ def show_host(host_name):
 
     # Get graph data. By default, show last 4 hours
     now = int(time.time())
-    graphstart = int(app.request.GET.get('graphstart', str(now - 4 * 3600)))
+    graphstart = int(app.request.GET.get('graphstart', str(now - 24 * 3600)))
     graphend = int(app.request.GET.get('graphend', str(now)))
 
     return {
@@ -61,7 +61,7 @@ def show_service(host_name, service):
 
     # Get graph data. By default, show last 4 hours
     now = int(time.time())
-    graphstart = int(app.request.GET.get('graphstart', str(now - 4 * 3600)))
+    graphstart = int(app.request.GET.get('graphstart', str(now - 24 * 3600)))
     graphend = int(app.request.GET.get('graphend', str(now)))
 
     return {

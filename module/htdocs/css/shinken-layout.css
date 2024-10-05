@@ -45,7 +45,14 @@ body {
 }
 
 .content-header .page-header {
-    font-size: 36px;
+    font-size: 30px;
+    margin: 0px 0px 16px 0px;
+    padding-bottom: 4px;
+    text-transform: uppercase;
+}
+
+.content-header .breadcrumb {
+    padding: 0px;
 }
 
 .content-header .breadcrumb > .active,
@@ -53,13 +60,26 @@ body {
     color: #ddd;
 }
 
+.content-header .breadcrumb a:hover {
+    text-decoration: none;
+}
+
 .page-subheader {
-    color: #777;
     margin: 40px 0 20px;
+}
+
+.page-subheader,
+.page-subheader a,
+.page-subheader a:hover {
+    color: #777;
 }
 
 .page-subheader .fas {
     margin-right: 10px;
+}
+
+.page-subheader .fa-stack {
+    margin-right: 8px;
 }
 
 .breadcrumb {
@@ -109,7 +129,7 @@ body {
 .table-title {
     color: #7F7F7F;
     /*padding-left: 30px;*/
-    margin: 30px 0 20px 20px;
+    margin: 24px 0 16px 16px;
     /*font-size: 0.917em;*/
 }
 
@@ -120,6 +140,10 @@ body {
 
 .table-title a:hover {
     text-decoration: none;
+}
+
+.panel-problems-synthesis > .panel-body {
+    padding: 8px 16px;
 }
 
 /*
@@ -585,7 +609,9 @@ footer nav {
  * Status lead
  */
 .status-lead {
-    margin-bottom: 20px;
+    margin-top: 8px;
+    margin-bottom: 16px;
+    margin-left: 16px;
     font-size: 14px;
     font-weight: 300;
     line-height: 1.4;
@@ -752,10 +778,13 @@ width: 95%;
 
 
 .daterange-title {
-    margin: 20px 0 8px;
-    padding: 0 24px;
-    color: #777;
+    font-size: 14px;
+    margin: 16px 0 4px;
+    /*padding: 0 24px;*/
+    color: #ccc;
     line-height: 24px;
+    text-transform: uppercase;
+    font-weight: bold;
 }
 
 .comment-time {
@@ -780,3 +809,10 @@ width: 95%;
 .badge-critical {
   background-color: #da4f49 !important;
 }
+
+/* CTA Buttons */
+.btn-shinken,
+.btn-shinken:hover {
+    color: #337ab7 !important;
+}
+

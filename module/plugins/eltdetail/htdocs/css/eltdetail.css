@@ -313,6 +313,32 @@ div.content {
    margin-left: 5px;
 }
 
+/*
+ * Events
+ */
+.event-level0 {
+    color: #aaa;
+}
+.event-level1 {
+    color: #777;
+}
+.event-level2 {
+}
+.event-level3 {
+    font-size: medium;
+}
+.event-level4 {
+    font-weight: bold;
+    font-size: medium;
+}
+.event-level5 {
+    font-weight: bold;
+    font-size: large;
+}
+.event-level5 > td {
+    padding: 10px 5px !important;
+}
+
 
 /*
  *

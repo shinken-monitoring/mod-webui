@@ -15,7 +15,7 @@
       listOfURL.push($(this).data('link'));
     });
   }
-  currentItem = $('#modal').data('link').replace('?modal=true','');
+  currentItem = $('#modal').data('link').split('?')[0];
 
   index = listOfURL.indexOf(currentItem);
   nextItem = listOfURL[index + 1];
@@ -72,18 +72,46 @@ Invalid element name
 %rebase("layout", js=js, css=css, breadcrumb=breadcrumb, title=elt_type.title()+' detail: ' + elt.get_full_name())
 %end
 
+%if modal:
 <div class="modal-header">
+%end
 
   <div class="row">
     <div class="col-xs-8 col-sm-9 col-md-10">
-      <div class="status-lead" style="margin-left: 10px;">
+      <div class="status-lead">
         <table>
           <tr>
-            <td class="text-center" style="min-width: 50px;">
-              {{!helper.get_fa_icon_state(elt)}}
+          <td title="{{elt.get_name()}} - {{elt.state}}
+ Since {{helper.print_date(elt.last_state_change, format="%d %b %Y %H:%M:%S")}}
+ 
+ Last check <strong>{{helper.print_duration(elt.last_chk)}}</strong>
+ Next check <strong>{{helper.print_duration(elt.next_chk)}}</strong>
+ %if (elt.check_freshness):
+ (Freshness threshold: {{elt.freshness_threshold}} seconds)
+ %end
+ "
+            data-placement="right"
+            data-container="body"
+            class="text-center item-state font-{{elt.state.lower() }}">
+              <div style="display: table-cell; vertical-align: middle; padding: 4px 16px 4px 8px;">
+                {{!helper.get_fa_icon_state(elt, use_title=False)}}
+              </div>
+              <div style="display: table-cell; vertical-align: middle;">
+                <h4 style="margin: 0 0 4px 0; min-width: 50px;">{{ elt.state }}</h4>
+                <small>
+                    %if elt.state_type == 'HARD':
+                    <span class="hidden-xs">{{!helper.print_duration(elt.last_state_change, just_duration=True,x_elts=2)}}</span>
+                    <span class="visible-xs">{{!helper.print_duration(elt.last_state_change, just_duration=True,x_elts=1)}}</span>
+                    %else:
+                    <small><span class="hidden-xs">attempt </span>{{elt.attempt}}/{{elt.max_check_attempts}}</small>
+                    <!--soft state-->
+                    %end
+                  <!--</span>-->
+                </small>
+              </div>              
             </td>
-            <td>
-              <h4 style="padding-left: 20px;">
+            <td style="padding-left: 16px">
+              <h4 style="margin: 0 0 4px 0">
                 %if elt_type == 'service':
                 <a onclick="display_modal('/host/{{ elt.host_name }}?modal=true', 'xl')">{{ elt.host.display_name if elt.host.display_name else elt.host.get_name() }}</a>:
                 %end
@@ -92,25 +120,15 @@ Invalid element name
                 ({{ elt.address }})
                 %end
               </h4>
+              <samp>{{elt.output}}</samp>
             </td>
           </tr>
           <tr>
-            <td class="font-{{elt.state.lower()}} text-center" style="vertical-align: top !important;">
-              <strong>{{ elt.state }}</strong><br>
-              <span title="Since {{time.strftime("%d %b %Y %H:%M:%S", time.localtime(elt.last_state_change))}}">
-                <small>
-                  %if elt.state_type == 'HARD':
-                  {{!helper.print_duration(elt.last_state_change, just_duration=True, x_elts=2)}}
-                  %else:
-                  attempt {{elt.attempt}}/{{elt.max_check_attempts}}
-                  <!--soft state-->
-                  %end
-                </small>
-              </span>
+            <td>
             </td>
-            <td style="vertical-align: top !important; padding-left: 20px;">
-              <samp>{{elt.output}}{{! '<br/>'+elt.long_output.replace('\n', '<br/>') if elt.long_output else ''}}</samp>
+            <td style="padding-left: 16px">
               <div>
+                <samp>{{! elt.long_output.replace('\n', '<br/>') if elt.long_output else ''}}</samp>
                 %if elt.problem_has_been_acknowledged:
                 <p style="margin-top: 10px;"><samp><i class="fas fa-check"></i> {{ helper.get_acknowledge_comment(elt) }}</samp></p>
                 %end
@@ -132,27 +150,27 @@ Invalid element name
       <div class="pull-right pb_detail-action-buttons">
         %if modal:
         <div>
-        <a id="modal-previous-elt" class="btn btn-lg btn-ico btn-action js-open-elt" title="Previous element" href=""><i class="fas fa-backward"></i></a>
-        <a id="modal-next-elt" class="btn btn-lg btn-ico btn-action js-open-elt" title="Next element" href=""><i class="fas fa-forward"></i></a>
+        <a id="modal-previous-elt" class="btn btn-lg btn-ico btn-action js-open-elt" title="Previous element" href=""><i class="fas fa-arrow-left"></i></a>
+        <a id="modal-next-elt" class="btn btn-lg btn-ico btn-action js-open-elt" title="Next element" href=""><i class="fas fa-arrow-right"></i></a>
         <button class="btn btn-lg btn-ico btn-action" data-dismiss="modal" aria-label="Close" title="Close this window"><i class="fas fa-times"></i></button>
         </div>
         %end
         <div>
         %if app.can_action():
-        <button class="btn btn-lg btn-ico btn-action js-recheck"
+        <button class="btn btn-lg btn-ico btn-action btn-shinken js-recheck"
           title="Recheck"
           data-element="{{helper.get_uri_name(elt)}}">
           <i class="fas fa-sync"></i>
         </button>
         %if elt.state != elt.ok_up and not elt.problem_has_been_acknowledged:
-        <button class="btn btn-lg btn-ico btn-action js-add-acknowledge"
+        <button class="btn btn-lg btn-ico btn-action btn-shinken js-add-acknowledge"
           title="Acknowledge this problem"
           data-element="{{helper.get_uri_name(elt)}}">
           <i class="fas fa-check"></i>
         </button>
         %end
         <div class="dropdown" style="display: inline;">
-          <button class="btn btn-lg btn-ico btn-action dropdown-toggle" type="button" id="dropdown-downtime-{{ helper.get_html_id(elt) }}" data-toggle="dropdown"
+          <button class="btn btn-lg btn-ico btn-action btn-shinken dropdown-toggle" type="button" id="dropdown-downtime-{{ helper.get_html_id(elt) }}" data-toggle="dropdown"
             title="Schedule a downtime for this element"
             data-element="{{helper.get_uri_name(elt)}}">
             <i class="far fa-clock"></i>
@@ -172,13 +190,13 @@ Invalid element name
           </ul>
         </div>
         %if elt.event_handler_enabled and elt.event_handler:
-        <button class="btn btn-lg btn-ico btn-action js-try-to-fix"
+        <button class="btn btn-lg btn-ico btn-action btn-shinken js-try-to-fix"
           title="Try to fix (launch event handler)"
           data-element="{{helper.get_uri_name(elt)}}">
           <i class="fas fa-magic"></i>
         </button>
         %end
-        <button class="btn btn-lg btn-ico btn-action js-submit-ok"
+        <button class="btn btn-lg btn-ico btn-action btn-shinken js-submit-ok"
           title="Submit a check result"
           data-element="{{helper.get_uri_name(elt)}}">
           <i class="fas fa-share"></i>
@@ -191,6 +209,9 @@ Invalid element name
     </div>
 
   </div>
+%if modal:
+</div>
+%end
 
   <!--<h3 class="modal-title">{{ elt.get_full_name() }}</h3>-->
 
@@ -286,38 +307,6 @@ Invalid element name
 
    %if elt.got_business_rule:
    <div class="alert alert-warning"><i class="fas fa-warning"></i> This element is a business rule.</div>
-   %end
-
-   %if elt_type=='host':
-   %s = app.datamgr.get_services_synthesis(elt.services, user)
-   <div class="panel panel-default">
-     <div class="panel-body">
-       <table class="table table-invisible table-condensed">
-         <tbody>
-           <tr>
-             <td>
-               <a role="menuitem" href="/all?search=type:service {{ elt.host_name }}">
-                  <b>{{s['nb_elts']}} services:&nbsp;</b>
-               </a>
-             </td>
-
-             %for state in 'ok', 'warning', 'critical', 'pending', 'unknown', 'ack', 'downtime':
-             <td>
-               %if s['nb_' + state]>0:
-               <a role="menuitem" href="/all?search=type:service is:{{state}} {{ elt.host_name }}">
-               %end
-                  %label = "<span title='%s%%'>%s" % (s['pct_' + state], s['nb_' + state])
-                  {{!helper.get_fa_icon_state_and_label(cls='service', state=state, label=label, disabled=(not s['nb_' + state]))}}
-               %if s['nb_' + state]>0:
-               </a>
-               %end
-             </td>
-             %end
-           </tr>
-         </tbody>
-       </table>
-     </div>
-   </div>
    %end
 
    <!-- Fourth row : host/service information -->

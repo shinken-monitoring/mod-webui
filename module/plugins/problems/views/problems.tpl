@@ -13,8 +13,6 @@
 <!-- Problems filtering and display -->
 <div id="problems">
 
-   %include("_problems_synthesis.tpl", pbs=pbs, search_string=app.get_search_string())
-
    %if not pbs:
    <center>
      <div class="page-header">
@@ -54,6 +52,10 @@
    %include("_problems.tpl", pbs=bi_pbs)
 
    %end
+
 </div>
 
 %include('_problems_actions-navbar.tpl')
+
+%include("_problems_synthesis.tpl", pbs=pbs, search_string=app.get_search_string())
+

@@ -6,7 +6,7 @@
 %if hasattr(records,"__iter__"):
 %for daterange, logs in helper.group_by_daterange(records, key=lambda x: x['time']).items():
 %if logs:
-<div class="daterange-title">{{ daterange }}</div>
+<h4 class="daterange-title">{{ daterange }}</h4>
    <table class="table table-condensed">
       <tbody style="font-size:small;">
          %for log in logs:

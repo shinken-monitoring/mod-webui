@@ -79,7 +79,17 @@ function display_modal(inner_url, size="") {
 }
 
 function display_eltdetail_modal(inner_url) {
-    display_modal(inner_url + '?modal=true', 'xl');
+    var urlParams = new URLSearchParams(window.location.search);
+    graphstart=urlParams.get('graphstart');
+    graphend=urlParams.get('graphend');
+    modalParams='?modal=true';
+    if (graphstart) {
+        modalParams=modalParams + '&graphstart=' + graphstart;
+    }
+    if (graphend) {
+        modalParams=modalParams + '&graphend=' + graphend;
+    }
+    display_modal(inner_url + modalParams, 'xl');
     document.location.hash = inner_url;
 }
 
