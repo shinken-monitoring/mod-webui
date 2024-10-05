@@ -416,54 +416,6 @@ class Helper(object):
                  self.get_fa_icon_state(obj=obj, cls=cls, state=state, disabled=disabled, use_title=use_title),
                  label)
 
-    # :TODO:maethor:150609: Rewrite this function
-    def get_navi(self, total, pos, step=30):
-        """
-        Get the pages navigation HTML widget
-
-        :param total:
-        :param pos:
-        :param step:
-        :return:
-        """
-        step = float(step)
-        nb_pages = math.ceil(total / step) if step != 0 else 0
-        current_page = int(pos / step) if step != 0 else 0
-
-        step = int(step)
-
-        res = []
-
-        nb_max_items = 2
-
-        if current_page >= nb_max_items:
-            # Name, start, end, is_current
-            res.append((u'«', 0, step, False))
-            res.append(('...', None, None, False))
-
-        # pylint: disable=undefined-variable
-        # Because xrange...
-        for i in xrange(current_page - (nb_max_items / 2), current_page + 1 + (nb_max_items / 2)):
-            if i < 0:
-                continue
-            is_current = (i == current_page)
-            start = int(i * step)
-            # Maybe we are generating a page too high, bail out
-            if start > total:
-                continue
-
-            end = int((i + 1) * step)
-            res.append(('%d' % (i + 1), start, end, is_current))
-
-        if current_page < nb_pages - nb_max_items:
-            start = int((nb_pages - (nb_max_items - 1)) * step)
-            end = int(total)
-            # end = int(nb_pages * step)
-            res.append(('...', None, None, False))
-            res.append((u'»', start, end, False))
-
-        return res
-
     def get_html_color(self, state):
         colors = {
             'CRITICAL': "#d9534f",

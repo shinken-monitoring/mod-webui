@@ -47,14 +47,13 @@ def show_minemap():
     end = int(app.request.GET.get('end', start + step))
 
     # If we overflow, came back as normal
-    total = len(items)
-    if start > total:
+    if start > len(items):
         start = 0
         end = step
 
-    navi = app.helper.get_navi(total, start, step=step)
+    pagination = {'total': len(items), 'start': start, 'end': end, 'step': elts_per_page}
 
-    return {'navi': navi, 'items': items[start:end], 'page': "minemap"}
+    return {'pagination': pagination, 'items': items[start:end], 'page': "minemap"}
 
 
 def show_minemaps():

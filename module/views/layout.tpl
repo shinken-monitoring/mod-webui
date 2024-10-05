@@ -30,8 +30,7 @@
 %setdefault('user', None)
 %setdefault('app', None)
 
-%setdefault('navi', None)
-%setdefault('elts_per_page', 25)
+%setdefault('pagination', None)
 
 %if app is not None:
 %helper = app.helper
@@ -114,8 +113,8 @@
             <div id="page-content" class="row">
                <!-- Page header -->
                <section class="content-header">
-                  %if navi:
-                  %include("pagination_element", navi=navi, page=page, elts_per_page=elts_per_page, display_steps_form=True, div_class="pull-right hidden-xs", drop="dropdown")
+                  %if pagination:
+                  %include("pagination_element", pagination=pagination, page=page, display_steps_form=True, div_class="pull-right hidden-xs", drop="dropdown")
                   %end
                   <h3 class="page-header hidden-xs" style="margin-top: -8px;">
                     <ol class="breadcrumb hidden-xs">
@@ -142,19 +141,19 @@
                   {{!base}}
                </section>
 
-               %if navi and len(navi) > 1:
+               %if pagination and (pagination['start'] != 0 or pagination['end'] <= pagination['total']):
                <hr>
                <section class="pagination-footer">
-               %include("pagination_element", navi=navi, page=page, elts_per_page=elts_per_page, display_steps_form=True, drop="dropup")
+               %include("pagination_element", pagination=pagination, page=page, display_steps_form=True, drop="dropup")
                </section>
                %end
             </div>
             <!--end-page-content-->
 
+            <!--%include("footer_element")-->
+
          </div>
       </div>
-
-      %include("footer_element")
 
       <!-- A modal div that will be filled and shown when we want forms ... -->
       <div class="modal fade" id="modal" role="dialog" aria-labelledby="Generic modal box" aria-hidden="true">

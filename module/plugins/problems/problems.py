@@ -90,19 +90,16 @@ def get_all():
         start = 0
         end = start + step
 
-    navi = app.helper.get_navi(len(pbs), start, step=step)
-
     return {
         'pbs': pbs[start:end],
         'problems_search': True if search == default_filtering else False,
         'all_pbs': items,
-        'navi': navi,
         'title': title,
         'bookmarks': app.prefs_module.get_user_bookmarks(user),
         'bookmarksro': app.prefs_module.get_common_bookmarks(),
         'sound': sound_pref,
-        'elts_per_page': elts_per_page,
-        'display_impacts': display_impacts
+        'display_impacts': display_impacts,
+        'pagination': {'total': len(items), 'start': start, 'end': end, 'step': elts_per_page}
     }
 
 

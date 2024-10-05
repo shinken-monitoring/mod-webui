@@ -400,12 +400,12 @@ def alignak_events():
         start = 0
         end = step
 
-    navi = app.helper.get_navi(total, start, step=step)
+    pagination = {'total': total, 'start': start, 'end': end, 'step': step}
 
     logger.info("[WebUI-system] got %d matching items", len(items))
 
     return {
-        'navi': navi,
+        'pagination': pagination,
         'page': "alignak/events",
         'logs': items[start:end],
         'total': total,
