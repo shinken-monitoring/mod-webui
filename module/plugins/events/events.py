@@ -44,7 +44,7 @@ def _add_event(host_name, message, t, level, source):
 
 
 # Host element view
-def host(host_name):
+def host_events(host_name):
     # Ok, we can lookup it
     user = app.bottle.request.environ['USER']
     h = app.datamgr.get_host(host_name, user) or app.redirect404()
@@ -102,29 +102,30 @@ def host(host_name):
     }
 
 
-def add_event(host_name):
+def add_event(host_pattern):
     user = app.bottle.request.environ['USER']
-    h = app.datamgr.get_host(host_name, user) or app.redirect404()
+    hosts = app.datamgr.get_hosts(user, host_pattern) or app.redirect404()
 
     t = app.request.forms.get('time', int(time.time()))
     level = app.request.forms.get('level', 0)
     message = app.request.forms.get('message', 'msg')
     source = app.request.forms.get('source', '')
 
-    _add_event(host_name, message, t, level, source)
+    for h in hosts:
+        _add_event(h.host_name, message, t, level, source)
 
-    app.response.content_type = 'application/json'
-    return "{'status': 200, 'text': 'New event : %s'}" % message
+    app.response.content_type = 'application/text'
+    return "New event {'hosts': %s, 'time': %s, 'level': %s, source: '%s', 'message': '%s'}" % ([h.host_name for h in hosts], t, level, source, message)
 
 
 pages = {
-    host: {
+    host_events: {
         'name': 'EventsHost', 'route': '/events/host/:host_name',
         'view': 'events',
         'static': True
     },
     add_event: {
-        'name': 'AddEvent', 'route': '/api/events/add/:host_name',
+        'name': 'AddEvent', 'route': '/api/events/add/:host_pattern',
         'method': 'POST'
     }
 }
