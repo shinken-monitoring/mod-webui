@@ -73,7 +73,12 @@ def get_all():
     title = app.request.GET.get('title', 'All problems')
 
     search = app.get_search_string() or ""
-    items = list(app.datamgr.search_hosts_and_services(search, user))
+    try:
+        items = list(app.datamgr.search_hosts_and_services(search, user, raise_not_found=True))
+        search_error = ''
+    except LookupError as e:
+        search_error = e
+        items = list()
 
     pbs = list(sorted(items, hst_srv_sort))
 
@@ -95,6 +100,7 @@ def get_all():
         'problems_search': True if search == default_filtering else False,
         'all_pbs': items,
         'title': title,
+        'search_error': search_error,
         'bookmarks': app.prefs_module.get_user_bookmarks(user),
         'bookmarksro': app.prefs_module.get_common_bookmarks(),
         'sound': sound_pref,

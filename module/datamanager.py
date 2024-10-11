@@ -468,6 +468,10 @@ class WebUIDataManager(DataManager):
                     # if the item has an hostgroups property
                     items = [i for i in items if getattr(i, 'get_hostgroups') and
                              group.get_name() in [g.get_name() for g in i.get_hostgroups()]]
+                elif raise_not_found:
+                    raise LookupError('Hostgroup "%s" not found' % s)
+                else:
+                    items = []
 
             if (t in ['sg', 'sgroup', 'servicegroup']) and s.lower() != 'all':
                 logger.debug("[WebUI - datamanager] searching for items in the servicegroup %s", s)
@@ -477,6 +481,10 @@ class WebUIDataManager(DataManager):
                     # Only the items that have a servicegroups property
                     items = [i for i in items if getattr(i, 'servicegroups') and
                              group.get_name() in [g.get_name() for g in i.servicegroups]]
+                elif raise_not_found:
+                    raise LookupError('Servicegroup "%s" not found' % s)
+                else:
+                    items = []
 
             if (t in ['cg', 'cgroup', 'contactgroup']) and s.lower() != 'all':
                 logger.debug("[WebUI - datamanager] searching for items related with the contactgroup %s", s)
@@ -490,12 +498,19 @@ class WebUIDataManager(DataManager):
                     items = list(set(itertools.chain(*[self._only_related_to(items,
                                                                              self.rg.contacts.find_by_name(c))
                                                        for c in contacts])))
+                elif raise_not_found:
+                    raise LookupError('Contactgroup "%s" not found' % s)
+                else:
+                    items = []
 
             if t == 'realm':
                 r = self.get_realm(s)
-                if not r:
-                    return []  # :TODO:maethor:150716: raise an error
-                items = [i for i in items if i.get_realm() == r]
+                if r:
+                    items = [i for i in items if i.get_realm() == r]
+                elif raise_not_found:
+                    raise LookupError('Realm "%s" not found' % r)
+                else:
+                    items = []
 
             if t == 'htag' and s.lower() != 'all':
                 items = [i for i in items if i.__class__.my_type == 'host' and s in i.get_host_tags()]
