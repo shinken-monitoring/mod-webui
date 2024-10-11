@@ -88,13 +88,17 @@ class WebUIDataManager(DataManager):
     ##
     # Hosts
     ##
-    def get_hosts(self, user=None):
+    def get_hosts(self, user=None, host_pattern=None):
         """ Get a list of all hosts.
 
             :param user: concerned user
+            :param host_pattern: host pattern to search for (ex: host1:host2:hostgroup1)
             :returns: list of all hosts
         """
-        return self.search_hosts_and_services('type:host', user)
+        search_string='type:host'
+        if host_pattern and host_pattern != 'all':
+            search_string += ' hp:"%s"' % host_pattern
+        return self.search_hosts_and_services(search_string, user)
 
     def get_important_hosts(self, user=None):
         return self.search_hosts_and_services(
@@ -110,7 +114,7 @@ class WebUIDataManager(DataManager):
 
     def get_host_services(self, hname, user):
         """ Get host services by its hostname. """
-        return self.search_hosts_and_services('type:service host:%s' % (hname), user=user)
+        return self.search_hosts_and_services('type:service host:^%s$' % (hname), user=user)
 
     def get_percentage_hosts_state(self, user=None, problem=False):
         """ Get percentage of hosts not in (or in) problems.
@@ -171,13 +175,13 @@ class WebUIDataManager(DataManager):
                     if host.is_problem and host.problem_has_been_acknowledged:
                         h['nb_ack'] += 1
 
-                    if host.is_problem and not host.problem_has_been_acknowledged:
+                    if host.is_problem and not host.problem_has_been_acknowledged and not host.in_scheduled_downtime:
                         h['nb_problems'] += 1
                         if host.is_impact:
                             h['nb_impacts'] += 1
             else:
                 h['nb_problems'] = sum(1 for host in hosts if host.is_problem
-                                       and not host.problem_has_been_acknowledged)
+                                       and not host.problem_has_been_acknowledged and not host.in_scheduled_downtime)
                 h['nb_impacts'] = sum(1 for host in hosts if host.is_problem
                                       and not host.problem_has_been_acknowledged and host.is_impact)
                 h['nb_ack'] = sum(1 for host in hosts if host.is_problem and host.problem_has_been_acknowledged)
@@ -284,15 +288,15 @@ class WebUIDataManager(DataManager):
                     if service.is_problem and service.problem_has_been_acknowledged:
                         s['nb_ack'] += 1
 
-                    if service.is_problem and not service.problem_has_been_acknowledged:
+                    if service.is_problem and not service.problem_has_been_acknowledged and not service.in_scheduled_downtime:
                         s['nb_problems'] += 1
                         if service.is_impact:
                             s['nb_impacts'] += 1
             else:
                 s['nb_problems'] = sum(1 for service in services if service.is_problem
-                                       and not service.problem_has_been_acknowledged)
+                                       and not service.problem_has_been_acknowledged and not service.in_scheduled_downtime)
                 s['nb_impacts'] = sum(1 for service in services if service.is_problem
-                                      and not service.problem_has_been_acknowledged and service.is_impact)
+                                      and not service.problem_has_been_acknowledged and not service.in_scheduled_downtime and service.is_impact)
                 s['nb_ack'] = sum(1 for service in services if service.is_problem
                                   and service.problem_has_been_acknowledged)
 
@@ -333,7 +337,7 @@ class WebUIDataManager(DataManager):
     ##
     # Searching
     ##
-    def search_hosts_and_services(self, search, user, sorter=None):
+    def search_hosts_and_services(self, search, user, sorter=None, raise_not_found=False):
         """ Search hosts and services.
 
             This method is the heart of the datamanager. All other methods should be based on this one.
@@ -458,6 +462,50 @@ class WebUIDataManager(DataManager):
                         pass
 
                 items = new_items
+
+            # Ansible-like host patterns to filter hosts by name and hostgroups
+            # https://docs.ansible.com/ansible/latest/inventory_guide/intro_patterns.html
+            # Examples: 
+            # - host1 and host2: 'host1:host2'
+            # - hosts members of hostgroup1 or hostgroup2: 'hostgroup1:hostgroup2'
+            # - hosts members of hostgroup1, but not host 2: 'hostgroup1:!host2'
+            # - hosts that are in both hostgroup1 and hostgroup2: 'hostgroup1:&hostgroup2'
+            {
+            if (t in ['hp', 'hpattern', 'hostpattern']) and s.lower != 'all':
+                logger.debug("[WebUI - datamanager] search for items with hostpattern %s", s)
+                hp_host_names = set()
+                for p in s.replace(',', ':').split(':'):
+                    if p == 'all':
+                        hp_host_names = set(i.host_name for i in items)
+                        continue
+                    difference = False
+                    intersection = False
+
+                    if p.startswith('!'):
+                        p = p[1:]
+                        difference = True
+
+                    if p.startswith('&'):
+                        p = p[1:]
+                        intersection = True
+
+                    r = re.compile('^%s$' % p.replace('*', '.*'))
+
+                    phosts = set(i.host_name for i in items if r.match(i.host_name))
+
+                    for i in items:
+                        if getattr(i, 'get_hostgroups') and list(filter(r.match, [g.get_name() for g in i.get_hostgroups()])):
+                            phosts.add(i.host_name)
+
+                    if phosts:
+                        if difference:
+                            hp_host_names -= phosts
+                        elif intersection:
+                            hp_host_names &= phosts
+                        else:
+                            hp_host_names |= phosts
+
+                items = [i for i in items if i.host_name in hp_host_names]
 
             if (t in ['hg', 'hgroup', 'hostgroup']) and s.lower() != 'all':
                 logger.debug("[WebUI - datamanager] searching for items in the hostgroup %s", s)
