@@ -194,6 +194,9 @@
            <!--<li class="disabled"><a href="#actions" data-toggle="modal"><i class="fas fa-doc"></i> Actions</a></li>-->
            <li><a href="/user/pref" data-toggle="modal"><i class="fas fa-wrench"></i>&nbsp; Preferences</a></li>
            <li class="divider"></li>
+           %if user.previous_login:
+           <li><a href='/user/login_as/{{ user.previous_login }}'><i class="fas fa-sign-in-alt"></i>&nbsp; Login back to {{ user.previous_login }}</a></li>
+           %end
            <li><a href="/user/logout" data-toggle="modal" data-target="/user/logout"><i class="fas fa-sign-out-alt"></i>&nbsp; Logout</a></li>
          </ul>
       </li>

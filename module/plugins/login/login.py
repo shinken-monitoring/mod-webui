@@ -43,7 +43,7 @@ def user_login():
     cookie_value = app.request.get_cookie(app.session_cookie, secret=app.auth_secret)
     if cookie_value:
         logger.info("[WebUI] user login request, existing cookie found: %s", cookie_value)
-        bottle.redirect(app.get_url("Dashboard"))
+        bottle.redirect(app.get_url("Root"))
 
     elif app.remote_user_enable in ['1', '2']:
         logger.debug("[WebUI] user login request, no existing cookie found")
@@ -75,7 +75,7 @@ def user_login():
                 }
                 app.response.set_cookie(str(app.session_cookie), cookie_value,
                                         secret=app.auth_secret, path='/')
-                bottle.redirect(app.get_url("Dashboard"))
+                bottle.redirect(app.get_url("Root"))
 
     logger.debug("[WebUI] session user message - get: %s",
                  app.request.environ.get('MSG', 'None...'))
@@ -119,7 +119,7 @@ def user_auth():
             is_authenticated = False
         else:
             logger.debug("[WebUI]  user '%s' signed in: %s", login, cookie_value)
-            bottle.redirect(app.get_url("Dashboard"))
+            bottle.redirect(app.get_url("Root"))
     else:
         logger.debug("[WebUI]  user '%s' access denied, redirection to: %s", login, app.get_url("GetLogin"))
 
@@ -127,6 +127,38 @@ def user_auth():
         bottle.redirect(app.get_url("GetLogin") + "?error=%s" % app.request.environ.get('MSG', ''))
 
     return {'is_auth': is_authenticated}
+
+
+def user_login_as(contact_name):
+    user = app.bottle.request.environ['USER']
+    if contact_name == user.previous_login:
+        logger.info("[WebUI]  admin user '%s' is signing in out from %s ...", contact_name, user.contact_name)
+        cookie_value = {
+            'login': contact_name,
+            'session': app.user_session,
+            'info': app.user_info
+        }
+    else:
+        logger.info("[WebUI]  admin user '%s' is signing in as %s ...", user.contact_name, contact_name)
+        contact = app.datamgr.get_contact(name=contact_name, user=user) or app.redirect404() # Checks if we are allowed to login as this user
+        cookie_value = {
+            'login': contact_name,
+            'previous_login': user.contact_name,
+            'session': app.user_session,
+            'info': app.user_info
+        }
+
+    logger.debug("[WebUI]  setting cookie '%s' for %s", app.session_cookie, contact_name)
+
+    try:
+        app.response.set_cookie(str(app.session_cookie), cookie_value,
+                                secret=app.auth_secret, path='/')
+    except ValueError:
+        logger.error("[WebUI]  cookie value error (too long > 4096 bytes!): %s", cookie_value)
+        is_authenticated = False
+    else:
+        logger.debug("[WebUI]  user '%s' signed in: %s", contact_name, cookie_value)
+        bottle.redirect(app.get_url("Root"))
 
 
 def get_root():
@@ -143,6 +175,9 @@ pages = {
     },
     user_logout: {
         'name': 'Logout', 'route': '/user/logout'
+    },
+    user_login_as: {
+        'name': 'LoginAs', 'route': '/user/login_as/:contact_name'
     },
     get_root: {
         'name': 'Root', 'route': '/'

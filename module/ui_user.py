@@ -34,6 +34,7 @@ from shinken.objects.service import Service
 
 class User(Contact):
     session = None
+    previous_login = None
 
     def set_information(self, session, *information):
         """

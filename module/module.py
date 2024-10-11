@@ -1257,6 +1257,8 @@ def login_required():
         logger.debug("[WebUI] user info: %s", app.user_info)
         contact_name = cookie_value.get('login', cookie_value)
         logger.debug("[WebUI] user login: %s", contact_name)
+        previous_login = cookie_value.get('previous_login', cookie_value)
+        logger.debug("[WebUI] user previous_login: %s", previous_login)
     else:
         # Only the /dashboard/currently should be accessible to anonymous users
         contact_name = 'anonymous'
@@ -1281,6 +1283,9 @@ def login_required():
     user = User.from_contact(contact)
     if app.user_session and app.user_info:
         user.set_information(app.user_session, app.user_info)
+
+    if isinstance(previous_login, basestring):
+        user.previous_login = previous_login
 
     logger.debug("[WebUI] update current user: %s", user)
     request.environ['USER'] = user

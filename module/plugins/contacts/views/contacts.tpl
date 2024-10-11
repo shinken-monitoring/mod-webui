@@ -21,6 +21,7 @@
           <th>Notifications</th>
           <th>Email</th>
           <th>Notification way</th>
+          <th></th>
         </tr>
          <!--<tr>-->
          <!--<th colspan="2"></th>-->
@@ -62,6 +63,11 @@
              %else:
              {{ nw.get_name() }}
              %end
+             %end
+           </td>
+           <td>
+             %if user.is_administrator():
+             <a class='btn btn-xs btn-default' title='Login as {{ contact.contact_name }}' href='/user/login_as/{{ contact.contact_name }}'><i class="fas fa-sign-in-alt"></i></a>
              %end
            </td>
          </tr>
