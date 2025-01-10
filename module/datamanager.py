@@ -470,8 +470,7 @@ class WebUIDataManager(DataManager):
             # - hosts members of hostgroup1 or hostgroup2: 'hostgroup1:hostgroup2'
             # - hosts members of hostgroup1, but not host 2: 'hostgroup1:!host2'
             # - hosts that are in both hostgroup1 and hostgroup2: 'hostgroup1:&hostgroup2'
-            {
-            if (t in ['hp', 'hpattern', 'hostpattern']) and s.lower != 'all':
+            if (t in ['hp', 'hpattern', 'hostpattern']) and s.lower() != 'all':
                 logger.debug("[WebUI - datamanager] search for items with hostpattern %s", s)
                 hp_host_names = set()
                 for p in s.replace(',', ':').split(':'):
@@ -622,12 +621,12 @@ class WebUIDataManager(DataManager):
                     items = [i for i in items if i.__class__.my_type == 'service'
                              or i.problem_has_been_acknowledged]
                     items = [i for i in items if i.__class__.my_type == 'host'
-                             or (i.problem_has_been_acknowledged or i.host.problem_has_been_acknowledged)]
-                elif s.lower() == 'downtime':
+                             or (i.problem_has_been_acknowledged or (i.host_dependency_enabled and i.host.problem_has_been_acknowledged))]
+                elif s.lower() == 'downtime' or s.lower() == 'dt':
                     items = [i for i in items if i.__class__.my_type == 'service'
                              or i.in_scheduled_downtime]
                     items = [i for i in items if i.__class__.my_type == 'host'
-                             or (i.in_scheduled_downtime or i.host.in_scheduled_downtime)]
+                             or (i.in_scheduled_downtime or (i.host_dependency_enabled and i.host.in_scheduled_downtime))]
                 elif s.lower() == 'impact':
                     items = [i for i in items if i.is_impact]
                 elif s.lower() == 'flapping':
@@ -662,12 +661,12 @@ class WebUIDataManager(DataManager):
                     items = [i for i in items if i.__class__.my_type == 'service'
                              or not i.problem_has_been_acknowledged]
                     items = [i for i in items if i.__class__.my_type == 'host'
-                             or (not i.problem_has_been_acknowledged and not i.host.problem_has_been_acknowledged)]
-                elif s.lower() == 'downtime':
+                             or (not i.problem_has_been_acknowledged and not (i.host_dependency_enabled and i.host.problem_has_been_acknowledged))]
+                elif s.lower() == 'downtime' or s.lower() == 'dt':
                     items = [i for i in items if i.__class__.my_type == 'service'
                              or not i.in_scheduled_downtime]
                     items = [i for i in items if i.__class__.my_type == 'host'
-                             or (not i.in_scheduled_downtime and not i.host.in_scheduled_downtime)]
+                             or (not i.in_scheduled_downtime and not (i.host_dependency_enabled and i.host.in_scheduled_downtime))]
                 elif s.lower() == 'impact':
                     items = [i for i in items if not i.is_impact]
                 elif s.lower() == 'flapping':
