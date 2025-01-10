@@ -17,7 +17,11 @@
    %today9 = int(mktime((today + timedelta(hours=9)).timetuple()))
    %today14 = int(mktime((today + timedelta(hours=14)).timetuple()))
    %nextmonday = int(mktime((today + timedelta(days=-today.weekday(), weeks=1, hours=8)).timetuple()))
+   %if now.month < 12:
    %nextmonth = datetime(now.year, now.month+1, 1, 8)
+   %else:
+   %nextmonth = datetime(now.year+1, 1, 1, 8)
+   %end
    %if nextmonth.weekday() > 4:
    %nextmonth = nextmonth + timedelta(days=7-nextmonth.weekday())
    %end

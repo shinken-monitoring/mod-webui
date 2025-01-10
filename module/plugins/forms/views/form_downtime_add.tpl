@@ -25,25 +25,34 @@
    $('#modal').on('shown.bs.modal', function () {
       $("#dtr_downtime").daterangepicker({
          ranges: {
-            '2 hours':       [moment(), moment().add('hours', 2)],
-            '8 hours':       [moment(), moment().add('hours', 8)],
-            '1 day':         [moment(), moment().add('days', 1)],
-            '2 days':        [moment(), moment().add('days', 2)],
-            '1 week':        [moment(), moment().add('days', 7)],
-            '1 month':       [moment(), moment().add('month', 1)],
+            '1 hour':       [moment(), moment().add(1, 'hours')],
+            '3 days':       [moment(), moment().add(3, 'days').hour(8).minutes(0)],
+            '7 days':       [moment(), moment().add(7, 'days').hour(8).minutes(0)],
+            '30 days':      [moment(), moment().add(30, 'days').hour(8).minutes(0)],
+            'Today 9am':    [moment(), moment().hour(9)],
+            'Today 14pm':   [moment(), moment().hour(14)],
+            'Tomorrow 8am': [moment(), moment().add(1, 'days').hour(8).minutes(0)],
+            'Next Monday 8am':     [moment(), moment().add(7, 'days').startOf('week').hours(8).minutes(0)],
+            'First of next month': [moment(), moment().add(1, 'month').startOf('month').hours(8).minutes(0)],
+            'First of next year':  [moment(), moment().add(1, 'year').startOf('year').hours(8).minutes(0)],
          },
-         format: 'YYYY-MM-DD HH:mm',
-         separator: '   to   ',
+         locale: {
+           format: 'YYYY-MM-DD HH:mm',
+           separator: '   to   ',
+         },
          minDate: moment(),
          //dateLimit: moment(),
          startDate: moment(),
-         endDate: moment().add('days', 2),
+         endDate: moment().add(1, 'days'),
          timePicker: true,
-         timePickerIncrement: 1,
-         timePicker12Hour: false,
+         timePickerIncrement: 10,
+         timePicker24Hour: true,
          showDropdowns: false,
          showWeekNumbers: false,
+         alwaysShowCalendars: true,
          opens: 'right',
+         buttonClasses: 'btn',
+         applyButtonClasses: 'btn-primary',
          },
 
          function(start, end, label) {
@@ -83,15 +92,14 @@
       </div>
 
       <div class="form-group">
-         <label for="dtr_downtime">Downtime date range</label>
-         <div class="input-group">
+         <div class="input-group" title="Downtime range">
             <span class="input-group-addon"><i class="fas fa-calendar"></i></span>
             <input type="text" name="dtr_downtime" id="dtr_downtime" class="form-control" />
          </div>
       </div>
 
       <div class="form-group">
-         <textarea name="reason" id="reason" class="form-control" rows="5" placeholder="Downtime comment…">Downtime scheduled by {{user.get_name()}}</textarea>
+         <textarea name="reason" title="Downtime message" id="reason" class="form-control" rows="5" placeholder="Downtime comment…">Downtime scheduled by {{user.get_name()}}</textarea>
       </div>
 
       <a href="javascript:submit_local_form();" class="btn btn-primary btn-lg btn-block"> <i class="fas fa-save"></i> Submit</a>

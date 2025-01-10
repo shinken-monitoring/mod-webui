@@ -39,6 +39,17 @@
       </div>
    </div>
 
+   %if app.prefs_module.get_ui_user_preference(user, 'show_wip_views') == 'true':
+   <table class="table table-hover table-striped table-condensed">
+      %for group in hostgroups:
+     <tr>
+       <td>{{ group.get_name() }}</td>
+     </tr>
+     %end
+   </table>
+   %end
+
+   %if app.prefs_module.get_ui_user_preference(user, 'show_wip_views') == 'false':
    <!-- Groups list -->
    <ul id="groups" class="list-group">
       %if debug:
@@ -261,4 +272,5 @@
          %#end
       %end
    </ul>
+   %end
 </div>
