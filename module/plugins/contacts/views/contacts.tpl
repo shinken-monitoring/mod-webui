@@ -1,4 +1,4 @@
-%rebase("layout", title='All contacts (%d contacts)' % len(contacts))
+%rebase("layout", title='%d contacts' % len(contacts))
 
 %setdefault('fmwk', 'Shinken')
 
@@ -7,7 +7,7 @@
 
 <div id="contacts" class="panel panel-default">
 
-   <table class="table table-hover">
+   <table class="table table-hover table-striped table-condensed">
       <!--<colgroup>-->
          <!--<col style="width: 20%;"></col>-->
          <!--<col style="width: 20%;"></col>-->
@@ -15,9 +15,9 @@
       <!--</colgroup>-->
       <thead>
         <tr>
+          <th></th>
           <th>Name</th>
-          <th>Alias</th>
-          <th>Business impact</th>
+          <th>Min business impact</th>
           <th>Notifications</th>
           <th>Email</th>
           <th>Notification way</th>
@@ -38,17 +38,21 @@
              %else:
              <i class="fas fa-fw font-black fa-" title="This user is allowed to launch commands"></i>
              %end
-             {{ !helper.get_contact_avatar(contact) }}
            </td>
-           <td><strong>{{ contact.alias if contact.alias != "none" else "" }}</strong></td>
-           <td><strong>{{ contact.min_business_impact }}</strong></td>
+           <td>
+             <a href="/contact/{{ contact.contact_name }}">
+               {{ !helper.get_contact_avatar(contact, with_name=False, with_link=False) }}
+               &nbsp;&nbsp;&nbsp;
+               {{ contact.contact_name }}
+               {{ "(alias "+contact.alias+")" if contact.alias != "none" else "" }}
+             </a>
+           </td>
+           <td>{{ contact.min_business_impact }}</td>
            <td>
            %if not contact.host_notifications_enabled and not contact.service_notifications_enabled:
            None
            %else:
-           <strong>
            {{ 'hosts' if contact.host_notifications_enabled else '' }} - {{ 'services' if contact.service_notifications_enabled else ''}}
-           </strong>
            %end
            </td>
            <td>

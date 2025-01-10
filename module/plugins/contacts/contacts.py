@@ -41,7 +41,7 @@ def show_contact(name):
 # All contacts
 def show_contacts():
     user = app.request.environ['USER']
-    _ = user.is_administrator() or app.redirect403()
+    user.is_administrator() or app.redirect403()
 
     return {'contacts': sorted(app.datamgr.get_contacts(user=user), key=lambda c: c.contact_name)}
 
