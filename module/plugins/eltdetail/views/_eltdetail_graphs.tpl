@@ -2,10 +2,12 @@
 <script>
   var html_graphes = [];
   var current_graph = '';
+  var hostname='{{elt.host_name}}';
   var graphstart={{graphstart}};
   var graphend={{graphend}};
-  var graphmax=Math.floor(Date.now()/1000);
-  var hostname='{{elt.host_name}}';
+  function graphmax() {
+    return Math.floor(Date.now()/1000);
+  }
   if (graphend > graphmax) {
     graphend = graphmax;
   }
@@ -31,6 +33,8 @@
                     <li><a class="js-graph-shortcut" data-delta=172800>2 days</a></li>
                     <li><a class="js-graph-shortcut" data-delta=608800>1 week</a></li>
                     <li><a class="js-graph-shortcut" data-delta=2592000>1 month</a></li>
+                    <li><a class="js-graph-shortcut" data-delta=7776000>3 month</a></li>
+                    <li><a class="js-graph-shortcut" data-delta=15552000>6 month</a></li>
                     <li><a class="js-graph-shortcut" data-delta=31536000>1 year</a></li>
                   </ul>
                 </div>
@@ -45,38 +49,37 @@
           </div>
 
           <div class="text-center" id='graph_images' style='margin-top: 16px'>
-          %include("_eltdetail_service_graphs.tpl")
-          %if elt_type == 'host':
-          %include("_eltdetail_host_graphs.tpl")
-          %end
-          </div>
+            %include("_eltdetail_service_graphs.tpl")
+            %if elt_type == 'host':
+            %include("_eltdetail_host_graphs.tpl")
+            %end
 
-          %if elt_type == 'service':
-          %twin_elts=app.datamgr.get_twin_elts(elt, user)
-          %if twin_elts:
-          <div class="text-center">
-          %for twin_elt in twin_elts:
-          %if twin_elt != elt:
-          <h4 class="page-subheader"><a class="js-open-elt" href="{{ helper.get_link_dest(twin_elt) }}">{{! helper.get_fa_icon_state(twin_elt) }}{{ twin_elt.get_full_name() }}</a></h4>
-          %include("_eltdetail_service_graphs.tpl", elt=twin_elt)
-          %end
-          %end
-          </div>
-          %end
-          %end
-          
-          %related_hosts=app.datamgr.get_related_hosts(elt, user)
-          <div class="text-center">
-          <hr>
-          %for related_host in related_hosts:
-          <h4 class="page-subheader"><a class="js-open-elt" href="{{ helper.get_link_dest(related_host) }}">Related host {{ related_host.get_full_name() }}</a></h4>
-          %include("_eltdetail_host_graphs.tpl", elt=related_host)
-          %end
+            %if elt_type == 'service':
+            %twin_elts=app.datamgr.get_twin_elts(elt, user)
+            %if twin_elts:
+            <div class="text-center">
+              %for twin_elt in twin_elts:
+              %if twin_elt != elt:
+              <h4 class="page-subheader"><a class="js-open-elt" href="{{ helper.get_link_dest(twin_elt) }}">{{! helper.get_fa_icon_state(twin_elt) }}{{ twin_elt.get_full_name() }}</a></h4>
+              %include("_eltdetail_service_graphs.tpl", elt=twin_elt)
+              %end
+              %end
+            </div>
+            %end
+            %end
+            
+            %related_hosts=app.datamgr.get_related_hosts(elt, user)
+            <div class="text-center">
+              <hr>
+              %for related_host in related_hosts:
+              <h4 class="page-subheader"><a class="js-open-elt" href="{{ helper.get_link_dest(related_host) }}">Related host {{ related_host.get_full_name() }}</a></h4>
+              %include("_eltdetail_host_graphs.tpl", elt=related_host)
+              %end
+            </div>
           </div>
         </div>
 
         <div class="col-md-6">
-          %if app.prefs_module.get_ui_user_preference(user, 'show_wip_views') == 'true':
           <div class="text-center">
             <div class="form-inline" style="display: inline-block;">
               <div class="input-group" role="group" aria-label="...">
@@ -95,7 +98,6 @@
           </div>
           <div id='main_events' style='margin-top: 16px'>
           </div>
-          %end
         </div>
       </div>
 
@@ -172,32 +174,40 @@
         $("body").on("click", ".js-graph-right", function () {
           delta = Math.floor((graphend - graphstart)/4);
           diff = graphend - graphstart;
-          graphend = Math.min(graphend + delta, graphmax);
+          graphend = Math.min(graphend + delta, graphmax());
           graphstart = Math.min(graphend - diff, graphstart + delta);
 
           updateDateRange();
         });
 
         $("body").on("click", ".js-graph-zoom-out", function () {
-          delta = Math.floor((graphend - graphstart)/4);
-          graphend = Math.min(graphend + delta, graphmax);
-          graphstart = graphstart - delta;
+          if ((graphmax() - graphend) < (60*60*12)) {
+            delta = Math.floor((graphend - graphstart)/2);
+            graphstart = graphstart - delta;
+          } else {
+            delta = Math.floor((graphend - graphstart)/4);
+            graphend = Math.min(graphend + delta, graphmax());
+            graphstart = graphstart - delta;
+          }
 
           updateDateRange();
         });
 
         $("body").on("click", ".js-graph-zoom-in", function () {
-          delta = Math.floor((graphend - graphstart)/6);
-          if (graphend != graphmax) {
+          if ((graphmax() - graphend) < (60*60*12)) {
+            delta = Math.floor((graphend - graphstart)/3);
+            graphstart = graphstart + delta;
+          } else {
+            delta = Math.floor((graphend - graphstart)/6);
             graphend = graphend - delta;
+            graphstart = graphstart + delta;
           }
-          graphstart = graphstart + delta;
 
           updateDateRange();
         });
 
         $("body").on("click", ".js-graph-shortcut", function () {
-          graphend = graphmax;
+          graphend = graphmax();
           graphstart = graphend - $(this).data('delta');
 
           updateDateRange();

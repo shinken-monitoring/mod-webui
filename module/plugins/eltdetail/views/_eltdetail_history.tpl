@@ -22,4 +22,6 @@
     </div>
   </div>
 </div>
+
+<script type="text/javascript" src="/static/logs/js/history.js?v=2.8.2"></script>
 %end

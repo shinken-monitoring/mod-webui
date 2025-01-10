@@ -152,6 +152,7 @@ Invalid element name
         <div>
         <a id="modal-previous-elt" class="btn btn-lg btn-ico btn-action js-open-elt" title="Previous element" href=""><i class="fas fa-arrow-left"></i></a>
         <a id="modal-next-elt" class="btn btn-lg btn-ico btn-action js-open-elt" title="Next element" href=""><i class="fas fa-arrow-right"></i></a>
+        <a class="btn btn-lg btn-ico btn-action" href="{{ app.request.fullpath }}"><i class="fas fa-expand-alt"></i></a>
         <button class="btn btn-lg btn-ico btn-action" data-dismiss="modal" aria-label="Close" title="Close this window"><i class="fas fa-times"></i></button>
         </div>
         %end
@@ -162,12 +163,61 @@ Invalid element name
           data-element="{{helper.get_uri_name(elt)}}">
           <i class="fas fa-sync"></i>
         </button>
+
+        %from datetime import datetime, date, timedelta
+        %from time import mktime
+        %dtnow=datetime.now()
+        %today=datetime(dtnow.year, dtnow.month, dtnow.day)
+        %today9 = int(mktime((today + timedelta(hours=9)).timetuple()))
+        %today14 = int(mktime((today + timedelta(hours=14)).timetuple()))
+        %nextmonday = int(mktime((today + timedelta(days=-today.weekday(), weeks=1, hours=8)).timetuple()))
+        %if dtnow.month < 12:
+        %nextmonth = datetime(dtnow.year, dtnow.month+1, 1, 8)
+        %else:
+        %nextmonth = datetime(dtnow.year+1, 1, 1, 8)
+        %end
+        %if nextmonth.weekday() > 4:
+        %nextmonth = nextmonth + timedelta(days=7-nextmonth.weekday())
+        %end
+        %nextmonth = int(mktime(nextmonth.timetuple()))
+        %nextyear = datetime(dtnow.year+1, 1, 2, 8)
+        %if nextyear.weekday() > 4:
+        %nextyear = nextyear + timedelta(days=7-nextyear.weekday())
+        %end
+        %nextyear = int(mktime(nextyear.timetuple()))
+        %tomorrow8 = int(mktime((today + timedelta(days=1, hours=8)).timetuple()))
+        %tomorrow9 = int(mktime((today + timedelta(days=1, hours=9)).timetuple()))
+        %in3days8 = int(mktime((today + timedelta(days=3, hours=8)).timetuple()))
+        %in7days8 = int(mktime((today + timedelta(days=7, hours=8)).timetuple()))
+        %in30days8 = int(mktime((today + timedelta(days=30, hours=8)).timetuple()))
+
         %if elt.state != elt.ok_up and not elt.problem_has_been_acknowledged:
-        <button class="btn btn-lg btn-ico btn-action btn-shinken js-add-acknowledge"
-          title="Acknowledge this problem"
-          data-element="{{helper.get_uri_name(elt)}}">
-          <i class="fas fa-check"></i>
-        </button>
+        <div class="dropdown" style="display: inline; padding: 0; margin: 0;">
+          <button class="btn btn-lg btn-ico btn-action btn-shinken dropdown-toggle" type="button" id="dropdown-ack" data-toggle="dropdown" title="Acknowledge this problem">
+            <i class="fa fa-check"></i>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdown-ack-{{ helper.get_html_id(elt) }}" style="margin-top: 15px;">
+            <li class="dropdown-header">Acknowledge for…</li>
+            <li><a href="#" class="js-add-acknowledge" data-element="{{ helper.get_uri_name(elt) }}" data-duration="60">1 hour</a></li>
+            <li><a href="#" class="js-add-acknowledge" data-element="{{ helper.get_uri_name(elt) }}" data-until="{{ in3days8 }}">3 days</a></li>
+            <li><a href="#" class="js-add-acknowledge" data-element="{{ helper.get_uri_name(elt) }}" data-until="{{ in7days8 }}">7 days</a></li>
+            <li><a href="#" class="js-add-acknowledge" data-element="{{ helper.get_uri_name(elt) }}" data-until="{{ in30days8 }}">30 days</a></li>
+            <li class="dropdown-header">or until…</li>
+            %if datetime.now().hour < 9:
+            <li><a href="#" class="js-add-acknowledge" data-element="{{ helper.get_uri_name(elt) }}" data-until="{{ today9 }}">Today 9am</a></li>
+            %end
+            %if datetime.now().hour < 14:
+            <li><a href="#" class="js-add-acknowledge" data-element="{{ helper.get_uri_name(elt) }}" data-until="{{ today14 }}">Today 14pm</a></li>
+            %end
+            <li><a href="#" class="js-add-acknowledge" data-element="{{ helper.get_uri_name(elt) }}" data-until="{{ tomorrow8 }}">Tomorrow 8am</a></li>
+            %if datetime.now().hour > 18:
+            <li><a href="#" class="js-add-acknowledge" data-element="{{ helper.get_uri_name(elt) }}" data-until="{{ tomorrow9 }}">Tomorrow 9am</a></li>
+            %end
+            <li><a href="#" class="js-add-acknowledge" data-element="{{ helper.get_uri_name(elt) }}" data-until="{{ nextmonday }}">Next monday 8am</a></li>
+            <li class="divider"></li>
+            <li><a href="#" class="js-add-acknowledge" data-element="{{ helper.get_uri_name(elt) }}">without expiration</a></li>
+          </ul>
+        </div>
         %end
         <div class="dropdown" style="display: inline;">
           <button class="btn btn-lg btn-ico btn-action btn-shinken dropdown-toggle" type="button" id="dropdown-downtime-{{ helper.get_html_id(elt) }}" data-toggle="dropdown"
@@ -177,15 +227,26 @@ Invalid element name
           </button>
           <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdown-downtime-{{ helper.get_html_id(elt) }}" style="margin-top: 15px;">
             <li class="dropdown-header">Set a downtime for…</li>
-            <li role="separator" class="divider"></li>
             <li><a href="#" class="js-schedule-downtime" data-element="{{helper.get_uri_name(elt)}}" data-duration="60">1 hour</a></li>
-            <li><a href="#" class="js-schedule-downtime" data-element="{{helper.get_uri_name(elt)}}" data-duration="180">3 hours</a></li>
-            <li><a href="#" class="js-schedule-downtime" data-element="{{helper.get_uri_name(elt)}}" data-duration="720">12 hours</a></li>
-            <li><a href="#" class="js-schedule-downtime" data-element="{{helper.get_uri_name(elt)}}" data-duration="1440">24 hours</a></li>
-            <li><a href="#" class="js-schedule-downtime" data-element="{{helper.get_uri_name(elt)}}" data-duration="2880">3 days</a></li>
-            <li><a href="#" class="js-schedule-downtime" data-element="{{helper.get_uri_name(elt)}}" data-duration="10080">7 days</a></li>
-            <li><a href="#" class="js-schedule-downtime" data-element="{{helper.get_uri_name(elt)}}" data-duration="43200">30 days</a></li>
-            <li role="separator" class="divider"></li>
+            <li><a href="#" class="js-schedule-downtime" data-element="{{helper.get_uri_name(elt)}}" data-until="{{ in3days8 }}">3 days</a></li>
+            <li><a href="#" class="js-schedule-downtime" data-element="{{helper.get_uri_name(elt)}}" data-until="{{ in7days8 }}">7 days</a></li>
+            <li><a href="#" class="js-schedule-downtime" data-element="{{helper.get_uri_name(elt)}}" data-until="{{ in30days8 }}">30 days</a></li>
+            <li class="dropdown-header">or until…</li>
+            %if datetime.now().hour < 9:
+            <li><a href="#" class="js-schedule-downtime" data-element="{{helper.get_uri_name(elt)}}" data-until="{{ today9 }}">Today 9am</a></li>
+            %end
+            %if datetime.now().hour < 14:
+            <li><a href="#" class="js-schedule-downtime" data-element="{{helper.get_uri_name(elt)}}" data-until="{{ today14 }}">Today 14pm</a></li>
+            %end
+            <li><a href="#" class="js-schedule-downtime" data-element="{{helper.get_uri_name(elt)}}" data-until="{{ tomorrow8 }}">Tomorrow 8am</a></li>
+            %if datetime.now().hour > 18:
+            <li><a href="#" class="js-schedule-downtime" data-element="{{helper.get_uri_name(elt)}}" data-until="{{ tomorrow9 }}">Tomorrow 9am</a></li>
+            %end
+            <li><a href="#" class="js-schedule-downtime" data-element="{{helper.get_uri_name(elt)}}" data-until="{{ nextmonday }}">Next monday 8am</a></li>
+            <li class="dropdown-header">…</li>
+            <li><a href="#" class="js-schedule-downtime" data-element="{{helper.get_uri_name(elt)}}" data-until="{{ nextmonth }}">First of next month</a></li>
+            <li><a href="#" class="js-schedule-downtime" data-element="{{helper.get_uri_name(elt)}}" data-until="{{ nextyear }}">First of next year</a></li>
+            <li class="divider"></li>
             <li><a href="#" class="js-schedule-downtime" data-element="{{helper.get_uri_name(elt)}}">Custom timeperiod</a></li>
           </ul>
         </div>
@@ -325,10 +386,14 @@ Invalid element name
             <li><a href="#comments" data-toggle="tab">Comments</a></li>
             <li><a href="#downtimes" data-toggle="tab">Downtimes</a></li>
             %if app.logs_module.is_available():
+            %if app.prefs_module.get_ui_user_preference(user, 'show_wip_views') == 'true':
+            <li><a href="#history" data-toggle="tab">History</a></li>
+            %else:
             %if not modal:
             <li><a href="#history" data-toggle="tab">History</a></li>
             %else:
             <li><a href="{{ helper.get_link_dest(elt) }}#history"><i class="fas fa-arrow-right"></i> History</a></li>
+            %end
             %end
             <!--%if app.logs_module.is_available() and elt_type=='host':-->
             <!--%if not modal:-->

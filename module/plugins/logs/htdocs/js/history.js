@@ -3,9 +3,9 @@ var history_offset = 0;
 function more_history() {
     disable_refresh();
 
-    if ($(window).data('ajaxready') == false) return;
+    if (history_ajax_ready == false) return;
 
-    $(window).data('ajaxready', false);
+    history_ajax_ready = false;
 
     $("#loading-spinner").fadeIn(400);
     var url = '/logs/inner';
@@ -33,7 +33,7 @@ function more_history() {
         if (data.indexOf('table') !== -1) {
             $("#inner_history").append(data);
             history_offset+=100;
-            $(window).data('ajaxready', true);
+            history_ajax_ready = true;
         }
         $("#loading-spinner").fadeOut(400);
     });
@@ -41,14 +41,22 @@ function more_history() {
 
 more_history();
 
-$(window).data('ajaxready', true);
+var history_ajax_ready = true
 
 $(window).scroll(function() {
-    if ($(window).data('ajaxready') == false) return;
+    if (history_ajax_ready == false) return;
 
-    if(($(window).scrollTop() + $(window).height() + 150) > $(document).height()) {
+    if (window.innerHeight + window.pageYOffset >= document.body.offsetHeight) {
         more_history();
     }
 });
 
+
+$('#modal').scroll(function() {
+    if (history_ajax_ready == false) return;
+
+    if(($('#modal').scrollTop() + $('#modal').height() + 10) > $('#modal').height()) {
+        more_history();
+    }
+});
 
