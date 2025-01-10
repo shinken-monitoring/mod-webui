@@ -190,7 +190,6 @@
          <ul class="dropdown-menu">
            <li class="dropdown-header">Logged in as {{ username }}</li>
            <li class="divider"></li>
-           <li><a href="https://github.com/shinken-monitoring/mod-webui/wiki" target="_blank"><i class="fas fa-book"></i>&nbsp; Documentation</a></li>
            <!--<li class="disabled"><a href="#actions" data-toggle="modal"><i class="fas fa-doc"></i> Actions</a></li>-->
            <li><a href="/user/pref" data-toggle="modal"><i class="fas fa-wrench"></i>&nbsp; Preferences</a></li>
            <li class="divider"></li>

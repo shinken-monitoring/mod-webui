@@ -474,6 +474,7 @@ td .ellipsis > .long-output {
 
 .sidebar ul li a.active {
     background-color: inherit;
+    /*background-color: #4D95BE;*/
     /*font-weight: inherit;*/
 }
 

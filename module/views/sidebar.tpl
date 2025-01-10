@@ -175,13 +175,37 @@
       <li role="separator" style="margin: 20px;"></li>
 
       <li class="hidden-xs text-center">
-        <a href="#" onclick="toggle_sidebar()" class="js-sidebar-toggle"><i class="fas fa-arrow-left sidebar-icon"></i></a>
+        <a href="#" onclick="toggle_sidebar()" class="js-sidebar-toggle" title="Expand sidebar"><i class="fas fa-arrow-left sidebar-icon"></i></a>
       </li>
     </ul>
 
+    %import time
+    <!--<ul class="nav hidden-xs" id="sidebar-menu-bottom">-->
+      <!--[> User info <]-->
+      <!--<li class="dropdown">-->
+        <!--<a href="#" class="btn btn-ico btn-user dropdown-toggle" data-toggle="dropdown" style="background-image: url({{ user.avatar_url }}?s=33;" title="Profile & Settings">-->
+           <!--[><img src="/avatar/{{ username }}" class="img-circle" size="32px"><]-->
+           <!--[><i class="fas fa-user" title="{{ username }}"></i><]-->
+         <!--</a>-->
+
+         <!--<ul class="dropdown-menu">-->
+           <!--<li class="dropdown-header">Logged in as {{ username }}</li>-->
+           <!--<li class="divider"></li>-->
+           <!--[><li class="disabled"><a href="#actions" data-toggle="modal"><i class="fas fa-doc"></i> Actions</a></li><]-->
+           <!--<li><a href="/user/pref" data-toggle="modal"><i class="fas fa-wrench"></i>&nbsp; Preferences</a></li>-->
+           <!--<li class="divider"></li>-->
+           <!--<li><a href="/user/logout" data-toggle="modal" data-target="/user/logout"><i class="fas fa-sign-out-alt"></i>&nbsp; Logout</a></li>-->
+         <!--</ul>-->
+      <!--</li>-->
+      <!--%import time-->
+      <!--<li onclick="display_modal('/modal/about')" class="text-center" title="Page rendered in {{ int((time.time() - app.request.start_time) * 1000) }}ms">-->
+        <!--<img src='/static/images/logos/shinken-gray.png' width='24px;'>-->
+      <!--</li>-->
+    <!--</ul>-->
+
     <div class="nav hidden-xs" id="sidebar-menu-bottom">
-      <div onclick="display_modal('/modal/about')" class="text-center">
-        <img src='/favicon.ico' width='24px;'>
+      <div onclick="display_modal('/modal/about')" class="text-center" title="Page rendered in {{ int((time.time() - app.request.start_time) * 1000) }}ms">
+        <img src='/static/images/logos/shinken-gray.png' width='24px;'>
       </div>
     </div>
   </div>
